@@ -18,7 +18,7 @@
   </title>
   
     
-      <meta property='og:description' content='Deriving PlutusType with DPTStrat PlutusTypeData allows for easily constructing and deconstructing Constr BuiltinData/Data values. It allows fully type safe matching on Data encoded values, without embedding type information within the generated script - unlike PlutusTx. PDataFields, on top of that, allows for ergonomic field access.' />
+      <meta property='og:description' content='Deriving PlutusType with DPTStrat PlutusTypeData allows for easily constructing and deconstructing Constr BuiltinData/Data values. It allows fully type safe matching on Data encoded values, without embedding type information within the generated script - unlike PlutusTx. PDataFields, on top of that, allows for ergonomic field access.andBuiltinData/DataData encoded' />
       <meta property='og:site_name' content='Plutarch Plutus' />
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
@@ -54,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=9573fbd9-a6b9-40bd-b236-912816f906f9' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=9cd7fbab-7a46-4b31-bf90-1894b195e77b' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -2501,46 +2501,6 @@
   
         
     </span>
-    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PTuple' href='Types/PTuple.html'>
-      PTuple
-    </a>
-    
-      
-  </div>
-
-  <!-- Node's children forest, displayed only on active trees
-    TODO: Use <details> to toggle visibility?
-  -->
-  
-    
-  
-</div>
-    
-      <!-- Variable bindings for this tree-->
-
-  
-
-
-
-  
-
-
-<!-- Rendering of this tree -->
-<div class='pl-2'>
-  <!-- Node's rootLabel-->
-  <div class='flex items-center my-2 space-x-2 justify-left'>
-    <span>
-      
-        
-    
-      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
-        </path>
-      </svg>
-    
-  
-        
-    </span>
     <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PUnit' href='Types/PUnit.html'>
       PUnit
     </a>
@@ -3223,17 +3183,36 @@
 <summary> imports </summary>
 <p>
 </div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>{-# LANGUAGE QualifiedDo #-}
-module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where 
+module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
 
 import Plutarch.Prelude
-import Plutarch.Api.V1.Contexts (PScriptContext, PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying))
-import Plutarch.Api.V1.Value (PCurrencySymbol)
+import Plutarch.LedgerApi.V3 (
+  PScriptContext, 
+  PScriptPurpose (PMinting),
+  PScriptInfo (
+    PSpendingScript, 
+    PMintingScript, 
+    PRewardingScript, 
+    PCertifyingScript,
+    PVotingScript,
+    PProposingScript
+    ), 
+    PCurrencySymbol
+  )
 import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
-import PlutusLedgerApi.V1 (TxInfo (TxInfo), POSIXTime(POSIXTime), ScriptPurpose (Minting), ScriptContext (ScriptContext))
+import PlutusLedgerApi.V3 (
+  TxInfo (TxInfo), 
+  POSIXTime(POSIXTime), 
+  ScriptContext (ScriptContext),
+  ScriptInfo (MintingScript),
+  Redeemer (Redeemer)
+  )
 import PlutusLedgerApi.V1.Value (CurrencySymbol (CurrencySymbol))
 import PlutusLedgerApi.V1.Interval (interval)
 import qualified PlutusTx
+import qualified PlutusTx.AssocMap as AssocMap
+import qualified PlutusTx.Builtins as Builtins
 import Plutarch.Docs.Run (evalWithArgsT)</code></pre></div><div xmlhtmlRaw></p>
 </details>
 </div>
@@ -3276,12 +3255,14 @@ import Plutarch.Docs.Run (evalWithArgsT)</code></pre></div><div xmlhtmlRaw></p>
     </ul>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>foo :: Term s (PScriptContext :--&gt; PString)
 foo = plam $ \ctx -&gt; P.do
-  purpose &lt;- pmatch $ pfield @"purpose" # ctx
-  case purpose of
-    PMinting _ -&gt; "It's minting!"
-    PSpending _ -&gt; "It's spending!"
-    PRewarding _ -&gt; "It's rewarding!"
-    PCertifying _ -&gt; "It's certifying!"</code></pre></div>
+  scriptInfo &lt;- pmatch $ pfield @"scriptInfo" # ctx
+  case scriptInfo of 
+    PMintingScript _ -&gt; "It's minting!"
+    PSpendingScript _ -&gt; "It's spending!"
+    PRewardingScript _ -&gt; "It's rewarding!"
+    PCertifyingScript _ -&gt; "It's certifying!"
+    PVotingScript _ -&gt; "It's voting!"
+    PProposingScript _ -&gt; "It's proposing!"</code></pre></div>
     <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
       
     <p class='mb-3'>
@@ -3329,6 +3310,10 @@ foo = plam $ \ctx -&gt; P.do
       Aside: <code class='py-0.5 px-0.5 bg-gray-100'>pfield</code> is actually return type polymorhpic. It could’ve returned either <code class='py-0.5 px-0.5 bg-gray-100'>PAsData PScriptPurpose</code> and <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose</code>. In this case, GHC correctly infers that we actually want a <code class='py-0.5 px-0.5 bg-gray-100'>PScriptPurpose</code>, since <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code> doesn’t work on <code class='py-0.5 px-0.5 bg-gray-100'>PAsData PScriptPurpose</code>!
     </p>
   
+    </blockquote>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
     <p class='mb-3'>
       Sometimes GHC isn’t so smart, and you’re forced to provide an explicit type annotation. Or you can simply use <code class='py-0.5 px-0.5 bg-gray-100'>pfromData $ pfield ....</code>.
     </p>
@@ -3362,18 +3347,25 @@ foo = plam $ \ctx -&gt; P.do
 mockCtx =
   ScriptContext
     (TxInfo
-      mempty
-      mempty
-      mempty
-      mempty
-      mempty
-      mempty
-      (interval (POSIXTime 1) (POSIXTime 2))
-      mempty
-      mempty
-      ""
+      mempty -- inputs
+      mempty -- reference inputs
+      mempty -- outputs
+      0 -- fee
+      mempty -- mint
+      mempty -- certs
+      AssocMap.empty -- withdrawals
+      (interval (POSIXTime 1) (POSIXTime 2)) -- valid range
+      mempty -- signatories
+      AssocMap.empty -- redeemers
+      AssocMap.empty -- data
+      "" -- id
+      AssocMap.empty -- votes
+      mempty -- proposal procedures
+      Nothing -- current treasury amount
+      Nothing -- current treasury donation
     )
-    (Minting (CurrencySymbol ""))
+    (Redeemer . Builtins.mkI $ 0)
+    (MintingScript (CurrencySymbol ""))
 
 res :: Either _ _
 res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
@@ -3429,11 +3421,11 @@ res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
     </p>
   <div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>foo' :: Term s (PScriptContext :--&gt; PUnit)
 foo' = plam $ \ctx' -&gt; P.do
-  ctx &lt;- pletFields @["txInfo", "purpose"] ctx'
+  ctx &lt;- pletFields @["txInfo", "scriptInfo"] ctx'
   let
-    _purpose = ctx.purpose
+    _scriptInfo = ctx.scriptInfo
     _txInfo = ctx.txInfo
-  -- &lt;use purpose and txInfo here&gt;
+  -- &lt;use scriptInfo and txInfo here&gt;
   pconstant ()</code></pre></div>
     <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
       
@@ -3597,10 +3589,22 @@ purpose = pcon $ PMinting fields
       Note: The constructor ordering in <code class='py-0.5 px-0.5 bg-gray-100'>PVehicle</code> matters! If you used <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'><code class='py-0.5 px-0.5 bg-gray-100'>makeIsDataIndexed</code></a> on <code class='py-0.5 px-0.5 bg-gray-100'>Vehicle</code> to assign an index to each constructor - the Plutarch type’s constructors must follow the same indexing order.
     </p>
   
+    </blockquote>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
     <p class='mb-3'>
       In this case, <code class='py-0.5 px-0.5 bg-gray-100'>PFourWheeler</code> is at the 0th index, <code class='py-0.5 px-0.5 bg-gray-100'>PTwoWheeler</code> is at the 1st index, and <code class='py-0.5 px-0.5 bg-gray-100'>PImmovableBox</code> is at the 3rd index. Thus, the corresponding <code class='py-0.5 px-0.5 bg-gray-100'>makeIsDataIndexed</code> usage should be:
     </p>
-  <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]</code></pre></div>
+  
+    </blockquote>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      <div class='py-0.5 mb-3 text-sm'><pre><code class='hs language-hs'>PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]</code></pre></div>
+    </blockquote>
+  
+    <blockquote class='py-0.5 px-4 mb-3 italic border-l-4 bg-gray-50 text-gray-600 border-gray-400 quote'>
+      
     <p class='mb-3'>
       Also see: <a href='Tricks/makeIsDataIndexed%2C%20Haskell%20ADTs%2C%20and%20PIsDataRepr.html' class='text-blue-600 mavenLinkBold hover:underline'>Isomorphism between Haskell ADTs and <code class='py-0.5 px-0.5 bg-gray-100'>PIsData</code></a>
     </p>
@@ -3894,21 +3898,6 @@ instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData</code></pr
         </li>
       
         <li>
-          <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='Types/PTuple.html'>
-            PTuple
-          </a>
-          
-            <div class='mb-4 overflow-auto text-sm text-gray-500'>
-  
-    <div class='pl-2 mt-2 border-l-2 border-blue-200 hover:border-blue-500'>
-      <div><p><code>PTuple</code> has a <a href='Typeclasses/PIsDataRepr%20and%20PDataFields.html#all-about-extracting-fields' class='text-gray-600 font-bold hover:bg-gray-50'><code>PDataFields</code></a> instance. As such, you can extract its fields using <code>pletFields</code> or <code>pfield</code>.</p></div>
-    </div>
-  
-</div>
-          
-        </li>
-      
-        <li>
           <a class='text-blue-600 mavenLinkBold hover:bg-blue-50' href='Typeclasses/PIsDataRepr%20and%20PDataFields.html'>
             PIsDataRepr and PDataFields
           </a>
@@ -4018,7 +4007,7 @@ instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData</code></pr
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.17.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.18.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

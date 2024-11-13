@@ -1,0 +1,609 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE DeriveGeneric #-}</span><span>
+</span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE FlexibleContexts #-}</span><span>
+</span><span id="line-5"></span><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-comment">-----------------------------------------------------------------------------</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- |</span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- Module      :  Distribution.Simple.Program.Find</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- Copyright   :  Duncan Coutts 2013</span><span>
+</span><span id="line-11"></span><span class="hs-comment">--</span><span>
+</span><span id="line-12"></span><span class="hs-comment">-- Maintainer  :  cabal-devel@haskell.org</span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- Portability :  portable</span><span>
+</span><span id="line-14"></span><span class="hs-comment">--</span><span>
+</span><span id="line-15"></span><span class="hs-comment">-- A somewhat extended notion of the normal program search path concept.</span><span>
+</span><span id="line-16"></span><span class="hs-comment">--</span><span>
+</span><span id="line-17"></span><span class="hs-comment">-- Usually when finding executables we just want to look in the usual places</span><span>
+</span><span id="line-18"></span><span class="hs-comment">-- using the OS's usual method for doing so. In Haskell the normal OS-specific</span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- method is captured by 'findExecutable'. On all common OSs that makes use of</span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- a @PATH@ environment variable, (though on Windows it is not just the @PATH@).</span><span>
+</span><span id="line-21"></span><span class="hs-comment">--</span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- However it is sometimes useful to be able to look in additional locations</span><span>
+</span><span id="line-23"></span><span class="hs-comment">-- without having to change the process-global @PATH@ environment variable.</span><span>
+</span><span id="line-24"></span><span class="hs-comment">-- So we need an extension of the usual 'findExecutable' that can look in</span><span>
+</span><span id="line-25"></span><span class="hs-comment">-- additional locations, either before, after or instead of the normal OS</span><span>
+</span><span id="line-26"></span><span class="hs-comment">-- locations.</span><span>
+</span><span id="line-27"></span><span class="hs-comment">--</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Distribution.Simple.Program.Find</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-29"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Program search path</span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPath"><span class="hs-identifier">ProgramSearchPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-31"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathEntry"><span class="hs-identifier">ProgramSearchPathEntry</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-32"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#defaultProgramSearchPath"><span class="hs-identifier">defaultProgramSearchPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-33"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#findProgramOnSearchPath"><span class="hs-identifier">findProgramOnSearchPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#programSearchPathAsPATHVar"><span class="hs-identifier">programSearchPathAsPATHVar</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#logExtraProgramSearchPath"><span class="hs-identifier">logExtraProgramSearchPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-36"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#getSystemSearchPath"><span class="hs-identifier">getSystemSearchPath</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-37"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#getExtraPathEnv"><span class="hs-identifier">getExtraPathEnv</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-38"></span><span>    </span><span class="annot"><a href="Distribution.Simple.Program.Find.html#simpleProgram"><span class="hs-identifier">simpleProgram</span></a></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/Prelude.html#/Prelude.html"><span class="hs-identifier">Prelude</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../Cabal-syntax-3.10.3.0/src/Distribution.Compat.Prelude.html#/Distribution.Compat.Prelude.html"><span class="hs-identifier">Distribution.Compat.Prelude</span></a></span><span>
+</span><span id="line-43"></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Distribution.Verbosity.html"><span class="hs-identifier">Distribution.Verbosity</span></a></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html"><span class="hs-identifier">Distribution.Simple.Program.Types</span></a></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Distribution.Simple.Utils.html"><span class="hs-identifier">Distribution.Simple.Utils</span></a></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../Cabal-syntax-3.10.3.0/src/Distribution.System.html#/Distribution.System.html"><span class="hs-identifier">Distribution.System</span></a></span><span>
+</span><span id="line-48"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Distribution.Compat.Environment.html"><span class="hs-identifier">Distribution.Compat.Environment</span></a></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><a href="../../directory-1.3.8.5/src/System.Directory.html#/System.Directory.html"><span class="hs-identifier">System.Directory</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Directory</span></span><span>
+</span><span id="line-51"></span><span>         </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../directory-1.3.8.5/src/System.Directory.html#findExecutable/System.Directory.html#findExecutable"><span class="hs-identifier">findExecutable</span></a></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.html#/System.FilePath.html"><span class="hs-identifier">System.FilePath</span></a></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">FilePath</span></span><span>
+</span><span id="line-53"></span><span>         </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator">(&lt;/&gt;)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C.%3E/System.FilePath.Posix.html#%3C.%3E"><span class="hs-operator">(&lt;.&gt;)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#splitSearchPath/System.FilePath.Posix.html#splitSearchPath"><span class="hs-identifier">splitSearchPath</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#searchPathSeparator/System.FilePath.Posix.html#searchPathSeparator"><span class="hs-identifier">searchPathSeparator</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#getSearchPath/System.FilePath.Posix.html#getSearchPath"><span class="hs-identifier">getSearchPath</span></a></span><span>
+</span><span id="line-54"></span><span>         </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#takeDirectory/System.FilePath.Posix.html#takeDirectory"><span class="hs-identifier">takeDirectory</span></a></span><span> </span><span class="hs-special">)</span><span class="hs-cpp">
+#if defined(mingw32_HOST_OS)
+</span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-identifier">System.Win32</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="hs-identifier">Win32</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-59"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#defaultProgramSearchPath"><span class="hs-identifier hs-type">defaultProgramSearchPath</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPath"><span class="hs-identifier hs-type">ProgramSearchPath</span></a></span><span>
+</span><span id="line-60"></span><span id="defaultProgramSearchPath"><span class="annot"><span class="annottext">defaultProgramSearchPath :: ProgramSearchPath
+</span><a href="Distribution.Simple.Program.Find.html#defaultProgramSearchPath"><span class="hs-identifier hs-var hs-var">defaultProgramSearchPath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ProgramSearchPathEntry
+</span><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathDefault"><span class="hs-identifier hs-var">ProgramSearchPathDefault</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#logExtraProgramSearchPath"><span class="hs-identifier hs-type">logExtraProgramSearchPath</span></a></span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Distribution.Verbosity.html#Verbosity"><span class="hs-identifier hs-type">Verbosity</span></a></span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span id="logExtraProgramSearchPath"><span class="annot"><span class="annottext">logExtraProgramSearchPath :: Verbosity -&gt; [FilePath] -&gt; IO ()
+</span><a href="Distribution.Simple.Program.Find.html#logExtraProgramSearchPath"><span class="hs-identifier hs-var hs-var">logExtraProgramSearchPath</span></a></span></span><span> </span><span id="local-6989586621679352437"><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352437"><span class="hs-identifier hs-var">verbosity</span></a></span></span><span> </span><span id="local-6989586621679352438"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352438"><span class="hs-identifier hs-var">extraPaths</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-67"></span><span>  </span><span class="annot"><span class="annottext">Verbosity -&gt; FilePath -&gt; IO ()
+</span><a href="Distribution.Simple.Utils.html#info"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352437"><span class="hs-identifier hs-var">verbosity</span></a></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO ())
+-&gt; ([FilePath] -&gt; FilePath) -&gt; [FilePath] -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#./GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; FilePath
+</span><a href="../../base-4.18.2.1/src/Data.OldList.html#unlines/Data.OldList.html#unlines"><span class="hs-identifier hs-var">unlines</span></a></span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; IO ()) -&gt; [FilePath] -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%24/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-68"></span><span>    </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;Including the following directories in PATH:&quot;</span></span><span>
+</span><span id="line-69"></span><span>      </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; [FilePath]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; FilePath) -&gt; [FilePath] -&gt; [FilePath]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#map/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;- &quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352438"><span class="hs-identifier hs-var">extraPaths</span></a></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#findProgramOnSearchPath"><span class="hs-identifier hs-type">findProgramOnSearchPath</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Distribution.Verbosity.html#Verbosity"><span class="hs-identifier hs-type">Verbosity</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPath"><span class="hs-identifier hs-type">ProgramSearchPath</span></a></span><span>
+</span><span id="line-72"></span><span>                        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span id="findProgramOnSearchPath"><span class="annot"><span class="annottext">findProgramOnSearchPath :: Verbosity
+-&gt; ProgramSearchPath
+-&gt; FilePath
+-&gt; IO (Maybe (FilePath, [FilePath]))
+</span><a href="Distribution.Simple.Program.Find.html#findProgramOnSearchPath"><span class="hs-identifier hs-var hs-var">findProgramOnSearchPath</span></a></span></span><span> </span><span id="local-6989586621679352442"><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352442"><span class="hs-identifier hs-var">verbosity</span></a></span></span><span> </span><span id="local-6989586621679352443"><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352443"><span class="hs-identifier hs-var">searchpath</span></a></span></span><span> </span><span id="local-6989586621679352444"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-74"></span><span>    </span><span class="annot"><span class="annottext">Verbosity -&gt; FilePath -&gt; IO ()
+</span><a href="Distribution.Simple.Utils.html#debug"><span class="hs-identifier hs-var">debug</span></a></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352442"><span class="hs-identifier hs-var">verbosity</span></a></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; IO ()) -&gt; FilePath -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%24/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;Searching for &quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot; in path.&quot;</span></span><span>
+</span><span id="line-75"></span><span>    </span><span id="local-6989586621679352446"><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath])
+</span><a href="#local-6989586621679352446"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[[FilePath]]
+-&gt; ProgramSearchPath -&gt; IO (Maybe (FilePath, [FilePath]))
+</span><a href="#local-6989586621679352447"><span class="hs-identifier hs-var">tryPathElems</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352443"><span class="hs-identifier hs-var">searchpath</span></a></span><span>
+</span><span id="line-76"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath])
+</span><a href="#local-6989586621679352446"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-77"></span><span>      </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath])
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Verbosity -&gt; FilePath -&gt; IO ()
+</span><a href="Distribution.Simple.Utils.html#debug"><span class="hs-identifier hs-var">debug</span></a></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352442"><span class="hs-identifier hs-var">verbosity</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;Cannot find &quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot; on the path&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>      </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679352448"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352448"><span class="hs-identifier hs-var">path</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Verbosity -&gt; FilePath -&gt; IO ()
+</span><a href="Distribution.Simple.Utils.html#debug"><span class="hs-identifier hs-var">debug</span></a></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352442"><span class="hs-identifier hs-var">verbosity</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;Found &quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot; at &quot;</span></span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352448"><span class="hs-identifier hs-var">path</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath]) -&gt; IO (Maybe (FilePath, [FilePath]))
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath])
+</span><a href="#local-6989586621679352446"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-81"></span><span>    </span><span class="annot"><a href="#local-6989586621679352447"><span class="hs-identifier hs-type">tryPathElems</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathEntry"><span class="hs-identifier hs-type">ProgramSearchPathEntry</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-82"></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679352447"><span class="annot"><span class="annottext">tryPathElems :: [[FilePath]]
+-&gt; ProgramSearchPath -&gt; IO (Maybe (FilePath, [FilePath]))
+</span><a href="#local-6989586621679352447"><span class="hs-identifier hs-var hs-var">tryPathElems</span></a></span></span><span> </span><span class="annot"><span class="annottext">[[FilePath]]
+</span><span class="hs-identifier">_</span></span><span>     </span><span class="hs-special">[</span><span class="hs-special">]</span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath]) -&gt; IO (Maybe (FilePath, [FilePath]))
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath])
+forall a. Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
+</span><span id="line-84"></span><span>    </span><span class="annot"><a href="#local-6989586621679352447"><span class="hs-identifier hs-var">tryPathElems</span></a></span><span> </span><span id="local-6989586621679352449"><span class="annot"><span class="annottext">[[FilePath]]
+</span><a href="#local-6989586621679352449"><span class="hs-identifier hs-var">tried</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679352450"><span class="annot"><span class="annottext">ProgramSearchPathEntry
+</span><a href="#local-6989586621679352450"><span class="hs-identifier hs-var">pe</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679352451"><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352451"><span class="hs-identifier hs-var">pes</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-85"></span><span>      </span><span id="local-6989586621679352452"><span class="annot"><span class="annottext">(Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352452"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ProgramSearchPathEntry -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352453"><span class="hs-identifier hs-var">tryPathElem</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPathEntry
+</span><a href="#local-6989586621679352450"><span class="hs-identifier hs-var">pe</span></a></span><span>
+</span><span id="line-86"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352452"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-87"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span class="hs-special">,</span><span>      </span><span id="local-6989586621679352454"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352454"><span class="hs-identifier hs-var">notfoundat</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[[FilePath]]
+-&gt; ProgramSearchPath -&gt; IO (Maybe (FilePath, [FilePath]))
+</span><a href="#local-6989586621679352447"><span class="hs-identifier hs-var">tryPathElems</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352454"><span class="hs-identifier hs-var">notfoundat</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [[FilePath]] -&gt; [[FilePath]]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[[FilePath]]
+</span><a href="#local-6989586621679352449"><span class="hs-identifier hs-var">tried</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352451"><span class="hs-identifier hs-var">pes</span></a></span><span>
+</span><span id="line-88"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621679352455"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352455"><span class="hs-identifier hs-var">foundat</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679352456"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352456"><span class="hs-identifier hs-var">notfoundat</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (FilePath, [FilePath]) -&gt; IO (Maybe (FilePath, [FilePath]))
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(FilePath, [FilePath]) -&gt; Maybe (FilePath, [FilePath])
+forall a. a -&gt; Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352455"><span class="hs-identifier hs-var">foundat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352457"><span class="hs-identifier hs-var">alltried</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span>          </span><span class="hs-keyword">where</span><span>
+</span><span id="line-90"></span><span>            </span><span id="local-6989586621679352457"><span class="annot"><span class="annottext">alltried :: [FilePath]
+</span><a href="#local-6989586621679352457"><span class="hs-identifier hs-var hs-var">alltried</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[FilePath]] -&gt; [FilePath]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/Data.Foldable.html#concat/Data.Foldable.html#concat"><span class="hs-identifier hs-var">concat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[FilePath]] -&gt; [[FilePath]]
+forall a. [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.List.html#reverse/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352456"><span class="hs-identifier hs-var">notfoundat</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [[FilePath]] -&gt; [[FilePath]]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">[[FilePath]]
+</span><a href="#local-6989586621679352449"><span class="hs-identifier hs-var">tried</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span>    </span><span class="annot"><a href="#local-6989586621679352453"><span class="hs-identifier hs-type">tryPathElem</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathEntry"><span class="hs-identifier hs-type">ProgramSearchPathEntry</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span>    </span><span id="local-6989586621679352453"><span class="annot"><span class="annottext">tryPathElem :: ProgramSearchPathEntry -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352453"><span class="hs-identifier hs-var hs-var">tryPathElem</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathDir"><span class="hs-identifier hs-type">ProgramSearchPathDir</span></a></span><span> </span><span id="local-6989586621679352462"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352462"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-94"></span><span>        </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352463"><span class="hs-identifier hs-var">findFirstExe</span></a></span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352462"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C.%3E/System.FilePath.Posix.html#%3C.%3E"><span class="hs-operator hs-var">&lt;.&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352464"><span class="hs-identifier hs-var">ext</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679352464"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352464"><span class="hs-identifier hs-var">ext</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="Distribution.Simple.Utils.html#exeExtensions"><span class="hs-identifier hs-var">exeExtensions</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span>    </span><span class="hs-comment">-- On windows, getSystemSearchPath is not guaranteed 100% correct so we</span><span>
+</span><span id="line-97"></span><span>    </span><span class="hs-comment">-- use findExecutable and then approximate the not-found-at locations.</span><span>
+</span><span id="line-98"></span><span>    </span><span class="annot"><a href="#local-6989586621679352453"><span class="hs-identifier hs-var">tryPathElem</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPathEntry
+</span><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathDefault"><span class="hs-identifier hs-var">ProgramSearchPathDefault</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">OS
+</span><a href="../../Cabal-syntax-3.10.3.0/src/Distribution.System.html#buildOS/Distribution.System.html#buildOS"><span class="hs-identifier hs-var">buildOS</span></a></span><span> </span><span class="annot"><span class="annottext">OS -&gt; OS -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">OS
+</span><a href="../../Cabal-syntax-3.10.3.0/src/Distribution.System.html#Windows/Distribution.System.html#Windows"><span class="hs-identifier hs-var">Windows</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-99"></span><span>      </span><span id="local-6989586621679352468"><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="#local-6989586621679352468"><span class="hs-identifier hs-var">mExe</span></a></span></span><span>    </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[IO (Maybe FilePath)] -&gt; IO (Maybe FilePath)
+forall (m :: * -&gt; *) a. Monad m =&gt; [m (Maybe a)] -&gt; m (Maybe a)
+</span><a href="#local-6989586621679352469"><span class="hs-identifier hs-var">firstJustM</span></a></span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO (Maybe FilePath)
+</span><a href="Distribution.Simple.Program.Find.html#findExecutable"><span class="hs-identifier hs-var">findExecutable</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C.%3E/System.FilePath.Posix.html#%3C.%3E"><span class="hs-operator hs-var">&lt;.&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352470"><span class="hs-identifier hs-var">ext</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679352470"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352470"><span class="hs-identifier hs-var">ext</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="Distribution.Simple.Utils.html#exeExtensions"><span class="hs-identifier hs-var">exeExtensions</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-100"></span><span>      </span><span id="local-6989586621679352471"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352471"><span class="hs-identifier hs-var">syspath</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [FilePath]
+</span><a href="Distribution.Simple.Program.Find.html#getSystemSearchPath"><span class="hs-identifier hs-var">getSystemSearchPath</span></a></span><span>
+</span><span id="line-101"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="#local-6989586621679352468"><span class="hs-identifier hs-var">mExe</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-102"></span><span>        </span><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-103"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679352472"><span class="annot"><span class="annottext">notfoundat :: [FilePath]
+</span><a href="#local-6989586621679352472"><span class="hs-identifier hs-var hs-var">notfoundat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352473"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679352473"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352473"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352471"><span class="hs-identifier hs-var">syspath</span></a></span><span> </span><span class="hs-special">]</span><span> </span><span class="hs-keyword">in</span><span>
+</span><span id="line-104"></span><span>          </span><span class="annot"><span class="annottext">(Maybe FilePath, [FilePath]) -&gt; IO (Maybe FilePath, [FilePath])
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe FilePath
+forall a. Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352472"><span class="hs-identifier hs-var">notfoundat</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-105"></span><span>
+</span><span id="line-106"></span><span>        </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621679352474"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352474"><span class="hs-identifier hs-var">foundat</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-107"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679352475"><span class="annot"><span class="annottext">founddir :: FilePath
+</span><a href="#local-6989586621679352475"><span class="hs-identifier hs-var hs-var">founddir</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#takeDirectory/System.FilePath.Posix.html#takeDirectory"><span class="hs-identifier hs-var">takeDirectory</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352474"><span class="hs-identifier hs-var">foundat</span></a></span><span>
+</span><span id="line-108"></span><span>              </span><span id="local-6989586621679352478"><span class="annot"><span class="annottext">notfoundat :: [FilePath]
+</span><a href="#local-6989586621679352478"><span class="hs-identifier hs-var hs-var">notfoundat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352479"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span>
+</span><span id="line-109"></span><span>                           </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679352479"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352479"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Bool) -&gt; [FilePath] -&gt; [FilePath]
+forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.List.html#takeWhile/GHC.List.html#takeWhile"><span class="hs-identifier hs-var">takeWhile</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352475"><span class="hs-identifier hs-var">founddir</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352471"><span class="hs-identifier hs-var">syspath</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-110"></span><span>          </span><span class="annot"><span class="annottext">(Maybe FilePath, [FilePath]) -&gt; IO (Maybe FilePath, [FilePath])
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; Maybe FilePath
+forall a. a -&gt; Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352474"><span class="hs-identifier hs-var">foundat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352478"><span class="hs-identifier hs-var">notfoundat</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span>    </span><span class="hs-comment">-- On other OSs we can just do the simple thing</span><span>
+</span><span id="line-113"></span><span>    </span><span class="annot"><a href="#local-6989586621679352453"><span class="hs-identifier hs-var">tryPathElem</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPathEntry
+</span><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathDefault"><span class="hs-identifier hs-var">ProgramSearchPathDefault</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-114"></span><span>      </span><span id="local-6989586621679352482"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352482"><span class="hs-identifier hs-var">dirs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [FilePath]
+</span><a href="Distribution.Simple.Program.Find.html#getSystemSearchPath"><span class="hs-identifier hs-var">getSystemSearchPath</span></a></span><span>
+</span><span id="line-115"></span><span>      </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352463"><span class="hs-identifier hs-var">findFirstExe</span></a></span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352483"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352444"><span class="hs-identifier hs-var">prog</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C.%3E/System.FilePath.Posix.html#%3C.%3E"><span class="hs-operator hs-var">&lt;.&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352484"><span class="hs-identifier hs-var">ext</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679352483"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352483"><span class="hs-identifier hs-var">dir</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352482"><span class="hs-identifier hs-var">dirs</span></a></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679352484"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352484"><span class="hs-identifier hs-var">ext</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="Distribution.Simple.Utils.html#exeExtensions"><span class="hs-identifier hs-var">exeExtensions</span></a></span><span> </span><span class="hs-special">]</span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span>    </span><span class="annot"><a href="#local-6989586621679352463"><span class="hs-identifier hs-type">findFirstExe</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-118"></span><span>    </span><span id="local-6989586621679352463"><span class="annot"><span class="annottext">findFirstExe :: [FilePath] -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352463"><span class="hs-identifier hs-var hs-var">findFirstExe</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath] -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352485"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-119"></span><span>      </span><span class="hs-keyword">where</span><span>
+</span><span id="line-120"></span><span>        </span><span id="local-6989586621679352485"><span class="annot"><span class="annottext">go :: [FilePath] -&gt; [FilePath] -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352485"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679352489"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352489"><span class="hs-identifier hs-var">fs'</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Maybe FilePath, [FilePath]) -&gt; IO (Maybe FilePath, [FilePath])
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe FilePath
+forall a. Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath]
+forall a. [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.List.html#reverse/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352489"><span class="hs-identifier hs-var">fs'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-121"></span><span>        </span><span class="annot"><a href="#local-6989586621679352485"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span id="local-6989586621679352490"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352490"><span class="hs-identifier hs-var">fs'</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679352491"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352491"><span class="hs-identifier hs-var">f</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679352492"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352492"><span class="hs-identifier hs-var">fs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-122"></span><span>          </span><span id="local-6989586621679352493"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679352493"><span class="hs-identifier hs-var">isExe</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO Bool
+</span><a href="Distribution.Simple.Utils.html#doesExecutableExist"><span class="hs-identifier hs-var">doesExecutableExist</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352491"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-123"></span><span>          </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679352493"><span class="hs-identifier hs-var">isExe</span></a></span><span>
+</span><span id="line-124"></span><span>            </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">(Maybe FilePath, [FilePath]) -&gt; IO (Maybe FilePath, [FilePath])
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; Maybe FilePath
+forall a. a -&gt; Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352491"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath]
+forall a. [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.List.html#reverse/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352490"><span class="hs-identifier hs-var">fs'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-125"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath] -&gt; IO (Maybe FilePath, [FilePath])
+</span><a href="#local-6989586621679352485"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352491"><span class="hs-identifier hs-var">f</span></a></span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; [FilePath]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352490"><span class="hs-identifier hs-var">fs'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352492"><span class="hs-identifier hs-var">fs</span></a></span><span>
+</span><span id="line-126"></span><span>
+</span><span id="line-127"></span><span>    </span><span class="hs-comment">-- Helper for evaluating actions until the first one returns 'Just'</span><span>
+</span><span id="line-128"></span><span>    </span><span id="local-6989586621679352360"><span id="local-6989586621679352361"><span class="annot"><a href="#local-6989586621679352469"><span class="hs-identifier hs-type">firstJustM</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#Monad/GHC.Base.html#Monad"><span class="hs-identifier hs-type">Monad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679352360"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679352360"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679352361"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679352360"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679352361"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-129"></span><span>    </span><span id="local-6989586621679352469"><span class="annot"><span class="annottext">firstJustM :: forall (m :: * -&gt; *) a. Monad m =&gt; [m (Maybe a)] -&gt; m (Maybe a)
+</span><a href="#local-6989586621679352469"><span class="hs-identifier hs-var hs-var">firstJustM</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; m (Maybe a)
+forall a. a -&gt; m a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+forall a. Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
+</span><span id="line-130"></span><span>    </span><span class="annot"><a href="#local-6989586621679352469"><span class="hs-identifier hs-var">firstJustM</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679352500"><span class="annot"><span class="annottext">m (Maybe a)
+</span><a href="#local-6989586621679352500"><span class="hs-identifier hs-var">ma</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679352501"><span class="annot"><span class="annottext">[m (Maybe a)]
+</span><a href="#local-6989586621679352501"><span class="hs-identifier hs-var">mas</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-131"></span><span>      </span><span id="local-6989586621679352502"><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679352502"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m (Maybe a)
+</span><a href="#local-6989586621679352500"><span class="hs-identifier hs-var">ma</span></a></span><span>
+</span><span id="line-132"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679352502"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-133"></span><span>        </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><span class="hs-identifier">_</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; m (Maybe a)
+forall a. a -&gt; m a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="#local-6989586621679352502"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-134"></span><span>        </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[m (Maybe a)] -&gt; m (Maybe a)
+forall (m :: * -&gt; *) a. Monad m =&gt; [m (Maybe a)] -&gt; m (Maybe a)
+</span><a href="#local-6989586621679352469"><span class="hs-identifier hs-var">firstJustM</span></a></span><span> </span><span class="annot"><span class="annottext">[m (Maybe a)]
+</span><a href="#local-6989586621679352501"><span class="hs-identifier hs-var">mas</span></a></span><span>
+</span><span id="line-135"></span><span>
+</span><span id="line-136"></span><span class="hs-comment">-- | Adds some paths to the &quot;PATH&quot; entry in the key-value environment provided</span><span>
+</span><span id="line-137"></span><span class="hs-comment">-- or if there is none, looks up @$PATH@ in the real environment.</span><span>
+</span><span id="line-138"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#getExtraPathEnv"><span class="hs-identifier hs-type">getExtraPathEnv</span></a></span><span>
+</span><span id="line-139"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Distribution.Verbosity.html#Verbosity"><span class="hs-identifier hs-type">Verbosity</span></a></span><span>
+</span><span id="line-140"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#String/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#String/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-141"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-142"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#String/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#String/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-143"></span><span id="getExtraPathEnv"><span class="annot"><span class="annottext">getExtraPathEnv :: Verbosity
+-&gt; [(FilePath, Maybe FilePath)]
+-&gt; [FilePath]
+-&gt; IO [(FilePath, Maybe FilePath)]
+</span><a href="Distribution.Simple.Program.Find.html#getExtraPathEnv"><span class="hs-identifier hs-var hs-var">getExtraPathEnv</span></a></span></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">[(FilePath, Maybe FilePath)]
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(FilePath, Maybe FilePath)] -&gt; IO [(FilePath, Maybe FilePath)]
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-144"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#getExtraPathEnv"><span class="hs-identifier hs-var">getExtraPathEnv</span></a></span><span> </span><span id="local-6989586621679352503"><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352503"><span class="hs-identifier hs-var">verbosity</span></a></span></span><span> </span><span id="local-6989586621679352504"><span class="annot"><span class="annottext">[(FilePath, Maybe FilePath)]
+</span><a href="#local-6989586621679352504"><span class="hs-identifier hs-var">env</span></a></span></span><span> </span><span id="local-6989586621679352505"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352505"><span class="hs-identifier hs-var">extras</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-145"></span><span>  </span><span id="local-6989586621679352506"><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="#local-6989586621679352506"><span class="hs-identifier hs-var">mb_path</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [(FilePath, Maybe FilePath)] -&gt; Maybe (Maybe FilePath)
+forall a b. Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
+</span><a href="../../base-4.18.2.1/src/GHC.List.html#lookup/GHC.List.html#lookup"><span class="hs-identifier hs-var">lookup</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;PATH&quot;</span></span><span> </span><span class="annot"><span class="annottext">[(FilePath, Maybe FilePath)]
+</span><a href="#local-6989586621679352504"><span class="hs-identifier hs-var">env</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-146"></span><span>    </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621679352508"><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="#local-6989586621679352508"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe FilePath -&gt; IO (Maybe FilePath)
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="#local-6989586621679352508"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-147"></span><span>    </span><span class="annot"><span class="annottext">Maybe (Maybe FilePath)
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO (Maybe FilePath)
+</span><a href="../../base-4.18.2.1/src/System.Environment.html#lookupEnv/System.Environment.html#lookupEnv"><span class="hs-identifier hs-var">lookupEnv</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;PATH&quot;</span></span><span>
+</span><span id="line-148"></span><span>  </span><span class="annot"><span class="annottext">Verbosity -&gt; [FilePath] -&gt; IO ()
+</span><a href="Distribution.Simple.Program.Find.html#logExtraProgramSearchPath"><span class="hs-identifier hs-var">logExtraProgramSearchPath</span></a></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352503"><span class="hs-identifier hs-var">verbosity</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352505"><span class="hs-identifier hs-var">extras</span></a></span><span>
+</span><span id="line-149"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679352510"><span class="annot"><span class="annottext">extra :: FilePath
+</span><a href="#local-6989586621679352510"><span class="hs-identifier hs-var hs-var">extra</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath
+forall a. [a] -&gt; [[a]] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/Data.OldList.html#intercalate/Data.OldList.html#intercalate"><span class="hs-identifier hs-var">intercalate</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#searchPathSeparator/System.FilePath.Posix.html#searchPathSeparator"><span class="hs-identifier hs-var">searchPathSeparator</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679352505"><span class="hs-identifier hs-var">extras</span></a></span><span>
+</span><span id="line-150"></span><span>      </span><span id="local-6989586621679352512"><span class="annot"><span class="annottext">path' :: FilePath
+</span><a href="#local-6989586621679352512"><span class="hs-identifier hs-var hs-var">path'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="#local-6989586621679352506"><span class="hs-identifier hs-var">mb_path</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-151"></span><span>        </span><span class="annot"><span class="annottext">Maybe FilePath
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352510"><span class="hs-identifier hs-var">extra</span></a></span><span>
+</span><span id="line-152"></span><span>        </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621679352513"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352513"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352510"><span class="hs-identifier hs-var">extra</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; FilePath
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%2B%2B/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#searchPathSeparator/System.FilePath.Posix.html#searchPathSeparator"><span class="hs-identifier hs-var">searchPathSeparator</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; FilePath -&gt; FilePath
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352513"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><span id="line-153"></span><span>  </span><span class="annot"><span class="annottext">[(FilePath, Maybe FilePath)] -&gt; IO [(FilePath, Maybe FilePath)]
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;PATH&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Maybe FilePath
+forall a. a -&gt; Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Just/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352512"><span class="hs-identifier hs-var">path'</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-154"></span><span>
+</span><span id="line-155"></span><span class="hs-comment">-- | Interpret a 'ProgramSearchPath' to construct a new @$PATH@ env var.</span><span>
+</span><span id="line-156"></span><span class="hs-comment">-- Note that this is close but not perfect because on Windows the search</span><span>
+</span><span id="line-157"></span><span class="hs-comment">-- algorithm looks at more than just the @%PATH%@.</span><span>
+</span><span id="line-158"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#programSearchPathAsPATHVar"><span class="hs-identifier hs-type">programSearchPathAsPATHVar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPath"><span class="hs-identifier hs-type">ProgramSearchPath</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#String/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span>
+</span><span id="line-159"></span><span id="programSearchPathAsPATHVar"><span class="annot"><span class="annottext">programSearchPathAsPATHVar :: ProgramSearchPath -&gt; IO FilePath
+</span><a href="Distribution.Simple.Program.Find.html#programSearchPathAsPATHVar"><span class="hs-identifier hs-var hs-var">programSearchPathAsPATHVar</span></a></span></span><span> </span><span id="local-6989586621679352514"><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352514"><span class="hs-identifier hs-var">searchpath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-160"></span><span>    </span><span id="local-6989586621679352515"><span class="annot"><span class="annottext">[[FilePath]]
+</span><a href="#local-6989586621679352515"><span class="hs-identifier hs-var">ess</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(ProgramSearchPathEntry -&gt; IO [FilePath])
+-&gt; ProgramSearchPath -&gt; IO [[FilePath]]
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; [a] -&gt; f [b]
+</span><a href="../../base-4.18.2.1/src/Data.Traversable.html#traverse/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPathEntry -&gt; IO [FilePath]
+</span><a href="#local-6989586621679352517"><span class="hs-identifier hs-var">getEntries</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352514"><span class="hs-identifier hs-var">searchpath</span></a></span><span>
+</span><span id="line-161"></span><span>    </span><span class="annot"><span class="annottext">FilePath -&gt; IO FilePath
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath] -&gt; FilePath
+forall a. [a] -&gt; [[a]] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/Data.OldList.html#intercalate/Data.OldList.html#intercalate"><span class="hs-identifier hs-var">intercalate</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#searchPathSeparator/System.FilePath.Posix.html#searchPathSeparator"><span class="hs-identifier hs-var">searchPathSeparator</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[[FilePath]] -&gt; [FilePath]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/Data.Foldable.html#concat/Data.Foldable.html#concat"><span class="hs-identifier hs-var">concat</span></a></span><span> </span><span class="annot"><span class="annottext">[[FilePath]]
+</span><a href="#local-6989586621679352515"><span class="hs-identifier hs-var">ess</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-162"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-163"></span><span>    </span><span id="local-6989586621679352517"><span class="annot"><span class="annottext">getEntries :: ProgramSearchPathEntry -&gt; IO [FilePath]
+</span><a href="#local-6989586621679352517"><span class="hs-identifier hs-var hs-var">getEntries</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathDir"><span class="hs-identifier hs-type">ProgramSearchPathDir</span></a></span><span> </span><span id="local-6989586621679352523"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352523"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO [FilePath]
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352523"><span class="hs-identifier hs-var">dir</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-164"></span><span>    </span><span class="annot"><a href="#local-6989586621679352517"><span class="hs-identifier hs-var">getEntries</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPathEntry
+</span><a href="Distribution.Simple.Program.Types.html#ProgramSearchPathDefault"><span class="hs-identifier hs-var">ProgramSearchPathDefault</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-165"></span><span>      </span><span id="local-6989586621679352524"><span class="annot"><span class="annottext">[(FilePath, FilePath)]
+</span><a href="#local-6989586621679352524"><span class="hs-identifier hs-var">env</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO [(FilePath, FilePath)]
+</span><a href="Distribution.Compat.Environment.html#getEnvironment"><span class="hs-identifier hs-var">getEnvironment</span></a></span><span>
+</span><span id="line-166"></span><span>      </span><span class="annot"><span class="annottext">[FilePath] -&gt; IO [FilePath]
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[FilePath]
+-&gt; (FilePath -&gt; [FilePath]) -&gt; Maybe FilePath -&gt; [FilePath]
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><a href="../../base-4.18.2.1/src/Data.Maybe.html#maybe/Data.Maybe.html#maybe"><span class="hs-identifier hs-var">maybe</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; [FilePath]
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#splitSearchPath/System.FilePath.Posix.html#splitSearchPath"><span class="hs-identifier hs-var">splitSearchPath</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; [(FilePath, FilePath)] -&gt; Maybe FilePath
+forall a b. Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
+</span><a href="../../base-4.18.2.1/src/GHC.List.html#lookup/GHC.List.html#lookup"><span class="hs-identifier hs-var">lookup</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-string">&quot;PATH&quot;</span></span><span> </span><span class="annot"><span class="annottext">[(FilePath, FilePath)]
+</span><a href="#local-6989586621679352524"><span class="hs-identifier hs-var">env</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-167"></span><span>
+</span><span id="line-168"></span><span class="hs-comment">-- | Get the system search path. On Unix systems this is just the @$PATH@ env</span><span>
+</span><span id="line-169"></span><span class="hs-comment">-- var, but on windows it's a bit more complicated.</span><span>
+</span><span id="line-170"></span><span class="hs-comment">--</span><span>
+</span><span id="line-171"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#getSystemSearchPath"><span class="hs-identifier hs-type">getSystemSearchPath</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-172"></span><span id="getSystemSearchPath"><span class="annot"><span class="annottext">getSystemSearchPath :: IO [FilePath]
+</span><a href="Distribution.Simple.Program.Find.html#getSystemSearchPath"><span class="hs-identifier hs-var hs-var">getSystemSearchPath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([FilePath] -&gt; [FilePath]) -&gt; IO [FilePath] -&gt; IO [FilePath]
+forall a b. (a -&gt; b) -&gt; IO a -&gt; IO b
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#fmap/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath]
+forall a. Eq a =&gt; [a] -&gt; [a]
+</span><a href="../../base-4.18.2.1/src/Data.OldList.html#nub/Data.OldList.html#nub"><span class="hs-identifier hs-var">nub</span></a></span><span> </span><span class="annot"><span class="annottext">(IO [FilePath] -&gt; IO [FilePath]) -&gt; IO [FilePath] -&gt; IO [FilePath]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#%24/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span class="hs-cpp">
+#if defined(mingw32_HOST_OS)
+</span><span>    </span><span class="hs-identifier">processdir</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">takeDirectory</span><span> </span><span class="hs-special">`</span><span class="hs-identifier">fmap</span><span class="hs-special">`</span><span> </span><span class="hs-identifier">Win32.getModuleFileName</span><span> </span><span class="hs-identifier">Win32.nullHANDLE</span><span>
+</span><span id="line-175"></span><span>    </span><span class="hs-identifier">currentdir</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">Win32.getCurrentDirectory</span><span>
+</span><span id="line-176"></span><span>    </span><span class="hs-identifier">systemdir</span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">Win32.getSystemDirectory</span><span>
+</span><span id="line-177"></span><span>    </span><span class="hs-identifier">windowsdir</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">Win32.getWindowsDirectory</span><span>
+</span><span id="line-178"></span><span>    </span><span class="hs-identifier">pathdirs</span><span>   </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">FilePath.getSearchPath</span><span>
+</span><span id="line-179"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-identifier">path</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">processdir</span><span> </span><span class="hs-glyph">:</span><span> </span><span class="hs-identifier">currentdir</span><span>
+</span><span id="line-180"></span><span>             </span><span class="hs-glyph">:</span><span> </span><span class="hs-identifier">systemdir</span><span>  </span><span class="hs-glyph">:</span><span> </span><span class="hs-identifier">windowsdir</span><span>
+</span><span id="line-181"></span><span>             </span><span class="hs-glyph">:</span><span> </span><span class="hs-identifier">pathdirs</span><span>
+</span><span id="line-182"></span><span>    </span><span class="hs-identifier">return</span><span> </span><span class="hs-identifier">path</span><span class="hs-cpp">
+#else
+</span><span>    </span><span class="annot"><span class="annottext">IO [FilePath]
+</span><a href="../../filepath-1.4.300.1/src/System.FilePath.Posix.html#getSearchPath/System.FilePath.Posix.html#getSearchPath"><span class="hs-identifier hs-var">FilePath.getSearchPath</span></a></span><span class="hs-cpp">
+#endif
+</span><span class="hs-cpp">
+#ifdef MIN_VERSION_directory
+</span><span class="hs-cpp">#if MIN_VERSION_directory(1,2,1)
+</span><span class="hs-cpp">#define HAVE_directory_121
+</span><span class="hs-cpp">#endif
+</span><span class="hs-cpp">#endif
+</span><span>
+</span><span id="line-193"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#findExecutable"><span class="hs-identifier hs-type">findExecutable</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Maybe/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.IO.html#FilePath/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+#ifdef HAVE_directory_121
+</span><span id="findExecutable"><span class="annot"><span class="annottext">findExecutable :: FilePath -&gt; IO (Maybe FilePath)
+</span><a href="Distribution.Simple.Program.Find.html#findExecutable"><span class="hs-identifier hs-var hs-var">findExecutable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO (Maybe FilePath)
+</span><a href="../../directory-1.3.8.5/src/System.Directory.html#findExecutable/System.Directory.html#findExecutable"><span class="hs-identifier hs-var">Directory.findExecutable</span></a></span><span class="hs-cpp">
+#else
+</span><span class="hs-identifier">findExecutable</span><span> </span><span class="hs-identifier">prog</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-198"></span><span>      </span><span class="hs-comment">-- With directory &lt; 1.2.1 'findExecutable' doesn't check that the path</span><span>
+</span><span id="line-199"></span><span>      </span><span class="hs-comment">-- really refers to an executable.</span><span>
+</span><span id="line-200"></span><span>      </span><span class="hs-identifier">mExe</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">Directory.findExecutable</span><span> </span><span class="hs-identifier">prog</span><span>
+</span><span id="line-201"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="hs-identifier">mExe</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-202"></span><span>        </span><span class="hs-identifier">Just</span><span> </span><span class="hs-identifier">exe</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-203"></span><span>          </span><span class="hs-identifier">exeExists</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-identifier">doesExecutableExist</span><span> </span><span class="hs-identifier">exe</span><span>
+</span><span id="line-204"></span><span>          </span><span class="hs-keyword">if</span><span> </span><span class="hs-identifier">exeExists</span><span>
+</span><span id="line-205"></span><span>            </span><span class="hs-keyword">then</span><span> </span><span class="hs-identifier">return</span><span> </span><span class="hs-identifier">mExe</span><span>
+</span><span id="line-206"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="hs-identifier">return</span><span> </span><span class="hs-identifier">Nothing</span><span>
+</span><span id="line-207"></span><span>        </span><span class="hs-identifier">_</span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier">return</span><span> </span><span class="hs-identifier">mExe</span><span class="hs-cpp">
+#endif
+</span><span>
+</span><span id="line-210"></span><span>
+</span><span id="line-211"></span><span class="hs-comment">-- | Make a simple named program.</span><span>
+</span><span id="line-212"></span><span class="hs-comment">--</span><span>
+</span><span id="line-213"></span><span class="hs-comment">-- By default we'll just search for it in the path and not try to find the</span><span>
+</span><span id="line-214"></span><span class="hs-comment">-- version name. You can override these behaviours if necessary, eg:</span><span>
+</span><span id="line-215"></span><span class="hs-comment">--</span><span>
+</span><span id="line-216"></span><span class="hs-comment">-- &gt; (simpleProgram &quot;foo&quot;) { programFindLocation = ... , programFindVersion ... }</span><span>
+</span><span id="line-217"></span><span class="hs-comment">--</span><span>
+</span><span id="line-218"></span><span class="annot"><a href="Distribution.Simple.Program.Find.html#simpleProgram"><span class="hs-identifier hs-type">simpleProgram</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../base-4.18.2.1/src/GHC.Base.html#String/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span>
+</span><span id="line-219"></span><span id="simpleProgram"><span class="annot"><span class="annottext">simpleProgram :: FilePath -&gt; Program
+</span><a href="Distribution.Simple.Program.Find.html#simpleProgram"><span class="hs-identifier hs-var hs-var">simpleProgram</span></a></span></span><span> </span><span id="local-6989586621679352528"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352528"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Distribution.Simple.Program.Types.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-220"></span><span>    </span><span class="annot"><span class="annottext">programName :: FilePath
+</span><a href="Distribution.Simple.Program.Types.html#programName"><span class="hs-identifier hs-var">programName</span></a></span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352528"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-221"></span><span>    </span><span class="annot"><span class="annottext">programFindLocation :: Verbosity -&gt; ProgramSearchPath -&gt; IO (Maybe (FilePath, [FilePath]))
+</span><a href="Distribution.Simple.Program.Types.html#programFindLocation"><span class="hs-identifier hs-var">programFindLocation</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679352532"><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352532"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span id="local-6989586621679352533"><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352533"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Verbosity
+-&gt; ProgramSearchPath
+-&gt; FilePath
+-&gt; IO (Maybe (FilePath, [FilePath]))
+</span><a href="Distribution.Simple.Program.Find.html#findProgramOnSearchPath"><span class="hs-identifier hs-var">findProgramOnSearchPath</span></a></span><span> </span><span class="annot"><span class="annottext">Verbosity
+</span><a href="#local-6989586621679352532"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">ProgramSearchPath
+</span><a href="#local-6989586621679352533"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679352528"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-222"></span><span>    </span><span class="annot"><span class="annottext">programFindVersion :: Verbosity -&gt; FilePath -&gt; IO (Maybe Version)
+</span><a href="Distribution.Simple.Program.Types.html#programFindVersion"><span class="hs-identifier hs-var">programFindVersion</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Verbosity
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Version -&gt; IO (Maybe Version)
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe Version
+forall a. Maybe a
+</span><a href="../../base-4.18.2.1/src/GHC.Maybe.html#Nothing/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-223"></span><span>    </span><span class="annot"><span class="annottext">programPostConf :: Verbosity -&gt; ConfiguredProgram -&gt; IO ConfiguredProgram
+</span><a href="Distribution.Simple.Program.Types.html#programPostConf"><span class="hs-identifier hs-var">programPostConf</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Verbosity
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679352536"><span class="annot"><span class="annottext">ConfiguredProgram
+</span><a href="#local-6989586621679352536"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ConfiguredProgram -&gt; IO ConfiguredProgram
+forall a. a -&gt; IO a
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#return/GHC.Base.html#return"><span class="hs-identifier hs-var">return</span></a></span><span> </span><span class="annot"><span class="annottext">ConfiguredProgram
+</span><a href="#local-6989586621679352536"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-224"></span><span>    </span><span class="annot"><span class="annottext">programNormaliseArgs :: Maybe Version -&gt; PackageDescription -&gt; [FilePath] -&gt; [FilePath]
+</span><a href="Distribution.Simple.Program.Types.html#programNormaliseArgs"><span class="hs-identifier hs-var">programNormaliseArgs</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">Maybe Version
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">PackageDescription
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; [FilePath]
+forall a. a -&gt; a
+</span><a href="../../base-4.18.2.1/src/GHC.Base.html#id/GHC.Base.html#id"><span class="hs-identifier hs-var">id</span></a></span><span>
+</span><span id="line-225"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-226"></span></pre></body></html>

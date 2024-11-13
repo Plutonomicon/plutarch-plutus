@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- Mirrors the corresponding V1 module in plutus-ledger-api</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.LedgerApi.V1.DCert</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier">PDCert</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.DataRepr</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><span class="hs-identifier">DerivePConstantViaData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">DerivePConstantViaData</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Credential</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier">PStakingCredential</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Crypto</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier">PPubKeyHash</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Lift</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><span class="hs-identifier">PConstantDecl</span></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><span class="hs-identifier">PUnsafeLiftDecl</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">PLifted</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">data</span><span> </span><span id="PDCert"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-var">PDCert</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679285804"><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PDCertDelegRegKey"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertDelegRegKey"><span class="hs-identifier hs-var">PDCertDelegRegKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier hs-type">PStakingCredential</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PDCertDelegDeRegKey"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertDelegDeRegKey"><span class="hs-identifier hs-var">PDCertDelegDeRegKey</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier hs-type">PStakingCredential</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PDCertDelegDelegate"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertDelegDelegate"><span class="hs-identifier hs-var">PDCertDelegDelegate</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier hs-type">PStakingCredential</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;_1&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PDCertPoolRegister"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertPoolRegister"><span class="hs-identifier hs-var">PDCertPoolRegister</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;_1&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PDCertPoolRetire"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertPoolRetire"><span class="hs-identifier hs-var">PDCertPoolRetire</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;_1&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PDCertGenesis"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertGenesis"><span class="hs-identifier hs-var">PDCertGenesis</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PDCertMir"><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCertMir"><span class="hs-identifier hs-var">PDCertMir</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285804"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679285813"><span id="local-6989586621679285815"><span class="annot"><span class="annottext">(forall x. PDCert s -&gt; Rep (PDCert s) x)
+-&gt; (forall x. Rep (PDCert s) x -&gt; PDCert s) -&gt; Generic (PDCert s)
+forall x. Rep (PDCert s) x -&gt; PDCert s
+forall x. PDCert s -&gt; Rep (PDCert s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PDCert s) x -&gt; PDCert s
+forall (s :: S) x. PDCert s -&gt; Rep (PDCert s) x
+$cfrom :: forall (s :: S) x. PDCert s -&gt; Rep (PDCert s) x
+from :: forall x. PDCert s -&gt; Rep (PDCert s) x
+$cto :: forall (s :: S) x. Rep (PDCert s) x -&gt; PDCert s
+to :: forall x. Rep (PDCert s) x -&gt; PDCert s
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679285819"><span id="local-6989586621679285825"><span class="annot"><span class="annottext">(forall (s :: S). PDCert s -&gt; Term s (PInner PDCert))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner PDCert) -&gt; (PDCert s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PDCert
+forall (s :: S). PDCert s -&gt; Term s (PInner PDCert)
+forall (s :: S) (b :: PType).
+Term s (PInner PDCert) -&gt; (PDCert s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PDCert s -&gt; Term s (PInner PDCert)
+pcon' :: forall (s :: S). PDCert s -&gt; Term s (PInner PDCert)
+$cpmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PDCert) -&gt; (PDCert s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PDCert) -&gt; (PDCert s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-37"></span><span>      </span><span id="local-6989586621679285830"><span id="local-6989586621679285836"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PDCert) -&gt; Term s PDCert)
+-&gt; (forall (s :: S). Term s PDCert -&gt; Term s PData)
+-&gt; PIsData PDCert
+forall (s :: S). Term s (PAsData PDCert) -&gt; Term s PDCert
+forall (s :: S). Term s PDCert -&gt; Term s PData
+forall (a :: PType).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PDCert) -&gt; Term s PDCert
+pfromDataImpl :: forall (s :: S). Term s (PAsData PDCert) -&gt; Term s PDCert
+$cpdataImpl :: forall (s :: S). Term s PDCert -&gt; Term s PData
+pdataImpl :: forall (s :: S). Term s PDCert -&gt; Term s PData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-39"></span><span>      </span><span id="local-6989586621679285843"><span class="annot"><span class="annottext">(forall (s :: S). Term s PDCert -&gt; Term s PDCert -&gt; Term s PBool)
+-&gt; PEq PDCert
+forall (s :: S). Term s PDCert -&gt; Term s PDCert -&gt; Term s PBool
+forall (t :: PType).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+$c#== :: forall (s :: S). Term s PDCert -&gt; Term s PDCert -&gt; Term s PBool
+#== :: forall (s :: S). Term s PDCert -&gt; Term s PDCert -&gt; Term s PBool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-41"></span><span>      </span><span id="local-6989586621679285875"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PDCert -&gt; Term s PString)
+-&gt; PShow PDCert
+forall (s :: S). Bool -&gt; Term s PDCert -&gt; Term s PString
+forall (t :: PType).
+(forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
+$cpshow' :: forall (s :: S). Bool -&gt; Term s PDCert -&gt; Term s PString
+pshow' :: forall (s :: S). Bool -&gt; Term s PDCert -&gt; Term s PString
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
+</span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-43"></span><span>      </span><span id="local-6989586621679285933"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
+</span><span id="line-44"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-type">PDCert</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeData</span></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PUnsafeLiftDecl</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-type">PDCert</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PLifted"><span class="annot"><span class="hs-identifier hs-var">PLifted</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.DCert</span></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-55"></span><span id="local-6989586621679286063"><span id="local-6989586621679286073"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DerivePConstantViaData</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.DCert</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-type">PDCert</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PConstantDecl</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.DCert</span></span></span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679286097"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-type">PDCert</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-62"></span></pre></body></html>

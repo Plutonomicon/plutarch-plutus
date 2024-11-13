@@ -2,17 +2,17 @@
 </span><span id="line-2"></span><span>
 </span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Pretty.Internal.Name</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Pretty.Internal.Name.html#smartName"><span class="hs-identifier">smartName</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Pretty.Internal.Name.html#freshVarName"><span class="hs-identifier">freshVarName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-4"></span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Reader</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ask</span></span><span class="hs-special">)</span><span>
-</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.State</span></span><span> </span><span class="hs-special">(</span><span>
-</span><span id="line-7"></span><span>  </span><span class="annot"><span class="hs-identifier">get</span></span><span class="hs-special">,</span><span>
-</span><span id="line-8"></span><span>  </span><span class="annot"><span class="hs-identifier">lift</span></span><span class="hs-special">,</span><span>
-</span><span id="line-9"></span><span>  </span><span class="annot"><span class="hs-identifier">modify'</span></span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.html"><span class="hs-identifier">Control.Monad.Reader</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#ask"><span class="hs-identifier">ask</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.State.html"><span class="hs-identifier">Control.Monad.State</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.State.Class.html#get"><span class="hs-identifier">get</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Class.html#lift"><span class="hs-identifier">lift</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.State.Class.html#modify%27"><span class="hs-identifier">modify'</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-10"></span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html"><span class="hs-identifier">Data.Functor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html#%24%3E"><span class="hs-operator">($&gt;)</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Set</span></span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Text</span></span><span class="hs-special">)</span><span>
-</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Txt</span></span><span>
-</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Traversable.html"><span class="hs-identifier">Data.Traversable</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Traversable.html#for"><span class="hs-identifier">for</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html"><span class="hs-identifier">Data.Functor</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%24%3E"><span class="hs-operator">($&gt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.html"><span class="hs-identifier">Data.Set</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Set</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.html"><span class="hs-identifier">Data.Text</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier">Text</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.html"><span class="hs-identifier">Data.Text</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Txt</span></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html"><span class="hs-identifier">Data.Traversable</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#for"><span class="hs-identifier">for</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-16"></span><span>
 </span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Random.Stateful</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">randomRM</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">uniformRM</span></span><span class="hs-special">)</span><span>
 </span><span id="line-18"></span><span>
@@ -32,60 +32,60 @@
 </span><span id="line-32"></span><span>  </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#memorizeName"><span class="hs-identifier">memorizeName</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-33"></span><span> </span><span class="hs-special">)</span><span>
 </span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span id="local-6989586621679752947"><span id="local-6989586621679752950"><span class="annot"><a href="Plutarch.Pretty.Internal.Name.html#smartName"><span class="hs-identifier hs-type">smartName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">DeBruijn</span></span><span> </span><span class="annot"><a href="#local-6989586621679752947"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyMonad"><span class="hs-identifier hs-type">PrettyMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679752950"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span></span></span><span>
+</span><span id="line-35"></span><span id="local-6989586621679544917"><span id="local-6989586621679544920"><span class="annot"><a href="Plutarch.Pretty.Internal.Name.html#smartName"><span class="hs-identifier hs-type">smartName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">DeBruijn</span></span><span> </span><span class="annot"><a href="#local-6989586621679544917"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyMonad"><span class="hs-identifier hs-type">PrettyMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679544920"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span></span></span><span>
 </span><span id="line-36"></span><span id="smartName"><span class="annot"><span class="annottext">smartName :: forall (uni :: Type -&gt; Type) s.
 Term DeBruijn uni DefaultFun () -&gt; PrettyMonad s Text
-</span><a href="Plutarch.Pretty.Internal.Name.html#smartName"><span class="hs-identifier hs-var hs-var">smartName</span></a></span></span><span> </span><span id="local-6989586621679753108"><span class="annot"><span class="annottext">Term DeBruijn uni DefaultFun ()
-</span><a href="#local-6989586621679753108"><span class="hs-identifier hs-var">uplc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyState"><span class="hs-identifier hs-type">PrettyState</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621679753109"><span class="annot"><span class="annottext">Map Index Text
+</span><a href="Plutarch.Pretty.Internal.Name.html#smartName"><span class="hs-identifier hs-var hs-var">smartName</span></a></span></span><span> </span><span id="local-6989586621679545078"><span class="annot"><span class="annottext">Term DeBruijn uni DefaultFun ()
+</span><a href="#local-6989586621679545078"><span class="hs-identifier hs-var">uplc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyState"><span class="hs-identifier hs-type">PrettyState</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621679545079"><span class="annot"><span class="annottext">Map Index Text
 $sel:ps'nameMap:PrettyState :: PrettyState -&gt; Map Index Text
 ps'nameMap :: Map Index Text
 </span><a href="Plutarch.Pretty.Internal.Types.html#%24sel%3Aps%27nameMap%3APrettyState"><span class="hs-identifier hs-var hs-var">ps'nameMap</span></a></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) PrettyState
 forall s (m :: Type -&gt; Type). MonadState s m =&gt; m s
-</span><span class="hs-identifier hs-var">get</span></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.State.Class.html#get"><span class="hs-identifier hs-var">get</span></a></span><span>
 </span><span id="line-38"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Term DeBruijn uni DefaultFun ()
-</span><a href="#local-6989586621679753108"><span class="hs-identifier hs-var">uplc</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679545078"><span class="hs-identifier hs-var">uplc</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-39"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Force</span></span><span> </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Force</span></span><span> </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Builtin</span></span><span> </span><span class="annot"><span class="annottext">()
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679753110"><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621679753110"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; PrettyMonad s Text
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679545080"><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621679545080"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; PrettyMonad s Text
 forall a.
 a -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; PrettyMonad s Text) -&gt; Text -&gt; PrettyMonad s Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; PrettyMonad s Text) -&gt; Text -&gt; PrettyMonad s Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Plutarch.Pretty.Internal.Config.html#forcedPrefix"><span class="hs-identifier hs-var">forcedPrefix</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
-</span><span class="hs-identifier hs-var">Txt.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DefaultFun -&gt; String
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#pack"><span class="hs-identifier hs-var">Txt.pack</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DefaultFun -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621679753110"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621679545080"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-40"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Force</span></span><span> </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Builtin</span></span><span> </span><span class="annot"><span class="annottext">()
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679753113"><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621679753113"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; PrettyMonad s Text
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679545083"><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621679545083"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; PrettyMonad s Text
 forall a.
 a -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; PrettyMonad s Text) -&gt; Text -&gt; PrettyMonad s Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; PrettyMonad s Text) -&gt; Text -&gt; PrettyMonad s Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><a href="Plutarch.Pretty.Internal.Config.html#forcedPrefix"><span class="hs-identifier hs-var">forcedPrefix</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
-</span><span class="hs-identifier hs-var">Txt.pack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DefaultFun -&gt; String
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#pack"><span class="hs-identifier hs-var">Txt.pack</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DefaultFun -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621679753113"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621679545083"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-41"></span><span>    </span><span class="annot"><span class="annottext">Term DeBruijn uni DefaultFun ()
 </span><a href="Plutarch.Pretty.Internal.TermUtils.html#PFixAst"><span class="hs-identifier hs-var">PFixAst</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; PrettyMonad s Text
 forall a.
 a -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;fix&quot;</span></span><span>
 </span><span id="line-42"></span><span>    </span><span class="annot"><a href="Plutarch.Pretty.Internal.TermUtils.html#ComposeAST"><span class="hs-identifier hs-type">ComposeAST</span></a></span><span>
 </span><span id="line-43"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Builtin</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">DefaultFun
@@ -95,47 +95,47 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 forall a.
 a -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;unDataSum&quot;</span></span><span>
 </span><span id="line-45"></span><span>    </span><span class="annot"><a href="Plutarch.Pretty.Internal.TermUtils.html#ComposeAST"><span class="hs-identifier hs-type">ComposeAST</span></a></span><span>
 </span><span id="line-46"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Var</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeBruijn</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Index Text -&gt; Index -&gt; Maybe DefaultFun
 </span><a href="Plutarch.Pretty.Internal.Types.html#builtinFunAtRef"><span class="hs-identifier hs-var">builtinFunAtRef</span></a></span><span> </span><span class="annot"><span class="annottext">Map Index Text
-</span><a href="#local-6989586621679753109"><span class="hs-identifier hs-var">ps'nameMap</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621679545079"><span class="hs-identifier hs-var">ps'nameMap</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
 </span><span class="hs-identifier hs-var">PLC.SndPair</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Builtin</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">DefaultFun
 </span><span class="hs-identifier hs-var">PLC.UnConstrData</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; PrettyMonad s Text
 forall a.
 a -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;unDataSum&quot;</span></span><span>
 </span><span id="line-48"></span><span>    </span><span class="annot"><span class="annottext">Term DeBruijn uni DefaultFun ()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PrettyMonad s Text
 forall s. PrettyMonad s Text
 </span><a href="Plutarch.Pretty.Internal.Name.html#freshVarName"><span class="hs-identifier hs-var">freshVarName</span></a></span><span>
 </span><span id="line-49"></span><span>
-</span><span id="line-50"></span><span id="local-6989586621679752988"><span class="annot"><a href="Plutarch.Pretty.Internal.Name.html#freshVarName"><span class="hs-identifier hs-type">freshVarName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyMonad"><span class="hs-identifier hs-type">PrettyMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679752988"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span></span><span>
+</span><span id="line-50"></span><span id="local-6989586621679544958"><span class="annot"><a href="Plutarch.Pretty.Internal.Name.html#freshVarName"><span class="hs-identifier hs-type">freshVarName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyMonad"><span class="hs-identifier hs-type">PrettyMonad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679544958"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span></span><span>
 </span><span id="line-51"></span><span id="freshVarName"><span class="annot"><span class="annottext">freshVarName :: forall s. PrettyMonad s Text
 </span><a href="Plutarch.Pretty.Internal.Name.html#freshVarName"><span class="hs-identifier hs-var hs-var">freshVarName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-52"></span><span>  </span><span id="local-6989586621679753172"><span class="annot"><span class="annottext">STGenM StdGen s
-</span><a href="#local-6989586621679753172"><span class="hs-identifier hs-var">stGen</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679545142"><span class="annot"><span class="annottext">STGenM StdGen s
+</span><a href="#local-6989586621679545142"><span class="hs-identifier hs-var">stGen</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT
   (STGenM StdGen s) (StateT PrettyState (ST s)) (STGenM StdGen s)
 forall r (m :: Type -&gt; Type). MonadReader r m =&gt; m r
-</span><span class="hs-identifier hs-var">ask</span></span><span>
-</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyState"><span class="hs-identifier hs-type">PrettyState</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621679753173"><span class="annot"><span class="annottext">Set Text
+</span><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#ask"><span class="hs-identifier hs-var">ask</span></a></span><span>
+</span><span id="line-53"></span><span>  </span><span class="annot"><a href="Plutarch.Pretty.Internal.Types.html#PrettyState"><span class="hs-identifier hs-type">PrettyState</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621679545143"><span class="annot"><span class="annottext">Set Text
 $sel:ps'names:PrettyState :: PrettyState -&gt; Set Text
 ps'names :: Set Text
 </span><a href="Plutarch.Pretty.Internal.Types.html#%24sel%3Aps%27names%3APrettyState"><span class="hs-identifier hs-var hs-var">ps'names</span></a></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) PrettyState
 forall s (m :: Type -&gt; Type). MonadState s m =&gt; m s
-</span><span class="hs-identifier hs-var">get</span></span><span>
-</span><span id="line-54"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679753174"><span class="annot"><span class="annottext">existingNames :: Set Text
-</span><a href="#local-6989586621679753174"><span class="hs-identifier hs-var hs-var">existingNames</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Text -&gt; Set Text -&gt; Set Text
+</span><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.State.Class.html#get"><span class="hs-identifier hs-var">get</span></a></span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679545144"><span class="annot"><span class="annottext">existingNames :: Set Text
+</span><a href="#local-6989586621679545144"><span class="hs-identifier hs-var hs-var">existingNames</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Text -&gt; Set Text -&gt; Set Text
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
-</span><span class="hs-identifier hs-var">Set.union</span></span><span> </span><span class="annot"><span class="annottext">Set Text
-</span><a href="#local-6989586621679753173"><span class="hs-identifier hs-var">ps'names</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text
+</span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#union"><span class="hs-identifier hs-var">Set.union</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text
+</span><a href="#local-6989586621679545143"><span class="hs-identifier hs-var">ps'names</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text
 </span><a href="Plutarch.Pretty.Internal.Config.html#keywords"><span class="hs-identifier hs-var">keywords</span></a></span><span>
-</span><span id="line-55"></span><span>  </span><span id="local-6989586621679753176"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679753176"><span class="hs-identifier hs-var">nameTailLen</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">StateT PrettyState (ST s) Int
+</span><span id="line-55"></span><span>  </span><span id="local-6989586621679545146"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679545146"><span class="hs-identifier hs-var">nameTailLen</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">StateT PrettyState (ST s) Int
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Int
 forall (m :: Type -&gt; Type) a.
 Monad m =&gt;
@@ -143,43 +143,43 @@ m a -&gt; ReaderT (STGenM StdGen s) m a
 forall (t :: (Type -&gt; Type) -&gt; Type -&gt; Type) (m :: Type -&gt; Type) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
-</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(StateT PrettyState (ST s) Int
+</span><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Class.html#lift"><span class="hs-identifier hs-var">lift</span></a></span><span> </span><span class="annot"><span class="annottext">(StateT PrettyState (ST s) Int
  -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Int)
 -&gt; (ST s Int -&gt; StateT PrettyState (ST s) Int)
 -&gt; ST s Int
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ST s Int -&gt; StateT PrettyState (ST s) Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ST s Int -&gt; StateT PrettyState (ST s) Int
 forall (m :: Type -&gt; Type) a.
 Monad m =&gt;
 m a -&gt; StateT PrettyState m a
 forall (t :: (Type -&gt; Type) -&gt; Type -&gt; Type) (m :: Type -&gt; Type) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
-</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(ST s Int
+</span><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Class.html#lift"><span class="hs-identifier hs-var">lift</span></a></span><span> </span><span class="annot"><span class="annottext">(ST s Int
  -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Int)
 -&gt; ST s Int
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; STGenM StdGen s -&gt; ST s Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; STGenM StdGen s -&gt; ST s Int
 forall g r (m :: Type -&gt; Type) a.
 (RandomGenM g r m, Random a) =&gt;
 (a, a) -&gt; g -&gt; m a
 </span><span class="hs-identifier hs-var">randomRM</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.4/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">7</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">STGenM StdGen s
-</span><a href="#local-6989586621679753172"><span class="hs-identifier hs-var">stGen</span></a></span><span>
-</span><span id="line-56"></span><span>  </span><span id="local-6989586621679753178"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679753178"><span class="hs-identifier hs-var">beginChar</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
+</span><a href="#local-6989586621679545142"><span class="hs-identifier hs-var">stGen</span></a></span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679545148"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679545148"><span class="hs-identifier hs-var">beginChar</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 forall {a} {t :: (Type -&gt; Type) -&gt; Type -&gt; Type}
        {t :: (Type -&gt; Type) -&gt; Type -&gt; Type} {m :: Type -&gt; Type}.
 (MonadReader a (t (t m)), MonadTrans t, MonadTrans t, Monad (t m),
  StatefulGen a m) =&gt;
 Text -&gt; t (t m) Char
-</span><a href="#local-6989586621679753179"><span class="hs-identifier hs-var">chooseChar</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753180"><span class="hs-identifier hs-var">starterChars</span></a></span><span>
-</span><span id="line-57"></span><span>  </span><span id="local-6989586621679753181"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753181"><span class="hs-identifier hs-var">newName</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text)
+</span><a href="#local-6989586621679545149"><span class="hs-identifier hs-var">chooseChar</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545150"><span class="hs-identifier hs-var">starterChars</span></a></span><span>
+</span><span id="line-57"></span><span>  </span><span id="local-6989586621679545151"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545151"><span class="hs-identifier hs-var">newName</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text)
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String
 -&gt; PrettyMonad s Text
 forall a b.
@@ -187,29 +187,29 @@ forall a b.
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) a
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) b
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Text
-</span><span class="hs-identifier hs-var">Txt.pack</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text) -&gt; (String -&gt; String) -&gt; String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#pack"><span class="hs-identifier hs-var">Txt.pack</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text) -&gt; (String -&gt; String) -&gt; String -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679753178"><span class="hs-identifier hs-var">beginChar</span></a></span><span> </span><span class="hs-glyph">:</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679545148"><span class="hs-identifier hs-var">beginChar</span></a></span><span> </span><span class="hs-glyph">:</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String
  -&gt; PrettyMonad s Text)
 -&gt; (ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
     -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String)
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 -&gt; PrettyMonad s Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Int]
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Int]
 -&gt; (Int
     -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char)
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String
 forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
 (Traversable t, Applicative f) =&gt;
 t a -&gt; (a -&gt; f b) -&gt; f (t b)
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Traversable.html#for"><span class="hs-identifier hs-var">for</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#for"><span class="hs-identifier hs-var">for</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 Item [Int]
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Int
 Item [Int]
-</span><a href="#local-6989586621679753176"><span class="hs-identifier hs-var">nameTailLen</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">((Int
+</span><a href="#local-6989586621679545146"><span class="hs-identifier hs-var">nameTailLen</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">((Int
   -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char)
  -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String)
 -&gt; (ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
@@ -218,66 +218,66 @@ Item [Int]
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) String
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 -&gt; Int
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 forall a b. a -&gt; b -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#const"><span class="hs-identifier hs-var">const</span></a></span><span> </span><span class="annot"><span class="annottext">(ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#const"><span class="hs-identifier hs-var">const</span></a></span><span> </span><span class="annot"><span class="annottext">(ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
  -&gt; PrettyMonad s Text)
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 -&gt; PrettyMonad s Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) Char
 forall {a} {t :: (Type -&gt; Type) -&gt; Type -&gt; Type}
        {t :: (Type -&gt; Type) -&gt; Type -&gt; Type} {m :: Type -&gt; Type}.
 (MonadReader a (t (t m)), MonadTrans t, MonadTrans t, Monad (t m),
  StatefulGen a m) =&gt;
 Text -&gt; t (t m) Char
-</span><a href="#local-6989586621679753179"><span class="hs-identifier hs-var">chooseChar</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753183"><span class="hs-identifier hs-var">chars</span></a></span><span>
+</span><a href="#local-6989586621679545149"><span class="hs-identifier hs-var">chooseChar</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545153"><span class="hs-identifier hs-var">chars</span></a></span><span>
 </span><span id="line-58"></span><span>  </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Set Text -&gt; Bool
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Bool
-</span><span class="hs-identifier hs-var">Set.member</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753181"><span class="hs-identifier hs-var">newName</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text
-</span><a href="#local-6989586621679753174"><span class="hs-identifier hs-var">existingNames</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#member"><span class="hs-identifier hs-var">Set.member</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545151"><span class="hs-identifier hs-var">newName</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text
+</span><a href="#local-6989586621679545144"><span class="hs-identifier hs-var">existingNames</span></a></span><span>
 </span><span id="line-59"></span><span>    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">PrettyMonad s Text
 forall s. PrettyMonad s Text
 </span><a href="Plutarch.Pretty.Internal.Name.html#freshVarName"><span class="hs-identifier hs-var">freshVarName</span></a></span><span>
 </span><span id="line-60"></span><span>    </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(PrettyState -&gt; PrettyState)
 -&gt; ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) ()
 forall s (m :: Type -&gt; Type). MonadState s m =&gt; (s -&gt; s) -&gt; m ()
-</span><span class="hs-identifier hs-var">modify'</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; PrettyState -&gt; PrettyState
+</span><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.State.Class.html#modify%27"><span class="hs-identifier hs-var">modify'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; PrettyState -&gt; PrettyState
 </span><a href="Plutarch.Pretty.Internal.Types.html#memorizeName"><span class="hs-identifier hs-var">memorizeName</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753181"><span class="hs-identifier hs-var">newName</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) ()
+</span><a href="#local-6989586621679545151"><span class="hs-identifier hs-var">newName</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ReaderT (STGenM StdGen s) (StateT PrettyState (ST s)) ()
 -&gt; Text -&gt; PrettyMonad s Text
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; f a -&gt; b -&gt; f b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html#%24%3E"><span class="hs-operator hs-var">$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753181"><span class="hs-identifier hs-var">newName</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%24%3E"><span class="hs-operator hs-var">$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545151"><span class="hs-identifier hs-var">newName</span></a></span><span>
 </span><span id="line-61"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-62"></span><span>    </span><span id="local-6989586621679753179"><span class="annot"><span class="annottext">chooseChar :: Text -&gt; t (t m) Char
-</span><a href="#local-6989586621679753179"><span class="hs-identifier hs-var hs-var">chooseChar</span></a></span></span><span> </span><span id="local-6989586621679753240"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753240"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-63"></span><span>      </span><span id="local-6989586621679753241"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679753241"><span class="hs-identifier hs-var">stGen</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t (t m) a
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621679545149"><span class="annot"><span class="annottext">chooseChar :: Text -&gt; t (t m) Char
+</span><a href="#local-6989586621679545149"><span class="hs-identifier hs-var hs-var">chooseChar</span></a></span></span><span> </span><span id="local-6989586621679545210"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545210"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-63"></span><span>      </span><span id="local-6989586621679545211"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679545211"><span class="hs-identifier hs-var">stGen</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t (t m) a
 forall r (m :: Type -&gt; Type). MonadReader r m =&gt; m r
-</span><span class="hs-identifier hs-var">ask</span></span><span>
-</span><span id="line-64"></span><span>      </span><span id="local-6989586621679753242"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679753242"><span class="hs-identifier hs-var">chosenIx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m Int -&gt; t (t m) Int
+</span><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#ask"><span class="hs-identifier hs-var">ask</span></a></span><span>
+</span><span id="line-64"></span><span>      </span><span id="local-6989586621679545212"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679545212"><span class="hs-identifier hs-var">chosenIx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">t m Int -&gt; t (t m) Int
 forall (m :: Type -&gt; Type) a. Monad m =&gt; m a -&gt; t m a
 forall (t :: (Type -&gt; Type) -&gt; Type -&gt; Type) (m :: Type -&gt; Type) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
-</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(t m Int -&gt; t (t m) Int)
+</span><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Class.html#lift"><span class="hs-identifier hs-var">lift</span></a></span><span> </span><span class="annot"><span class="annottext">(t m Int -&gt; t (t m) Int)
 -&gt; (m Int -&gt; t m Int) -&gt; m Int -&gt; t (t m) Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">m Int -&gt; t m Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">m Int -&gt; t m Int
 forall (m :: Type -&gt; Type) a. Monad m =&gt; m a -&gt; t m a
 forall (t :: (Type -&gt; Type) -&gt; Type -&gt; Type) (m :: Type -&gt; Type) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
-</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(m Int -&gt; t (t m) Int) -&gt; m Int -&gt; t (t m) Int
+</span><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Class.html#lift"><span class="hs-identifier hs-var">lift</span></a></span><span> </span><span class="annot"><span class="annottext">(m Int -&gt; t (t m) Int) -&gt; m Int -&gt; t (t m) Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; a -&gt; m Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; a -&gt; m Int
 forall a g (m :: Type -&gt; Type).
 (UniformRange a, StatefulGen g m) =&gt;
 (a, a) -&gt; g -&gt; m a
@@ -286,50 +286,50 @@ StatefulGen g m =&gt;
 (Int, Int) -&gt; g -&gt; m Int
 </span><span class="hs-identifier hs-var">uniformRM</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int
-</span><span class="hs-identifier hs-var">Txt.length</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753240"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.html#length"><span class="hs-identifier hs-var">Txt.length</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545210"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Num.html#-"><span class="hs-operator hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#-"><span class="hs-operator hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679753241"><span class="hs-identifier hs-var">stGen</span></a></span><span>
+</span><a href="#local-6989586621679545211"><span class="hs-identifier hs-var">stGen</span></a></span><span>
 </span><span id="line-65"></span><span>      </span><span class="annot"><span class="annottext">Char -&gt; t (t m) Char
 forall a. a -&gt; t (t m) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; t (t m) Char) -&gt; Char -&gt; t (t m) Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; t (t m) Char) -&gt; Char -&gt; t (t m) Char
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">HasCallStack =&gt; Text -&gt; Int -&gt; Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">HasCallStack =&gt; Text -&gt; Int -&gt; Char
 Text -&gt; Int -&gt; Char
-</span><span class="hs-identifier hs-var">Txt.index</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753240"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679753242"><span class="hs-identifier hs-var">chosenIx</span></a></span><span>
-</span><span id="line-66"></span><span>    </span><span id="local-6989586621679753180"><span class="annot"><span class="annottext">starterChars :: Text
-</span><a href="#local-6989586621679753180"><span class="hs-identifier hs-var hs-var">starterChars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
-</span><span class="hs-identifier hs-var">Txt.pack</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.html#index"><span class="hs-identifier hs-var">Txt.index</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545210"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679545212"><span class="hs-identifier hs-var">chosenIx</span></a></span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679545150"><span class="annot"><span class="annottext">starterChars :: Text
+</span><a href="#local-6989586621679545150"><span class="hs-identifier hs-var hs-var">starterChars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#pack"><span class="hs-identifier hs-var">Txt.pack</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'a'</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'z'</span></span><span class="hs-special">]</span><span>
-</span><span id="line-67"></span><span>    </span><span id="local-6989586621679753183"><span class="annot"><span class="annottext">chars :: Text
-</span><a href="#local-6989586621679753183"><span class="hs-identifier hs-var hs-var">chars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
-</span><span class="hs-identifier hs-var">Txt.append</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679753180"><span class="hs-identifier hs-var">starterChars</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; (String -&gt; Text) -&gt; String -&gt; Text
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621679545153"><span class="annot"><span class="annottext">chars :: Text
+</span><a href="#local-6989586621679545153"><span class="hs-identifier hs-var hs-var">chars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#append"><span class="hs-identifier hs-var">Txt.append</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679545150"><span class="hs-identifier hs-var">starterChars</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; (String -&gt; Text) -&gt; String -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
-</span><span class="hs-identifier hs-var">Txt.pack</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text) -&gt; String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#pack"><span class="hs-identifier hs-var">Txt.pack</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Text) -&gt; String -&gt; Text
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'A'</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'Z'</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'0'</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'9'</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
 Item String
 </span><span class="hs-char">'_'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Char
 Item String

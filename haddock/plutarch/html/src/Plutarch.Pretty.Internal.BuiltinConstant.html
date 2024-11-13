@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Pretty.Internal.BuiltinConstant</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier">prettyConstant</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-2"></span><span>
-</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ByteString</span></span><span class="hs-special">)</span><span>
-</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Builder</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BSB</span></span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Lazy</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">LBS</span></span><span>
-</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Text</span></span><span class="hs-special">)</span><span>
-</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text.Encoding</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">TxtEnc</span></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Builder.html"><span class="hs-identifier">Data.ByteString.Builder</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BSB</span></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Lazy.html"><span class="hs-identifier">Data.ByteString.Lazy</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">LBS</span></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.html"><span class="hs-identifier">Data.Text</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier">Text</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Encoding.html"><span class="hs-identifier">Data.Text.Encoding</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">TxtEnc</span></span><span>
 </span><span id="line-8"></span><span>
 </span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;+&gt;)</span></span><span class="hs-special">)</span><span>
 </span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PP</span></span><span>
@@ -18,82 +18,82 @@
 </span><span id="line-18"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-type">prettyConstant</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">DefaultUni</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PP.Doc</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-19"></span><span id="prettyConstant"><span class="annot"><span class="annottext">prettyConstant :: Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var hs-var">prettyConstant</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniInteger</span></span><span> </span><span id="local-6989586621679752404"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752404"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ()
+</span><span class="hs-identifier hs-var">PLC.DefaultUniInteger</span></span><span> </span><span id="local-6989586621679544374"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544374"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ()
 forall ann. a -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.pretty</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752404"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621679544374"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-20"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniByteString</span></span><span> </span><span id="local-6989586621679752411"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752411"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Doc ()
+</span><span class="hs-identifier hs-var">PLC.DefaultUniByteString</span></span><span> </span><span id="local-6989586621679544381"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544381"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Doc ()
 forall ann. Text -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.pretty</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Doc ()) -&gt; Text -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#encodeHex"><span class="hs-identifier hs-var">encodeHex</span></a></span><span> </span><span class="annot"><span class="annottext">a
 ByteString
-</span><a href="#local-6989586621679752411"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679544381"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-21"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniString</span></span><span> </span><span id="local-6989586621679752423"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752423"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">PLC.DefaultUniString</span></span><span> </span><span id="local-6989586621679544393"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544393"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-22"></span><span>  </span><span class="hs-comment">-- Have to `show` first to get a quoted string.</span><span>
 </span><span id="line-23"></span><span>  </span><span class="annot"><span class="annottext">String -&gt; Doc ()
 forall ann. String -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.pretty</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Doc ()) -&gt; String -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; String
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752423"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544393"><span class="hs-identifier hs-var">s</span></a></span><span>
 </span><span id="line-24"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniUnit</span></span><span> </span><span class="annot"><span class="annottext">a
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;()&quot;</span></span><span>
 </span><span id="line-25"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniBool</span></span><span> </span><span id="local-6989586621679752435"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752435"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ()
+</span><span class="hs-identifier hs-var">PLC.DefaultUniBool</span></span><span> </span><span id="local-6989586621679544405"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544405"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ()
 forall ann. a -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.pretty</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752435"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-26"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUniList</span></span><span> </span><span id="local-6989586621679752451"><span class="annot"><span class="annottext">DefaultUni (Esc @k1 a1)
-</span><a href="#local-6989586621679752451"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679752452"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679752452"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679544405"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-26"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUniList</span></span><span> </span><span id="local-6989586621679544421"><span class="annot"><span class="annottext">DefaultUni (Esc @k1 a1)
+</span><a href="#local-6989586621679544421"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679544422"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544422"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-27"></span><span>  </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.list</span></span><span> </span><span class="annot"><span class="annottext">([Doc ()] -&gt; Doc ()) -&gt; [Doc ()] -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
 </span><span id="line-28"></span><span>    </span><span class="annot"><span class="annottext">(a1 -&gt; Doc ()) -&gt; [a1] -&gt; [Doc ()]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Doc ())
 -&gt; (a1 -&gt; Some @Type (ValueOf DefaultUni)) -&gt; a1 -&gt; Doc ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni a1 -&gt; Some @Type (ValueOf DefaultUni)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni a1 -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni a1 -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; (a1 -&gt; ValueOf DefaultUni a1)
 -&gt; a1
 -&gt; Some @Type (ValueOf DefaultUni)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a1) -&gt; a1 -&gt; ValueOf DefaultUni a1
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a1) -&gt; a1 -&gt; ValueOf DefaultUni a1
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @k1 a1)
 DefaultUni (Esc @Type a1)
-</span><a href="#local-6989586621679752451"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544421"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a
 [a1]
-</span><a href="#local-6989586621679752452"><span class="hs-identifier hs-var">l</span></a></span><span>
-</span><span id="line-29"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUniPair</span></span><span> </span><span id="local-6989586621679752483"><span class="annot"><span class="annottext">DefaultUni (Esc @k3 a2)
-</span><a href="#local-6989586621679752483"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679752484"><span class="annot"><span class="annottext">DefaultUni (Esc @k1 a1)
-</span><a href="#local-6989586621679752484"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">~</span><span class="hs-special">(</span><span id="local-6989586621679752485"><span class="annot"><span class="annottext">a2
-</span><a href="#local-6989586621679752485"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679752486"><span class="annot"><span class="annottext">a1
-</span><a href="#local-6989586621679752486"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679544422"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-29"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUniPair</span></span><span> </span><span id="local-6989586621679544453"><span class="annot"><span class="annottext">DefaultUni (Esc @k3 a2)
+</span><a href="#local-6989586621679544453"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679544454"><span class="annot"><span class="annottext">DefaultUni (Esc @k1 a1)
+</span><a href="#local-6989586621679544454"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">~</span><span class="hs-special">(</span><span id="local-6989586621679544455"><span class="annot"><span class="annottext">a2
+</span><a href="#local-6989586621679544455"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679544456"><span class="annot"><span class="annottext">a1
+</span><a href="#local-6989586621679544456"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-30"></span><span>  </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.tupled</span></span><span>
@@ -103,84 +103,84 @@ forall ann. [Doc ann] -&gt; Doc ann
 -&gt; ValueOf DefaultUni a2
 -&gt; Doc ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni a2 -&gt; Some @Type (ValueOf DefaultUni)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni a2 -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni a2 -&gt; Doc ())
 -&gt; ValueOf DefaultUni a2 -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a2) -&gt; a2 -&gt; ValueOf DefaultUni a2
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a2) -&gt; a2 -&gt; ValueOf DefaultUni a2
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @k3 a2)
 DefaultUni (Esc @Type a2)
-</span><a href="#local-6989586621679752483"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">a2
-</span><a href="#local-6989586621679752485"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
+</span><a href="#local-6989586621679544453"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">a2
+</span><a href="#local-6989586621679544455"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Doc ())
 -&gt; (ValueOf DefaultUni a1 -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; ValueOf DefaultUni a1
 -&gt; Doc ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni a1 -&gt; Some @Type (ValueOf DefaultUni)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni a1 -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni a1 -&gt; Doc ())
 -&gt; ValueOf DefaultUni a1 -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a1) -&gt; a1 -&gt; ValueOf DefaultUni a1
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a1) -&gt; a1 -&gt; ValueOf DefaultUni a1
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @k1 a1)
 DefaultUni (Esc @Type a1)
-</span><a href="#local-6989586621679752484"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">a1
-</span><a href="#local-6989586621679752486"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679544454"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">a1
+</span><a href="#local-6989586621679544456"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-32"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.Constr</span></span><span> </span><span id="local-6989586621679752500"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679752500"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679752501"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679752501"><span class="hs-identifier hs-var">dl</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.Constr</span></span><span> </span><span id="local-6989586621679544470"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679544470"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679544471"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679544471"><span class="hs-identifier hs-var">dl</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-33"></span><span>  </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;&#931;&quot;</span></span><span>
 </span><span id="line-34"></span><span>    </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Doc ()
 forall ann. Integer -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.pretty</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679752500"><span class="hs-identifier hs-var">ix</span></a></span><span>
+</span><a href="#local-6989586621679544470"><span class="hs-identifier hs-var">ix</span></a></span><span>
 </span><span id="line-35"></span><span>    </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;.&quot;</span></span><span>
 </span><span id="line-36"></span><span>    </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.list</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Doc ())
 -&gt; (Data -&gt; Some @Type (ValueOf DefaultUni)) -&gt; Data -&gt; Doc ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; (Data -&gt; ValueOf DefaultUni Data)
 -&gt; Data
 -&gt; Some @Type (ValueOf DefaultUni)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data) -&gt; Data -&gt; ValueOf DefaultUni Data
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data) -&gt; Data -&gt; ValueOf DefaultUni Data
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="annot"><span class="annottext">(Data -&gt; Doc ()) -&gt; [Data] -&gt; [Doc ()]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679752501"><span class="hs-identifier hs-var">dl</span></a></span><span class="hs-special">)</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679544471"><span class="hs-identifier hs-var">dl</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.Map</span></span><span> </span><span id="local-6989586621679752514"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679752514"><span class="hs-identifier hs-var">ascList</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.Map</span></span><span> </span><span id="local-6989586621679544484"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621679544484"><span class="hs-identifier hs-var">ascList</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-38"></span><span>  </span><span class="annot"><span class="annottext">Doc () -&gt; Doc ()
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.group</span></span><span>
 </span><span id="line-39"></span><span>    </span><span class="annot"><span class="annottext">(Doc () -&gt; Doc ()) -&gt; ([Doc ()] -&gt; Doc ()) -&gt; [Doc ()] -&gt; Doc ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc () -&gt; [Doc ()] -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc () -&gt; [Doc ()] -&gt; Doc ()
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann -&gt; [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.encloseSep</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -194,19 +194,19 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-string">&quot;, &quot;</span></span><span>
 </span><span id="line-40"></span><span>    </span><span class="annot"><span class="annottext">([Doc ()] -&gt; Doc ()) -&gt; [Doc ()] -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">((Data, Data) -&gt; Doc ()) -&gt; [(Data, Data)] -&gt; [Doc ()]
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">((Data, Data) -&gt; Doc ()) -&gt; [(Data, Data)] -&gt; [Doc ()]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span>
-</span><span id="line-41"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679752518"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621679752518"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679752519"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621679752519"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span>
+</span><span id="line-41"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679544488"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621679544488"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679544489"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621679544489"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-42"></span><span>          </span><span class="annot"><span class="annottext">Int -&gt; Doc () -&gt; Doc ()
 forall ann. Int -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.hang</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="Plutarch.Pretty.Internal.Config.html#indentWidth"><span class="hs-identifier hs-var">indentWidth</span></a></span><span> </span><span class="annot"><span class="annottext">(Doc () -&gt; Doc ()) -&gt; Doc () -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
 </span><span id="line-43"></span><span>            </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.sep</span></span><span>
@@ -218,7 +218,7 @@ forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621679752518"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
+</span><a href="#local-6989586621679544488"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;=&quot;</span></span><span>
@@ -226,118 +226,118 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Doc ())
 -&gt; Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data) -&gt; Data -&gt; ValueOf DefaultUni Data
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data) -&gt; Data -&gt; ValueOf DefaultUni Data
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621679752519"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621679544489"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-46"></span><span>              </span><span class="hs-special">]</span><span>
 </span><span id="line-47"></span><span>      </span><span class="hs-special">)</span><span>
 </span><span id="line-48"></span><span>      </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679752514"><span class="hs-identifier hs-var">ascList</span></a></span><span>
+</span><a href="#local-6989586621679544484"><span class="hs-identifier hs-var">ascList</span></a></span><span>
 </span><span id="line-49"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.List</span></span><span> </span><span id="local-6989586621679752528"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679752528"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.List</span></span><span> </span><span id="local-6989586621679544498"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679544498"><span class="hs-identifier hs-var">l</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-50"></span><span>  </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;#&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Doc ()] -&gt; Doc ()
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">PP.list</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Doc ())
 -&gt; (Data -&gt; Some @Type (ValueOf DefaultUni)) -&gt; Data -&gt; Doc ()
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni Data -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; (Data -&gt; ValueOf DefaultUni Data)
 -&gt; Data
 -&gt; Some @Type (ValueOf DefaultUni)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data) -&gt; Data -&gt; ValueOf DefaultUni Data
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data) -&gt; Data -&gt; ValueOf DefaultUni Data
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Data)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="annot"><span class="annottext">(Data -&gt; Doc ()) -&gt; [Data] -&gt; [Doc ()]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679752528"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679544498"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.B</span></span><span> </span><span id="local-6989586621679752534"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679752534"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.B</span></span><span> </span><span id="local-6989586621679544504"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679544504"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-52"></span><span>  </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;#&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ValueOf DefaultUni ByteString -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni ByteString -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; ValueOf DefaultUni ByteString -&gt; Some @Type (ValueOf DefaultUni)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type ByteString)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type ByteString)
 -&gt; ByteString -&gt; ValueOf DefaultUni ByteString
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type ByteString)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniByteString</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679752534"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679544504"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-53"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.I</span></span><span> </span><span id="local-6989586621679752540"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679752540"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">PLC.DefaultUniData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.I</span></span><span> </span><span id="local-6989586621679544510"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679544510"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-54"></span><span>  </span><span class="annot"><span class="annottext">Doc ()
 </span><span class="hs-string">&quot;#&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc () -&gt; Doc () -&gt; Doc ()
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Doc ()
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ValueOf DefaultUni Integer -&gt; Some @Type (ValueOf DefaultUni)
 forall {k} (tag :: k -&gt; Type) (a :: k). tag a -&gt; Some @k tag
 </span><span class="hs-identifier hs-var">PLC.Some</span></span><span> </span><span class="annot"><span class="annottext">(ValueOf DefaultUni Integer -&gt; Some @Type (ValueOf DefaultUni))
 -&gt; ValueOf DefaultUni Integer -&gt; Some @Type (ValueOf DefaultUni)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Integer)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Integer)
 -&gt; Integer -&gt; ValueOf DefaultUni Integer
 forall (uni :: Type -&gt; Type) a.
 uni (Esc @Type a) -&gt; a -&gt; ValueOf uni a
 </span><span class="hs-identifier hs-var">PLC.ValueOf</span></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type Integer)
 </span><span class="hs-identifier hs-var">PLC.DefaultUniInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679752540"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-55"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span id="local-6989586621679752550"><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><a href="#local-6989586621679752550"><span class="hs-identifier hs-var">uni</span></a></span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679544510"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#prettyConstant"><span class="hs-identifier hs-var">prettyConstant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLC.ValueOf</span></span><span> </span><span id="local-6989586621679544520"><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
+</span><a href="#local-6989586621679544520"><span class="hs-identifier hs-var">uni</span></a></span></span><span> </span><span class="annot"><span class="annottext">a
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-56"></span><span>  </span><span class="annot"><span class="annottext">String -&gt; Doc ()
 forall a. HasCallStack =&gt; String -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Doc ()) -&gt; String -&gt; Doc ()
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Doc ()) -&gt; String -&gt; Doc ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;prettyConstant(impossible): &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a) -&gt; String
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a) -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
-</span><a href="#local-6989586621679752550"><span class="hs-identifier hs-var">uni</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc @Type a)
+</span><a href="#local-6989586621679544520"><span class="hs-identifier hs-var">uni</span></a></span><span>
 </span><span id="line-57"></span><span>
-</span><span id="line-58"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#encodeHex"><span class="hs-identifier hs-type">encodeHex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ByteString</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-58"></span><span class="annot"><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#encodeHex"><span class="hs-identifier hs-type">encodeHex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>
 </span><span id="line-59"></span><span id="encodeHex"><span class="annot"><span class="annottext">encodeHex :: ByteString -&gt; Text
 </span><a href="Plutarch.Pretty.Internal.BuiltinConstant.html#encodeHex"><span class="hs-identifier hs-var hs-var">encodeHex</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;0x&quot;</span></span><span> </span><span class="hs-operator">&lt;&gt;</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Text) -&gt; (ByteString -&gt; Text) -&gt; ByteString -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
-</span><span class="hs-identifier hs-var">TxtEnc.decodeUtf8</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Encoding.html#decodeUtf8"><span class="hs-identifier hs-var">TxtEnc.decodeUtf8</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
 -&gt; (ByteString -&gt; ByteString) -&gt; ByteString -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
-</span><span class="hs-identifier hs-var">LBS.toStrict</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Lazy.Internal.html#toStrict"><span class="hs-identifier hs-var">LBS.toStrict</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString)
 -&gt; (ByteString -&gt; ByteString) -&gt; ByteString -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Builder -&gt; ByteString
-</span><span class="hs-identifier hs-var">BSB.toLazyByteString</span></span><span> </span><span class="annot"><span class="annottext">(Builder -&gt; ByteString)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Builder -&gt; ByteString
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Builder.html#toLazyByteString"><span class="hs-identifier hs-var">BSB.toLazyByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(Builder -&gt; ByteString)
 -&gt; (ByteString -&gt; Builder) -&gt; ByteString -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.4/html/libraries/base-4.18.2.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Builder
-</span><span class="hs-identifier hs-var">BSB.byteStringHex</span></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Builder
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Builder.ASCII.html#byteStringHex"><span class="hs-identifier hs-var">BSB.byteStringHex</span></a></span><span>
 </span><span id="line-60"></span></pre></body></html>

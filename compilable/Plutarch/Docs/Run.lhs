@@ -6,15 +6,12 @@
 module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where
 import Data.Bifunctor (first)
 import Data.ByteString.Short (ShortByteString)
-import Data.Default (def)
 import Data.Text (Text, pack)
 import Plutarch (ClosedTerm, compile)
-import Plutarch.Script (Script (Script, unScript), serialiseScript)
-import Plutarch.Evaluate (evalScript)
+import Plutarch.Script (Script (unScript), serialiseScript)
+import Plutarch.Evaluate (evalScript, applyArguments)
 import PlutusLedgerApi.V1 (Data, ExBudget)
-import PlutusCore.MkPlc (mkIterAppNoAnn, mkConstant)
-import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program, progTerm)
-import Control.Lens.Combinators (over)
+import UntypedPlutusCore (DeBruijn, DefaultFun, DefaultUni, Program)
 ```
 
 </p>
@@ -103,12 +100,6 @@ You can compile a Plutarch term using `compile` (from `Plutarch` module), making
 I often use these helper functions to test Plutarch quickly:
 
 ```haskell
-applyArguments :: Script -> [Data] -> Script
-applyArguments (Script p) args =
-    let termArgs = mkConstant () <$> args
-        applied t = mkIterAppNoAnn t termArgs
-    in Script $ over progTerm applied p
-
 evalSerialize :: ClosedTerm a -> Either Text ShortByteString
 evalSerialize x = serialiseScript . (\(a, _, _) -> a) <$> evalT x
 
@@ -117,7 +108,7 @@ evalT x = evalWithArgsT x []
 
 evalWithArgsT :: ClosedTerm a -> [Data] -> Either Text (Script, ExBudget, [Text])
 evalWithArgsT x args = do
-  cmp <- compile def x
+  cmp <- compile mempty x
   let (escr, budg, trc) = evalScript $ applyArguments cmp args
   scr <- first (pack . show) escr
   pure (scr, budg, trc)

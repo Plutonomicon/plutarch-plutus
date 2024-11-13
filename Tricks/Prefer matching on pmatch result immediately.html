@@ -18,7 +18,7 @@
   </title>
   
     
-      <meta property='og:description' content='You should always try and pattern match on the result of pmatch immediately. This is because the semantics of pmatch will make anything you write before the pattern match be inlined for every single branch:' />
+      <meta property='og:description' content='You should always try and pattern match on the result of pmatch immediately. This is because the semantics of pmatch will make anything you write before the pattern match be inlined for every single branch:immediatelybefore' />
       <meta property='og:site_name' content='Plutarch Plutus' />
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
@@ -54,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=9573fbd9-a6b9-40bd-b236-912816f906f9' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=9cd7fbab-7a46-4b31-bf90-1894b195e77b' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -2501,46 +2501,6 @@
   
         
     </span>
-    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PTuple' href='Types/PTuple.html'>
-      PTuple
-    </a>
-    
-      
-  </div>
-
-  <!-- Node's children forest, displayed only on active trees
-    TODO: Use <details> to toggle visibility?
-  -->
-  
-    
-  
-</div>
-    
-      <!-- Variable bindings for this tree-->
-
-  
-
-
-
-  
-
-
-<!-- Rendering of this tree -->
-<div class='pl-2'>
-  <!-- Node's rootLabel-->
-  <div class='flex items-center my-2 space-x-2 justify-left'>
-    <span>
-      
-        
-    
-      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
-        </path>
-      </svg>
-    
-  
-        
-    </span>
     <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PUnit' href='Types/PUnit.html'>
       PUnit
     </a>
@@ -3220,9 +3180,18 @@
 <div xmlhtmlRaw><details>
 <summary> imports </summary>
 <p>
-</div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>module Plutarch.Docs.PreferMatchingOnResult (this, this') where 
+</div><div class='py-0.5 mb-3 text-sm'><pre><code class='haskell language-haskell'>module Plutarch.Docs.PreferMatchingOnResult (this, this') where
 import Plutarch.Prelude
-import Plutarch.Api.V1 (PScriptPurpose (PSpending, PMinting, PRewarding, PCertifying))</code></pre></div><div xmlhtmlRaw></p>
+import Plutarch.LedgerApi.V3 (
+  PScriptPurpose (
+    PSpending, 
+    PMinting, 
+    PRewarding, 
+    PCertifying,
+    PVoting,
+    PProposing
+    )
+  )</code></pre></div><div xmlhtmlRaw></p>
 </details>
 </div>
     <h1 id='prefer-pattern-matching-on-the-result-of-pmatch-immediately' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
@@ -3248,7 +3217,9 @@ this = plam $ \x -&gt; pmatch x $ \l -&gt;
     PMinting _ -&gt; i + 3
     PSpending _ -&gt; i + 4
     PRewarding _ -&gt; i + 5
-    PCertifying _ -&gt; i + 6</code></pre></div>
+    PCertifying _ -&gt; i + 6
+    PVoting _ -&gt; i + 7
+    PProposing _ -&gt; i + 8</code></pre></div>
     <p class='mb-3'>
       Notice how the above code <code class='py-0.5 px-0.5 bg-gray-100'>plet</code>s a computation <em>before</em> matching on <code class='py-0.5 px-0.5 bg-gray-100'>l</code>, the <code class='py-0.5 px-0.5 bg-gray-100'>pmatch</code> result. This will make the <code class='py-0.5 px-0.5 bg-gray-100'>plet $ 1 + 2 $ \i -&gt; i + &lt;something&gt;</code> be inlined in every branch of your pattern match! That is, not only will it compute the <code class='py-0.5 px-0.5 bg-gray-100'>1 + 2</code> every time, it will <em>also</em> <code class='py-0.5 px-0.5 bg-gray-100'>plet</code> it, which introduced an extra lambda, only to immediately apply the lambda!
     </p>
@@ -3262,7 +3233,9 @@ this' = plam $ \x -&gt; plet  (1 + 2) $ \i -&gt;
     PMinting _ -&gt; i + 3
     PSpending _ -&gt; i + 4
     PRewarding _ -&gt; i + 5
-    PCertifying _ -&gt; i + 6</code></pre></div>
+    PCertifying _ -&gt; i + 6
+    PVoting _ -&gt; i + 7
+    PProposing _ -&gt; i + 8</code></pre></div>
     <p class='mb-3'>
       This applies much the same with <code class='py-0.5 px-0.5 bg-gray-100'>do</code> syntax (whether with <code class='py-0.5 px-0.5 bg-gray-100'>TermCont</code> or with <code class='py-0.5 px-0.5 bg-gray-100'>QualifiedDo</code>). Try to use inline partial pattern matching (e.g <code class='py-0.5 px-0.5 bg-gray-100'>PMinting _ &lt;- pmatch x</code>), or pattern match on the very next line (e.g <code class='py-0.5 px-0.5 bg-gray-100'>l &lt;- pmatch x; case l of ...</code>).
     </p>
@@ -3338,7 +3311,7 @@ this' = plam $ \x -&gt; plet  (1 + 2) $ \i -&gt;
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.17.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.18.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

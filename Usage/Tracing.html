@@ -18,7 +18,7 @@
   </title>
   
     
-      <meta property='og:description' content='You can use the functions ptrace, ptraceError, ptraceIfFalse, ptraceIfTrue (from Plutarch.Trace or Plutarch.Prelude) for tracing. These behave similarly to the ones you’re used to from PlutusTx.' />
+      <meta property='og:description' content='Fundamentally, there are two kinds of traces Plutarch can add to your code:' />
       <meta property='og:site_name' content='Plutarch Plutus' />
       <meta property='og:image' content />
       <meta property='og:type' content='website' />
@@ -54,7 +54,7 @@
 
   
   
-  <link href='tailwind.css?instanceId=9573fbd9-a6b9-40bd-b236-912816f906f9' rel='stylesheet' type='text/css' />
+  <link href='tailwind.css?instanceId=9cd7fbab-7a46-4b31-bf90-1894b195e77b' rel='stylesheet' type='text/css' />
 
   <style>
     /* Heist error element */
@@ -2497,46 +2497,6 @@
   
         
     </span>
-    <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PTuple' href='Types/PTuple.html'>
-      PTuple
-    </a>
-    
-      
-  </div>
-
-  <!-- Node's children forest, displayed only on active trees
-    TODO: Use <details> to toggle visibility?
-  -->
-  
-    
-  
-</div>
-    
-      <!-- Variable bindings for this tree-->
-
-  
-
-
-
-  
-
-
-<!-- Rendering of this tree -->
-<div class='pl-2'>
-  <!-- Node's rootLabel-->
-  <div class='flex items-center my-2 space-x-2 justify-left'>
-    <span>
-      
-        
-    
-      <svg class='w-4 h-4 flex-shrink-0 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
-        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'>
-        </path>
-      </svg>
-    
-  
-        
-    </span>
     <a class='hover:bg-blue-200 rounded px-1.5 truncate' title='PUnit' href='Types/PUnit.html'>
       PUnit
     </a>
@@ -3209,7 +3169,9 @@
   </a>
 </h1>
     
-      <article class='overflow-auto'>
+      <div class='md:grid md:gap-4 md:grid-cols-8'>
+        <div class='md:col-span-6'>
+          <article class='overflow-auto'>
   <!-- What goes in this file will appear on top of note body-->
   
 
@@ -3239,16 +3201,138 @@ import Plutarch.Prelude ()</code></pre></div><div xmlhtmlRaw></p>
     </h1>
   
     <p class='mb-3'>
-      You can use the functions <code class='py-0.5 px-0.5 bg-gray-100'>ptrace</code>, <code class='py-0.5 px-0.5 bg-gray-100'>ptraceError</code>, <code class='py-0.5 px-0.5 bg-gray-100'>ptraceIfFalse</code>, <code class='py-0.5 px-0.5 bg-gray-100'>ptraceIfTrue</code> (from <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.Trace</code> or <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.Prelude</code>) for tracing. These behave similarly to the ones you’re used to from <a href='https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Trace.html' class='text-blue-600 hover:underline' data-linkicon='external' target='_blank' rel='noopener'>PlutusTx</a>.
+      Fundamentally, there are two kinds of traces Plutarch can add to your code:
+    </p>
+  
+    <ul class='my-3 ml-6 space-y-1 list-disc'>
+      
+        <li>
+          Info tracing, which is the ‘regular’ kind of tracing; and
+        </li>
+      
+        <li>
+          Debug tracing, which is supposed to be more verbose and provide more detail for debugging purposes.
+        </li>
+      
+    </ul>
+  
+    <p class='mb-3'>
+      The basic way you can add traces to your code is using <code class='py-0.5 px-0.5 bg-gray-100'>ptraceInfo</code> to add an info trace, and <code class='py-0.5 px-0.5 bg-gray-100'>ptraceDebug</code> to add a debug trace. <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.Trace</code> (and <code class='py-0.5 px-0.5 bg-gray-100'>Plutarch.Prelude</code>) export additional functions for more specific cases, including ones that include use of <code class='py-0.5 px-0.5 bg-gray-100'>PShow</code>, and that only inject a trace under certain conditions. See those modules, and their documentation, for more details.
     </p>
   
     <p class='mb-3'>
-      If you have the <code class='py-0.5 px-0.5 bg-gray-100'>development</code> flag for <code class='py-0.5 px-0.5 bg-gray-100'>plutarch</code> turned on - you’ll see the trace messages appear in the trace log during script evaluation. When not in development mode - these functions basically do nothing.
+      If you have the <code class='py-0.5 px-0.5 bg-gray-100'>development</code> flag for <code class='py-0.5 px-0.5 bg-gray-100'>plutarch</code> turned on - you’ll see the trace messages appear in the trace log during script evaluation. When not in development mode, these functions basically do nothing.
+    </p>
+  
+    <h1 id='important-note' class='group mt-6 mb-4 font-bold text-gray-700 text-5xl'>
+      
+  Important note
+  
+  <a href='Usage/Tracing.html#important-note' class='--ema-anchor'>
+    <span class='hover:text-blue-400 group-hover:visible invisible cursor-pointer text-sm align-middle' aria-label='Copy link'><svg class='inline w-4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+        <path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path>
+        <path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path>
+      </svg></span>
+  </a>
+
+
+    </h1>
+  
+    <p class='mb-3'>
+      Use of <code class='py-0.5 px-0.5 bg-gray-100'>PShow</code> is strongly discouraged in any production on-chain scripts. This uses a lot of resources onchain, and can easily exhaust script limits unless done carefully. In general, only resort to <code class='py-0.5 px-0.5 bg-gray-100'>PShow</code> if you absolutely have to: otherwise, prefer static strings as outputs.
     </p>
   
   <!-- What goes in this file will appear below the note body-->
 </article>
+        </div>
+        <div class='hidden md:block md:col-span-2 md:border-l'>
+          <nav id='toc' class='hidden leading-relaxed md:block md:sticky md:top-0 md:max-h-screen md:overflow-y-auto'>
+  <div class='text-gray-600 text-sm -mt-2'>
     
+        <ul class='ml-2'>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Tracing'>
+              <a href='Usage/Tracing.html#tracing' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Tracing
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+            <li class='whitespace-nowrap truncate mt-2' title='Important note'>
+              <a href='Usage/Tracing.html#important-note' class='--ema-toc bg-blue-200 rounded-md p-0.5'>
+                Important note
+              </a>
+              
+        <ul class='ml-2'>
+          
+        </ul>
+      
+            </li>
+          
+        </ul>
+      
+  </div>
+  <script>
+    // Highlight the TOC, based from https://stackoverflow.com/a/75346369
+    // TODO: We should get rid of JavaScript! See https://github.com/srid/emanote/issues/520
+    function highlightTOC() {
+      // Grab the toc links
+      const links = document.querySelectorAll("ul > li > a.--ema-toc");
+
+      // Find the matching anchors in the document body
+      const sections = [];
+      links.forEach((link) => {
+        let found = {};
+        for (section of document.querySelectorAll("a.--ema-anchor")) {
+          if (link.href == section.href) {
+            found = section;
+            break;
+          }
+        }
+        sections.push(found);
+      });
+
+      // Current toc link is marked with the following class
+      const mark = "toc-item-active";
+
+      // Set window scroll handler to update the toc mark.
+      window.onscroll = () => {
+        // Remove previous mark
+        links.forEach((link) => {
+          link.classList.remove(mark);
+        });
+
+        // Mark the link of the section that is in view, starting from the end
+        let marked = false;
+        for (var i = sections.length - 1; i >= 0; i--) {
+          if (window.scrollY > sections[i].offsetTop - 80) {
+            links[i].classList.add(mark);
+            marked = true;
+            break;
+          }
+        }
+
+        // Special case for the first and last section which might not reach the top
+        if (!marked && window.scrollY > 0) {
+          let i = 0;
+          if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight) {
+            // We are at the bottom
+            i = links.length - 1
+          }
+          links[i].classList.add(mark);
+        }
+      };
+    }
+    highlightTOC();
+  </script>
+</nav>
+        </div>
+      </div>
+      
     <div class='flex flex-col lg:flex-row lg:space-x-2'>
       
       
@@ -3317,7 +3401,7 @@ import Plutarch.Prelude ()</code></pre></div><div xmlhtmlRaw></p>
     </a>
   </div>
   <div>
-    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.17.0'>
+    <a href='https://emanote.srid.ca' target='_blank' title='Generated by Emanote 1.3.18.0'>
       <img class='w-6 h-6 hover:text-blue-700' src='_emanote-static/emanote-logo.svg' />
     </a>
   </div>

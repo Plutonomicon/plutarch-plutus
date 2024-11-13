@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE PatternSynonyms #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE RoleAnnotations #-}</span><span>
+</span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE ViewPatterns #-}</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusLedgerApi.QuickCheck.Utils</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier">SizedByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier">SizedByteString</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier">unSizedByteString</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier">AsWord64</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier">AsWord64</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#fromAsWord64"><span class="hs-identifier">fromAsWord64</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BS</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Proxy.html"><span class="hs-identifier">Data.Proxy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Proxy.html#Proxy"><span class="hs-identifier">Proxy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Proxy.html#Proxy"><span class="hs-identifier">Proxy</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Word.html"><span class="hs-identifier">Data.Word</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word64"><span class="hs-identifier">Word64</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.TypeNats.html"><span class="hs-identifier">GHC.TypeNats</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.TypeNats.html#KnownNat"><span class="hs-identifier">KnownNat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier">Natural</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.TypeNats.html#natVal"><span class="hs-identifier">natVal</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shrink</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><span class="hs-identifier">CoArbitrary</span></span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span>  </span><span class="annot"><span class="hs-identifier">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">function</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><span class="hs-identifier">functionMap</span></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><span class="hs-identifier">vectorOf</span></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck.Instances.ByteString</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="annot"><span class="hs-comment">{- | Helper for 'ByteString's of a fixed length. We don't expose the
+constructor, instead providing a read-only pattern, as well as an accessor
+function, to ensure that the size invariant is maintained.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="SizedByteString"><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-var">SizedByteString</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134022"><span class="annot"><a href="#local-6989586621679134022"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier hs-type">Natural</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="UnsafeSizedByteString"><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeSizedByteString"><span class="hs-identifier hs-var">UnsafeSizedByteString</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-36"></span><span>      </span><span id="local-6989586621679134090"><span id="local-6989586621679134095"><span class="annot"><span class="annottext">SizedByteString n -&gt; SizedByteString n -&gt; Bool
+(SizedByteString n -&gt; SizedByteString n -&gt; Bool)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; Bool)
+-&gt; Eq (SizedByteString n)
+forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+== :: SizedByteString n -&gt; SizedByteString n -&gt; Bool
+$c/= :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+/= :: SizedByteString n -&gt; SizedByteString n -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-38"></span><span>      </span><span id="local-6989586621679134103"><span id="local-6989586621679134108"><span id="local-6989586621679134112"><span id="local-6989586621679134116"><span id="local-6989586621679134120"><span id="local-6989586621679134124"><span id="local-6989586621679134128"><span class="annot"><span class="annottext">Eq (SizedByteString n)
+Eq (SizedByteString n) =&gt;
+(SizedByteString n -&gt; SizedByteString n -&gt; Ordering)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; Bool)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; Bool)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; Bool)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; Bool)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n)
+-&gt; (SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n)
+-&gt; Ord (SizedByteString n)
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+SizedByteString n -&gt; SizedByteString n -&gt; Ordering
+SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n
+forall (n :: Natural). Eq (SizedByteString n)
+forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Ordering
+forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+$ccompare :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Ordering
+compare :: SizedByteString n -&gt; SizedByteString n -&gt; Ordering
+$c&lt; :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+&lt; :: SizedByteString n -&gt; SizedByteString n -&gt; Bool
+$c&lt;= :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+&lt;= :: SizedByteString n -&gt; SizedByteString n -&gt; Bool
+$c&gt; :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+&gt; :: SizedByteString n -&gt; SizedByteString n -&gt; Bool
+$c&gt;= :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; Bool
+&gt;= :: SizedByteString n -&gt; SizedByteString n -&gt; Bool
+$cmax :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n
+max :: SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n
+$cmin :: forall (n :: Natural).
+SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n
+min :: SizedByteString n -&gt; SizedByteString n -&gt; SizedByteString n
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-42"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-43"></span><span>      </span><span id="local-6989586621679134134"><span id="local-6989586621679134140"><span id="local-6989586621679134144"><span class="annot"><span class="annottext">Int -&gt; SizedByteString n -&gt; ShowS
+[SizedByteString n] -&gt; ShowS
+SizedByteString n -&gt; String
+(Int -&gt; SizedByteString n -&gt; ShowS)
+-&gt; (SizedByteString n -&gt; String)
+-&gt; ([SizedByteString n] -&gt; ShowS)
+-&gt; Show (SizedByteString n)
+forall (n :: Natural). Int -&gt; SizedByteString n -&gt; ShowS
+forall (n :: Natural). [SizedByteString n] -&gt; ShowS
+forall (n :: Natural). SizedByteString n -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: forall (n :: Natural). Int -&gt; SizedByteString n -&gt; ShowS
+showsPrec :: Int -&gt; SizedByteString n -&gt; ShowS
+$cshow :: forall (n :: Natural). SizedByteString n -&gt; String
+show :: SizedByteString n -&gt; String
+$cshowList :: forall (n :: Natural). [SizedByteString n] -&gt; ShowS
+showList :: [SizedByteString n] -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
+</span><span id="line-44"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">role</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="annot"><span class="hs-identifier">nominal</span></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-49"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134021"><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.TypeNats.html#KnownNat"><span class="hs-identifier hs-type">KnownNat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134021"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134021"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679134161"><span class="annot"><span class="annottext">arbitrary :: Gen (SizedByteString n)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="annottext">ByteString -&gt; SizedByteString n
+forall (n :: Natural). ByteString -&gt; SizedByteString n
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeSizedByteString"><span class="hs-identifier hs-var">UnsafeSizedByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; SizedByteString n)
+-&gt; ([Word8] -&gt; ByteString) -&gt; [Word8] -&gt; SizedByteString n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#pack"><span class="hs-identifier hs-var">BS.pack</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; SizedByteString n)
+-&gt; Gen [Word8] -&gt; Gen (SizedByteString n)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-53"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679134165"><span class="annot"><span class="annottext">len :: Int
+</span><a href="#local-6989586621679134165"><span class="hs-identifier hs-var hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">(Natural -&gt; Int) -&gt; (Proxy n -&gt; Natural) -&gt; Proxy n -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy n -&gt; Natural
+forall (n :: Natural) (proxy :: Natural -&gt; Type).
+KnownNat n =&gt;
+proxy n -&gt; Natural
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.TypeNats.html#natVal"><span class="hs-identifier hs-var">natVal</span></a></span><span> </span><span class="annot"><span class="annottext">(Proxy n -&gt; Int) -&gt; Proxy n -&gt; Int
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (t :: Natural). Proxy t
+forall {k} (t :: k). Proxy t
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Proxy.html#Proxy"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="#local-6989586621679134021"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-54"></span><span>      </span><span class="annot"><span class="annottext">Int -&gt; Gen Word8 -&gt; Gen [Word8]
+forall a. Int -&gt; Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">vectorOf</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679134165"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Word8
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679134173"><span class="annot"><span class="annottext">shrink :: SizedByteString n -&gt; [SizedByteString n]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">([Word8] -&gt; SizedByteString n) -&gt; [[Word8]] -&gt; [SizedByteString n]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; SizedByteString n
+forall (n :: Natural). ByteString -&gt; SizedByteString n
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeSizedByteString"><span class="hs-identifier hs-var">UnsafeSizedByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; SizedByteString n)
+-&gt; ([Word8] -&gt; ByteString) -&gt; [Word8] -&gt; SizedByteString n
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#pack"><span class="hs-identifier hs-var">BS.pack</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>      </span><span class="annot"><span class="annottext">([[Word8]] -&gt; [SizedByteString n])
+-&gt; (SizedByteString n -&gt; [[Word8]])
+-&gt; SizedByteString n
+-&gt; [SizedByteString n]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; [Word8]) -&gt; [Word8] -&gt; [[Word8]]
+forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; [a] -&gt; f [b]
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; [Word8]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span>
+</span><span id="line-59"></span><span>      </span><span class="annot"><span class="annottext">([Word8] -&gt; [[Word8]])
+-&gt; (SizedByteString n -&gt; [Word8]) -&gt; SizedByteString n -&gt; [[Word8]]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#unpack"><span class="hs-identifier hs-var">BS.unpack</span></a></span><span>
+</span><span id="line-60"></span><span>      </span><span class="annot"><span class="annottext">(ByteString -&gt; [Word8])
+-&gt; (SizedByteString n -&gt; ByteString)
+-&gt; SizedByteString n
+-&gt; [Word8]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">SizedByteString n -&gt; ByteString
+forall (n :: Natural). SizedByteString n -&gt; ByteString
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier hs-var">unSizedByteString</span></a></span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-63"></span><span id="local-6989586621679134177"><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679134053"><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134053"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134059"><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134059"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-68"></span><span>  </span><span id="local-6989586621679134189"><span class="annot"><span class="annottext">function :: forall b. (SizedByteString n -&gt; b) -&gt; SizedByteString n :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(SizedByteString n -&gt; ByteString)
+-&gt; (ByteString -&gt; SizedByteString n)
+-&gt; (SizedByteString n -&gt; b)
+-&gt; SizedByteString n :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">SizedByteString n -&gt; ByteString
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; SizedByteString n
+forall (n :: Natural). ByteString -&gt; SizedByteString n
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeSizedByteString"><span class="hs-identifier hs-var">UnsafeSizedByteString</span></a></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="annot"><span class="hs-comment">{- | Read-only pattern for accessing the underlying 'ByteString'. Use it just
+like you would use a data constructor in a pattern match.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-75"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134065"><span class="annot"><a href="#local-6989586621679134065"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier hs-type">Natural</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134065"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-76"></span><span class="hs-keyword">pattern</span><span> </span><span id="SizedByteString"><span id="%24mSizedByteString"><span class="annot"><span class="annottext">$mSizedByteString :: forall {r} {n :: Natural}.
+SizedByteString n -&gt; (ByteString -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-var hs-var">SizedByteString</span></a></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679134191"><span class="hs-identifier hs-type">bs</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeSizedByteString"><span class="hs-identifier hs-type">UnsafeSizedByteString</span></a></span><span> </span><span id="local-6989586621679134191"><span class="annot"><a href="#local-6989586621679134191"><span class="hs-identifier hs-var">bs</span></a></span></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-pragma">{-# COMPLETE</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-pragma hs-type">SizedByteString</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="annot"><span class="hs-comment">{- | Get the underlying 'ByteString'. It is guaranteed to have the length
+specified in its type.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-85"></span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier hs-type">unSizedByteString</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134047"><span class="annot"><a href="#local-6989586621679134047"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Natural.html#Natural"><span class="hs-identifier hs-type">Natural</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-87"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#SizedByteString"><span class="hs-identifier hs-type">SizedByteString</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134047"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-88"></span><span>  </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
+</span><span id="line-89"></span><span id="unSizedByteString"><span class="annot"><span class="annottext">unSizedByteString :: forall (n :: Natural). SizedByteString n -&gt; ByteString
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier hs-var hs-var">unSizedByteString</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SizedByteString n -&gt; ByteString
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span class="annot"><span class="hs-comment">{- | Plutus' ledger API often has to \'fake\' 'Word64' using the much larger
+'Integer' type. This helper is designed to generate 'Integer's that fit into
+'Word64'.
+
+We don't expose the constructor directly; instead, we provide a read-only
+pattern and an accessor function.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">newtype</span><span> </span><span id="AsWord64"><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier hs-var">AsWord64</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="UnsafeAsWord64"><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeAsWord64"><span class="hs-identifier hs-var">UnsafeAsWord64</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word64"><span class="hs-identifier hs-type">Word64</span></a></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-102"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-103"></span><span>      </span><span id="local-6989586621679134195"><span id="local-6989586621679134200"><span class="annot"><span class="annottext">AsWord64 -&gt; AsWord64 -&gt; Bool
+(AsWord64 -&gt; AsWord64 -&gt; Bool)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; Bool) -&gt; Eq AsWord64
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: AsWord64 -&gt; AsWord64 -&gt; Bool
+== :: AsWord64 -&gt; AsWord64 -&gt; Bool
+$c/= :: AsWord64 -&gt; AsWord64 -&gt; Bool
+/= :: AsWord64 -&gt; AsWord64 -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
+</span><span id="line-104"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-105"></span><span>      </span><span id="local-6989586621679134207"><span id="local-6989586621679134212"><span id="local-6989586621679134216"><span id="local-6989586621679134220"><span id="local-6989586621679134224"><span id="local-6989586621679134228"><span id="local-6989586621679134232"><span class="annot"><span class="annottext">Eq AsWord64
+Eq AsWord64 =&gt;
+(AsWord64 -&gt; AsWord64 -&gt; Ordering)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; Bool)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; Bool)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; Bool)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; Bool)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; AsWord64)
+-&gt; (AsWord64 -&gt; AsWord64 -&gt; AsWord64)
+-&gt; Ord AsWord64
+AsWord64 -&gt; AsWord64 -&gt; Bool
+AsWord64 -&gt; AsWord64 -&gt; Ordering
+AsWord64 -&gt; AsWord64 -&gt; AsWord64
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+$ccompare :: AsWord64 -&gt; AsWord64 -&gt; Ordering
+compare :: AsWord64 -&gt; AsWord64 -&gt; Ordering
+$c&lt; :: AsWord64 -&gt; AsWord64 -&gt; Bool
+&lt; :: AsWord64 -&gt; AsWord64 -&gt; Bool
+$c&lt;= :: AsWord64 -&gt; AsWord64 -&gt; Bool
+&lt;= :: AsWord64 -&gt; AsWord64 -&gt; Bool
+$c&gt; :: AsWord64 -&gt; AsWord64 -&gt; Bool
+&gt; :: AsWord64 -&gt; AsWord64 -&gt; Bool
+$c&gt;= :: AsWord64 -&gt; AsWord64 -&gt; Bool
+&gt;= :: AsWord64 -&gt; AsWord64 -&gt; Bool
+$cmax :: AsWord64 -&gt; AsWord64 -&gt; AsWord64
+max :: AsWord64 -&gt; AsWord64 -&gt; AsWord64
+$cmin :: AsWord64 -&gt; AsWord64 -&gt; AsWord64
+min :: AsWord64 -&gt; AsWord64 -&gt; AsWord64
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
+</span><span id="line-106"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-107"></span><span>      </span><span id="local-6989586621679134237"><span id="local-6989586621679134242"><span class="annot"><span class="annottext">Gen AsWord64
+Gen AsWord64 -&gt; (AsWord64 -&gt; [AsWord64]) -&gt; Arbitrary AsWord64
+AsWord64 -&gt; [AsWord64]
+forall a. Gen a -&gt; (a -&gt; [a]) -&gt; Arbitrary a
+$carbitrary :: Gen AsWord64
+arbitrary :: Gen AsWord64
+$cshrink :: AsWord64 -&gt; [AsWord64]
+shrink :: AsWord64 -&gt; [AsWord64]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Arbitrary</span></span></span></span><span>
+</span><span id="line-108"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-109"></span><span>      </span><span id="local-6989586621679134247"><span class="annot"><span class="annottext">(forall b. AsWord64 -&gt; Gen b -&gt; Gen b) -&gt; CoArbitrary AsWord64
+forall b. AsWord64 -&gt; Gen b -&gt; Gen b
+forall a. (forall b. a -&gt; Gen b -&gt; Gen b) -&gt; CoArbitrary a
+$ccoarbitrary :: forall b. AsWord64 -&gt; Gen b -&gt; Gen b
+coarbitrary :: forall b. AsWord64 -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">CoArbitrary</span></span></span><span>
+</span><span id="line-110"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word64"><span class="hs-identifier hs-type">Word64</span></a></span><span>
+</span><span id="line-112"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-113"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-114"></span><span>      </span><span id="local-6989586621679134253"><span id="local-6989586621679134258"><span id="local-6989586621679134262"><span class="annot"><span class="annottext">Int -&gt; AsWord64 -&gt; ShowS
+[AsWord64] -&gt; ShowS
+AsWord64 -&gt; String
+(Int -&gt; AsWord64 -&gt; ShowS)
+-&gt; (AsWord64 -&gt; String) -&gt; ([AsWord64] -&gt; ShowS) -&gt; Show AsWord64
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; AsWord64 -&gt; ShowS
+showsPrec :: Int -&gt; AsWord64 -&gt; ShowS
+$cshow :: AsWord64 -&gt; String
+show :: AsWord64 -&gt; String
+$cshowList :: [AsWord64] -&gt; ShowS
+showList :: [AsWord64] -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
+</span><span id="line-115"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-118"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier hs-type">AsWord64</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-119"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-120"></span><span>  </span><span id="local-6989586621679134269"><span class="annot"><span class="annottext">function :: forall b. (AsWord64 -&gt; b) -&gt; AsWord64 :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(AsWord64 -&gt; Word64)
+-&gt; (Word64 -&gt; AsWord64) -&gt; (AsWord64 -&gt; b) -&gt; AsWord64 :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">AsWord64 -&gt; Word64
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; AsWord64
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#UnsafeAsWord64"><span class="hs-identifier hs-var">UnsafeAsWord64</span></a></span><span>
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span class="annot"><span class="hs-comment">{- | Read-only pattern for accessing the underlying 'Integer'. Use it just like
+you would use a data constructor in a pattern match.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-127"></span><span class="hs-keyword">pattern</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier hs-type">AsWord64</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier hs-type">AsWord64</span></a></span><span>
+</span><span id="line-128"></span><span class="hs-keyword">pattern</span><span> </span><span id="AsWord64"><span id="%24mAsWord64"><span class="annot"><span class="annottext">$mAsWord64 :: forall {r}. AsWord64 -&gt; (Integer -&gt; r) -&gt; ((# #) -&gt; r) -&gt; r
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier hs-var hs-var">AsWord64</span></a></span></span></span><span> </span><span class="annot"><a href="#local-6989586621679134271"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#fromAsWord64"><span class="hs-identifier hs-type">fromAsWord64</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621679134271"><span class="annot"><a href="#local-6989586621679134271"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span>
+</span><span id="line-130"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-131"></span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#fromAsWord64"><span class="hs-identifier hs-type">fromAsWord64</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#AsWord64"><span class="hs-identifier hs-type">AsWord64</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
+</span><span id="line-132"></span><span id="fromAsWord64"><span class="annot"><span class="annottext">fromAsWord64 :: AsWord64 -&gt; Integer
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#fromAsWord64"><span class="hs-identifier hs-var hs-var">fromAsWord64</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">(Word64 -&gt; Integer) -&gt; (AsWord64 -&gt; Word64) -&gt; AsWord64 -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. Coercible a b =&gt; a -&gt; b
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word64"><span class="hs-identifier hs-type">Word64</span></a></span><span>
+</span><span id="line-133"></span></pre></body></html>

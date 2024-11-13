@@ -1,0 +1,808 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusLedgerApi.V1.Orphans.Interval</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Word.html"><span class="hs-identifier">Data.Word</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word32"><span class="hs-identifier">Word32</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLA</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1.Interval</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Interval</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Time.html"><span class="hs-identifier">PlutusLedgerApi.V1.Orphans.Time</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shrink</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><span class="hs-identifier">Arbitrary1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">liftArbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">liftShrink</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><span class="hs-identifier">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">coarbitrary</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><span class="hs-identifier">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">function</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><span class="hs-identifier">frequency</span></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><span class="hs-identifier">functionMap</span></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><span class="hs-identifier">getNonNegative</span></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><span class="hs-identifier">oneof</span></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><span class="hs-identifier">variant</span></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="annot"><span class="hs-comment">{- | This instance does not bias the constructor choice: it is equally likely to
+produce 'PLA.Finite', 'PLA.NegInf' and 'PLA.PosInf'. Bear this in mind when
+using: in particular, the instance for 'PLA.Interval' /does not/ make use of
+this instance.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary1</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Extended</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftArbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621679135817"><span class="annot"><span class="annottext">liftArbitrary :: forall a. Gen a -&gt; Gen (Extended a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftArbitrary</span></span></span><span> </span><span id="local-6989586621679135818"><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679135818"><span class="hs-identifier hs-var">genInner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-31"></span><span>    </span><span class="annot"><span class="annottext">[Gen (Extended a)] -&gt; Gen (Extended a)
+forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">oneof</span></span><span>
+</span><span id="line-32"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Gen (Extended a)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Extended a
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span>
+</span><span id="line-33"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">a -&gt; Extended a
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Extended a) -&gt; Gen a -&gt; Gen (Extended a)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679135818"><span class="hs-identifier hs-var">genInner</span></a></span><span>
+</span><span id="line-34"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Gen (Extended a)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Extended a
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span>
+</span><span id="line-35"></span><span>      </span><span class="hs-special">]</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftShrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621679135822"><span class="annot"><span class="annottext">liftShrink :: forall a. (a -&gt; [a]) -&gt; Extended a -&gt; [Extended a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShrink</span></span></span><span> </span><span id="local-6989586621679135823"><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679135823"><span class="hs-identifier hs-var">shrinkInner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-38"></span><span>    </span><span class="annot"><span class="annottext">Extended a
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-39"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span id="local-6989586621679135824"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135824"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Extended a
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Extended a) -&gt; [a] -&gt; [Extended a]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679135823"><span class="hs-identifier hs-var">shrinkInner</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135824"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-40"></span><span>    </span><span class="annot"><span class="annottext">Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="annot"><span class="hs-comment">{- | This makes use of the 'Arbitrary1' instance of 'PLA.Extended' internally,
+and thus is subject to the same caveats.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135719"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679135719"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Extended</span></span><span> </span><span class="annot"><a href="#local-6989586621679135719"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679135832"><span class="annot"><span class="annottext">arbitrary :: Gen (Extended a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen a -&gt; Gen (Extended a)
+forall a. Gen a -&gt; Gen (Extended a)
+forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen a
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-50"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679135835"><span class="annot"><span class="annottext">shrink :: Extended a -&gt; [Extended a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; [a]) -&gt; Extended a -&gt; [Extended a]
+forall a. (a -&gt; [a]) -&gt; Extended a -&gt; [Extended a]
+forall (f :: Type -&gt; Type) a.
+Arbitrary1 f =&gt;
+(a -&gt; [a]) -&gt; f a -&gt; [f a]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135724"><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679135724"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Extended</span></span><span> </span><span class="annot"><a href="#local-6989586621679135724"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679135845"><span class="annot"><span class="annottext">coarbitrary :: forall b. Extended a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">Extended a
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span id="local-6989586621679135846"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135846"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Gen b -&gt; Gen b
+forall b. a -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135846"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span class="annot"><span class="annottext">Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-62"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135736"><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679135736"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Extended</span></span><span> </span><span class="annot"><a href="#local-6989586621679135736"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-64"></span><span>  </span><span id="local-6989586621679135855"><span class="annot"><span class="annottext">function :: forall b. (Extended a -&gt; b) -&gt; Extended a :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Extended a -&gt; Maybe (Maybe a))
+-&gt; (Maybe (Maybe a) -&gt; Extended a)
+-&gt; (Extended a -&gt; b)
+-&gt; Extended a :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Maybe (Maybe a)
+</span><a href="#local-6989586621679135856"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (Maybe a) -&gt; Extended a
+</span><a href="#local-6989586621679135857"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-66"></span><span>      </span><span class="annot"><a href="#local-6989586621679135856"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Extended</span></span><span> </span><span class="annot"><a href="#local-6989586621679135736"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679135736"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>      </span><span id="local-6989586621679135856"><span class="annot"><span class="annottext">into :: Extended a -&gt; Maybe (Maybe a)
+</span><a href="#local-6989586621679135856"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-68"></span><span>        </span><span class="annot"><span class="annottext">Extended a
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Maybe a)
+forall a. Maybe a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
+</span><span id="line-69"></span><span>        </span><span class="annot"><span class="annottext">Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; Maybe (Maybe a)
+forall a. a -&gt; Maybe a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+forall a. Maybe a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
+</span><span id="line-70"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span id="local-6989586621679135858"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135858"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; Maybe (Maybe a)
+forall a. a -&gt; Maybe a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Maybe a
+forall a. a -&gt; Maybe a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135858"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>      </span><span class="annot"><a href="#local-6989586621679135857"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679135736"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Extended</span></span><span> </span><span class="annot"><a href="#local-6989586621679135736"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-72"></span><span>      </span><span id="local-6989586621679135857"><span class="annot"><span class="annottext">outOf :: Maybe (Maybe a) -&gt; Extended a
+</span><a href="#local-6989586621679135857"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-73"></span><span>        </span><span class="annot"><span class="annottext">Maybe (Maybe a)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Extended a
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span>
+</span><span id="line-74"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Extended a
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span>
+</span><span id="line-75"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621679135859"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135859"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Extended a
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679135859"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="annot"><span class="hs-comment">{- | This makes use of the 'Arbitrary1' instance of 'PLA.Extended' internally,
+and thus is subject to the same caveats. Furthermore, in cases where it makes
+sense to talk about open and closed bounds, this instance produces open and
+closed bounds with equal probability. Keep these in mind when using this
+instance; in particular, the instance for 'PLA.Interval' /does not/ make use
+of this instance.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-86"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.LowerBound</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.POSIXTime</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621679135872"><span class="annot"><span class="annottext">arbitrary :: Gen (LowerBound POSIXTime)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679135873"><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135873"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen (Extended POSIXTime)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-90"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135873"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-91"></span><span>      </span><span class="hs-comment">-- For a finite bound, it makes sense to talk about it being open or</span><span>
+</span><span id="line-92"></span><span>      </span><span class="hs-comment">-- closed.</span><span>
+</span><span id="line-93"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; LowerBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; LowerBound a
+</span><span class="hs-identifier hs-var">PLA.LowerBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135873"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; LowerBound POSIXTime)
+-&gt; Gen Closure -&gt; Gen (LowerBound POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-94"></span><span>      </span><span class="hs-comment">-- If the bound is infinite, it _must_ be open.</span><span>
+</span><span id="line-95"></span><span>      </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime -&gt; Gen (LowerBound POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(LowerBound POSIXTime -&gt; Gen (LowerBound POSIXTime))
+-&gt; (Closure -&gt; LowerBound POSIXTime)
+-&gt; Closure
+-&gt; Gen (LowerBound POSIXTime)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; LowerBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; LowerBound a
+</span><span class="hs-identifier hs-var">PLA.LowerBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135873"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; Gen (LowerBound POSIXTime))
+-&gt; Closure -&gt; Gen (LowerBound POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span>
+</span><span id="line-96"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-97"></span><span>  </span><span id="local-6989586621679135881"><span class="annot"><span class="annottext">shrink :: LowerBound POSIXTime -&gt; [LowerBound POSIXTime]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.LowerBound</span></span><span> </span><span id="local-6989586621679135882"><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135882"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679135883"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135883"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135882"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-98"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; LowerBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; LowerBound a
+</span><span class="hs-identifier hs-var">PLA.LowerBound</span></span><span> </span><span class="annot"><span class="annottext">(Extended POSIXTime -&gt; Closure -&gt; LowerBound POSIXTime)
+-&gt; [Extended POSIXTime] -&gt; [Closure -&gt; LowerBound POSIXTime]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; [Extended POSIXTime]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135882"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">[Closure -&gt; LowerBound POSIXTime]
+-&gt; [Closure] -&gt; [LowerBound POSIXTime]
+forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+f (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Closure -&gt; [Closure]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135883"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-99"></span><span>    </span><span class="hs-comment">-- Negative or positive infinity bounds can't really shrink sensibly</span><span>
+</span><span id="line-100"></span><span>    </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-103"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135752"><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679135752"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.LowerBound</span></span><span> </span><span class="annot"><a href="#local-6989586621679135752"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-105"></span><span>  </span><span id="local-6989586621679135890"><span class="annot"><span class="annottext">coarbitrary :: forall b. LowerBound a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.LowerBound</span></span><span> </span><span id="local-6989586621679135891"><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135891"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679135892"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135892"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+forall b. Extended a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135891"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Closure -&gt; Gen b -&gt; Gen b
+forall b. Closure -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135892"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-108"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135755"><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679135755"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.LowerBound</span></span><span> </span><span class="annot"><a href="#local-6989586621679135755"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-109"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-110"></span><span>  </span><span id="local-6989586621679135901"><span class="annot"><span class="annottext">function :: forall b. (LowerBound a -&gt; b) -&gt; LowerBound a :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(LowerBound a -&gt; (Extended a, Closure))
+-&gt; ((Extended a, Closure) -&gt; LowerBound a)
+-&gt; (LowerBound a -&gt; b)
+-&gt; LowerBound a :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.LowerBound</span></span><span> </span><span id="local-6989586621679135902"><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135902"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679135903"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135903"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135902"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135903"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Extended a -&gt; Closure -&gt; LowerBound a)
+-&gt; (Extended a, Closure) -&gt; LowerBound a
+forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Closure -&gt; LowerBound a
+forall a. Extended a -&gt; Closure -&gt; LowerBound a
+</span><span class="hs-identifier hs-var">PLA.LowerBound</span></span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span class="annot"><span class="hs-comment">{- | This makes use of the 'Arbitrary1' instance of 'PLA.Extended' internally,
+and thus is subject to the same caveats. Furthermore, in cases where it makes
+sense to talk about open and closed bounds, this instance produces open and
+closed bounds with equal probability. Keep these in mind when using this
+instance; in particular, the instance for 'PLA.Interval' /does not/ make use
+of this instance.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-121"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.UpperBound</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.POSIXTime</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-122"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-123"></span><span>  </span><span id="local-6989586621679135914"><span class="annot"><span class="annottext">arbitrary :: Gen (UpperBound POSIXTime)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-124"></span><span>    </span><span id="local-6989586621679135915"><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135915"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen (Extended POSIXTime)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-125"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135915"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-126"></span><span>      </span><span class="hs-comment">-- For a finite bound, it makes sense to talk about it being open or</span><span>
+</span><span id="line-127"></span><span>      </span><span class="hs-comment">-- closed.</span><span>
+</span><span id="line-128"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135915"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; UpperBound POSIXTime)
+-&gt; Gen Closure -&gt; Gen (UpperBound POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-129"></span><span>      </span><span class="hs-comment">-- If the bound is infinite, it _must_ be open.</span><span>
+</span><span id="line-130"></span><span>      </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">UpperBound POSIXTime -&gt; Gen (UpperBound POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(UpperBound POSIXTime -&gt; Gen (UpperBound POSIXTime))
+-&gt; (Closure -&gt; UpperBound POSIXTime)
+-&gt; Closure
+-&gt; Gen (UpperBound POSIXTime)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135915"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; Gen (UpperBound POSIXTime))
+-&gt; Closure -&gt; Gen (UpperBound POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span>
+</span><span id="line-131"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-132"></span><span>  </span><span id="local-6989586621679135922"><span class="annot"><span class="annottext">shrink :: UpperBound POSIXTime -&gt; [UpperBound POSIXTime]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.UpperBound</span></span><span> </span><span id="local-6989586621679135923"><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135923"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679135924"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135924"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135923"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-133"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="annot"><span class="annottext">(Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime)
+-&gt; [Extended POSIXTime] -&gt; [Closure -&gt; UpperBound POSIXTime]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; [Extended POSIXTime]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679135923"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">[Closure -&gt; UpperBound POSIXTime]
+-&gt; [Closure] -&gt; [UpperBound POSIXTime]
+forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+f (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Closure -&gt; [Closure]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135924"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-134"></span><span>    </span><span class="hs-comment">-- Negative or positive infinity bounds can't really shrink sensibly</span><span>
+</span><span id="line-135"></span><span>    </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-136"></span><span>
+</span><span id="line-137"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-138"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135765"><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679135765"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.UpperBound</span></span><span> </span><span class="annot"><a href="#local-6989586621679135765"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-139"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-140"></span><span>  </span><span id="local-6989586621679135930"><span class="annot"><span class="annottext">coarbitrary :: forall b. UpperBound a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.UpperBound</span></span><span> </span><span id="local-6989586621679135931"><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135931"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679135932"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135932"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+forall b. Extended a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135931"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Closure -&gt; Gen b -&gt; Gen b
+forall b. Closure -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135932"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-141"></span><span>
+</span><span id="line-142"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-143"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135768"><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679135768"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.UpperBound</span></span><span> </span><span class="annot"><a href="#local-6989586621679135768"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-145"></span><span>  </span><span id="local-6989586621679135939"><span class="annot"><span class="annottext">function :: forall b. (UpperBound a -&gt; b) -&gt; UpperBound a :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(UpperBound a -&gt; (Extended a, Closure))
+-&gt; ((Extended a, Closure) -&gt; UpperBound a)
+-&gt; (UpperBound a -&gt; b)
+-&gt; UpperBound a :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.UpperBound</span></span><span> </span><span id="local-6989586621679135940"><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135940"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621679135941"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135941"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Extended a
+</span><a href="#local-6989586621679135940"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679135941"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Extended a -&gt; Closure -&gt; UpperBound a)
+-&gt; (Extended a, Closure) -&gt; UpperBound a
+forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Closure -&gt; UpperBound a
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span class="hs-special">)</span><span>
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="annot"><span class="hs-comment">{- | We provide an instance specialized to 'PLA.POSIXTime', rather than a more
+general one, as it doesn't make much sense to talk about 'PLA.Interval's of
+arbitrary types in general. Furthermore, this is the only instance we
+actually use, so there's no real loss there.
+
+This instance tries to make time intervals as fairly as possible, while also
+ensuring that they're sensibly formed. We work under the assumption of a
+32-bit epoch: while this is _technically_ not going to last much longer,
+we're safe until about 2030 on that basis, which should be enough for now.
+
+We choose not to shrink intervals, as this is surprisingly complex: in at
+least one common case, it's not even possible to write a shrinker that will
+ever 'bottom out', due to us having infinite bounds!
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-163"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135945"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Interval</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.POSIXTime</span></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-164"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-165"></span><span>  </span><span id="local-6989586621679136000"><span class="annot"><span class="annottext">arbitrary :: Gen (Interval POSIXTime)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-166"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136007"><span class="annot"><span class="annottext">epochSize :: Int
+</span><a href="#local-6989586621679136007"><span class="hs-identifier hs-var hs-var">epochSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word32 -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word32
+forall a. Bounded a =&gt; a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word32"><span class="hs-identifier hs-type">Word32</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-167"></span><span>    </span><span id="local-6989586621679136009"><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136009"><span class="hs-identifier hs-var">lowerBound</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-168"></span><span>      </span><span class="annot"><span class="annottext">[(Int, Gen (Extended POSIXTime))] -&gt; Gen (Extended POSIXTime)
+forall a. HasCallStack =&gt; [(Int, Gen a)] -&gt; Gen a
+</span><span class="hs-identifier hs-var">frequency</span></span><span>
+</span><span id="line-169"></span><span>        </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Gen (Extended POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-170"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Gen (Extended POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-171"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136007"><span class="hs-identifier hs-var">epochSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Extended POSIXTime
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">(POSIXTime -&gt; Extended POSIXTime)
+-&gt; (NonNegative POSIXTime -&gt; POSIXTime)
+-&gt; NonNegative POSIXTime
+-&gt; Extended POSIXTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative POSIXTime -&gt; POSIXTime
+forall a. NonNegative a -&gt; a
+</span><span class="hs-identifier hs-var">getNonNegative</span></span><span> </span><span class="annot"><span class="annottext">(NonNegative POSIXTime -&gt; Extended POSIXTime)
+-&gt; Gen (NonNegative POSIXTime) -&gt; Gen (Extended POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (NonNegative POSIXTime)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-172"></span><span>        </span><span class="hs-special">]</span><span>
+</span><span id="line-173"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136009"><span class="hs-identifier hs-var">lowerBound</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-174"></span><span>      </span><span class="hs-comment">-- With a finite lower bound, it makes sense to talk about an upper one</span><span>
+</span><span id="line-175"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span id="local-6989586621679136010"><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136010"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-176"></span><span>        </span><span id="local-6989586621679136011"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136011"><span class="hs-identifier hs-var">lowerClosure</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-177"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136012"><span class="annot"><span class="annottext">lower :: LowerBound POSIXTime
+</span><a href="#local-6989586621679136012"><span class="hs-identifier hs-var hs-var">lower</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; LowerBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; LowerBound a
+</span><span class="hs-identifier hs-var">PLA.LowerBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136009"><span class="hs-identifier hs-var">lowerBound</span></a></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136011"><span class="hs-identifier hs-var">lowerClosure</span></a></span><span>
+</span><span id="line-178"></span><span>        </span><span class="hs-comment">-- To ensure we generate something sensible for the upper bound, we</span><span>
+</span><span id="line-179"></span><span>        </span><span class="hs-comment">-- either generate a 'diff', or positive infinity.</span><span>
+</span><span id="line-180"></span><span>        </span><span id="local-6989586621679136013"><span class="annot"><span class="annottext">Either (Extended Any) POSIXTime
+</span><a href="#local-6989586621679136013"><span class="hs-identifier hs-var">whatUpper</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-181"></span><span>          </span><span class="annot"><span class="annottext">[(Int, Gen (Either (Extended Any) POSIXTime))]
+-&gt; Gen (Either (Extended Any) POSIXTime)
+forall a. HasCallStack =&gt; [(Int, Gen a)] -&gt; Gen a
+</span><span class="hs-identifier hs-var">frequency</span></span><span>
+</span><span id="line-182"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Either (Extended Any) POSIXTime
+-&gt; Gen (Either (Extended Any) POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Either (Extended Any) POSIXTime
+ -&gt; Gen (Either (Extended Any) POSIXTime))
+-&gt; (Extended Any -&gt; Either (Extended Any) POSIXTime)
+-&gt; Extended Any
+-&gt; Gen (Either (Extended Any) POSIXTime)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Extended Any -&gt; Either (Extended Any) POSIXTime
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">(Extended Any -&gt; Gen (Either (Extended Any) POSIXTime))
+-&gt; Extended Any -&gt; Gen (Either (Extended Any) POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Extended Any
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-183"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136007"><span class="hs-identifier hs-var">epochSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Either (Extended Any) POSIXTime
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(POSIXTime -&gt; Either (Extended Any) POSIXTime)
+-&gt; (NonNegative POSIXTime -&gt; POSIXTime)
+-&gt; NonNegative POSIXTime
+-&gt; Either (Extended Any) POSIXTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative POSIXTime -&gt; POSIXTime
+forall a. NonNegative a -&gt; a
+</span><span class="hs-identifier hs-var">getNonNegative</span></span><span> </span><span class="annot"><span class="annottext">(NonNegative POSIXTime -&gt; Either (Extended Any) POSIXTime)
+-&gt; Gen (NonNegative POSIXTime)
+-&gt; Gen (Either (Extended Any) POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (NonNegative POSIXTime)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-184"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-185"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either (Extended Any) POSIXTime
+</span><a href="#local-6989586621679136013"><span class="hs-identifier hs-var">whatUpper</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-186"></span><span>          </span><span class="hs-comment">-- If we have an infinite upper bound, we know it will be open.</span><span>
+</span><span id="line-187"></span><span>          </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="annot"><span class="annottext">Extended Any
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-188"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136014"><span class="annot"><span class="annottext">upper :: UpperBound a
+</span><a href="#local-6989586621679136014"><span class="hs-identifier hs-var hs-var">upper</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Extended a -&gt; Closure -&gt; UpperBound a
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="annot"><span class="annottext">Extended a
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span>
+</span><span id="line-189"></span><span>            </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Interval POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; (UpperBound POSIXTime -&gt; Interval POSIXTime)
+-&gt; UpperBound POSIXTime
+-&gt; Gen (Interval POSIXTime)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime -&gt; UpperBound POSIXTime -&gt; Interval POSIXTime
+forall a. LowerBound a -&gt; UpperBound a -&gt; Interval a
+</span><span class="hs-identifier hs-var">PLA.Interval</span></span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime
+</span><a href="#local-6989586621679136012"><span class="hs-identifier hs-var">lower</span></a></span><span> </span><span class="annot"><span class="annottext">(UpperBound POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; UpperBound POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">UpperBound POSIXTime
+forall {a}. UpperBound a
+</span><a href="#local-6989586621679136014"><span class="hs-identifier hs-var">upper</span></a></span><span>
+</span><span id="line-190"></span><span>          </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679136015"><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136015"><span class="hs-identifier hs-var">diff</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136015"><span class="hs-identifier hs-var">diff</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136011"><span class="hs-identifier hs-var">lowerClosure</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-191"></span><span>            </span><span class="hs-comment">-- A diff of 0 means we can only have a singleton closure sensibly.</span><span>
+</span><span id="line-192"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Interval POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; (POSIXTime -&gt; Interval POSIXTime)
+-&gt; POSIXTime
+-&gt; Gen (Interval POSIXTime)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Interval POSIXTime
+forall a. a -&gt; Interval a
+</span><span class="hs-identifier hs-var">Interval.singleton</span></span><span> </span><span class="annot"><span class="annottext">(POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136010"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-193"></span><span>            </span><span class="hs-comment">-- A diff of 1 with an open lower bound means we either have a</span><span>
+</span><span id="line-194"></span><span>            </span><span class="hs-comment">-- singleton closure or an empty one.</span><span>
+</span><span id="line-195"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-196"></span><span>              </span><span id="local-6989586621679136017"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136017"><span class="hs-identifier hs-var">upperClosure</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-197"></span><span>              </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Interval POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-198"></span><span>                </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136017"><span class="hs-identifier hs-var">upperClosure</span></a></span><span>
+</span><span id="line-199"></span><span>                  </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Interval POSIXTime
+forall a. a -&gt; Interval a
+</span><span class="hs-identifier hs-var">Interval.singleton</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136010"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-200"></span><span>                  </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Interval POSIXTime
+forall a. Interval a
+</span><span class="hs-identifier hs-var">Interval.never</span></span><span>
+</span><span id="line-201"></span><span>            </span><span class="hs-comment">-- A diff of 1 with a closed lower bound is either a singleton</span><span>
+</span><span id="line-202"></span><span>            </span><span class="hs-comment">-- closure or one with two values.</span><span>
+</span><span id="line-203"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#True"><span class="hs-identifier hs-var">True</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-204"></span><span>              </span><span id="local-6989586621679136019"><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136019"><span class="hs-identifier hs-var">upperClosure</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-205"></span><span>              </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Interval POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-206"></span><span>                </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136019"><span class="hs-identifier hs-var">upperClosure</span></a></span><span>
+</span><span id="line-207"></span><span>                  </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime -&gt; UpperBound POSIXTime -&gt; Interval POSIXTime
+forall a. LowerBound a -&gt; UpperBound a -&gt; Interval a
+</span><span class="hs-identifier hs-var">PLA.Interval</span></span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime
+</span><a href="#local-6989586621679136012"><span class="hs-identifier hs-var">lower</span></a></span><span> </span><span class="annot"><span class="annottext">(UpperBound POSIXTime -&gt; Interval POSIXTime)
+-&gt; (Closure -&gt; UpperBound POSIXTime)
+-&gt; Closure
+-&gt; Interval POSIXTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime -&gt; Extended POSIXTime
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136010"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; POSIXTime -&gt; POSIXTime
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136015"><span class="hs-identifier hs-var">diff</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; Interval POSIXTime) -&gt; Closure -&gt; Interval POSIXTime
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="#local-6989586621679136019"><span class="hs-identifier hs-var">upperClosure</span></a></span><span>
+</span><span id="line-208"></span><span>                  </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Interval POSIXTime
+forall a. a -&gt; Interval a
+</span><span class="hs-identifier hs-var">Interval.singleton</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136010"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-209"></span><span>            </span><span class="hs-comment">-- A diff bigger than 1 can be treated uniformly.</span><span>
+</span><span id="line-210"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Closure
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime -&gt; UpperBound POSIXTime -&gt; Interval POSIXTime
+forall a. LowerBound a -&gt; UpperBound a -&gt; Interval a
+</span><span class="hs-identifier hs-var">PLA.Interval</span></span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime
+</span><a href="#local-6989586621679136012"><span class="hs-identifier hs-var">lower</span></a></span><span> </span><span class="annot"><span class="annottext">(UpperBound POSIXTime -&gt; Interval POSIXTime)
+-&gt; (Closure -&gt; UpperBound POSIXTime)
+-&gt; Closure
+-&gt; Interval POSIXTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime -&gt; Extended POSIXTime
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136010"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; POSIXTime -&gt; POSIXTime
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><a href="#local-6989586621679136015"><span class="hs-identifier hs-var">diff</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; Interval POSIXTime)
+-&gt; Gen Closure -&gt; Gen (Interval POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-211"></span><span>      </span><span class="hs-comment">-- With an negative infinite lower bound, we know it will be open.</span><span>
+</span><span id="line-212"></span><span>      </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier hs-var">PLA.NegInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-213"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136021"><span class="annot"><span class="annottext">lower :: LowerBound POSIXTime
+</span><a href="#local-6989586621679136021"><span class="hs-identifier hs-var hs-var">lower</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; LowerBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; LowerBound a
+</span><span class="hs-identifier hs-var">PLA.LowerBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136009"><span class="hs-identifier hs-var">lowerBound</span></a></span><span> </span><span class="annot"><span class="annottext">Closure
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span>
+</span><span id="line-214"></span><span>        </span><span class="hs-comment">-- To ensure we generate something sensible for the upper bound, we</span><span>
+</span><span id="line-215"></span><span>        </span><span class="hs-comment">-- do not attempt to generate NegInf</span><span>
+</span><span id="line-216"></span><span>        </span><span id="local-6989586621679136022"><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136022"><span class="hs-identifier hs-var">upperBound</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-217"></span><span>          </span><span class="annot"><span class="annottext">[(Int, Gen (Extended POSIXTime))] -&gt; Gen (Extended POSIXTime)
+forall a. HasCallStack =&gt; [(Int, Gen a)] -&gt; Gen a
+</span><span class="hs-identifier hs-var">frequency</span></span><span>
+</span><span id="line-218"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Gen (Extended POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+forall a. Extended a
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-219"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136007"><span class="hs-identifier hs-var">epochSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">POSIXTime -&gt; Extended POSIXTime
+forall a. a -&gt; Extended a
+</span><span class="hs-identifier hs-var">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">(POSIXTime -&gt; Extended POSIXTime)
+-&gt; (NonNegative POSIXTime -&gt; POSIXTime)
+-&gt; NonNegative POSIXTime
+-&gt; Extended POSIXTime
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative POSIXTime -&gt; POSIXTime
+forall a. NonNegative a -&gt; a
+</span><span class="hs-identifier hs-var">getNonNegative</span></span><span> </span><span class="annot"><span class="annottext">(NonNegative POSIXTime -&gt; Extended POSIXTime)
+-&gt; Gen (NonNegative POSIXTime) -&gt; Gen (Extended POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (NonNegative POSIXTime)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-220"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-221"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136022"><span class="hs-identifier hs-var">upperBound</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-222"></span><span>          </span><span class="hs-comment">-- With a finite upper bound, we just choose a closure and move on.</span><span>
+</span><span id="line-223"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">PLA.Finite</span></span><span> </span><span class="annot"><span class="annottext">POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-224"></span><span>            </span><span id="local-6989586621679136023"><span class="annot"><span class="annottext">UpperBound POSIXTime
+</span><a href="#local-6989586621679136023"><span class="hs-identifier hs-var">upper</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime -&gt; Closure -&gt; UpperBound POSIXTime
+forall a. Extended a -&gt; Closure -&gt; UpperBound a
+</span><span class="hs-identifier hs-var">PLA.UpperBound</span></span><span> </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><a href="#local-6989586621679136022"><span class="hs-identifier hs-var">upperBound</span></a></span><span> </span><span class="annot"><span class="annottext">(Closure -&gt; UpperBound POSIXTime)
+-&gt; Gen Closure -&gt; Gen (UpperBound POSIXTime)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Closure
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-225"></span><span>            </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Interval POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; (UpperBound POSIXTime -&gt; Interval POSIXTime)
+-&gt; UpperBound POSIXTime
+-&gt; Gen (Interval POSIXTime)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime -&gt; UpperBound POSIXTime -&gt; Interval POSIXTime
+forall a. LowerBound a -&gt; UpperBound a -&gt; Interval a
+</span><span class="hs-identifier hs-var">PLA.Interval</span></span><span> </span><span class="annot"><span class="annottext">LowerBound POSIXTime
+</span><a href="#local-6989586621679136021"><span class="hs-identifier hs-var">lower</span></a></span><span> </span><span class="annot"><span class="annottext">(UpperBound POSIXTime -&gt; Gen (Interval POSIXTime))
+-&gt; UpperBound POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">UpperBound POSIXTime
+</span><a href="#local-6989586621679136023"><span class="hs-identifier hs-var">upper</span></a></span><span>
+</span><span id="line-226"></span><span>          </span><span class="hs-comment">-- With an infinite upper bound, we have the range that includes</span><span>
+</span><span id="line-227"></span><span>          </span><span class="hs-comment">-- everything. We use the canonical choice provided by</span><span>
+</span><span id="line-228"></span><span>          </span><span class="hs-comment">-- Interval.always.</span><span>
+</span><span id="line-229"></span><span>          </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Interval POSIXTime
+forall a. Interval a
+</span><span class="hs-identifier hs-var">Interval.always</span></span><span>
+</span><span id="line-230"></span><span>      </span><span class="hs-comment">-- With an positive infinite lower bound, we have the empty interval, and</span><span>
+</span><span id="line-231"></span><span>      </span><span class="hs-comment">-- can choose any representation of such that we like. We use the</span><span>
+</span><span id="line-232"></span><span>      </span><span class="hs-comment">-- canonical choice provided by Interval.never.</span><span>
+</span><span id="line-233"></span><span>      </span><span class="annot"><span class="annottext">Extended POSIXTime
+</span><span class="hs-identifier hs-var">PLA.PosInf</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Interval POSIXTime -&gt; Gen (Interval POSIXTime)
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Interval POSIXTime
+forall a. Interval a
+</span><span class="hs-identifier hs-var">Interval.never</span></span><span>
+</span><span id="line-234"></span><span>
+</span><span id="line-235"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-236"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135786"><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679135786"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Interval</span></span><span> </span><span class="annot"><a href="#local-6989586621679135786"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-237"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-238"></span><span>  </span><span id="local-6989586621679136030"><span class="annot"><span class="annottext">coarbitrary :: forall b. Interval a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Interval</span></span><span> </span><span id="local-6989586621679136031"><span class="annot"><span class="annottext">LowerBound a
+</span><a href="#local-6989586621679136031"><span class="hs-identifier hs-var">lower</span></a></span></span><span> </span><span id="local-6989586621679136032"><span class="annot"><span class="annottext">UpperBound a
+</span><a href="#local-6989586621679136032"><span class="hs-identifier hs-var">upper</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">LowerBound a -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+forall b. LowerBound a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">LowerBound a
+</span><a href="#local-6989586621679136031"><span class="hs-identifier hs-var">lower</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">UpperBound a -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+forall b. UpperBound a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">UpperBound a
+</span><a href="#local-6989586621679136032"><span class="hs-identifier hs-var">upper</span></a></span><span>
+</span><span id="line-239"></span><span>
+</span><span id="line-240"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-241"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679135789"><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679135789"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Interval</span></span><span> </span><span class="annot"><a href="#local-6989586621679135789"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-242"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-243"></span><span>  </span><span id="local-6989586621679136039"><span class="annot"><span class="annottext">function :: forall b. (Interval a -&gt; b) -&gt; Interval a :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Interval a -&gt; (LowerBound a, UpperBound a))
+-&gt; ((LowerBound a, UpperBound a) -&gt; Interval a)
+-&gt; (Interval a -&gt; b)
+-&gt; Interval a :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Interval</span></span><span> </span><span id="local-6989586621679136040"><span class="annot"><span class="annottext">LowerBound a
+</span><a href="#local-6989586621679136040"><span class="hs-identifier hs-var">lower</span></a></span></span><span> </span><span id="local-6989586621679136041"><span class="annot"><span class="annottext">UpperBound a
+</span><a href="#local-6989586621679136041"><span class="hs-identifier hs-var">upper</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">LowerBound a
+</span><a href="#local-6989586621679136040"><span class="hs-identifier hs-var">lower</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">UpperBound a
+</span><a href="#local-6989586621679136041"><span class="hs-identifier hs-var">upper</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(LowerBound a -&gt; UpperBound a -&gt; Interval a)
+-&gt; (LowerBound a, UpperBound a) -&gt; Interval a
+forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="annot"><span class="annottext">LowerBound a -&gt; UpperBound a -&gt; Interval a
+forall a. LowerBound a -&gt; UpperBound a -&gt; Interval a
+</span><span class="hs-identifier hs-var">PLA.Interval</span></span><span class="hs-special">)</span><span>
+</span><span id="line-244"></span></pre></body></html>

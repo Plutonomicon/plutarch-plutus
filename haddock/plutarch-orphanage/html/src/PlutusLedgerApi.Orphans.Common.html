@@ -1,0 +1,1408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusLedgerApi.Orphans.Common</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier">Blake2b256Hash</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier">Blake2b244Hash</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#getBlake2b256Hash"><span class="hs-identifier">getBlake2b256Hash</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#getBlake2b244Hash"><span class="hs-identifier">getBlake2b244Hash</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier">UnsortedAssocMap</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#getUnsortedAssocMap"><span class="hs-identifier">getUnsortedAssocMap</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.html"><span class="hs-identifier">Data.Set</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Set</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html"><span class="hs-identifier">PlutusLedgerApi.QuickCheck.Utils</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier">unSizedByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusPrelude</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Pretty</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.AssocMap</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">AssocMap</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Builtins</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Builtins</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Prelude</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shrink</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><span class="hs-identifier">Arbitrary1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">liftArbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">liftShrink</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><span class="hs-identifier">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">coarbitrary</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span>  </span><span class="annot"><span class="hs-identifier">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">function</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-26"></span><span>  </span><span class="annot"><span class="hs-identifier">Gen</span></span><span class="hs-special">,</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><span class="hs-identifier">NonNegative</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NonNegative</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-28"></span><span>  </span><span class="annot"><span class="hs-identifier">functionMap</span></span><span class="hs-special">,</span><span>
+</span><span id="line-29"></span><span>  </span><span class="annot"><span class="hs-identifier">getNonNegative</span></span><span class="hs-special">,</span><span>
+</span><span id="line-30"></span><span>  </span><span class="annot"><span class="hs-identifier">liftArbitrary</span></span><span class="hs-special">,</span><span>
+</span><span id="line-31"></span><span>  </span><span class="annot"><span class="hs-identifier">oneof</span></span><span class="hs-special">,</span><span>
+</span><span id="line-32"></span><span>  </span><span class="annot"><span class="hs-identifier">scale</span></span><span class="hs-special">,</span><span>
+</span><span id="line-33"></span><span>  </span><span class="annot"><span class="hs-identifier">shuffle</span></span><span class="hs-special">,</span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><span class="hs-identifier">sized</span></span><span class="hs-special">,</span><span>
+</span><span id="line-35"></span><span>  </span><span class="annot"><span class="hs-identifier">variant</span></span><span class="hs-special">,</span><span>
+</span><span id="line-36"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-41"></span><span>  </span><span id="local-6989586621679134477"><span class="annot"><span class="annottext">arbitrary :: Gen BuiltinByteString
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
+</span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
+-&gt; Gen ByteString -&gt; Gen BuiltinByteString
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen ByteString
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-43"></span><span>  </span><span id="local-6989586621679134486"><span class="annot"><span class="annottext">shrink :: BuiltinByteString -&gt; [BuiltinByteString]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
+-&gt; [ByteString] -&gt; [BuiltinByteString]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
+</span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([ByteString] -&gt; [BuiltinByteString])
+-&gt; (BuiltinByteString -&gt; [ByteString])
+-&gt; BuiltinByteString
+-&gt; [BuiltinByteString]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; [ByteString])
+-&gt; (BuiltinByteString -&gt; ByteString)
+-&gt; BuiltinByteString
+-&gt; [ByteString]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ByteString
+BuiltinByteString -&gt; FromBuiltin BuiltinByteString
+forall arep. HasFromBuiltin arep =&gt; arep -&gt; FromBuiltin arep
+</span><span class="hs-identifier hs-var">PlutusTx.fromBuiltin</span></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679134495"><span class="annot"><span class="annottext">coarbitrary :: forall b. BuiltinByteString -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Gen b -&gt; Gen b
+forall b. ByteString -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Gen b -&gt; Gen b)
+-&gt; (BuiltinByteString -&gt; ByteString)
+-&gt; BuiltinByteString
+-&gt; Gen b
+-&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ByteString
+BuiltinByteString -&gt; FromBuiltin BuiltinByteString
+forall arep. HasFromBuiltin arep =&gt; arep -&gt; FromBuiltin arep
+</span><span class="hs-identifier hs-var">PlutusTx.fromBuiltin</span></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-53"></span><span>  </span><span id="local-6989586621679134503"><span class="annot"><span class="annottext">function :: forall b. (BuiltinByteString -&gt; b) -&gt; BuiltinByteString :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; ByteString)
+-&gt; (ByteString -&gt; BuiltinByteString)
+-&gt; (BuiltinByteString -&gt; b)
+-&gt; BuiltinByteString :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ByteString
+BuiltinByteString -&gt; FromBuiltin BuiltinByteString
+forall arep. HasFromBuiltin arep =&gt; arep -&gt; FromBuiltin arep
+</span><span class="hs-identifier hs-var">PlutusTx.fromBuiltin</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
+</span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span class="annot"><span class="hs-comment">{- | Wrapper for BLAKE2b-244 hashes for convenience.
+@since
+-}</span></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">newtype</span><span> </span><span id="Blake2b244Hash"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-var">Blake2b244Hash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Blake2b244Hash"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-var">Blake2b244Hash</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134506"><span id="local-6989586621679134511"><span class="annot"><span class="annottext">Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+(Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool) -&gt; Eq Blake2b244Hash
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+== :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+$c/= :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+/= :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134519"><span id="local-6989586621679134524"><span id="local-6989586621679134528"><span id="local-6989586621679134532"><span id="local-6989586621679134536"><span id="local-6989586621679134540"><span id="local-6989586621679134544"><span class="annot"><span class="annottext">Eq Blake2b244Hash
+Eq Blake2b244Hash =&gt;
+(Blake2b244Hash -&gt; Blake2b244Hash -&gt; Ordering)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash)
+-&gt; (Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash)
+-&gt; Ord Blake2b244Hash
+Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+Blake2b244Hash -&gt; Blake2b244Hash -&gt; Ordering
+Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+$ccompare :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Ordering
+compare :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Ordering
+$c&lt; :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+&lt; :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+$c&lt;= :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+&lt;= :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+$c&gt; :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+&gt; :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+$c&gt;= :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+&gt;= :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Bool
+$cmax :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash
+max :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash
+$cmin :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash
+min :: Blake2b244Hash -&gt; Blake2b244Hash -&gt; Blake2b244Hash
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134550"><span id="local-6989586621679134556"><span id="local-6989586621679134560"><span class="annot"><span class="annottext">Int -&gt; Blake2b244Hash -&gt; ShowS
+[Blake2b244Hash] -&gt; ShowS
+Blake2b244Hash -&gt; String
+(Int -&gt; Blake2b244Hash -&gt; ShowS)
+-&gt; (Blake2b244Hash -&gt; String)
+-&gt; ([Blake2b244Hash] -&gt; ShowS)
+-&gt; Show Blake2b244Hash
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Blake2b244Hash -&gt; ShowS
+showsPrec :: Int -&gt; Blake2b244Hash -&gt; ShowS
+$cshow :: Blake2b244Hash -&gt; String
+show :: Blake2b244Hash -&gt; String
+$cshowList :: [Blake2b244Hash] -&gt; ShowS
+showList :: [Blake2b244Hash] -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="hs-comment">-- No shrinker, as it doesn't make much sense to.</span><span>
+</span><span id="line-63"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134565"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679134573"><span class="annot"><span class="annottext">arbitrary :: Gen Blake2b244Hash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-66"></span><span>    </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; Blake2b244Hash
+</span><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-var">Blake2b244Hash</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; Blake2b244Hash)
+-&gt; (SizedByteString 28 -&gt; BuiltinByteString)
+-&gt; SizedByteString 28
+-&gt; Blake2b244Hash
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
+</span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
+-&gt; (SizedByteString 28 -&gt; ByteString)
+-&gt; SizedByteString 28
+-&gt; BuiltinByteString
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat). SizedByteString n -&gt; ByteString
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier hs-var">unSizedByteString</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">28</span></span><span> </span><span class="annot"><span class="annottext">(SizedByteString 28 -&gt; Blake2b244Hash)
+-&gt; Gen (SizedByteString 28) -&gt; Gen Blake2b244Hash
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (SizedByteString 28)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-67"></span><span>
+</span><span id="line-68"></span><span id="local-6989586621679134575"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span></span><span>
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#getBlake2b244Hash"><span class="hs-identifier hs-type">getBlake2b244Hash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-71"></span><span id="getBlake2b244Hash"><span class="annot"><span class="annottext">getBlake2b244Hash :: Blake2b244Hash -&gt; BuiltinByteString
+</span><a href="PlutusLedgerApi.Orphans.Common.html#getBlake2b244Hash"><span class="hs-identifier hs-var hs-var">getBlake2b244Hash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Blake2b244Hash -&gt; BuiltinByteString
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="hs-comment">-- Wrapper for BLAKE2b-256 hashes for convenience.</span><span>
+</span><span id="line-74"></span><span class="hs-keyword">newtype</span><span> </span><span id="Blake2b256Hash"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-var">Blake2b256Hash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Blake2b256Hash"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-var">Blake2b256Hash</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-75"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134581"><span id="local-6989586621679134585"><span class="annot"><span class="annottext">Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+(Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool) -&gt; Eq Blake2b256Hash
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+== :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+$c/= :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+/= :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134592"><span id="local-6989586621679134596"><span id="local-6989586621679134600"><span id="local-6989586621679134604"><span id="local-6989586621679134608"><span id="local-6989586621679134612"><span id="local-6989586621679134616"><span class="annot"><span class="annottext">Eq Blake2b256Hash
+Eq Blake2b256Hash =&gt;
+(Blake2b256Hash -&gt; Blake2b256Hash -&gt; Ordering)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash)
+-&gt; (Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash)
+-&gt; Ord Blake2b256Hash
+Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+Blake2b256Hash -&gt; Blake2b256Hash -&gt; Ordering
+Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+$ccompare :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Ordering
+compare :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Ordering
+$c&lt; :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+&lt; :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+$c&lt;= :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+&lt;= :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+$c&gt; :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+&gt; :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+$c&gt;= :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+&gt;= :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Bool
+$cmax :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash
+max :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash
+$cmin :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash
+min :: Blake2b256Hash -&gt; Blake2b256Hash -&gt; Blake2b256Hash
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134621"><span id="local-6989586621679134625"><span id="local-6989586621679134629"><span class="annot"><span class="annottext">Int -&gt; Blake2b256Hash -&gt; ShowS
+[Blake2b256Hash] -&gt; ShowS
+Blake2b256Hash -&gt; String
+(Int -&gt; Blake2b256Hash -&gt; ShowS)
+-&gt; (Blake2b256Hash -&gt; String)
+-&gt; ([Blake2b256Hash] -&gt; ShowS)
+-&gt; Show Blake2b256Hash
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Blake2b256Hash -&gt; ShowS
+showsPrec :: Int -&gt; Blake2b256Hash -&gt; ShowS
+$cshow :: Blake2b256Hash -&gt; String
+show :: Blake2b256Hash -&gt; String
+$cshowList :: [Blake2b256Hash] -&gt; ShowS
+showList :: [Blake2b256Hash] -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-comment">-- No shrinker, as it doesn't make much sense to.</span><span>
+</span><span id="line-79"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134633"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-81"></span><span>  </span><span id="local-6989586621679134640"><span class="annot"><span class="annottext">arbitrary :: Gen Blake2b256Hash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-82"></span><span>    </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; Blake2b256Hash
+</span><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-var">Blake2b256Hash</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; Blake2b256Hash)
+-&gt; (SizedByteString 32 -&gt; BuiltinByteString)
+-&gt; SizedByteString 32
+-&gt; Blake2b256Hash
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
+</span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
+-&gt; (SizedByteString 32 -&gt; ByteString)
+-&gt; SizedByteString 32
+-&gt; BuiltinByteString
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall (n :: Nat). SizedByteString n -&gt; ByteString
+</span><a href="PlutusLedgerApi.QuickCheck.Utils.html#unSizedByteString"><span class="hs-identifier hs-var">unSizedByteString</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">32</span></span><span> </span><span class="annot"><span class="annottext">(SizedByteString 32 -&gt; Blake2b256Hash)
+-&gt; Gen (SizedByteString 32) -&gt; Gen Blake2b256Hash
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (SizedByteString 32)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span id="local-6989586621679134642"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span></span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#getBlake2b256Hash"><span class="hs-identifier hs-type">getBlake2b256Hash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-87"></span><span id="getBlake2b256Hash"><span class="annot"><span class="annottext">getBlake2b256Hash :: Blake2b256Hash -&gt; BuiltinByteString
+</span><a href="PlutusLedgerApi.Orphans.Common.html#getBlake2b256Hash"><span class="hs-identifier hs-var hs-var">getBlake2b256Hash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Blake2b256Hash -&gt; BuiltinByteString
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="annot"><span class="hs-comment">{- | This is a very general instance, able to produce 'PlutusTx.BuiltinData' of
+basically any shape. You probably want something more focused than this.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-94"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-95"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621679134682"><span class="annot"><span class="annottext">arbitrary :: Gen BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Gen BuiltinData) -&gt; Gen BuiltinData
+forall a. (Int -&gt; Gen a) -&gt; Gen a
+</span><span class="hs-identifier hs-var">sized</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Gen BuiltinData) -&gt; Gen BuiltinData)
+-&gt; (Int -&gt; Gen BuiltinData) -&gt; Gen BuiltinData
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679134683"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679134683"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen BuiltinData
+</span><a href="#local-6989586621679134684"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679134683"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><span id="line-97"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-98"></span><span>      </span><span class="annot"><a href="#local-6989586621679134685"><span class="hs-identifier hs-type">scaleDown</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134328"><span class="annot"><a href="#local-6989586621679134328"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="#local-6989586621679134328"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="#local-6989586621679134328"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-99"></span><span>      </span><span id="local-6989586621679134685"><span class="annot"><span class="annottext">scaleDown :: forall a. Gen a -&gt; Gen a
+</span><a href="#local-6989586621679134685"><span class="hs-identifier hs-var hs-var">scaleDown</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int) -&gt; Gen a -&gt; Gen a
+forall a. (Int -&gt; Int) -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">scale</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#quot"><span class="hs-operator hs-var">`quot`</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">4</span></span><span class="hs-special">)</span><span>
+</span><span id="line-100"></span><span>      </span><span class="annot"><a href="#local-6989586621679134684"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-101"></span><span>      </span><span id="local-6989586621679134684"><span class="annot"><span class="annottext">go :: Int -&gt; Gen BuiltinData
+</span><a href="#local-6989586621679134684"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679134690"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679134690"><span class="hs-identifier hs-var">size</span></a></span></span><span>
+</span><span id="line-102"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679134690"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Gen BuiltinData] -&gt; Gen BuiltinData
+forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">oneof</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134692"><span class="hs-identifier hs-var">genB</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134693"><span class="hs-identifier hs-var">genI</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-103"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#otherwise"><span class="hs-identifier hs-var">otherwise</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Gen BuiltinData] -&gt; Gen BuiltinData
+forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
+</span><span class="hs-identifier hs-var">oneof</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134692"><span class="hs-identifier hs-var">genB</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134693"><span class="hs-identifier hs-var">genI</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134694"><span class="hs-identifier hs-var">genConstr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134695"><span class="hs-identifier hs-var">genList</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+</span><a href="#local-6989586621679134696"><span class="hs-identifier hs-var">genMap</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-104"></span><span>      </span><span class="annot"><a href="#local-6989586621679134692"><span class="hs-identifier hs-type">genB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-105"></span><span>      </span><span id="local-6989586621679134692"><span class="annot"><span class="annottext">genB :: Gen BuiltinData
+</span><a href="#local-6989586621679134692"><span class="hs-identifier hs-var hs-var">genB</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkB</span></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; BuiltinData)
+-&gt; Gen BuiltinByteString -&gt; Gen BuiltinData
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen BuiltinByteString
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-106"></span><span>      </span><span class="annot"><a href="#local-6989586621679134693"><span class="hs-identifier hs-type">genI</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-107"></span><span>      </span><span id="local-6989586621679134693"><span class="annot"><span class="annottext">genI :: Gen BuiltinData
+</span><a href="#local-6989586621679134693"><span class="hs-identifier hs-var hs-var">genI</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkI</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; BuiltinData) -&gt; Gen Integer -&gt; Gen BuiltinData
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Integer
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-108"></span><span>      </span><span class="annot"><a href="#local-6989586621679134694"><span class="hs-identifier hs-type">genConstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-109"></span><span>      </span><span id="local-6989586621679134694"><span class="annot"><span class="annottext">genConstr :: Gen BuiltinData
+</span><a href="#local-6989586621679134694"><span class="hs-identifier hs-var hs-var">genConstr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-110"></span><span>        </span><span class="annot"><span class="annottext">Integer -&gt; [BuiltinData] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkConstr</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; [BuiltinData] -&gt; BuiltinData)
+-&gt; (NonNegative Integer -&gt; Integer)
+-&gt; NonNegative Integer
+-&gt; [BuiltinData]
+-&gt; BuiltinData
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative Integer -&gt; Integer
+forall a. NonNegative a -&gt; a
+</span><span class="hs-identifier hs-var">getNonNegative</span></span><span>
+</span><span id="line-111"></span><span>          </span><span class="annot"><span class="annottext">(NonNegative Integer -&gt; [BuiltinData] -&gt; BuiltinData)
+-&gt; Gen (NonNegative Integer) -&gt; Gen ([BuiltinData] -&gt; BuiltinData)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (NonNegative Integer)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-112"></span><span>          </span><span class="annot"><span class="annottext">Gen ([BuiltinData] -&gt; BuiltinData)
+-&gt; Gen [BuiltinData] -&gt; Gen BuiltinData
+forall a b. Gen (a -&gt; b) -&gt; Gen a -&gt; Gen b
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+f (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen [BuiltinData] -&gt; Gen [BuiltinData]
+forall a. Gen a -&gt; Gen a
+</span><a href="#local-6989586621679134685"><span class="hs-identifier hs-var">scaleDown</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen BuiltinData -&gt; Gen [BuiltinData]
+forall a. Gen a -&gt; Gen [a]
+forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-113"></span><span>      </span><span class="annot"><a href="#local-6989586621679134695"><span class="hs-identifier hs-type">genList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-114"></span><span>      </span><span id="local-6989586621679134695"><span class="annot"><span class="annottext">genList :: Gen BuiltinData
+</span><a href="#local-6989586621679134695"><span class="hs-identifier hs-var hs-var">genList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-115"></span><span>        </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkList</span></span><span> </span><span class="annot"><span class="annottext">([BuiltinData] -&gt; BuiltinData)
+-&gt; Gen [BuiltinData] -&gt; Gen BuiltinData
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen [BuiltinData] -&gt; Gen [BuiltinData]
+forall a. Gen a -&gt; Gen a
+</span><a href="#local-6989586621679134685"><span class="hs-identifier hs-var">scaleDown</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen BuiltinData -&gt; Gen [BuiltinData]
+forall a. Gen a -&gt; Gen [a]
+forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-116"></span><span>      </span><span class="annot"><a href="#local-6989586621679134696"><span class="hs-identifier hs-type">genMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-117"></span><span>      </span><span id="local-6989586621679134696"><span class="annot"><span class="annottext">genMap :: Gen BuiltinData
+</span><a href="#local-6989586621679134696"><span class="hs-identifier hs-var hs-var">genMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-118"></span><span>        </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkMap</span></span><span> </span><span class="annot"><span class="annottext">([(BuiltinData, BuiltinData)] -&gt; BuiltinData)
+-&gt; Gen [(BuiltinData, BuiltinData)] -&gt; Gen BuiltinData
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen [(BuiltinData, BuiltinData)]
+-&gt; Gen [(BuiltinData, BuiltinData)]
+forall a. Gen a -&gt; Gen a
+</span><a href="#local-6989586621679134685"><span class="hs-identifier hs-var">scaleDown</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen (BuiltinData, BuiltinData) -&gt; Gen [(BuiltinData, BuiltinData)]
+forall a. Gen a -&gt; Gen [a]
+forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(BuiltinData -&gt; BuiltinData -&gt; (BuiltinData, BuiltinData))
+-&gt; Gen BuiltinData
+-&gt; Gen (BuiltinData -&gt; (BuiltinData, BuiltinData))
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen (BuiltinData -&gt; (BuiltinData, BuiltinData))
+-&gt; Gen BuiltinData -&gt; Gen (BuiltinData, BuiltinData)
+forall a b. Gen (a -&gt; b) -&gt; Gen a -&gt; Gen b
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+f (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen BuiltinData
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-120"></span><span>  </span><span id="local-6989586621679134724"><span class="annot"><span class="annottext">shrink :: BuiltinData -&gt; [BuiltinData]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span id="local-6989586621679134725"><span class="annot"><span class="annottext">BuiltinData
+</span><a href="#local-6989586621679134725"><span class="hs-identifier hs-var">dat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-121"></span><span>    </span><span class="annot"><span class="annottext">BuiltinData
+-&gt; (Integer -&gt; [BuiltinData] -&gt; [BuiltinData])
+-&gt; ([(BuiltinData, BuiltinData)] -&gt; [BuiltinData])
+-&gt; ([BuiltinData] -&gt; [BuiltinData])
+-&gt; (Integer -&gt; [BuiltinData])
+-&gt; (BuiltinByteString -&gt; [BuiltinData])
+-&gt; [BuiltinData]
+forall r.
+BuiltinData
+-&gt; (Integer -&gt; [BuiltinData] -&gt; r)
+-&gt; ([(BuiltinData, BuiltinData)] -&gt; r)
+-&gt; ([BuiltinData] -&gt; r)
+-&gt; (Integer -&gt; r)
+-&gt; (BuiltinByteString -&gt; r)
+-&gt; r
+</span><span class="hs-identifier hs-var">Builtins.matchData</span></span><span>
+</span><span id="line-122"></span><span>      </span><span class="annot"><span class="annottext">BuiltinData
+</span><a href="#local-6989586621679134725"><span class="hs-identifier hs-var">dat</span></a></span><span>
+</span><span id="line-123"></span><span>      </span><span class="annot"><span class="annottext">Integer -&gt; [BuiltinData] -&gt; [BuiltinData]
+</span><a href="#local-6989586621679134727"><span class="hs-identifier hs-var">shrinkConstr</span></a></span><span>
+</span><span id="line-124"></span><span>      </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)] -&gt; [BuiltinData]
+</span><a href="#local-6989586621679134728"><span class="hs-identifier hs-var">shrinkMap</span></a></span><span>
+</span><span id="line-125"></span><span>      </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; [BuiltinData]
+</span><a href="#local-6989586621679134729"><span class="hs-identifier hs-var">shrinkList</span></a></span><span>
+</span><span id="line-126"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(NonNegative Integer -&gt; BuiltinData)
+-&gt; [NonNegative Integer] -&gt; [BuiltinData]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkI</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; BuiltinData)
+-&gt; (NonNegative Integer -&gt; Integer)
+-&gt; NonNegative Integer
+-&gt; BuiltinData
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative Integer -&gt; Integer
+forall a. NonNegative a -&gt; a
+</span><span class="hs-identifier hs-var">getNonNegative</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([NonNegative Integer] -&gt; [BuiltinData])
+-&gt; (Integer -&gt; [NonNegative Integer]) -&gt; Integer -&gt; [BuiltinData]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative Integer -&gt; [NonNegative Integer]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">(NonNegative Integer -&gt; [NonNegative Integer])
+-&gt; (Integer -&gt; NonNegative Integer)
+-&gt; Integer
+-&gt; [NonNegative Integer]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; NonNegative Integer
+forall a. a -&gt; NonNegative a
+</span><span class="hs-identifier hs-var">NonNegative</span></span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; BuiltinData)
+-&gt; [BuiltinByteString] -&gt; [BuiltinData]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkB</span></span><span> </span><span class="annot"><span class="annottext">([BuiltinByteString] -&gt; [BuiltinData])
+-&gt; (BuiltinByteString -&gt; [BuiltinByteString])
+-&gt; BuiltinByteString
+-&gt; [BuiltinData]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; [BuiltinByteString]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span class="hs-special">)</span><span>
+</span><span id="line-128"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-129"></span><span>      </span><span class="annot"><a href="#local-6989586621679134727"><span class="hs-identifier hs-type">shrinkConstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span>
+</span><span id="line-130"></span><span>      </span><span id="local-6989586621679134727"><span class="annot"><span class="annottext">shrinkConstr :: Integer -&gt; [BuiltinData] -&gt; [BuiltinData]
+</span><a href="#local-6989586621679134727"><span class="hs-identifier hs-var hs-var">shrinkConstr</span></a></span></span><span> </span><span id="local-6989586621679134730"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134730"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679134731"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134731"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-131"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">NonNegative</span></span><span> </span><span id="local-6989586621679134732"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134732"><span class="hs-identifier hs-var">ix'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NonNegative Integer -&gt; [NonNegative Integer]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; NonNegative Integer
+forall a. a -&gt; NonNegative a
+</span><span class="hs-identifier hs-var">NonNegative</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134730"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span>        </span><span id="local-6989586621679134733"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134733"><span class="hs-identifier hs-var">dats'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; [[BuiltinData]]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134731"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><span id="line-133"></span><span>        </span><span class="annot"><span class="annottext">BuiltinData -&gt; [BuiltinData]
+forall a. a -&gt; [a]
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinData -&gt; [BuiltinData])
+-&gt; ([BuiltinData] -&gt; BuiltinData) -&gt; [BuiltinData] -&gt; [BuiltinData]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [BuiltinData] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkConstr</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134732"><span class="hs-identifier hs-var">ix'</span></a></span><span> </span><span class="annot"><span class="annottext">([BuiltinData] -&gt; [BuiltinData]) -&gt; [BuiltinData] -&gt; [BuiltinData]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134733"><span class="hs-identifier hs-var">dats'</span></a></span><span>
+</span><span id="line-134"></span><span>      </span><span class="annot"><a href="#local-6989586621679134728"><span class="hs-identifier hs-type">shrinkMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span>
+</span><span id="line-135"></span><span>      </span><span id="local-6989586621679134728"><span class="annot"><span class="annottext">shrinkMap :: [(BuiltinData, BuiltinData)] -&gt; [BuiltinData]
+</span><a href="#local-6989586621679134728"><span class="hs-identifier hs-var hs-var">shrinkMap</span></a></span></span><span> </span><span id="local-6989586621679134734"><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+</span><a href="#local-6989586621679134734"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkMap</span></span><span> </span><span class="annot"><span class="annottext">([(BuiltinData, BuiltinData)] -&gt; BuiltinData)
+-&gt; [[(BuiltinData, BuiltinData)]] -&gt; [BuiltinData]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)] -&gt; [[(BuiltinData, BuiltinData)]]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+</span><a href="#local-6989586621679134734"><span class="hs-identifier hs-var">kvs</span></a></span><span>
+</span><span id="line-136"></span><span>      </span><span class="annot"><a href="#local-6989586621679134729"><span class="hs-identifier hs-type">shrinkList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span>
+</span><span id="line-137"></span><span>      </span><span id="local-6989586621679134729"><span class="annot"><span class="annottext">shrinkList :: [BuiltinData] -&gt; [BuiltinData]
+</span><a href="#local-6989586621679134729"><span class="hs-identifier hs-var hs-var">shrinkList</span></a></span></span><span> </span><span id="local-6989586621679134735"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134735"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkList</span></span><span> </span><span class="annot"><span class="annottext">([BuiltinData] -&gt; BuiltinData) -&gt; [[BuiltinData]] -&gt; [BuiltinData]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; [[BuiltinData]]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134735"><span class="hs-identifier hs-var">ell</span></a></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-140"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-141"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-142"></span><span>  </span><span id="local-6989586621679134754"><span class="annot"><span class="annottext">coarbitrary :: forall b. BuiltinData -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span id="local-6989586621679134755"><span class="annot"><span class="annottext">BuiltinData
+</span><a href="#local-6989586621679134755"><span class="hs-identifier hs-var">dat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-143"></span><span>    </span><span class="annot"><span class="annottext">BuiltinData
+-&gt; (Integer -&gt; [BuiltinData] -&gt; Gen b -&gt; Gen b)
+-&gt; ([(BuiltinData, BuiltinData)] -&gt; Gen b -&gt; Gen b)
+-&gt; ([BuiltinData] -&gt; Gen b -&gt; Gen b)
+-&gt; (Integer -&gt; Gen b -&gt; Gen b)
+-&gt; (BuiltinByteString -&gt; Gen b -&gt; Gen b)
+-&gt; Gen b
+-&gt; Gen b
+forall r.
+BuiltinData
+-&gt; (Integer -&gt; [BuiltinData] -&gt; r)
+-&gt; ([(BuiltinData, BuiltinData)] -&gt; r)
+-&gt; ([BuiltinData] -&gt; r)
+-&gt; (Integer -&gt; r)
+-&gt; (BuiltinByteString -&gt; r)
+-&gt; r
+</span><span class="hs-identifier hs-var">Builtins.matchData</span></span><span>
+</span><span id="line-144"></span><span>      </span><span class="annot"><span class="annottext">BuiltinData
+</span><a href="#local-6989586621679134755"><span class="hs-identifier hs-var">dat</span></a></span><span>
+</span><span id="line-145"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134756"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134756"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679134757"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134757"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Gen b -&gt; Gen b
+forall b. Integer -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134756"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; Gen b -&gt; Gen b
+forall b. [BuiltinData] -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134757"><span class="hs-identifier hs-var">dats</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-146"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134758"><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+</span><a href="#local-6989586621679134758"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)] -&gt; Gen b -&gt; Gen b
+forall b. [(BuiltinData, BuiltinData)] -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+</span><a href="#local-6989586621679134758"><span class="hs-identifier hs-var">kvs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-147"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134759"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134759"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; Gen b -&gt; Gen b
+forall b. [BuiltinData] -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134759"><span class="hs-identifier hs-var">ell</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-148"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134760"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134760"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">3</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Gen b -&gt; Gen b
+forall b. Integer -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134760"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-149"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134761"><span class="annot"><span class="annottext">BuiltinByteString
+</span><a href="#local-6989586621679134761"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
+</span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">4</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+forall b. BuiltinByteString -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString
+</span><a href="#local-6989586621679134761"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-150"></span><span>
+</span><span id="line-151"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-152"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-153"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-154"></span><span>  </span><span id="local-6989586621679134779"><span class="annot"><span class="annottext">function :: forall b. (BuiltinData -&gt; b) -&gt; BuiltinData :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(BuiltinData
+ -&gt; Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; (Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString)))
+    -&gt; BuiltinData)
+-&gt; (BuiltinData -&gt; b)
+-&gt; BuiltinData :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">BuiltinData
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+</span><a href="#local-6989586621679134780"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Either
+  (Integer, [BuiltinData])
+  (Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; BuiltinData
+</span><a href="#local-6989586621679134781"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><span id="line-155"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-156"></span><span>      </span><span class="annot"><a href="#local-6989586621679134780"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-157"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-158"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-159"></span><span>          </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-160"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-161"></span><span>              </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-162"></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-163"></span><span>                  </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span>
+</span><span id="line-164"></span><span>                  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-165"></span><span>                  </span><span class="hs-special">)</span><span>
+</span><span id="line-166"></span><span>              </span><span class="hs-special">)</span><span>
+</span><span id="line-167"></span><span>          </span><span class="hs-special">)</span><span>
+</span><span id="line-168"></span><span>      </span><span id="local-6989586621679134780"><span class="annot"><span class="annottext">into :: BuiltinData
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+</span><a href="#local-6989586621679134780"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span id="local-6989586621679134782"><span class="annot"><span class="annottext">BuiltinData
+</span><a href="#local-6989586621679134782"><span class="hs-identifier hs-var">dat</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-169"></span><span>        </span><span class="annot"><span class="annottext">BuiltinData
+-&gt; (Integer
+    -&gt; [BuiltinData]
+    -&gt; Either
+         (Integer, [BuiltinData])
+         (Either
+            [(BuiltinData, BuiltinData)]
+            (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; ([(BuiltinData, BuiltinData)]
+    -&gt; Either
+         (Integer, [BuiltinData])
+         (Either
+            [(BuiltinData, BuiltinData)]
+            (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; ([BuiltinData]
+    -&gt; Either
+         (Integer, [BuiltinData])
+         (Either
+            [(BuiltinData, BuiltinData)]
+            (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; (Integer
+    -&gt; Either
+         (Integer, [BuiltinData])
+         (Either
+            [(BuiltinData, BuiltinData)]
+            (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; (BuiltinByteString
+    -&gt; Either
+         (Integer, [BuiltinData])
+         (Either
+            [(BuiltinData, BuiltinData)]
+            (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall r.
+BuiltinData
+-&gt; (Integer -&gt; [BuiltinData] -&gt; r)
+-&gt; ([(BuiltinData, BuiltinData)] -&gt; r)
+-&gt; ([BuiltinData] -&gt; r)
+-&gt; (Integer -&gt; r)
+-&gt; (BuiltinByteString -&gt; r)
+-&gt; r
+</span><span class="hs-identifier hs-var">Builtins.matchData</span></span><span>
+</span><span id="line-170"></span><span>          </span><span class="annot"><span class="annottext">BuiltinData
+</span><a href="#local-6989586621679134782"><span class="hs-identifier hs-var">dat</span></a></span><span>
+</span><span id="line-171"></span><span>          </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134783"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134783"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Integer, [BuiltinData])
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">((Integer, [BuiltinData])
+ -&gt; Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; ([BuiltinData] -&gt; (Integer, [BuiltinData]))
+-&gt; [BuiltinData]
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134783"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-172"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either
+  [(BuiltinData, BuiltinData)]
+  (Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either
+   [(BuiltinData, BuiltinData)]
+   (Either [BuiltinData] (Either Integer BuiltinByteString))
+ -&gt; Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; ([(BuiltinData, BuiltinData)]
+    -&gt; Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; [(BuiltinData, BuiltinData)]
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-173"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either
+  [(BuiltinData, BuiltinData)]
+  (Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either
+   [(BuiltinData, BuiltinData)]
+   (Either [BuiltinData] (Either Integer BuiltinByteString))
+ -&gt; Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; ([BuiltinData]
+    -&gt; Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; [BuiltinData]
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Either [BuiltinData] (Either Integer BuiltinByteString)
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either [BuiltinData] (Either Integer BuiltinByteString)
+ -&gt; Either
+      [(BuiltinData, BuiltinData)]
+      (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; ([BuiltinData]
+    -&gt; Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; [BuiltinData]
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+-&gt; Either [BuiltinData] (Either Integer BuiltinByteString)
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-174"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either
+  [(BuiltinData, BuiltinData)]
+  (Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either
+   [(BuiltinData, BuiltinData)]
+   (Either [BuiltinData] (Either Integer BuiltinByteString))
+ -&gt; Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; (Integer
+    -&gt; Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; Integer
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Either [BuiltinData] (Either Integer BuiltinByteString)
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either [BuiltinData] (Either Integer BuiltinByteString)
+ -&gt; Either
+      [(BuiltinData, BuiltinData)]
+      (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; (Integer
+    -&gt; Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; Integer
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Either Integer BuiltinByteString
+-&gt; Either [BuiltinData] (Either Integer BuiltinByteString)
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either Integer BuiltinByteString
+ -&gt; Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; (Integer -&gt; Either Integer BuiltinByteString)
+-&gt; Integer
+-&gt; Either [BuiltinData] (Either Integer BuiltinByteString)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Either Integer BuiltinByteString
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-175"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Either
+  [(BuiltinData, BuiltinData)]
+  (Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either
+   [(BuiltinData, BuiltinData)]
+   (Either [BuiltinData] (Either Integer BuiltinByteString))
+ -&gt; Either
+      (Integer, [BuiltinData])
+      (Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString))))
+-&gt; (BuiltinByteString
+    -&gt; Either
+         [(BuiltinData, BuiltinData)]
+         (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; BuiltinByteString
+-&gt; Either
+     (Integer, [BuiltinData])
+     (Either
+        [(BuiltinData, BuiltinData)]
+        (Either [BuiltinData] (Either Integer BuiltinByteString)))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Either [BuiltinData] (Either Integer BuiltinByteString)
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either [BuiltinData] (Either Integer BuiltinByteString)
+ -&gt; Either
+      [(BuiltinData, BuiltinData)]
+      (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; (BuiltinByteString
+    -&gt; Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; BuiltinByteString
+-&gt; Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Either Integer BuiltinByteString
+-&gt; Either [BuiltinData] (Either Integer BuiltinByteString)
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Either Integer BuiltinByteString
+ -&gt; Either [BuiltinData] (Either Integer BuiltinByteString))
+-&gt; (BuiltinByteString -&gt; Either Integer BuiltinByteString)
+-&gt; BuiltinByteString
+-&gt; Either [BuiltinData] (Either Integer BuiltinByteString)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; Either Integer BuiltinByteString
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-176"></span><span>      </span><span class="annot"><a href="#local-6989586621679134781"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-177"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-178"></span><span>          </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-179"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-180"></span><span>              </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-181"></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
+</span><span id="line-182"></span><span>                  </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span class="hs-special">]</span><span>
+</span><span id="line-183"></span><span>                  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-184"></span><span>                  </span><span class="hs-special">)</span><span>
+</span><span id="line-185"></span><span>              </span><span class="hs-special">)</span><span>
+</span><span id="line-186"></span><span>          </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-187"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinData</span></span><span>
+</span><span id="line-188"></span><span>      </span><span id="local-6989586621679134781"><span class="annot"><span class="annottext">outOf :: Either
+  (Integer, [BuiltinData])
+  (Either
+     [(BuiltinData, BuiltinData)]
+     (Either [BuiltinData] (Either Integer BuiltinByteString)))
+-&gt; BuiltinData
+</span><a href="#local-6989586621679134781"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-189"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134784"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134784"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134785"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134785"><span class="hs-identifier hs-var">dats</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [BuiltinData] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkConstr</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134784"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134785"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><span id="line-190"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679134786"><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+</span><a href="#local-6989586621679134786"><span class="hs-identifier hs-var">kvs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkMap</span></span><span> </span><span class="annot"><span class="annottext">[(BuiltinData, BuiltinData)]
+</span><a href="#local-6989586621679134786"><span class="hs-identifier hs-var">kvs</span></a></span><span>
+</span><span id="line-191"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679134787"><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134787"><span class="hs-identifier hs-var">ell</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[BuiltinData] -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkList</span></span><span> </span><span class="annot"><span class="annottext">[BuiltinData]
+</span><a href="#local-6989586621679134787"><span class="hs-identifier hs-var">ell</span></a></span><span>
+</span><span id="line-192"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679134788"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134788"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkI</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679134788"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-193"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679134789"><span class="annot"><span class="annottext">BuiltinByteString
+</span><a href="#local-6989586621679134789"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; BuiltinData
+</span><span class="hs-identifier hs-var">Builtins.mkB</span></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString
+</span><a href="#local-6989586621679134789"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-194"></span><span>
+</span><span id="line-195"></span><span class="annot"><span class="hs-comment">{- | This generates well-defined maps: specifically, there are no duplicate
+keys. To ensure that this is preserved, we do not shrink keys: we only drop
+whole entries, or shrink values associated with keys.
+
+In order to make this instance even moderately efficient, we require an 'Ord'
+constraint on keys. In practice, this isn't a significant limitation, as
+basically all Plutus types have such an instance.
+
+@since 1.0.0
+-}</span></span><span>
+</span><span id="line-205"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134362"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134362"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134362"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134362"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-206"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftArbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-207"></span><span>  </span><span id="local-6989586621679134806"><span class="annot"><span class="annottext">liftArbitrary :: forall a. Gen a -&gt; Gen (Map k a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftArbitrary</span></span></span><span> </span><span id="local-6989586621679134807"><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679134807"><span class="hs-identifier hs-var">genVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-208"></span><span>    </span><span class="annot"><span class="annottext">[(k, a)] -&gt; Map k a
+forall k v. [(k, v)] -&gt; Map k v
+</span><span class="hs-identifier hs-var">AssocMap.unsafeFromList</span></span><span> </span><span class="annot"><span class="annottext">([(k, a)] -&gt; Map k a) -&gt; Gen [(k, a)] -&gt; Gen (Map k a)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-209"></span><span>      </span><span class="hs-comment">-- First, generate a Set of keys to ensure no duplication</span><span>
+</span><span id="line-210"></span><span>      </span><span id="local-6989586621679134809"><span class="annot"><span class="annottext">[k]
+</span><a href="#local-6989586621679134809"><span class="hs-identifier hs-var">keyList</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set k -&gt; [k]
+forall a. Set a -&gt; [a]
+</span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">(Set k -&gt; [k]) -&gt; Gen (Set k) -&gt; Gen [k]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Set k)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-211"></span><span>      </span><span class="hs-comment">-- Then generate a value for each</span><span>
+</span><span id="line-212"></span><span>      </span><span class="annot"><span class="annottext">(k -&gt; Gen (k, a)) -&gt; [k] -&gt; Gen [(k, a)]
+forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; [a] -&gt; f [b]
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134812"><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134812"><span class="hs-identifier hs-var">key</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134812"><span class="hs-identifier hs-var">key</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a -&gt; (k, a)) -&gt; Gen a -&gt; Gen (k, a)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679134807"><span class="hs-identifier hs-var">genVal</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[k]
+</span><a href="#local-6989586621679134809"><span class="hs-identifier hs-var">keyList</span></a></span><span>
+</span><span id="line-213"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftShrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-214"></span><span>  </span><span id="local-6989586621679134816"><span class="annot"><span class="annottext">liftShrink :: forall a. (a -&gt; [a]) -&gt; Map k a -&gt; [Map k a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShrink</span></span></span><span> </span><span id="local-6989586621679134817"><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679134817"><span class="hs-identifier hs-var">shrinkVal</span></a></span></span><span> </span><span id="local-6989586621679134818"><span class="annot"><span class="annottext">Map k a
+</span><a href="#local-6989586621679134818"><span class="hs-identifier hs-var">aMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-215"></span><span>    </span><span class="annot"><span class="annottext">[(k, a)] -&gt; Map k a
+forall k v. [(k, v)] -&gt; Map k v
+</span><span class="hs-identifier hs-var">AssocMap.unsafeFromList</span></span><span> </span><span class="annot"><span class="annottext">([(k, a)] -&gt; Map k a) -&gt; [[(k, a)]] -&gt; [Map k a]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-216"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679134819"><span class="annot"><span class="annottext">asList :: [(k, a)]
+</span><a href="#local-6989586621679134819"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map k a -&gt; [(k, a)]
+forall k v. Map k v -&gt; [(k, v)]
+</span><span class="hs-identifier hs-var">AssocMap.toList</span></span><span> </span><span class="annot"><span class="annottext">Map k a
+</span><a href="#local-6989586621679134818"><span class="hs-identifier hs-var">aMap</span></a></span><span>
+</span><span id="line-217"></span><span>      </span><span class="annot"><span class="annottext">((k, a) -&gt; [(k, a)]) -&gt; [(k, a)] -&gt; [[(k, a)]]
+forall a. (a -&gt; [a]) -&gt; [a] -&gt; [[a]]
+forall (f :: Type -&gt; Type) a.
+Arbitrary1 f =&gt;
+(a -&gt; [a]) -&gt; f a -&gt; [f a]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679134821"><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134821"><span class="hs-identifier hs-var">key</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134822"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134822"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134821"><span class="hs-identifier hs-var">key</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a -&gt; (k, a)) -&gt; [a] -&gt; [(k, a)]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679134817"><span class="hs-identifier hs-var">shrinkVal</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134822"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(k, a)]
+</span><a href="#local-6989586621679134819"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><span id="line-218"></span><span>
+</span><span id="line-219"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-220"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134378"><span id="local-6989586621679134379"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134378"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134379"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134378"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134378"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134379"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-221"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-222"></span><span>  </span><span id="local-6989586621679134831"><span class="annot"><span class="annottext">arbitrary :: Gen (Map k v)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen v -&gt; Gen (Map k v)
+forall a. Gen a -&gt; Gen (Map k a)
+forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen v
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-223"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-224"></span><span>  </span><span id="local-6989586621679134834"><span class="annot"><span class="annottext">shrink :: Map k v -&gt; [Map k v]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(v -&gt; [v]) -&gt; Map k v -&gt; [Map k v]
+forall a. (a -&gt; [a]) -&gt; Map k a -&gt; [Map k a]
+forall (f :: Type -&gt; Type) a.
+Arbitrary1 f =&gt;
+(a -&gt; [a]) -&gt; f a -&gt; [f a]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="annot"><span class="annottext">v -&gt; [v]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span>
+</span><span id="line-225"></span><span>
+</span><span id="line-226"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-227"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134382"><span id="local-6989586621679134383"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134382"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134383"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134382"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134383"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-228"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-229"></span><span>  </span><span id="local-6989586621679134841"><span class="annot"><span class="annottext">coarbitrary :: forall b. Map k v -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(k, v)] -&gt; Gen b -&gt; Gen b
+forall b. [(k, v)] -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">([(k, v)] -&gt; Gen b -&gt; Gen b)
+-&gt; (Map k v -&gt; [(k, v)]) -&gt; Map k v -&gt; Gen b -&gt; Gen b
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Map k v -&gt; [(k, v)]
+forall k v. Map k v -&gt; [(k, v)]
+</span><span class="hs-identifier hs-var">AssocMap.toList</span></span><span>
+</span><span id="line-230"></span><span>
+</span><span id="line-231"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-232"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134387"><span id="local-6989586621679134388"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679134387"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679134388"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134387"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134388"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-233"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-234"></span><span>  </span><span id="local-6989586621679134848"><span class="annot"><span class="annottext">function :: forall b. (Map k v -&gt; b) -&gt; Map k v :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map k v -&gt; [(k, v)])
+-&gt; ([(k, v)] -&gt; Map k v) -&gt; (Map k v -&gt; b) -&gt; Map k v :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">Map k v -&gt; [(k, v)]
+forall k v. Map k v -&gt; [(k, v)]
+</span><span class="hs-identifier hs-var">AssocMap.toList</span></span><span> </span><span class="annot"><span class="annottext">[(k, v)] -&gt; Map k v
+forall k v. [(k, v)] -&gt; Map k v
+</span><span class="hs-identifier hs-var">AssocMap.unsafeFromList</span></span><span>
+</span><span id="line-235"></span><span>
+</span><span id="line-236"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-237"></span><span class="hs-keyword">newtype</span><span> </span><span id="UnsortedAssocMap"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-var">UnsortedAssocMap</span></a></span></span><span> </span><span id="local-6989586621679134425"><span class="annot"><a href="#local-6989586621679134425"><span class="hs-identifier hs-type">k</span></a></span></span><span> </span><span id="local-6989586621679134426"><span class="annot"><a href="#local-6989586621679134426"><span class="hs-identifier hs-type">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="UnsortedAssocMap"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-var">UnsortedAssocMap</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134425"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134426"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-238"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679134853"><span id="local-6989586621679134858"><span id="local-6989586621679134862"><span class="annot"><span class="annottext">Int -&gt; UnsortedAssocMap k v -&gt; ShowS
+[UnsortedAssocMap k v] -&gt; ShowS
+UnsortedAssocMap k v -&gt; String
+(Int -&gt; UnsortedAssocMap k v -&gt; ShowS)
+-&gt; (UnsortedAssocMap k v -&gt; String)
+-&gt; ([UnsortedAssocMap k v] -&gt; ShowS)
+-&gt; Show (UnsortedAssocMap k v)
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+forall k v.
+(Show k, Show v) =&gt;
+Int -&gt; UnsortedAssocMap k v -&gt; ShowS
+forall k v. (Show k, Show v) =&gt; [UnsortedAssocMap k v] -&gt; ShowS
+forall k v. (Show k, Show v) =&gt; UnsortedAssocMap k v -&gt; String
+$cshowsPrec :: forall k v.
+(Show k, Show v) =&gt;
+Int -&gt; UnsortedAssocMap k v -&gt; ShowS
+showsPrec :: Int -&gt; UnsortedAssocMap k v -&gt; ShowS
+$cshow :: forall k v. (Show k, Show v) =&gt; UnsortedAssocMap k v -&gt; String
+show :: UnsortedAssocMap k v -&gt; String
+$cshowList :: forall k v. (Show k, Show v) =&gt; [UnsortedAssocMap k v] -&gt; ShowS
+showList :: [UnsortedAssocMap k v] -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134869"><span id="local-6989586621679134874"><span class="annot"><span class="annottext">UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+(UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool)
+-&gt; (UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool)
+-&gt; Eq (UnsortedAssocMap k v)
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+forall k v.
+(Ord k, Eq v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+$c== :: forall k v.
+(Ord k, Eq v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+== :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+$c/= :: forall k v.
+(Ord k, Eq v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+/= :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134884"><span id="local-6989586621679134889"><span id="local-6989586621679134893"><span id="local-6989586621679134897"><span id="local-6989586621679134901"><span id="local-6989586621679134905"><span id="local-6989586621679134909"><span class="annot"><span class="annottext">Eq (UnsortedAssocMap k v)
+Eq (UnsortedAssocMap k v) =&gt;
+(UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Ordering)
+-&gt; (UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool)
+-&gt; (UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool)
+-&gt; (UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool)
+-&gt; (UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool)
+-&gt; (UnsortedAssocMap k v
+    -&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v)
+-&gt; (UnsortedAssocMap k v
+    -&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v)
+-&gt; Ord (UnsortedAssocMap k v)
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Ordering
+UnsortedAssocMap k v
+-&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall k v. (Ord k, Ord v) =&gt; Eq (UnsortedAssocMap k v)
+forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Ordering
+forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v
+-&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v
+$ccompare :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Ordering
+compare :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Ordering
+$c&lt; :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+&lt; :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+$c&lt;= :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+&lt;= :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+$c&gt; :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+&gt; :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+$c&gt;= :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+&gt;= :: UnsortedAssocMap k v -&gt; UnsortedAssocMap k v -&gt; Bool
+$cmax :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v
+-&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v
+max :: UnsortedAssocMap k v
+-&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v
+$cmin :: forall k v.
+(Ord k, Ord v) =&gt;
+UnsortedAssocMap k v
+-&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v
+min :: UnsortedAssocMap k v
+-&gt; UnsortedAssocMap k v -&gt; UnsortedAssocMap k v
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134917"><span id="local-6989586621679134922"><span class="annot"><span class="annottext">(forall ann. UnsortedAssocMap k v -&gt; Doc ann)
+-&gt; (forall ann. [UnsortedAssocMap k v] -&gt; Doc ann)
+-&gt; Pretty (UnsortedAssocMap k v)
+forall ann. [UnsortedAssocMap k v] -&gt; Doc ann
+forall ann. UnsortedAssocMap k v -&gt; Doc ann
+forall a.
+(forall ann. a -&gt; Doc ann)
+-&gt; (forall ann. [a] -&gt; Doc ann) -&gt; Pretty a
+forall k v ann.
+(Pretty k, Pretty v) =&gt;
+[UnsortedAssocMap k v] -&gt; Doc ann
+forall k v ann.
+(Pretty k, Pretty v) =&gt;
+UnsortedAssocMap k v -&gt; Doc ann
+$cpretty :: forall k v ann.
+(Pretty k, Pretty v) =&gt;
+UnsortedAssocMap k v -&gt; Doc ann
+pretty :: forall ann. UnsortedAssocMap k v -&gt; Doc ann
+$cprettyList :: forall k v ann.
+(Pretty k, Pretty v) =&gt;
+[UnsortedAssocMap k v] -&gt; Doc ann
+prettyList :: forall ann. [UnsortedAssocMap k v] -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-239"></span><span>
+</span><span id="line-240"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-241"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134423"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134423"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134423"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary1</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134423"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-242"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftArbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-243"></span><span>  </span><span id="local-6989586621679134940"><span class="annot"><span class="annottext">liftArbitrary :: forall a. Gen a -&gt; Gen (UnsortedAssocMap k a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftArbitrary</span></span></span><span> </span><span id="local-6989586621679134941"><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679134941"><span class="hs-identifier hs-var">genVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-244"></span><span>    </span><span class="annot"><span class="annottext">Map k a -&gt; UnsortedAssocMap k a
+forall k v. Map k v -&gt; UnsortedAssocMap k v
+</span><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-var">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><span class="annottext">(Map k a -&gt; UnsortedAssocMap k a)
+-&gt; ([(k, a)] -&gt; Map k a) -&gt; [(k, a)] -&gt; UnsortedAssocMap k a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(k, a)] -&gt; Map k a
+forall k v. [(k, v)] -&gt; Map k v
+</span><span class="hs-identifier hs-var">AssocMap.unsafeFromList</span></span><span> </span><span class="annot"><span class="annottext">([(k, a)] -&gt; UnsortedAssocMap k a)
+-&gt; Gen [(k, a)] -&gt; Gen (UnsortedAssocMap k a)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-245"></span><span>      </span><span id="local-6989586621679134942"><span class="annot"><span class="annottext">[k]
+</span><a href="#local-6989586621679134942"><span class="hs-identifier hs-var">keyList</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set k -&gt; [k]
+forall a. Set a -&gt; [a]
+</span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">(Set k -&gt; [k]) -&gt; Gen (Set k) -&gt; Gen [k]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Set k)
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-246"></span><span>      </span><span id="local-6989586621679134943"><span class="annot"><span class="annottext">[k]
+</span><a href="#local-6989586621679134943"><span class="hs-identifier hs-var">unsortedKeyList</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[k] -&gt; Gen [k]
+forall a. [a] -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">shuffle</span></span><span> </span><span class="annot"><span class="annottext">[k]
+</span><a href="#local-6989586621679134942"><span class="hs-identifier hs-var">keyList</span></a></span><span>
+</span><span id="line-247"></span><span>      </span><span class="annot"><span class="annottext">(k -&gt; Gen (k, a)) -&gt; [k] -&gt; Gen [(k, a)]
+forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+forall (f :: Type -&gt; Type) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; [a] -&gt; f [b]
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679134944"><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134944"><span class="hs-identifier hs-var">key</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134944"><span class="hs-identifier hs-var">key</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a -&gt; (k, a)) -&gt; Gen a -&gt; Gen (k, a)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679134941"><span class="hs-identifier hs-var">genVal</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[k]
+</span><a href="#local-6989586621679134943"><span class="hs-identifier hs-var">unsortedKeyList</span></a></span><span>
+</span><span id="line-248"></span><span>
+</span><span id="line-249"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftShrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-250"></span><span>  </span><span id="local-6989586621679134948"><span class="annot"><span class="annottext">liftShrink :: forall a.
+(a -&gt; [a]) -&gt; UnsortedAssocMap k a -&gt; [UnsortedAssocMap k a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShrink</span></span></span><span> </span><span id="local-6989586621679134949"><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679134949"><span class="hs-identifier hs-var">shrinkVal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span id="local-6989586621679134950"><span class="annot"><span class="annottext">Map k a
+</span><a href="#local-6989586621679134950"><span class="hs-identifier hs-var">aMap</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-251"></span><span>    </span><span class="annot"><span class="annottext">Map k a -&gt; UnsortedAssocMap k a
+forall k v. Map k v -&gt; UnsortedAssocMap k v
+</span><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-var">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><span class="annottext">(Map k a -&gt; UnsortedAssocMap k a)
+-&gt; ([(k, a)] -&gt; Map k a) -&gt; [(k, a)] -&gt; UnsortedAssocMap k a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(k, a)] -&gt; Map k a
+forall k v. [(k, v)] -&gt; Map k v
+</span><span class="hs-identifier hs-var">AssocMap.unsafeFromList</span></span><span> </span><span class="annot"><span class="annottext">([(k, a)] -&gt; UnsortedAssocMap k a)
+-&gt; [[(k, a)]] -&gt; [UnsortedAssocMap k a]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-252"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679134951"><span class="annot"><span class="annottext">asList :: [(k, a)]
+</span><a href="#local-6989586621679134951"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map k a -&gt; [(k, a)]
+forall k v. Map k v -&gt; [(k, v)]
+</span><span class="hs-identifier hs-var">AssocMap.toList</span></span><span> </span><span class="annot"><span class="annottext">Map k a
+</span><a href="#local-6989586621679134950"><span class="hs-identifier hs-var">aMap</span></a></span><span>
+</span><span id="line-253"></span><span>      </span><span class="annot"><span class="annottext">((k, a) -&gt; [(k, a)]) -&gt; [(k, a)] -&gt; [[(k, a)]]
+forall a. (a -&gt; [a]) -&gt; [a] -&gt; [[a]]
+forall (f :: Type -&gt; Type) a.
+Arbitrary1 f =&gt;
+(a -&gt; [a]) -&gt; f a -&gt; [f a]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679134952"><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134952"><span class="hs-identifier hs-var">key</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679134953"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134953"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">k
+</span><a href="#local-6989586621679134952"><span class="hs-identifier hs-var">key</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a -&gt; (k, a)) -&gt; [a] -&gt; [(k, a)]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679134949"><span class="hs-identifier hs-var">shrinkVal</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679134953"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(k, a)]
+</span><a href="#local-6989586621679134951"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><span id="line-254"></span><span>
+</span><span id="line-255"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-256"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134431"><span id="local-6989586621679134432"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134431"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134432"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-type">Ord</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134431"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134431"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134432"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-257"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-258"></span><span>  </span><span id="local-6989586621679134962"><span class="annot"><span class="annottext">arbitrary :: Gen (UnsortedAssocMap k v)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen v -&gt; Gen (UnsortedAssocMap k v)
+forall a. Gen a -&gt; Gen (UnsortedAssocMap k a)
+forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen v
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-259"></span><span>
+</span><span id="line-260"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-261"></span><span>  </span><span id="local-6989586621679134965"><span class="annot"><span class="annottext">shrink :: UnsortedAssocMap k v -&gt; [UnsortedAssocMap k v]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(v -&gt; [v]) -&gt; UnsortedAssocMap k v -&gt; [UnsortedAssocMap k v]
+forall a.
+(a -&gt; [a]) -&gt; UnsortedAssocMap k a -&gt; [UnsortedAssocMap k a]
+forall (f :: Type -&gt; Type) a.
+Arbitrary1 f =&gt;
+(a -&gt; [a]) -&gt; f a -&gt; [f a]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="annot"><span class="annottext">v -&gt; [v]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span>
+</span><span id="line-262"></span><span>
+</span><span id="line-263"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-264"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134435"><span id="local-6989586621679134436"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134435"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679134436"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134435"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134436"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-265"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-266"></span><span>  </span><span id="local-6989586621679134971"><span class="annot"><span class="annottext">coarbitrary :: forall b. UnsortedAssocMap k v -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span id="local-6989586621679134972"><span class="annot"><span class="annottext">Map k v
+</span><a href="#local-6989586621679134972"><span class="hs-identifier hs-var">aMap</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map k v -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+forall b. Map k v -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Map k v
+</span><a href="#local-6989586621679134972"><span class="hs-identifier hs-var">aMap</span></a></span><span>
+</span><span id="line-267"></span><span>
+</span><span id="line-268"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-269"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679134440"><span id="local-6989586621679134441"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679134440"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="#local-6989586621679134441"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134440"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134441"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-270"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-271"></span><span>  </span><span id="local-6989586621679134980"><span class="annot"><span class="annottext">function :: forall b. (UnsortedAssocMap k v -&gt; b) -&gt; UnsortedAssocMap k v :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134440"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134441"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">UnsortedAssocMap k v -&gt; Map k v
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">Map k v -&gt; UnsortedAssocMap k v
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
+</span><span id="line-272"></span><span>
+</span><span id="line-273"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-274"></span><span id="local-6989586621679134443"><span id="local-6989586621679134444"><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#getUnsortedAssocMap"><span class="hs-identifier hs-type">getUnsortedAssocMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#UnsortedAssocMap"><span class="hs-identifier hs-type">UnsortedAssocMap</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134443"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134444"><span class="hs-identifier hs-type">v</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679134443"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679134444"><span class="hs-identifier hs-type">v</span></a></span></span></span><span>
+</span><span id="line-275"></span><span id="getUnsortedAssocMap"><span class="annot"><span class="annottext">getUnsortedAssocMap :: forall k v. UnsortedAssocMap k v -&gt; Map k v
+</span><a href="PlutusLedgerApi.Orphans.Common.html#getUnsortedAssocMap"><span class="hs-identifier hs-var hs-var">getUnsortedAssocMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">UnsortedAssocMap k v -&gt; Map k v
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
+</span><span id="line-276"></span></pre></body></html>

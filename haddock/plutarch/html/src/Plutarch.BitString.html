@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.BitString</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Type</span></span><span>
+</span><span id="line-3"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier">PBitString</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Functions</span></span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#preadBit"><span class="hs-identifier">preadBit</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#pwriteBits"><span class="hs-identifier">pwriteBits</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#pshift"><span class="hs-identifier">pshift</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#protate"><span class="hs-identifier">protate</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#pcountSetBits"><span class="hs-identifier">pcountSetBits</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#pfindFirstSetBit"><span class="hs-identifier">pfindFirstSetBit</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.BitString.html#pfindFirstSetBit%27"><span class="hs-identifier">pfindFirstSetBit'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Bool.html"><span class="hs-identifier">Plutarch.Bool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Bool.html#PBool"><span class="hs-identifier">PBool</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier">PEq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#POrd"><span class="hs-identifier">POrd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PPartialOrd"><span class="hs-identifier">PPartialOrd</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#pif"><span class="hs-identifier">pif</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Bool.html#%23%3C"><span class="hs-operator">(#&lt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.html"><span class="hs-identifier">Plutarch.Builtin</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.html#PBuiltinList"><span class="hs-identifier">PBuiltinList</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.ByteString.html"><span class="hs-identifier">Plutarch.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Integer.html"><span class="hs-identifier">Plutarch.Integer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.html"><span class="hs-identifier">Plutarch.Internal</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-21"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#phoistAcyclic"><span class="hs-identifier">phoistAcyclic</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#plet"><span class="hs-identifier">plet</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier">punsafeBuiltin</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-26"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#%23"><span class="hs-operator">(#)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-27"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-28"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Newtype.html"><span class="hs-identifier">Plutarch.Internal.Newtype</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Newtype.html#PlutusTypeNewtype"><span class="hs-identifier">PlutusTypeNewtype</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Other.html"><span class="hs-identifier">Plutarch.Internal.Other</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier">pto</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PLam.html"><span class="hs-identifier">Plutarch.Internal.PLam</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier">plam</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html"><span class="hs-identifier">Plutarch.Internal.PlutusType</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-33"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier">DerivePlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier">DPTStrat</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier">PlutusType</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-35"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier">pcon</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-36"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Maybe.html"><span class="hs-identifier">Plutarch.Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier">PMaybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Maybe.html#PJust"><span class="hs-identifier">PJust</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Maybe.html#PNothing"><span class="hs-identifier">PNothing</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><span class="hs-comment">{- | A wrapper around 'PByteString' for CIP-122 and CIP-123 bitwise operations.
+
+= Note
+
+This type exists because /bit/ and /byte/ indexes work in different
+directions. To avoid confusing behaviour, we require an explicit wrapping of
+'PByteString's to use bitwise functionality: this way, it's clear where which
+scheme applies.
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-51"></span><span class="hs-keyword">newtype</span><span> </span><span id="PBitString"><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-var">PBitString</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565556"><span class="annot"><a href="#local-6989586621679565556"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PBitString"><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-var">PBitString</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565556"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-54"></span><span>      </span><span id="local-6989586621679565559"><span id="local-6989586621679565561"><span class="annot"><span class="annottext">(forall x. PBitString s -&gt; Rep (PBitString s) x)
+-&gt; (forall x. Rep (PBitString s) x -&gt; PBitString s)
+-&gt; Generic (PBitString s)
+forall x. Rep (PBitString s) x -&gt; PBitString s
+forall x. PBitString s -&gt; Rep (PBitString s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PBitString s) x -&gt; PBitString s
+forall (s :: S) x. PBitString s -&gt; Rep (PBitString s) x
+$cfrom :: forall (s :: S) x. PBitString s -&gt; Rep (PBitString s) x
+from :: forall x. PBitString s -&gt; Rep (PBitString s) x
+$cto :: forall (s :: S) x. Rep (PBitString s) x -&gt; PBitString s
+to :: forall x. Rep (PBitString s) x -&gt; PBitString s
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-55"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-57"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-58"></span><span>      </span><span id="local-6989586621679565565"><span id="local-6989586621679565571"><span class="annot"><span class="annottext">(forall (s :: S). PBitString s -&gt; Term s (PInner PBitString))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner PBitString)
+    -&gt; (PBitString s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PBitString
+forall (s :: S). PBitString s -&gt; Term s (PInner PBitString)
+forall (s :: S) (b :: PType).
+Term s (PInner PBitString)
+-&gt; (PBitString s -&gt; Term s b) -&gt; Term s b
+forall (a :: PType).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: PType).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PBitString s -&gt; Term s (PInner PBitString)
+pcon' :: forall (s :: S). PBitString s -&gt; Term s (PInner PBitString)
+$cpmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PBitString)
+-&gt; (PBitString s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: PType).
+Term s (PInner PBitString)
+-&gt; (PBitString s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-60"></span><span>      </span><span id="local-6989586621679565576"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool)
+-&gt; PEq PBitString
+forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+forall (t :: PType).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+$c#== :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+#== :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#PEq"><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></a></span></span><span>
+</span><span id="line-61"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-62"></span><span>      </span><span id="local-6989586621679565596"><span id="local-6989586621679565602"><span id="local-6989586621679565607"><span id="local-6989586621679565610"><span class="annot"><span class="annottext">PEq PBitString
+PEq PBitString =&gt;
+(forall (s :: S).
+ Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool)
+-&gt; PPartialOrd PBitString
+forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+forall (t :: PType).
+PEq t =&gt;
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; PPartialOrd t
+$c#&lt;= :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+#&lt;= :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+$c#&lt; :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+#&lt; :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+$c#&gt;= :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+#&gt;= :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+$c#&gt; :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+#&gt; :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#PPartialOrd"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PPartialOrd</span></a></span></span></span></span></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-64"></span><span>      </span><span id="local-6989586621679565617"><span id="local-6989586621679565621"><span class="annot"><span class="annottext">PPartialOrd PBitString
+PPartialOrd PBitString =&gt;
+(forall (s :: S).
+ Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString)
+-&gt; (forall (s :: S).
+    Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString)
+-&gt; POrd PBitString
+forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
+forall (t :: PType).
+PPartialOrd t =&gt;
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t) -&gt; POrd t
+$cpmax :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
+pmax :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
+$cpmin :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
+pmin :: forall (s :: S).
+Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
+</span><a href="Plutarch.Bool.html#POrd"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></a></span></span></span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DerivePlutusType"><span class="hs-identifier hs-type">DerivePlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DPTStrat"><span class="hs-identifier hs-var">DPTStrat</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Newtype.html#PlutusTypeNewtype"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></a></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="annot"><span class="hs-comment">{- | Bit access operation, as defined in [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#readbit).
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-75"></span><span class="annot"><a href="Plutarch.BitString.html#preadBit"><span class="hs-identifier hs-type">preadBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565480"><span class="annot"><a href="#local-6989586621679565480"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565480"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span id="preadBit"><span class="annot"><span class="annottext">preadBit :: forall (s :: S). Term s (PBitString :--&gt; (PInteger :--&gt; PBool))
+</span><a href="Plutarch.BitString.html#preadBit"><span class="hs-identifier hs-var hs-var">preadBit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PBitString :--&gt; (PInteger :--&gt; PBool))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ReadBit</span></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="annot"><span class="hs-comment">{- | Given a list of positions, set the bits at those positions.
+
+This works similarly to the @writeBits@ operation in
+[CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits)
+with regard to the list of indexes. Effectively, @psetBits b ixes@ is
+equivalent to @writeBits b . map (, True) $ ixes@. All caveats that this
+entails from the CIP-122 description apply.
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="annot"><span class="hs-comment">{- | Sets bits, as per
+[CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits).
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-94"></span><span class="annot"><a href="Plutarch.BitString.html#pwriteBits"><span class="hs-identifier hs-type">pwriteBits</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565487"><span class="annot"><a href="#local-6989586621679565487"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565487"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.html#PBuiltinList"><span class="hs-identifier hs-type">PBuiltinList</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-95"></span><span id="pwriteBits"><span class="annot"><span class="annottext">pwriteBits :: forall (s :: S).
+Term
+  s
+  (PBitString
+   :--&gt; (PBuiltinList PInteger :--&gt; (PBool :--&gt; PBitString)))
+</span><a href="Plutarch.BitString.html#pwriteBits"><span class="hs-identifier hs-var hs-var">pwriteBits</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PBitString
+      :--&gt; (PBuiltinList PInteger :--&gt; (PBool :--&gt; PBitString)))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.WriteBits</span></span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span class="annot"><span class="hs-comment">{- | Performs a shift, as per
+[CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiseshift).
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-102"></span><span class="annot"><a href="Plutarch.BitString.html#pshift"><span class="hs-identifier hs-type">pshift</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565490"><span class="annot"><a href="#local-6989586621679565490"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565490"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-103"></span><span id="pshift"><span class="annot"><span class="annottext">pshift :: forall (s :: S).
+Term s (PBitString :--&gt; (PInteger :--&gt; PBitString))
+</span><a href="Plutarch.BitString.html#pshift"><span class="hs-identifier hs-var hs-var">pshift</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PBitString :--&gt; (PInteger :--&gt; PBitString))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ShiftByteString</span></span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span class="annot"><span class="hs-comment">{- | Performs a rotation, as per
+[CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiserotate).
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-110"></span><span class="annot"><a href="Plutarch.BitString.html#protate"><span class="hs-identifier hs-type">protate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565645"><span class="annot"><a href="#local-6989586621679565645"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565645"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span id="protate"><span class="annot"><span class="annottext">protate :: forall (s :: S).
+Term s (PBitString :--&gt; (PInteger :--&gt; PBitString))
+</span><a href="Plutarch.BitString.html#protate"><span class="hs-identifier hs-var hs-var">protate</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PBitString :--&gt; (PInteger :--&gt; PBitString))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.RotateByteString</span></span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span class="annot"><span class="hs-comment">{- | Counts the number of set bits, as per
+[CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#countsetbits).
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-118"></span><span class="annot"><a href="Plutarch.BitString.html#pcountSetBits"><span class="hs-identifier hs-type">pcountSetBits</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565493"><span class="annot"><a href="#local-6989586621679565493"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565493"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-119"></span><span id="pcountSetBits"><span class="annot"><span class="annottext">pcountSetBits :: forall (s :: S). Term s (PBitString :--&gt; PInteger)
+</span><a href="Plutarch.BitString.html#pcountSetBits"><span class="hs-identifier hs-var hs-var">pcountSetBits</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PBitString :--&gt; PInteger)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.CountSetBits</span></span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="annot"><span class="hs-comment">{- | Finds the index of the first set bit, as per
+[CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#findfirstsetbit).
+
+= Note
+
+This returns @-1@ if the argument is either empty, or contains no set bits.
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-130"></span><span class="annot"><a href="Plutarch.BitString.html#pfindFirstSetBit%27"><span class="hs-identifier hs-type">pfindFirstSetBit'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565648"><span class="annot"><a href="#local-6989586621679565648"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565648"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-131"></span><span id="pfindFirstSetBit%27"><span class="annot"><span class="annottext">pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--&gt; PInteger)
+</span><a href="Plutarch.BitString.html#pfindFirstSetBit%27"><span class="hs-identifier hs-var hs-var">pfindFirstSetBit'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PBitString :--&gt; PInteger)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.FindFirstSetBit</span></span><span>
+</span><span id="line-132"></span><span>
+</span><span id="line-133"></span><span class="annot"><span class="hs-comment">{- | As @pfindFirstSetBit'@, but produces 'PNothing' if the argument is empty,
+or contains no set bits.
+
+@since WIP
+-}</span></span><span>
+</span><span id="line-138"></span><span class="annot"><a href="Plutarch.BitString.html#pfindFirstSetBit"><span class="hs-identifier hs-type">pfindFirstSetBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679565496"><span class="annot"><a href="#local-6989586621679565496"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679565496"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier hs-type">PMaybe</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-139"></span><span id="pfindFirstSetBit"><span class="annot"><span class="annottext">pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--&gt; PMaybe PInteger)
+</span><a href="Plutarch.BitString.html#pfindFirstSetBit"><span class="hs-identifier hs-var hs-var">pfindFirstSetBit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). Term s (PBitString :--&gt; PMaybe PInteger))
+-&gt; Term s (PBitString :--&gt; PMaybe PInteger)
+forall (a :: PType) (s :: S).
+HasCallStack =&gt;
+ClosedTerm a -&gt; Term s a
+</span><a href="Plutarch.Internal.html#phoistAcyclic"><span class="hs-identifier hs-var">phoistAcyclic</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (s :: S). Term s (PBitString :--&gt; PMaybe PInteger))
+ -&gt; Term s (PBitString :--&gt; PMaybe PInteger))
+-&gt; (forall (s :: S). Term s (PBitString :--&gt; PMaybe PInteger))
+-&gt; Term s (PBitString :--&gt; PMaybe PInteger)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s PBitString -&gt; Term s (PMaybe PInteger))
+-&gt; Term s (PBitString :--&gt; PMaybe PInteger)
+forall a (b :: PType) (s :: S) (c :: PType).
+(PLamN a b s, HasCallStack) =&gt;
+(Term s c -&gt; a) -&gt; Term s (c :--&gt; b)
+forall (c :: PType).
+HasCallStack =&gt;
+(Term s c -&gt; Term s (PMaybe PInteger))
+-&gt; Term s (c :--&gt; PMaybe PInteger)
+</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="annot"><span class="annottext">((Term s PBitString -&gt; Term s (PMaybe PInteger))
+ -&gt; Term s (PBitString :--&gt; PMaybe PInteger))
+-&gt; (Term s PBitString -&gt; Term s (PMaybe PInteger))
+-&gt; Term s (PBitString :--&gt; PMaybe PInteger)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679565662"><span class="annot"><span class="annottext">Term s PBitString
+</span><a href="#local-6989586621679565662"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-140"></span><span>  </span><span class="annot"><span class="annottext">Term s PInteger
+-&gt; (Term s PInteger -&gt; Term s (PMaybe PInteger))
+-&gt; Term s (PMaybe PInteger)
+forall (s :: S) (a :: PType) (b :: PType).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.html#plet"><span class="hs-identifier hs-var">plet</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PInner PBitString :--&gt; PInteger)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.FindFirstSetBit</span></span><span> </span><span class="annot"><span class="annottext">Term s (PInner PBitString :--&gt; PInteger)
+-&gt; Term s (PInner PBitString) -&gt; Term s PInteger
+forall (s :: S) (a :: PType) (b :: PType).
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PBitString -&gt; Term s (PInner PBitString)
+forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
+</span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PBitString
+</span><a href="#local-6989586621679565662"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PInteger -&gt; Term s (PMaybe PInteger))
+ -&gt; Term s (PMaybe PInteger))
+-&gt; (Term s PInteger -&gt; Term s (PMaybe PInteger))
+-&gt; Term s (PMaybe PInteger)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679565663"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679565663"><span class="hs-identifier hs-var">result</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-141"></span><span>    </span><span class="annot"><span class="annottext">Term s PBool
+-&gt; Term s (PMaybe PInteger)
+-&gt; Term s (PMaybe PInteger)
+-&gt; Term s (PMaybe PInteger)
+forall (s :: S) (a :: PType).
+Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
+</span><a href="Plutarch.Bool.html#pif"><span class="hs-identifier hs-var">pif</span></a></span><span>
+</span><span id="line-142"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679565663"><span class="hs-identifier hs-var">result</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+forall (t :: PType) (s :: S).
+PPartialOrd t =&gt;
+Term s t -&gt; Term s t -&gt; Term s PBool
+</span><a href="Plutarch.Bool.html#%23%3C"><span class="hs-operator hs-var">#&lt;</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term w PInteger
+forall {w :: S}. Term w PInteger
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PMaybe PInteger s -&gt; Term s (PMaybe PInteger)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">PMaybe PInteger s
+forall (a :: PType) (s :: S). PMaybe a s
+</span><a href="Plutarch.Maybe.html#PNothing"><span class="hs-identifier hs-var">PNothing</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PMaybe PInteger s -&gt; Term s (PMaybe PInteger)
+forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
+</span><a href="Plutarch.Internal.PlutusType.html#pcon"><span class="hs-identifier hs-var">pcon</span></a></span><span> </span><span class="annot"><span class="annottext">(PMaybe PInteger s -&gt; Term s (PMaybe PInteger))
+-&gt; (Term s PInteger -&gt; PMaybe PInteger s)
+-&gt; Term s PInteger
+-&gt; Term s (PMaybe PInteger)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; PMaybe PInteger s
+forall (a :: PType) (s :: S). Term s a -&gt; PMaybe a s
+</span><a href="Plutarch.Maybe.html#PJust"><span class="hs-identifier hs-var">PJust</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s PInteger -&gt; Term s (PMaybe PInteger))
+-&gt; Term s PInteger -&gt; Term s (PMaybe PInteger)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679565663"><span class="hs-identifier hs-var">result</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-145"></span></pre></body></html>
