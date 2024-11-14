@@ -38,6 +38,7 @@
   - [PUnit](Types/PUnit.md)
 
 - [Typeclasses](Typeclasses.md)
+  - [PLiftable](Typeclasses/PLiftable.md)
   - [PConstant and PLift](Typeclasses/PConstantAndPLift.md)
   - [PEq and POrd](Typeclasses/PEqAndPOrd.md)
   - [PIntegral](Typeclasses/PIntegral.md)
