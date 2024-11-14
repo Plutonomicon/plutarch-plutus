@@ -36,7 +36,7 @@
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
-      hercules-ci.github-pages.branch = "master";
+      hercules-ci.github-pages.branch = "staging";
 
       perSystem = { config, system, lib, self', ... }:
         let
