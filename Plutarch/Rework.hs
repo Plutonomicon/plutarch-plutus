@@ -36,6 +36,7 @@ import GHC.Word (Word64)
 import Plutarch
 import Plutarch.Builtin
 import Plutarch.DataRepr.Internal
+import Plutarch.Evaluate (evalTerm')
 import Plutarch.Internal
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Prelude
@@ -164,7 +165,7 @@ pmatchDataRec ::
   Term s (PDataRec struct) ->
   (PRec struct s -> Term s b) ->
   Term s b
-pmatchDataRec ((pasList #) . punsafeCoerce -> x) f =
+pmatchDataRec (punsafeCoerce -> x) f =
   let
     go :: forall y ys. PIsData y => H s ys -> H s (y ': ys)
     go (H rest) = H $ \ds cps ->
@@ -662,6 +663,58 @@ instance
     pcon $ PSOPRec $ PRec $ unZ $ unSOP $ hcoerce $ from x
   pmatch' x f = pmatch x (f . DeriveAsSOPRec . to . hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPSOPRec)
 
+---------------------------------------------------------------------- Unrolling
+
+-- -- $> :t pfix
+
+unroll :: Integer -> a -> (a -> a) -> a
+unroll 0 d _ = d
+unroll n d f =
+  f (unroll (n - 1) d f)
+
+myplength :: PIsListLike list a => Term s (list a :--> PInteger)
+myplength =
+  pfix # plam go #$ 0
+  where
+    -- plam (bar 0)
+
+    go ::
+      PIsListLike list a =>
+      Term s (PInteger :--> list a :--> PInteger) ->
+      Term s PInteger ->
+      Term s (list a) ->
+      Term s PInteger
+    go self n = pelimList (\_ xs -> self # (n + 1) # xs) n
+
+    bar = unroll 4 (\c li -> (pfix # plam go) # c # li) go'
+    go' ::
+      PIsListLike list a =>
+      (ClosedTerm PInteger -> Term s (list a) -> Term s PInteger) ->
+      ClosedTerm PInteger ->
+      Term s (list a) ->
+      Term s PInteger
+    go' self n = pelimList (\_ xs -> self (evalTerm' mempty (n + 1)) xs) n
+
+myplength' :: PIsListLike list a => Term s (list a :--> PInteger)
+myplength' = bar'
+  where
+    bar f = unroll 4 (\c li -> f # c # li) go'
+    bar' = pfix # plam bar #$ 0
+    go' ::
+      PIsListLike list a =>
+      (Term s PInteger -> Term s (list a) -> Term s PInteger) ->
+      Term s PInteger ->
+      Term s (list a) ->
+      Term s PInteger
+    go' self n = pelimList (\_ xs -> self (n + 1) xs) n
+
+sampleList :: Term s (PBuiltinList PInteger)
+sampleList = pconstant [1, 2, 3, 4, 5]
+
+-- -- $> prettyTermAndCost mempty $ myplength @PBuiltinList @PInteger # sampleList
+
+-- -- $> prettyTermAndCost mempty $ myplength' @PBuiltinList @PInteger # sampleList
+
 ----------------------------------------------------------------------
 
 {- $>
@@ -678,6 +731,10 @@ import Plutarch.Internal.Generic
 import GHC.Exts (Any)
 <$
 -}
+
+-- $> prettyTermAndCost mempty $ fa # 5
+
+-- $> prettyTermAndCost mempty $ fb # 5
 
 ---- $> :t from
 --
@@ -729,8 +786,13 @@ data MyPMaybe' a s
   deriving stock (GHC.Generic)
 instance SOP.Generic (MyPMaybe' s a)
 
+deriving via
+  DeriveAsDataStruct (MyPMaybe' a)
+  instance
+    PIsData a => PlutusType (MyPMaybe' a)
+
 data MyPMaybe a s
-  = MyPJust (Term s a) (Term s a) (Term s a) (Term s a)
+  = MyPJust (Term s a)
   | MyPNothing
   deriving stock (GHC.Generic)
 instance SOP.Generic (MyPMaybe a s)
@@ -749,30 +811,139 @@ deriving via
   instance
     PIsData a => PlutusType (MyPRecord a)
 
+data PFoo a s
+  = PA (Term s a)
+  | PB (Term s PUnit)
+  | PC
+  deriving stock (GHC.Generic)
+instance SOP.Generic (PFoo a s)
+
+deriving via
+  DeriveAsSOPStruct (PFoo a)
+  instance
+    PlutusType (PFoo a)
+
+data PFooScott a s
+  = PAScott (Term s a)
+  | PBScott (Term s PUnit)
+  | PCScott
+  deriving stock (GHC.Generic)
+instance SOP.Generic (PFooScott a s)
+
+deriving via
+  DeriveAsScottStruct (PFooScott a)
+  instance
+    PlutusType (PFooScott a)
+
+pchangeRepr ::
+  forall (t :: S -> Type) (f :: S -> Type) s.
+  ( SOP.Generic (f s)
+  , SOP.Generic (t s)
+  , Code (f s) ~ Code (t s)
+  , PlutusType f
+  , PlutusType t
+  ) =>
+  Term s f ->
+  Term s t
+pchangeRepr x = pmatch x (pcon . to . from)
+
 fun :: Term s PInteger
 fun = unTermCont $ do
-  myRec <- pmatchC $ pcon $ MyPRecord (pconstant @PInteger 10) (pconstant 20)
+  PA x <- pmatchC $ pcon $ PA (pconstant @PInteger 10)
 
-  pure $ myRec.myrec'a + myRec.myrec'b + 10
+  pure x
 
-fun' :: Term s PInteger
-fun' = unTermCont $ do
-  myRec <- pmatchC $ pcon $ MyPRecord (pconstant @PInteger 10) (pconstant 20)
-  a <- pletC myRec.myrec'a
+data MyList a s
+  = MyNil
+  | MyCons (Term s a) (Term s (MyList a))
+  deriving stock (GHC.Generic)
+instance SOP.Generic (MyList a s)
 
-  pure $ a + a + 10
+deriving via
+  DeriveAsSOPStruct (MyList a)
+  instance
+    PlutusType (MyList a)
 
-fun'' :: Term s PInteger
-fun'' = unTermCont $ do
-  let
-    someData :: Term s PData
-    someData = pconstant $ PLA.List [PLA.I 1, PLA.I 2, PLA.I 3, PLA.I 100]
+myList :: Term s (MyList PInteger)
+myList = evalTerm' mempty $ pcon $ MyCons 5 $ pcon $ MyCons 4 $ pcon $ MyCons 3 $ pcon $ MyCons 2 $ pcon MyNil
 
-  PDataRec (PRec (a :* b :* c :* Nil)) <-
-    pmatchC @(PDataRec '[PInteger, PInteger, PInteger]) $
-      punsafeCoerce someData
+myListLength :: Term s (MyList a :--> PInteger)
+myListLength = pfix #$ plam $ \r li ->
+  pmatch li \case
+    MyNil -> 0
+    MyCons _ rest -> 1 + (r # rest)
 
-  pure $ a + b + c
+data MyLongRecord a s
+  = MyLongRecord -- (Term s a) (Term s PInteger) (Term s PInteger)
+  deriving stock (GHC.Generic)
+instance SOP.Generic (MyLongRecord a s)
+
+deriving via
+  DeriveAsScottStruct (MyLongRecord a)
+  instance
+    PlutusType (MyLongRecord a)
+
+myLongRecord :: Term s (MyLongRecord PInteger)
+myLongRecord = pcon MyLongRecord
+
+myLongRecordAddAll :: Term s (MyLongRecord PInteger :--> PInteger)
+myLongRecordAddAll = plam $ \x ->
+  pmatch x $
+    \MyLongRecord -> 10
+
+-- $> prettyTermAndCost mempty $ myListLength # myList
+
+-- $> prettyTermAndCost mempty $ myLongRecordAddAll # myLongRecord
+
+-- $> prettyTermAndCost mempty $ pcon $ PA (pconstant @PInteger 10)
+
+-- fun' :: Term s PInteger
+-- fun' = unTermCont $ do
+--   myRec <- pmatchC $ pcon $ MyPRecord (pconstant @PInteger 10) (pconstant 20)
+--   a <- pletC myRec.myrec'a
+
+--   pure $ a + a + 10
+
+-- fun'' :: Term s PInteger
+-- fun'' = unTermCont $ do
+--   let
+--     someData :: Term s PData
+--     someData = pconstant $ PLA.List [PLA.I 1, PLA.I 2, PLA.I 3, PLA.I 100]
+
+--   PDataRec (PRec (a :* b :* c :* Nil)) <-
+--     pmatchC @(PDataRec '[PInteger, PInteger, PInteger]) $
+--       punsafeCoerce someData
+
+--   pure $ a + b + c
+
+data PBar (s :: S)
+  = Pa (Term s (PDataRecord '[]))
+  | Pb (Term s (PDataRecord '[]))
+  | Pc (Term s (PDataRecord '[]))
+  deriving stock
+    ( -- | @since 2.0.0
+      GHC.Generic
+    )
+  deriving anyclass
+    ( -- | @since 2.0.0
+      PlutusType
+    , -- | @since 2.0.0
+      PIsData
+    )
+
+-- | @since 2.0.0
+instance DerivePlutusType PBar where
+  type DPTStrat _ = PlutusTypeData
+
+-- $> prettyTermAndCost mempty $ pmatch (pcon (Pa pdnil)) (\case { (Pc _) -> pconstant @PInteger 1; _ -> perror})
+
+-- $> prettyTermAndCost mempty $ pmatch (pcon (Pa pdnil)) (\(Pc _) -> pconstant @PInteger 1)
+
+-- $> prettyTermAndCost mempty $ pmatch (pcon $ PA (pconstant @PInteger 10)) (\case { (PC) -> (pconstant @PInteger 1); _ -> perror})
+
+-- $> plift $ fun
+
+-- $> prettyTermAndCost mempty $ pcon $ PA (pconstant @PInteger 10)
 
 -- $> prettyTermAndCost mempty $ fun''
 
@@ -855,3 +1026,18 @@ handler _ = perror
 
 -- bazMatch :: Term s PInteger
 -- bazMatch = pmatchScottRec baz (\(PRec (x :* y :* z :* Nil)) -> pmatchScottRec baz (\_ -> x + x + y + z))
+
+f :: Term s (PInteger :--> PInteger)
+f = plam $ const 10
+
+fa :: Term s (PInteger :--> PInteger)
+fa = plam (\_ x -> f # x) # pconstant @PInteger 10000
+
+fb :: Term s (PInteger :--> PInteger)
+fb = caseFirst (4 + 2 :: Term s PInteger) f
+
+caseFirst :: Term s a -> Term s b -> Term s b
+caseFirst n t = Term $ \i -> do
+  n' <- (getTerm &&& getDeps) <$> asRawTerm n i
+  t' <- (getTerm &&& getDeps) <$> asRawTerm t i
+  pure $ TermResult (RCase (RConstr 0 []) [fst t', fst n']) (snd n' <> snd t')

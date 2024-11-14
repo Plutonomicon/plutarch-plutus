@@ -219,6 +219,20 @@ To achieve better prettification, certain AST structures are given special handl
 prettyTerm :: Config -> ClosedTerm a -> PP.Doc ()
 prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
 
+-- prettyCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
+-- prettyCost conf x =
+--   let
+--     (_, ExBudget cpu mem, _) = either (error . Txt.unpack) id $ evalTerm @a conf x
+--     scriptSize =
+--       SBS.length $
+--         serialiseUPLC $
+--           unScript $
+--             either (error . Txt.unpack) id $
+--               compile conf x
+--   in
+--     "CPU: " <> PP.align (PP.pretty cpu) <>
+--     "\nMEM: " <> PP.pretty mem <> "\nSIZE: " <> PP.pretty scriptSize
+
 prettyTermAndCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
 prettyTermAndCost conf x =
   let
