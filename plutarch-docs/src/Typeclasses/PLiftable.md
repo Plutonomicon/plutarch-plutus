@@ -116,19 +116,20 @@ The type is defined as follows: its implementation is not important.
 ```haskell
 newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveBuiltinPLiftable (a s)
-``
+```
 
 We can see that this `newtype` has two type arguments (besides the `s` to make
 it a Plutarch type): one for the Plutarch type for which we want to derive the
 instance, and one for a Haskell type that is meant to be its `AsHaskell`
-equivalent. To use the derivation helper, you write something like the
-following, substituting `a` and `h` as appropriate:
+equivalent. As an example of how to use this helper, consider the following:
 
 ```haskell
--- ensure that a is an instance of Plutus type, and h is in the default universe
-
-deriving via (DeriveBuiltinPLiftable a h) instance PLiftable a
+deriving via (DeriveBuiltinPLiftable PInteger Integer) 
+    instance PLiftable PInteger
 ```
+
+This specifies that `PInteger`'s Haskell-level equivalent is `Integer` by way of
+its presence in the default Plutarch universe. 
 
 ### Via `DeriveDataPLiftable`
 
@@ -147,15 +148,20 @@ newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 
 Similarly to `DeriveBuiltinPLiftable`, we have two relevant type arguments: 
 one for the Plutarch type for which we want to derive an instance, and 
-another for its Haskell-level equivalent. Much as with `DeriveBuiltinPLiftable`,
-we use `DeriveDataPLiftable` as so, substituting `a` and `h` appropriately:
+another for its Haskell-level equivalent. As an example of how to use this
+helper, consider the following:
 
 ```haskell
-deriving via (DeriveDataPLiftable a h) instance PLiftable a
+deriving via (DeriveDataPLiftable PScriptContext ScriptContext) 
+    instance PLiftable PScriptContext
 ```
 
-There are more stringent requirements of `a` and `h` for this to work. Aside
-from `a` being an instance of `PlutusType`, we also must ensure that:
+This declares that `PScriptContext`'s Haskell-level equivalent is
+`ScriptContext` (from `plutus-ledger-api`), by way of its `Data` encoding. 
+
+There are additional requirements for using this helper with Plutarch type `a`
+and Haskell-level equivalent `h`. Aside from `a` being an instance of
+`PlutusType`, we also must have the following:
 
 * `PInner a` is `PData` (namely, construction and matching is actually carried
   out in a computation involving `Data`)
@@ -185,7 +191,23 @@ If you use either of `DeriveBuiltinPLiftable` or `DeriveDataPLiftable` with
 instance manually, you will have to ensure this yourself. We provide a helper
 for testing that these laws hold in `plutarch-testlib`, in the
 `Plutarch.Test.Laws` module, called `checkPLiftableLaws`, which uses QuickCheck
-to verify that the laws are maintained.
+to verify that the laws are maintained. For example, to check that the instances
+for `PLiftable PInteger` and `PLiftable PScriptContext` are correct, we would 
+write:
+
+```haskell
+main :: IO ()
+main = defaultMain . testGroup "Laws" $ [
+    checkPLiftableLaws @PInteger,
+    checkPLiftableLaws @PScriptContext
+    ]
+```
+
+`checkPLiftableLaws` requires the use of a type argument, as it is otherwise
+ambiguous. It also works largely by way of `AsHaskell`, which means that the
+Haskell-level equivalent of the type being tested must be an instance of
+`Arbitrary`, `Eq` and `Show`, as well as `Pretty`. The name of the type being
+tested will automatically be added to the output of the test suite.
 
 One important caveat to any definition of `PLiftable` instances, manual or not:
 ensure that the Haskell-level equivalent that you declare is genuine. While
@@ -216,8 +238,9 @@ Haskell-to-Plutarch direction, while `plift` is the Plutarch-to-Haskell
 direction. There are three minor caveats to their use:
 
 * `pconstant` is technically ambiguous, as many different Plutarch types can
-  share the same choice for `AsHaskell`. Thus, you may need to use type
-  arguments when calling `pconstant` to avoid ambiguity errors from the
+  share the same choice for `AsHaskell`. A good example is that `PAsData
+  PInteger` and `PInteger` would have the same `AsHaskell` (namely, `Integer`).
+  Thus, you may need to use a type argument to avoid ambiguity errors from the
   compiler.
 * `plift` transforms any `LiftError` into a call to `error`.
 * `plift` requires a rank-2 argument for the Plutarch term (to ensure it's
