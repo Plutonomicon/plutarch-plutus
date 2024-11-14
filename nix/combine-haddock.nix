@@ -11,9 +11,11 @@ let
   hsPkgs =
     lib.attrValues (
       pkgs.haskell-nix.haskellLib.collectComponents' "library" (
-        pkgs.haskell-nix.haskellLib.selectProjectPackages cabalProject.hsPkgs // (
+        pkgs.haskell-nix.haskellLib.selectProjectPackages cabalProject.hsPkgs
+        //
+        (
           lib.filterAttrs
-            (name: _: lib.elem name targetPackages)
+            (name: _: lib.any (x: builtins.match "(${x})-.*$" name == [ x ]) targetPackages)
             cabalProject.hsPkgs
         )
       )
