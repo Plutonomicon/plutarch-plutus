@@ -203,3 +203,9 @@ checkHaskellNumEquivalent :: forall (plutarchInput :: S -> Type). (PUnsafeLiftDe
 
 -- | @since WIP
 checkHaskellIntegralEquivalent :: forall (plutarchInput :: S -> Type). (PUnsafeLiftDecl plutarchInput, Pretty (PLifted plutarchInput), Arbitrary (PLifted plutarchInput), Typeable (PLifted plutarchInput), Integral (PLifted plutarchInput), Typeable plutarchInput, PIntegral plutarchInput) => TestTree
+
+-- | Verifies that the specified Plutarch and Haskell types satisfy the
+--   laws of <a>PLiftable</a>.
+--   
+--   @since WIP
+checkPLiftableLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a, Show (AsHaskell a), Typeable a) => TestTree

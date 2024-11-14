@@ -2226,6 +2226,145 @@ instance forall a b. (Plutarch.Lift.PConstant a, Plutarch.Lift.PConstant b) => P
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Builtin.PBuiltinPair a b)
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PEq a, Plutarch.Bool.PEq b) => Plutarch.Bool.PEq (Plutarch.Builtin.PBuiltinPair a b)
 
+module Plutarch.Internal.Lift
+
+-- | Indicates that the given Plutarch type has an equivalent in Haskell
+--   (and Plutus by extension), and we have the ability to move between
+--   them.
+--   
+--   <h1>Important note</h1>
+--   
+--   Calling <a>toPlutarch</a> and <a>fromPlutarch</a> directly should
+--   rarely, if ever, be a thing you do. Prefer using <a>pconstant</a> and
+--   <a>plift</a>, as these handle some of the oddities required without
+--   you having to think about them.
+--   
+--   You should rarely, if ever, need to define <a>PLiftable</a> instances
+--   by hand. Whenever possible, prefer using <a>DeriveBuiltinPLiftable</a>
+--   and <a>DeriveDataPLiftable</a>, as they have fewer complexities and
+--   caveats. See their documentation for when to use them.
+--   
+--   If you do want to define the methods yourself, there's a few key
+--   factors to keep in mind:
+--   
+--   <ol>
+--   <li><a>PLifted</a> is a trivial wrapper to assist with <tt>via</tt>
+--   derivations: it is isomorphic to <tt>Identity</tt> and should be
+--   treated as such. Use <a>unPLifted</a> to 'pull' terms out.</li>
+--   <li><a>fromPlutarch</a> involves compilation and evaluation. When
+--   doing so, ensure that you use the largest possible budgets to avoid
+--   weird problems.</li>
+--   <li>When choosing a type for <a>AsHaskell</a>, <i>any</i> value of
+--   that type <i>must</i> be representable in Plutarch. If you have
+--   internal invariants to maintain on the Haskell side, make sure you do
+--   so with great care.</li>
+--   </ol>
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt><a>fromPlutarch</a> <a>.</a> <a>toPlutarch</a></tt> <tt>=</tt>
+--   <tt><a>Right</a></tt></li>
+--   <li><tt><a>fmap</a> <a>toPlutarch</a> <a>.</a>
+--   <a>fromPlutarch</a></tt> <tt>=</tt> <tt><a>Right</a></tt></li>
+--   </ol>
+--   
+--   Any derivations via <a>DeriveBuiltinPLiftable</a> and
+--   <a>DeriveDataPLiftable</a> automatically follow these laws.
+--   
+--   @since WIP
+class PlutusType a => PLiftable (a :: S -> Type) where {
+    type AsHaskell a :: Type;
+}
+toPlutarch :: forall (s :: S). PLiftable a => AsHaskell a -> PLifted a s
+fromPlutarch :: PLiftable a => (forall (s :: S). PLifted a s) -> Either LiftError (AsHaskell a)
+
+-- | Given a Haskell-level representation of a Plutarch term, transform it
+--   into its equivalent term.
+--   
+--   @since WIP
+pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Term s a
+
+-- | Given a closed Plutarch term, compile and evaluate it, then produce
+--   the corresponding Haskell value. If compilation or evaluation fails
+--   somehow, this will call <a>error</a>: if you need to 'trap' these
+--   outcomes and handle them differently somehow, use <a>fromPlutarch</a>.
+--   
+--   @since WIP
+plift :: forall (a :: S -> Type). PLiftable a => (forall (s :: S). Term s a) -> AsHaskell a
+
+-- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
+--   Haskell-level equivalent <tt>h</tt> that is directly part of the
+--   Plutus default universe (instead of by way of a <tt>Data</tt>
+--   encoding).
+--   
+--   @since WIP
+newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+DeriveBuiltinPLiftable :: a s -> DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+
+-- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
+--   Haskell-level equivalent <tt>h</tt> by way of its <tt>Data</tt>
+--   encoding, rather than by <tt>h</tt> being directly part of the Plutus
+--   default universe.
+--   
+--   @since WIP
+newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+DeriveDataPLiftable :: a s -> DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+
+-- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
+--   needed when writing manual instances of <a>PLiftable</a>, or if you
+--   want to use <a>toPlutarch</a> and <a>fromPlutarch</a> directly.
+--   
+--   @since WIP
+newtype PLifted a s
+PLifted :: Term s POpaque -> PLifted a s
+
+-- | Wrapper around <a>punsafeCoerce</a> to 'pull out' a term inside a
+--   <a>PLifted</a>.
+--   
+--   @since WIP
+unPLifted :: PLifted a s -> Term s a
+
+-- | Used with <a>fromPlutarch</a> methods to give additional information
+--   about why evaluating a Plutarch term into a Haskell value went wrong.
+--   
+--   @since WIP
+data LiftError
+
+-- | Evaluation failed for some reason.
+CouldNotEvaluate :: EvalError -> LiftError
+
+-- | We tried to use a builtin not part of the Plutus universe.
+TypeError :: BuiltinError -> LiftError
+
+-- | Compiling the term into a script failed.
+CouldNotCompile :: Text -> LiftError
+
+-- | <tt>Data</tt> encoding was invalid for our type
+CouldNotDecodeData :: LiftError
+
+-- | Helper for writing <a>PLiftable</a> instances. This is <i>highly</i>
+--   unsafe, and only suitable for internal use!
+--   
+--   @since WIP
+unsafeToUni :: forall (a :: S -> Type) (h :: Type). DefaultUni `Includes` h => (forall (s :: S). PLifted a s) -> Either LiftError h
+
+-- | Helper for writing <a>PLifted</a> instances. This is <i>highly</i>
+--   unsafe, and only suitable for internal use!
+--   
+--   @since WIP
+unsafeFromUni :: forall (a :: S -> Type) (h :: Type) (s :: S). DefaultUni `Includes` h => h -> PLifted a s
+instance GHC.Show.Show Plutarch.Internal.Lift.LiftError
+instance GHC.Classes.Eq Plutarch.Internal.Lift.LiftError
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h s)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveDataPLiftable a h s)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
+instance forall (a :: Plutarch.Internal.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, (Plutarch.Internal.PlutusType.PInner a :: Plutarch.Internal.PType) GHC.Types.~ (Plutarch.Builtin.PData :: Plutarch.Internal.PType), PlutusTx.IsData.Class.ToData h, PlutusTx.IsData.Class.FromData h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
+instance forall (a :: Plutarch.Internal.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
+
 module Plutarch.FFI
 
 -- | Equality of inner types - Plutarch on the left and Haskell on the
