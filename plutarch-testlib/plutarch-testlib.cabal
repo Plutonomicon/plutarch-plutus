@@ -87,6 +87,7 @@ library
 
   exposed-modules:
     Plutarch.Test.Bench
+    Plutarch.Test.Bench.Meta
     Plutarch.Test.Golden
     Plutarch.Test.Laws
     Plutarch.Test.QuickCheck
