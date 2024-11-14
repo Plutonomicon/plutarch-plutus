@@ -22,7 +22,8 @@ module Plutarch.Internal.Lift (
   PLifted (..),
   unPLifted,
   LiftError (..),
-  unsafeUniToPLifted,
+  unsafeToUni,
+  unsafeFromUni,
 ) where
 
 import Data.Kind (Type)
@@ -191,9 +192,9 @@ instance
   where
   type AsHaskell (DeriveBuiltinPLiftable a h) = h
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch = unsafeUniToPLifted
+  toPlutarch = unsafeFromUni
   {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = unsafePLiftedToUni
+  fromPlutarch = unsafeToUni
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ by way of its @Data@ encoding, rather than by @h@ being directly part of
@@ -221,10 +222,10 @@ instance
   where
   type AsHaskell (DeriveDataPLiftable a h) = h
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch = unsafeUniToPLifted @_ @PLCData.Data . PTx.toData
+  toPlutarch = unsafeFromUni @_ @PLCData.Data . PTx.toData
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch t = do
-    res <- unsafePLiftedToUni t
+    res <- unsafeToUni t
     case PTx.fromData res of
       Nothing -> Left CouldNotDecodeData
       Just res' -> pure res'
@@ -234,12 +235,12 @@ suitable for internal use!
 
 @since WIP
 -}
-unsafeUniToPLifted ::
+unsafeFromUni ::
   forall (a :: S -> Type) (h :: Type) (s :: S).
   PLC.DefaultUni `Includes` h =>
   h ->
   PLifted a s
-unsafeUniToPLifted =
+unsafeFromUni =
   PLifted . punsafeConstantInternal . PLC.someValue @h @PLC.DefaultUni
 
 {- | Helper for writing 'PLiftable' instances. This is /highly/ unsafe, and only
@@ -247,12 +248,12 @@ suitable for internal use!
 
 @since WIP
 -}
-unsafePLiftedToUni ::
+unsafeToUni ::
   forall (a :: S -> Type) (h :: Type).
   PLC.DefaultUni `Includes` h =>
   (forall (s :: S). PLifted a s) ->
   Either LiftError h
-unsafePLiftedToUni t =
+unsafeToUni t =
   case compile (Tracing LogInfo DoTracing) (unPLifted t) of
     Left err -> Left . CouldNotCompile $ err
     Right compiled -> case evalScriptHuge compiled of
