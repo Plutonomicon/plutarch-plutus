@@ -71,6 +71,7 @@ library
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
+    , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
