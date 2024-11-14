@@ -12,10 +12,12 @@ module Plutarch.Test.Laws (
   checkHaskellOrdEquivalent,
   checkHaskellNumEquivalent,
   checkHaskellIntegralEquivalent,
+  checkPLiftableLaws,
 ) where
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
+import Plutarch.Internal.Lift (PLiftable (AsHaskell, fromPlutarch, toPlutarch))
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
@@ -39,6 +41,30 @@ import Test.QuickCheck (
 import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
+
+{- | Verifies that the specified Plutarch and Haskell types satisfy the laws of
+'PLiftable'.
+
+@since WIP
+-}
+checkPLiftableLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , Eq (AsHaskell a)
+  , PLiftable a
+  , Show (AsHaskell a)
+  , Typeable a
+  ) =>
+  TestTree
+checkPLiftableLaws =
+  testGroup
+    (instanceOfType @(S -> Type) @a "PLiftable")
+    [ testProperty "fromPlutarch . toPlutarch = Right"
+        . forAllShrinkShow arbitrary shrink prettyShow
+        $ \(x :: AsHaskell a) ->
+          fromPlutarch (toPlutarch @a x) === Right x
+    ]
 
 {- | Like `checkLedgerProperties` but specialized to `PValue`
 
