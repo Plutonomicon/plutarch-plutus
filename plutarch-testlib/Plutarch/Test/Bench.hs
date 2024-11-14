@@ -4,6 +4,13 @@
 
 Interface mirrors the one from @tasty-bench@ but 'bench' instead of taking @Benchmarkable@
 takes 'Plutarch.ClosedTerm'
+
+To compare benchmark run against baseline file you need to generate it first with
+@cabal run bench -- --csv baseline.csv@. Then after making modifications you can rerun the
+benchmarks to compare with previous values with @cabal run bench -- --baseline baseline.csv@.
+You can instruct benchmarks to fail if certain values changed by too much using @--fail-if-*@
+flags. See @cabal run bench -- --help@ for all available flags. To regenreate baseline file
+run with @--csv@ flag again.
 -}
 module Plutarch.Test.Bench (
   BenchConfig (Optimizing, NonOptimizing),
