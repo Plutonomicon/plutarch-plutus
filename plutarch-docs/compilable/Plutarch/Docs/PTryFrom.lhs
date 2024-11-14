@@ -1,1 +1,1 @@
-../../../Typeclasses/PTryFrom.md
+../../../src/Typeclasses/PTryFrom.md
