@@ -1,0 +1,411 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>PConstantAndPLift</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../Overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../Introduction.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Introduction/DelayAndForce.html"><strong aria-hidden="true">2.1.</strong> DelayAndForce</a></li><li class="chapter-item expanded "><a href="../Introduction/PatternMatching.html"><strong aria-hidden="true">2.2.</strong> PatternMatching</a></li><li class="chapter-item expanded "><a href="../Introduction/PlutarchTerms.html"><strong aria-hidden="true">2.3.</strong> PlutarchTerms</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Introduction/PlutarchTerms/PlutarchConstants.html"><strong aria-hidden="true">2.3.1.</strong> PlutarchConstants</a></li><li class="chapter-item expanded "><a href="../Introduction/PlutarchTerms/PlutarchLambdas.html"><strong aria-hidden="true">2.3.2.</strong> PlutarchLambdas</a></li></ol></li><li class="chapter-item expanded "><a href="../Introduction/PlutarchTypes.html"><strong aria-hidden="true">2.4.</strong> PlutarchTypes</a></li><li class="chapter-item expanded "><a href="../Introduction/UntypedPlutusCore.html"><strong aria-hidden="true">2.5.</strong> UntypedPlutusCore</a></li><li class="chapter-item expanded "><a href="../DEVGUIDE.html"><strong aria-hidden="true">2.6.</strong> Dev Guide</a></li><li class="chapter-item expanded "><a href="../Run.html"><strong aria-hidden="true">2.7.</strong> Run</a></li><li class="chapter-item expanded "><a href="../Troubleshooting.html"><strong aria-hidden="true">2.8.</strong> Troubleshooting</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Examples</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../examples/BASIC.html"><strong aria-hidden="true">3.1.</strong> Basic</a></li><li class="chapter-item expanded "><a href="../examples/VALIDATOR.html"><strong aria-hidden="true">3.2.</strong> Validator</a></li></ol></li><li class="chapter-item expanded "><a href="../Concepts.html"><strong aria-hidden="true">4.</strong> Concepts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Concepts/DataAndScottEncoding.html"><strong aria-hidden="true">4.1.</strong> DataAndScottEncoding</a></li><li class="chapter-item expanded "><a href="../Concepts/GenericProgramming.html"><strong aria-hidden="true">4.2.</strong> GenericProgramming</a></li><li class="chapter-item expanded "><a href="../Concepts/HaskellSynonym.html"><strong aria-hidden="true">4.3.</strong> HaskellSynonym</a></li><li class="chapter-item expanded "><a href="../Concepts/Hoisting.html"><strong aria-hidden="true">4.4.</strong> Hoisting</a></li><li class="chapter-item expanded "><a href="../Concepts/WhatIsTheS.html"><strong aria-hidden="true">4.5.</strong> WhatIsTheS</a></li></ol></li><li class="chapter-item expanded "><a href="../Types.html"><strong aria-hidden="true">5.</strong> Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Types/PAsData.html"><strong aria-hidden="true">5.1.</strong> PAsData</a></li><li class="chapter-item expanded "><a href="../Types/PBool.html"><strong aria-hidden="true">5.2.</strong> PBool</a></li><li class="chapter-item expanded "><a href="../Types/PBuiltinList.html"><strong aria-hidden="true">5.3.</strong> PBuiltinList</a></li><li class="chapter-item expanded "><a href="../Types/PBuiltinPair.html"><strong aria-hidden="true">5.4.</strong> PBuiltinPair</a></li><li class="chapter-item expanded "><a href="../Types/PByteString.html"><strong aria-hidden="true">5.5.</strong> PByteString</a></li><li class="chapter-item expanded "><a href="../Types/PData.html"><strong aria-hidden="true">5.6.</strong> PData</a></li><li class="chapter-item expanded "><a href="../Types/PDataSumAndPDataRecord.html"><strong aria-hidden="true">5.7.</strong> PDataSumAndPDataRecord</a></li><li class="chapter-item expanded "><a href="../Types/PInteger.html"><strong aria-hidden="true">5.8.</strong> PInteger</a></li><li class="chapter-item expanded "><a href="../Types/PList.html"><strong aria-hidden="true">5.9.</strong> PList</a></li><li class="chapter-item expanded "><a href="../Types/PString.html"><strong aria-hidden="true">5.10.</strong> PString</a></li><li class="chapter-item expanded "><a href="../Types/PUnit.html"><strong aria-hidden="true">5.11.</strong> PUnit</a></li></ol></li><li class="chapter-item expanded "><a href="../Typeclasses.html"><strong aria-hidden="true">6.</strong> Typeclasses</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Typeclasses/PConstantAndPLift.html" class="active"><strong aria-hidden="true">6.1.</strong> PConstantAndPLift</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PEqAndPOrd.html"><strong aria-hidden="true">6.2.</strong> PEqAndPOrd</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PIntegral.html"><strong aria-hidden="true">6.3.</strong> PIntegral</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PIsData.html"><strong aria-hidden="true">6.4.</strong> PIsData</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PIsDataReprAndPDataFields.html"><strong aria-hidden="true">6.5.</strong> PIsDataReprAndPDataFields</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PListLike.html"><strong aria-hidden="true">6.6.</strong> PListLike</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PlutusType,PCon,PMatch.html"><strong aria-hidden="true">6.7.</strong> PlutusType,PCon,PMatch</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PTryFrom.html"><strong aria-hidden="true">6.8.</strong> PTryFrom</a></li></ol></li><li class="chapter-item expanded "><a href="../Usage.html"><strong aria-hidden="true">7.</strong> Usage</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Usage/AvoidWorkDuplicationUsingPlet.html"><strong aria-hidden="true">7.1.</strong> AvoidWorkDuplicationUsingPlet</a></li><li class="chapter-item expanded "><a href="../Usage/Conditionals.html"><strong aria-hidden="true">7.2.</strong> Conditionals</a></li><li class="chapter-item expanded "><a href="../Usage/DerivingForNewtypes.html"><strong aria-hidden="true">7.3.</strong> DerivingForNewtypes</a></li><li class="chapter-item expanded "><a href="../Usage/DerivingWithGenerics.html"><strong aria-hidden="true">7.4.</strong> DerivingWithGenerics</a></li><li class="chapter-item expanded "><a href="../Usage/DoSyntaxWithQualifiedDo.html"><strong aria-hidden="true">7.5.</strong> DoSyntaxWithQualifiedDo</a></li><li class="chapter-item expanded "><a href="../Usage/DoSyntaxWithTermCont.html"><strong aria-hidden="true">7.6.</strong> DoSyntaxWithTermCont</a></li><li class="chapter-item expanded "><a href="../Usage/FFI.html"><strong aria-hidden="true">7.7.</strong> FFI</a></li><li class="chapter-item expanded "><a href="../Usage/PreludeMixin.html"><strong aria-hidden="true">7.8.</strong> PreludeMixin</a></li><li class="chapter-item expanded "><a href="../Usage/RaisingErrors.html"><strong aria-hidden="true">7.9.</strong> RaisingErrors</a></li><li class="chapter-item expanded "><a href="../Usage/Recursion.html"><strong aria-hidden="true">7.10.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="../Usage/Tracing.html"><strong aria-hidden="true">7.11.</strong> Tracing</a></li><li class="chapter-item expanded "><a href="../Usage/UnsafeFunctions.html"><strong aria-hidden="true">7.12.</strong> UnsafeFunctions</a></li></ol></li><li class="chapter-item expanded "><a href="../Tricks.html"><strong aria-hidden="true">8.</strong> Tricks</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Tricks/DifferenceBetweenPconAndPconstant.html"><strong aria-hidden="true">8.1.</strong> DifferenceBetweenPconAndPconstant</a></li><li class="chapter-item expanded "><a href="../Tricks/DontDuplicateWork.html"><strong aria-hidden="true">8.2.</strong> DontDuplicateWork</a></li><li class="chapter-item expanded "><a href="../Tricks/makeIsDataIndexed,HaskellADTs,PIsDataRepr.html"><strong aria-hidden="true">8.3.</strong> makeIsDataIndexed,HaskellADTs,PIsDataRepr</a></li><li class="chapter-item expanded "><a href="../Tricks/OptimizingUnhoistableLambdas.html"><strong aria-hidden="true">8.4.</strong> OptimizingUnhoistableLambdas</a></li><li class="chapter-item expanded "><a href="../Tricks/PlutarchFunctionsStrict.html"><strong aria-hidden="true">8.5.</strong> PlutarchFunctionsStrict</a></li><li class="chapter-item expanded "><a href="../Tricks/PreferMatchingOnPmatchResultImmediately.html"><strong aria-hidden="true">8.6.</strong> PreferMatchingOnPmatchResultImmediately</a></li><li class="chapter-item expanded "><a href="../Tricks/PreferPlutarchFunctions.html"><strong aria-hidden="true">8.7.</strong> PreferPlutarchFunctions</a></li><li class="chapter-item expanded "><a href="../Tricks/PreferStaticallyBuildingConstants.html"><strong aria-hidden="true">8.8.</strong> PreferStaticallyBuildingConstants</a></li><li class="chapter-item expanded "><a href="../Tricks/RepresentationOfPlutarchType.html"><strong aria-hidden="true">8.9.</strong> RepresentationOfPlutarchType</a></li><li class="chapter-item expanded "><a href="../Tricks/ResponsibilityOfEvaluationInHaskellFunctions.html"><strong aria-hidden="true">8.10.</strong> ResponsibilityOfEvaluationInHaskellFunctions</a></li><li class="chapter-item expanded "><a href="../Tricks/UsingHaskellLevelFunctions.html"><strong aria-hidden="true">8.11.</strong> UsingHaskellLevelFunctions</a></li><li class="chapter-item expanded "><a href="../Tricks/WorkingWithBoundFields.html"><strong aria-hidden="true">8.12.</strong> WorkingWithBoundFields</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <details>
+<summary> imports </summary>
+<p>
+<pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# LANGUAGE UndecidableInstances #-}
+module Plutarch.Docs.PConstantAndPLift (b, purp) where
+import Plutarch.Prelude
+import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
+import Plutarch.LedgerApi.V3 (PScriptPurpose)
+</code></pre>
+</p>
+</details>
+<h1 id="pconstant--plift"><a class="header" href="#pconstant--plift"><code>PConstant</code> &amp; <code>PLift</code></a></h1>
+<p>These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented
+as a builtin type, i.e.
+<a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni"><code>DefaultUni</code></a>
+and its corresponding <a href="./../Concepts/HaskellSynonym.html">Haskell synonym</a>. The gory details of these
+two are not too useful to users, but you can read all about it if you want at
+<a href="../DEVGUIDE.html#pconstant-and-plift">Developers' corner</a>.</p>
+<p>What's more important, are the abilities that <code>PConstant</code>/<code>PLift</code> instances have:</p>
+<pre><code class="language-hs">pconstant :: PLift p =&gt; PLifted p -&gt; Term s p
+
+plift :: (HasCallStack, PLift p) =&gt; ClosedTerm p -&gt; PLifted p
+</code></pre>
+<p>These typeclasses also bestow the associated type families:</p>
+<pre><code class="language-hs">type PLifted :: PType -&gt; Type
+
+type PConstanted :: Type -&gt; PType
+</code></pre>
+<p>These are meant to be inverse type families of each other. In particular, <code>PLifted p</code> represents the Haskell synonym
+of the Plutarch type, <code>p</code>. Similarly, <code>PConstanted h</code> represents the Plutarch type corresponding to the Haskell type,
+<code>h</code>.</p>
+<p><code>pconstant</code> lets you build a Plutarch value from its corresponding Haskell synonym. For example, the Haskell synonym
+of <a href="./../Types/PBool.html"><code>PBool</code></a> is
+<a href="https://hackage.haskell.org/package/base-4.16.0.0/docs/Data-Bool.html#t:Bool"><code>Bool</code></a>.</p>
+<pre><code class="language-haskell">b :: Term s PBool
+b = pconstant False
+</code></pre>
+<p>On the other end, <code>plift</code> lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e. <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni"><code>DefaultUni</code></a>:</p>
+<pre><code class="language-haskell">purp :: Term s PScriptPurpose
+purp = pconstant $ Minting "be"
+</code></pre>
+<pre><code class="language-hs">&gt; plift purp
+Minting "be"
+</code></pre>
+<p>There's also another handy utility, <code>pconstantData</code>:</p>
+<pre><code class="language-hs">pconstantData :: (PLift p, ToData (PLifted p)) =&gt; PLifted p -&gt; Term s (PAsData p)
+</code></pre>
+<blockquote>
+<p>Note: This isn't the actual type of <code>pconstantData</code> - it's simplified here for the sake of documentation ;)</p>
+</blockquote>
+<p>It's simply the <code>PAsData</code> building cousin of <code>pconstant</code>!</p>
+<h2 id="implementing-pconstant--plift"><a class="header" href="#implementing-pconstant--plift">Implementing <code>PConstant</code> &amp; <code>PLift</code></a></h2>
+<p>If your custom Plutarch type is represented by a builtin type under the hood
+(i.e. not <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoded</a> - rather one of the
+<a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni"><code>DefaultUni</code></a> types)</p>
+<ul>
+<li>you can implement <code>PLift</code> for it by using the provided machinery.</li>
+</ul>
+<p>This comes in three flavors:</p>
+<ul>
+<li>
+<p>Plutarch type represented <strong>directly</strong> by a builtin type that <strong>is not</strong> <code>Data</code> (<code>DefaultUniData</code>)
+==&gt; <code>DerivePConstantDirect</code></p>
+<p><em>Ex:</em> <code>PInteger</code> is directly represented as a builtin integer.</p>
+</li>
+<li>
+<p>Plutarch type represented <strong>indirectly</strong> by a builtin type that <strong>is not</strong> <code>Data</code> (<code>DefaultUniData</code>)
+==&gt; <code>DerivePConstantViaNewtype</code></p>
+<p><em>Ex:</em> <code>PPositive</code> is a newtype to a <code>PInteger</code>, and <code>PInteger</code> is <em>directly</em> represented as a
+<code>BuiltinInteger</code>.</p>
+</li>
+<li>
+<p>Plutarch type represented by <code>Data</code>, i.e. <a href="./../Concepts/DataAndScottEncoding.html#data-encoding">data encoded</a>
+(<code>DefaultUniData</code>) ==&gt; <code>DerivePConstantViaData</code></p>
+<p><em>Ex:</em> <code>PScriptPurpose</code> is represented as a <code>Data</code> value. It is synonymous to <code>ScriptPurpose</code> from the Plutus Ledger API</p>
+</li>
+</ul>
+<p>Whichever path you need to go down, there is one common part- implementing <code>PLift</code>, or rather <code>PUnsafeLiftDecl</code>. See,
+<code>PLift</code> is actually just a type synonym to <code>PUnsafeLiftDecl</code> (with a bit more machinery). Essentially an empty
+typeclass with an associated type family that provides insight on the relationship between a Plutarch type and its
+Haskell synonym.</p>
+<pre><code class="language-hs">instance PUnsafeLiftDecl YourPlutarchType where
+  type PLifted YourPlutarchType = YourHaskellType
+</code></pre>
+<p>In fact, <code>PConstant</code> is <em>also</em> a type synonym. The actual typeclass you'll be implementing is <code>PConstantDecl</code>.</p>
+<p>You're tasked with assigning the correct Haskell synonym to your Plutarch type, and what an important task it is! Recall that <code>pconstant</code>'s argument type will depend on your assignment here. In particular: <code>pconstant :: YourHaskellType -&gt; YourPlutarchType</code>.</p>
+<p>Some examples:</p>
+<ul>
+<li>
+<p>for <code>YourPlutarchType</code> = <code>PInteger</code>, <code>YourHaskellType</code> = <code>Integer</code></p>
+<pre><code class="language-hs">instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
+</code></pre>
+</li>
+<li>
+<p>for <code>YourPlutarchType</code> = <code>PValidatorHash</code>, <code>YourHaskellType</code> = <code>ValidatorHash</code></p>
+<pre><code class="language-hs">instance PUnsafeLiftDecl PValidatorHash where type PLifted PValidatorHash = Plutus.ValidatorHash
+</code></pre>
+</li>
+<li>
+<p>for <code>YourPlutarchType</code> = <code>PScriptPurpose</code>, <code>YourHaskellType</code> = <code>ScriptPurpose</code></p>
+<pre><code class="language-hs">instance PUnsafeLiftDecl PScriptPurpose where type PLifted PScriptPurpose = Plutus.ScriptPurpose
+</code></pre>
+</li>
+</ul>
+<p>Now, let's get to implementing <code>PConstant</code> for the Haskell synonym, via the three methods.
+The first of which is <code>DerivePConstantDirect</code>:</p>
+<pre><code class="language-hs">deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
+</code></pre>
+<p><code>DerivePConstantDirect</code> takes in two type parameters:</p>
+<ul>
+<li>The Haskell type itself, for which <code>PConstant</code> is being implemented for.</li>
+<li>The <strong>direct</strong> Plutarch synonym to the Haskell type.</li>
+</ul>
+<p>Pretty simple! Let's check out <code>DerivePConstantViaNewtype</code> now:</p>
+<pre><code class="language-hs">{-# LANGUAGE UndecidableInstances #-}
+
+import Plutarch.Lift (DerivePConstantViaNewtype (DerivePConstantViaNewtype), PConstantDecl, PUnsafeLiftDecl)
+import Plutarch.Prelude
+
+import qualified Plutus.V1.Ledger.Api as Plutus
+
+newtype PValidatorHash (s :: S) = PValidatorHash (Term s PByteString)
+
+...
+
+deriving via (DerivePConstantViaNewtype Plutus.ValidatorHash PValidatorHash PByteString)
+  instance PConstantDecl Plutus.ValidatorHash
+</code></pre>
+<p><code>DerivePConstantViaNewtype</code> takes in three type parameters:</p>
+<ul>
+<li>
+<p>The Haskell newtype itself, for which <code>PConstant</code> is being implemented for.</p>
+</li>
+<li>
+<p>The Plutarch synonym to the Haskell type.</p>
+</li>
+<li>
+<p>The actual Plutarch type corresponding to the Haskell type contained within the newtype.</p>
+<p>For example, <code>ValidatorHash</code> is a newtype to a <code>ByteString</code>, which is synonymous to <code>PByteString</code>. In the same way, <code>PValidatorHash</code> is actually just a newtype to a <code>PByteString</code> term.
+During runtime, <code>ValidatorHash</code> is actually just a <code>ByteString</code>, the same applies for <code>PValidatorHash</code>. So we give it the <code>newtype</code> treatment with <code>DerivePConstantViaNewtype</code>!</p>
+</li>
+</ul>
+<p>Finally, we have <code>DerivePConstantViaData</code> for <code>Data</code> values:</p>
+<pre><code class="language-hs">data PScriptPurpose (s :: S)
+  = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
+  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
+  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
+  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+
+deriving via
+  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
+  instance PConstantDecl Plutus.ScriptPurpose
+</code></pre>
+<p><code>DerivePConstantViaData</code> takes in two type parameters:</p>
+<ul>
+<li>The Haskell type itself, for which <code>PConstant</code> is being implemented for.</li>
+<li>The Plutarch synonym to the Haskell type.
+And that's all you need to know to implement <code>PConstant</code> and <code>PLift</code>!</li>
+</ul>
+<h2 id="implementing-pconstant--plift-for-types-with-type-variables-generic-types"><a class="header" href="#implementing-pconstant--plift-for-types-with-type-variables-generic-types">Implementing <code>PConstant</code> &amp; <code>PLift</code> for types with type variables (generic types)</a></h2>
+<p>If your Plutarch type and its Haskell synonym are generic types (e.g. <code>PMaybeData a</code>) - the implementation gets a tad more difficult. In particular, you need to constrain the generic type variables to also have the relevant instance.</p>
+<p>The constraints observed when implementing <code>PLift</code>:</p>
+<ul>
+<li>Each type variable must also have a <code>PLift</code> instance.</li>
+</ul>
+<p>The constraints observed when implementing <code>PConstant</code>:</p>
+<ul>
+<li>Each type variable must also have a <code>PConstant</code> instance.</li>
+</ul>
+<p>If you're using <code>DerivePConstantViaData</code>, you should use the <code>PLiftData</code> and <code>PConstantData</code> constraints instead respectively.</p>
+<p>Here's how you'd set up all this for <code>PMaybeData a</code>:</p>
+<pre><code class="language-hs">data PMaybeData a (s :: S)
+  = PDJust (Term s (PDataRecord '["_0" ':= a]))
+  | PDNothing (Term s (PDataRecord '[]))
+
+instance PLiftData a =&gt; PUnsafeLiftDecl (PMaybeData a) where
+  type PLifted (PMaybeData a) = Maybe (PLifted a)
+
+deriving via
+  (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
+  instance
+    PConstantData a =&gt; PConstantDecl (Maybe a)
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Typeclasses.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Typeclasses/PEqAndPOrd.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Typeclasses.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Typeclasses/PEqAndPOrd.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

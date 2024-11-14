@@ -1,0 +1,506 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>PIsDataReprAndPDataFields</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../Overview.html"><strong aria-hidden="true">1.</strong> Overview</a></li><li class="chapter-item expanded "><a href="../Introduction.html"><strong aria-hidden="true">2.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Introduction/DelayAndForce.html"><strong aria-hidden="true">2.1.</strong> DelayAndForce</a></li><li class="chapter-item expanded "><a href="../Introduction/PatternMatching.html"><strong aria-hidden="true">2.2.</strong> PatternMatching</a></li><li class="chapter-item expanded "><a href="../Introduction/PlutarchTerms.html"><strong aria-hidden="true">2.3.</strong> PlutarchTerms</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Introduction/PlutarchTerms/PlutarchConstants.html"><strong aria-hidden="true">2.3.1.</strong> PlutarchConstants</a></li><li class="chapter-item expanded "><a href="../Introduction/PlutarchTerms/PlutarchLambdas.html"><strong aria-hidden="true">2.3.2.</strong> PlutarchLambdas</a></li></ol></li><li class="chapter-item expanded "><a href="../Introduction/PlutarchTypes.html"><strong aria-hidden="true">2.4.</strong> PlutarchTypes</a></li><li class="chapter-item expanded "><a href="../Introduction/UntypedPlutusCore.html"><strong aria-hidden="true">2.5.</strong> UntypedPlutusCore</a></li><li class="chapter-item expanded "><a href="../DEVGUIDE.html"><strong aria-hidden="true">2.6.</strong> Dev Guide</a></li><li class="chapter-item expanded "><a href="../Run.html"><strong aria-hidden="true">2.7.</strong> Run</a></li><li class="chapter-item expanded "><a href="../Troubleshooting.html"><strong aria-hidden="true">2.8.</strong> Troubleshooting</a></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">3.</strong> Examples</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../examples/BASIC.html"><strong aria-hidden="true">3.1.</strong> Basic</a></li><li class="chapter-item expanded "><a href="../examples/VALIDATOR.html"><strong aria-hidden="true">3.2.</strong> Validator</a></li></ol></li><li class="chapter-item expanded "><a href="../Concepts.html"><strong aria-hidden="true">4.</strong> Concepts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Concepts/DataAndScottEncoding.html"><strong aria-hidden="true">4.1.</strong> DataAndScottEncoding</a></li><li class="chapter-item expanded "><a href="../Concepts/GenericProgramming.html"><strong aria-hidden="true">4.2.</strong> GenericProgramming</a></li><li class="chapter-item expanded "><a href="../Concepts/HaskellSynonym.html"><strong aria-hidden="true">4.3.</strong> HaskellSynonym</a></li><li class="chapter-item expanded "><a href="../Concepts/Hoisting.html"><strong aria-hidden="true">4.4.</strong> Hoisting</a></li><li class="chapter-item expanded "><a href="../Concepts/WhatIsTheS.html"><strong aria-hidden="true">4.5.</strong> WhatIsTheS</a></li></ol></li><li class="chapter-item expanded "><a href="../Types.html"><strong aria-hidden="true">5.</strong> Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Types/PAsData.html"><strong aria-hidden="true">5.1.</strong> PAsData</a></li><li class="chapter-item expanded "><a href="../Types/PBool.html"><strong aria-hidden="true">5.2.</strong> PBool</a></li><li class="chapter-item expanded "><a href="../Types/PBuiltinList.html"><strong aria-hidden="true">5.3.</strong> PBuiltinList</a></li><li class="chapter-item expanded "><a href="../Types/PBuiltinPair.html"><strong aria-hidden="true">5.4.</strong> PBuiltinPair</a></li><li class="chapter-item expanded "><a href="../Types/PByteString.html"><strong aria-hidden="true">5.5.</strong> PByteString</a></li><li class="chapter-item expanded "><a href="../Types/PData.html"><strong aria-hidden="true">5.6.</strong> PData</a></li><li class="chapter-item expanded "><a href="../Types/PDataSumAndPDataRecord.html"><strong aria-hidden="true">5.7.</strong> PDataSumAndPDataRecord</a></li><li class="chapter-item expanded "><a href="../Types/PInteger.html"><strong aria-hidden="true">5.8.</strong> PInteger</a></li><li class="chapter-item expanded "><a href="../Types/PList.html"><strong aria-hidden="true">5.9.</strong> PList</a></li><li class="chapter-item expanded "><a href="../Types/PString.html"><strong aria-hidden="true">5.10.</strong> PString</a></li><li class="chapter-item expanded "><a href="../Types/PUnit.html"><strong aria-hidden="true">5.11.</strong> PUnit</a></li></ol></li><li class="chapter-item expanded "><a href="../Typeclasses.html"><strong aria-hidden="true">6.</strong> Typeclasses</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Typeclasses/PConstantAndPLift.html"><strong aria-hidden="true">6.1.</strong> PConstantAndPLift</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PEqAndPOrd.html"><strong aria-hidden="true">6.2.</strong> PEqAndPOrd</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PIntegral.html"><strong aria-hidden="true">6.3.</strong> PIntegral</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PIsData.html"><strong aria-hidden="true">6.4.</strong> PIsData</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PIsDataReprAndPDataFields.html" class="active"><strong aria-hidden="true">6.5.</strong> PIsDataReprAndPDataFields</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PListLike.html"><strong aria-hidden="true">6.6.</strong> PListLike</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PlutusType,PCon,PMatch.html"><strong aria-hidden="true">6.7.</strong> PlutusType,PCon,PMatch</a></li><li class="chapter-item expanded "><a href="../Typeclasses/PTryFrom.html"><strong aria-hidden="true">6.8.</strong> PTryFrom</a></li></ol></li><li class="chapter-item expanded "><a href="../Usage.html"><strong aria-hidden="true">7.</strong> Usage</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Usage/AvoidWorkDuplicationUsingPlet.html"><strong aria-hidden="true">7.1.</strong> AvoidWorkDuplicationUsingPlet</a></li><li class="chapter-item expanded "><a href="../Usage/Conditionals.html"><strong aria-hidden="true">7.2.</strong> Conditionals</a></li><li class="chapter-item expanded "><a href="../Usage/DerivingForNewtypes.html"><strong aria-hidden="true">7.3.</strong> DerivingForNewtypes</a></li><li class="chapter-item expanded "><a href="../Usage/DerivingWithGenerics.html"><strong aria-hidden="true">7.4.</strong> DerivingWithGenerics</a></li><li class="chapter-item expanded "><a href="../Usage/DoSyntaxWithQualifiedDo.html"><strong aria-hidden="true">7.5.</strong> DoSyntaxWithQualifiedDo</a></li><li class="chapter-item expanded "><a href="../Usage/DoSyntaxWithTermCont.html"><strong aria-hidden="true">7.6.</strong> DoSyntaxWithTermCont</a></li><li class="chapter-item expanded "><a href="../Usage/FFI.html"><strong aria-hidden="true">7.7.</strong> FFI</a></li><li class="chapter-item expanded "><a href="../Usage/PreludeMixin.html"><strong aria-hidden="true">7.8.</strong> PreludeMixin</a></li><li class="chapter-item expanded "><a href="../Usage/RaisingErrors.html"><strong aria-hidden="true">7.9.</strong> RaisingErrors</a></li><li class="chapter-item expanded "><a href="../Usage/Recursion.html"><strong aria-hidden="true">7.10.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="../Usage/Tracing.html"><strong aria-hidden="true">7.11.</strong> Tracing</a></li><li class="chapter-item expanded "><a href="../Usage/UnsafeFunctions.html"><strong aria-hidden="true">7.12.</strong> UnsafeFunctions</a></li></ol></li><li class="chapter-item expanded "><a href="../Tricks.html"><strong aria-hidden="true">8.</strong> Tricks</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../Tricks/DifferenceBetweenPconAndPconstant.html"><strong aria-hidden="true">8.1.</strong> DifferenceBetweenPconAndPconstant</a></li><li class="chapter-item expanded "><a href="../Tricks/DontDuplicateWork.html"><strong aria-hidden="true">8.2.</strong> DontDuplicateWork</a></li><li class="chapter-item expanded "><a href="../Tricks/makeIsDataIndexed,HaskellADTs,PIsDataRepr.html"><strong aria-hidden="true">8.3.</strong> makeIsDataIndexed,HaskellADTs,PIsDataRepr</a></li><li class="chapter-item expanded "><a href="../Tricks/OptimizingUnhoistableLambdas.html"><strong aria-hidden="true">8.4.</strong> OptimizingUnhoistableLambdas</a></li><li class="chapter-item expanded "><a href="../Tricks/PlutarchFunctionsStrict.html"><strong aria-hidden="true">8.5.</strong> PlutarchFunctionsStrict</a></li><li class="chapter-item expanded "><a href="../Tricks/PreferMatchingOnPmatchResultImmediately.html"><strong aria-hidden="true">8.6.</strong> PreferMatchingOnPmatchResultImmediately</a></li><li class="chapter-item expanded "><a href="../Tricks/PreferPlutarchFunctions.html"><strong aria-hidden="true">8.7.</strong> PreferPlutarchFunctions</a></li><li class="chapter-item expanded "><a href="../Tricks/PreferStaticallyBuildingConstants.html"><strong aria-hidden="true">8.8.</strong> PreferStaticallyBuildingConstants</a></li><li class="chapter-item expanded "><a href="../Tricks/RepresentationOfPlutarchType.html"><strong aria-hidden="true">8.9.</strong> RepresentationOfPlutarchType</a></li><li class="chapter-item expanded "><a href="../Tricks/ResponsibilityOfEvaluationInHaskellFunctions.html"><strong aria-hidden="true">8.10.</strong> ResponsibilityOfEvaluationInHaskellFunctions</a></li><li class="chapter-item expanded "><a href="../Tricks/UsingHaskellLevelFunctions.html"><strong aria-hidden="true">8.11.</strong> UsingHaskellLevelFunctions</a></li><li class="chapter-item expanded "><a href="../Tricks/WorkingWithBoundFields.html"><strong aria-hidden="true">8.12.</strong> WorkingWithBoundFields</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <details>
+<summary> imports </summary>
+<p>
+<pre><code class="language-haskell">{-# LANGUAGE QualifiedDo #-}
+module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
+
+import Plutarch.Prelude
+import Plutarch.LedgerApi.V3 (
+  PScriptContext,
+  PScriptPurpose (PMinting),
+  PScriptInfo (
+    PSpendingScript,
+    PMintingScript,
+    PRewardingScript,
+    PCertifyingScript,
+    PVotingScript,
+    PProposingScript
+    ),
+    PCurrencySymbol
+  )
+import Plutarch.DataRepr (PDataFields)
+import qualified Plutarch.Monadic as P
+import PlutusLedgerApi.V3 (
+  TxInfo (TxInfo),
+  POSIXTime(POSIXTime),
+  ScriptContext (ScriptContext),
+  ScriptInfo (MintingScript),
+  Redeemer (Redeemer)
+  )
+import PlutusLedgerApi.V1.Value (CurrencySymbol (CurrencySymbol))
+import PlutusLedgerApi.V1.Interval (interval)
+import qualified PlutusTx
+import qualified PlutusTx.AssocMap as AssocMap
+import qualified PlutusTx.Builtins as Builtins
+import Plutarch.Docs.Run (evalWithArgsT)
+</code></pre>
+</p>
+</details>
+<h1 id="plutustype-via-plutustypedata--pdatafields"><a class="header" href="#plutustype-via-plutustypedata--pdatafields"><code>PlutusType</code> via <code>PlutusTypeData</code> &amp; <code>PDataFields</code></a></h1>
+<p>Deriving <code>PlutusType</code> with <code>DPTStrat PlutusTypeData</code> allows for easily constructing <em>and</em> deconstructing <code>Constr</code>
+<a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md"><code>BuiltinData</code>/<code>Data</code></a> values. It allows fully type safe matching on
+<a href="./../Concepts/DataAndScottEncoding.html"><code>Data</code> encoded</a> values, without embedding type information within the generated script - unlike
+PlutusTx. <code>PDataFields</code>, on top of that, allows for ergonomic field access.</p>
+<blockquote>
+<p>Aside: What's a <code>Constr</code> data value? Briefly, it's how Plutus Core encodes non-trivial ADTs into <code>Data</code>/<code>BuiltinData</code>. Together with <code>BuiltinList</code>s it allows for a sum-of-products encoding.
+Essentially, whenever you have a custom non-trivial ADT (that isn't just an integer, bytestring, string/text, list, or assoc map) - and you want to represent it as a data encoded value -
+you should derive <code>PIsData</code> for it</p>
+</blockquote>
+<p>For example, <code>PScriptContext</code> - which is the Plutarch synonym to <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3-Contexts.html#t:ScriptContext"><code>ScriptContext</code></a></p>
+<ul>
+<li>has the necessary instances. This lets you easily keep track of its type, match on it, deconstruct it - you name it!</li>
+</ul>
+<pre><code class="language-haskell">foo :: Term s (PScriptContext :--&gt; PString)
+foo = plam $ \ctx -&gt; P.do
+  scriptInfo &lt;- pmatch $ pfield @"scriptInfo" # ctx
+  case scriptInfo of
+    PMintingScript _ -&gt; "It's minting!"
+    PSpendingScript _ -&gt; "It's spending!"
+    PRewardingScript _ -&gt; "It's rewarding!"
+    PCertifyingScript _ -&gt; "It's certifying!"
+    PVotingScript _ -&gt; "It's voting!"
+    PProposingScript _ -&gt; "It's proposing!"
+</code></pre>
+<blockquote>
+<p>Note: The above snippet uses GHC 9 features (<code>QualifiedDo</code>). Be sure to check out <a href="./../Usage/DoSyntaxWithTermCont.html">Do syntax with <code>TermCont</code></a>.</p>
+</blockquote>
+<p>Of course, just like <code>ScriptContext</code> - <code>PScriptContext</code> is represented as a <code>Data</code> value in Plutus Core. Plutarch just lets you keep track of the <em>exact representation</em> of it within the type system.</p>
+<p>Here's how <code>PScriptContext</code> is defined:</p>
+<pre><code class="language-hs">newtype PScriptContext (s :: S)
+  = PScriptContext
+      ( Term
+          s
+          ( PDataRecord
+              '[ "txInfo" ':= PTxInfo
+               , "purpose" ':= PScriptPurpose
+               ]
+          )
+      )
+</code></pre>
+<p>It's a constructor containing a <a href="./../Types/PDataSumAndPDataRecord.html"><code>PDataRecord</code></a> term. It has 2 fields- <code>txInfo</code> and <code>purpose</code>.</p>
+<p>First, we extract the <code>purpose</code> field using <code>pfield @"purpose"</code>:</p>
+<pre><code class="language-hs">pfield :: Term s (PScriptContext :--&gt; PScriptPurpose)
+</code></pre>
+<blockquote>
+<p>Note: When extracting several fields from the same variable, you should instead use <code>pletFields</code>. See: <a href="#all-about-extracting-fields">Extracting fields</a></p>
+</blockquote>
+<blockquote>
+<p>Aside: <code>pfield</code> is actually return type polymorhpic. It could've returned either <code>PAsData PScriptPurpose</code> and <code>PScriptPurpose</code>. In this case, GHC correctly infers that we actually want a
+<code>PScriptPurpose</code>, since <code>pmatch</code> doesn't work on <code>PAsData PScriptPurpose</code>!</p>
+</blockquote>
+<blockquote>
+<p>Sometimes GHC isn't so smart, and you're forced to provide an explicit type annotation. Or you can simply use <code>pfromData $ pfield ....</code>.</p>
+</blockquote>
+<p>Now, we can <code>pmatch</code> on our <code>Term s PScriptPurpose</code> to extract the Haskell ADT (<code>PScriptPurpose s</code>) out of the Plutarch term:</p>
+<pre><code class="language-hs">pmatch :: Term s PScriptPurpose -&gt; (PScriptPurpose s -&gt; Term s PString) -&gt; Term s PString
+</code></pre>
+<p>Now that we have <code>PScriptPurpose s</code>, we can just <code>case</code> match on it! <code>PScriptPurpose</code> is defined as:</p>
+<pre><code class="language-hs">data PScriptPurpose (s :: S)
+  = PMinting (Term s (PDataRecord '["_0" ':= PCurrencySymbol]))
+  | PSpending (Term s (PDataRecord '["_0" ':= PTxOutRef]))
+  | PRewarding (Term s (PDataRecord '["_0" ':= PStakingCredential]))
+  | PCertifying (Term s (PDataRecord '["_0" ':= PDCert]))
+</code></pre>
+<p>It's just a Plutarch sum type.</p>
+<p>We're not really interested in the fields (the <code>PDataRecord</code> term), so we just match on the constructor with the familiar <code>case</code>. Easy!</p>
+<p>Let's pass in a <code>ScriptContext</code> as a <code>Data</code> value from Haskell to this Plutarch script and see if it works!</p>
+<pre><code class="language-haskell">mockCtx :: ScriptContext
+mockCtx =
+  ScriptContext
+    (TxInfo
+      mempty -- inputs
+      mempty -- reference inputs
+      mempty -- outputs
+      0 -- fee
+      mempty -- mint
+      mempty -- certs
+      AssocMap.empty -- withdrawals
+      (interval (POSIXTime 1) (POSIXTime 2)) -- valid range
+      mempty -- signatories
+      AssocMap.empty -- redeemers
+      AssocMap.empty -- data
+      "" -- id
+      AssocMap.empty -- votes
+      mempty -- proposal procedures
+      Nothing -- current treasury amount
+      Nothing -- current treasury donation
+    )
+    (Redeemer . Builtins.mkI $ 0)
+    (MintingScript (CurrencySymbol ""))
+
+res :: Either _ _
+res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
+-- Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
+</code></pre>
+<blockquote>
+<p>Aside: You can find the definition of <code>evalWithArgsT</code> at <a href="../Overview.html#compiling-and-running">Compiling and Running</a>.</p>
+</blockquote>
+<h2 id="all-about-extracting-fields"><a class="header" href="#all-about-extracting-fields">All about extracting fields</a></h2>
+<p>We caught a glimpse of field extraction in the example above, thanks to <code>pfield</code>. However, that barely touched the surface.</p>
+<p>Once a type has a <code>PDataFields</code> instance, field extraction can be done with these 3 functions:</p>
+<ul>
+<li><code>pletFields</code></li>
+<li><code>pfield</code></li>
+<li><code>getField</code> (when not using <code>OverloadedRecordDot</code> or <a href="https://hackage.haskell.org/package/record-dot-preprocessor">record dot preprocessor</a>)</li>
+</ul>
+<p>Each has its own purpose. However, <code>pletFields</code> is arguably the most general purpose and most efficient. Whenever you need to extract several fields from the same variable, you should use <code>pletFields</code>:</p>
+<pre><code class="language-haskell">foo' :: Term s (PScriptContext :--&gt; PUnit)
+foo' = plam $ \ctx' -&gt; P.do
+  ctx &lt;- pletFields @["txInfo", "scriptInfo"] ctx'
+  let
+    _scriptInfo = ctx.scriptInfo
+    _txInfo = ctx.txInfo
+  -- &lt;use scriptInfo and txInfo here&gt;
+  pconstant ()
+</code></pre>
+<blockquote>
+<p>Note: The above snippet uses GHC 9 features (<code>QualifiedDo</code> and <code>OverloadedRecordDot</code>). Be sure to check out <a href="./../Usage/DoSyntaxWithTermCont.html">Do syntax with <code>TermCont</code></a> and <a href="./../Typeclasses/PIsDataReprAndPDataFields.html#alternatives-to-overloadedrecorddot">alternatives to <code>OverloadedRecordDot</code></a>.</p>
+</blockquote>
+<p>In essence, <code>pletFields</code> takes in a type level list of the field names that you want to access and a continuation function that takes in an <code>HRec</code>. This <code>HRec</code> is essentially a collection of the bound fields. You don't have to worry too much about the details of <code>HRec</code>. This particular usage has type:</p>
+<pre><code class="language-hs">pletFields :: Term s PScriptContext
+  -&gt; (HRec
+        (BoundTerms
+           '[ "txInfo" ':= PTxInfo, "purpose" ':= PScriptPurpose]
+           '[ 'Bind, 'Bind]
+           s)
+      -&gt; Term s PUnit)
+  -&gt; Term s PUnit
+</code></pre>
+<p>You can then access the fields on this <code>HRec</code> using <code>OverloadedRecordDot</code>.</p>
+<p>Next up is <code>pfield</code>. You should <em>only ever</em> use this if you just want one field from a variable and no more. Its usage is simply <code>pfield @"fieldName" # variable</code>. You can, however, also use <code>pletFields</code> in this case (e.g. <code>pletFields @'["fieldName"] variable</code>). <code>pletFields</code> with a singular field has the same efficiency as <code>pfield</code>!</p>
+<p>Finally, <code>getField</code> is merely there to supplement the lack of record dot syntax. See: <a href="#alternatives-to-overloadedrecorddot">Alternative to <code>OverloadedRecordDot</code></a>.</p>
+<blockquote>
+<p>Note: An important thing to realize is that <code>pfield</code> and <code>getField</code> (or overloaded record dot on <code>HRec</code>) are <em>return type polymorphic</em>. They can return both <code>PAsData Foo</code> or <code>Foo</code> terms,
+depending on the surrounding context. This is very useful in the case of <code>pmatch</code>, as <code>pmatch</code> doesn't work on <code>PAsData</code> terms. So you can simply write <code>pmatch $ pfield ...</code> and <code>pfield</code>
+will correctly choose to <em>unwrap</em> the <code>PAsData</code> term.</p>
+</blockquote>
+<h3 id="alternatives-to-overloadedrecorddot"><a class="header" href="#alternatives-to-overloadedrecorddot">Alternatives to <code>OverloadedRecordDot</code></a></h3>
+<p>If <code>OverloadedRecordDot</code> is not available, you can also try using the <a href="https://hackage.haskell.org/package/record-dot-preprocessor">record dot preprocessor plugin</a>.</p>
+<p>If you don't want to use either, you can simply use <code>getField</code>. In fact, <code>ctx.purpose</code> above just translates to <code>getField @"purpose" ctx</code>. Nothing magical there!</p>
+<h2 id="all-about-constructing-data-values"><a class="header" href="#all-about-constructing-data-values">All about constructing data values</a></h2>
+<p>We learned about type safe matching (through <code>PlutusType</code>) as well as type safe field access (through <code>PDataFields</code>) - how about construction? You can derive
+<a href="./PlutusType,PCon,PMatch.html"><code>PlutusType</code></a>, using a data representation by using <code>DPTStrat _ = PlutusTypeData</code> and <code>PlutusType</code> bestows the ability
+to not only <em>deconstruct</em>, but also <strong>construct</strong> values - you can do that just as easily!</p>
+<p>Let's see how we could build a <code>PMinting</code> <code>PScriptPurpose</code> given a <code>PCurrencySymbol</code>:</p>
+<pre><code class="language-haskell">currSym :: Term s PCurrencySymbol
+currSym = pconstant $ CurrencySymbol "foo"
+
+purpose :: Term s PScriptPurpose
+purpose = pcon $ PMinting fields
+  where
+    currSymDat :: Term _ (PAsData PCurrencySymbol)
+    currSymDat = pdata currSym
+    fields :: Term _ (PDataRecord '[ "_0" ':= PCurrencySymbol ])
+    fields = pdcons # currSymDat # pdnil
+</code></pre>
+<p>All the type annotations are here to help!</p>
+<p>This is just like regular <code>pcon</code> usage you've <a href="./PlutusType,PCon,PMatch.html">from <code>PlutusType</code>/<code>PCon</code></a>. It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.</p>
+<p>What's more interesting, is the <code>fields</code> binding. Recall that <code>PMinting</code> is a constructor with one argument, that argument is a <a href="../Types/PDataSumAndPDataRecord.html"><code>PDataRecord</code></a> term. In particular, we want: <code>Term s (PDataRecord '["_0" ':= PCurrencySymbol ])</code>. It encodes the exact type, position, and name of the field. So, all we have to do is create a <code>PDataRecord</code> term!</p>
+<p>Of course, we do that using <code>pdcons</code> - which is just the familiar <code>cons</code> but for <code>PDataRecord</code> terms.</p>
+<pre><code class="language-hs">pdcons :: forall label a l s. Term s (PAsData a :--&gt; PDataRecord l :--&gt; PDataRecord ((label ':= a) ': l))
+</code></pre>
+<p>It takes a <code>PAsData a</code> and adds that <code>a</code> to the <code>PDataRecord</code> heterogenous list. We feed it a <code>PAsData PCurrencySymbol</code> term and <code>pdnil</code> - the empty data record. That should give us:</p>
+<pre><code class="language-hs">pdcons # currSymDat # pdnil :: Term _ (PDataRecord '[ label ':= PCurrencySymbol ])
+</code></pre>
+<p>Cool! Wait, what's <code>label</code>? It's the field name associated with the field, in our case, we want the field name to be <code>_0</code> - because that's what the <code>PMinting</code> constructor wants. You can
+either specify the label with a type application or you can just have a type annotation for the binding (which is what we do here). Or you can let GHC try and match up the <code>label</code> with
+the surrounding environment!</p>
+<p>Now that we have <code>fields</code>, we can use it with <code>PMinting</code> to build a <code>PScriptPurpose s</code> and feed it to <code>pcon</code> - we're done!</p>
+<h2 id="implementing-pisdata-and-friends"><a class="header" href="#implementing-pisdata-and-friends">Implementing <code>PIsData</code> and friends</a></h2>
+<p>Implementing these is rather simple with generic deriving. All you need is a well formed type using <code>PDataRecord</code>. For example, suppose you wanted to implement <code>PIsData</code> for the Plutarch
+version of this Haskell type:</p>
+<pre><code class="language-haskell">data Vehicle
+  = FourWheeler Integer Integer Integer Integer
+  | TwoWheeler Integer Integer
+  | ImmovableBox
+</code></pre>
+<p>You'd declare the corresponding Plutarch type as:</p>
+<pre><code class="language-haskell">data PVehicle' (s :: S)
+  = PFourWheeler' (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler' (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox' (Term s (PDataRecord '[]))
+</code></pre>
+<p>Each field type must also have a <code>PIsData</code> instance. We've fulfilled this criteria above as <code>PInteger</code> does indeed have a <code>PIsData</code> instance. However, think of <code>PBuiltinList</code>s, as an example. <code>PBuiltinList</code>'s <code>PIsData</code> instance is restricted to only <code>PAsData</code> elements.</p>
+<pre><code class="language-hs">instance PIsData a =&gt; PIsData (PBuiltinList (PAsData a))
+</code></pre>
+<p>Thus, you can use <code>PBuiltinList (PAsData PInteger)</code> as a field type, but not <code>PBuiltinList PInteger</code>.</p>
+<blockquote>
+<p>Note: The constructor ordering in <code>PVehicle</code> matters! If you used <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-IsData.html#v:makeIsDataIndexed"><code>makeIsDataIndexed</code></a> on
+<code>Vehicle</code> to assign an index to each constructor - the Plutarch type's constructors must follow the same indexing order.</p>
+</blockquote>
+<blockquote>
+<p>In this case, <code>PFourWheeler</code> is at the 0th index, <code>PTwoWheeler</code> is at the 1st index, and <code>PImmovableBox</code> is at the 3rd index. Thus, the corresponding <code>makeIsDataIndexed</code> usage should be:</p>
+</blockquote>
+<blockquote>
+<pre><code class="language-hs">PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
+</code></pre>
+</blockquote>
+<blockquote>
+<p>Also see: <a href="./../Tricks/makeIsDataIndexed,HaskellADTs,PIsDataRepr.html">Isomorphism between Haskell ADTs and <code>PIsData</code></a></p>
+</blockquote>
+<p>And you'd simply derive <code>PlutustType</code> with plutus data representation using generics. You can then also derive <code>PIsData</code> and if the dataype only has one ocnstructor <code>PDataFields</code>.</p>
+<p>Furthermore, you can also derive the following typeclasses after deriving <code>PlutusType</code> with <code>DPTStrat _ = PlutusTypeData</code></p>
+<ul>
+<li><a href="./PEqAndPOrd.html"><code>PEq</code></a></li>
+<li><a href="./PEqAndPOrd.html"><code>POrd</code></a></li>
+</ul>
+<p>Combine all that, and you have:</p>
+<pre><code class="language-haskell">data PVehicle (s :: S)
+  = PFourWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger, "_2" ':= PInteger, "_3" ':= PInteger]))
+  | PTwoWheeler (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PInteger]))
+  | PImmovableBox (Term s (PDataRecord '[]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType PVehicle where type DPTStrat _ = PlutusTypeData
+</code></pre>
+<blockquote>
+<p>Note: You cannot derive <code>PIsData</code> for types that are represented using <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding</a>. Your types must be well formed and
+should be using <code>PDataRecord</code> terms instead.</p>
+</blockquote>
+<p>That's it! Now you can represent <code>PVehicle</code> as a <code>Data</code> value, as well as deconstruct and access its fields super ergonomically. Let's try it!</p>
+<pre><code class="language-haskell">test :: Term s (PVehicle :--&gt; PInteger)
+test = plam $ \veh' -&gt; P.do
+  veh &lt;- pmatch veh'
+  case veh of
+    PFourWheeler fwh' -&gt; P.do
+      fwh &lt;- pletFields @'["_0", "_1", "_2", "_3"] fwh'
+      fwh._0 + fwh._1 + fwh._2 + fwh._3
+    PTwoWheeler twh' -&gt; P.do
+      twh &lt;- pletFields @'["_0", "_1"] twh'
+      twh._0 + twh._1
+    PImmovableBox _ -&gt; 0
+</code></pre>
+<p>What about types with singular constructors? It's quite similar to the sum type case. Here's how it looks:</p>
+<pre><code class="language-haskell">newtype PFoo (s :: S) = PMkFoo (Term s (PDataRecord '["foo" ':= PByteString]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PDataFields, PIsData)
+instance DerivePlutusType PFoo where type DPTStrat _ = PlutusTypeData
+</code></pre>
+<p>Just an extra <code>PDataFields</code> derivation compared to the sum type usage!</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Typeclasses/PIsData.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Typeclasses/PListLike.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Typeclasses/PIsData.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Typeclasses/PListLike.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
