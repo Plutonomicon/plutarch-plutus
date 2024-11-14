@@ -1,1 +1,1 @@
-../../../src/Typeclasses/PEq and POrd.md
+../../../src/Typeclasses/PEqAndPOrd.md

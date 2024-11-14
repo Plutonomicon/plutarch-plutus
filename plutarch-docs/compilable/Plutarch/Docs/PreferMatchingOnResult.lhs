@@ -1,1 +1,1 @@
-../../../src/Tricks/Prefer matching on pmatch result immediately.md
+../../../src/Tricks/PreferMatchingOnPmatchResultImmediately.md

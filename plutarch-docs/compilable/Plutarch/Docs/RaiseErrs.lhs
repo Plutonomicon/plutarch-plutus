@@ -1,1 +1,1 @@
-../../../src/Usage/Raising errors.md
+../../../src/Usage/RaisingErrors.md

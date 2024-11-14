@@ -1,1 +1,1 @@
-../../../src/Tricks/Using Haskell level functions.md
+../../../src/Tricks/UsingHaskellLevelFunctions.md

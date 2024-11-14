@@ -1,1 +1,1 @@
-../../../src/Tricks/Optimizing unhoistable lambdas.md
+../../../src/Tricks/OptimizingUnhoistableLambdas.md

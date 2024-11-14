@@ -1,1 +1,1 @@
-../../../src/Types/PDataSum and PDataRecord.md
+../../../src/Types/PDataSumAndPDataRecord.md

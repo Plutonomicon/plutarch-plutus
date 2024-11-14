@@ -1,1 +1,1 @@
-../../../src/Tricks/Difference between pcon and pconstant.md
+../../../src/Tricks/DifferenceBetweenPconAndPconstant.md

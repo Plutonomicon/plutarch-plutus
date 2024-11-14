@@ -1,1 +1,1 @@
-../../../src/Tricks/Working with bound fields.md
+../../../src/Tricks/WorkingWithBoundFields.md

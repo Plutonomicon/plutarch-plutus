@@ -1,1 +1,1 @@
-../../../src/Usage/Deriving for newtypes.md
+../../../src/Usage/DerivingForNewtypes.md
