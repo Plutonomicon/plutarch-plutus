@@ -216,7 +216,6 @@ instance
   , PInner a ~ PData
   , PTx.ToData h
   , PTx.FromData h
-  , PLC.DefaultUni `Includes` h
   ) =>
   PLiftable (DeriveDataPLiftable a h)
   where
