@@ -27,8 +27,6 @@
 
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-
-    emanote.url = "github:srid/emanote";
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
@@ -36,7 +34,6 @@
       imports = [
         ./nix/pre-commit.nix
         ./nix/hercules-ci.nix
-        inputs.emanote.flakeModule
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
@@ -68,6 +65,9 @@
               exactDeps = false;
               # TODO(peter-mlabs): Use `apply-refact` for repo wide refactoring `find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +``
               shellHook = config.pre-commit.installationScript;
+              nativeBuildInputs = with pkgs; [
+                mdbook
+              ];
               tools = {
                 cabal = { };
                 haskell-language-server = { };
@@ -83,20 +83,16 @@
         in
         {
           inherit (flake) devShells;
-          emanote = {
-            sites.plutarch-docs = {
-              layers = [
-                {
-                  path = ./plutarch-docs;
-                  pathString = "./plutarch-docs";
-                }
-              ];
-              baseUrl = "/plutarch-plutus/";
-            };
-          };
-
           hercules-ci.github-pages.settings.contents = self'.packages.combined-docs;
           packages = flake.packages // {
+            plutarch-docs = pkgs.stdenv.mkDerivation {
+              name = "pluatrch-docs";
+              src = ./plutarch-docs;
+              buildInputs = with pkgs; [ mdbook ];
+              buildPhase = ''
+                mdbook build . -d $out
+              '';
+            };
             haddock = (import ./nix/combine-haddock.nix) { inherit pkgs lib; } {
               cabalProject = project;
               targetPackages = [

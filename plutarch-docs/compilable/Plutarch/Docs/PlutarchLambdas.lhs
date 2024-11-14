@@ -1,1 +1,1 @@
-../../../Introduction/Plutarch Terms/Plutarch Lambdas.md
+../../../src/Introduction/PlutarchTerms/PlutarchLambdas.md
