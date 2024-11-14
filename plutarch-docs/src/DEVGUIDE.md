@@ -293,20 +293,23 @@ There's just one element in `txInfoInputs` in this example, and there it is. Of 
 
 # How to build docs
 
-To run the docs locally from the Git working copy (useful when editing them),
+To run the docs locally from the Git working copy (useful when editing them), from nix development shell,
 
 ```sh-session
-nix run .#docs
+# in plutarch-docs directory
+mdbook serve .
 ```
+
+When you add new file that is compilable, please run `./createSymlinks` script. This will generate symbolic links to
+`./compilable` directory which cabal will build. Don't forget to add the name of the module new file defines to `plutarch-docs.cabal` at `other-modules` section so that it will actually build.
 
 To build the static HTML site,
 
 ```sh-session
-nix build .#website
+mdbook build .
 ```
 
 To run the docs directly without cloning the Git repo,
-
 ```sh-session
-nix run github:Plutonomicon/plutarch#website
+nix run github:Plutonomicon/plutarch#combined-docs
 ```
