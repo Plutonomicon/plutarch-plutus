@@ -134,6 +134,9 @@ typeName :: forall k (a :: k). Typeable a => String
 instanceOfType :: forall k (a :: k). Typeable a => String -> String
 typeName' :: Bool -> TypeRep k -> String
 
+-- | @since WIP
+precompileTerm :: forall (p :: S -> Type). ClosedTerm p -> ClosedTerm p
+
 module Plutarch.Test.QuickCheck
 
 -- | Like <a>testEval</a> but generate terms
@@ -186,13 +189,13 @@ checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesAssocMap :: TestTree
 
 -- | @since WIP
-checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PUnsafeLiftDecl a, PTryFrom PData a, Eq (PLifted a), Show (PLifted a), Arbitrary (PLifted a), PIsData a, ToData (PLifted a), Typeable (PLifted a), Pretty (PLifted a)) => TestTree
+checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PUnsafeLiftDecl a, PTryFrom PData a, Eq (PLifted a), Arbitrary (PLifted a), PIsData a, ToData (PLifted a), Typeable (PLifted a), Pretty (PLifted a)) => TestTree
 
 -- | @since WIP
 checkLedgerPropertiesPCountable :: forall (a :: S -> Type). (Typeable a, PCountable a, Arbitrary (PLifted a), Pretty (PLifted a), Eq (PLifted a), Show (PLifted a), PUnsafeLiftDecl a) => TestTree
 
 -- | @since WIP
-checkLedgerPropertiesPEnumerable :: forall (a :: S -> Type). (Typeable a, PEnumerable a, Arbitrary (PLifted a), Pretty (PLifted a), Eq (PLifted a), Show (PLifted a), PUnsafeLiftDecl a) => TestTree
+checkLedgerPropertiesPEnumerable :: forall (a :: S -> Type). (Typeable a, PEnumerable a, Arbitrary (PLifted a), Pretty (PLifted a), Eq (PLifted a), PUnsafeLiftDecl a) => TestTree
 
 -- | @since WIP
 checkHaskellOrdEquivalent :: forall (plutarchInput :: S -> Type). (PUnsafeLiftDecl plutarchInput, Pretty (PLifted plutarchInput), Arbitrary (PLifted plutarchInput), Typeable (PLifted plutarchInput), Ord (PLifted plutarchInput), Typeable plutarchInput, PPartialOrd plutarchInput) => TestTree
