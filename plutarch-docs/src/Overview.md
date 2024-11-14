@@ -2,26 +2,14 @@ The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!
 
 > Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!
 
-<details>
-<summary> Table of Contents </summary>
-
-- [Overview](#overview)
-  - [Compiling and Running](#compiling-and-running)
-  - [Introduction and Basic Syntax](#introduction-and-basic-syntax)
-  - [Practical Usage](#practical-usage)
-  - [Concepts](#concepts)
-  - [Typeclasses](#typeclasses)
-  - [Working with Types](#working-with-types)
-- [Examples](#examples)
-- [Rules of thumb, Tips, and Tricks](#rules-of-thumb-tips-and-tricks)
-- [Common Issues and Troubleshooting](#common-issues-and-troubleshooting)
-- [Useful Links](#useful-links)
-
-</details>
-
 > Aside: Not interested in the details? Skip straight to [examples](#examples)!
 
 # Overview
+
+## Haddock
+Haddock documentation of `plutus-core`, `plutus-ledger-api`, `plutus-tx`, and few other upstream library with correctly matched version to latest Plutarch is available:
+
+[Go to Haddock](https://plutonomicon.github.io/plutarch-plutus/haddock/)
 
 ## Compiling and Running
 
