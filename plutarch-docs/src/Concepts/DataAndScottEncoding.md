@@ -4,7 +4,7 @@
 
 ```haskell
 {-# LANGUAGE RankNTypes #-}
-module Plutarch.Docs.DataAndScottEncoding (nothing, just, foo) where 
+module Plutarch.Docs.DataAndScottEncoding (nothing, just, foo) where
 
 import Prelude (Integer, (+))
 ```
@@ -14,9 +14,9 @@ import Prelude (Integer, (+))
 
 # Data encoding and Scott encoding
 
-In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: [`Constr`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.
+In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: [`Constr`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data) data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.
 
-> Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs). It's important to note that [`Data`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#t:Data) (`Constr` or otherwise) is also a builtin type.
+> Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs). It's important to note that [`Data`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data) (`Constr` or otherwise) is also a builtin type.
 
 ## Data encoding
 
@@ -84,4 +84,4 @@ foo (\_ n -> n)
 
 Neat!
 
-This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](./../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md)!
+This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](./../Typeclasses/PlutusType,PCon,PMatch.md)!

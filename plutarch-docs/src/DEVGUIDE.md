@@ -59,7 +59,7 @@ Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE
 
 ## Plutus Core constants (UNSAFE)
 
-> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/Plutarch%20Terms/Plutarch%20Constants.md) and [`PConstant`/`PLift`](./Typeclasses/PConstant%20and%20PLift.md) section of the Plutarch user guide.
+> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/PlutarchTerms/PlutarchConstants.md) and [`PConstant`/`PLift`](./Typeclasses/PConstantAndPLift.md) section of the Plutarch user guide.
 
 Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean:
 
@@ -239,7 +239,7 @@ mockCtx =
 Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf data (Constr 0 [List [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]],List [],Map [],Map [],List [],List [],Constr 0 [Constr 0 [Constr 1 [I 1],Constr 1 []],Constr 0 [Constr 1 [I 2],Constr 1 []]],List [],List [],Constr 0 [B ""]])))))
 ```
 
-> Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](./README.md#compiling-and-running).
+> Aside: You can find the definition of `evalWithArgsT` above - [Compiling and Running](./Overview.md#compiling-and-running).
 
 But we're not done yet! We want `txInfoInputs`. You may have noticed where exactly it is located on the above output. See that `List …`? Inside the outermost `Constr`'s fields? That's our `txInfoInputs`!
 
@@ -287,9 +287,9 @@ There's just one element in `txInfoInputs` in this example, and there it is. Of 
 - [Builtin pairs](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md)
 - [Builtin functions](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md)
 - [Builtin data](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md)
-- [Plutus builtin functions and types](https://playground.plutus.iohkdev.io/doc/haddock//plutus-tx/html/PlutusTx-Builtins-Internal.html)
-- [Plutus Core builtin function identifiers, aka `DefaultFun`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultFun)
-- [Plutus Core types, aka `DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)
+- [Plutus builtin functions and types](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#v:error)
+- [Plutus Core builtin function identifiers, aka `DefaultFun`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/UntypedPlutusCore.html#t:DefaultFun)
+- [Plutus Core types, aka `DefaultUni`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni)
 
 # How to build docs
 

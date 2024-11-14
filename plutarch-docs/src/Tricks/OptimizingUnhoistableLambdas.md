@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.OptimizingUnhoistable (pfoo, pfoo') where 
+module Plutarch.Docs.OptimizingUnhoistable (pfoo, pfoo') where
 import Plutarch.Prelude
 ```
 
@@ -23,7 +23,7 @@ pfoo = plam $ \x l ->
 
 Here, both uses of `innerf` will inline the lambda and then apply. This is problematic since you probably wanted to have a single lambda that you could simply reference with a variable.
 
-In these cases, you can simply [use `plet`](./Don't%20duplicate%20work.md) as you would have [in other places](../Usage/Avoid%20work%20duplication%20using%20plet.md)
+In these cases, you can simply [use `plet`](./DontDuplicateWork.md) as you would have [in other places](../Usage/AvoidWorkDuplicationUsingPlet.md)
 
 ```haskell
 pfoo' :: Term s (PInteger :--> PBuiltinList PInteger :--> PInteger)

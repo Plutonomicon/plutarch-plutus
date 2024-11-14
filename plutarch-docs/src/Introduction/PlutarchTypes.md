@@ -28,4 +28,4 @@ The above notion is essential to understanding why not all `PType`s have data co
 
 In general, the concrete UPLC representations are connected to Plutarch types through their `PlutusType` implementation.
 
-Also see: [Figuring out the representation of a Plutarch type](./../Tricks/Representation%20of%20Plutarch%20type.md).
+Also see: [Figuring out the representation of a Plutarch type](./../Tricks/RepresentationOfPlutarchType.md).

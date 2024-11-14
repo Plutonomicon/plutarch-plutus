@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where 
+module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where
 import Plutarch.Prelude hiding (pelimList)
 ```
 
@@ -12,9 +12,9 @@ import Plutarch.Prelude hiding (pelimList)
 
 # When to use Haskell level functions?
 
-Although you should generally [prefer Plutarch level functions](./Prefer%20Plutarch%20functions.md), there are times when a Haskell level function is actually much better. However, figuring out _when_ that is the case - is a delicate art.
+Although you should generally [prefer Plutarch level functions](./PreferPlutarchFunctions.md), there are times when a Haskell level function is actually much better. However, figuring out _when_ that is the case - is a delicate art.
 
-There is one simple and straightforward use case though, when you want a function argument to be lazily evaluated. In such a case, you should use a Haskell level function that `pdelay`s the argument before calling some Plutarch level function. Recall that [Plutarch level functions are strict](./Plutarch%20functions%20strict.md).
+There is one simple and straightforward use case though, when you want a function argument to be lazily evaluated. In such a case, you should use a Haskell level function that `pdelay`s the argument before calling some Plutarch level function. Recall that [Plutarch level functions are strict](./PlutarchFunctionsStrict.md).
 
 Outside of that straightforward use case, figuring out when to use Haskell level functions is quite complex. Haskell level functions will always be inlined when generating the Plutus Core. Unless the function is used _only once_, this sort of inlining will increase the script size - which is problematic.
 
@@ -47,11 +47,11 @@ pmatch ls $ \case
 Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have taken a Haskell level function instead:
 
 ```haskell
-pelimList' :: 
+pelimList' ::
   forall (a :: PType) (r :: PType) (s :: S).
-  PLift a 
-  => (Term s a -> Term s (PBuiltinList a) -> Term s r) 
-  -> Term s r -> Term s (PBuiltinList a) 
+  PLift a
+  => (Term s a -> Term s (PBuiltinList a) -> Term s r)
+  -> Term s r -> Term s (PBuiltinList a)
   -> Term s r
 pelimList' match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons x xs

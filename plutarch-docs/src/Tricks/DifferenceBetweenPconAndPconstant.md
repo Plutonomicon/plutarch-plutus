@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.DifferencePconPconstant () where 
+module Plutarch.Docs.DifferencePconPconstant () where
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType(pcon', pmatch'))
 ```
@@ -29,4 +29,4 @@ instance PlutusType AB where
 
 You can use the `A` and `B` constructors during building, but still have your type be represented as integers under the hood! You cannot do this with `pconstant`.
 
-You should prefer `pconstant`/`pconstantData` (from [`PConstant`/`PLift`](./../Typeclasses/PConstant%20and%20PLift.md)) when you can build something up entirely from Haskell level constants and that _something_ has the same representation as the Haskell constant.
+You should prefer `pconstant`/`pconstantData` (from [`PConstant`/`PLift`](./../Typeclasses/PConstantAndPLift.md)) when you can build something up entirely from Haskell level constants and that _something_ has the same representation as the Haskell constant.

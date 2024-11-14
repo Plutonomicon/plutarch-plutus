@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.WorkDuplication (abs, abs', pf, pf') where 
+module Plutarch.Docs.WorkDuplication (abs, abs', pf, pf') where
 import Plutarch.Prelude
 import Prelude hiding (abs)
 ```
@@ -20,7 +20,7 @@ Consider the simple snippet:
 ```haskell
 pf :: Term s PInteger
 pf =
-  let 
+  let
     foo :: forall s. Term s PInteger
     foo = 1 + 2      -- | A Haskell binding.
   in pif
@@ -129,7 +129,7 @@ You don't have to worry about work duplication on arguments in _every single sce
 
 Where else is `plet` unnecessary? Functions taking in continuations, such as `plet` (duh) and `pletFields`, always pre-evaluate the binding. An exception, however, is `pmatch`. In certain cases, you don't need to `plet` bindings within the `pmatch` case handler. For example, if you use `pmatch` on a `PList`, the `x` and `xs` in the `PSCons x xs` _will always be pre-evaluated_. On the other hand, if you use `pmatch` on a `PBuiltinList`, the `x` and `xs` in the `PCons x xs` _are **not** pre-evaluated_. Be sure to `plet` them if you use them several times!
 
-In general, `plet`ing something back-to-back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./../Typeclasses/PIsDataRepr%20and%20PDataFields.md#implementing-pisdatarepr-and-friends)") and Scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
+In general, `plet`ing something back-to-back several times will be optimized to a singular `plet` anyway. However, you should know that for data encoded types (types that follow "[implementing `PIsDataRepr` and friends](./../Typeclasses/PIsDataReprAndPDataFields.md#implementing-pisdatarepr-and-friends)") and Scott encoded types, `pmatch` handlers get pre-evaluated bindings. For `PBuiltinList`, and `PDataRecord` - the bindings are not pre-evaluated.
 
 You should also `plet` local bindings! In particular, if you applied a function (Plutarch level or Haskell level) to obtain a value, then bound that value to a variable e.g. with `let` or `where`, then avoid using it multiple times. The binding will simply get inlined as the function application - and it'll keep getting re-evaluated. You should `plet` it first!
 

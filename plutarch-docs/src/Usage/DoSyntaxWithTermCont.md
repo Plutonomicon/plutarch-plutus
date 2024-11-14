@@ -32,7 +32,7 @@ test = plam $ \x -> pmatch x $ \case
   _ -> ptraceInfoError "pattern match failure"
 ```
 
-That's rather ugly! [`pmatch`](./../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md) takes in a continuation as its second argument. Can we make this a bit more ergonomic?
+That's rather ugly! [`pmatch`](./../Typeclasses/PlutusType,PCon,PMatch.md) takes in a continuation as its second argument. Can we make this a bit more ergonomic?
 
 ```haskell
 pmatchC :: PlutusType a => Term s a -> TermCont s (a s)

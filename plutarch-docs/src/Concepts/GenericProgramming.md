@@ -4,7 +4,7 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
-module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where 
+module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
@@ -22,14 +22,14 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 A `Term` or `ClosedTerm` represents Plutus Lambda Calculus expression in Plutarch world.
 Allows for additional checks and safety compared to UPLC.
-See more: [Plutarch Terms](https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Introduction/Plutarch%20Terms.md).
+See more: [Plutarch Terms](../Introduction/PlutarchTerms.md).
 
 ### Data and Scott encoding
 
 Datatypes can be encoded using Scott and `Data` encoding.
 These concepts are well explained in Plutonomicon:
-[Data encoding](https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
-and [Scott encoding](https://github.com/Plutonomicon/plutarch-plutus/blob/master/docs/Concepts/Data%20and%20Scott%20encoding.md#scott-encoding).
+[Data encoding](../Concepts/DataAndScottEncoding.md#data-encoding)
+and [Scott encoding](../Concepts/DataAndScottEncoding.md#scott-encoding).
 
 ### `anyclass` deriving strategy
 
@@ -38,7 +38,7 @@ Usually depends that given datatype derives `Generic` typeclass also or some oth
 
 ### generics-sop
 
-A really good introduction to `generics-sop` by the maker of the library, Andres Löh, can be found 
+A really good introduction to `generics-sop` by the maker of the library, Andres Löh, can be found
 [in this YouTube video recorded at the 2020 ZuriHac](https://www.youtube.com/watch?v=pwnrfREbhWY)
 
 Overall image of [generics-sop](https://github.com/well-typed/generics-sop) package.
@@ -98,10 +98,10 @@ This mechanism allows for generic programming over Haskell types and Plutarch ty
 ## Intro
 
 As Plutarch is an eDSL in Haskell, it does not allow us to work on Plutus-level variables directly.
-Manipulating ADTs can be done in terms of `pcon` and `pmatch` which belong to a class called `PlutusType`. 
+Manipulating ADTs can be done in terms of `pcon` and `pmatch` which belong to a class called `PlutusType`.
 
 How this class is implemented is not that important but can be looked up in `Plutarch/Internal/PlutusType.hs`
-by the interested reader. 
+by the interested reader.
 
 These typeclass methods could be written manually, but is a bit tedious and error-prone, thus the generic
 representation from `GHC.Generics` is used.
@@ -219,5 +219,5 @@ For `pcon`:
 
 ## Recommended patterns when working with pcon/pmatch
 
-[Tricks - Prefer matching on pmatch result immediately](https://github.com/Plutonomicon/plutarch/blob/master/docs/Tricks/Prefer%20matching%20on%20pmatch%20result%20immediately.md)
-[Typeclasses - PlutusType, PCon, and PMatch - derive instances automatically](https://github.com/Plutonomicon/plutarch/blob/master/docs/Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md)
+- [Tricks - Prefer matching on pmatch result immediately](../../Tricks/PreferMatchingOnPmatchResultImmediately.md)
+- [Typeclasses - PlutusType, PCon, and PMatch - derive instances automatically](../../Typeclasses/PlutusType,PCon,PMatch.md)

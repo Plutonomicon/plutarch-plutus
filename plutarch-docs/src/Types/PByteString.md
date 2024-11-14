@@ -3,8 +3,8 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PByteString (notQuiteTheAnswer, aChar) where 
-import Plutarch.Prelude 
+module Plutarch.Docs.PByteString (notQuiteTheAnswer, aChar) where
+import Plutarch.Prelude
 import qualified Data.ByteString as BS
 ```
 
@@ -13,7 +13,7 @@ import qualified Data.ByteString as BS
 
 # `PByteString`
 
-Plutarch level bytestring terms can be created using `phexByteStr` and `pconstant` (`pbyteStr` is deprecated). `phexByteStr` interprets a hex string literal as a 
+Plutarch level bytestring terms can be created using `phexByteStr` and `pconstant` (`pbyteStr` is deprecated). `phexByteStr` interprets a hex string literal as a
 `Term s PByteString` and `pconstant` (`pbyteStr`) merely converts a `ByteString` into a `Term s PByteString`.
 
 ```haskell
@@ -30,4 +30,4 @@ Similar to `PString`, it has a `PEq` instance. As well as `Semigroup` and `Monoi
 
 It **does not** have a `PlutusType` instance.
 
-This is synonymous to Plutus Core [builtin bytestring](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinByteString).
+This is synonymous to Plutus Core [builtin bytestring](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinByteString).

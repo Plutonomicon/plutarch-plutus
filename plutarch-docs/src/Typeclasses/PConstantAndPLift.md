@@ -18,8 +18,8 @@ import Plutarch.LedgerApi.V3 (PScriptPurpose)
 
 These two closely tied together typeclasses establish a bridge between a Plutarch level type (that is represented
 as a builtin type, i.e.
-[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni))
-and its corresponding [Haskell synonym](./../Concepts/Haskell%20Synonym.md). The gory details of these
+[`DefaultUni`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni)
+and its corresponding [Haskell synonym](./../Concepts/HaskellSynonym.md). The gory details of these
 two are not too useful to users, but you can read all about it if you want at
 [Developers' corner](../DEVGUIDE.md#pconstant-and-plift).
 
@@ -52,7 +52,7 @@ b :: Term s PBool
 b = pconstant False
 ```
 
-On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e. [`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni)):
+On the other end, `plift` lets you obtain the Haskell synonym of a Plutarch value (that is represented as a builtin value, i.e. [`DefaultUni`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni):
 
 ```haskell
 purp :: Term s PScriptPurpose
@@ -77,8 +77,8 @@ It's simply the `PAsData` building cousin of `pconstant`!
 ## Implementing `PConstant` & `PLift`
 
 If your custom Plutarch type is represented by a builtin type under the hood
-(i.e. not [Scott encoded](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) - rather one of the
-[`DefaultUni`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-core/html/PlutusCore.html#t:DefaultUni) types)
+(i.e. not [Scott encoded](./../Concepts/DataAndScottEncoding.md#scott-encoding) - rather one of the
+[`DefaultUni`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni) types)
 - you can implement `PLift` for it by using the provided machinery.
 
 This comes in three flavors:
@@ -94,7 +94,7 @@ This comes in three flavors:
   *Ex:* `PPositive` is a newtype to a `PInteger`, and `PInteger` is _directly_ represented as a
   `BuiltinInteger`.
 
-- Plutarch type represented by `Data`, i.e. [data encoded](./../Concepts/Data%20and%20Scott%20encoding.md#data-encoding)
+- Plutarch type represented by `Data`, i.e. [data encoded](./../Concepts/DataAndScottEncoding.md#data-encoding)
   (`DefaultUniData`) ==> `DerivePConstantViaData`
 
   *Ex:* `PScriptPurpose` is represented as a `Data` value. It is synonymous to `ScriptPurpose` from the Plutus Ledger API

@@ -4,7 +4,7 @@
 
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
-module Plutarch.Docs.PlutarchConstants (x, s, i, xd, hexs, justTerm, hPJustPInteger) where 
+module Plutarch.Docs.PlutarchConstants (x, s, i, xd, hexs, justTerm, hPJustPInteger) where
 import Plutarch.Prelude
 ```
 
@@ -21,9 +21,9 @@ When evaluated, a constant Plutarch `Term` will always yield the same result. Th
 
 ## Static building of constant `Term`s with `pconstant`
 
-If we know the desired value of a constant `Term` at compile-time, we can build the `Term` directly from [Haskell synonyms](./../../Concepts/Haskell%20Synonym.md). The function to do so is `pconstant`.
+If we know the desired value of a constant `Term` at compile-time, we can build the `Term` directly from [Haskell synonyms](../../Concepts/HaskellSynonym.md). The function to do so is `pconstant`.
 
-Constructing constants in this way utilizes the [`PConstant`/`PLift`](./../../Typeclasses/PConstant%20and%20PLift.md) typeclasses. These typeclasses expose the following [associated type families](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
+Constructing constants in this way utilizes the [`PConstant`/`PLift`](../../Typeclasses/PConstantAndPLift.md) typeclasses. These typeclasses expose the following [associated type families](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
 
 ```hs
 type PLifted :: PType -> Type
@@ -111,7 +111,7 @@ hPJustPInteger :: Term s PInteger -> Term s (PMaybe PInteger)
 hPJustPInteger x = pcon (PJust x)
 ```
 
-The `pcon` function is a method of the [`PCon` typeclass](./../../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md).
+The `pcon` function is a method of the [`PCon` typeclass](./../../Typeclasses/PlutusType,PCon,PMatch.md).
 
 ## Overloaded literals
 

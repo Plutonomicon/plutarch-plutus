@@ -93,34 +93,8 @@ You generally want to adhere to the same extensions and GHC options the [Plutarc
 
 # Evaluation
 
-You can compile a Plutarch term using `compile` (from `Plutarch` module), making sure it has no free variables. `compile` returns a `Script`, which you can use as you would any other Plutus script. The API in [`Plutus.V1.Ledger.Scripts`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Scripts.html) should prove helpful.
+You can compile a Plutarch term using `compile` (from `Plutarch` module), making sure it has no free variables. `compile` returns a `Script`, which you can use as you would any other Plutus script.
 
-> For further insight into what is compiled - you can use `printTerm` or `printScript` (from `Plutarch` module).
-
-I often use these helper functions to test Plutarch quickly:
-
-```haskell
-evalSerialize :: ClosedTerm a -> Either Text ShortByteString
-evalSerialize x = serialiseScript . (\(a, _, _) -> a) <$> evalT x
-
-evalT :: ClosedTerm a -> Either Text (Script, ExBudget, [Text])
-evalT x = evalWithArgsT x []
-
-evalWithArgsT :: ClosedTerm a -> [Data] -> Either Text (Script, ExBudget, [Text])
-evalWithArgsT x args = do
-  cmp <- compile mempty x
-  let (escr, budg, trc) = evalScript $ applyArguments cmp args
-  scr <- first (pack . show) escr
-  pure (scr, budg, trc)
-
-evalWithArgsT' :: ClosedTerm a -> [Data] -> Either Text (Program DeBruijn DefaultUni DefaultFun (), ExBudget, [Text])
-evalWithArgsT' x args =
-  (\(res, budg, trcs) -> (unScript res, budg, trcs))
-    <$> evalWithArgsT x args
-```
-
-The fields in the result triple correspond to script result, execution budget (how much memory and CPU units were used), and trace log - respectively.
-Of course if you're only interested in the result of the script evaluation, you can just ignore the exbudget and tracelog just like `evalSerialize` does.
-`evalSerialize` is a function that you can use to quickly obtain a serialized script.
+> For further insight into what is compiled - you can use `Plutarch.Pretty.prettyTerm`.
 
 > Note: You can pretty much ignore the UPLC types involved here. All it really means is that the result is a "UPLC program". When it's printed, it's pretty legible - especially for debugging purposes. Although not necessary to use Plutarch, you may find the [Plutonomicon UPLC guide](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md) useful.

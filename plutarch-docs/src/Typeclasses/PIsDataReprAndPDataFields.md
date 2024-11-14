@@ -8,23 +8,23 @@ module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..)
 
 import Plutarch.Prelude
 import Plutarch.LedgerApi.V3 (
-  PScriptContext, 
+  PScriptContext,
   PScriptPurpose (PMinting),
   PScriptInfo (
-    PSpendingScript, 
-    PMintingScript, 
-    PRewardingScript, 
+    PSpendingScript,
+    PMintingScript,
+    PRewardingScript,
     PCertifyingScript,
     PVotingScript,
     PProposingScript
-    ), 
+    ),
     PCurrencySymbol
   )
 import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
 import PlutusLedgerApi.V3 (
-  TxInfo (TxInfo), 
-  POSIXTime(POSIXTime), 
+  TxInfo (TxInfo),
+  POSIXTime(POSIXTime),
   ScriptContext (ScriptContext),
   ScriptInfo (MintingScript),
   Redeemer (Redeemer)
@@ -45,21 +45,21 @@ import Plutarch.Docs.Run (evalWithArgsT)
 
 Deriving `PlutusType` with `DPTStrat PlutusTypeData` allows for easily constructing _and_ deconstructing `Constr`
 [`BuiltinData`/`Data`](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md) values. It allows fully type safe matching on
-[`Data` encoded](./../Concepts/Data%20and%20Scott%20encoding.md) values, without embedding type information within the generated script - unlike
+[`Data` encoded](./../Concepts/DataAndScottEncoding.md) values, without embedding type information within the generated script - unlike
 PlutusTx. `PDataFields`, on top of that, allows for ergonomic field access.
 
 > Aside: What's a `Constr` data value? Briefly, it's how Plutus Core encodes non-trivial ADTs into `Data`/`BuiltinData`. Together with `BuiltinList`s it allows for a sum-of-products encoding.
   Essentially, whenever you have a custom non-trivial ADT (that isn't just an integer, bytestring, string/text, list, or assoc map) - and you want to represent it as a data encoded value -
   you should derive `PIsData` for it
 
-For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-ledger-api/html/Plutus-V1-Ledger-Contexts.html#t:ScriptContext)
+For example, `PScriptContext` - which is the Plutarch synonym to [`ScriptContext`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3-Contexts.html#t:ScriptContext)
 - has the necessary instances. This lets you easily keep track of its type, match on it, deconstruct it - you name it!
 
 ```haskell
 foo :: Term s (PScriptContext :--> PString)
 foo = plam $ \ctx -> P.do
   scriptInfo <- pmatch $ pfield @"scriptInfo" # ctx
-  case scriptInfo of 
+  case scriptInfo of
     PMintingScript _ -> "It's minting!"
     PSpendingScript _ -> "It's spending!"
     PRewardingScript _ -> "It's rewarding!"
@@ -68,7 +68,7 @@ foo = plam $ \ctx -> P.do
     PProposingScript _ -> "It's proposing!"
 ```
 
-> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [Do syntax with `TermCont`](./../Usage/Do%20syntax%20with%20TermCont.md).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo`). Be sure to check out [Do syntax with `TermCont`](./../Usage/DoSyntaxWithTermCont.md).
 
 Of course, just like `ScriptContext` - `PScriptContext` is represented as a `Data` value in Plutus Core. Plutarch just lets you keep track of the _exact representation_ of it within the type system.
 
@@ -87,7 +87,7 @@ newtype PScriptContext (s :: S)
       )
 ```
 
-It's a constructor containing a [`PDataRecord`](./../Types/PDataSum%20and%20PDataRecord.md) term. It has 2 fields- `txInfo` and `purpose`.
+It's a constructor containing a [`PDataRecord`](./../Types/PDataSumAndPDataRecord.md) term. It has 2 fields- `txInfo` and `purpose`.
 
 First, we extract the `purpose` field using `pfield @"purpose"`:
 
@@ -154,7 +154,7 @@ res = foo `evalWithArgsT` [PlutusTx.toData mockCtx]
 -- Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf string "It's minting!"))))
 ```
 
-> Aside: You can find the definition of `evalWithArgsT` at [Compiling and Running](../README.md#compiling-and-running).
+> Aside: You can find the definition of `evalWithArgsT` at [Compiling and Running](../Overview.md#compiling-and-running).
 
 ## All about extracting fields
 
@@ -179,7 +179,7 @@ foo' = plam $ \ctx' -> P.do
   pconstant ()
 ```
 
-> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [Do syntax with `TermCont`](./../Usage/Do%20syntax%20with%20TermCont.md) and [alternatives to `OverloadedRecordDot`](./../Typeclasses/PIsDataRepr%20and%20PDataFields.md#alternatives-to-overloadedrecorddot).
+> Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [Do syntax with `TermCont`](./../Usage/DoSyntaxWithTermCont.md) and [alternatives to `OverloadedRecordDot`](./../Typeclasses/PIsDataReprAndPDataFields.md#alternatives-to-overloadedrecorddot).
 
 In essence, `pletFields` takes in a type level list of the field names that you want to access and a continuation function that takes in an `HRec`. This `HRec` is essentially a collection of the bound fields. You don't have to worry too much about the details of `HRec`. This particular usage has type:
 
@@ -213,7 +213,7 @@ If you don't want to use either, you can simply use `getField`. In fact, `ctx.pu
 ## All about constructing data values
 
 We learned about type safe matching (through `PlutusType`) as well as type safe field access (through `PDataFields`) - how about construction? You can derive
-[`PlutusType`](./PlutusType,%20PCon,%20and%20PMatch.md), using a data representation by using `DPTStrat _ = PlutusTypeData` and `PlutusType` bestows the ability
+[`PlutusType`](./PlutusType,PCon,PMatch.md), using a data representation by using `DPTStrat _ = PlutusTypeData` and `PlutusType` bestows the ability
 to not only _deconstruct_, but also **construct** values - you can do that just as easily!
 
 Let's see how we could build a `PMinting` `PScriptPurpose` given a `PCurrencySymbol`:
@@ -233,9 +233,9 @@ purpose = pcon $ PMinting fields
 
 All the type annotations are here to help!
 
-This is just like regular `pcon` usage you've [from `PlutusType`/`PCon`](./PlutusType,%20PCon,%20and%20PMatch.md). It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.
+This is just like regular `pcon` usage you've [from `PlutusType`/`PCon`](./PlutusType,PCon,PMatch.md). It takes in the Haskell ADT of your Plutarch type and gives back a Plutarch term.
 
-What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](../Types/PDataSum%20and%20PDataRecord.md) term. In particular, we want: `Term s (PDataRecord '["_0" ':= PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
+What's more interesting, is the `fields` binding. Recall that `PMinting` is a constructor with one argument, that argument is a [`PDataRecord`](../Types/PDataSumAndPDataRecord.md) term. In particular, we want: `Term s (PDataRecord '["_0" ':= PCurrencySymbol ])`. It encodes the exact type, position, and name of the field. So, all we have to do is create a `PDataRecord` term!
 
 Of course, we do that using `pdcons` - which is just the familiar `cons` but for `PDataRecord` terms.
 
@@ -284,7 +284,7 @@ instance PIsData a => PIsData (PBuiltinList (PAsData a))
 
 Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PBuiltinList PInteger`.
 
-> Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx.html#v:makeIsDataIndexed) on
+> Note: The constructor ordering in `PVehicle` matters! If you used [`makeIsDataIndexed`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-IsData.html#v:makeIsDataIndexed) on
 > `Vehicle` to assign an index to each constructor - the Plutarch type's constructors must follow the same indexing order.
 
 > In this case, `PFourWheeler` is at the 0th index, `PTwoWheeler` is at the 1st index, and `PImmovableBox` is at the 3rd index. Thus, the corresponding `makeIsDataIndexed` usage should be:
@@ -293,14 +293,14 @@ Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PB
 > PlutusTx.makeIsDataIndexed ''PVehicle [('FourWheeler,0),('TwoWheeler,1),('ImmovableBox,2)]
 > ```
 
-> Also see: [Isomorphism between Haskell ADTs and `PIsData`](./../Tricks/makeIsDataIndexed,%20Haskell%20ADTs,%20and%20PIsDataRepr.md)
+> Also see: [Isomorphism between Haskell ADTs and `PIsData`](./../Tricks/makeIsDataIndexed,HaskellADTs,PIsDataRepr.md)
 
 And you'd simply derive `PlutustType` with plutus data representation using generics. You can then also derive `PIsData` and if the dataype only has one ocnstructor `PDataFields`.
 
 Furthermore, you can also derive the following typeclasses after deriving `PlutusType` with `DPTStrat _ = PlutusTypeData`
 
-- [`PEq`](./PEq%20and%20POrd.md)
-- [`POrd`](./PEq%20and%20POrd.md)
+- [`PEq`](./PEqAndPOrd.md)
+- [`POrd`](./PEqAndPOrd.md)
 
 Combine all that, and you have:
 
@@ -314,7 +314,7 @@ data PVehicle (s :: S)
 instance DerivePlutusType PVehicle where type DPTStrat _ = PlutusTypeData
 ```
 
-> Note: You cannot derive `PIsData` for types that are represented using [Scott encoding](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding). Your types must be well formed and
+> Note: You cannot derive `PIsData` for types that are represented using [Scott encoding](./../Concepts/DataAndScottEncoding.md#scott-encoding). Your types must be well formed and
   should be using `PDataRecord` terms instead.
 
 That's it! Now you can represent `PVehicle` as a `Data` value, as well as deconstruct and access its fields super ergonomically. Let's try it!

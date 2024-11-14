@@ -17,7 +17,7 @@ import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
 
 # Prefer statically building constants whenever possible
 
-Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular [Haskell synonyms](./../Concepts/Haskell%20Synonym.md) of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (e.g. `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
+Whenever you can build a Plutarch constant out of a pure Haskell value - do it! Functions such as `pconstant`, `phexByteStr` operate on regular [Haskell synonyms](./../Concepts/HaskellSynonym.md) of Plutarch types. Unlike `pcon`, which potentially works on Plutarch terms (e.g. `pcon $ PJust x`, `x` is a `Term s a`). A Plutarch term is an entirely "runtime" concept. "Runtime" as in "Plutus Core Runtime". They only get evaluated during runtime!
 
 On the other hand, whenever you transform a Haskell synonym to its corresponding Plutarch type using `pconstant`, `phexByteStr` etc. - you're _directly_ building a Plutus Core constant. This is entirely static! There are no runtime function calls, no runtime building, it's just _there_, inside the compiled script.
 

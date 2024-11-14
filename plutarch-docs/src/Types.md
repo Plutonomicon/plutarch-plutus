@@ -11,5 +11,5 @@ This section describes the fundamental, commonly used Plutarch types.
 - [`PList`](./Types/PList.md)
 - [`PBuiltinPair`](./Types/PBuiltinPair.md)
 - [`PAsData`](./Types/PAsData.md)
-- [`PDataSum` & `PDataRecord`](./Types/PDataSum%20and%20PDataRecord.md)
+- [`PDataSum` & `PDataRecord`](./Types/PDataSumAndPDataRecord.md)
 - [`PData`](./Types/PData.md)

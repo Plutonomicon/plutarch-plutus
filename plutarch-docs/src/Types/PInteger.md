@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PInteger () where 
+module Plutarch.Docs.PInteger () where
 import Plutarch.Prelude ()
 ```
 
@@ -12,7 +12,7 @@ import Plutarch.Prelude ()
 
 # `PInteger`
 
-`Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from integer literals. 
+`Term s PInteger` has a convenient `Num` instance that allows you to construct Plutarch level integer terms from integer literals.
 It also means you have all the typical arithmetic operations available to you:
 
 ```hs
@@ -29,6 +29,6 @@ It **does not** have a `PlutusType` instance.
 
 > Note: be aware that GHC offers constant folding, i.e. at compile time expressions like `3 * 20000` will be folded to their result. This is important
 > because if you were to instead use the Plutarch level function, the evaluation would instead be delayed until plutarch runtime increasing the script
-> cost. 
+> cost.
 
-This is synonymous to Plutus Core [builtin integer](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:Integer).
+This is synonymous to Plutus Core [builtin integer](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinInteger).

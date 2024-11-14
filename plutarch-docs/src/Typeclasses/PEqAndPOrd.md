@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where 
+module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where
 
 import Plutarch.Prelude
 ```
@@ -27,7 +27,7 @@ class PEq t where
 ```
 That would yield a `Term s PBool`, which you would probably use with `pif` (or similar).
 
-Similarly, `PPartialOrd` (and `POrd`) emulates `Ord`: (where `PPartialOrd` represents partial orders 
+Similarly, `PPartialOrd` (and `POrd`) emulates `Ord`: (where `PPartialOrd` represents partial orders
 and `POrd` represents total orders)
 
 ```hs
@@ -77,4 +77,4 @@ newtype PTriplet a s
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 ```
 
-> Aside: `PEq` derivation for data encoded types uses "Data equality". It simply ensures the structure (as represented through [data encoding](../Concepts/Data%20and%20Scott%20encoding.md#data-encoding)) of both values are _exactly_ the same. It does not take into account any custom `PEq` instances for the individual fields within.
+> Aside: `PEq` derivation for data encoded types uses "Data equality". It simply ensures the structure (as represented through [data encoding](../Concepts/DataAndScottEncoding.md#data-encoding)) of both values are _exactly_ the same. It does not take into account any custom `PEq` instances for the individual fields within.

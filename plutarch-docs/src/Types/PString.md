@@ -5,7 +5,7 @@
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
 
-module Plutarch.Docs.PString (pfoo) where 
+module Plutarch.Docs.PString (pfoo) where
 import Plutarch.Prelude
 ```
 
@@ -25,4 +25,4 @@ It also has a `PEq` instance. And its terms have `Semigroup` and `Monoid` instan
 
 It **does not** have a `PlutusType` instance.
 
-This is synonymous to Plutus Core [builtin string](https://playground.plutus.iohkdev.io/doc/haddock/plutus-tx/html/PlutusTx-Builtins.html#t:BuiltinString) (actually Text).
+This is synonymous to Plutus Core [builtin string](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#t:BuiltinString) (actually Text).

@@ -12,10 +12,10 @@ compile :: ClosedTerm a -> Script
 
 `Term`s are constructed from Haskell values and are tagged with `PType`s.
 
-- [Plutarch Constant `Term`s](./Plutarch%20Terms/Plutarch%20Constants.md)
-  - [Static building of constant `Term`s with `pconstant`](./Plutarch%20Terms/Plutarch%20Constants.md#static-building-of-constant-terms-with-pconstant)
-  - [Dynamic building of constant `Term`s with `pcon`](./Plutarch%20Terms/Plutarch%20Constants.md#dynamic-building-of-constant-terms-with-pcon)
-  - [Overloaded literals](./Plutarch%20Terms/Plutarch%20Constants.md#overloaded-literals)
-  - [Helper functions](./Plutarch%20Terms/Plutarch%20Constants.md#helper-functions)
-- [Lambdas; Plutarch-level Function `Term`s.](./Plutarch%20Terms/Plutarch%20Lambdas.md#lambdas-plutarch-level-function-terms)
-  - [Function Application](./Plutarch%20Terms/Plutarch%20Lambdas.md#function-application)
+- [Plutarch Constant `Term`s](./PlutarchTerms/PlutarchConstants.md)
+  - [Static building of constant `Term`s with `pconstant`](./PlutarchTerms/PlutarchConstants.md#static-building-of-constant-terms-with-pconstant)
+  - [Dynamic building of constant `Term`s with `pcon`](./PlutarchTerms/PlutarchConstants.md#dynamic-building-of-constant-terms-with-pcon)
+  - [Overloaded literals](./PlutarchTerms/PlutarchConstants.md#overloaded-literals)
+  - [Helper functions](./PlutarchTerms/PlutarchConstants.md#helper-functions)
+- [Lambdas; Plutarch-level Function `Term`s.](./PlutarchTerms/PlutarchLambdas.md#lambdas-plutarch-level-function-terms)
+  - [Function Application](./PlutarchTerms/PlutarchLambdas.md#function-application)

@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.PList (pFe, pFeElim, pFeList) where 
+module Plutarch.Docs.PList (pFe, pFeElim, pFeList) where
 import Plutarch.Prelude
 ```
 
@@ -12,9 +12,9 @@ import Plutarch.Prelude
 
 # `PList`
 
-Here's the [Scott encoded](./../Concepts/Data%20and%20Scott%20encoding.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](./../Typeclasses/PListLike.md) instance - so you won't be missing any of those utilities here!
+Here's the [Scott encoded](./../Concepts/DataAndScottEncoding.md#scott-encoding) cousin of `PBuiltinList`. What does that mean? Well, in practice, it just means that `PList` can contain _any arbitrary_ term - not just builtin types. `PList` also has a [`PListLike`](./../Typeclasses/PListLike.md) instance - so you won't be missing any of those utilities here!
 
-`PList` also has a [`PlutusType`](../Typeclasses/PlutusType,%20PCon,%20and%20PMatch.md) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`):
+`PList` also has a [`PlutusType`](../Typeclasses/PlutusType,PCon,PMatch.md) instance. You can construct a `PList` using `pcon` (but you should prefer using `pcons` from `PListLike`):
 
 ```haskell
 pFeList :: forall s. Term s (PList PByteString)

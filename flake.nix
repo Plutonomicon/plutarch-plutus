@@ -68,6 +68,9 @@
               exactDeps = false;
               # TODO(peter-mlabs): Use `apply-refact` for repo wide refactoring `find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +``
               shellHook = config.pre-commit.installationScript;
+              nativeBuildInputs = with pkgs; [
+                mdbook
+              ];
               tools = {
                 cabal = { };
                 haskell-language-server = { };

@@ -3,7 +3,7 @@
 <p>
 
 ```haskell
-module Plutarch.Docs.Hoisting (hor, (#||)) where 
+module Plutarch.Docs.Hoisting (hor, (#||)) where
 
 import Plutarch.Prelude hiding ((#||))
 import Plutarch.Bool (pif')
@@ -23,13 +23,13 @@ x :: Term s PInteger
 x = something complex
 ```
 
-Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](./../Tricks/Don't%20duplicate%20work.md). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
+Any use of `x` will inline the **full definition** of `x`. `x + x` will duplicate `something complex` in the AST. To avoid this, you should [use `plet` in order to avoid duplicate work](./../Tricks/DontDuplicateWork.md). Do note that this is **strictly evaluated, and hence isn't always the best solution.**
 
 There is however still a problem: what about top-level functions like `fib`, `sum`, `filter`, and such? We can use `plet` to avoid duplicating the definition, but this is error-prone. To do this perfectly means that each function that generates part of the AST would need to have access to the `plet`'ed definitions, meaning that we'd likely have to put it into a record or typeclass.
 
 To solve this problem, Plutarch supports _hoisting_. Hoisting only works for _closed terms_, that is, terms that don't reference any free variables (introduced by `plam`).
 
-Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common sub-expression elimination. Do note that because of this, your hoisted term is **also strictly evaluated**, meaning that you _shouldn't_ hoist non-lazy complex computations (use [`pdelay`](./../Introduction/Delay%20and%20Force.md) to avoid this).
+Hoisted terms are essentially moved to a top-level `plet`, i.e. it's essentially common sub-expression elimination. Do note that because of this, your hoisted term is **also strictly evaluated**, meaning that you _shouldn't_ hoist non-lazy complex computations (use [`pdelay`](./../Introduction/DelayAndForce.md) to avoid this).
 
 In general, you should use `phoistAcyclic` on every top level function:
 
