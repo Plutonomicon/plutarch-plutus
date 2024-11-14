@@ -94,6 +94,7 @@ library
     Plutarch.Internal
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
+    Plutarch.Internal.Lift
     Plutarch.Internal.Newtype
     Plutarch.Internal.Other
     Plutarch.Internal.PLam

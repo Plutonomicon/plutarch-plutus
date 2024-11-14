@@ -1,1 +1,1 @@
-../../../Usage/Do syntax with TermCont.md
+../../../src/Usage/Do syntax with TermCont.md

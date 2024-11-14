@@ -1,1 +1,1 @@
-../../../Concepts/Data and Scott encoding.md
+../../../src/Concepts/DataAndScottEncoding.md
