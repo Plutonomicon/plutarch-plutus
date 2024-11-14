@@ -24,7 +24,7 @@ import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
-import Plutarch.Test.Utils (instanceOfType, prettyEquals, prettyShow, typeName, typeName')
+import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -102,7 +102,6 @@ checkLedgerProperties ::
   , PUnsafeLiftDecl a
   , PTryFrom PData a
   , Eq (PLifted a)
-  , Show (PLifted a)
   , Arbitrary (PLifted a)
   , PIsData a
   , Plutus.ToData (PLifted a)
@@ -146,7 +145,6 @@ checkLedgerPropertiesPEnumerable ::
   , Arbitrary (PLifted a)
   , Pretty (PLifted a)
   , Eq (PLifted a)
-  , Show (PLifted a)
   , PUnsafeLiftDecl a
   ) =>
   TestTree
@@ -173,9 +171,12 @@ checkHaskellOrdEquivalent =
         , instanceOfType @(S -> Type) @plutarchInput "POrd"
         ]
     )
-    [ testProperty "== = #==" $ checkHaskellEquivalent2 ((==) @(PLifted plutarchInput)) (plam (#==))
-    , testProperty "< = #<" $ checkHaskellEquivalent2 ((<) @(PLifted plutarchInput)) (plam (#<))
-    , testProperty "<= = #<=" $ checkHaskellEquivalent2 ((<=) @(PLifted plutarchInput)) (plam (#<=))
+    [ testProperty "== = #==" $
+        checkHaskellEquivalent2 ((==) @(PLifted plutarchInput)) (precompileTerm $ plam (#==))
+    , testProperty "< = #<" $
+        checkHaskellEquivalent2 ((<) @(PLifted plutarchInput)) (precompileTerm $ plam (#<))
+    , testProperty "<= = #<=" $
+        checkHaskellEquivalent2 ((<=) @(PLifted plutarchInput)) (precompileTerm $ plam (#<=))
     ]
 
 -- | @since WIP
@@ -289,24 +290,23 @@ penumerableLaws ::
   , Arbitrary (PLifted a)
   , Pretty (PLifted a)
   , Eq (PLifted a)
-  , Show (PLifted a)
   , PUnsafeLiftDecl a
   ) =>
   [TestTree]
 penumerableLaws =
   [ testProperty "ppredecessor . psuccessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a) ->
-        plift (ppredecessor #$ psuccessor # pconstant x) === plift (pconstant x)
+        plift (ppredecessor #$ psuccessor # pconstant x) `prettyEquals` plift (pconstant x)
   , testProperty "psuccessor . ppredecessor = id" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a) ->
-        plift (psuccessor #$ ppredecessor # pconstant x) === plift (pconstant x)
+        plift (psuccessor #$ ppredecessor # pconstant x) `prettyEquals` plift (pconstant x)
   , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a) ->
-        plift (ppredecessorN # 1 # pconstant x) === plift (ppredecessor # pconstant x)
-  , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
+        plift (ppredecessorN # 1 # pconstant x) `prettyEquals` plift (ppredecessor # pconstant x)
+  , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: PLifted a, n :: Positive, m :: Positive) ->
         plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant x))
-          === plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
+          `prettyEquals` plift (ppredecessorN # (pconstant n + pconstant m) # pconstant x)
   ]
 
 -- plift . pconstant = id
@@ -314,7 +314,6 @@ punsafeLiftDeclLaws ::
   forall (a :: S -> Type).
   ( PUnsafeLiftDecl a
   , Eq (PLifted a)
-  , Show (PLifted a)
   , Arbitrary (PLifted a)
   , Pretty (PLifted a)
   ) =>
@@ -322,7 +321,7 @@ punsafeLiftDeclLaws ::
   [TestTree]
 punsafeLiftDeclLaws propName =
   [ testProperty propName . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: PLifted a) ->
-      plift (pconstant x) === x
+      plift (pconstant x) `prettyEquals` x
   ]
 
 -- pfromData . pdata = id
@@ -331,7 +330,6 @@ punsafeLiftDeclLaws propName =
 pisDataLaws ::
   forall (a :: S -> Type).
   ( Arbitrary (PLifted a)
-  , Show (PLifted a)
   , PUnsafeLiftDecl a
   , PIsData a
   , Eq (PLifted a)
@@ -351,19 +349,19 @@ pisDataLaws tyName =
       testProperty "pfromData . pdata = id"
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: PLifted a) ->
-          plift (pfromData . pdata . pconstant $ x) === x
+          plift (precompileTerm (plam (pfromData . pdata) # pconstant x)) `prettyEquals` x
     toDataProp :: TestTree
     toDataProp =
       testProperty "plift . pforgetData . pdata . pconstant = toData"
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: PLifted a) ->
-          plift (pforgetData . pdata . pconstant $ x) === Plutus.toData x
+          plift (precompileTerm (plam (pforgetData . pdata)) # pconstant x) `prettyEquals` Plutus.toData x
     coerceProp :: TestTree
     coerceProp =
       testProperty coerceName
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: PLifted a) ->
-          plift (pfromData . punsafeCoerce @_ @_ @(PAsData a) . pconstant . Plutus.toData $ x) === x
+          plift (precompileTerm (plam (pfromData . punsafeCoerce @_ @_ @(PAsData a))) # pconstant (Plutus.toData x)) `prettyEquals` x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> tyName <> ") . pconstant . toData = id"
 
@@ -371,7 +369,6 @@ pisDataLaws tyName =
 ptryFromLaws ::
   forall (a :: S -> Type).
   ( Arbitrary (PLifted a)
-  , Show (PLifted a)
   , PUnsafeLiftDecl a
   , Eq (PLifted a)
   , PTryFrom PData a
@@ -385,7 +382,8 @@ ptryFromLaws = [pDataAgreementProp]
     pDataAgreementProp = testProperty "can parse toData of original"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: PLifted a) ->
-        plift (ptryFrom @a (pconstant . Plutus.toData $ x) fst) === x
+        plift (precompileTerm (plam $ \d -> ptryFrom @a d fst) # (pconstant . Plutus.toData $ x))
+          `prettyEquals` x
 
 -- This is an ugly kludge because PValue doesn't have a direct PData conversion,
 -- and bringing one in would break too much other stuff to be worth it.
@@ -396,7 +394,8 @@ ptryFromLawsValue = [pDataAgreementProp]
     pDataAgreementProp = testProperty "can parse toData of original"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(v :: PLA.Value) ->
-        plift (pfromData . ptryFrom @(PAsData (V1.PValue V1.Unsorted V1.NoGuarantees)) (pconstant . Plutus.toData $ v) $ fst) === v
+        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PValue V1.Unsorted V1.NoGuarantees)) d $ fst) # pconstant (Plutus.toData v))
+          `prettyEquals` v
 
 -- Same as before
 ptryFromLawsAssocMap :: [TestTree]
@@ -406,5 +405,5 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
     pDataAgreementProp = testProperty "can parse toData of original"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(v :: AssocMap.Map Integer Integer) ->
-        plift (pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) (pconstant . Plutus.toData $ v) $ fst)
-          === v
+        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) d $ fst) # pconstant (Plutus.toData v))
+          `prettyEquals` v

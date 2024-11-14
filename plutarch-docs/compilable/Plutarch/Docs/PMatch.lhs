@@ -1,1 +1,1 @@
-../../../Concepts/GenericProgramming.md
+../../../src/Concepts/GenericProgramming.md
