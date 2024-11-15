@@ -6,6 +6,145 @@
 @version 1.0.0
 
 
+-- | Plutarch benchmarking tools
+--   
+--   Interface mirrors the one from <tt>tasty-bench</tt> but <a>bench</a>
+--   instead of taking <tt>Benchmarkable</tt> takes <a>ClosedTerm</a>
+--   
+--   To compare benchmark run against baseline file you need to generate it
+--   first with <tt>cabal run bench -- --csv baseline.csv</tt>. Then after
+--   making modifications you can rerun the benchmarks to compare with
+--   previous values with <tt>cabal run bench -- --baseline
+--   baseline.csv</tt>. You can instruct benchmarks to fail if certain
+--   values changed by too much using <tt>--fail-if-*</tt> flags. See
+--   <tt>cabal run bench -- --help</tt> for all available flags. To
+--   regenreate baseline file run with <tt>--csv</tt> flag again.
+module Plutarch.Test.Bench
+
+-- | @since WIP
+data BenchConfig
+
+-- | Compile with UPLC simplifier pass and no tracing
+Optimizing :: BenchConfig
+
+-- | Compile without UPLC simplifier and configurable tracing
+NonOptimizing :: Config -> BenchConfig
+
+-- | Use this instead of <a>defaultMain</a> from <tt>Test.Tasty</tt> to run
+--   benchmarks to get formatted output
+--   
+--   @since WIP
+defaultMain :: TestTree -> IO ()
+
+-- | Create benchmark from Plutarch term without tracing and no UPLC
+--   simplifier
+--   
+--   @since WIP
+bench :: TestName -> ClosedTerm a -> TestTree
+
+-- | Like <a>bench</a> but with customizable compilation config
+--   
+--   @since WIP
+benchWithConfig :: TestName -> BenchConfig -> ClosedTerm a -> TestTree
+
+-- | Compare benchmarks, reporting relative CPU, MEM, and size differences
+--   
+--   @since WIP
+bcompare :: String -> TestTree -> TestTree
+
+-- | Like <a>bcompare</a> but with customizable upper and lower bounds of
+--   relative differences
+--   
+--   @since WIP
+bcompareWithin :: (Double, Double) -> (Double, Double) -> (Double, Double) -> String -> TestTree -> TestTree
+
+-- | @since WIP
+data BaselinePath
+
+-- | @since WIP
+data CsvPath
+
+-- | @since WIP
+data FailIfMoreCpu
+
+-- | @since WIP
+data FailIfLessCpu
+
+-- | @since WIP
+data FailIfMoreMem
+
+-- | @since WIP
+data FailIfLessMem
+
+-- | @since WIP
+data FailIfBigger
+
+-- | @since WIP
+data FailIfSmaller
+
+-- | @since WIP
+consoleBenchReporter :: Ingredient
+
+-- | @since WIP
+csvReporter :: Ingredient
+instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfMoreCpu
+instance GHC.Num.Num Plutarch.Test.Bench.FailIfMoreCpu
+instance GHC.Read.Read Plutarch.Test.Bench.FailIfMoreCpu
+instance GHC.Show.Show Plutarch.Test.Bench.FailIfMoreCpu
+instance GHC.Classes.Ord Plutarch.Test.Bench.FailIfMoreCpu
+instance GHC.Classes.Eq Plutarch.Test.Bench.FailIfMoreCpu
+instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfLessCpu
+instance GHC.Num.Num Plutarch.Test.Bench.FailIfLessCpu
+instance GHC.Read.Read Plutarch.Test.Bench.FailIfLessCpu
+instance GHC.Show.Show Plutarch.Test.Bench.FailIfLessCpu
+instance GHC.Classes.Ord Plutarch.Test.Bench.FailIfLessCpu
+instance GHC.Classes.Eq Plutarch.Test.Bench.FailIfLessCpu
+instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfMoreMem
+instance GHC.Num.Num Plutarch.Test.Bench.FailIfMoreMem
+instance GHC.Read.Read Plutarch.Test.Bench.FailIfMoreMem
+instance GHC.Show.Show Plutarch.Test.Bench.FailIfMoreMem
+instance GHC.Classes.Ord Plutarch.Test.Bench.FailIfMoreMem
+instance GHC.Classes.Eq Plutarch.Test.Bench.FailIfMoreMem
+instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfLessMem
+instance GHC.Num.Num Plutarch.Test.Bench.FailIfLessMem
+instance GHC.Read.Read Plutarch.Test.Bench.FailIfLessMem
+instance GHC.Show.Show Plutarch.Test.Bench.FailIfLessMem
+instance GHC.Classes.Ord Plutarch.Test.Bench.FailIfLessMem
+instance GHC.Classes.Eq Plutarch.Test.Bench.FailIfLessMem
+instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfBigger
+instance GHC.Num.Num Plutarch.Test.Bench.FailIfBigger
+instance GHC.Read.Read Plutarch.Test.Bench.FailIfBigger
+instance GHC.Show.Show Plutarch.Test.Bench.FailIfBigger
+instance GHC.Classes.Ord Plutarch.Test.Bench.FailIfBigger
+instance GHC.Classes.Eq Plutarch.Test.Bench.FailIfBigger
+instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfSmaller
+instance GHC.Num.Num Plutarch.Test.Bench.FailIfSmaller
+instance GHC.Read.Read Plutarch.Test.Bench.FailIfSmaller
+instance GHC.Show.Show Plutarch.Test.Bench.FailIfSmaller
+instance GHC.Classes.Ord Plutarch.Test.Bench.FailIfSmaller
+instance GHC.Classes.Eq Plutarch.Test.Bench.FailIfSmaller
+instance GHC.Classes.Ord Plutarch.Test.Bench.BaselinePath
+instance GHC.Classes.Eq Plutarch.Test.Bench.BaselinePath
+instance GHC.Classes.Ord Plutarch.Test.Bench.CsvPath
+instance GHC.Classes.Eq Plutarch.Test.Bench.CsvPath
+instance GHC.Read.Read Plutarch.Test.Bench.ExecutionBudget
+instance GHC.Show.Show Plutarch.Test.Bench.ExecutionBudget
+instance forall a. GHC.Read.Read a => GHC.Read.Read (Plutarch.Test.Bench.WithLoHi a)
+instance forall a. GHC.Show.Show a => GHC.Show.Show (Plutarch.Test.Bench.WithLoHi a)
+instance GHC.Base.Functor Plutarch.Test.Bench.Unique
+instance forall a. GHC.Base.Semigroup (Plutarch.Test.Bench.Unique a)
+instance forall a. GHC.Base.Monoid (Plutarch.Test.Bench.Unique a)
+instance Test.Tasty.Core.IsTest Plutarch.Test.Bench.PBenchmarkable
+instance Test.Tasty.Options.IsOption (GHC.Maybe.Maybe Plutarch.Test.Bench.CsvPath)
+instance Test.Tasty.Options.IsOption (GHC.Maybe.Maybe Plutarch.Test.Bench.BaselinePath)
+instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfSmaller
+instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfBigger
+instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfLessMem
+instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfMoreMem
+instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfLessCpu
+instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfMoreCpu
+
+
 -- | Utilities for golden testing
 --   
 --   To regenerate golden tests it is enough to remove <tt>./goldens</tt>

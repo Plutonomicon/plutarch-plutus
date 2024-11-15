@@ -22,15 +22,15 @@
 
 @since 1.0.0
 -}</span></span><span>
-</span><span id="line-25"></span><span id="local-6989586621679136889"><span id="local-6989586621679136894"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span></span></span><span>
+</span><span id="line-25"></span><span id="local-6989586621679137064"><span id="local-6989586621679137069"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span></span></span><span>
 </span><span id="line-26"></span><span>
 </span><span id="line-27"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-28"></span><span id="local-6989586621679136900"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span></span><span>
+</span><span id="line-28"></span><span id="local-6989586621679137075"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b256Hash"><span class="hs-identifier hs-type">Blake2b256Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span></span><span>
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-31"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-32"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-33"></span><span>  </span><span id="local-6989586621679136912"><span class="annot"><span class="annottext">function :: forall b. (TxId -&gt; b) -&gt; TxId :-&gt; b
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679137087"><span class="annot"><span class="annottext">function :: forall b. (TxId -&gt; b) -&gt; TxId :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TxId -&gt; BuiltinByteString)
 -&gt; (BuiltinByteString -&gt; TxId) -&gt; (TxId -&gt; b) -&gt; TxId :-&gt; b
 forall b a c.
@@ -44,7 +44,7 @@ forall a b. Coercible a b =&gt; a -&gt; b
 </span><span id="line-35"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-37"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-38"></span><span>  </span><span id="local-6989586621679136931"><span class="annot"><span class="annottext">arbitrary :: Gen TxOutRef
+</span><span id="line-38"></span><span>  </span><span id="local-6989586621679137106"><span class="annot"><span class="annottext">arbitrary :: Gen TxOutRef
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TxId -&gt; Integer -&gt; TxOutRef
 </span><span class="hs-identifier hs-var">PLA.TxOutRef</span></span><span> </span><span class="annot"><span class="annottext">(TxId -&gt; Integer -&gt; TxOutRef)
 -&gt; Gen TxId -&gt; Gen (Integer -&gt; TxOutRef)
@@ -65,17 +65,17 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
 </span><span id="line-39"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-40"></span><span>  </span><span id="local-6989586621679136944"><span class="annot"><span class="annottext">shrink :: TxOutRef -&gt; [TxOutRef]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span id="local-6989586621679136945"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679136945"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span id="local-6989586621679136946"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136946"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679137119"><span class="annot"><span class="annottext">shrink :: TxOutRef -&gt; [TxOutRef]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span id="local-6989586621679137120"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137120"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span id="local-6989586621679137121"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679137121"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-41"></span><span>    </span><span class="annot"><span class="annottext">TxId -&gt; Integer -&gt; TxOutRef
 </span><span class="hs-identifier hs-var">PLA.TxOutRef</span></span><span> </span><span class="annot"><span class="annottext">(TxId -&gt; Integer -&gt; TxOutRef) -&gt; [TxId] -&gt; [Integer -&gt; TxOutRef]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TxId -&gt; [TxId]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679136945"><span class="hs-identifier hs-var">tid</span></a></span><span> </span><span class="annot"><span class="annottext">[Integer -&gt; TxOutRef] -&gt; [Integer] -&gt; [TxOutRef]
+</span><a href="#local-6989586621679137120"><span class="hs-identifier hs-var">tid</span></a></span><span> </span><span class="annot"><span class="annottext">[Integer -&gt; TxOutRef] -&gt; [Integer] -&gt; [TxOutRef]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b.
 Applicative f =&gt;
@@ -101,31 +101,31 @@ forall a. a -&gt; NonNegative a
 </span><span class="hs-identifier hs-var">NonNegative</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; [Integer]) -&gt; Integer -&gt; [Integer]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136946"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679137121"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span>
 </span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-45"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-46"></span><span>  </span><span id="local-6989586621679136953"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxOutRef -&gt; Gen b -&gt; Gen b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span id="local-6989586621679136954"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679136954"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span id="local-6989586621679136955"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136955"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679137128"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxOutRef -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span id="local-6989586621679137129"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137129"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span id="local-6989586621679137130"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679137130"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-47"></span><span>    </span><span class="annot"><span class="annottext">TxId -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. TxId -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679136954"><span class="hs-identifier hs-var">tid</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137129"><span class="hs-identifier hs-var">tid</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Gen b -&gt; Gen b
 forall b. Integer -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136955"><span class="hs-identifier hs-var">ix</span></a></span><span>
+</span><a href="#local-6989586621679137130"><span class="hs-identifier hs-var">ix</span></a></span><span>
 </span><span id="line-48"></span><span>
 </span><span id="line-49"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-51"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-52"></span><span>  </span><span id="local-6989586621679136963"><span class="annot"><span class="annottext">function :: forall b. (TxOutRef -&gt; b) -&gt; TxOutRef :-&gt; b
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679137138"><span class="annot"><span class="annottext">function :: forall b. (TxOutRef -&gt; b) -&gt; TxOutRef :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TxOutRef -&gt; (TxId, Integer))
 -&gt; ((TxId, Integer) -&gt; TxOutRef)
 -&gt; (TxOutRef -&gt; b)
@@ -133,11 +133,11 @@ forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b a c.
 Function b =&gt;
 (a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
-</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span id="local-6989586621679136964"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679136964"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span id="local-6989586621679136965"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136965"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679136964"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136965"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(TxId -&gt; Integer -&gt; TxOutRef) -&gt; (TxId, Integer) -&gt; TxOutRef
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span id="local-6989586621679137139"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137139"><span class="hs-identifier hs-var">tid</span></a></span></span><span> </span><span id="local-6989586621679137140"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679137140"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137139"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679137140"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(TxId -&gt; Integer -&gt; TxOutRef) -&gt; (TxId, Integer) -&gt; TxOutRef
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="annot"><span class="annottext">TxId -&gt; Integer -&gt; TxOutRef
 </span><span class="hs-identifier hs-var">PLA.TxOutRef</span></span><span class="hs-special">)</span><span>
@@ -145,7 +145,7 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><span id="line-54"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-56"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-57"></span><span>  </span><span id="local-6989586621679136982"><span class="annot"><span class="annottext">arbitrary :: Gen TxOut
+</span><span id="line-57"></span><span>  </span><span id="local-6989586621679137157"><span class="annot"><span class="annottext">arbitrary :: Gen TxOut
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">Address -&gt; Value -&gt; Maybe DatumHash -&gt; TxOut
 </span><span class="hs-identifier hs-var">PLA.TxOut</span></span><span>
@@ -177,30 +177,30 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span> </span><span class="hs-comment">-- maybe datum hash</span><span>
 </span><span id="line-62"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-63"></span><span>  </span><span id="local-6989586621679136995"><span class="annot"><span class="annottext">shrink :: TxOut -&gt; [TxOut]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span id="local-6989586621679136996"><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679136996"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679136997"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679136997"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span id="local-6989586621679136998"><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679136998"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-64"></span><span>    </span><span id="local-6989586621679136999"><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679136999"><span class="hs-identifier hs-var">addr'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Address -&gt; [Address]
+</span><span id="line-63"></span><span>  </span><span id="local-6989586621679137170"><span class="annot"><span class="annottext">shrink :: TxOut -&gt; [TxOut]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span id="local-6989586621679137171"><span class="annot"><span class="annottext">Address
+</span><a href="#local-6989586621679137171"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679137172"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137172"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span id="local-6989586621679137173"><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137173"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-64"></span><span>    </span><span id="local-6989586621679137174"><span class="annot"><span class="annottext">Address
+</span><a href="#local-6989586621679137174"><span class="hs-identifier hs-var">addr'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Address -&gt; [Address]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679136996"><span class="hs-identifier hs-var">addr</span></a></span><span>
-</span><span id="line-65"></span><span>    </span><span id="local-6989586621679137000"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137000"><span class="hs-identifier hs-var">val'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UTxOValue -&gt; Value
+</span><a href="#local-6989586621679137171"><span class="hs-identifier hs-var">addr</span></a></span><span>
+</span><span id="line-65"></span><span>    </span><span id="local-6989586621679137175"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137175"><span class="hs-identifier hs-var">val'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">UTxOValue -&gt; Value
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#getUtxoValue"><span class="hs-identifier hs-var">Value.getUtxoValue</span></a></span><span> </span><span class="annot"><span class="annottext">(UTxOValue -&gt; Value) -&gt; [UTxOValue] -&gt; [Value]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">UTxOValue -&gt; [UTxOValue]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Value -&gt; UTxOValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-var">Value.UTxOValue</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679136997"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-66"></span><span>    </span><span id="local-6989586621679137002"><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137002"><span class="hs-identifier hs-var">mdh'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash -&gt; [Maybe DatumHash]
+</span><a href="#local-6989586621679137172"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679137177"><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137177"><span class="hs-identifier hs-var">mdh'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash -&gt; [Maybe DatumHash]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679136998"><span class="hs-identifier hs-var">mdh</span></a></span><span>
+</span><a href="#local-6989586621679137173"><span class="hs-identifier hs-var">mdh</span></a></span><span>
 </span><span id="line-67"></span><span>    </span><span class="annot"><span class="annottext">TxOut -&gt; [TxOut]
 forall a. a -&gt; [a]
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -209,42 +209,42 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Address -&gt; Value -&gt; Maybe DatumHash -&gt; TxOut
 </span><span class="hs-identifier hs-var">PLA.TxOut</span></span><span> </span><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679136999"><span class="hs-identifier hs-var">addr'</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137000"><span class="hs-identifier hs-var">val'</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe DatumHash -&gt; [TxOut]) -&gt; Maybe DatumHash -&gt; [TxOut]
+</span><a href="#local-6989586621679137174"><span class="hs-identifier hs-var">addr'</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137175"><span class="hs-identifier hs-var">val'</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe DatumHash -&gt; [TxOut]) -&gt; Maybe DatumHash -&gt; [TxOut]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137002"><span class="hs-identifier hs-var">mdh'</span></a></span><span>
+</span><a href="#local-6989586621679137177"><span class="hs-identifier hs-var">mdh'</span></a></span><span>
 </span><span id="line-68"></span><span>
 </span><span id="line-69"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-70"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-72"></span><span>  </span><span id="local-6989586621679137013"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxOut -&gt; Gen b -&gt; Gen b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span id="local-6989586621679137014"><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679137014"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679137015"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137015"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span id="local-6989586621679137016"><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137016"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679137188"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxOut -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span id="local-6989586621679137189"><span class="annot"><span class="annottext">Address
+</span><a href="#local-6989586621679137189"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679137190"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137190"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span id="local-6989586621679137191"><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137191"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-73"></span><span>    </span><span class="annot"><span class="annottext">Address -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. Address -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679137014"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137189"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. Value -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137015"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137190"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash -&gt; Gen b -&gt; Gen b
 forall b. Maybe DatumHash -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137016"><span class="hs-identifier hs-var">mdh</span></a></span><span>
+</span><a href="#local-6989586621679137191"><span class="hs-identifier hs-var">mdh</span></a></span><span>
 </span><span id="line-74"></span><span>
 </span><span id="line-75"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-76"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-77"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-78"></span><span>  </span><span id="local-6989586621679137029"><span class="annot"><span class="annottext">function :: forall b. (TxOut -&gt; b) -&gt; TxOut :-&gt; b
+</span><span id="line-78"></span><span>  </span><span id="local-6989586621679137204"><span class="annot"><span class="annottext">function :: forall b. (TxOut -&gt; b) -&gt; TxOut :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TxOut -&gt; (Address, Value, Maybe DatumHash))
 -&gt; ((Address, Value, Maybe DatumHash) -&gt; TxOut)
 -&gt; (TxOut -&gt; b)
@@ -253,26 +253,26 @@ forall b a c.
 Function b =&gt;
 (a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
 </span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">TxOut -&gt; (Address, Value, Maybe DatumHash)
-</span><a href="#local-6989586621679137030"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">(Address, Value, Maybe DatumHash) -&gt; TxOut
-</span><a href="#local-6989586621679137031"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><a href="#local-6989586621679137205"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">(Address, Value, Maybe DatumHash) -&gt; TxOut
+</span><a href="#local-6989586621679137206"><span class="hs-identifier hs-var">outOf</span></a></span><span>
 </span><span id="line-79"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-80"></span><span>      </span><span class="annot"><a href="#local-6989586621679137030"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Address</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DatumHash</span></span><span class="hs-special">)</span><span>
-</span><span id="line-81"></span><span>      </span><span id="local-6989586621679137030"><span class="annot"><span class="annottext">into :: TxOut -&gt; (Address, Value, Maybe DatumHash)
-</span><a href="#local-6989586621679137030"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span id="local-6989586621679137032"><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679137032"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679137033"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137033"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span id="local-6989586621679137034"><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137034"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679137032"><span class="hs-identifier hs-var">addr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137033"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137034"><span class="hs-identifier hs-var">mdh</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-82"></span><span>      </span><span class="annot"><a href="#local-6989586621679137031"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Address</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DatumHash</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span>
-</span><span id="line-83"></span><span>      </span><span id="local-6989586621679137031"><span class="annot"><span class="annottext">outOf :: (Address, Value, Maybe DatumHash) -&gt; TxOut
-</span><a href="#local-6989586621679137031"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679137035"><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679137035"><span class="hs-identifier hs-var">addr</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137036"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137036"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137037"><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137037"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Address -&gt; Value -&gt; Maybe DatumHash -&gt; TxOut
+</span><span id="line-80"></span><span>      </span><span class="annot"><a href="#local-6989586621679137205"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Address</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DatumHash</span></span><span class="hs-special">)</span><span>
+</span><span id="line-81"></span><span>      </span><span id="local-6989586621679137205"><span class="annot"><span class="annottext">into :: TxOut -&gt; (Address, Value, Maybe DatumHash)
+</span><a href="#local-6989586621679137205"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span> </span><span id="local-6989586621679137207"><span class="annot"><span class="annottext">Address
+</span><a href="#local-6989586621679137207"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679137208"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137208"><span class="hs-identifier hs-var">val</span></a></span></span><span> </span><span id="local-6989586621679137209"><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137209"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Address
+</span><a href="#local-6989586621679137207"><span class="hs-identifier hs-var">addr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137208"><span class="hs-identifier hs-var">val</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137209"><span class="hs-identifier hs-var">mdh</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>      </span><span class="annot"><a href="#local-6989586621679137206"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.Address</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DatumHash</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span>
+</span><span id="line-83"></span><span>      </span><span id="local-6989586621679137206"><span class="annot"><span class="annottext">outOf :: (Address, Value, Maybe DatumHash) -&gt; TxOut
+</span><a href="#local-6989586621679137206"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679137210"><span class="annot"><span class="annottext">Address
+</span><a href="#local-6989586621679137210"><span class="hs-identifier hs-var">addr</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137211"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137211"><span class="hs-identifier hs-var">val</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137212"><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137212"><span class="hs-identifier hs-var">mdh</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Address -&gt; Value -&gt; Maybe DatumHash -&gt; TxOut
 </span><span class="hs-identifier hs-var">PLA.TxOut</span></span><span> </span><span class="annot"><span class="annottext">Address
-</span><a href="#local-6989586621679137035"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137036"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
-</span><a href="#local-6989586621679137037"><span class="hs-identifier hs-var">mdh</span></a></span><span>
+</span><a href="#local-6989586621679137210"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137211"><span class="hs-identifier hs-var">val</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe DatumHash
+</span><a href="#local-6989586621679137212"><span class="hs-identifier hs-var">mdh</span></a></span><span>
 </span><span id="line-84"></span></pre></body></html>
