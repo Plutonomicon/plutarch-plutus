@@ -196,64 +196,69 @@ consoleBenchReporter = modifyConsoleReporter [Option (Proxy :: Proxy (Maybe Base
         . joinQuotedFields
         . lines
         <$> (readFile path >>= evaluate . force)
-  pure $ \name mDepR r -> case safeRead (resultDescription r) of
-    Nothing -> r
-    Just
-      ( WithLoHi
-          est@(ExecutionBudget budgetCpu' budgetMem' budgetSize')
-          (lowerBoundCpu, upperBoundCpu)
-          (lowerBoundMem, upperBoundMem)
-          (lowerBoundSize, upperBoundSize)
-        ) ->
-        (if isAcceptable then id else forceFail)
-          r
-            { resultDescription =
-                toTableAligned
-                  [ ["CPU", show budgetCpu', bcompareCpu, showSlowdown slowDownCpu]
-                  , ["MEM", show budgetMem', bcompareMem, showSlowdown slowDownMem]
-                  , ["SIZE", show budgetSize', bcompareSize, showSlowdown slowDownSize]
-                  ]
-            }
-        where
-          showSlowdown s = if isNothing mSlowDown then "" else formatSlowDown s
-          isAcceptable = isAcceptableVsBaseline && isAcceptableVsBcompare
-          mSlowDown = compareVsBaseline baseline name est
-          slowDownCpu = maybe 1 (\(cpu, _, _) -> cpu) mSlowDown
-          slowDownMem = maybe 1 (\(_, mem, _) -> mem) mSlowDown
-          slowDownSize = maybe 1 (\(_, _, size) -> size) mSlowDown
-          isAcceptableVsBaseline =
-            slowDownCpu >= lowerBoundCpu
-              && slowDownCpu <= upperBoundCpu
-              && slowDownMem >= lowerBoundMem
-              && slowDownMem <= upperBoundMem
-              && slowDownSize >= lowerBoundSize
-              && slowDownSize <= upperBoundSize
-          (isAcceptableVsBcompare, bcompareCpu, bcompareMem, bcompareSize) = case mDepR of
-            Nothing -> (True, "", "", "" :: String)
-            Just
-              ( WithLoHi
-                  depR
-                  (depLowerBoundCpu, depUpperBoundCpu)
-                  (depLowerBoundMem, depUpperBoundMem)
-                  (depLowerBoundSize, depUpperBoundSize)
-                ) -> case safeRead (resultDescription depR) of
-                Nothing -> (True, "", "", "")
-                Just (WithLoHi (ExecutionBudget depCpu depMem depSize) _ _ _) ->
-                  let
-                    ratioCpu :: Double = fromIntegral budgetCpu' / fromIntegral depCpu
-                    ratioMem :: Double = fromIntegral budgetMem' / fromIntegral depMem
-                    ratioSize :: Double = fromIntegral budgetSize' / fromIntegral depSize
-                   in
-                    ( ratioCpu >= depLowerBoundCpu
-                        && ratioCpu <= depUpperBoundCpu
-                        && ratioMem >= depLowerBoundMem
-                        && ratioMem <= depUpperBoundMem
-                        && ratioSize >= depLowerBoundSize
-                        && ratioSize <= depUpperBoundSize
-                    , printf "%.2fx" ratioCpu
-                    , printf "%.2fx" ratioMem
-                    , printf "%.2fx" ratioSize
-                    )
+  pure $ \name uDepR r ->
+    case uDepR of
+      None -> testFailed "Failed to find pattern from `bcompare`"
+      NotUnique -> testFailed "Pattern from `bcompare` is not unique"
+      mDepR ->
+        case safeRead (resultDescription r) of
+          Nothing -> r
+          Just
+            ( WithLoHi
+                est@(ExecutionBudget budgetCpu' budgetMem' budgetSize')
+                (lowerBoundCpu, upperBoundCpu)
+                (lowerBoundMem, upperBoundMem)
+                (lowerBoundSize, upperBoundSize)
+              ) ->
+              (if isAcceptable then id else forceFail)
+                r
+                  { resultDescription =
+                      toTableAligned
+                        [ ["CPU", show budgetCpu', bcompareCpu, showSlowdown slowDownCpu]
+                        , ["MEM", show budgetMem', bcompareMem, showSlowdown slowDownMem]
+                        , ["SIZE", show budgetSize', bcompareSize, showSlowdown slowDownSize]
+                        ]
+                  }
+              where
+                showSlowdown s = if isNothing mSlowDown then "" else formatSlowDown s
+                isAcceptable = isAcceptableVsBaseline && isAcceptableVsBcompare
+                mSlowDown = compareVsBaseline baseline name est
+                slowDownCpu = maybe 1 (\(cpu, _, _) -> cpu) mSlowDown
+                slowDownMem = maybe 1 (\(_, mem, _) -> mem) mSlowDown
+                slowDownSize = maybe 1 (\(_, _, size) -> size) mSlowDown
+                isAcceptableVsBaseline =
+                  slowDownCpu >= lowerBoundCpu
+                    && slowDownCpu <= upperBoundCpu
+                    && slowDownMem >= lowerBoundMem
+                    && slowDownMem <= upperBoundMem
+                    && slowDownSize >= lowerBoundSize
+                    && slowDownSize <= upperBoundSize
+                (isAcceptableVsBcompare, bcompareCpu, bcompareMem, bcompareSize) = case mDepR of
+                  NotProvided -> (True, "", "", "" :: String)
+                  Unique
+                    ( WithLoHi
+                        depR
+                        (depLowerBoundCpu, depUpperBoundCpu)
+                        (depLowerBoundMem, depUpperBoundMem)
+                        (depLowerBoundSize, depUpperBoundSize)
+                      ) -> case safeRead (resultDescription depR) of
+                      Nothing -> (True, "", "", "")
+                      Just (WithLoHi (ExecutionBudget depCpu depMem depSize) _ _ _) ->
+                        let
+                          ratioCpu :: Double = fromIntegral budgetCpu' / fromIntegral depCpu
+                          ratioMem :: Double = fromIntegral budgetMem' / fromIntegral depMem
+                          ratioSize :: Double = fromIntegral budgetSize' / fromIntegral depSize
+                         in
+                          ( ratioCpu >= depLowerBoundCpu
+                              && ratioCpu <= depUpperBoundCpu
+                              && ratioMem >= depLowerBoundMem
+                              && ratioMem <= depUpperBoundMem
+                              && ratioSize >= depLowerBoundSize
+                              && ratioSize <= depUpperBoundSize
+                          , printf "%.2fx" ratioCpu
+                          , printf "%.2fx" ratioMem
+                          , printf "%.2fx" ratioSize
+                          )
 
 -- | @since WIP
 csvReporter :: Ingredient
@@ -480,15 +485,14 @@ instance IsOption (Maybe CsvPath) where
 
 modifyConsoleReporter ::
   [OptionDescription] ->
-  (OptionSet -> IO (TestName -> Maybe (WithLoHi Result) -> Result -> Result)) ->
+  (OptionSet -> IO (TestName -> Unique (WithLoHi Result) -> Result -> Result)) ->
   Ingredient
 modifyConsoleReporter desc' iof = TestReporter (desc ++ desc') $ \opts tree ->
   let nameSeqs = IntMap.fromDistinctAscList $ zip [0 ..] $ testNameSeqs opts tree
       namesAndDeps =
         IntMap.fromDistinctAscList $
           zip [0 ..] $
-            map (second isSingle) $
-              testNamesAndDeps nameSeqs opts tree
+            testNamesAndDeps nameSeqs opts tree
       modifySMap =
         (iof opts >>=)
           . flip postprocessResult
@@ -498,9 +502,6 @@ modifyConsoleReporter desc' iof = TestReporter (desc ++ desc') $ \opts tree ->
     (desc, cb) = case consoleTestReporter of
       TestReporter d c -> (d, c)
       _ -> error "modifyConsoleReporter: consoleTestReporter must be TestReporter"
-
-    isSingle (Unique a) = Just a
-    isSingle _ = Nothing
 
 data ExecutionBudget = ExecutionBudget Integer Integer Integer
   deriving stock (Show, Read)
@@ -554,16 +555,18 @@ instance IsTest PBenchmarkable where
       FailIfBigger ifBigger = lookupOption opts
       FailIfSmaller ifSmaller = lookupOption opts
 
-data Unique a = None | Unique !a | NotUnique
+data Unique a = None | Unique !a | NotUnique | NotProvided
   deriving stock (Functor)
 
 instance Semigroup (Unique a) where
-  None <> a = a
+  a <> NotProvided = a
+  NotProvided <> a = a
   a <> None = a
+  None <> a = a
   _ <> _ = NotUnique
 
 instance Monoid (Unique a) where
-  mempty = None
+  mempty = NotProvided
   mappend = (<>)
 
 -- | Convert a test tree to a list of test names.
@@ -579,7 +582,7 @@ testNamesAndDeps :: IntMap (Seq TestName) -> OptionSet -> TestTree -> [(TestName
 testNamesAndDeps im =
   foldTestTree
     trivialFold
-      { foldSingle = const $ const . (: []) . (,mempty)
+      { foldSingle = const $ const . (: []) . (,NotProvided)
       , foldGroup = const $ (. concat) . map . first . (++) . (++ ".")
       , foldAfter = const foldDeps
       }
@@ -589,20 +592,20 @@ testNamesAndDeps im =
       | pbcomparePrefix `isPrefixOf` xs
       , Just (WithLoHi () cpu mem size) <- safeRead $ drop (length pbcomparePrefix) xs =
           map $ second $ mappend $ (\x -> WithLoHi x cpu mem size) <$> findMatchingKeys im p
-    foldDeps _ _ = id
+    foldDeps _ _ = map (second (const NotProvided))
 
 pbcomparePrefix :: String
 pbcomparePrefix = "plutarch-bench"
 
 findMatchingKeys :: IntMap (Seq TestName) -> Expr -> Unique IntMap.Key
 findMatchingKeys im p =
-  foldMap (\(k, v) -> if withFields v pat == Right True then Unique k else mempty) $ IntMap.assocs im
+  foldMap (\(k, v) -> if withFields v pat == Right True then Unique k else None) $ IntMap.assocs im
   where
     pat = eval p >>= asB
 
 postprocessResult ::
-  (TestName -> Maybe (WithLoHi Result) -> Result -> Result) ->
-  IntMap (TestName, Maybe (WithLoHi IntMap.Key), TVar Status) ->
+  (TestName -> Unique (WithLoHi Result) -> Result -> Result) ->
+  IntMap (TestName, Unique (WithLoHi IntMap.Key), TVar Status) ->
   IO StatusMap
 postprocessResult f src = do
   paired <- forM src $ \(name, mDepId, tv) -> (name,mDepId,tv,) <$> newTVarIO NotStarted
@@ -617,14 +620,16 @@ postprocessResult f src = do
                 case new of
                   Done res -> do
                     depRes <- case mDepId of
-                      Nothing -> pure Nothing
-                      Just (WithLoHi depId cpu mem size) -> case IntMap.lookup depId src of
-                        Nothing -> pure Nothing
+                      Unique (WithLoHi depId cpu mem size) -> case IntMap.lookup depId src of
+                        Nothing -> pure None
                         Just (_, _, depTV) -> do
                           depStatus <- readTVar depTV
                           case depStatus of
-                            Done dep -> pure $ Just (WithLoHi dep cpu mem size)
-                            _ -> pure Nothing
+                            Done dep -> pure $ Unique (WithLoHi dep cpu mem size)
+                            _ -> pure NotProvided
+                      None -> pure None
+                      NotUnique -> pure NotUnique
+                      NotProvided -> pure NotProvided
                     writeTVar oldTV (Done (f name depRes res))
                     pure (Any True, All True)
                   Executing newProgr -> do
