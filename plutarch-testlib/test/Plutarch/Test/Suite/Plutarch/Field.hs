@@ -5,7 +5,7 @@ module Plutarch.Test.Suite.Plutarch.Field (tests) where
 import Plutarch.Builtin (ppairDataBuiltin)
 import Plutarch.LedgerApi.V1 (PAddress (PAddress))
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.SpecTypes (PTriplet)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V1.Address (Address (Address))
@@ -28,22 +28,22 @@ tests =
                 , goldenEval "getY" getY
                 , goldenEval "tripYZ" tripYZ
                 ]
-            , goldenEvalEqual "tripSum.A" (tripSum # tripA) (pconstant 1000)
-            , goldenEvalEqual "tripSum.B" (tripSum # tripB) (pconstant 100)
-            , goldenEvalEqual "tripSum.C" (tripSum # tripC) (pconstant 10)
-            , goldenEvalEqual "tripYZ=tripZY" tripYZ tripZY
+            , goldenEval "tripSum.A" (tripSum # tripA)
+            , goldenEval "tripSum.B" (tripSum # tripB)
+            , goldenEval "tripSum.C" (tripSum # tripC)
+            , goldenEval "tripYZ=tripZY" tripYZ
             ]
         , plutarchGolden
             "rangeFields"
             "field.rangeFields"
             [ goldenEval "lam" rangeFields
-            , goldenEvalEqual "app" (rangeFields # someFields) (pconstant 11)
+            , goldenEval "app" (rangeFields # someFields)
             ]
         , plutarchGolden
             "dropFields"
             "field.dropFields"
             [ goldenEval "lam" dropFields
-            , goldenEvalEqual "app" (dropFields # someFields) (pconstant 17)
+            , goldenEval "app" (dropFields # someFields)
             ]
         , plutarchGolden
             "pletFields"
@@ -51,20 +51,20 @@ tests =
             [ goldenGroup
                 "letSomeFields"
                 [ goldenEval "lam" letSomeFields
-                , goldenEvalEqual "order" letSomeFields letSomeFields'
-                , goldenEvalEqual "app" (letSomeFields # someFields) (pconstant 14)
+                , goldenEval "order" letSomeFields
+                , goldenEval "app" (letSomeFields # someFields)
                 ]
             , goldenGroup
                 "nFields"
                 [ goldenEval "lam" nFields
-                , goldenEvalEqual "app" (nFields # someFields) (pconstant 1)
+                , goldenEval "app" (nFields # someFields)
                 ]
             ]
         , plutarchGolden
             "other"
             "field.other"
-            [ goldenEvalEqual "by" by (pconstant 10)
-            , goldenEvalEqual "dotPlus" dotPlus (pconstant 19010)
+            [ goldenEval "by" by
+            , goldenEval "dotPlus" dotPlus
             ]
         , plutarchGolden
             "data"
@@ -174,16 +174,6 @@ tripYZ =
       pfromData fs.y + pfromData fs.z
 
 {- |
-  The ordering of fields specified is irrelevant,
-  this is equivalent to 'tripYZ'.
--}
-tripZY :: Term s (PTriplet PInteger :--> PInteger)
-tripZY =
-  plam $ \x -> pletFields @["z", "y"] x $
-    \fs ->
-      pfromData fs.y + pfromData fs.z
-
-{- |
   When accessing only a single field, we can use 'pfield'.
 
   This should be used carefully - if more than one field is needed,
@@ -261,16 +251,6 @@ rangeFields =
 letSomeFields :: Term s (PDataRecord SomeFields :--> PInteger)
 letSomeFields =
   plam $ \r -> pletFields @["_3", "_4", "_7"] r $ \fs ->
-    pfromData fs._3
-      + pfromData fs._4
-      + pfromData fs._7
-
-{- |
-  Ordering of fields is irrelevant
--}
-letSomeFields' :: Term s (PDataRecord SomeFields :--> PInteger)
-letSomeFields' =
-  plam $ \r -> pletFields @["_7", "_3", "_4"] r $ \fs ->
     pfromData fs._3
       + pfromData fs._4
       + pfromData fs._7

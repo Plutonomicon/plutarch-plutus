@@ -1,1 +1,1 @@
-../../../examples/VALIDATOR.md
+../../../src/examples/VALIDATOR.md

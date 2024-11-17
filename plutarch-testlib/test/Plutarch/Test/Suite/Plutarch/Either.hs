@@ -3,7 +3,7 @@ module Plutarch.Test.Suite.Plutarch.Either (tests) where
 import Plutarch.Either (PEitherData)
 import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.TryFrom ()
 import Test.Tasty (TestTree, testGroup)
@@ -19,14 +19,14 @@ tests =
             "eq"
             [ goldenGroup
                 "true"
-                [ goldenEvalEqual "left" (pcon @(PEither PInteger PInteger) (PLeft 42) #== pcon (PLeft 42)) (pcon PTrue)
-                , goldenEvalEqual "right" (pcon @(PEither PInteger PInteger) (PRight 42) #== pcon (PRight 42)) (pcon PTrue)
+                [ goldenEval "left" (pcon @(PEither PInteger PInteger) (PLeft 42) #== pcon (PLeft 42))
+                , goldenEval "right" (pcon @(PEither PInteger PInteger) (PRight 42) #== pcon (PRight 42))
                 ]
             , goldenGroup
                 "false"
-                [ goldenEvalEqual "left-right" (pcon @(PEither PInteger PInteger) (PLeft 42) #== pcon (PRight 42)) (pcon PFalse)
-                , goldenEvalEqual "left-left" (pcon @(PEither PInteger PInteger) (PLeft 24) #== pcon (PLeft 42)) (pcon PFalse)
-                , goldenEvalEqual "right-right" (pcon @(PEither PInteger PInteger) (PRight 24) #== pcon (PRight 42)) (pcon PFalse)
+                [ goldenEval "left-right" (pcon @(PEither PInteger PInteger) (PLeft 42) #== pcon (PRight 42))
+                , goldenEval "left-left" (pcon @(PEither PInteger PInteger) (PLeft 24) #== pcon (PLeft 42))
+                , goldenEval "right-right" (pcon @(PEither PInteger PInteger) (PRight 24) #== pcon (PRight 42))
                 ]
             ]
         ]

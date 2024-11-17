@@ -21,6 +21,7 @@ module Plutarch.LedgerApi.Utils (
   pdjust,
   pdnothing,
   pmaybeToMaybeData,
+  pmaybeDataToMaybe,
   passertPDJust,
 
   -- ** PRationalData
@@ -351,6 +352,19 @@ pmaybeToMaybeData = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
     PNothing -> pcon PDNothing
     PJust x -> pcon . PDJust . pdata $ x
+
+{- | Inverse of `pmaybeToMaybeData`
+
+@since WIP
+-}
+pmaybeDataToMaybe ::
+  forall (a :: PType) (s :: S).
+  PIsData a =>
+  Term s (PMaybeData a :--> PMaybe a)
+pmaybeDataToMaybe = phoistAcyclic $
+  plam $ \t -> pmatch t $ \case
+    PDNothing -> pcon PNothing
+    PDJust x -> pcon . PJust . pfromData $ x
 
 {- | Extract the value stored in a 'PMaybeData' container. If there's no value,
 throw an error with the given message.

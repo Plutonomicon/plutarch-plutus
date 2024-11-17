@@ -221,6 +221,7 @@ module Plutarch.Prelude (
   LogLevel (..),
   TracingMode (..),
   compile,
+  compileOptimized,
 
   -- * Enumerable and countable
   PCountable (..),

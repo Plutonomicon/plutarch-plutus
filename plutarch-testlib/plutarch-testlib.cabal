@@ -67,14 +67,18 @@ library
   build-depends:
     , aeson
     , bytestring
+    , containers
+    , deepseq
     , filepath
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
+    , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
     , QuickCheck
+    , tagged
     , tasty
     , tasty-golden
     , tasty-hunit
@@ -82,6 +86,7 @@ library
     , text
 
   exposed-modules:
+    Plutarch.Test.Bench
     Plutarch.Test.Golden
     Plutarch.Test.Laws
     Plutarch.Test.QuickCheck
@@ -117,6 +122,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.TryFrom
     Plutarch.Test.Suite.Plutarch.Unit
     Plutarch.Test.Suite.Plutarch.Uplc
+    Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.Utils
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
@@ -134,9 +140,22 @@ test-suite tests
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    , prettyprinter
+    , QuickCheck
     , serialise
     , tasty
     , tasty-hunit
     , tasty-quickcheck
     , text
     , transformers
+
+benchmark bench
+  import:         lang
+  type:           exitcode-stdio-1.0
+  main-is:        Bench.hs
+  hs-source-dirs: bench
+  build-depends:
+    , plutarch
+    , plutarch-ledger-api
+    , plutarch-testlib
+    , tasty

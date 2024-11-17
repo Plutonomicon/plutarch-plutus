@@ -17,6 +17,7 @@ module Plutarch.Maybe (
   pfromMaybe,
   pmaybe,
   passertPJust,
+  pmapMaybe,
 ) where
 
 import Data.Kind (Type)
@@ -138,3 +139,13 @@ passertPJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PJust v -> v
     _ -> ptraceInfoError emsg
+
+{- | Map underlying value if `PMaybe` is `PJust`, do nothing if it is `PNothing`
+
+@since WIP
+-}
+pmapMaybe :: Term s ((a :--> b) :--> PMaybe a :--> PMaybe b)
+pmapMaybe = phoistAcyclic $
+  plam $ \f mv -> pmatch mv $ \case
+    PJust v -> pjust # (f # v)
+    PNothing -> pnothing

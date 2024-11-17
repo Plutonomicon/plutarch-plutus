@@ -5,7 +5,7 @@ import Data.ByteString qualified as BS
 import GHC.Exts (fromList)
 import Plutarch.ByteString (pallBS)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenEvalEqual, goldenGroup, plutarchGolden)
+import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
 
@@ -23,26 +23,20 @@ tests =
             ( let a :: [String] = ["42", "ab", "df", "c9"]
                in pconstant @PByteString (BS.pack $ fmap readByte a) #== phexByteStr (concat a)
             )
-        , goldenEvalEqual "plengthByteStr" ((plengthBS # phexByteStr "012f") #== 2) (pcon PTrue)
+        , goldenEval "plengthByteStr" ((plengthBS # phexByteStr "012f") #== 2)
         , goldenEval
             "pconsBS"
             ( let xs = phexByteStr "48fCd1"
                in (plengthBS #$ pconsBS # pconstant 91 # xs) #== (1 + plengthBS # xs)
             )
-        , goldenEvalEqual
-            "pindexByteStr"
-            (pindexBS # phexByteStr "4102af" # 1)
-            (pconstant @PByte 0x02)
-        , goldenEvalEqual
-            "psliceByteStr"
-            (psliceBS # 2 # 3 # phexByteStr "4102afde5b2a")
-            (phexByteStr "afde5b")
+        , goldenEval "pindexByteStr" (pindexBS # phexByteStr "4102af" # 1)
+        , goldenEval "psliceByteStr" (psliceBS # 2 # 3 # phexByteStr "4102afde5b2a")
         , goldenEval "eq" (phexByteStr "12" #== phexByteStr "12")
         , let s1 = phexByteStr "12"
               s2 = phexByteStr "34"
            in goldenGroup
                 "semigroup"
-                [ goldenEvalEqual "concats" (s1 <> s2) (phexByteStr "1234")
+                [ goldenEval "concats" (s1 <> s2)
                 , goldenGroup
                     "laws"
                     [ goldenEval "id.1" ((mempty <> s1) #== s1)

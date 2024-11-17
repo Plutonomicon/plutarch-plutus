@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Test.QuickCheck (
+  propEval,
   propEvalFail,
   propCompileFail,
   propEvalEqual,
@@ -11,7 +12,7 @@ module Plutarch.Test.QuickCheck (
 import Data.Text qualified as Text
 import Plutarch.Prelude hiding (Positive)
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
-import Plutarch.Test.Utils (prettyEquals, prettyShow)
+import Plutarch.Test.Utils (precompileTerm, prettyEquals, prettyShow)
 import Prettyprinter (Pretty)
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.QuickCheck (
@@ -85,6 +86,18 @@ propEvalEqual name mkTerm mkExpected =
         FailedToEvaluate err _ -> counterexample ("Failed to evaluate expected term: " <> show err) False
         Evaluated expected _ -> actual === expected
 
+{- | Like `Plutarch.Test.Unit.testEval` but generate terms
+
+@since WIP
+-}
+propEval :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
+propEval name mkTerm =
+  testProperty name $ forAllShrinkShow arbitrary shrink show $ \(input :: a) ->
+    case evalTermResult NoTracing (mkTerm input) of
+      FailedToCompile err -> counterexample ("Failed to compile: " <> Text.unpack err) False
+      FailedToEvaluate err _ -> counterexample ("Failed to evaluate: " <> show err) False
+      Evaluated _ _ -> property True
+
 -- | @since WIP
 checkHaskellEquivalent ::
   forall (plutarchInput :: S -> Type) (plutarchOutput :: S -> Type).
@@ -100,7 +113,10 @@ checkHaskellEquivalent ::
   Property
 checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
-    \(input :: PLifted haskellInput) -> goHaskell input `prettyEquals` plift (goPlutarch # pconstant input)
+    \(input :: PLifted haskellInput) -> goHaskell input `prettyEquals` plift (pfun # pconstant input)
+  where
+    pfun :: ClosedTerm (plutarchInput :--> plutarchOutput)
+    pfun = precompileTerm goPlutarch
 
 -- | @since WIP
 checkHaskellEquivalent2 ::
@@ -121,7 +137,10 @@ checkHaskellEquivalent2 ::
 checkHaskellEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \(input1 :: PLifted haskellInput1, input2 :: PLifted haskellInput2) ->
-      goHaskell input1 input2 `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant input2)
+      goHaskell input1 input2 `prettyEquals` plift (pfun # pconstant input1 # pconstant input2)
+  where
+    pfun :: ClosedTerm (plutarchInput1 :--> plutarchInput2 :--> plutarchOutput)
+    pfun = precompileTerm goPlutarch
 
 -- * Orphans
 

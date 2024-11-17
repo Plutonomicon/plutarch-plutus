@@ -96,6 +96,7 @@ library
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
+    Plutarch.Internal.Lift
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord

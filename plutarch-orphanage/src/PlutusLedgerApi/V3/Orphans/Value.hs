@@ -65,7 +65,10 @@ instance Arbitrary MintValue where
       let keyList = Set.toList keySet
       -- For each key, generate a set of token name keys that aren't Ada
       keyVals <- traverse (scale (`quot` 8) . mkInner) keyList
-      pure . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
+
+      -- It is possible to generate positive and negative quantity of the same asset so we have to
+      -- prune zeros despite using NonZero generator
+      pure . pruneZeros . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals) $ keyVals
     where
       mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
       mkInner cs =
@@ -105,3 +108,14 @@ instance Function MintValue where
 -- | @since WIP
 getMintValue :: MintValue -> Value.Value
 getMintValue = coerce
+
+pruneZeros :: Value.Value -> Value.Value
+pruneZeros (Value.Value assets) =
+  Value.Value $
+    AssocMap.unsafeFromList $
+      filter (not . AssocMap.null . snd) $ -- After removing tokens now we may have empty currency list, so clear that as well
+        AssocMap.toList (AssocMap.mapMaybe (assocMapNonEmpty . filter ((/= 0) . snd) . AssocMap.toList) assets) -- Remove all zero tokens
+  where
+    assocMapNonEmpty :: [(k, v)] -> Maybe (AssocMap.Map k v)
+    assocMapNonEmpty [] = Nothing
+    assocMapNonEmpty lst = Just $ AssocMap.unsafeFromList lst

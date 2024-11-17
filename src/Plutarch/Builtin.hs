@@ -52,6 +52,7 @@ import Plutarch.Builtin.Lift (
   pconstantFromRepr,
   pconstantToRepr,
  )
+import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PByteString,
@@ -323,6 +324,7 @@ newtype PAsData (a :: S -> Type) (s :: S) = PAsData (Term s a)
 
 type family IfSameThenData (a :: S -> Type) (b :: S -> Type) :: S -> Type where
   IfSameThenData a a = PData
+  IfSameThenData _ POpaque = PData
   IfSameThenData _ b = PAsData b
 
 instance PIsData a => PlutusType (PAsData a) where
@@ -444,7 +446,6 @@ instance PIsData PBool where
       nil :: Term s (PBuiltinList PData)
       nil = pnil
 
--- | NB: `PAsData (PBuiltinPair (PAsData a) (PAsData b))` and `PAsData (PTuple a b)` have the same representation.
 instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
   pfromDataImpl x = f # x
     where
