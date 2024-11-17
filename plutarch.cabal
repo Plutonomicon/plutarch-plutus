@@ -68,6 +68,7 @@ common c
     -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
     -Wno-operator-whitespace -fprint-equality-relations
     -fprint-explicit-kinds -fprint-explicit-foralls
+    -Wno-missing-export-lists
 
 library
   import:          c
@@ -90,6 +91,7 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.FFI
+    Plutarch.Fun
     Plutarch.Integer
     Plutarch.Internal
     Plutarch.Internal.Evaluate
@@ -142,7 +144,8 @@ library
     , generics-sop
     , lens
     , mtl
-    , plutus-core        >=1.36.0.0
+    , plutus-core             >=1.36.0.0
+    , plutus-core:index-envs
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter

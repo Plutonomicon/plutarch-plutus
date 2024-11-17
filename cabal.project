@@ -15,6 +15,13 @@ packages:
   ./.
   ./plutarch-*
 
+source-repository-package
+    type: git
+    location: https://github.com/SeungheonOh/plutus/
+    tag: f91ef81025ba569186c705e9ea7817591fb93d25
+    subdir: plutus-core
+    --sha256: +9TEMg6L8+01XEw3kzXfcCndMKSPTxnqsgETlqLTNzg=
+
 benchmarks: true
 tests: true
 test-show-details: direct

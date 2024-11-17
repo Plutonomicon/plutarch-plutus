@@ -59,6 +59,11 @@
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };
+            # pkg-def-extras = builtins.trace "here " [
+            #   (hackage: builtins.trace (builtins.deepSeq (hackage."plutus-core"."1.36.0.0".revisions.default) (hackage."plutus-core"."1.36.0.0".revisions.default)) ({
+            #     "mylib" = hackage."plutus-core"."1.36.0.0".revisions.default;
+            #   }))
+            # ];
             shell = {
               withHoogle = true;
               withHaddock = true;
