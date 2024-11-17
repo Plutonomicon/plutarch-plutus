@@ -17,6 +17,7 @@ import Plutarch.Builtin.Integer (
   pbuiltinRemainderInteger,
   pbuiltinSubtractInteger,
  )
+import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Internal.Builtin (
   pif,
   plam,
@@ -24,7 +25,6 @@ import Plutarch.Internal.Builtin (
   punsafeDowncast,
  )
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (

@@ -29,6 +29,7 @@ import Plutarch.Builtin (
   pfromDataImpl,
  )
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Internal.Builtin (
   pfix,
   pif,
@@ -38,7 +39,6 @@ import Plutarch.Internal.Builtin (
   punsafeDowncast,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Numeric (
   PIntegral (pquot),
   PNum,

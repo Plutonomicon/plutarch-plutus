@@ -78,13 +78,13 @@ import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Internal.Lift (
+import Plutarch.Builtin.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
   pconstant,
  )
+import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),

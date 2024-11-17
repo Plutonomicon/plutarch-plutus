@@ -3,14 +3,14 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 {- |
-Module: Plutarch.Internal.Lift
+Module: Plutarch.Builtin.Lift
 Description: Conversion to and from Plutarch terms and Haskell types
 
 This module defines functions, associated type families, and newtypes for use with
 [@DerivingVia@](https://ryanglscott.github.io/papers/deriving-via.pdf) to allow
 Plutarch to convert to and from PTypes and Haskell types.
 -}
-module Plutarch.Internal.Lift (
+module Plutarch.Builtin.Lift (
   -- * Conversion between Plutarch terms and Haskell types
   pconstant,
   plift,

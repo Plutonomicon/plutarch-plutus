@@ -32,10 +32,10 @@ import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
 import Plutarch.Builtin.Integer (PInteger (PInteger))
+import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Internal.Generic (PCode)
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (
   PType,

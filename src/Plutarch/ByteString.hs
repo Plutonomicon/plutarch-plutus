@@ -49,6 +49,12 @@ import Plutarch.Builtin.Integer (
   pbuiltinLessThanEqualsInteger,
   pbuiltinLessThanInteger,
  )
+import Plutarch.Builtin.Lift (
+  PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+ )
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Builtin (
   PByteString,
@@ -58,12 +64,6 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (
-  PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric ()
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))

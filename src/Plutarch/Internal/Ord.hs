@@ -13,6 +13,7 @@ import Plutarch.Builtin.Integer (
   pbuiltinLessThanEqualsInteger,
   pbuiltinLessThanInteger,
  )
+import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PByteString,
@@ -22,7 +23,6 @@ import Plutarch.Internal.Builtin (
   pto,
  )
 import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.PlutusType (PInner, pcon)
 import Plutarch.Internal.Term (
   S,

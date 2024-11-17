@@ -76,6 +76,7 @@ library
     Plutarch.Builtin
     Plutarch.Builtin.Bool
     Plutarch.Builtin.Integer
+    Plutarch.Builtin.Lift
     Plutarch.Builtin.Opaque
     Plutarch.Builtin.Unit
     Plutarch.ByteString
@@ -95,7 +96,6 @@ library
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
-    Plutarch.Internal.Lift
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord

@@ -59,6 +59,7 @@ import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Internal.Builtin (
   PString,
   pfix,
@@ -68,7 +69,6 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord (POrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),

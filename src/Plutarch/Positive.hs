@@ -15,13 +15,13 @@ import Data.Text (pack)
 import GHC.Generics (Generic)
 import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Builtin (pif, plam, pto)
-import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.Lift (
+import Plutarch.Builtin.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
  )
+import Plutarch.Internal.Builtin (pif, plam, pto)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (PIntegral, PNum (pfromInteger, (#-)))
 import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<=))

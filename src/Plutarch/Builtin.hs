@@ -39,6 +39,19 @@ import Plutarch.Builtin.Bool (
   pbuiltinIfThenElse,
  )
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Lift (
+  DerivePConstantDirect (DerivePConstantDirect),
+  PConstant,
+  PConstantDecl,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  PUnsafeLiftDecl,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PByteString,
@@ -52,19 +65,6 @@ import Plutarch.Internal.Builtin (
   (#||),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLift,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (
   POrd,

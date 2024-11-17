@@ -74,6 +74,17 @@ import Plutarch.Builtin (
  )
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Lift (
+  PConstant,
+  PConstantDecl,
+  PConstantRepr,
+  PConstanted,
+  PLift,
+  PLifted,
+  pconstant,
+  pconstantFromRepr,
+  pconstantToRepr,
+ )
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.DataRepr.Internal.HList (
@@ -91,17 +102,6 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
-import Plutarch.Internal.Lift (
-  PConstant,
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLift,
-  PLifted,
-  pconstant,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd, PPartialOrd, (#<), (#<=))
 import Plutarch.Internal.PlutusType (

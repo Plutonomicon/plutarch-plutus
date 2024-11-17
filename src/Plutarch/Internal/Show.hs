@@ -29,6 +29,7 @@ import Generics.SOP (
 import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Builtin.Bool (PBool, pbuiltinIfThenElse)
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.ByteString (
   PByte,
@@ -50,7 +51,6 @@ import Plutarch.Internal.Builtin (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Numeric (pquot, prem)
 import Plutarch.Internal.Ord ((#<))
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)

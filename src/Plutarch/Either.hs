@@ -38,6 +38,10 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.Lift (
+  PConstantDecl (PConstanted),
+  PUnsafeLiftDecl (PLifted),
+ )
 import Plutarch.DataRepr.Internal (
   DerivePConstantViaData (DerivePConstantViaData),
   PConstantData,
@@ -45,10 +49,6 @@ import Plutarch.DataRepr.Internal (
  )
 import Plutarch.Internal.Builtin (pif, plam, pto)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
