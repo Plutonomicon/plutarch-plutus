@@ -18,13 +18,14 @@ module Plutarch.TermCont (
 
 import Data.Kind (Type)
 import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.String (PString)
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,
   Bindings,
   BoundTerms,
  )
-import Plutarch.Internal.Builtin (PString, pif)
+import Plutarch.Internal.Builtin (pif)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.Term (S, Term, plet)
 import Plutarch.Internal.TermCont (TermCont, tcont)

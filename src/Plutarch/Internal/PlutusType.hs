@@ -31,9 +31,11 @@ import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
+import Plutarch.Builtin.ByteString (PByteString (PByteString))
 import Plutarch.Builtin.Integer (PInteger (PInteger))
 import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
+import Plutarch.Builtin.String (PString (PString))
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
@@ -172,3 +174,19 @@ instance PlutusType PInteger where
   pcon' = coerce
   {-# INLINEABLE pmatch' #-}
   pmatch' t f = f (PInteger t)
+
+-- | @since WIP
+instance PlutusType PString where
+  type PInner PString = POpaque
+  {-# INLINEABLE pcon' #-}
+  pcon' = coerce
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PString t)
+
+-- | @since WIP
+instance PlutusType PByteString where
+  type PInner PByteString = POpaque
+  {-# INLINEABLE pcon' #-}
+  pcon' = coerce
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PByteString t)

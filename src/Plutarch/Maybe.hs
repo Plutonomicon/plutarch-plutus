@@ -24,7 +24,8 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.Lift (pconstant)
-import Plutarch.Internal.Builtin (PString, plam)
+import Plutarch.Builtin.String (PString)
+import Plutarch.Internal.Builtin (plam)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),

@@ -5,15 +5,11 @@
 -- | Types and functions that are integral to Plutarch, or primitive to UPLC.
 module Plutarch.Internal.Builtin (
   -- * Types
-  PString (..),
-  PByteString (..),
   PBLS12_381_G1_Element (..),
   PBLS12_381_G2_Element (..),
   PBLS12_381_MlResult (..),
 
   -- * Functions
-
-  -- ** PInteger
 
   -- ** PBool
   pnot,
@@ -25,21 +21,7 @@ module Plutarch.Internal.Builtin (
   (#||),
   pif,
 
-  -- ** PString
-  pbuiltinEqualsString,
-  pbuiltinAppendString,
-  pbuiltinEncodeUtf8,
-  pbuiltinDecodeUtf8,
-
   -- ** PByteString
-  pbuiltinAppendByteString,
-  pbuiltinConsByteString,
-  pbuiltinSliceByteString,
-  pbuiltinLengthOfByteString,
-  pbuiltinIndexByteString,
-  pbuiltinEqualsByteString,
-  pbuiltinLessThanByteString,
-  pbuiltinLessThanEqualsByteString,
 
   -- ** BLS
   pbuiltinBls12_381_G1_add,
@@ -69,22 +51,20 @@ module Plutarch.Internal.Builtin (
   punsafeDowncast,
 ) where
 
-import Data.ByteString (ByteString)
 import Data.Kind (Type)
 import Data.Text (Text)
-import Data.Text qualified as Text
-import GHC.Exts (IsString (fromString))
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
   PConstantDecl,
   PUnsafeLiftDecl (PLifted),
-  pconstant,
  )
 import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -114,87 +94,6 @@ import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381_G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381_G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as Pairing
-
-{- | A Plutus string.
-
-@since WIP
--}
-newtype PString (s :: S) = PString (Term s POpaque)
-  deriving stock
-    ( -- | @since WIP
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since WIP
-      PlutusType
-    )
-
--- | @since WIP
-instance DerivePlutusType PString where
-  type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-instance PUnsafeLiftDecl PString where
-  type PLifted PString = Text
-
--- | @since WIP
-deriving via
-  (DerivePConstantDirect Text PString)
-  instance
-    PConstantDecl Text
-
--- | @since WIP
-instance IsString (Term s PString) where
-  {-# INLINEABLE fromString #-}
-  fromString = pconstant . Text.pack
-
--- | @since WIP
-instance Semigroup (Term s PString) where
-  {-# INLINEABLE (<>) #-}
-  x <> y = pbuiltinAppendString # x # y
-
--- | @since WIP
-instance Monoid (Term s PString) where
-  {-# INLINEABLE mempty #-}
-  mempty = pconstant ""
-
-{- | A Plutus bytestring.
-
-@since WIP
--}
-newtype PByteString (s :: S) = PByteString (Term s POpaque)
-  deriving stock
-    ( -- | @since WIP
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since WIP
-      PlutusType
-    )
-
--- | @since WIP
-instance DerivePlutusType PByteString where
-  type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-instance PUnsafeLiftDecl PByteString where
-  type PLifted PByteString = ByteString
-
--- | @since WIP
-deriving via
-  (DerivePConstantDirect ByteString PByteString)
-  instance
-    PConstantDecl ByteString
-
--- | @since WIP
-instance Semigroup (Term s PByteString) where
-  {-# INLINEABLE (<>) #-}
-  x <> y = pbuiltinAppendByteString # x # y
-
--- | @since WIP
-instance Monoid (Term s PByteString) where
-  {-# INLINEABLE mempty #-}
-  mempty = pconstant ""
 
 {- | A point on the BLS12-381 G1 curve.
 
@@ -449,78 +348,6 @@ por' ::
   Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x y ->
   pbuiltinIfThenElse # x # x # y
-
--- | @since WIP
-pbuiltinEqualsString ::
-  forall (s :: S).
-  Term s (PString :--> PString :--> PBool)
-pbuiltinEqualsString = punsafeBuiltin PLC.EqualsString
-
--- | @since WIP
-pbuiltinAppendByteString ::
-  forall (s :: S).
-  Term s (PByteString :--> PByteString :--> PByteString)
-pbuiltinAppendByteString = punsafeBuiltin PLC.AppendByteString
-
--- | @since WIP
-pbuiltinConsByteString ::
-  forall (s :: S).
-  Term s (PInteger :--> PByteString :--> PByteString)
-pbuiltinConsByteString = punsafeBuiltin PLC.ConsByteString
-
--- | @since WIP
-pbuiltinSliceByteString ::
-  forall (s :: S).
-  Term s (PInteger :--> PInteger :--> PByteString :--> PByteString)
-pbuiltinSliceByteString = punsafeBuiltin PLC.SliceByteString
-
--- | @since WIP
-pbuiltinLengthOfByteString ::
-  forall (s :: S).
-  Term s (PByteString :--> PInteger)
-pbuiltinLengthOfByteString = punsafeBuiltin PLC.LengthOfByteString
-
--- | @since WIP
-pbuiltinIndexByteString ::
-  forall (s :: S).
-  Term s (PByteString :--> PInteger :--> PInteger)
-pbuiltinIndexByteString = punsafeBuiltin PLC.IndexByteString
-
--- | @since WIP
-pbuiltinEqualsByteString ::
-  forall (s :: S).
-  Term s (PByteString :--> PByteString :--> PBool)
-pbuiltinEqualsByteString = punsafeBuiltin PLC.EqualsByteString
-
--- | @since WIP
-pbuiltinLessThanByteString ::
-  forall (s :: S).
-  Term s (PByteString :--> PByteString :--> PBool)
-pbuiltinLessThanByteString = punsafeBuiltin PLC.LessThanByteString
-
--- | @since WIP
-pbuiltinLessThanEqualsByteString ::
-  forall (s :: S).
-  Term s (PByteString :--> PByteString :--> PBool)
-pbuiltinLessThanEqualsByteString = punsafeBuiltin PLC.LessThanEqualsByteString
-
--- | @since WIP
-pbuiltinAppendString ::
-  forall (s :: S).
-  Term s (PString :--> PString :--> PString)
-pbuiltinAppendString = punsafeBuiltin PLC.AppendString
-
--- | @since WIP
-pbuiltinEncodeUtf8 ::
-  forall (s :: S).
-  Term s (PString :--> PByteString)
-pbuiltinEncodeUtf8 = punsafeBuiltin PLC.EncodeUtf8
-
--- | @since WIP
-pbuiltinDecodeUtf8 ::
-  forall (s :: S).
-  Term s (PByteString :--> PString)
-pbuiltinDecodeUtf8 = punsafeBuiltin PLC.DecodeUtf8
 
 -- | @since WIP
 punsafeDowncast ::

@@ -43,6 +43,7 @@ import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (
   PInteger,
   pbuiltinEqualsInteger,
@@ -57,7 +58,6 @@ import Plutarch.Builtin.Lift (
  )
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Builtin (
-  PByteString,
   pfix,
   pif,
   plam,

@@ -60,8 +60,8 @@ import Numeric.Natural (Natural)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (pconstant)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Builtin (
-  PString,
   pfix,
   pif,
   plam,

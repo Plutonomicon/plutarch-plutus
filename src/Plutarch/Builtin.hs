@@ -38,6 +38,7 @@ import Plutarch.Builtin.Bool (
   PBool,
   pbuiltinIfThenElse,
  )
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   DerivePConstantDirect (DerivePConstantDirect),
@@ -53,10 +54,9 @@ import Plutarch.Builtin.Lift (
   pconstantToRepr,
  )
 import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
-  PByteString,
-  PString,
   pfix,
   pif,
   plam,

@@ -86,6 +86,7 @@ import Plutarch.Builtin.Lift (
   pconstantToRepr,
  )
 import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
@@ -95,7 +96,6 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexList,
  )
 import Plutarch.Internal.Builtin (
-  PString,
   pif,
   plam,
   pto,

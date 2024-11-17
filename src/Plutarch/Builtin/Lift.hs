@@ -30,12 +30,15 @@ module Plutarch.Builtin.Lift (
 ) where
 
 import Control.Lens ((^?))
+import Data.ByteString (ByteString)
 import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
 import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Term (
@@ -287,6 +290,32 @@ instance PUnsafeLiftDecl PInteger where
 instance PConstantDecl Integer where
   type PConstantRepr Integer = Integer
   type PConstanted Integer = PInteger
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PString where
+  type PLifted PString = Text
+
+-- | @since WIP
+instance PConstantDecl Text where
+  type PConstantRepr Text = Text
+  type PConstanted Text = PString
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PByteString where
+  type PLifted PByteString = ByteString
+
+-- | @since WIP
+instance PConstantDecl ByteString where
+  type PConstantRepr ByteString = ByteString
+  type PConstanted ByteString = PByteString
   {-# INLINEABLE pconstantToRepr #-}
   pconstantToRepr = coerce
   {-# INLINEABLE pconstantFromRepr #-}

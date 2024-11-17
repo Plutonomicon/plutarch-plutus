@@ -21,17 +21,15 @@ import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
   pbuiltinIfThenElse,
  )
+import Plutarch.Builtin.ByteString (PByteString, pbuiltinEqualsByteString)
 import Plutarch.Builtin.Integer (PInteger, pbuiltinEqualsInteger)
+import Plutarch.Builtin.String (PString, pbuiltinEqualsString)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
   PBLS12_381_G1_Element,
   PBLS12_381_G2_Element,
-  PByteString,
-  PString,
   pbuiltinBls12_381_G1_equal,
   pbuiltinBls12_381_G2_equal,
-  pbuiltinEqualsByteString,
-  pbuiltinEqualsString,
   pnot,
   (#&&),
  )

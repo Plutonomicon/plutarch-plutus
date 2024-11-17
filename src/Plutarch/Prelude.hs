@@ -238,6 +238,7 @@ import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Builtin
 import Plutarch.Builtin.Bool (PBool (..))
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   DerivePConstantViaBuiltin (..),
@@ -250,6 +251,11 @@ import Plutarch.Builtin.Lift (
   plift,
  )
 import Plutarch.Builtin.Opaque (POpaque (..))
+import Plutarch.Builtin.String (
+  PString,
+  pbuiltinDecodeUtf8,
+  pbuiltinEncodeUtf8,
+ )
 import Plutarch.Builtin.Unit (PUnit (..))
 import Plutarch.ByteString
 import Plutarch.Crypto

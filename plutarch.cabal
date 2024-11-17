@@ -75,9 +75,11 @@ library
     Plutarch.BitString
     Plutarch.Builtin
     Plutarch.Builtin.Bool
+    Plutarch.Builtin.ByteString
     Plutarch.Builtin.Integer
     Plutarch.Builtin.Lift
     Plutarch.Builtin.Opaque
+    Plutarch.Builtin.String
     Plutarch.Builtin.Unit
     Plutarch.ByteString
     Plutarch.Convert

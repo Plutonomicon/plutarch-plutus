@@ -8,6 +8,11 @@ import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
   pbuiltinIfThenElse,
  )
+import Plutarch.Builtin.ByteString (
+  PByteString,
+  pbuiltinLessThanByteString,
+  pbuiltinLessThanEqualsByteString,
+ )
 import Plutarch.Builtin.Integer (
   PInteger,
   pbuiltinLessThanEqualsInteger,
@@ -16,9 +21,6 @@ import Plutarch.Builtin.Integer (
 import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
-  PByteString,
-  pbuiltinLessThanByteString,
-  pbuiltinLessThanEqualsByteString,
   pnot,
   pto,
  )

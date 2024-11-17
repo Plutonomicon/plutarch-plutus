@@ -4,7 +4,8 @@ module Plutarch.Internal.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Builtin (PString, pbuiltinTrace)
+import Plutarch.Builtin.String (PString)
+import Plutarch.Internal.Builtin (pbuiltinTrace)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug),
