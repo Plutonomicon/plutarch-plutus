@@ -35,6 +35,11 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Constraint, Type)
 import Data.Text (Text)
 import GHC.Stack (HasCallStack)
+import Plutarch.Builtin.BLS (
+  PBLS12_381_G1_Element,
+  PBLS12_381_G2_Element,
+  PBLS12_381_MlResult,
+ )
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
@@ -54,6 +59,9 @@ import Plutarch.Internal.Term (
 import Plutarch.Script (unScript)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant, _UnliftingEvaluationError)
+import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381_G1
+import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381_G2
+import PlutusCore.Crypto.BLS12_381.Pairing qualified as Pairing
 import PlutusTx (BuiltinData, Data, builtinDataToData, dataToBuiltinData)
 import PlutusTx.Builtins.HasBuiltin (FromBuiltin, HasFromBuiltin, HasToBuiltin, ToBuiltin, fromBuiltin, toBuiltin)
 import Universe (Includes)
@@ -316,6 +324,45 @@ instance PUnsafeLiftDecl PByteString where
 instance PConstantDecl ByteString where
   type PConstantRepr ByteString = ByteString
   type PConstanted ByteString = PByteString
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PBLS12_381_G1_Element where
+  type PLifted PBLS12_381_G1_Element = BLS12_381_G1.Element
+
+-- | @since WIP
+instance PConstantDecl BLS12_381_G1.Element where
+  type PConstantRepr BLS12_381_G1.Element = BLS12_381_G1.Element
+  type PConstanted BLS12_381_G1.Element = PBLS12_381_G1_Element
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PBLS12_381_G2_Element where
+  type PLifted PBLS12_381_G2_Element = BLS12_381_G2.Element
+
+-- | @since WIP
+instance PConstantDecl BLS12_381_G2.Element where
+  type PConstantRepr BLS12_381_G2.Element = BLS12_381_G2.Element
+  type PConstanted BLS12_381_G2.Element = PBLS12_381_G2_Element
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PBLS12_381_MlResult where
+  type PLifted PBLS12_381_MlResult = Pairing.MlResult
+
+-- | @since WIP
+instance PConstantDecl Pairing.MlResult where
+  type PConstantRepr Pairing.MlResult = Pairing.MlResult
+  type PConstanted Pairing.MlResult = PBLS12_381_MlResult
   {-# INLINEABLE pconstantToRepr #-}
   pconstantToRepr = coerce
   {-# INLINEABLE pconstantFromRepr #-}

@@ -74,6 +74,7 @@ library
   exposed-modules:
     Plutarch.BitString
     Plutarch.Builtin
+    Plutarch.Builtin.BLS
     Plutarch.Builtin.Bool
     Plutarch.Builtin.ByteString
     Plutarch.Builtin.Integer

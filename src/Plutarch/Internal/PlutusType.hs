@@ -30,6 +30,11 @@ import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
+import Plutarch.Builtin.BLS (
+  PBLS12_381_G1_Element (PBLS12_381_G1_Element),
+  PBLS12_381_G2_Element (PBLS12_381_G2_Element),
+  PBLS12_381_MlResult (PBLS12_381_MlResult),
+ )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
 import Plutarch.Builtin.ByteString (PByteString (PByteString))
 import Plutarch.Builtin.Integer (PInteger (PInteger))
@@ -38,7 +43,11 @@ import Plutarch.Builtin.Opaque (POpaque (POpaque))
 import Plutarch.Builtin.String (PString (PString))
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Internal.Generic (PCode)
-import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
+import Plutarch.Internal.Quantification (
+  PFix (PFix),
+  PForall (PForall),
+  PSome (PSome),
+ )
 import Plutarch.Internal.Term (
   PType,
   Term,
@@ -190,3 +199,27 @@ instance PlutusType PByteString where
   pcon' = coerce
   {-# INLINEABLE pmatch' #-}
   pmatch' t f = f (PByteString t)
+
+-- | @since WIP
+instance PlutusType PBLS12_381_G1_Element where
+  type PInner PBLS12_381_G1_Element = POpaque
+  {-# INLINEABLE pcon' #-}
+  pcon' = coerce
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PBLS12_381_G1_Element t)
+
+-- | @since WIP
+instance PlutusType PBLS12_381_G2_Element where
+  type PInner PBLS12_381_G2_Element = POpaque
+  {-# INLINEABLE pcon' #-}
+  pcon' = coerce
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PBLS12_381_G2_Element t)
+
+-- | @since WIP
+instance PlutusType PBLS12_381_MlResult where
+  type PInner PBLS12_381_MlResult = POpaque
+  {-# INLINEABLE pcon' #-}
+  pcon' = coerce
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PBLS12_381_MlResult t)
