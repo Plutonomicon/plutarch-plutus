@@ -42,6 +42,7 @@ import Plutarch.Builtin.BLS (
  )
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
@@ -363,6 +364,19 @@ instance PUnsafeLiftDecl PBLS12_381_MlResult where
 instance PConstantDecl Pairing.MlResult where
   type PConstantRepr Pairing.MlResult = Pairing.MlResult
   type PConstanted Pairing.MlResult = PBLS12_381_MlResult
+  {-# INLINEABLE pconstantToRepr #-}
+  pconstantToRepr = coerce
+  {-# INLINEABLE pconstantFromRepr #-}
+  pconstantFromRepr = Just . coerce
+
+-- | @since WIP
+instance PUnsafeLiftDecl PData where
+  type PLifted PData = Data
+
+-- | @since WIP
+instance PConstantDecl Data where
+  type PConstantRepr Data = Data
+  type PConstanted Data = PData
   {-# INLINEABLE pconstantToRepr #-}
   pconstantToRepr = coerce
   {-# INLINEABLE pconstantFromRepr #-}

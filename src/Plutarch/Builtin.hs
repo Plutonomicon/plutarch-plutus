@@ -3,7 +3,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Builtin (
-  PData,
   pfstBuiltin,
   psndBuiltin,
   pasConstr,
@@ -39,9 +38,17 @@ import Plutarch.Builtin.Bool (
   pbuiltinIfThenElse,
  )
 import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (
+  PData,
+  pbuiltinBData,
+  pbuiltinChooseData,
+  pbuiltinIData,
+  pbuiltinSerialiseData,
+  pbuiltinUnBData,
+  pbuiltinUnIData,
+ )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
   PConstant,
   PConstantDecl,
   PConstantRepr,
@@ -54,10 +61,8 @@ import Plutarch.Builtin.Lift (
   pconstantToRepr,
  )
 import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
-  pfix,
   pif,
   plam,
   pto,
@@ -114,7 +119,6 @@ import Plutarch.List (
     pnull,
     ptail
   ),
-  pfoldr',
   phead,
   plistEquals,
   pmap,
@@ -239,64 +243,9 @@ instance PIsData (PBuiltinList a) => Fc 'True a where
 instance Fc (F a) a => PEq (PBuiltinList a) where
   (#==) = fc (Proxy @(F a))
 
-newtype PData (s :: S) = PData (Term s PData)
-
-instance PShow PData where
-  pshow' b t0 = wrap (go0 # t0)
-    where
-      wrap s = pif (pconstant b) ("(" <> s <> ")") s
-      go0 :: Term s (PData :--> PString)
-      go0 = phoistAcyclic $
-        pfix #$ plam $ \go t ->
-          let pshowConstr pp0 = plet pp0 $ \pp ->
-                "Constr "
-                  <> pshow' False (pfstBuiltin # pp)
-                  <> " "
-                  <> pshowListPString # (pmap # go # (psndBuiltin # pp))
-              pshowMap pplist =
-                "Map " <> pshowListPString # (pmap # pshowPair # pplist)
-              pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
-                "("
-                  <> (go # (pfstBuiltin # pp))
-                  <> ", "
-                  <> (go # (psndBuiltin # pp))
-                  <> ")"
-              pshowList xs = "List " <> pshowListPString # (pmap # go # xs)
-              pshowListPString = phoistAcyclic $
-                plam $ \plist ->
-                  "["
-                    <> pelimList
-                      ( \x0 xs0 ->
-                          x0 <> (pfoldr' (\x r -> ", " <> x <> r) # ("" :: Term s PString) # xs0)
-                      )
-                      ""
-                      plist
-                    <> "]"
-           in pforce $
-                pchooseData
-                  # t
-                  # pdelay (pshowConstr (pasConstr # t))
-                  # pdelay (pshowMap (pasMap # t))
-                  # pdelay (pshowList (pasList # t))
-                  # pdelay ("I " <> pshow (pasInt # t))
-                  # pdelay ("B " <> pshow (pasByteStr # t))
-
-instance PlutusType PData where
-  type PInner PData = PData
-  type PCovariant' PData = ()
-  type PContravariant' PData = ()
-  type PVariant' PData = ()
-  pcon' (PData t) = t
-  pmatch' t f = f (PData t)
-
-instance PUnsafeLiftDecl PData where type PLifted PData = Data
-deriving via (DerivePConstantDirect Data PData) instance PConstantDecl Data
-
-instance PEq PData where
-  x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
 pchooseData :: Term s (PData :--> a :--> a :--> a :--> a :--> a :--> a)
-pchooseData = phoistAcyclic $ pforce $ punsafeBuiltin PLC.ChooseData
+pchooseData = phoistAcyclic $ plam $ \d x1 x2 x3 x4 x5 ->
+  pforce $ pbuiltinChooseData # d # x1 # x2 # x3 # x4 # x5
 
 pasConstr :: Term s (PData :--> PBuiltinPair PInteger (PBuiltinList PData))
 pasConstr = punsafeBuiltin PLC.UnConstrData
@@ -311,14 +260,14 @@ pasList :: Term s (PData :--> PBuiltinList PData)
 pasList = punsafeBuiltin PLC.UnListData
 
 pasInt :: Term s (PData :--> PInteger)
-pasInt = punsafeBuiltin PLC.UnIData
+pasInt = pbuiltinUnIData
 
 pasByteStr :: Term s (PData :--> PByteString)
-pasByteStr = punsafeBuiltin PLC.UnBData
+pasByteStr = pbuiltinUnBData
 
 -- | Serialise any builtin data to its cbor represented by a builtin bytestring
 pserialiseData :: Term s (PData :--> PByteString)
-pserialiseData = punsafeBuiltin PLC.SerialiseData
+pserialiseData = pbuiltinSerialiseData
 
 newtype PAsData (a :: S -> Type) (s :: S) = PAsData (Term s a)
 
@@ -416,11 +365,11 @@ instance DerivePlutusType (Helper2 f a) where
 
 instance PIsData PInteger where
   pfromDataImpl x = pasInt # pforgetData x
-  pdataImpl x = punsafeBuiltin PLC.IData # x
+  pdataImpl x = pbuiltinIData # x
 
 instance PIsData PByteString where
   pfromDataImpl x = pasByteStr # pforgetData x
-  pdataImpl x = punsafeBuiltin PLC.BData # x
+  pdataImpl x = pbuiltinBData # x
 
 {- |
   Instance for PBool following the Plutus IsData repr

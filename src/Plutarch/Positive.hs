@@ -13,7 +13,8 @@ import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
-import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
+import Plutarch.Builtin (PAsData, PIsData, pdata)
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   DerivePConstantDirect (DerivePConstantDirect),

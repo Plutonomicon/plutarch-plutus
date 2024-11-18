@@ -1,3 +1,5 @@
+{-# LANGUAGE NoPartialTypeSignatures #-}
+
 module Plutarch.Internal.Show (
   PShow (pshow'),
   pshow,
@@ -29,6 +31,7 @@ import Generics.SOP (
 import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Builtin.Bool (PBool, pbuiltinIfThenElse)
 import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.String (
@@ -98,8 +101,8 @@ instance PShow PString where
               -- Non-ascii byte sequence will not use bytes < 128.
               -- So we are safe to rewrite the lower byte values.
               -- https://en.wikipedia.org/wiki/UTF-8#Encoding
-              let doubleQuote :: Term _ PInteger = 34 -- `"`
-                  escapeSlash :: Term _ PInteger = 92 -- `\`
+              let doubleQuote = 34 -- `"`
+                  escapeSlash = 92 -- `\`
                   rec_ = pconsBS # x #$ self # xs
                in pif
                     (x #== (punsafeIntegerToByte # doubleQuote))
@@ -176,6 +179,57 @@ instance PShow PByteString where
               ( pconstant $ toInteger x
               , pconstant @PString $ T.pack [intToDigit x]
               )
+
+-- | @since WIP
+instance PShow PData where
+  {-# INLINEABLE pshow' #-}
+  pshow' _ _ = "FIXME: I am a bad instance"
+
+{- TODO: Reintroduce this instance once we untangle this utter mess of
+ - dependencies
+-- | @since WIP
+instance PShow PData where
+  {-# INLINEABLE pshow' #-}
+  pshow' b t0 = wrap (go0 # t0)
+    where
+      wrap :: forall (s :: S) . Term s PString -> Term s PString
+      wrap s = pif (pconstant b) ("(" <> s <> ")") s
+      go0 :: forall (s :: S) . Term s (PData :--> PString)
+      go0 = phoistAcyclic $
+        pfix #$ plam $ \go t ->
+          let pshowConstr pp0 = plet pp0 $ \pp ->
+                "Constr "
+                  <> pshow' False (pfstBuiltin # pp)
+                  <> " "
+                  <> pshowListPString # (pmap # go # (psndBuiltin # pp))
+              pshowMap pplist =
+                "Map " <> pshowListPString # (pmap # pshowPair # pplist)
+              pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
+                "("
+                  <> (go # (pfstBuiltin # pp))
+                  <> ", "
+                  <> (go # (psndBuiltin # pp))
+                  <> ")"
+              pshowList xs = "List " <> pshowListPString # (pmap # go # xs)
+              pshowListPString = phoistAcyclic $
+                plam $ \plist ->
+                  "["
+                    <> pelimList
+                      ( \x0 xs0 ->
+                          x0 <> (pfoldr' (\x r -> ", " <> x <> r) # ("" :: Term s PString) # xs0)
+                      )
+                      ""
+                      plist
+                    <> "]"
+           in pforce $
+                pchooseData
+                  # t
+                  # pdelay (pshowConstr (pasConstr # t))
+                  # pdelay (pshowMap (pasMap # t))
+                  # pdelay (pshowList (pasList # t))
+                  # pdelay ("I " <> pshow (pasInt # t))
+                  # pdelay ("B " <> pshow (pasByteStr # t))
+-}
 
 -- | Case matching on bytestring, as if a list.
 pelimBS ::

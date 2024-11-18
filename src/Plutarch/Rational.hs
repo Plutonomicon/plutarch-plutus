@@ -19,7 +19,6 @@ import GHC.Generics (Generic)
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
-  PData,
   PIsData,
   pasInt,
   pasList,
@@ -28,6 +27,7 @@ import Plutarch.Builtin (
   pforgetData,
   pfromDataImpl,
  )
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Internal.Builtin (

@@ -27,6 +27,7 @@ import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
  )
 import Plutarch.Builtin.ByteString (PByteString, pbuiltinEqualsByteString)
+import Plutarch.Builtin.Data (PData, pbuiltinEqualsData)
 import Plutarch.Builtin.Integer (PInteger, pbuiltinEqualsInteger)
 import Plutarch.Builtin.String (PString, pbuiltinEqualsString)
 import Plutarch.Builtin.Unit (PUnit)
@@ -108,6 +109,11 @@ instance PEq PString where
 instance PEq PByteString where
   {-# INLINEABLE (#==) #-}
   x #== y = pbuiltinEqualsByteString # x # y
+
+-- | @since WIP
+instance PEq PData where
+  {-# INLINEABLE (#==) #-}
+  x #== y = pbuiltinEqualsData # x # y
 
 -- Helpers
 

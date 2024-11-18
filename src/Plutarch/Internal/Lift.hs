@@ -30,7 +30,7 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
-import Plutarch.Builtin (PData)
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)

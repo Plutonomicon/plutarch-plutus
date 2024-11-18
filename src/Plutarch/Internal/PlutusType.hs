@@ -37,6 +37,7 @@ import Plutarch.Builtin.BLS (
  )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pbuiltinIfThenElse)
 import Plutarch.Builtin.ByteString (PByteString (PByteString))
+import Plutarch.Builtin.Data (PData (PData))
 import Plutarch.Builtin.Integer (PInteger (PInteger))
 import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
@@ -222,3 +223,14 @@ instance PlutusType PBLS12_381_MlResult where
   pcon' = coerce
   {-# INLINEABLE pmatch' #-}
   pmatch' t f = f (PBLS12_381_MlResult t)
+
+-- | @since WIP
+instance PlutusType PData where
+  type PInner PData = PData
+  type PCovariant' PData = ()
+  type PContravariant' PData = ()
+  type PVariant' PData = ()
+  {-# INLINEABLE pcon' #-}
+  pcon' (PData t) = t
+  {-# INLINEABLE pmatch' #-}
+  pmatch' t f = f (PData t)

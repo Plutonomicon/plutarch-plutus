@@ -27,7 +27,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin (
   PAsData,
-  PData,
   PIsData (pdataImpl, pfromDataImpl),
   pasConstr,
   pconstrBuiltin,
@@ -38,6 +37,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),

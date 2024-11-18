@@ -59,7 +59,6 @@ import Generics.SOP (
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
-  PData,
   PIsData,
   pasConstr,
   pchooseListBuiltin,
@@ -73,6 +72,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   PConstant,

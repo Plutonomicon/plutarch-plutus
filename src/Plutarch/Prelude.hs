@@ -264,6 +264,7 @@ import Plutarch.Builtin.Crypto (
   pbuiltinSha3_256,
   pbuiltinVerifyEd25519Signature,
  )
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   DerivePConstantViaBuiltin (..),
