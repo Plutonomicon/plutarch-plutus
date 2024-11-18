@@ -42,6 +42,7 @@ import Generics.SOP (
  )
 import Plutarch.Internal (PDelayed, PType, S, Term, pdelay, pforce, phoistAcyclic, plet, (#), (#$), (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.Internal.Other (
   pto,
  )
@@ -61,6 +62,12 @@ import PlutusCore qualified as PLC
 -- | Plutus 'BuiltinBool'
 data PBool (s :: S) = PTrue | PFalse
   deriving stock (Show)
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBool Bool)
+  instance
+    PLiftable PBool
 
 instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
 deriving via (DerivePConstantDirect Bool PBool) instance PConstantDecl Bool

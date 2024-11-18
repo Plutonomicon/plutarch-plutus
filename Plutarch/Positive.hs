@@ -45,6 +45,11 @@ import Plutarch (
   (#$),
   type (:-->),
  )
+import Plutarch.Internal.Lift (
+  LiftError (CouldNotDecodeData),
+  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
+  punsafeCoercePLifted,
+ )
 import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.TermCont (tcont)
@@ -54,7 +59,16 @@ import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 newtype PPositive s = PPositive (Term s PInteger)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PShow)
+
 instance DerivePlutusType PPositive where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PLiftable PPositive where
+  type AsHaskell PPositive = Positive
+  toPlutarch = punsafeCoercePLifted @PPositive . toPlutarch @PInteger . getPositive
+  fromPlutarch p = do
+    b <- fromPlutarch $ punsafeCoercePLifted @PInteger p
+    maybe (Left CouldNotDecodeData) Right $ mkPositive b
 
 instance PNum PPositive where
   x #- y = ptryPositive #$ pto x #- pto y

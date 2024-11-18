@@ -32,6 +32,7 @@ import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (Term, (#), (:-->))
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
@@ -58,6 +59,12 @@ newtype PBuiltinBLS12_381_G1_Element s = PBuiltinBLS12_381_G1_Element (Term s PO
 
 -- | @since 1.9.0
 instance DerivePlutusType PBuiltinBLS12_381_G1_Element where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinBLS12_381_G1_Element BLS12_381.G1.Element)
+  instance
+    PLiftable PBuiltinBLS12_381_G1_Element
 
 -- | @since 1.9.0
 instance PUnsafeLiftDecl PBuiltinBLS12_381_G1_Element where type PLifted PBuiltinBLS12_381_G1_Element = BLS12_381.G1.Element
@@ -132,6 +139,12 @@ newtype PBuiltinBLS12_381_G2_Element s = PBuiltinBLS12_381_G2_Element (Term s PO
 
 -- | @since 1.9.0
 instance DerivePlutusType PBuiltinBLS12_381_G2_Element where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinBLS12_381_G2_Element BLS12_381.G2.Element)
+  instance
+    PLiftable PBuiltinBLS12_381_G2_Element
 
 -- | @since 1.9.0
 instance PUnsafeLiftDecl PBuiltinBLS12_381_G2_Element where type PLifted PBuiltinBLS12_381_G2_Element = BLS12_381.G2.Element
@@ -209,6 +222,12 @@ newtype PBuiltinBLS12_381_MlResult s = PBuiltinBLS12_381_MlResult (Term s POpaqu
 
 -- | @since 1.9.0
 instance DerivePlutusType PBuiltinBLS12_381_MlResult where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinBLS12_381_MlResult BLS12_381.Pairing.MlResult)
+  instance
+    PLiftable PBuiltinBLS12_381_MlResult
 
 -- | @since 1.9.0
 instance PUnsafeLiftDecl PBuiltinBLS12_381_MlResult where type PLifted PBuiltinBLS12_381_MlResult = BLS12_381.Pairing.MlResult

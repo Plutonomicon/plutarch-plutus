@@ -20,6 +20,7 @@ import Plutarch.Bool (PBool, PEq, (#&&), (#<=), (#==), (#||))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (S, Term, phoistAcyclic, (#), (:-->))
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PLam (plam)
@@ -41,7 +42,14 @@ newtype PString s = PString (Term s POpaque)
 
 instance DerivePlutusType PString where type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PString Text)
+  instance
+    PLiftable PString
+
 instance PUnsafeLiftDecl PString where type PLifted PString = Text
+
 deriving via (DerivePConstantDirect Text PString) instance PConstantDecl Text
 
 {-# DEPRECATED pfromText "Use `pconstant` instead." #-}

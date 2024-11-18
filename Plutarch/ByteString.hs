@@ -66,6 +66,13 @@ import Plutarch.Internal (
   (#$),
   (:-->),
  )
+import Plutarch.Internal.Lift (
+  DeriveBuiltinPLiftable,
+  LiftError (CouldNotDecodeData),
+  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
+  PLifted' (PLifted'),
+  punsafeCoercePLifted,
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pfix)
 import Plutarch.Internal.PLam (plam)
@@ -92,6 +99,12 @@ newtype PByteString s = PByteString (Term s POpaque)
   deriving anyclass (PlutusType)
 
 instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PByteString ByteString)
+  instance
+    PLiftable PByteString
 
 instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
 deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString
@@ -135,6 +148,12 @@ newtype PByte (s :: S) = PByte (Term s POpaque)
 -- | @since WIP
 instance DerivePlutusType PByte where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PLiftable PByte where
+  type AsHaskell PByte = Word8
+  toPlutarch = punsafeCoercePLifted @PByte . toPlutarch @PInteger . fromIntegral @_ @Integer
+  fromPlutarch p = fmap (fromIntegral @Integer @Word8) $ fromPlutarch $ punsafeCoercePLifted @PInteger p
 
 -- | @since WIP
 instance PUnsafeLiftDecl PByte where

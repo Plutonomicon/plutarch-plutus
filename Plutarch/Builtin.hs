@@ -80,6 +80,13 @@ import Plutarch.Bool (
  )
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Lift (
+  DeriveBuiltinPLiftable,
+  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
+  PLifted' (PLifted'),
+  unsafeFromUni,
+  unsafeToUni,
+ )
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Lift (
@@ -132,6 +139,17 @@ instance PlutusType (PBuiltinPair a b) where
   type PVariant' (PBuiltinPair a b) = (PVariant' a, PVariant' b)
   pcon' (PBuiltinPair x) = x
   pmatch' x f = f (PBuiltinPair x)
+
+-- | @since WIP
+instance
+  ( PLC.Contains PLC.DefaultUni (AsHaskell a)
+  , PLC.Contains PLC.DefaultUni (AsHaskell b)
+  ) =>
+  PLiftable (PBuiltinPair a b)
+  where
+  type AsHaskell (PBuiltinPair a b) = (AsHaskell a, AsHaskell b)
+  toPlutarch = unsafeFromUni -- FIXME: Is that right???
+  fromPlutarch = unsafeToUni
 
 instance (PLift a, PLift b) => PUnsafeLiftDecl (PBuiltinPair a b) where
   type PLifted (PBuiltinPair a b) = (PLifted a, PLifted b)
@@ -204,6 +222,15 @@ instance PLift a => PlutusType (PBuiltinList a) where
         # xs
         # pdelay (f PNil)
         # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
+
+-- | @since WIP
+instance
+  (PLift a, a ~ PConstanted (PLifted a), PLC.Contains PLC.DefaultUni (AsHaskell a)) =>
+  PLiftable (PBuiltinList a)
+  where
+  type AsHaskell (PBuiltinList a) = [AsHaskell a]
+  toPlutarch = unsafeFromUni -- FIXME: Is that right???
+  fromPlutarch = unsafeToUni
 
 instance PListLike PBuiltinList where
   type PElemConstraint PBuiltinList a = PLift a
@@ -283,6 +310,12 @@ instance PlutusType PData where
   type PVariant' PData = ()
   pcon' (PData t) = t
   pmatch' t f = f (PData t)
+
+-- | @since WIP
+deriving via
+  DeriveBuiltinPLiftable PData Data
+  instance
+    PLiftable PData
 
 instance PUnsafeLiftDecl PData where type PLifted PData = Data
 deriving via (DerivePConstantDirect Data PData) instance PConstantDecl Data

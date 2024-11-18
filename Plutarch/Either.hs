@@ -67,6 +67,7 @@ import Plutarch.DataRepr.Internal (
   PConstantData,
   PLiftData,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell), PLifted' (PLifted'))
 import Plutarch.Internal.PlutusType (
   PlutusType (PInner, pcon', pmatch'),
  )
@@ -76,6 +77,7 @@ import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom)
 import Plutarch.Unsafe (punsafeCoerce)
+import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | Scott-encoded 'Either'.
 data PEither (a :: PType) (b :: PType) (s :: S)
@@ -145,6 +147,17 @@ instance PlutusType (PEitherData a b) where
         ((pfstBuiltin # asConstr) #== 0)
         (f . PDLeft . punsafeCoerce $ arg)
         (f . PDRight . punsafeCoerce $ arg)
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable (PEitherData a b) (Either (AsHaskell a) (AsHaskell b))
+  instance
+    ( Plutus.ToData (AsHaskell a)
+    , Plutus.FromData (AsHaskell a)
+    , Plutus.ToData (AsHaskell b)
+    , Plutus.FromData (AsHaskell b)
+    ) =>
+    PLiftable (PEitherData a b)
 
 -- | @since WIP
 instance PIsData (PEitherData a b) where

@@ -22,6 +22,7 @@ import Plutarch.Internal (
   (#),
   (:-->),
  )
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)
 import Plutarch.Internal.PLam (plam)
@@ -43,6 +44,12 @@ newtype PInteger s = PInteger (Term s POpaque)
   deriving anyclass (PlutusType)
 
 instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PInteger Integer)
+  instance
+    PLiftable PInteger
 
 instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
 deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
