@@ -21,6 +21,7 @@ module Plutarch.Internal.Lift (
   -- ** Manual instance helpers
   PLifted' (..),
   unPLifted,
+  punsafeCoercePLifted,
   LiftError (..),
   unsafeToUni,
   unsafeFromUni,
@@ -132,6 +133,10 @@ type role PLifted' nominal nominal
 -}
 unPLifted :: PLifted' a s -> Term s a
 unPLifted (PLifted' t) = punsafeCoerce t
+
+-- | @since WIP
+punsafeCoercePLifted :: forall (b :: S -> Type) (a :: S -> Type) (s :: S). PLifted' a s -> PLifted' b s
+punsafeCoercePLifted (PLifted' t) = PLifted' t
 
 {- | Given a Haskell-level representation of a Plutarch term, transform it into
 its equivalent term.
