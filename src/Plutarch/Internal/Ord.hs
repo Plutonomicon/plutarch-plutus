@@ -6,7 +6,6 @@ module Plutarch.Internal.Ord (
 
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
-  pbuiltinIfThenElse,
  )
 import Plutarch.Builtin.ByteString (
   PByteString,
@@ -21,6 +20,7 @@ import Plutarch.Builtin.Integer (
 import Plutarch.Builtin.Lift (pconstant)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
+  pif',
   pnot,
   pto,
  )
@@ -107,16 +107,16 @@ can do.
 class PPartialOrd t => POrd t where
   -- | @since WIP
   pmax :: forall (s :: S). Term s t -> Term s t -> Term s t
-  pmax x y = pbuiltinIfThenElse # (x #< y) # y # x
+  pmax x y = pif' # (x #< y) # y # x
 
   -- | @since WIP
   pmin :: forall (s :: S). Term s t -> Term s t -> Term s t
-  pmin x y = pbuiltinIfThenElse # (x #< y) # x # y
+  pmin x y = pif' # (x #< y) # x # y
 
 -- | @since WIP
 instance PPartialOrd PBool where
-  x #< y = pbuiltinIfThenElse # x # pconstant False # y
-  x #<= y = pbuiltinIfThenElse # x # y # pconstant True
+  x #< y = pif' # x # pconstant False # y
+  x #<= y = pif' # x # y # pconstant True
 
 -- | @since WIP
 instance POrd PBool

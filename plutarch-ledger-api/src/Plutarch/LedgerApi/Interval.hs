@@ -33,7 +33,6 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
-import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
 import Plutarch.Prelude hiding (psingleton, pto)
 import PlutusLedgerApi.V3 qualified as Plutus
 
@@ -650,7 +649,7 @@ minLower = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         x'
-        (pif (pfromData yt #< pfromData xt) y' (pbuiltinIfThenElse # xc # x' # y'))
+        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # x' # y'))
 
 maxLower ::
   forall (a :: S -> Type) (s :: S).
@@ -669,7 +668,7 @@ maxLower = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         y'
-        (pif (pfromData yt #< pfromData xt) x' (pbuiltinIfThenElse # xc # y' # x'))
+        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # y' # x'))
 
 minUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -688,7 +687,7 @@ minUpper = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         x'
-        (pif (pfromData yt #< pfromData xt) y' (pbuiltinIfThenElse # xc # y' # x'))
+        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # y' # x'))
 
 maxUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -707,7 +706,7 @@ maxUpper = phoistAcyclic $
       pif
         (pfromData xt #< pfromData yt)
         y'
-        (pif (pfromData yt #< pfromData xt) x' (pbuiltinIfThenElse # xc # x' # y'))
+        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # x' # y'))
 
 -- value < endpoint
 pbefore' ::

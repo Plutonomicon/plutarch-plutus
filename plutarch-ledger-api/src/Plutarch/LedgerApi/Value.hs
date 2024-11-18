@@ -60,7 +60,6 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.List qualified as List
@@ -719,7 +718,7 @@ plovelaceValueOf = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> 0
       PCons x _ ->
-        pbuiltinIfThenElse
+        pif'
           # (pfstBuiltin # x #== padaSymbolData)
           # pfromData (psndBuiltin #$ phead #$ pto $ pfromData $ psndBuiltin # x)
           # 0
@@ -841,7 +840,7 @@ padaOnlyValue = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> value
       PCons x _ ->
-        pbuiltinIfThenElse
+        pif'
           # (pfstBuiltin # x #== padaSymbolData)
           # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
           # pcon (PValue AssocMap.pempty)
@@ -858,7 +857,7 @@ pnoAdaValue = phoistAcyclic $
     pmatch (pto $ pto value) $ \case
       PNil -> value
       PCons x xs ->
-        pbuiltinIfThenElse # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
+        pif' # (pfstBuiltin # x #== padaSymbolData) # pcon (PValue $ pcon $ AssocMap.PMap xs) # value
 
 -- Helpers
 

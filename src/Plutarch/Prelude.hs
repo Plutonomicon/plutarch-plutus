@@ -56,9 +56,12 @@ module Plutarch.Prelude (
   PPartialOrd (..),
   POrd (..),
   pif,
+  pif',
   pnot,
   (#&&),
   (#||),
+  pand,
+  por,
   pand',
   por',
 
@@ -293,7 +296,22 @@ import Plutarch.Internal.BitString (
   pshift,
   pwriteBits,
  )
-import Plutarch.Internal.Builtin
+import Plutarch.Internal.Builtin (
+  pand,
+  pand',
+  pfix,
+  pif,
+  pif',
+  pinl,
+  plam,
+  pnot,
+  por,
+  por',
+  pto,
+  punsafeDowncast,
+  (#&&),
+  (#||),
+ )
 import Plutarch.Internal.Convert (
   PEndianness,
   pbyteStringToInteger,
@@ -302,14 +320,14 @@ import Plutarch.Internal.Convert (
   pmostSignificantFirst,
   pmostSignificantLast,
  )
-import Plutarch.Internal.Eq
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Quantification
 import Plutarch.Internal.ScottEncoding
-import Plutarch.Internal.Show (PShow (..), pshow)
+import Plutarch.Internal.Show (PShow, pshow)
 import Plutarch.Internal.Term
 import Plutarch.List
 import Plutarch.Maybe

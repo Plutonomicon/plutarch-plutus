@@ -25,13 +25,13 @@ import Plutarch.Builtin.BLS (
  )
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
-  pbuiltinIfThenElse,
  )
 import Plutarch.Builtin.ByteString (PByteString, pbuiltinEqualsByteString)
 import Plutarch.Builtin.Integer (PInteger, pbuiltinEqualsInteger)
 import Plutarch.Builtin.String (PString, pbuiltinEqualsString)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Builtin (
+  pif',
   pnot,
   (#&&),
  )
@@ -97,7 +97,7 @@ instance PEq PInteger where
 instance PEq PBool where
   {-# INLINEABLE (#==) #-}
   x #== y = plet y $ \y' ->
-    pbuiltinIfThenElse # x # y' #$ pnot # y'
+    pif' # x # y' #$ pnot # y'
 
 -- | @since WIP
 instance PEq PString where

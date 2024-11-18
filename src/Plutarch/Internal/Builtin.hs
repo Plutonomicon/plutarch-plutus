@@ -15,6 +15,7 @@ module Plutarch.Internal.Builtin (
   (#&&),
   (#||),
   pif,
+  pif',
 
   -- ** Other
   pfix,
@@ -106,12 +107,22 @@ pif b ifTrue ifFalse = pmatch b $ \case
   PTrue -> ifTrue
   PFalse -> ifFalse
 
+{- | A strict if-then-else; both branches get evaluated regardless.
+
+@since WIP
+-}
+pif' ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (PBool :--> a :--> a :--> a)
+pif' = phoistAcyclic $ plam $ \cond x y ->
+  pforce $ pbuiltinIfThenElse # cond # x # y
+
 -- | @since WIP
 pnot ::
   forall (s :: S).
   Term s (PBool :--> PBool)
 pnot = phoistAcyclic $ plam $ \x ->
-  pbuiltinIfThenElse # x # pcon PFalse # pcon PTrue
+  pforce $ pbuiltinIfThenElse # x # pcon PFalse # pcon PTrue
 
 -- | @since WIP
 pbuiltinTrace :: Term s (PString :--> a :--> a)
@@ -165,7 +176,7 @@ pand ::
   forall (s :: S).
   Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
 pand = phoistAcyclic $ plam $ \x y ->
-  pbuiltinIfThenElse # x # y # phoistAcyclic (pdelay $ pcon PFalse)
+  pforce $ pbuiltinIfThenElse # x # y # phoistAcyclic (pdelay $ pcon PFalse)
 
 {- | Lazy boolean and on 'Term's.
 
@@ -188,7 +199,7 @@ pand' ::
   forall (s :: S).
   Term s (PBool :--> PBool :--> PBool)
 pand' = phoistAcyclic $ plam $ \x y ->
-  pbuiltinIfThenElse # x # y # x
+  pforce $ pbuiltinIfThenElse # x # y # x
 
 {- | Lazy boolean inclusive or as a Plutarch function.
 
@@ -197,8 +208,8 @@ pand' = phoistAcyclic $ plam $ \x y ->
 por ::
   forall (s :: S).
   Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x ->
-  pbuiltinIfThenElse # x # phoistAcyclic (pdelay $ pcon PTrue)
+por = phoistAcyclic $ plam $ \x y ->
+  pbuiltinIfThenElse # x # pcon PTrue # pforce y
 
 {- | Lazy boolean inclusive or on 'Term's.
 
@@ -221,7 +232,7 @@ por' ::
   forall (s :: S).
   Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x y ->
-  pbuiltinIfThenElse # x # x # y
+  pforce $ pbuiltinIfThenElse # x # x # y
 
 -- | @since WIP
 punsafeDowncast ::

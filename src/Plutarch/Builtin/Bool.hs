@@ -8,10 +8,9 @@ module Plutarch.Builtin.Bool (
 
 import Data.Kind (Type)
 import Plutarch.Internal.Term (
+  PDelayed,
   S,
   Term,
-  pforce,
-  phoistAcyclic,
   punsafeBuiltin,
   (:-->),
  )
@@ -27,11 +26,8 @@ data PBool (s :: S) = PTrue | PFalse
       Show
     )
 
-{- | A strict if-then-else; both branches get evaluated regardless.
-
-@since WIP
--}
+-- | @since WIP
 pbuiltinIfThenElse ::
   forall (a :: S -> Type) (s :: S).
-  Term s (PBool :--> a :--> a :--> a)
-pbuiltinIfThenElse = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
+  Term s (PBool :--> a :--> a :--> PDelayed a)
+pbuiltinIfThenElse = punsafeBuiltin PLC.IfThenElse

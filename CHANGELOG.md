@@ -42,7 +42,6 @@
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 * `pexpModInteger` is now in `Plutarch.Integer`
 * `POpaque`, `pfix` and `pto` moved to `Plutarch.Internal.Builtin`
-* `pif'` is now `pbuiltinIfThenElse`
 * `ptrace'` is now `pbuiltinTrace`
 * `pencodeUtf8` and `pdecodeUtf8` are now `pbuiltinEncodeUtf8` and
   `pbuiltinDecodeUtf8`

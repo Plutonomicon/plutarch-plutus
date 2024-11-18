@@ -173,8 +173,7 @@ instance PlutusType PBool where
     PFalse -> pconstant False
   {-# INLINEABLE pmatch' #-}
   pmatch' b f =
-    pforce $
-      pbuiltinIfThenElse # b # pdelay (f PTrue) # pdelay (f PFalse)
+    pforce $ pforce $ pbuiltinIfThenElse # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 -- | @since WIP
 instance PlutusType PInteger where

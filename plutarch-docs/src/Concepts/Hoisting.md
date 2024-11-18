@@ -4,9 +4,7 @@
 
 ```haskell
 module Plutarch.Docs.Hoisting (hor, (#||)) where
-
-import Plutarch.Prelude hiding ((#||))
-import Plutarch.Builtin.Bool (pbuiltinIfThenElse)
+import Plutarch.Prelude hiding ((#||), por)
 ```
 
 </p>
@@ -59,7 +57,7 @@ You can factor out most of the logic to a Plutarch level function, and apply tha
 x #|| y = pforce $ por # x # pdelay y
 
 por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x y -> pbuiltinIfThenElse # x # pdelay (pconstant True) # y
+por = phoistAcyclic $ plam $ \x y -> pif' # x # pdelay (pconstant True) # y
 ```
 
 In general the pattern goes like this:
