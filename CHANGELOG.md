@@ -33,6 +33,8 @@
 * `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
 * `pmapMaybe` to `Plutarch.Maybe`
 * `pbuiltinVerifyEd25519Signature` is now exported from `Plutarch.Prelude`
+* Conversion functionality from `Plutarch.Internal.Convert` is now exported from
+  `Plutarch.Prelude`
 
 ## Changed
 
@@ -47,6 +49,7 @@
 * `PMaybeData` no longer uses `PDataRecord`
 * `Plutarch.Crypto` is now `Plutarch.Internal.Crypto`
 * All identifiers in `Plutarch.Internal.Crypto` now have a `pbuiltin` prefix
+* `Plutarch.Convert` is now `Plutarch.Internal.Convert`
 
 ## Removed
 

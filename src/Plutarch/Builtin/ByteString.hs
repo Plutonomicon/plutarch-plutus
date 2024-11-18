@@ -5,6 +5,8 @@ module Plutarch.Builtin.ByteString (
   PByteString (..),
 
   -- * Builtins
+
+  -- ** Manipulation
   pbuiltinAppendByteString,
   pbuiltinConsByteString,
   pbuiltinSliceByteString,
@@ -13,6 +15,10 @@ module Plutarch.Builtin.ByteString (
   pbuiltinEqualsByteString,
   pbuiltinLessThanByteString,
   pbuiltinLessThanEqualsByteString,
+
+  -- ** Conversion
+  pbuiltinByteStringToInteger,
+  pbuiltinIntegerToByteString,
 ) where
 
 import Data.ByteString (ByteString)
@@ -105,3 +111,15 @@ pbuiltinLessThanEqualsByteString ::
   forall (s :: S).
   Term s (PByteString :--> PByteString :--> PBool)
 pbuiltinLessThanEqualsByteString = punsafeBuiltin PLC.LessThanEqualsByteString
+
+-- | @since WIP
+pbuiltinByteStringToInteger ::
+  forall (s :: S).
+  Term s (PBool :--> PByteString :--> PInteger)
+pbuiltinByteStringToInteger = punsafeBuiltin PLC.ByteStringToInteger
+
+-- | @since WIP
+pbuiltinIntegerToByteString ::
+  forall (s :: S).
+  Term s (PBool :--> PInteger :--> PInteger :--> PByteString)
+pbuiltinIntegerToByteString = punsafeBuiltin PLC.IntegerToByteString

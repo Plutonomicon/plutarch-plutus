@@ -68,12 +68,15 @@ module Plutarch.Prelude (
   PByteString,
   PByte,
   PLogicOpSemantics,
+  PEndianness,
 
   -- ** Functions
 
   -- *** Construction
   ppadding,
   ptruncation,
+  pmostSignificantFirst,
+  pmostSignificantLast,
   pzeroesBS,
   ponesBS,
   preplicateBS,
@@ -91,6 +94,9 @@ module Plutarch.Prelude (
   -- *** Conversion
   pbyteToInteger,
   pintegerToByte,
+  pbyteStringToInteger,
+  pintegerToByteString,
+  pintegerToByteStringSized,
 
   -- *** Other
   phexByteStr,
@@ -268,6 +274,14 @@ import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Enum
 import Plutarch.Internal.Builtin
+import Plutarch.Internal.Convert (
+  PEndianness,
+  pbyteStringToInteger,
+  pintegerToByteString,
+  pintegerToByteStringSized,
+  pmostSignificantFirst,
+  pmostSignificantLast,
+ )
 import Plutarch.Internal.Eq
 import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric

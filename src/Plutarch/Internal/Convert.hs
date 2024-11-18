@@ -2,9 +2,9 @@
 
 @since WIP
 -}
-module Plutarch.Convert (
+module Plutarch.Internal.Convert (
   -- * Types
-  PEndianness,
+  PEndianness (..),
 
   -- * Functions
   pmostSignificantFirst,
