@@ -43,8 +43,9 @@ import Plutarch.Internal (
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Script (Script (Script))
+import Plutarch.TryFrom (PSubtype)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant)
@@ -214,7 +215,7 @@ instance DerivePlutusType (DeriveDataPLiftable a h) where
 -- | @since WIP
 instance
   ( PlutusType a
-  , PInner a ~ PData
+  , PSubtype PData a
   , PTx.ToData h
   , PTx.FromData h
   ) =>
