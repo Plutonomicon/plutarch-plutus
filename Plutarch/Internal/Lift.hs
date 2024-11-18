@@ -19,7 +19,7 @@ module Plutarch.Internal.Lift (
   DeriveDataPLiftable (..),
 
   -- ** Manual instance helpers
-  PLifted (..),
+  PLifted' (..),
   unPLifted,
   LiftError (..),
   unsafeToUni,
@@ -112,8 +112,8 @@ automatically follow these laws.
 -}
 class PlutusType a => PLiftable (a :: S -> Type) where
   type AsHaskell a :: Type
-  toPlutarch :: forall (s :: S). AsHaskell a -> PLifted a s
-  fromPlutarch :: (forall (s :: S). PLifted a s) -> Either LiftError (AsHaskell a)
+  toPlutarch :: forall (s :: S). AsHaskell a -> PLifted' a s
+  fromPlutarch :: (forall (s :: S). PLifted' a s) -> Either LiftError (AsHaskell a)
 
 {- | Similar to 'Identity', but at the level of Plutarch. Only needed when
 writing manual instances of 'PLiftable', or if you want to use 'toPlutarch'
@@ -121,16 +121,16 @@ and 'fromPlutarch' directly.
 
 @since WIP
 -}
-newtype PLifted a s = PLifted (Term s POpaque)
+newtype PLifted' a s = PLifted' (Term s POpaque)
 
-type role PLifted nominal nominal
+type role PLifted' nominal nominal
 
 {- | Wrapper around 'punsafeCoerce' to \'pull out\' a term inside a 'PLifted'.
 
 @since WIP
 -}
-unPLifted :: PLifted a s -> Term s a
-unPLifted (PLifted t) = punsafeCoerce t
+unPLifted :: PLifted' a s -> Term s a
+unPLifted (PLifted' t) = punsafeCoerce t
 
 {- | Given a Haskell-level representation of a Plutarch term, transform it into
 its equivalent term.
@@ -156,7 +156,7 @@ plift ::
   PLiftable a =>
   (forall (s :: S). Term s a) ->
   AsHaskell a
-plift t = case fromPlutarch (PLifted @a (punsafeCoerce t)) of
+plift t = case fromPlutarch (PLifted' @a (punsafeCoerce t)) of
   Left err ->
     error $
       "plift failed: "
@@ -239,9 +239,9 @@ unsafeFromUni ::
   forall (a :: S -> Type) (h :: Type) (s :: S).
   PLC.DefaultUni `Includes` h =>
   h ->
-  PLifted a s
+  PLifted' a s
 unsafeFromUni =
-  PLifted . punsafeConstantInternal . PLC.someValue @h @PLC.DefaultUni
+  PLifted' . punsafeConstantInternal . PLC.someValue @h @PLC.DefaultUni
 
 {- | Helper for writing 'PLiftable' instances. This is /highly/ unsafe, and only
 suitable for internal use!
@@ -251,7 +251,7 @@ suitable for internal use!
 unsafeToUni ::
   forall (a :: S -> Type) (h :: Type).
   PLC.DefaultUni `Includes` h =>
-  (forall (s :: S). PLifted a s) ->
+  (forall (s :: S). PLifted' a s) ->
   Either LiftError h
 unsafeToUni t =
   case compile (Tracing LogInfo DoTracing) (unPLifted t) of
