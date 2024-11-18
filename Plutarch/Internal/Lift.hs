@@ -30,7 +30,7 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
-import Plutarch.Builtin (PData)
+import {-# SOURCE #-} Plutarch.Builtin (PData)
 import Plutarch.Internal (
   Config (Tracing),
   LogLevel (LogInfo),
