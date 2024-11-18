@@ -1,4 +1,4 @@
-module Plutarch.BitString (
+module Plutarch.Internal.BitString (
   -- * Type
   PBitString (..),
 
@@ -81,17 +81,6 @@ instance DerivePlutusType PBitString where
 -}
 preadBit :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBool)
 preadBit = punsafeBuiltin PLC.ReadBit
-
-{- | Given a list of positions, set the bits at those positions.
-
-This works similarly to the @writeBits@ operation in
-[CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits)
-with regard to the list of indexes. Effectively, @psetBits b ixes@ is
-equivalent to @writeBits b . map (, True) $ ixes@. All caveats that this
-entails from the CIP-122 description apply.
-
-@since WIP
--}
 
 {- | Sets bits, as per
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits).

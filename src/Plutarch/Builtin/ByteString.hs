@@ -19,6 +19,21 @@ module Plutarch.Builtin.ByteString (
   -- ** Conversion
   pbuiltinByteStringToInteger,
   pbuiltinIntegerToByteString,
+
+  -- ** Logical
+  pbuiltinAndByteString,
+  pbuiltinOrByteString,
+  pbuiltinXorByteString,
+  pbuiltinComplementByteString,
+  pbuiltinReadBit,
+  -- pbuiltinWriteBits,
+  pbuiltinReplicateByte,
+
+  -- ** Bitwise
+  pbuiltinShiftByteString,
+  pbuiltinRotateByteString,
+  pbuiltinCountSetBits,
+  pbuiltinFindFirstSetBit,
 ) where
 
 import Data.ByteString (ByteString)
@@ -123,3 +138,65 @@ pbuiltinIntegerToByteString ::
   forall (s :: S).
   Term s (PBool :--> PInteger :--> PInteger :--> PByteString)
 pbuiltinIntegerToByteString = punsafeBuiltin PLC.IntegerToByteString
+
+-- | @since WIP
+pbuiltinAndByteString ::
+  forall (s :: S).
+  Term s (PBool :--> PByteString :--> PByteString :--> PByteString)
+pbuiltinAndByteString = punsafeBuiltin PLC.AndByteString
+
+-- | @since WIP
+pbuiltinOrByteString ::
+  forall (s :: S).
+  Term s (PBool :--> PByteString :--> PByteString :--> PByteString)
+pbuiltinOrByteString = punsafeBuiltin PLC.OrByteString
+
+-- | @since WIP
+pbuiltinXorByteString ::
+  forall (s :: S).
+  Term s (PBool :--> PByteString :--> PByteString :--> PByteString)
+pbuiltinXorByteString = punsafeBuiltin PLC.XorByteString
+
+-- | @since WIP
+pbuiltinComplementByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PByteString)
+pbuiltinComplementByteString = punsafeBuiltin PLC.ComplementByteString
+
+-- | @since WIP
+pbuiltinReadBit ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger :--> PBool)
+pbuiltinReadBit = punsafeBuiltin PLC.ReadBit
+
+-- TODO: WriteBits
+
+-- | @since WIP
+pbuiltinReplicateByte ::
+  forall (s :: S).
+  Term s (PInteger :--> PInteger :--> PByteString)
+pbuiltinReplicateByte = punsafeBuiltin PLC.ReplicateByte
+
+-- | @since WIP
+pbuiltinShiftByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger :--> PByteString)
+pbuiltinShiftByteString = punsafeBuiltin PLC.ShiftByteString
+
+-- | @since WIP
+pbuiltinRotateByteString ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger :--> PByteString)
+pbuiltinRotateByteString = punsafeBuiltin PLC.RotateByteString
+
+-- | @since WIP
+pbuiltinCountSetBits ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger)
+pbuiltinCountSetBits = punsafeBuiltin PLC.CountSetBits
+
+-- | @since WIP
+pbuiltinFindFirstSetBit ::
+  forall (s :: S).
+  Term s (PByteString :--> PInteger)
+pbuiltinFindFirstSetBit = punsafeBuiltin PLC.FindFirstSetBit

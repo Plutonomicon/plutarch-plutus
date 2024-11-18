@@ -72,7 +72,6 @@ common c
 library
   import:          c
   exposed-modules:
-    Plutarch.BitString
     Plutarch.Builtin
     Plutarch.Builtin.BLS
     Plutarch.Builtin.Bool
@@ -94,6 +93,7 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.FFI
+    Plutarch.Internal.BitString
     Plutarch.Internal.Builtin
     Plutarch.Internal.Convert
     Plutarch.Internal.Eq

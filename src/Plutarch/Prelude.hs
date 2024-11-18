@@ -69,6 +69,7 @@ module Plutarch.Prelude (
   PByte,
   PLogicOpSemantics,
   PEndianness,
+  PBitString (..),
 
   -- ** Functions
 
@@ -90,6 +91,15 @@ module Plutarch.Prelude (
   psliceBS,
   plengthBS,
   pindexBS,
+
+  -- *** Bit-oriented
+  preadBit,
+  pwriteBits,
+  pshift,
+  protate,
+  pcountSetBits,
+  pfindFirstSetBit,
+  pfindFirstSetBit',
 
   -- *** Conversion
   pbyteToInteger,
@@ -273,6 +283,16 @@ import Plutarch.ByteString
 import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Enum
+import Plutarch.Internal.BitString (
+  PBitString (..),
+  pcountSetBits,
+  pfindFirstSetBit,
+  pfindFirstSetBit',
+  preadBit,
+  protate,
+  pshift,
+  pwriteBits,
+ )
 import Plutarch.Internal.Builtin
 import Plutarch.Internal.Convert (
   PEndianness,
