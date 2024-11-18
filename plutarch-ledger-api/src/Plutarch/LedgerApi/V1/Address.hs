@@ -9,6 +9,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
 import Plutarch.Lift (
@@ -55,6 +56,12 @@ newtype PAddress (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType PAddress where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PAddress Plutus.Address
+  instance
+    PLiftable PAddress
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PAddress where

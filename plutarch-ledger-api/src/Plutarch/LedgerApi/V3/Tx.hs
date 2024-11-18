@@ -10,6 +10,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
@@ -47,6 +48,12 @@ newtype PTxId (s :: S) = PTxId (Term s (PDataNewtype PByteString))
 -- | @since 3.1.0
 instance DerivePlutusType PTxId where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxId Plutus.TxId
+  instance
+    PLiftable PTxId
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PTxId where
@@ -119,6 +126,12 @@ newtype PTxOutRef (s :: S)
 -- | @since 3.1.0
 instance DerivePlutusType PTxOutRef where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
+  instance
+    PLiftable PTxOutRef
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PTxOutRef where

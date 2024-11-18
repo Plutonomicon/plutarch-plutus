@@ -42,6 +42,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
@@ -89,6 +90,12 @@ newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCr
 instance DerivePlutusType PColdCommitteeCredential where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PColdCommitteeCredential Plutus.ColdCommitteeCredential
+  instance
+    PLiftable PColdCommitteeCredential
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PColdCommitteeCredential where
   type PLifted PColdCommitteeCredential = Plutus.ColdCommitteeCredential
@@ -125,6 +132,12 @@ newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCred
 instance DerivePlutusType PHotCommitteeCredential where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PHotCommitteeCredential Plutus.HotCommitteeCredential
+  instance
+    PLiftable PHotCommitteeCredential
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PHotCommitteeCredential where
   type PLifted PHotCommitteeCredential = Plutus.HotCommitteeCredential
@@ -160,6 +173,12 @@ newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
 -- | @since 3.1.0
 instance DerivePlutusType PDRepCredential where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PDRepCredential Plutus.DRepCredential
+  instance
+    PLiftable PDRepCredential
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PDRepCredential where
@@ -200,6 +219,12 @@ data PDRep (s :: S)
 instance DerivePlutusType PDRep where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PDRep Plutus.DRep
+  instance
+    PLiftable PDRep
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PDRep where
   type PLifted _ = Plutus.DRep
@@ -238,6 +263,12 @@ data PDelegatee (s :: S)
 -- | @since 3.1.0
 instance DerivePlutusType PDelegatee where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PDelegatee Plutus.Delegatee
+  instance
+    PLiftable PDelegatee
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PDelegatee where
@@ -286,6 +317,12 @@ data PTxCert (s :: S)
 instance DerivePlutusType PTxCert where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxCert Plutus.TxCert
+  instance
+    PLiftable PTxCert
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PTxCert where
   type PLifted _ = Plutus.TxCert
@@ -324,6 +361,12 @@ data PVoter (s :: S)
 -- | @since 3.1.0
 instance DerivePlutusType PVoter where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PVoter Plutus.Voter
+  instance
+    PLiftable PVoter
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PVoter where
@@ -364,6 +407,12 @@ data PVote (s :: S)
 instance DerivePlutusType PVote where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PVote Plutus.Vote
+  instance
+    PLiftable PVote
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PVote where
   type PLifted _ = Plutus.Vote
@@ -400,6 +449,12 @@ newtype PGovernanceActionId (s :: S)
 -- | @since 3.1.0
 instance DerivePlutusType PGovernanceActionId where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PGovernanceActionId Plutus.GovernanceActionId
+  instance
+    PLiftable PGovernanceActionId
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PGovernanceActionId where
@@ -450,6 +505,12 @@ newtype PCommittee (s :: S)
 instance DerivePlutusType PCommittee where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PCommittee Plutus.Committee
+  instance
+    PLiftable PCommittee
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PCommittee where
   type PLifted _ = Plutus.Committee
@@ -488,6 +549,12 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PDataRecord '["_0" := PM
 -- | @since 3.1.0
 instance DerivePlutusType PConstitution where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PConstitution Plutus.Constitution
+  instance
+    PLiftable PConstitution
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PConstitution where
@@ -528,6 +595,12 @@ newtype PProtocolVersion (s :: S)
 instance DerivePlutusType PProtocolVersion where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PProtocolVersion Plutus.ProtocolVersion
+  instance
+    PLiftable PProtocolVersion
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PProtocolVersion where
   type PLifted _ = Plutus.ProtocolVersion
@@ -564,6 +637,12 @@ newtype PChangedParameters (s :: S)
 -- | @since 3.1.0
 instance DerivePlutusType PChangedParameters where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PChangedParameters Plutus.ChangedParameters
+  instance
+    PLiftable PChangedParameters
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PChangedParameters where
@@ -618,6 +697,12 @@ data PGovernanceAction (s :: S)
 instance DerivePlutusType PGovernanceAction where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PGovernanceAction Plutus.GovernanceAction
+  instance
+    PLiftable PGovernanceAction
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PGovernanceAction where
   type PLifted _ = Plutus.GovernanceAction
@@ -666,6 +751,12 @@ newtype PProposalProcedure (s :: S)
 instance DerivePlutusType PProposalProcedure where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PProposalProcedure Plutus.ProposalProcedure
+  instance
+    PLiftable PProposalProcedure
+
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PProposalProcedure where
   type PLifted _ = Plutus.ProposalProcedure
@@ -711,6 +802,12 @@ data PScriptPurpose (s :: S)
 instance DerivePlutusType PScriptPurpose where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PScriptPurpose Plutus.ScriptPurpose
+  instance
+    PLiftable PScriptPurpose
+
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PScriptPurpose where
   type PLifted PScriptPurpose = Plutus.ScriptPurpose
@@ -752,6 +849,12 @@ data PScriptInfo (s :: S)
 -- | @since 3.1.0
 instance DerivePlutusType PScriptInfo where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PScriptInfo Plutus.ScriptInfo
+  instance
+    PLiftable PScriptInfo
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PScriptInfo where
@@ -802,6 +905,12 @@ newtype PTxInInfo (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType PTxInInfo where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
+  instance
+    PLiftable PTxInInfo
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PTxInInfo where
@@ -866,6 +975,12 @@ newtype PTxInfo (s :: S)
 instance DerivePlutusType PTxInfo where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxInfo Plutus.TxInfo
+  instance
+    PLiftable PTxInfo
+
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PTxInfo where
   type PLifted _ = Plutus.TxInfo
@@ -913,6 +1028,12 @@ newtype PScriptContext (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType PScriptContext where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PScriptContext Plutus.ScriptContext
+  instance
+    PLiftable PScriptContext
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PScriptContext where

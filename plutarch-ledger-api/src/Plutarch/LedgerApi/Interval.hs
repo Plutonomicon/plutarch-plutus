@@ -42,6 +42,7 @@ import Plutarch.Enum (
   PCountable (psuccessor),
   PEnumerable (ppredecessor),
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell), PLifted' (PLifted'))
 import Plutarch.Lift (
   PConstantDecl (PConstanted),
   PUnsafeLiftDecl (PLifted),
@@ -84,6 +85,12 @@ newtype PInterval (a :: S -> Type) (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType (PInterval a) where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable (PInterval a) (Plutus.Interval (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PInterval a)
 
 -- | @since 2.0.0
 instance
@@ -132,6 +139,11 @@ newtype PLowerBound (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PShow
     )
+
+deriving via
+  DeriveDataPLiftable (PLowerBound a) (Plutus.LowerBound (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PLowerBound a)
 
 -- | @since WIP
 instance (PIsData a, PCountable a) => PEq (PLowerBound a) where
@@ -197,6 +209,11 @@ newtype PUpperBound (a :: S -> Type) (s :: S)
       PShow
     )
 
+deriving via
+  DeriveDataPLiftable (PUpperBound a) (Plutus.UpperBound (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PUpperBound a)
+
 -- | @since WIP
 instance (PIsData a, PEnumerable a) => PEq (PUpperBound a) where
   {-# INLINEABLE (#==) #-}
@@ -256,6 +273,11 @@ data PExtended (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PShow
     )
+
+deriving via
+  DeriveDataPLiftable (PExtended a) (Plutus.Extended (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PExtended a)
 
 -- | @since 2.0.0
 instance DerivePlutusType (PExtended a) where

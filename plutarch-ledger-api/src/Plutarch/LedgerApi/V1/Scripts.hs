@@ -11,6 +11,7 @@ module Plutarch.LedgerApi.V1.Scripts (
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
@@ -46,6 +47,12 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s (PDataNewtype PByteString))
 -- | @since 2.0.0
 instance DerivePlutusType PScriptHash where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PScriptHash Plutus.ScriptHash
+  instance
+    PLiftable PScriptHash
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PScriptHash where
@@ -104,6 +111,12 @@ newtype PDatum (s :: S) = PDatum (Term s PData)
 instance DerivePlutusType PDatum where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PDatum Plutus.Datum
+  instance
+    PLiftable PDatum
+
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PDatum where
   type PLifted PDatum = Plutus.Datum
@@ -144,6 +157,12 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s (PDataNewtype PByteString))
 instance DerivePlutusType PDatumHash where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PDatumHash Plutus.DatumHash
+  instance
+    PLiftable PDatumHash
+
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PDatumHash where
   type PLifted PDatumHash = Plutus.DatumHash
@@ -179,6 +198,12 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
 -- | @since 2.0.0
 instance DerivePlutusType PRedeemer where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PRedeemer Plutus.Redeemer
+  instance
+    PLiftable PRedeemer
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PRedeemer where
@@ -219,6 +244,12 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s (PDataNewtype PByteString
 -- | @since 3.1.0
 instance DerivePlutusType PRedeemerHash where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PRedeemerHash Plutus.RedeemerHash
+  instance
+    PLiftable PRedeemerHash
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PRedeemerHash where

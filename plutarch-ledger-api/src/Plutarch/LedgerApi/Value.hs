@@ -63,6 +63,12 @@ module Plutarch.LedgerApi.Value (
 import Plutarch.Bool (pand', pif')
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
+import Plutarch.Internal.Lift (
+  DeriveDataPLiftable,
+  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
+  PLifted' (PLifted'),
+  punsafeCoercePLifted,
+ )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
@@ -104,6 +110,12 @@ newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
 instance DerivePlutusType PLovelace where
   type DPTStrat _ = PlutusTypeNewtype
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PLovelace Plutus.Lovelace
+  instance
+    PLiftable PLovelace
+
 -- | @since 2.2.0
 instance PUnsafeLiftDecl PLovelace where
   type PLifted PLovelace = Plutus.Lovelace
@@ -141,6 +153,12 @@ newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
 -- | @since 2.0.0
 instance DerivePlutusType PTokenName where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTokenName Plutus.TokenName
+  instance
+    PLiftable PTokenName
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PTokenName where
@@ -194,6 +212,12 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteSt
 -- | @since 2.0.0
 instance DerivePlutusType PCurrencySymbol where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PCurrencySymbol Plutus.CurrencySymbol
+  instance
+    PLiftable PCurrencySymbol
 
 -- | @since 3.1.0
 instance PTryFrom PData PCurrencySymbol where
@@ -252,6 +276,20 @@ type role PValue nominal nominal nominal
 -- | @since 2.0.0
 instance DerivePlutusType (PValue keys amounts) where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- TODO: DeriveVia wrapper for newtypes
+
+-- | @since WIP
+instance PLiftable (PValue 'AssocMap.Unsorted 'NoGuarantees) where
+  type AsHaskell (PValue 'AssocMap.Unsorted 'NoGuarantees) = Plutus.Value
+  toPlutarch =
+    punsafeCoercePLifted @(PValue 'AssocMap.Unsorted 'NoGuarantees)
+      . toPlutarch @(AssocMap.PMap 'AssocMap.Unsorted PCurrencySymbol (AssocMap.PMap 'AssocMap.Unsorted PTokenName PInteger))
+      . Plutus.getValue
+  fromPlutarch p =
+    fmap Plutus.Value $
+      fromPlutarch @(AssocMap.PMap 'AssocMap.Unsorted PCurrencySymbol (AssocMap.PMap 'AssocMap.Unsorted PTokenName PInteger)) $
+        punsafeCoercePLifted @(AssocMap.PMap 'AssocMap.Unsorted PCurrencySymbol (AssocMap.PMap 'AssocMap.Unsorted PTokenName PInteger)) p
 
 -- | @since 3.2.0
 instance PUnsafeLiftDecl (PValue 'AssocMap.Unsorted 'NoGuarantees) where
@@ -490,6 +528,12 @@ instance PPartialOrd PAssetClass where
 -- | @since WIP
 instance DerivePlutusType PAssetClass where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PAssetClass PlutusValue.AssetClass
+  instance
+    PLiftable PAssetClass
 
 -- | @since WIP
 instance PUnsafeLiftDecl PAssetClass where

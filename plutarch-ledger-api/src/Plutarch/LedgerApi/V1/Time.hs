@@ -16,6 +16,7 @@ import Plutarch.Enum (
   PCountable (psuccessor, psuccessorN),
   PEnumerable (ppredecessor, ppredecessorN),
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
   PConstantDecl,
@@ -102,6 +103,12 @@ instance PNum PPosixTime where
 -- | @since 2.0.0
 instance DerivePlutusType PPosixTime where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PPosixTime Plutus.POSIXTime
+  instance
+    PLiftable PPosixTime
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PPosixTime where

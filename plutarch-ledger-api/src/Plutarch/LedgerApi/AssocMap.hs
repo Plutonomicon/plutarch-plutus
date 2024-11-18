@@ -80,7 +80,7 @@ module Plutarch.LedgerApi.AssocMap (
 import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
-import Data.Traversable (for)
+import Data.Traversable (for, forM)
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   pasMap,
@@ -90,6 +90,11 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
  )
 import Plutarch.Internal (punsafeBuiltin)
+import Plutarch.Internal.Lift (
+  LiftError (CouldNotDecodeData),
+  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
+  punsafeCoercePLifted,
+ )
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Lift (
@@ -134,6 +139,33 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType (PMap keysort k v) where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance
+  ( Plutus.ToData (AsHaskell k)
+  , Plutus.ToData (AsHaskell v)
+  , Plutus.FromData (AsHaskell k)
+  , Plutus.FromData (AsHaskell v)
+  ) =>
+  PLiftable (PMap 'Unsorted k v)
+  where
+  type AsHaskell (PMap 'Unsorted k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
+  toPlutarch =
+    punsafeCoercePLifted @(PMap 'Unsorted k v)
+      . toPlutarch @(PBuiltinList (PBuiltinPair PData PData))
+      . map (bimap Plutus.toData Plutus.toData)
+      . PlutusMap.toList
+  fromPlutarch p =
+    ( fromPlutarch @(PBuiltinList (PBuiltinPair PData PData)) $
+        punsafeCoercePLifted @(PBuiltinList (PBuiltinPair PData PData)) p
+    )
+      >>= listToMap
+    where
+      listToMap :: [(Plutus.Data, Plutus.Data)] -> Either LiftError (PlutusMap.Map (AsHaskell k) (AsHaskell v))
+      listToMap lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
+        k <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData kd
+        v <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData vd
+        pure (k, v)
 
 -- | @since 2.0.0
 instance PIsData (PMap keysort k v) where

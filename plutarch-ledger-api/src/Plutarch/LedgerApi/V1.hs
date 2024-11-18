@@ -72,6 +72,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
@@ -124,6 +125,12 @@ newtype PTxOut (s :: S)
 instance DerivePlutusType PTxOut where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxOut Plutus.TxOut
+  instance
+    PLiftable PTxOut
+
 -- | @since 3.1.1
 instance PUnsafeLiftDecl PTxOut where
   type PLifted PTxOut = Plutus.TxOut
@@ -168,6 +175,12 @@ newtype PTxInInfo (s :: S)
 -- | @since 3.1.1
 instance DerivePlutusType PTxInInfo where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
+  instance
+    PLiftable PTxInInfo
 
 -- | @since 3.1.1
 instance PUnsafeLiftDecl PTxInInfo where
@@ -224,6 +237,12 @@ newtype PTxInfo (s :: S)
 instance DerivePlutusType PTxInfo where
   type DPTStrat _ = PlutusTypeData
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxInfo Plutus.TxInfo
+  instance
+    PLiftable PTxInfo
+
 -- | @since 3.1.1
 instance PUnsafeLiftDecl PTxInfo where
   type PLifted _ = Plutus.TxInfo
@@ -262,6 +281,12 @@ newtype PScriptContext (s :: S)
 -- | @since 3.1.1
 instance DerivePlutusType PScriptContext where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PScriptContext Plutus.ScriptContext
+  instance
+    PLiftable PScriptContext
 
 -- | @since 3.1.1
 instance PUnsafeLiftDecl PScriptContext where

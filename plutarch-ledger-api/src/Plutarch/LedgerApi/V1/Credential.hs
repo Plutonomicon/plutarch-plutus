@@ -9,6 +9,7 @@ module Plutarch.LedgerApi.V1.Credential (
 import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Lift (
@@ -46,6 +47,12 @@ data PCredential (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType PCredential where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PCredential Plutus.Credential
+  instance
+    PLiftable PCredential
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PCredential where
@@ -97,6 +104,12 @@ data PStakingCredential (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType PStakingCredential where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PStakingCredential Plutus.StakingCredential
+  instance
+    PLiftable PStakingCredential
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PStakingCredential where

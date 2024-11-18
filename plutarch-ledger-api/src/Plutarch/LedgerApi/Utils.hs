@@ -38,6 +38,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell), PLifted' (PLifted'))
 import Plutarch.Internal.PlutusType (
   PlutusType (pcon', pmatch'),
  )
@@ -106,6 +107,12 @@ instance PlutusType (PMaybeData a) where
       ((pfstBuiltin # asConstr) #== 1)
       (f PDNothing)
       (f . PDJust . punsafeCoerce $ phead #$ psndBuiltin # asConstr)
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable (PMaybeData a) (Maybe (AsHaskell a))
+  instance
+    (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
 
 -- | @since WIP
 instance PIsData (PMaybeData a) where
@@ -221,6 +228,12 @@ instance POrd PRationalData
 -- | @since 3.1.0
 instance DerivePlutusType PRationalData where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PRationalData Plutus.Rational
+  instance
+    PLiftable PRationalData
 
 -- | @since 3.1.0
 instance PUnsafeLiftDecl PRationalData where type PLifted PRationalData = Plutus.Rational

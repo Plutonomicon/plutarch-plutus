@@ -10,6 +10,7 @@ import Plutarch.DataRepr (
   DerivePConstantViaData (DerivePConstantViaData),
   PDataFields,
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)
@@ -49,6 +50,12 @@ data POutputDatum (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType POutputDatum where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable POutputDatum Plutus.OutputDatum
+  instance
+    PLiftable POutputDatum
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl POutputDatum where
@@ -98,6 +105,12 @@ newtype PTxOut (s :: S)
 -- | @since 2.0.0
 instance DerivePlutusType PTxOut where
   type DPTStrat _ = PlutusTypeData
+
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxOut Plutus.TxOut
+  instance
+    PLiftable PTxOut
 
 -- | @since 2.0.0
 instance PUnsafeLiftDecl PTxOut where
