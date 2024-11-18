@@ -181,8 +181,9 @@ module Plutarch.Prelude (
   ptraceDebugError,
 
   -- * Cryptographic hashes and signatures
-  psha2_256,
-  psha3_256,
+  pbuiltinSha2_256,
+  pbuiltinSha3_256,
+  pbuiltinVerifyEd25519Signature,
 
   -- * Conversion between Plutarch terms and Haskell types
   pconstant,
@@ -239,6 +240,11 @@ import GHC.Records (getField)
 import Plutarch.Builtin
 import Plutarch.Builtin.Bool (PBool (..))
 import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Crypto (
+  pbuiltinSha2_256,
+  pbuiltinSha3_256,
+  pbuiltinVerifyEd25519Signature,
+ )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Lift (
   DerivePConstantViaBuiltin (..),
@@ -258,7 +264,6 @@ import Plutarch.Builtin.String (
  )
 import Plutarch.Builtin.Unit (PUnit (..))
 import Plutarch.ByteString
-import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Enum

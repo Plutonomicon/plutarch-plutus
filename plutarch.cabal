@@ -77,6 +77,7 @@ library
     Plutarch.Builtin.BLS
     Plutarch.Builtin.Bool
     Plutarch.Builtin.ByteString
+    Plutarch.Builtin.Crypto
     Plutarch.Builtin.Integer
     Plutarch.Builtin.Lift
     Plutarch.Builtin.Opaque
@@ -84,7 +85,6 @@ library
     Plutarch.Builtin.Unit
     Plutarch.ByteString
     Plutarch.Convert
-    Plutarch.Crypto
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field

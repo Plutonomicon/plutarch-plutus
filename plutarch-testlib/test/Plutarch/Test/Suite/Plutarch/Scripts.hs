@@ -9,7 +9,6 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
 import Plutarch.Builtin (pasByteStr)
-import Plutarch.Crypto (pverifyEd25519Signature)
 import Plutarch.LedgerApi.V3 (
   PPubKeyHash,
   PScriptContext,
@@ -61,7 +60,7 @@ authorizedValidator ::
   Term s POpaque
 authorizedValidator authKey datumMessage redeemerSig _ctx =
   pif
-    (pverifyEd25519Signature # authKey # datumMessage # redeemerSig)
+    (pbuiltinVerifyEd25519Signature # authKey # datumMessage # redeemerSig)
     (popaque $ pcon PUnit)
     perror
 

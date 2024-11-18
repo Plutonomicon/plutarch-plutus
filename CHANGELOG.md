@@ -32,6 +32,7 @@
   essential to define anything in Plutarch
 * `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
 * `pmapMaybe` to `Plutarch.Maybe`
+* `pbuiltinVerifyEd25519Signature` is now exported from `Plutarch.Prelude`
 
 ## Changed
 
@@ -44,6 +45,8 @@
 * `pencodeUtf8` and `pdecodeUtf8` are now `pbuiltinEncodeUtf8` and
   `pbuiltinDecodeUtf8`
 * `PMaybeData` no longer uses `PDataRecord`
+* `Plutarch.Crypto` is now `Plutarch.Internal.Crypto`
+* All identifiers in `Plutarch.Internal.Crypto` now have a `pbuiltin` prefix
 
 ## Removed
 
