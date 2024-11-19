@@ -54,17 +54,14 @@ checkPLiftableLaws ::
   , Eq (AsHaskell a)
   , PLiftable a
   , Show (AsHaskell a)
-  , Typeable a
   ) =>
-  TestTree
+  [TestTree]
 checkPLiftableLaws =
-  testGroup
-    (instanceOfType @(S -> Type) @a "PLiftable")
-    [ testProperty "fromPlutarch . toPlutarch = Right"
-        . forAllShrinkShow arbitrary shrink prettyShow
-        $ \(x :: AsHaskell a) ->
-          fromPlutarch (toPlutarch @a x) === Right x
-    ]
+  [ testProperty "fromPlutarch . toPlutarch = Right"
+      . forAllShrinkShow arbitrary shrink prettyShow
+      $ \(x :: AsHaskell a) ->
+        fromPlutarch (toPlutarch @a x) === Right x
+  ]
 
 {- | Like `checkLedgerProperties` but specialized to `PValue`
 
@@ -79,6 +76,7 @@ checkLedgerPropertiesValue =
     [ punsafeLiftDeclLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue <-> Value"
     , pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
     , ptryFromLawsValue
+    , checkPLiftableLaws @(V1.PValue V1.Unsorted V1.NoGuarantees)
     ]
 
 {- | Like `checkLedgerProperties` but specialized to `PMap`
@@ -93,6 +91,7 @@ checkLedgerPropertiesAssocMap =
     [ punsafeLiftDeclLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
     , pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
     , ptryFromLawsAssocMap
+    , checkPLiftableLaws @(V1.PMap V1.Unsorted PInteger PInteger)
     ]
 
 -- | @since WIP
@@ -107,6 +106,11 @@ checkLedgerProperties ::
   , Plutus.ToData (PLifted a)
   , Typeable (PLifted a)
   , Pretty (PLifted a)
+  , Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , Eq (AsHaskell a)
+  , Show (AsHaskell a)
+  , PLiftable a
   ) =>
   TestTree
 checkLedgerProperties =
@@ -114,6 +118,7 @@ checkLedgerProperties =
     [ punsafeLiftDeclLaws @a punsafeLiftDeclLawsName
     , pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
     , ptryFromLaws @a
+    , checkPLiftableLaws @a
     ]
   where
     punsafeLiftDeclLawsName :: String
