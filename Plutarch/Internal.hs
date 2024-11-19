@@ -22,6 +22,7 @@ module Plutarch.Internal (
   punsafeConstant,
   punsafeConstantInternal,
   compile,
+  compileNamed,
   compileOptimized,
   compile',
   ClosedTerm,
@@ -64,6 +65,7 @@ import Data.Default (def)
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
+import Data.Maybe (fromMaybe)
 import Data.Monoid (Last (Last))
 import Data.Set qualified as S
 import Data.String (fromString)
@@ -73,11 +75,11 @@ import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
 import Plutarch.Internal.Evaluate (evalScript, uplcVersion)
-import Plutarch.Script (Script (Script))
+import Plutarch.Script (NamedScript (NamedScript), Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import PlutusCore.Compiler.Types (initUPLCSimplifierTrace)
-import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import PlutusCore.DeBruijn (DeBruijn, Index (Index), NamedDeBruijn (NamedDeBruijn))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
 
@@ -101,11 +103,11 @@ type Dig = Digest Blake2b_160
 data HoistedTerm = HoistedTerm Dig RawTerm
   deriving stock (Show)
 
-type UTerm = UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+type UTerm = UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
 data RawTerm
-  = RVar Word64
-  | RLamAbs Word64 RawTerm
+  = RVar (Maybe Text) Word64
+  | RLamAbs (Maybe Text) Word64 RawTerm -- length of list must match arity
   | RApply RawTerm [RawTerm]
   | RForce RawTerm
   | RDelay RawTerm
@@ -133,8 +135,8 @@ hashUTerm (UPLC.Constr _ idx uterms) =
 hashUTerm (UPLC.Case _ uterm uterms) = addHashIndex 9 . hashUTerm uterm . foldl1 (.) (hashUTerm <$> uterms)
 
 hashRawTerm' :: forall alg. HashAlgorithm alg => RawTerm -> Context alg -> Context alg
-hashRawTerm' (RVar x) = addHashIndex 0 . flip hashUpdate (F.flat (fromIntegral x :: Integer))
-hashRawTerm' (RLamAbs n x) =
+hashRawTerm' (RVar _ x) = addHashIndex 0 . flip hashUpdate (F.flat (fromIntegral x :: Integer))
+hashRawTerm' (RLamAbs _ n x) =
   addHashIndex 1 . flip hashUpdate (F.flat (fromIntegral n :: Integer)) . hashRawTerm' x
 hashRawTerm' (RApply x y) =
   addHashIndex 2 . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
@@ -430,27 +432,27 @@ data PDelayed (a :: PType) (s :: S)
   Only works with a single argument.
   Use 'plam' instead, to support currying.
 -}
-plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
-plam' f = Term \i ->
-  let v = Term \j -> pure $ mkTermRes $ RVar (j - (i + 1))
+plam' :: Maybe Text -> (Term s a -> Term s b) -> Term s (a :--> b)
+plam' name f = Term \i ->
+  let v = Term \j -> pure $ mkTermRes $ RVar name (j - (i + 1))
    in flip fmap (asRawTerm (f v) (i + 1)) \case
         -- eta-reduce for arity 1
-        t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
+        t@(getTerm -> RApply t'@(getArity -> Just _) [RVar _ 0]) -> t {getTerm = t'}
         -- eta-reduce for arity 2 + n
-        t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
-          | (== Just [0 .. n + 1]) (traverse (\case RVar n -> Just n; _ -> Nothing) args)
+        t@(getTerm -> RLamAbs _ n (RApply t'@(getArity -> Just n') args))
+          | (== Just [0 .. n + 1]) (traverse (\case RVar _ n -> Just n; _ -> Nothing) args)
               && n' >= n + 1 ->
               t {getTerm = t'}
         -- increment arity
-        t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
+        t@(getTerm -> RLamAbs name n t') -> t {getTerm = RLamAbs name (n + 1) t'}
         -- new lambda
-        t -> mapTerm (RLamAbs 0) t
+        t -> mapTerm (RLamAbs name 0) t
   where
     -- 0 is 1
     getArity :: RawTerm -> Maybe Word64
     -- We only do this if it's hoisted, since it's only safe if it doesn't
     -- refer to any of the variables in the wrapping lambda.
-    getArity (RHoisted (HoistedTerm _ (RLamAbs n _))) = Just n
+    getArity (RHoisted (HoistedTerm _ (RLamAbs _ n _))) = Just n
     getArity (RHoisted (HoistedTerm _ t)) = getArityBuiltin t
     getArity t = getArityBuiltin t
 
@@ -557,10 +559,10 @@ plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term \i ->
   asRawTerm v i >>= \case
     -- Inline sufficiently small terms in WHNF
-    (getTerm -> RVar _) -> asRawTerm (f v) i
+    (getTerm -> RVar _ _) -> asRawTerm (f v) i
     (getTerm -> RBuiltin _) -> asRawTerm (f v) i
     (getTerm -> RHoisted _) -> asRawTerm (f v) i
-    _ -> asRawTerm (papp (plam' f) v) i
+    _ -> asRawTerm (papp (plam' (Just "plet") f) v) i
 
 pthrow' :: HasCallStack => Text -> TermMonad a
 pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
@@ -577,8 +579,8 @@ papp x y = Term \i ->
     -- Applying an error to anything is an error.
     (_, getTerm -> RError) -> pure $ mkTermRes RError
     -- Applying to `id` changes nothing.
-    (getTerm -> RLamAbs 0 (RVar 0), y') -> pure y'
-    (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> pure y'
+    (getTerm -> RLamAbs _ 0 (RVar _ 0), y') -> pure y'
+    (getTerm -> RHoisted (HoistedTerm _ (RLamAbs _ 0 (RVar _ 0))), y') -> pure y'
     -- append argument
     (x'@(getTerm -> RApply x'l x'r), y') -> pure $ TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
     -- new RApply
@@ -656,7 +658,7 @@ phoistAcyclic t = Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
     t'@(getTerm -> RBuiltin _) -> pure t'
-    t' -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' t' of
+    t' -> case evalScript . Script . UPLC.Program () uplcVersion $ UPLC.termMapNames UPLC.unNameDeBruijn $ compile' t' of
       (Right _, _, _) ->
         let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
          in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
@@ -668,25 +670,30 @@ subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x 
 subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
 subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
 subst idx x (UPLC.Force () y) = UPLC.Force () (subst idx x y)
-subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
-subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
-subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
+subst idx x (UPLC.Var () (NamedDeBruijn _ (Index idx'))) | idx == idx' = x idx
+subst idx _ y@(UPLC.Var () (NamedDeBruijn _ (Index idx'))) | idx > idx' = y
+subst idx _ (UPLC.Var () (NamedDeBruijn name (Index idx'))) | idx < idx' = UPLC.Var () (NamedDeBruijn name $ Index $ idx' - 1)
 subst _ _ y = y
 
 rawTermToUPLC ::
-  (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
+  (HoistedTerm -> Word64 -> UPLC.Term NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
   Word64 ->
   RawTerm ->
-  UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
-rawTermToUPLC m l (RLamAbs n t) =
-  foldr ($) (rawTermToUPLC m (l + n + 1) t) (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
+  UPLC.Term NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+rawTermToUPLC _ _ (RVar name i) = UPLC.Var () (NamedDeBruijn (fromMaybe "unnamed" name) $ Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
+rawTermToUPLC m l (RLamAbs name n t) =
+  let
+    lambs =
+      zipWith ($) (replicate (fromIntegral $ n + 1) $ \n' b' -> UPLC.LamAbs () (NamedDeBruijn (fromMaybe "unnamed" name) $ Index $ n - n' + 1) b') [0 ..]
+   in
+    foldr ($) (rawTermToUPLC m (l + n + 1) t) lambs
 rawTermToUPLC m l (RApply x y) =
   let f y t@(UPLC.LamAbs () _ body) =
         case rawTermToUPLC m l y of
           -- Inline unconditionally if it's a variable or built-in.
           -- These terms are very small and are always WHNF.
-          UPLC.Var () (DeBruijn (Index idx)) -> subst 1 (\lvl -> UPLC.Var () (DeBruijn . Index $ idx + lvl - 1)) body
+          UPLC.Var () (NamedDeBruijn n (Index idx)) ->
+            subst 1 (\lvl -> UPLC.Var () (NamedDeBruijn n $ Index $ idx + lvl - 1)) body
           arg@UPLC.Builtin {} -> subst 1 (const arg) body
           arg -> UPLC.Apply () t arg
       f y t = UPLC.Apply () t (rawTermToUPLC m l y)
@@ -734,14 +741,14 @@ compile' t =
       (m, defs, n) = foldr g (M.empty, [], 0) $ filter (\(HoistedTerm hash _) -> not $ S.member hash toInline) deps
 
       map' (HoistedTerm hash term) l = case M.lookup hash m of
-        Just l' -> UPLC.Var () . DeBruijn . Index $ l - l'
+        Just l' -> UPLC.Var () $ NamedDeBruijn "hoisted" $ Index $ l - l'
         Nothing -> rawTermToUPLC map' l term
 
       body = rawTermToUPLC map' n t'
 
       wrapped =
         foldl'
-          (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def))
+          (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (NamedDeBruijn "hoist" $ Index 0) b) (rawTermToUPLC map' lvl def))
           body
           defs
    in wrapped
@@ -749,7 +756,11 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . UPLC.termMapNames UPLC.unNameDeBruijn . compile' <$> t' config
+
+compileNamed :: Config -> ClosedTerm a -> Either Text NamedScript
+compileNamed config t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> NamedScript . UPLC.Program () uplcVersion . compile' <$> t' config
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -769,10 +780,10 @@ compileOptimized t = case asClosedRawTerm t of
       Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
   where
     go ::
-      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
     go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
-      unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
+      unDB <- UPLC.unDeBruijnTerm compiled
       simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
       debruijnd <- UPLC.deBruijnTerm simplified
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd

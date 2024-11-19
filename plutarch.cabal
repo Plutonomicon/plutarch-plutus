@@ -152,3 +152,4 @@ library
     , QuickCheck
     , random
     , sop-core
+    , vector

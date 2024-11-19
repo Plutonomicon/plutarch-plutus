@@ -82,6 +82,6 @@ popaque = punsafeCoerce
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
 pfix = phoistAcyclic $
   punsafeCoerce $
-    plam' $ \f ->
-      plam' (\(x :: Term s POpaque) -> f # plam' (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))
-        # punsafeCoerce (plam' $ \(x :: Term s POpaque) -> f # plam' (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))
+    plam' (Just "pfix") $ \f ->
+      plam' (Just "pfix") (\(x :: Term s POpaque) -> f # plam' Nothing (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))
+        # punsafeCoerce (plam' Nothing $ \(x :: Term s POpaque) -> f # plam' Nothing (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))

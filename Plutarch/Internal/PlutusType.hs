@@ -107,7 +107,7 @@ instance PlutusType (a :--> b) where
   type PCovariant' (a :--> b) = (PContravariant' a, PCovariant' b)
   type PContravariant' (a :--> b) = (PCovariant' a, PContravariant' b)
   type PVariant' (a :--> b) = (PVariant' a, PVariant' b)
-  pcon' (PLam f) = plam' f
+  pcon' (PLam f) = plam' Nothing f
   pmatch' f g = plet f \f' -> g (PLam (f' #))
 
 instance PlutusType (PForall f) where

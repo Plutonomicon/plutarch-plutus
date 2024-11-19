@@ -67,7 +67,7 @@ import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Script (Script (Script))
+import Plutarch.Script (Script (Script), programMapNames)
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Unit (PUnit)
@@ -128,7 +128,7 @@ unsafeForeignExport config t = DeserializedCode program Nothing mempty
 -- | Seriously unsafe, may fail at run time or result in unexpected behaviour in your on-chain validator.
 unsafeForeignImport :: CompiledCode t -> ClosedTerm p
 unsafeForeignImport c =
-  Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ toNameless (void (getPlc c))) []
+  Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ programMapNames UPLC.fakeNameDeBruijn $ toNameless (void (getPlc c))) []
   where
     toNameless ::
       UPLC.Program UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->

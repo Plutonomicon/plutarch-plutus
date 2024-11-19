@@ -62,7 +62,7 @@ newtype PLamL' s b as = PLamL' {unPLamL' :: (NP (Term s) as -> Term s b) -> Term
 
 -- Explicitly variadic `plam`.
 plamL' :: SListI as => (NP (Term s) as -> Term s b) -> Term s (ScottFn' as b)
-plamL' = unPLamL' $ para_SList (PLamL' \f -> f Nil) (\(PLamL' prev) -> PLamL' \f -> plam' \a -> prev \as -> f (a :* as))
+plamL' = unPLamL' $ para_SList (PLamL' \f -> f Nil) (\(PLamL' prev) -> PLamL' \f -> plam' Nothing \a -> prev \as -> f (a :* as))
 
 newtype PLamL s b as = PLamL {unPLamL :: (NP (Term s) as -> Term s b) -> Term s (ScottFn as b)}
 

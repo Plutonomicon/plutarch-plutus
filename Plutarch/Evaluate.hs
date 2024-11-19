@@ -23,7 +23,7 @@ import Plutarch.Internal (
   TermResult (TermResult),
   compile,
  )
-import Plutarch.Script (Script (Script))
+import Plutarch.Script (Script (Script), programMapNames)
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import PlutusCore.MkPlc (mkConstant, mkIterAppNoAnn)
 import PlutusLedgerApi.Common (Data)
@@ -43,7 +43,7 @@ evalTerm config term =
   where
     fromScript :: Script -> ClosedTerm a
     fromScript (Script script) =
-      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []
+      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm $ programMapNames UPLC.fakeNameDeBruijn script) []
 
 {- | Compile and evaluate a ClosedTerm
 Useful for pre-evaluating terms so that they can be used as constants in
