@@ -5,7 +5,7 @@ module Plutarch.LedgerApi.V1.DCert (
   PDCert (..),
 ) where
 
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.V1.Credential (PStakingCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.Prelude

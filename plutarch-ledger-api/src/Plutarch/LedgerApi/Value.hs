@@ -65,7 +65,6 @@ import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   DeriveNewtypePLiftable,
-  PLifted' (PLifted'),
  )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
@@ -555,6 +554,7 @@ pnormalize = phoistAcyclic $
   where
     normalizeTokenMap ::
       forall (s' :: S) (k :: S -> Type) (any1 :: AssocMap.KeyGuarantees).
+      PIsData k =>
       Term s' (AssocMap.PMap any1 k PInteger) ->
       Term s' (PMaybe (AssocMap.PMap any1 k PInteger))
     normalizeTokenMap tokenMap =

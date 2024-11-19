@@ -1,4 +1,6 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 -- Because of the weird way the PlutusType derivation mechanisms work, we lose
 -- the PlutusType constraint. Kind of annoying, but we can't convince GHC
 -- otherwise.
@@ -20,12 +22,7 @@ module Plutarch.Internal.Lift (
   DeriveNewtypePLiftable (..),
 
   -- ** Manual instance helpers
-  PLifted' (..),
-  unPLifted,
-  punsafeCoercePLifted,
   LiftError (..),
-  unsafeToUni,
-  unsafeFromUni,
 ) where
 
 import Data.Coerce (Coercible, coerce)
@@ -45,14 +42,12 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Script (Script (Script))
 import Plutarch.TryFrom (PSubtype)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant)
-import PlutusCore.Data qualified as PLCData
 import PlutusTx qualified as PTx
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
@@ -114,31 +109,11 @@ automatically follow these laws.
 
 @since WIP
 -}
-class PlutusType a => PLiftable (a :: S -> Type) where
+class (PlutusType a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (a :: S -> Type) where
   type AsHaskell a :: Type
-  toPlutarch :: forall (s :: S). AsHaskell a -> PLifted' a s
-  fromPlutarch :: (forall (s :: S). PLifted' a s) -> Either LiftError (AsHaskell a)
-
-{- | Similar to 'Identity', but at the level of Plutarch. Only needed when
-writing manual instances of 'PLiftable', or if you want to use 'toPlutarch'
-and 'fromPlutarch' directly.
-
-@since WIP
--}
-newtype PLifted' a s = PLifted' (Term s POpaque)
-
-type role PLifted' nominal nominal
-
-{- | Wrapper around 'punsafeCoerce' to \'pull out\' a term inside a 'PLifted'.
-
-@since WIP
--}
-unPLifted :: PLifted' a s -> Term s a
-unPLifted (PLifted' t) = punsafeCoerce t
-
--- | @since WIP
-punsafeCoercePLifted :: forall (b :: S -> Type) (a :: S -> Type) (s :: S). PLifted' a s -> PLifted' b s
-punsafeCoercePLifted (PLifted' t) = PLifted' t
+  type PlutusRepr a :: Type
+  toPlutarch :: AsHaskell a -> PlutusRepr a
+  fromPlutarch :: PlutusRepr a -> Either LiftError (AsHaskell a)
 
 {- | Given a Haskell-level representation of a Plutarch term, transform it into
 its equivalent term.
@@ -150,7 +125,7 @@ pconstant ::
   PLiftable a =>
   AsHaskell a ->
   Term s a
-pconstant = punsafeCoerce . unPLifted . toPlutarch @a
+pconstant = punsafeCoerce . punsafeConstantInternal . PLC.someValue . toPlutarch @a
 
 {- | Given a closed Plutarch term, compile and evaluate it, then produce the
 corresponding Haskell value. If compilation or evaluation fails somehow, this
@@ -164,7 +139,7 @@ plift ::
   PLiftable a =>
   (forall (s :: S). Term s a) ->
   AsHaskell a
-plift t = case fromPlutarch (PLifted' @a (punsafeCoerce t)) of
+plift t = case plift' t of
   Left err ->
     error $
       "plift failed: "
@@ -175,6 +150,21 @@ plift t = case fromPlutarch (PLifted' @a (punsafeCoerce t)) of
               CouldNotDecodeData -> "Data value is not a valid encoding for this type"
            )
   Right res -> res
+
+plift' ::
+  forall (a :: S -> Type).
+  PLiftable a =>
+  (forall (s :: S). Term s a) ->
+  Either LiftError (AsHaskell a)
+plift' t =
+  case compile (Tracing LogInfo DoTracing) t of
+    Left err -> Left . CouldNotCompile $ err
+    Right compiled -> case evalScriptHuge compiled of
+      (evaluated, _, _) -> case evaluated of
+        Left err -> Left . CouldNotEvaluate $ err
+        Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
+          Left err -> Left . TypeError $ err
+          Right res -> fromPlutarch @a res
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ that is directly part of the Plutus default universe (instead of by way
@@ -199,10 +189,13 @@ instance
   PLiftable (DeriveBuiltinPLiftable a h)
   where
   type AsHaskell (DeriveBuiltinPLiftable a h) = h
+  type PlutusRepr (DeriveBuiltinPLiftable a h) = h
+
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch = unsafeFromUni
+  toPlutarch = id
+
   {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = unsafeToUni
+  fromPlutarch = Right
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ by way of its @Data@ encoding, rather than by @h@ being directly part of
@@ -229,12 +222,12 @@ instance
   PLiftable (DeriveDataPLiftable a h)
   where
   type AsHaskell (DeriveDataPLiftable a h) = h
+  type PlutusRepr (DeriveDataPLiftable a h) = PTx.Data
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch = unsafeFromUni @_ @PLCData.Data . PTx.toData
+  toPlutarch = PTx.toData
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch t = do
-    res <- unsafeToUni t
-    case PTx.fromData res of
+    case PTx.fromData t of
       Nothing -> Left CouldNotDecodeData
       Just res' -> pure res'
 
@@ -251,45 +244,10 @@ instance DerivePlutusType (DeriveNewtypePLiftable w i h) where
 -- | @since WIP
 instance (PLiftable inner, Coercible (AsHaskell inner) h) => PLiftable (DeriveNewtypePLiftable wrapper inner h) where
   type AsHaskell (DeriveNewtypePLiftable wrapper inner h) = h
+  type PlutusRepr (DeriveNewtypePLiftable wrapper inner h) = PlutusRepr inner
 
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch =
-    punsafeCoercePLifted @(DeriveNewtypePLiftable wrapper inner h)
-      . toPlutarch @inner
-      . coerce @h @(AsHaskell inner)
+  toPlutarch = toPlutarch @inner . coerce @h @(AsHaskell inner)
 
   {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch p = fmap coerce $ fromPlutarch $ punsafeCoercePLifted @inner p
-
-{- | Helper for writing 'PLifted' instances. This is /highly/ unsafe, and only
-suitable for internal use!
-
-@since WIP
--}
-unsafeFromUni ::
-  forall (a :: S -> Type) (h :: Type) (s :: S).
-  PLC.DefaultUni `Includes` h =>
-  h ->
-  PLifted' a s
-unsafeFromUni =
-  PLifted' . punsafeConstantInternal . PLC.someValue @h @PLC.DefaultUni
-
-{- | Helper for writing 'PLiftable' instances. This is /highly/ unsafe, and only
-suitable for internal use!
-
-@since WIP
--}
-unsafeToUni ::
-  forall (a :: S -> Type) (h :: Type).
-  PLC.DefaultUni `Includes` h =>
-  (forall (s :: S). PLifted' a s) ->
-  Either LiftError h
-unsafeToUni t =
-  case compile (Tracing LogInfo DoTracing) (unPLifted t) of
-    Left err -> Left . CouldNotCompile $ err
-    Right compiled -> case evalScriptHuge compiled of
-      (evaluated, _, _) -> case evaluated of
-        Left err -> Left . CouldNotEvaluate $ err
-        Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
-          Left err -> Left . TypeError $ err
-          Right res -> pure res
+  fromPlutarch = coerce . fromPlutarch @inner

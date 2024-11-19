@@ -93,9 +93,6 @@ import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Lift (
   LiftError (CouldNotDecodeData),
   PLiftable (fromPlutarch, toPlutarch),
-  punsafeCoercePLifted,
-  unsafeFromUni,
-  unsafeToUni,
  )
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
@@ -142,22 +139,12 @@ instance
   PLiftable (PMap 'Unsorted k v)
   where
   type AsHaskell (PMap 'Unsorted k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
-  toPlutarch =
-    punsafeCoercePLifted @(PMap 'Unsorted k v)
-      . unsafeFromUni
-      . map (bimap Plutus.toData Plutus.toData)
-      . PlutusMap.toList
-  fromPlutarch p =
-    ( unsafeToUni @(PBuiltinList (PBuiltinPair PData PData)) $
-        punsafeCoercePLifted @(PBuiltinList (PBuiltinPair PData PData)) p
-    )
-      >>= listToMap
-    where
-      listToMap :: [(Plutus.Data, Plutus.Data)] -> Either LiftError (PlutusMap.Map (AsHaskell k) (AsHaskell v))
-      listToMap lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
-        k <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData kd
-        v <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData vd
-        pure (k, v)
+  type PlutusRepr (PMap 'Unsorted k v) = [(Plutus.Data, Plutus.Data)]
+  toPlutarch = map (bimap Plutus.toData Plutus.toData) . PlutusMap.toList
+  fromPlutarch lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
+    k <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData kd
+    v <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData vd
+    pure (k, v)
 
 -- | @since 2.0.0
 instance PIsData (PMap keysort k v) where
@@ -176,7 +163,9 @@ instance PEq (PMap 'Sorted k v) where
 -- | @since 2.0.0
 instance
   ( PTryFrom PData (PAsData k)
+  , PIsData k
   , PTryFrom PData (PAsData v)
+  , PIsData v
   ) =>
   PTryFrom PData (PAsData (PMap 'Unsorted k v))
   where
@@ -255,7 +244,7 @@ passertSorted =
 
 @since 2.0.0
 -}
-pempty :: Term s (PMap 'Sorted k v)
+pempty :: (PIsData k, PIsData v) => Term s (PMap 'Sorted k v)
 pempty = punsafeDowncast pnil
 
 {- | Given a comparison function and a "zero" value, check whether a binary relation holds over
@@ -330,7 +319,7 @@ pcheckBinRel = phoistAcyclic $
 -}
 pall ::
   forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
-  PIsData v =>
+  (PIsData k, PIsData v) =>
   Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
   plam $ \pred m ->
@@ -358,7 +347,7 @@ given function.
 -}
 punionResolvingCollisionsWithData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term
     s
@@ -378,7 +367,7 @@ punionResolvingCollisionsWithData commutativity =
 -}
 pmapMaybe ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  (PIsData a, PIsData b) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((a :--> PMaybe b) :--> PMap g k a :--> PMap g k b)
 pmapMaybe = phoistAcyclic $
   plam $ \f -> pmapMaybeData #$ plam $ \v -> pmatch (f # pfromData v) $ \case
@@ -391,6 +380,7 @@ pmapMaybe = phoistAcyclic $
 -}
 pmapMaybeData ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((PAsData a :--> PMaybe (PAsData b)) :--> PMap g k a :--> PMap g k b)
 pmapMaybeData = phoistAcyclic $
   plam $ \f m ->
@@ -411,6 +401,7 @@ pmapMaybeData = phoistAcyclic $
 -}
 pnull ::
   forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (PIsData k, PIsData v) =>
   Term s (PMap any k v :--> PBool)
 pnull = plam (\m -> List.pnull # pto m)
 
@@ -420,7 +411,7 @@ pnull = plam (\m -> List.pnull # pto m)
 -}
 pmap ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  (PIsData a, PIsData b) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((a :--> b) :--> PMap g k a :--> PMap g k b)
 pmap = phoistAcyclic $
   plam $
@@ -455,6 +446,7 @@ pmapWithKey = phoistAcyclic $
 -}
 pmapData ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((PAsData a :--> PAsData b) :--> PMap g k a :--> PMap g k b)
 pmapData = phoistAcyclic $
   plam $ \f m ->
@@ -500,7 +492,7 @@ ptryLookup = phoistAcyclic $
 
 @since 2.1.1
 -}
-plookupData :: Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
+plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
 plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
 
 {- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
@@ -508,6 +500,7 @@ plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ ps
 @since 2.1.1
 -}
 plookupDataWith ::
+  (PIsData k, PIsData v) =>
   Term
     s
     ( (PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x)
@@ -543,6 +536,7 @@ psingleton = phoistAcyclic $ plam $ \key value -> psingletonData # pdata key # p
 -}
 psingletonData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  (PIsData k, PIsData v) =>
   Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v)
 psingletonData = phoistAcyclic $
   plam $
@@ -555,7 +549,7 @@ psingletonData = phoistAcyclic $
 -}
 pfoldAt ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S).
-  PIsData k =>
+  (PIsData k, PIsData v) =>
   Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
   plam $
@@ -568,6 +562,7 @@ pfoldAt = phoistAcyclic $
 -}
 pfoldAtData ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S).
+  (PIsData k, PIsData v) =>
   Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAtData = phoistAcyclic $
   plam $ \key def apply m ->
@@ -617,7 +612,7 @@ pdifference =
 -}
 pany ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
-  PIsData v =>
+  (PIsData k, PIsData v) =>
   Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
   plam $ \pred m ->
@@ -651,7 +646,7 @@ pinsert = phoistAcyclic $
 -}
 pdelete ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term s (k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pdelete = rebuildAtKey # plam id
 
@@ -699,7 +694,7 @@ given function.
 -}
 pintersectionWithData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term
     s
@@ -731,7 +726,7 @@ pforgetSorted v = punsafeDowncast (pto v)
 -}
 pkeysEqual ::
   forall (k :: PType) (a :: PType) (b :: PType) (s :: S).
-  (PIsData k, PEq k) =>
+  (PIsData k, PEq k, PIsData a, PIsData b) =>
   Term s (PMap 'Sorted k a :--> PMap 'Sorted k b :--> PBool)
 pkeysEqual = phoistAcyclic $
   plam $ \kvs kvs' ->
@@ -961,7 +956,7 @@ pkeys ::
     (v :: PType)
     (keys :: KeyGuarantees)
     (s :: S).
-  (PListLike ell, PElemConstraint ell (PAsData k)) =>
+  (PListLike ell, PElemConstraint ell (PAsData k), PIsData k, PIsData v) =>
   Term s (PMap keys k v :--> ell (PAsData k))
 pkeys = phoistAcyclic $
   plam $ \kvs -> pmatch kvs $ \(PMap kvs') ->
@@ -998,7 +993,7 @@ pkvPairLt = phoistAcyclic $
 -- | Rebuild the map at the given key.
 rebuildAtKey ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term
     s
     ( ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
@@ -1149,7 +1144,7 @@ pzipWith (SomeMergeHandlerCommutative mhc) =
 -}
 pzipWithData ::
   forall (s :: S) (k :: PType) (v :: PType).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   SomeMergeHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1182,6 +1177,7 @@ mergeHandlerCommutativeOnData (MergeHandlerCommutative bothPresent onePresent) =
 
 zipMerge ::
   forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
   OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1214,7 +1210,7 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
 
 zipMergeInsert ::
   forall (s :: S) (k :: PType) (v :: PType).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   MergeHandler (PAsData k) (PAsData v) s ->
   -- | 'PSTrue' means first arg is left, second arg is right.
   -- The first list gets passed in deconstructed form as head and tail
@@ -1296,6 +1292,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
 
 zipMergeCommutative ::
   forall (s :: S) (k :: PType) (v :: PType).
+  (PIsData k, PIsData v) =>
   OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1327,7 +1324,7 @@ zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \ca
 
 zipMergeInsertCommutative ::
   forall (s :: S) (k :: PType) (v :: PType).
-  (POrd k, PIsData k) =>
+  (POrd k, PIsData k, PIsData v) =>
   MergeHandlerCommutative (PAsData k) (PAsData v) s ->
   -- | 'PSTrue' means first arg is left, second arg is right.
   -- The first list gets passed in deconstructed form as head and tail

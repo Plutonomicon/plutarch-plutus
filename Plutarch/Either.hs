@@ -62,7 +62,7 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell), PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell))
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Show (PShow)

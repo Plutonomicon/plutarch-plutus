@@ -185,7 +185,7 @@ module Plutarch.Prelude (
   pconstant,
   pconstantData,
   plift,
-  PLiftable (AsHaskell),
+  PLiftable (AsHaskell, PlutusRepr),
 
   -- * Continuation monad
   TermCont (TermCont, runTermCont),

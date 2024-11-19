@@ -22,7 +22,7 @@ import Plutarch.Internal (
   (#),
   (:-->),
  )
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'), pconstant)
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)
 import Plutarch.Internal.PLam (plam)

@@ -7,7 +7,7 @@ module Plutarch.LedgerApi.V3.Tx (
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))

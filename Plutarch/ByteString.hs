@@ -67,10 +67,8 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
-  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
-  PLifted' (PLifted'),
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, toPlutarch),
   pconstant,
-  punsafeCoercePLifted,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pfix)
@@ -141,8 +139,9 @@ instance DerivePlutusType PByte where
 -- | @since WIP
 instance PLiftable PByte where
   type AsHaskell PByte = Word8
-  toPlutarch = punsafeCoercePLifted @PByte . toPlutarch @PInteger . fromIntegral @_ @Integer
-  fromPlutarch p = fmap (fromIntegral @Integer @Word8) $ fromPlutarch $ punsafeCoercePLifted @PInteger p
+  type PlutusRepr PByte = Integer
+  toPlutarch = toPlutarch @PInteger . fromIntegral @_ @Integer
+  fromPlutarch = fmap (fromIntegral @Integer @Word8) . fromPlutarch @PInteger
 
 -- | @since WIP
 instance PEq PByte where

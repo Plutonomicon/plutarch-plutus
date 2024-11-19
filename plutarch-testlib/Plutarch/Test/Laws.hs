@@ -59,7 +59,7 @@ checkPLiftableLaws =
   [ testProperty "fromPlutarch . toPlutarch = Right"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
-        fromPlutarch (toPlutarch @a x) === Right x
+        fromPlutarch @a (toPlutarch @a x) === Right x
   ]
 
 {- | Like `checkLedgerProperties` but specialized to `PValue`

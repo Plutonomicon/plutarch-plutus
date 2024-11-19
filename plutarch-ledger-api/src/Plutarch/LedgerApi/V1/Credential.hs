@@ -6,7 +6,7 @@ module Plutarch.LedgerApi.V1.Credential (
   PStakingCredential (..),
 ) where
 
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Prelude

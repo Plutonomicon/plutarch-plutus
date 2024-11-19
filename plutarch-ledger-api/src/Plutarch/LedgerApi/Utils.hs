@@ -35,7 +35,7 @@ import Plutarch.Builtin (
   pforgetData,
  )
 import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude

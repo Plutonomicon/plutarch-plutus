@@ -83,12 +83,8 @@ import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
-  LiftError (CouldNotDecodeData),
-  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
-  PLifted' (PLifted'),
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, toPlutarch),
   pconstant,
-  unsafeFromUni,
-  unsafeToUni,
  )
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Internal.Witness (witness)
@@ -116,7 +112,7 @@ import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom'
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
-import PlutusTx (Data (Constr), FromData, ToData)
+import PlutusTx (Data (Constr), ToData)
 import PlutusTx qualified
 
 -- | Plutus 'BuiltinPair'
@@ -131,15 +127,14 @@ instance PlutusType (PBuiltinPair a b) where
   pmatch' x f = f (PBuiltinPair x)
 
 -- | @since WIP
-instance
-  ( PLC.Contains PLC.DefaultUni (AsHaskell a)
-  , PLC.Contains PLC.DefaultUni (AsHaskell b)
-  ) =>
-  PLiftable (PBuiltinPair a b)
-  where
+instance (PLiftable a, PLiftable b) => PLiftable (PBuiltinPair a b) where
   type AsHaskell (PBuiltinPair a b) = (AsHaskell a, AsHaskell b)
-  toPlutarch = unsafeFromUni
-  fromPlutarch = unsafeToUni
+  type PlutusRepr (PBuiltinPair a b) = (PlutusRepr a, PlutusRepr b)
+  toPlutarch (a, b) = (toPlutarch @a a, toPlutarch @b b)
+  fromPlutarch (ar, br) = do
+    a <- fromPlutarch @a ar
+    b <- fromPlutarch @b br
+    pure (a, b)
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
@@ -159,7 +154,7 @@ data PBuiltinList (a :: PType) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
 
-instance (PShow a, PlutusType a) => PShow (PBuiltinList a) where
+instance (PShow a, PLiftable a) => PShow (PBuiltinList a) where
   pshow' _ x = pshowList @PBuiltinList @a # x
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
@@ -178,23 +173,24 @@ pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
 type role HAsData nominal
-data HAsData (a :: Type)
+newtype HAsData (a :: Type) = HAsData Data
 
 instance PIsData a => PLiftable (PAsData a) where
   type AsHaskell (PAsData a) = HAsData (AsHaskell a)
-  toPlutarch = undefined
-  fromPlutarch = undefined -- TODO
+  type PlutusRepr (PAsData a) = Data
+  toPlutarch (HAsData d) = d
+  fromPlutarch = Right . HAsData
 
 instance PLC.Contains PLC.DefaultUni HAsData where
   knownUni = PLC.knownUni :: forall k (uni :: Type -> Type) (a :: k). PLC.Contains @k uni a => uni (PLC.Esc @k a)
 
-instance PlutusType (PBuiltinList a) where
+instance PLiftable a => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
   type PCovariant' (PBuiltinList a) = PCovariant' a
   type PContravariant' (PBuiltinList a) = PContravariant' a
   type PVariant' (PBuiltinList a) = PVariant' a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
-  pcon' PNil = punsafeBuiltin PLC.MkNilData
+  pcon' PNil = pconstant []
   pmatch' xs' f = plet xs' $ \xs ->
     pforce $
       pchooseListBuiltin
@@ -203,16 +199,14 @@ instance PlutusType (PBuiltinList a) where
         # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
 
 -- | @since WIP
-instance
-  (ToData (AsHaskell a), FromData (AsHaskell a)) =>
-  PLiftable (PBuiltinList a)
-  where
+instance PLiftable a => PLiftable (PBuiltinList a) where
   type AsHaskell (PBuiltinList a) = [AsHaskell a]
-  toPlutarch = unsafeFromUni . map PlutusTx.toData
-  fromPlutarch p = unsafeToUni p >>= traverse (maybe (Left CouldNotDecodeData) Right . PlutusTx.fromData)
+  type PlutusRepr (PBuiltinList a) = [PlutusRepr a]
+  toPlutarch = map (toPlutarch @a)
+  fromPlutarch = traverse (fromPlutarch @a)
 
 instance PListLike PBuiltinList where
-  type PElemConstraint PBuiltinList a = (PlutusType a)
+  type PElemConstraint PBuiltinList a = (PLiftable a)
 
   pelimList match_cons match_nil ls = pmatch ls $ \case
     PCons x xs -> match_cons x xs

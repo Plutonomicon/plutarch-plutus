@@ -15,7 +15,7 @@ import Plutarch.Enum (
   PCountable (psuccessor, psuccessorN),
   PEnumerable (ppredecessor, ppredecessorN),
  )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Num (PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Prelude

@@ -39,7 +39,7 @@ import Plutarch.Enum (
   PCountable (psuccessor),
   PEnumerable (ppredecessor),
  )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.Prelude hiding (psingleton, pto)
 import PlutusLedgerApi.V3 qualified as Plutus
 
