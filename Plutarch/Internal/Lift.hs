@@ -17,6 +17,7 @@ module Plutarch.Internal.Lift (
   -- ** Via-helpers
   DeriveBuiltinPLiftable (..),
   DeriveDataPLiftable (..),
+  DeriveNewtypePLiftable (..),
 
   -- ** Manual instance helpers
   PLifted' (..),
@@ -27,6 +28,7 @@ module Plutarch.Internal.Lift (
   unsafeFromUni,
 ) where
 
+import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
@@ -235,6 +237,29 @@ instance
     case PTx.fromData res of
       Nothing -> Left CouldNotDecodeData
       Just res' -> pure res'
+
+-- | @since WIP
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+  = DeriveNewtypePLiftable (wrapper s)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
+
+-- | @since WIP
+instance DerivePlutusType (DeriveNewtypePLiftable w i h) where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance (PLiftable inner, Coercible (AsHaskell inner) h) => PLiftable (DeriveNewtypePLiftable wrapper inner h) where
+  type AsHaskell (DeriveNewtypePLiftable wrapper inner h) = h
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch =
+    punsafeCoercePLifted @(DeriveNewtypePLiftable wrapper inner h)
+      . toPlutarch @inner
+      . coerce @h @(AsHaskell inner)
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch p = fmap coerce $ fromPlutarch $ punsafeCoercePLifted @inner p
 
 {- | Helper for writing 'PLifted' instances. This is /highly/ unsafe, and only
 suitable for internal use!
