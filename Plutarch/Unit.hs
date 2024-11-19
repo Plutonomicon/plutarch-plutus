@@ -6,22 +6,11 @@ module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (Term, pcon, plet)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'), pconstant)
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
 import Plutarch.Show (PShow (pshow'))
 
 data PUnit s = PUnit
-
-instance PUnsafeLiftDecl PUnit where type PLifted PUnit = ()
-
-deriving via (DerivePConstantDirect () PUnit) instance PConstantDecl ()
 
 instance PlutusType PUnit where
   type PInner PUnit = PUnit

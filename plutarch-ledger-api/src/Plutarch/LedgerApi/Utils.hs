@@ -34,18 +34,9 @@ import Plutarch.Builtin (
   pconstrBuiltin,
   pforgetData,
  )
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell), PLifted' (PLifted'))
-import Plutarch.Internal.PlutusType (
-  PlutusType (pcon', pmatch'),
- )
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
@@ -126,16 +117,6 @@ instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
 
 -- | @since 2.0.0
 instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
-
--- | @since 2.0.0
-instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
-  type PLifted (PMaybeData a) = Maybe (PLifted a)
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
-  instance
-    PConstantData a => PConstantDecl (Maybe a)
 
 -- | @since 2.0.0
 instance (PIsData a, PPartialOrd a) => PPartialOrd (PMaybeData a) where
@@ -234,12 +215,6 @@ deriving via
   DeriveDataPLiftable PRationalData Plutus.Rational
   instance
     PLiftable PRationalData
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PRationalData where type PLifted PRationalData = Plutus.Rational
-
--- | @since 3.1.0
-deriving via (DerivePConstantViaData Plutus.Rational PRationalData) instance PConstantDecl Plutus.Rational
 
 -- | @since 3.1.0
 instance PTryFrom PData PRationalData where

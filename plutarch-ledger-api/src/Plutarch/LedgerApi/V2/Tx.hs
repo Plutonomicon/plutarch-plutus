@@ -6,20 +6,13 @@ module Plutarch.LedgerApi.V2.Tx (
   PTxOut (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)
 import Plutarch.LedgerApi.V1.Scripts (PDatum, PDatumHash, PScriptHash)
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V2 qualified as Plutus
 
@@ -56,16 +49,6 @@ deriving via
   DeriveDataPLiftable POutputDatum Plutus.OutputDatum
   instance
     PLiftable POutputDatum
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl POutputDatum where
-  type PLifted POutputDatum = Plutus.OutputDatum
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.OutputDatum POutputDatum)
-  instance
-    PConstantDecl Plutus.OutputDatum
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData POutputDatum)
@@ -111,16 +94,6 @@ deriving via
   DeriveDataPLiftable PTxOut Plutus.TxOut
   instance
     PLiftable PTxOut
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxOut where
-  type PLifted PTxOut = Plutus.TxOut
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.TxOut PTxOut)
-  instance
-    PConstantDecl Plutus.TxOut
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxOut)

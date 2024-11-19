@@ -32,17 +32,10 @@ import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal (Term, (#), (:-->))
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted' (PLifted'), pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
@@ -65,12 +58,6 @@ deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_G1_Element BLS12_381.G1.Element)
   instance
     PLiftable PBuiltinBLS12_381_G1_Element
-
--- | @since 1.9.0
-instance PUnsafeLiftDecl PBuiltinBLS12_381_G1_Element where type PLifted PBuiltinBLS12_381_G1_Element = BLS12_381.G1.Element
-
--- | @since 1.9.0
-deriving via (DerivePConstantDirect BLS12_381.G1.Element PBuiltinBLS12_381_G1_Element) instance PConstantDecl BLS12_381.G1.Element
 
 -- | @since 1.9.0
 instance PEq PBuiltinBLS12_381_G1_Element where
@@ -145,12 +132,6 @@ deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_G2_Element BLS12_381.G2.Element)
   instance
     PLiftable PBuiltinBLS12_381_G2_Element
-
--- | @since 1.9.0
-instance PUnsafeLiftDecl PBuiltinBLS12_381_G2_Element where type PLifted PBuiltinBLS12_381_G2_Element = BLS12_381.G2.Element
-
--- | @since 1.9.0
-deriving via (DerivePConstantDirect BLS12_381.G2.Element PBuiltinBLS12_381_G2_Element) instance PConstantDecl BLS12_381.G2.Element
 
 -- | @since 1.9.0
 instance PEq PBuiltinBLS12_381_G2_Element where
@@ -228,12 +209,6 @@ deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_MlResult BLS12_381.Pairing.MlResult)
   instance
     PLiftable PBuiltinBLS12_381_MlResult
-
--- | @since 1.9.0
-instance PUnsafeLiftDecl PBuiltinBLS12_381_MlResult where type PLifted PBuiltinBLS12_381_MlResult = BLS12_381.Pairing.MlResult
-
--- | @since 1.9.0
-deriving via (DerivePConstantDirect BLS12_381.Pairing.MlResult PBuiltinBLS12_381_MlResult) instance PConstantDecl BLS12_381.Pairing.MlResult
 
 {- | Perform a Miller loop operation on a G1 and G2 element.
 

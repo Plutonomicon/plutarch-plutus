@@ -6,16 +6,9 @@ module Plutarch.LedgerApi.V3.Tx (
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
@@ -54,16 +47,6 @@ deriving via
   DeriveDataPLiftable PTxId Plutus.TxId
   instance
     PLiftable PTxId
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxId where
-  type PLifted PTxId = Plutus.TxId
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.TxId PTxId)
-  instance
-    PConstantDecl Plutus.TxId
 
 -- | @since 3.1.0
 instance PTryFrom PData PTxId where
@@ -132,16 +115,6 @@ deriving via
   DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
   instance
     PLiftable PTxOutRef
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PTxOutRef where
-  type PLifted PTxOutRef = Plutus.TxOutRef
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.TxOutRef PTxOutRef)
-  instance
-    PConstantDecl Plutus.TxOutRef
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxOutRef)

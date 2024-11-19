@@ -37,7 +37,6 @@ module Plutarch.ByteString (
   phexByteStr,
 ) where
 
-import Data.Bits (toIntegralSized)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Char (toLower)
@@ -68,9 +67,9 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
-  LiftError (CouldNotDecodeData),
   PLiftable (AsHaskell, fromPlutarch, toPlutarch),
   PLifted' (PLifted'),
+  pconstant,
   punsafeCoercePLifted,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
@@ -82,13 +81,6 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
   pmatch,
- )
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
  )
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
@@ -105,9 +97,6 @@ deriving via
   (DeriveBuiltinPLiftable PByteString ByteString)
   instance
     PLiftable PByteString
-
-instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
-deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
@@ -154,19 +143,6 @@ instance PLiftable PByte where
   type AsHaskell PByte = Word8
   toPlutarch = punsafeCoercePLifted @PByte . toPlutarch @PInteger . fromIntegral @_ @Integer
   fromPlutarch p = fmap (fromIntegral @Integer @Word8) $ fromPlutarch $ punsafeCoercePLifted @PInteger p
-
--- | @since WIP
-instance PUnsafeLiftDecl PByte where
-  type PLifted PByte = Word8
-
--- | @since WIP
-instance PConstantDecl Word8 where
-  type PConstantRepr Word8 = Integer
-  type PConstanted Word8 = PByte
-  {-# INLINEABLE pconstantToRepr #-}
-  pconstantToRepr = fromIntegral
-  {-# INLINEABLE pconstantFromRepr #-}
-  pconstantFromRepr = toIntegralSized
 
 -- | @since WIP
 instance PEq PByte where

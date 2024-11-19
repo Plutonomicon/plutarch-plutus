@@ -6,16 +6,9 @@ module Plutarch.LedgerApi.V1.Credential (
   PStakingCredential (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
@@ -53,16 +46,6 @@ deriving via
   DeriveDataPLiftable PCredential Plutus.Credential
   instance
     PLiftable PCredential
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PCredential where
-  type PLifted PCredential = Plutus.Credential
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.Credential PCredential)
-  instance
-    PConstantDecl Plutus.Credential
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PCredential)
@@ -110,16 +93,6 @@ deriving via
   DeriveDataPLiftable PStakingCredential Plutus.StakingCredential
   instance
     PLiftable PStakingCredential
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PStakingCredential where
-  type PLifted PStakingCredential = Plutus.StakingCredential
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.StakingCredential PStakingCredential)
-  instance
-    PConstantDecl Plutus.StakingCredential
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PStakingCredential)

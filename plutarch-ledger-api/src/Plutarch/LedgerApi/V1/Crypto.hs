@@ -6,13 +6,8 @@ module Plutarch.LedgerApi.V1.Crypto (
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
@@ -48,16 +43,6 @@ deriving via
   DeriveDataPLiftable PPubKeyHash Plutus.PubKeyHash
   instance
     PLiftable PPubKeyHash
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PPubKeyHash where
-  type PLifted PPubKeyHash = Plutus.PubKeyHash
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.PubKeyHash PPubKeyHash)
-  instance
-    PConstantDecl Plutus.PubKeyHash
 
 -- | @since 3.1.0
 instance PTryFrom PData PPubKeyHash where

@@ -91,7 +91,7 @@ import Plutarch.Bool (
   (#||),
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Lift (pconstant)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.String (PString)

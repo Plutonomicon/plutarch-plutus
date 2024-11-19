@@ -68,11 +68,8 @@ module Plutarch.LedgerApi.V1 (
   Utils.prationalFromData,
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
@@ -85,10 +82,6 @@ import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
@@ -132,16 +125,6 @@ deriving via
     PLiftable PTxOut
 
 -- | @since 3.1.1
-instance PUnsafeLiftDecl PTxOut where
-  type PLifted PTxOut = Plutus.TxOut
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.TxOut PTxOut)
-  instance
-    PConstantDecl Plutus.TxOut
-
--- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxOut)
 
 -- | @since 3.1.1
@@ -181,16 +164,6 @@ deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
     PLiftable PTxInInfo
-
--- | @since 3.1.1
-instance PUnsafeLiftDecl PTxInInfo where
-  type PLifted PTxInInfo = Plutus.TxInInfo
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.TxInInfo PTxInInfo)
-  instance
-    PConstantDecl Plutus.TxInInfo
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxInInfo)
@@ -244,16 +217,6 @@ deriving via
     PLiftable PTxInfo
 
 -- | @since 3.1.1
-instance PUnsafeLiftDecl PTxInfo where
-  type PLifted _ = Plutus.TxInfo
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.TxInfo PTxInfo)
-  instance
-    PConstantDecl Plutus.TxInfo
-
--- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.1
@@ -287,16 +250,6 @@ deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance
     PLiftable PScriptContext
-
--- | @since 3.1.1
-instance PUnsafeLiftDecl PScriptContext where
-  type PLifted _ = Plutus.ScriptContext
-
--- | @since 3.1.1
-deriving via
-  (DerivePConstantViaData Plutus.ScriptContext PScriptContext)
-  instance
-    PConstantDecl Plutus.ScriptContext
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PScriptContext)

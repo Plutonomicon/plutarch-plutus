@@ -37,7 +37,7 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Bool (PBool, PEq)
-import Plutarch.Lift (pconstant)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)

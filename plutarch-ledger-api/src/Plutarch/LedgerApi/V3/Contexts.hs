@@ -38,11 +38,8 @@ module Plutarch.LedgerApi.V3.Contexts (
   --  pspendsOutput
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils (PMaybeData, PRationalData)
@@ -58,12 +55,6 @@ import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V2.Tx (PTxOut)
 import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 qualified as Plutus
 
@@ -95,16 +86,6 @@ deriving via
   DeriveDataPLiftable PColdCommitteeCredential Plutus.ColdCommitteeCredential
   instance
     PLiftable PColdCommitteeCredential
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PColdCommitteeCredential where
-  type PLifted PColdCommitteeCredential = Plutus.ColdCommitteeCredential
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaNewtype Plutus.ColdCommitteeCredential PColdCommitteeCredential PCredential)
-  instance
-    PConstantDecl Plutus.ColdCommitteeCredential
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PColdCommitteeCredential)
@@ -139,16 +120,6 @@ deriving via
     PLiftable PHotCommitteeCredential
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PHotCommitteeCredential where
-  type PLifted PHotCommitteeCredential = Plutus.HotCommitteeCredential
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaNewtype Plutus.HotCommitteeCredential PHotCommitteeCredential PCredential)
-  instance
-    PConstantDecl Plutus.HotCommitteeCredential
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PHotCommitteeCredential)
 
 -- | @since 3.1.0
@@ -179,16 +150,6 @@ deriving via
   DeriveDataPLiftable PDRepCredential Plutus.DRepCredential
   instance
     PLiftable PDRepCredential
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PDRepCredential where
-  type PLifted PDRepCredential = Plutus.DRepCredential
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaNewtype Plutus.DRepCredential PDRepCredential PCredential)
-  instance
-    PConstantDecl Plutus.DRepCredential
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PDRepCredential)
@@ -226,16 +187,6 @@ deriving via
     PLiftable PDRep
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PDRep where
-  type PLifted _ = Plutus.DRep
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.DRep PDRep)
-  instance
-    PConstantDecl Plutus.DRep
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PDRep)
 
 -- | @since 3.1.0
@@ -269,16 +220,6 @@ deriving via
   DeriveDataPLiftable PDelegatee Plutus.Delegatee
   instance
     PLiftable PDelegatee
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PDelegatee where
-  type PLifted _ = Plutus.Delegatee
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.Delegatee PDelegatee)
-  instance
-    PConstantDecl Plutus.Delegatee
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PDelegatee)
@@ -324,16 +265,6 @@ deriving via
     PLiftable PTxCert
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PTxCert where
-  type PLifted _ = Plutus.TxCert
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.TxCert PTxCert)
-  instance
-    PConstantDecl Plutus.TxCert
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxCert)
 
 -- | @since 3.1.0
@@ -367,16 +298,6 @@ deriving via
   DeriveDataPLiftable PVoter Plutus.Voter
   instance
     PLiftable PVoter
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PVoter where
-  type PLifted _ = Plutus.Voter
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.Voter PVoter)
-  instance
-    PConstantDecl Plutus.Voter
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PVoter)
@@ -414,16 +335,6 @@ deriving via
     PLiftable PVote
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PVote where
-  type PLifted _ = Plutus.Vote
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.Vote PVote)
-  instance
-    PConstantDecl Plutus.Vote
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PVote)
 
 -- | @since 3.1.0
@@ -455,16 +366,6 @@ deriving via
   DeriveDataPLiftable PGovernanceActionId Plutus.GovernanceActionId
   instance
     PLiftable PGovernanceActionId
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PGovernanceActionId where
-  type PLifted PGovernanceActionId = Plutus.GovernanceActionId
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.GovernanceActionId PGovernanceActionId)
-  instance
-    PConstantDecl Plutus.GovernanceActionId
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PGovernanceActionId)
@@ -512,16 +413,6 @@ deriving via
     PLiftable PCommittee
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PCommittee where
-  type PLifted _ = Plutus.Committee
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.Committee PCommittee)
-  instance
-    PConstantDecl Plutus.Committee
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PCommittee)
 
 {- | A constitution, omitting the optional anchor.
@@ -555,16 +446,6 @@ deriving via
   DeriveDataPLiftable PConstitution Plutus.Constitution
   instance
     PLiftable PConstitution
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PConstitution where
-  type PLifted PConstitution = Plutus.Constitution
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.Constitution PConstitution)
-  instance
-    PConstantDecl Plutus.Constitution
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PConstitution)
@@ -602,16 +483,6 @@ deriving via
     PLiftable PProtocolVersion
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PProtocolVersion where
-  type PLifted _ = Plutus.ProtocolVersion
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.ProtocolVersion PProtocolVersion)
-  instance
-    PConstantDecl Plutus.ProtocolVersion
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PProtocolVersion)
 
 -- | @since 3.1.0
@@ -643,16 +514,6 @@ deriving via
   DeriveDataPLiftable PChangedParameters Plutus.ChangedParameters
   instance
     PLiftable PChangedParameters
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PChangedParameters where
-  type PLifted PChangedParameters = Plutus.ChangedParameters
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaBuiltin Plutus.ChangedParameters PChangedParameters PData)
-  instance
-    PConstantDecl Plutus.ChangedParameters
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PChangedParameters)
@@ -704,16 +565,6 @@ deriving via
     PLiftable PGovernanceAction
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PGovernanceAction where
-  type PLifted _ = Plutus.GovernanceAction
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.GovernanceAction PGovernanceAction)
-  instance
-    PConstantDecl Plutus.GovernanceAction
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PGovernanceAction)
 
 -- | @since 3.1.0
@@ -758,16 +609,6 @@ deriving via
     PLiftable PProposalProcedure
 
 -- | @since 3.1.0
-instance PUnsafeLiftDecl PProposalProcedure where
-  type PLifted _ = Plutus.ProposalProcedure
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.ProposalProcedure PProposalProcedure)
-  instance
-    PConstantDecl Plutus.ProposalProcedure
-
--- | @since 3.1.0
 instance PTryFrom PData (PAsData PProposalProcedure)
 
 -- | @since 2.0.0
@@ -808,16 +649,6 @@ deriving via
   instance
     PLiftable PScriptPurpose
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PScriptPurpose where
-  type PLifted PScriptPurpose = Plutus.ScriptPurpose
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
-  instance
-    PConstantDecl Plutus.ScriptPurpose
-
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PScriptPurpose)
 
@@ -855,16 +686,6 @@ deriving via
   DeriveDataPLiftable PScriptInfo Plutus.ScriptInfo
   instance
     PLiftable PScriptInfo
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PScriptInfo where
-  type PLifted _ = Plutus.ScriptInfo
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.ScriptInfo PScriptInfo)
-  instance
-    PConstantDecl Plutus.ScriptInfo
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PScriptInfo)
@@ -911,16 +732,6 @@ deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
     PLiftable PTxInInfo
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxInInfo where
-  type PLifted PTxInInfo = Plutus.TxInInfo
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.TxInInfo PTxInInfo)
-  instance
-    PConstantDecl Plutus.TxInInfo
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxInInfo)
@@ -981,16 +792,6 @@ deriving via
   instance
     PLiftable PTxInfo
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxInfo where
-  type PLifted _ = Plutus.TxInfo
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.TxInfo PTxInfo)
-  instance
-    PConstantDecl Plutus.TxInfo
-
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxInfo)
 
@@ -1034,16 +835,6 @@ deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance
     PLiftable PScriptContext
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PScriptContext where
-  type PLifted _ = Plutus.ScriptContext
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.ScriptContext PScriptContext)
-  instance
-    PConstantDecl Plutus.ScriptContext
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PScriptContext)

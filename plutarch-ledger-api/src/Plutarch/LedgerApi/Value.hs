@@ -62,21 +62,13 @@ module Plutarch.LedgerApi.Value (
 
 import Plutarch.Bool (pand', pif')
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   DeriveNewtypePLiftable,
-  PLiftable,
   PLifted' (PLifted'),
  )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  DerivePConstantViaNewtype (DerivePConstantViaNewtype),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
- )
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
@@ -116,16 +108,6 @@ deriving via
   instance
     PLiftable PLovelace
 
--- | @since 2.2.0
-instance PUnsafeLiftDecl PLovelace where
-  type PLifted PLovelace = Plutus.Lovelace
-
--- | @since 2.2.0
-deriving via
-  (DerivePConstantViaData Plutus.Lovelace PLovelace)
-  instance
-    PConstantDecl Plutus.Lovelace
-
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PLovelace)
 
@@ -159,16 +141,6 @@ deriving via
   DeriveDataPLiftable PTokenName Plutus.TokenName
   instance
     PLiftable PTokenName
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTokenName where
-  type PLifted PTokenName = Plutus.TokenName
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.TokenName PTokenName)
-  instance
-    PConstantDecl Plutus.TokenName
 
 -- | @since 3.1.0
 instance PTryFrom PData PTokenName where
@@ -243,16 +215,6 @@ instance PTryFrom PData (PAsData PCurrencySymbol) where
     pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
-instance PUnsafeLiftDecl PCurrencySymbol where
-  type PLifted PCurrencySymbol = Plutus.CurrencySymbol
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.CurrencySymbol PCurrencySymbol)
-  instance
-    PConstantDecl Plutus.CurrencySymbol
-
--- | @since 2.0.0
 data AmountGuarantees = NoGuarantees | NonZero | Positive
 
 -- | @since 2.0.0
@@ -285,20 +247,6 @@ deriving via
     Plutus.Value
   instance
     PLiftable (PValue 'AssocMap.Unsorted 'NoGuarantees)
-
--- | @since 3.2.0
-instance PUnsafeLiftDecl (PValue 'AssocMap.Unsorted 'NoGuarantees) where
-  type PLifted (PValue 'AssocMap.Unsorted 'NoGuarantees) = Plutus.Value
-
--- | @since 3.2.0
-deriving via
-  ( DerivePConstantViaNewtype
-      Plutus.Value
-      (PValue 'AssocMap.Unsorted 'NoGuarantees)
-      (AssocMap.PMap 'AssocMap.Unsorted PCurrencySymbol (AssocMap.PMap 'AssocMap.Unsorted PTokenName PInteger))
-  )
-  instance
-    PConstantDecl Plutus.Value
 
 -- | @since 2.0.0
 instance PEq (PValue 'AssocMap.Sorted 'Positive) where
@@ -529,16 +477,6 @@ deriving via
   DeriveDataPLiftable PAssetClass PlutusValue.AssetClass
   instance
     PLiftable PAssetClass
-
--- | @since WIP
-instance PUnsafeLiftDecl PAssetClass where
-  type PLifted PAssetClass = PlutusValue.AssetClass
-
--- | @since WIP
-deriving via
-  (DerivePConstantViaData PlutusValue.AssetClass PAssetClass)
-  instance
-    PConstantDecl PlutusValue.AssetClass
 
 -- | @since WIP
 instance PTryFrom PData (PAsData PAssetClass)

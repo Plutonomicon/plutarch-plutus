@@ -185,10 +185,7 @@ module Plutarch.Prelude (
   pconstant,
   pconstantData,
   plift,
-  PConstant,
-  PLift,
-  PConstantData,
-  PLiftData,
+  PLiftable (AsHaskell),
 
   -- * Continuation monad
   TermCont (TermCont, runTermCont),
@@ -221,7 +218,7 @@ import Plutarch.Crypto
 import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Integer
-import Plutarch.Lift
+import Plutarch.Internal.Lift
 import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair

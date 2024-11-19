@@ -46,7 +46,6 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted' (PLifted'))
-import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceInfoError)
@@ -86,12 +85,6 @@ instance PTryFrom PData (PAsData PPositive) where
     res <- tcont . plet $ ptryPositive # i
     resData <- tcont . plet $ pdata res
     pure (resData, res)
-
--- | @since WIP
-instance PUnsafeLiftDecl PPositive where type PLifted PPositive = Positive
-
--- | @since WIP
-deriving via (DerivePConstantDirect Integer PPositive) instance PConstantDecl Positive
 
 -- | Build a 'PPositive' from a 'PInteger'. Yields 'PNothing' if argument is zero.
 ppositive :: Term s (PInteger :--> PMaybe PPositive)

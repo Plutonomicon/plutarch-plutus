@@ -31,7 +31,7 @@ tests =
         ]
     , propEvalEqual
         "pmaybeToMaybeData . pmaybeDataToMaybe = id"
-        (\(m :: Maybe Integer) -> pmaybeToMaybeData #$ pmaybeDataToMaybe # pconstant m)
+        (\(m :: Maybe Integer) -> pmaybeToMaybeData #$ pmaybeDataToMaybe # pconstant @(PMaybeData PInteger) m)
         (\(m :: Maybe Integer) -> pconstant m)
     , testProperty "fmap = pmapMaybe" $
         checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)

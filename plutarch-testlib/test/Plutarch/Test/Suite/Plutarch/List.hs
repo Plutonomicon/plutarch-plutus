@@ -97,41 +97,41 @@ tests =
             "preverse"
             [ testEvalEqual
                 "reversing an empty list is identity"
-                (preverse # pconstant ([] :: [Integer]))
+                (preverse # pconstant @(PBuiltinList PInteger) ([] :: [Integer]))
                 (pconstant ([] :: [Integer]))
             , testEvalEqual
                 "reversing a singleton is identity"
-                (preverse # pconstant ([1] :: [Integer]))
+                (preverse # pconstant @(PBuiltinList PInteger) ([1] :: [Integer]))
                 (pconstant ([1] :: [Integer]))
             , testEvalEqual
                 "reversing a non-singleton"
-                (preverse # pconstant ([1, 2] :: [Integer]))
+                (preverse # pconstant @(PBuiltinList PInteger) ([1, 2] :: [Integer]))
                 (pconstant ([2, 1] :: [Integer]))
             ]
         , testGroup
             "pcheckSorted"
             [ testEvalEqual
                 "empty lists are sorted"
-                (pcheckSorted # pconstant ([] :: [Integer]))
+                (pcheckSorted # pconstant @(PBuiltinList PInteger) ([] :: [Integer]))
                 (pcon PTrue)
             , testEvalEqual
                 "singleton lists are sorted"
-                (pcheckSorted # pconstant ([1] :: [Integer]))
+                (pcheckSorted # pconstant @(PBuiltinList PInteger) ([1] :: [Integer]))
                 (pcon PTrue)
             , testEvalEqual
                 "two items in the right order are sorted"
-                (pcheckSorted # pconstant ([1, 2] :: [Integer]))
+                (pcheckSorted # pconstant @(PBuiltinList PInteger) ([1, 2] :: [Integer]))
                 (pcon PTrue)
             , testEvalEqual
                 "two items in the wrong order are not sorted"
-                (pcheckSorted # pconstant ([2, 1] :: [Integer]))
+                (pcheckSorted # pconstant @(PBuiltinList PInteger) ([2, 1] :: [Integer]))
                 (pcon PFalse)
             ]
         ]
     , testGroup
         "Properties"
         [ testProperty "find <-> pfind" $
-            checkHaskellEquivalent
+            checkHaskellEquivalent @(PBuiltinList PInteger)
               (find @[] @Integer even)
               (plam $ \lst -> pmaybeToMaybeData #$ pfind # peven # lst)
         ]

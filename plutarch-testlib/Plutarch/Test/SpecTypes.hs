@@ -4,17 +4,10 @@
 -- | Dummy types used in tests
 module Plutarch.Test.SpecTypes (Triplet (..), PTriplet (..)) where
 
-import PlutusTx qualified
-
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.Prelude
+import PlutusTx qualified
 import Prettyprinter (Pretty (pretty), (<+>))
 import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 
@@ -56,15 +49,11 @@ instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 PlutusTx.makeIsDataIndexed ''Triplet [('Triplet, 0)]
 
 -- | @since WIP
-instance PLiftData a => PUnsafeLiftDecl (PTriplet a) where
-  type PLifted (PTriplet a) = Triplet (PLifted a)
+instance Arbitrary a => Arbitrary (Triplet a) where
+  arbitrary = Triplet <$> arbitrary <*> arbitrary <*> arbitrary
 
 -- | @since WIP
 deriving via
-  (DerivePConstantViaData (Triplet a) (PTriplet (PConstanted a)))
+  DeriveDataPLiftable (PTriplet a) (Triplet (AsHaskell a))
   instance
-    PConstantData a => PConstantDecl (Triplet a)
-
--- | @since WIP
-instance Arbitrary a => Arbitrary (Triplet a) where
-  arbitrary = Triplet <$> arbitrary <*> arbitrary <*> arbitrary
+    (PlutusTx.ToData (AsHaskell a), PlutusTx.FromData (AsHaskell a)) => PLiftable (PTriplet a)

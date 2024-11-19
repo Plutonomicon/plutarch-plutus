@@ -62,16 +62,8 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.DataRepr.Internal (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PConstantData,
-  PLiftData,
- )
 import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell), PLifted' (PLifted'))
-import Plutarch.Internal.PlutusType (
-  PlutusType (PInner, pcon', pmatch'),
- )
-import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
+import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
@@ -171,16 +163,6 @@ instance (PTryFrom PData a, PTryFrom PData b) => PTryFrom PData (PEitherData a b
 
 -- | @since WIP
 instance (PTryFrom PData a, PTryFrom PData b) => PTryFrom PData (PAsData (PEitherData a b))
-
--- | @since WIP
-instance (PLiftData a, PLiftData b) => PUnsafeLiftDecl (PEitherData a b) where
-  type PLifted (PEitherData a b) = Either (PLifted a) (PLifted b)
-
--- | @since WIP
-deriving via
-  (DerivePConstantViaData (Either a b) (PEitherData (PConstanted a) (PConstanted b)))
-  instance
-    (PConstantData a, PConstantData b) => PConstantDecl (Either a b)
 
 {- | Make a @Data@-encoded @Left@.
 

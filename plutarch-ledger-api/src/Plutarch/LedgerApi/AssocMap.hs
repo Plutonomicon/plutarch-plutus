@@ -80,7 +80,7 @@ module Plutarch.LedgerApi.AssocMap (
 import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
-import Data.Traversable (for, forM)
+import Data.Traversable (forM)
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   pasMap,
@@ -92,20 +92,13 @@ import Plutarch.Builtin (
 import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Lift (
   LiftError (CouldNotDecodeData),
-  PLiftable (AsHaskell, fromPlutarch, toPlutarch),
+  PLiftable (fromPlutarch, toPlutarch),
   punsafeCoercePLifted,
+  unsafeFromUni,
+  unsafeToUni,
  )
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
@@ -114,7 +107,6 @@ import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.AssocMap qualified as PlutusMap
-import PlutusTx.Eq qualified as PlutusTx
 import Prelude hiding (pred)
 
 -- TODO: Rename this, because this is actually a _sorting_ guarantee!
@@ -152,11 +144,11 @@ instance
   type AsHaskell (PMap 'Unsorted k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
   toPlutarch =
     punsafeCoercePLifted @(PMap 'Unsorted k v)
-      . toPlutarch @(PBuiltinList (PBuiltinPair PData PData))
+      . unsafeFromUni
       . map (bimap Plutus.toData Plutus.toData)
       . PlutusMap.toList
   fromPlutarch p =
-    ( fromPlutarch @(PBuiltinList (PBuiltinPair PData PData)) $
+    ( unsafeToUni @(PBuiltinList (PBuiltinPair PData PData)) $
         punsafeCoercePLifted @(PBuiltinList (PBuiltinPair PData PData)) p
     )
       >>= listToMap
@@ -180,35 +172,6 @@ instance PEq (PMap 'Sorted k v) where
         forall (s :: S).
         Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PBool)
       peqViaData = phoistAcyclic $ plam $ \m0 m1 -> pdata m0 #== pdata m1
-
--- | @since 2.0.0
-instance
-  ( PlutusTx.Eq (PLifted k)
-  , PLiftData k
-  , PLiftData v
-  , Ord (PLifted k)
-  ) =>
-  PUnsafeLiftDecl (PMap 'Unsorted k v)
-  where
-  type PLifted (PMap 'Unsorted k v) = PlutusMap.Map (PLifted k) (PLifted v)
-
--- | @since 2.0.0
-instance
-  ( PlutusTx.Eq k
-  , PConstantData k
-  , PConstantData v
-  , Ord k
-  ) =>
-  PConstantDecl (PlutusMap.Map k v)
-  where
-  type PConstantRepr (PlutusMap.Map k v) = [(Plutus.Data, Plutus.Data)]
-  type PConstanted (PlutusMap.Map k v) = PMap 'Unsorted (PConstanted k) (PConstanted v)
-  pconstantToRepr m = bimap Plutus.toData Plutus.toData <$> PlutusMap.toList m
-  pconstantFromRepr m = fmap PlutusMap.safeFromList $
-    for m $ \(x, y) -> do
-      x' <- Plutus.fromData x
-      y' <- Plutus.fromData y
-      Just (x', y')
 
 -- | @since 2.0.0
 instance

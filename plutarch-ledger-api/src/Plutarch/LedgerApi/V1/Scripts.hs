@@ -10,14 +10,8 @@ module Plutarch.LedgerApi.V1.Scripts (
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable, PLifted' (PLifted'))
+import Plutarch.Internal.Lift (DeriveDataPLiftable, PLifted' (PLifted'))
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  DerivePConstantViaBuiltin (DerivePConstantViaBuiltin),
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
@@ -53,16 +47,6 @@ deriving via
   DeriveDataPLiftable PScriptHash Plutus.ScriptHash
   instance
     PLiftable PScriptHash
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PScriptHash where
-  type PLifted PScriptHash = Plutus.ScriptHash
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.ScriptHash PScriptHash)
-  instance
-    PConstantDecl Plutus.ScriptHash
 
 -- | @since 3.1.0
 instance PTryFrom PData PScriptHash where
@@ -117,16 +101,6 @@ deriving via
   instance
     PLiftable PDatum
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PDatum where
-  type PLifted PDatum = Plutus.Datum
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaBuiltin Plutus.Datum PDatum PData)
-  instance
-    PConstantDecl Plutus.Datum
-
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PDatum)
 
@@ -163,16 +137,6 @@ deriving via
   instance
     PLiftable PDatumHash
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PDatumHash where
-  type PLifted PDatumHash = Plutus.DatumHash
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData Plutus.DatumHash PDatumHash)
-  instance
-    PConstantDecl Plutus.DatumHash
-
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PDatumHash)
 
@@ -204,16 +168,6 @@ deriving via
   DeriveDataPLiftable PRedeemer Plutus.Redeemer
   instance
     PLiftable PRedeemer
-
--- | @since 2.0.0
-instance PUnsafeLiftDecl PRedeemer where
-  type PLifted PRedeemer = Plutus.Redeemer
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaBuiltin Plutus.Redeemer PRedeemer PData)
-  instance
-    PConstantDecl Plutus.Redeemer
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PRedeemer)
@@ -250,16 +204,6 @@ deriving via
   DeriveDataPLiftable PRedeemerHash Plutus.RedeemerHash
   instance
     PLiftable PRedeemerHash
-
--- | @since 3.1.0
-instance PUnsafeLiftDecl PRedeemerHash where
-  type PLifted PRedeemerHash = Plutus.RedeemerHash
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData Plutus.RedeemerHash PRedeemerHash)
-  instance
-    PConstantDecl Plutus.RedeemerHash
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PRedeemerHash)
