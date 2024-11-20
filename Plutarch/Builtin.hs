@@ -364,7 +364,6 @@ instance PIsData a => PlutusType (PAsData a) where
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
--- donno why this won't work. This looks better : /
 instance {-# OVERLAPPING #-} PLiftable (PAsData PByteString) where
   type AsHaskell (PAsData PByteString) = ThanksIOG PByteString
   type PlutusRepr (PAsData PByteString) = Data
