@@ -232,6 +232,11 @@ newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s
       PShow
     )
 
+-- | @since WIP
+deriving anyclass instance PShow (PValue 'AssocMap.Unsorted amounts)
+
+deriving anyclass instance PShow (PValue 'AssocMap.Sorted amounts)
+
 type role PValue nominal nominal nominal
 
 -- | @since 2.0.0
@@ -554,7 +559,6 @@ pnormalize = phoistAcyclic $
   where
     normalizeTokenMap ::
       forall (s' :: S) (k :: S -> Type) (any1 :: AssocMap.KeyGuarantees).
-      PIsData k =>
       Term s' (AssocMap.PMap any1 k PInteger) ->
       Term s' (PMaybe (AssocMap.PMap any1 k PInteger))
     normalizeTokenMap tokenMap =
