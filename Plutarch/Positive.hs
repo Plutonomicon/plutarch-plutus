@@ -45,7 +45,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable)
+import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted (PLifted))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceInfoError)

@@ -4,7 +4,9 @@ import Plutarch.LedgerApi.Utils (PMaybeData, pmaybeDataToMaybe, pmaybeToMaybeDat
 import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
+import Plutarch.Test.Laws (checkPLiftableLaws)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, propEvalEqual)
+import Plutarch.Test.Utils (instanceOfType)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 
@@ -37,6 +39,10 @@ tests =
         checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
           (fmap even)
           (plam $ \m -> pmaybeToMaybeData #$ pmapMaybe # peven #$ pmaybeDataToMaybe # m)
+    , testGroup (instanceOfType @(S -> Type) @(PMaybe PInteger) "PLiftable") $
+        checkPLiftableLaws @(PMaybe PInteger)
+    , testGroup (instanceOfType @(S -> Type) @(PMaybeData PInteger) "PLiftable") $
+        checkPLiftableLaws @(PMaybeData PInteger)
     ]
 
 peven :: Term s (PInteger :--> PBool)

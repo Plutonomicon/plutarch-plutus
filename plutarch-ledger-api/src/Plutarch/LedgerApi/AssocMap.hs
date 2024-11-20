@@ -90,10 +90,7 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
  )
 import Plutarch.Internal (punsafeBuiltin)
-import Plutarch.Internal.Lift (
-  LiftError (CouldNotDecodeData),
-  PLiftable (fromPlutarch, toPlutarch),
- )
+import Plutarch.Internal.Lift (PLiftable (fromPlutarchRepr, toPlutarchRepr))
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.List qualified as List
@@ -140,10 +137,10 @@ instance
   where
   type AsHaskell (PMap 'Unsorted k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
   type PlutusRepr (PMap 'Unsorted k v) = [(Plutus.Data, Plutus.Data)]
-  toPlutarch = map (bimap Plutus.toData Plutus.toData) . PlutusMap.toList
-  fromPlutarch lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
-    k <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData kd
-    v <- maybe (Left CouldNotDecodeData) Right $ Plutus.fromData vd
+  toPlutarchRepr = map (bimap Plutus.toData Plutus.toData) . PlutusMap.toList
+  fromPlutarchRepr lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
+    k <- Plutus.fromData kd
+    v <- Plutus.fromData vd
     pure (k, v)
 
 -- | @since 2.0.0

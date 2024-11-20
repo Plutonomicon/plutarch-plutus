@@ -19,7 +19,7 @@ However, `PBuiltinList` can only contain builtin types. In particular, it cannot
 You can express the constraint of "only builtin types" using `PLift`, exported from `Plutarch.Builtin`-
 
 ```haskell
-validBuiltinList :: forall a s. PLift a => Term s (PBuiltinList a)
+validBuiltinList :: forall a s. PLiftable a => Term s (PBuiltinList a)
 validBuiltinList = undefined
 ```
 

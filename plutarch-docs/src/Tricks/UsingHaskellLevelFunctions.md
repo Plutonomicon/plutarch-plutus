@@ -21,7 +21,7 @@ Outside of that straightforward use case, figuring out when to use Haskell level
 However, if the function is used _only once_, and making it Plutarch level causes extra `plam`s and `#`s to be introduced - you should just make it Haskell level. For example, consider the `pelimList` implementation:
 
 ```haskell
-pelimList :: PLift a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
+pelimList :: PLiftable a => Term s (a :--> PBuiltinList a :--> r) -> Term s r -> Term s (PBuiltinList a) -> Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -> match_cons # x # xs
   PNil -> match_nil
@@ -49,7 +49,7 @@ Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have take
 ```haskell
 pelimList' ::
   forall (a :: PType) (r :: PType) (s :: S).
-  PLift a
+  PLiftable a
   => (Term s a -> Term s (PBuiltinList a) -> Term s r)
   -> Term s r -> Term s (PBuiltinList a)
   -> Term s r

@@ -33,6 +33,7 @@ import Plutarch (
   S,
   Term,
   pcon,
+  perror,
   phoistAcyclic,
   plam,
   plet,
@@ -62,7 +63,20 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Internal.Lift (DeriveDataPLiftable, PLiftable (AsHaskell))
+import Plutarch.Internal.Lift (
+  DeriveDataPLiftable,
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    fromPlutarch,
+    toPlutarch
+  ),
+  PLifted (PLifted),
+  PLiftedClosed,
+  getPLifted,
+  mkPLifted,
+  pconstant,
+ )
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Show (PShow)
@@ -80,6 +94,34 @@ data PEither (a :: PType) (b :: PType) (s :: S)
 
 instance DerivePlutusType (PEither a b) where
   type DPTStrat _ = PlutusTypeScott
+
+-- | @since WIP
+instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
+  type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
+  type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch (Left a) = mkPLifted $ plam (pcon . PLeft) # pconstant @a a
+  toPlutarch (Right b) = mkPLifted $ plam (pcon . PRight) # pconstant @b b
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = do
+    isLeft <-
+      fromPlutarch $
+        mkPLifted $
+          plam (\e -> pmatch e $ \case PLeft _ -> pconstant @PBool True; PRight _ -> pconstant @PBool False)
+            # getPLifted t
+    if isLeft
+      then
+        fmap Left $
+          fromPlutarch $
+            mkPLifted $
+              plam (\e -> pmatch e $ \case PLeft a -> a; PRight _ -> perror) # getPLifted t
+      else
+        fmap Right $
+          fromPlutarch $
+            mkPLifted $
+              plam (\e -> pmatch e $ \case PLeft _ -> perror; PRight b -> b) # getPLifted t
 
 {- | @Data@-encoded 'Either'.
 

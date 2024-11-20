@@ -23,7 +23,7 @@ import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (PPositive, Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
-import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName, typeName')
+import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
@@ -60,6 +60,8 @@ checkPLiftableLaws =
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
         fromPlutarch @a (toPlutarch @a x) === Right x
+  , testProperty "plift . pconstant = id" . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
+      plift (pconstant @a x) `prettyEquals` x
   ]
 
 {- | Like `checkLedgerProperties` but specialized to `PValue`
@@ -72,8 +74,7 @@ and bringing one in would break too much other stuff to be worth it.
 checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesValue =
   testGroup "PValue" . mconcat $
-    [ punsafeLiftDeclLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue <-> Value"
-    , pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
+    [ pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
     , ptryFromLawsValue
     , checkPLiftableLaws @(V1.PValue V1.Unsorted V1.NoGuarantees)
     ]
@@ -87,8 +88,7 @@ Same as above
 checkLedgerPropertiesAssocMap :: TestTree
 checkLedgerPropertiesAssocMap =
   testGroup "PMap" . mconcat $
-    [ punsafeLiftDeclLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap <-> AssocMap.Map"
-    , pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
+    [ pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
     , ptryFromLawsAssocMap
     , checkPLiftableLaws @(V1.PMap V1.Unsorted PInteger PInteger)
     ]
@@ -102,7 +102,6 @@ checkLedgerProperties ::
   , Eq (AsHaskell a)
   , PIsData a
   , Plutus.ToData (AsHaskell a)
-  , Typeable (AsHaskell a)
   , Arbitrary (AsHaskell a)
   , Pretty (AsHaskell a)
   , Show (AsHaskell a)
@@ -110,17 +109,10 @@ checkLedgerProperties ::
   TestTree
 checkLedgerProperties =
   testGroup (instanceOfType @(S -> Type) @a "Ledger Laws") . mconcat $
-    [ punsafeLiftDeclLaws @a punsafeLiftDeclLawsName
-    , pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
+    [ pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
     , ptryFromLaws @a
     , checkPLiftableLaws @a
     ]
-  where
-    punsafeLiftDeclLawsName :: String
-    punsafeLiftDeclLawsName =
-      typeName @(S -> Type) @a
-        <> " <-> "
-        <> typeName @Type @(AsHaskell a)
 
 -- | @since WIP
 checkLedgerPropertiesPCountable ::
@@ -307,21 +299,6 @@ penumerableLaws =
       \(x :: AsHaskell a, n :: Positive, m :: Positive) ->
         plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant @a x))
           `prettyEquals` plift (ppredecessorN # (pconstant n + pconstant m) # pconstant @a x)
-  ]
-
--- plift . pconstant = id
-punsafeLiftDeclLaws ::
-  forall (a :: S -> Type).
-  ( PLiftable a
-  , Eq (AsHaskell a)
-  , Arbitrary (AsHaskell a)
-  , Pretty (AsHaskell a)
-  ) =>
-  String ->
-  [TestTree]
-punsafeLiftDeclLaws propName =
-  [ testProperty propName . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
-      plift (pconstant @a x) `prettyEquals` x
   ]
 
 -- pfromData . pdata = id

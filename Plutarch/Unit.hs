@@ -6,7 +6,7 @@ module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch (Term, pcon, plet)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, pconstant)
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
 import Plutarch.Show (PShow (pshow'))
 

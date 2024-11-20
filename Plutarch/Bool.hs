@@ -42,7 +42,7 @@ import Generics.SOP (
  )
 import Plutarch.Internal (PDelayed, PType, S, Term, pdelay, pforce, phoistAcyclic, plet, (#), (#$), (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, pconstant)
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Other (
   pto,
  )
