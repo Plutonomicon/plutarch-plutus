@@ -22,11 +22,12 @@ module Plutarch.Internal.Lift (
   DeriveNewtypePLiftable (..),
 
   -- ** Manual instance helpers
+  unsafeToUni,
   fromPlutarchUni,
   toPlutarchUni,
   fromPlutarchReprScott,
   toPlutarchReprScott,
-  PLifted (PLifted),
+  PLifted (PLifted, unPLifted),
   mkPLifted,
   getPLifted,
   PLiftedScott (..),
@@ -174,6 +175,13 @@ toPlutarchUni ::
   PLifted s a
 toPlutarchUni p =
   PLifted $ popaque $ punsafeCoerce $ punsafeConstantInternal $ PLC.someValue $ toPlutarchRepr @a p
+
+unsafeToUni ::
+  forall (h :: Type) (a :: S -> Type) (s :: S).
+  PLC.DefaultUni `Includes` h =>
+  h ->
+  PLifted s a
+unsafeToUni x = PLifted $ popaque $ punsafeCoerce $ punsafeConstantInternal $ PLC.someValue x
 
 {- | Valid definition for 'fromPlutarch' if 'PlutusRepr' is in Plutus universe
 

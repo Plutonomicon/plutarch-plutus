@@ -84,10 +84,11 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
-  PLifted (PLifted),
+  PLifted (PLifted, unPLifted),
   fromPlutarchUni,
   pconstant,
   toPlutarchUni,
+  unsafeToUni,
  )
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Internal.Witness (witness)
@@ -176,7 +177,6 @@ data PBuiltinList (a :: PType) (s :: S)
 
 instance
   ( PShow a
-  , PLiftable a
   , PLC.Contains PLC.DefaultUni (PlutusRepr a)
   ) =>
   PShow (PBuiltinList a)
@@ -198,13 +198,13 @@ pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
-instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PlutusType (PBuiltinList a) where
+instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
   type PCovariant' (PBuiltinList a) = PCovariant' a
   type PContravariant' (PBuiltinList a) = PContravariant' a
   type PVariant' (PBuiltinList a) = PVariant' a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
-  pcon' PNil = pconstant []
+  pcon' PNil = punsafeCoerce $ unPLifted $ unsafeToUni @[PlutusRepr a] []
   pmatch' xs' f = plet xs' $ \xs ->
     pforce $
       pchooseListBuiltin
@@ -230,7 +230,7 @@ instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PLiftable 
   fromPlutarch = fromPlutarchUni
 
 instance PListLike PBuiltinList where
-  type PElemConstraint PBuiltinList a = (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a))
+  type PElemConstraint PBuiltinList a = (PLC.Contains PLC.DefaultUni (PlutusRepr a))
 
   pelimList match_cons match_nil ls = pmatch ls $ \case
     PCons x xs -> match_cons x xs
@@ -250,7 +250,7 @@ type family F (a :: PType) :: Bool where
 class Fc (x :: Bool) (a :: PType) where
   fc :: Proxy x -> Term s (PBuiltinList a) -> Term s (PBuiltinList a) -> Term s PBool
 
-instance (PLiftable a, PEq a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => Fc 'False a where
+instance (PEq a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => Fc 'False a where
   fc _ xs ys = plistEquals # xs # ys
 
 instance PIsData (PBuiltinList a) => Fc 'True a where

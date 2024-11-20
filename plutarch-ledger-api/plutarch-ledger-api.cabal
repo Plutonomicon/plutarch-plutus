@@ -8,6 +8,7 @@ common common-lang
     -Wall -Wcompat -Wincomplete-record-updates
     -Wincomplete-uni-patterns -Wredundant-constraints -Werror
     -Wmissing-deriving-strategies -Wmissing-export-lists
+    -Wno-missing-export-lists
 
   build-depends:      base
   default-extensions:
