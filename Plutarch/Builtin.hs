@@ -31,6 +31,7 @@ module Plutarch.Builtin (
   PDataNewtype (..),
 ) where
 
+import Data.ByteString (ByteString)
 import Data.Functor.Const (Const)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
@@ -118,6 +119,7 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusTx (Data (Constr), FromData, ToData)
 import PlutusTx qualified
+import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString), BuiltinData (BuiltinData))
 
 -- | Plutus 'BuiltinPair'
 newtype PBuiltinPair (a :: PType) (b :: PType) (s :: S) = PBuiltinPair (Term s (PBuiltinPair a b))
@@ -349,6 +351,11 @@ pdataLiteral = pconstant
 
 newtype PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 
+type family ThanksIOG a where
+  ThanksIOG PByteString = ByteString
+  ThanksIOG PData = Data
+  ThanksIOG a = AsHaskell a
+
 instance PIsData a => PlutusType (PAsData a) where
   type PInner (PAsData a) = IfSameThenData a (PInner a)
   type PCovariant' (PAsData a) = PCovariant' a
@@ -357,8 +364,33 @@ instance PIsData a => PlutusType (PAsData a) where
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
-instance (ToData (AsHaskell a), FromData (AsHaskell a), PIsData a) => PLiftable (PAsData a) where
-  type AsHaskell (PAsData a) = AsHaskell a
+-- donno why this won't work. This looks better : /
+instance {-# OVERLAPPING #-} PLiftable (PAsData PByteString) where
+  type AsHaskell (PAsData PByteString) = ThanksIOG PByteString
+  type PlutusRepr (PAsData PByteString) = Data
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = PlutusTx.toData . BuiltinByteString
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr x = (\(BuiltinByteString str) -> str) <$> PlutusTx.fromData x
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
+
+instance {-# OVERLAPPING #-} PLiftable (PAsData PData) where
+  type AsHaskell (PAsData PData) = ThanksIOG PData
+  type PlutusRepr (PAsData PData) = Data
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = PlutusTx.toData . BuiltinData
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr x = (\(BuiltinData str) -> str) <$> PlutusTx.fromData x
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
+
+instance (ToData (ThanksIOG a), FromData (ThanksIOG a), PIsData a) => PLiftable (PAsData a) where
+  type AsHaskell (PAsData a) = ThanksIOG a
   type PlutusRepr (PAsData a) = Data
 
   {-# INLINEABLE toPlutarchRepr #-}
@@ -569,8 +601,6 @@ instance PTryFrom PData (PAsData (PBuiltinList PData)) where
 instance
   ( PTryFrom PData (PAsData a)
   , PIsData a
-  , ToData (AsHaskell a)
-  , FromData (AsHaskell a)
   ) =>
   PTryFrom PData (PAsData (PBuiltinList (PAsData a)))
   where
