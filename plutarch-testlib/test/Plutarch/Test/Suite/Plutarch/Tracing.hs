@@ -11,22 +11,22 @@ tests =
     "Tracing"
     [ testEvalEqualTraces
         "ptraceInfo traces at info level"
-        (ptraceInfo "foo" (pconstant ()))
+        (ptraceInfo "foo" (pconstant @PUnit ()))
         LogInfo
         ["foo"]
     , testEvalEqualTraces
         "ptraceInfo traces at debug level"
-        (ptraceInfo "foo" (pconstant ()))
+        (ptraceInfo "foo" (pconstant @PUnit ()))
         LogDebug
         ["foo"]
     , testEvalEqualTraces
         "ptraceInfoShowId traces at info level"
-        (ptraceInfoShowId (pconstant ()))
+        (ptraceInfoShowId (pconstant @PUnit ()))
         LogInfo
         ["()"]
     , testEvalEqualTraces
         "ptraceInfoShowId traces at debug level"
-        (ptraceInfoShowId (pconstant ()))
+        (ptraceInfoShowId (pconstant @PUnit ()))
         LogDebug
         ["()"]
     , testEvalEqualTraces
@@ -81,22 +81,22 @@ tests =
         ["foo"]
     , testEvalEqualTraces
         "ptraceDebug does not trace at info level"
-        (ptraceDebug "foo" (pconstant ()))
+        (ptraceDebug "foo" (pconstant @PUnit ()))
         LogInfo
         []
     , testEvalEqualTraces
         "ptraceDebug traces at debug level"
-        (ptraceDebug "foo" (pconstant ()))
+        (ptraceDebug "foo" (pconstant @PUnit ()))
         LogDebug
         ["foo"]
     , testEvalEqualTraces
         "ptraceDebugShowId does not trace at info level"
-        (ptraceDebugShowId (pconstant ()))
+        (ptraceDebugShowId (pconstant @PUnit ()))
         LogInfo
         []
     , testEvalEqualTraces
         "ptraceDebugShowId traces at debug level"
-        (ptraceDebugShowId (pconstant ()))
+        (ptraceDebugShowId (pconstant @PUnit ()))
         LogDebug
         ["()"]
     , testEvalEqualTraces

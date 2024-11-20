@@ -22,17 +22,11 @@ import Plutarch.Internal (
   (#),
   (:-->),
  )
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import PlutusCore qualified as PLC
@@ -44,8 +38,11 @@ newtype PInteger s = PInteger (Term s POpaque)
 
 instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
 
-instance PUnsafeLiftDecl PInteger where type PLifted PInteger = Integer
-deriving via (DerivePConstantDirect Integer PInteger) instance PConstantDecl Integer
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PInteger Integer)
+  instance
+    PLiftable PInteger
 
 class PIntegral a where
   pdiv :: Term s (a :--> a :--> a)

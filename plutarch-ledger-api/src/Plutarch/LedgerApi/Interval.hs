@@ -34,18 +34,12 @@ module Plutarch.LedgerApi.Interval (
 ) where
 
 import Plutarch.Bool (pif')
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
+import Plutarch.DataRepr (PDataFields)
 import Plutarch.Enum (
   PCountable (psuccessor),
   PEnumerable (ppredecessor),
  )
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.Prelude hiding (psingleton, pto)
 import PlutusLedgerApi.V3 qualified as Plutus
 
@@ -85,19 +79,11 @@ newtype PInterval (a :: S -> Type) (s :: S)
 instance DerivePlutusType (PInterval a) where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PInterval a)
-  where
-  type PLifted (PInterval a) = (Plutus.Interval (PLifted a))
-
--- | @since 2.0.0
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData (Plutus.Interval a) (PInterval (PConstanted a)))
+  DeriveDataPLiftable (PInterval a) (Plutus.Interval (AsHaskell a))
   instance
-    PConstantData a =>
-    PConstantDecl (Plutus.Interval a)
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PInterval a)
 
 -- | @since 3.1.0
 instance PTryFrom PData a => PTryFrom PData (PInterval a)
@@ -133,6 +119,11 @@ newtype PLowerBound (a :: S -> Type) (s :: S)
       PShow
     )
 
+deriving via
+  DeriveDataPLiftable (PLowerBound a) (Plutus.LowerBound (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PLowerBound a)
+
 -- | @since WIP
 instance (PIsData a, PCountable a) => PEq (PLowerBound a) where
   {-# INLINEABLE (#==) #-}
@@ -148,20 +139,6 @@ instance (PIsData a, PCountable a) => PPartialOrd (PLowerBound a) where
 -- | @since 2.0.0
 instance DerivePlutusType (PLowerBound a) where
   type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PLowerBound a)
-  where
-  type PLifted (PLowerBound a) = (Plutus.LowerBound (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.LowerBound a) (PLowerBound (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.LowerBound a)
 
 -- | @since 3.1.0
 instance PTryFrom PData a => PTryFrom PData (PLowerBound a)
@@ -197,6 +174,11 @@ newtype PUpperBound (a :: S -> Type) (s :: S)
       PShow
     )
 
+deriving via
+  DeriveDataPLiftable (PUpperBound a) (Plutus.UpperBound (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PUpperBound a)
+
 -- | @since WIP
 instance (PIsData a, PEnumerable a) => PEq (PUpperBound a) where
   {-# INLINEABLE (#==) #-}
@@ -212,20 +194,6 @@ instance (PIsData a, PEnumerable a) => PPartialOrd (PUpperBound a) where
 -- | @since 2.0.0
 instance DerivePlutusType (PUpperBound a) where
   type DPTStrat _ = PlutusTypeData
-
--- | @since 2.0.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PUpperBound a)
-  where
-  type PLifted (PUpperBound a) = (Plutus.UpperBound (PLifted a))
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Plutus.UpperBound a) (PUpperBound (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.UpperBound a)
 
 -- | @since 3.1.0
 instance PTryFrom PData a => PTryFrom PData (PUpperBound a)
@@ -257,23 +225,14 @@ data PExtended (a :: S -> Type) (s :: S)
       PShow
     )
 
+deriving via
+  DeriveDataPLiftable (PExtended a) (Plutus.Extended (AsHaskell a))
+  instance
+    (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PExtended a)
+
 -- | @since 2.0.0
 instance DerivePlutusType (PExtended a) where
   type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.0
-instance
-  PLiftData a =>
-  PUnsafeLiftDecl (PExtended a)
-  where
-  type PLifted (PExtended a) = Plutus.Extended (PLifted a)
-
--- | @since 3.1.0
-deriving via
-  (DerivePConstantViaData (Plutus.Extended a) (PExtended (PConstanted a)))
-  instance
-    PConstantData a =>
-    PConstantDecl (Plutus.Extended a)
 
 -- | @since 3.1.0
 instance PTryFrom PData a => PTryFrom PData (PExtended a)
@@ -451,7 +410,7 @@ pto = phoistAcyclic $
 -}
 palways ::
   forall (a :: S -> Type) (s :: S).
-  PLiftData a =>
+  (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) =>
   Term s (PInterval a)
 palways = pconstant Plutus.always
 

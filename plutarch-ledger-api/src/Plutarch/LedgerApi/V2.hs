@@ -69,10 +69,8 @@ module Plutarch.LedgerApi.V2 (
   Utils.prationalFromData,
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
@@ -86,10 +84,6 @@ import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V2 qualified as Plutus
 
@@ -127,15 +121,11 @@ newtype PTxInInfo (s :: S)
 instance DerivePlutusType PTxInInfo where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.1
-instance PUnsafeLiftDecl PTxInInfo where
-  type PLifted PTxInInfo = Plutus.TxInInfo
-
--- | @since 3.1.1
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.TxInInfo PTxInInfo)
+  DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
-    PConstantDecl Plutus.TxInInfo
+    PLiftable PTxInInfo
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxInInfo)
@@ -184,15 +174,11 @@ newtype PTxInfo (s :: S)
 instance DerivePlutusType PTxInfo where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.1
-instance PUnsafeLiftDecl PTxInfo where
-  type PLifted _ = Plutus.TxInfo
-
--- | @since 3.1.1
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.TxInfo PTxInfo)
+  DeriveDataPLiftable PTxInfo Plutus.TxInfo
   instance
-    PConstantDecl Plutus.TxInfo
+    PLiftable PTxInfo
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PTxInfo)
@@ -223,15 +209,11 @@ newtype PScriptContext (s :: S)
 instance DerivePlutusType PScriptContext where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.1
-instance PUnsafeLiftDecl PScriptContext where
-  type PLifted _ = Plutus.ScriptContext
-
--- | @since 3.1.1
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.ScriptContext PScriptContext)
+  DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance
-    PConstantDecl Plutus.ScriptContext
+    PLiftable PScriptContext
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PScriptContext)

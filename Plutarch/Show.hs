@@ -50,12 +50,12 @@ import Plutarch.Internal (
   (:-->),
  )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (
   pfix,
  )
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
-import Plutarch.Lift (pconstant)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
 
 class PShow t where

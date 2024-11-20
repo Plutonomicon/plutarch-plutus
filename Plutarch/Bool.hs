@@ -42,19 +42,13 @@ import Generics.SOP (
  )
 import Plutarch.Internal (PDelayed, PType, S, Term, pdelay, pforce, phoistAcyclic, plet, (#), (#$), (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Other (
   pto,
  )
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
 import Plutarch.Internal.Quantification (PForall (PForall))
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
- )
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
@@ -62,8 +56,11 @@ import PlutusCore qualified as PLC
 data PBool (s :: S) = PTrue | PFalse
   deriving stock (Show)
 
-instance PUnsafeLiftDecl PBool where type PLifted PBool = Bool
-deriving via (DerivePConstantDirect Bool PBool) instance PConstantDecl Bool
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBool Bool)
+  instance
+    PLiftable PBool
 
 instance PlutusType PBool where
   type PInner PBool = PBool

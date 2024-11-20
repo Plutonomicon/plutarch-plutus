@@ -5,16 +5,10 @@ module Plutarch.LedgerApi.V1.Address (
   PAddress (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
@@ -56,15 +50,11 @@ newtype PAddress (s :: S)
 instance DerivePlutusType PAddress where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PAddress where
-  type PLifted PAddress = Plutus.Address
-
--- | @since 2.0.0
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.Address PAddress)
+  DeriveDataPLiftable PAddress Plutus.Address
   instance
-    PConstantDecl Plutus.Address
+    PLiftable PAddress
 
 -- | @since 2.0.0
 instance PTryFrom PData (PAsData PAddress)

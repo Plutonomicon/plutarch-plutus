@@ -48,7 +48,7 @@ import Plutarch.Builtin (
   pfromDataImpl,
  )
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
-import Plutarch.Lift (pconstant)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))

@@ -106,7 +106,6 @@ library
     Plutarch.Internal.Trace
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.Witness
-    Plutarch.Lift
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic

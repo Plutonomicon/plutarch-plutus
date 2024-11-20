@@ -11,7 +11,7 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V1.Address (Address (Address))
 import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
-import PlutusTx qualified
+import PlutusTx (toData)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -76,7 +76,7 @@ tests =
                     "pmatch"
                     [ goldenEval
                         "newtype"
-                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
                            in pmatch addr $ \(PAddress addrFields) ->
                                 pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
                                   ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
@@ -86,7 +86,7 @@ tests =
                     "pfield"
                     [ goldenEval
                         "newtype"
-                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
                            in pletFields @'["credential", "stakingCredential"] addr $ \y ->
                                 ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
                         )
@@ -98,7 +98,7 @@ tests =
                     "pfield"
                     [ goldenEval
                         "single"
-                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
                            in pfromData $ pfield @"credential" # addr
                         )
                     ]
@@ -106,7 +106,7 @@ tests =
                     "pletFields"
                     [ goldenEval
                         "single"
-                        ( let addr = pconstant $ Address (PubKeyCredential "ab") Nothing
+                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
                            in pletFields @'["credential"] addr $ \y ->
                                 pfromData $ getField @"credential" y
                         )
@@ -221,8 +221,8 @@ type SomeFields =
 someFields :: Term s (PDataRecord SomeFields)
 someFields =
   punsafeCoerce $
-    pconstant $
-      fmap (PlutusTx.toData @Integer) ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] :: [Integer])
+    pconstant @(PBuiltinList PData) $
+      fmap toData ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] :: [Integer])
 
 {- |
   We can also bind over a 'PDataRecord' directly.

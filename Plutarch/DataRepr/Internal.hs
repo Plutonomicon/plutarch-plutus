@@ -9,16 +9,13 @@ module Plutarch.DataRepr.Internal (
   pdcons,
   pdnil,
   DataReprHandlers (..),
-  PConstantData,
   PDataRecord (..),
-  PLiftData,
   PLabeledType (..),
   type PLabelIndex,
   type PUnLabel,
   type PLookupLabel,
   pindexDataRecord,
   pdropDataRecord,
-  DerivePConstantViaData (..),
   DualReprHandler (..),
   PlutusTypeData,
 ) where
@@ -26,7 +23,7 @@ module Plutarch.DataRepr.Internal (
 import Data.Coerce (coerce)
 import Data.Functor.Compose qualified as F
 import Data.Functor.Const (Const (Const))
-import Data.Kind (Constraint, Type)
+import Data.Kind (Type)
 import Data.List (groupBy, maximumBy, sortOn)
 import Data.Proxy (Proxy (Proxy))
 import Data.SOP.NP (cana_NP)
@@ -110,6 +107,7 @@ import Plutarch.DataRepr.Internal.HList (
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   DerivedPInner,
@@ -120,27 +118,14 @@ import Plutarch.Internal.PlutusType (
   pcon',
   pmatch',
  )
-import Plutarch.Lift (
-  PConstant,
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLift,
-  PLifted,
-  pconstant,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PSubtype, PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
-import Plutarch.Unit (PUnit (PUnit))
-import Plutarch.Unsafe (punsafeCoerce)
-import PlutusLedgerApi.V1 qualified as Ledger
-
 import Plutarch.Reducible (NoReduce, Reduce)
 import Plutarch.Show (PShow (pshow'))
 import Plutarch.String (PString)
+import Plutarch.Trace (ptraceInfoError)
+import Plutarch.TryFrom (PSubtype', PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation), PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast)
+import Plutarch.Unit (PUnit (PUnit))
+import Plutarch.Unsafe (punsafeCoerce)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
@@ -544,90 +529,6 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
       Const () (y ': ys) ->
       (DualReprHandler s PBool y, Const () ys)
     rer _ = (DualRepr (#<=), Const ())
-
-{- | Type synonym to simplify deriving of @PConstant@ via @DerivePConstantViaData@.
-
-A type @Foo a@ is considered "ConstantableData" if:
-
-- The wrapped type @a@ has a @PConstant@ instance.
-- The lifted type of @a@ has a @PUnsafeLiftDecl@ instance.
-- There is type equality between @a@ and @PLifted (PConstanted a)@.
-- The newtype has @FromData@ and @ToData@ instances
-
-These constraints are sufficient to derive a @PConstant@ instance for the newtype.
-
-For deriving @PConstant@ for a wrapped type represented in UPLC as @Data@, see
-@DerivePConstantViaData@.
-
-Polymorphic types can be derived as follows:
-
->data Bar a = Bar a deriving stock (GHC.Generic)
->
->PlutusTx.makeLift ''Bar
->PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
->
->data PBar (a :: PType) (s :: S)
->  = PBar (Term s (PDataRecord '["_0" ':= a]))
->  deriving stock (GHC.Generic)
->  deriving anyclass (SOP.Generic, PIsDataRepr)
->  deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
->
->instance
->  forall a.
->  PLiftData a =>
->  PUnsafeLiftDecl (PBar a)
->  where
->  type PLifted (PBar a) = Bar (PLifted a)
->
->deriving via
->  ( DerivePConstantViaData
->      (Bar a)
->      (PBar (PConstanted a))
->  )
->  instance
->    PConstantData a =>
->    PConstantDecl (Bar a)
--}
-type PConstantData :: Type -> Constraint
-type PConstantData h =
-  ( PConstant h
-  , Ledger.FromData h
-  , Ledger.ToData h
-  , PIsData (PConstanted h)
-  )
-
-type PLiftData :: PType -> Constraint
-type PLiftData p =
-  ( PLift p
-  , Ledger.FromData (PLifted p)
-  , Ledger.ToData (PLifted p)
-  , PIsData p
-  )
-
-{- |
-
-For deriving @PConstant@ for a wrapped type represented by a builtin type, see
-@DerivePConstantViaNewtype@.
--}
-newtype
-  DerivePConstantViaData
-    (h :: Type)
-    (p :: PType) -- The Plutarch synonym to the Haskell type
-  = -- | The Haskell type for which @PConstant is being derived.
-    DerivePConstantViaData h
-
-instance
-  ( PSubtype PData p
-  , PLift p
-  , Ledger.FromData h
-  , Ledger.ToData h
-  ) =>
-  PConstantDecl (DerivePConstantViaData h p)
-  where
-  type PConstantRepr (DerivePConstantViaData h p) = Ledger.Data
-  type PConstanted (DerivePConstantViaData h p) = p
-  pconstantToRepr (DerivePConstantViaData x) = Ledger.toData x
-  pconstantFromRepr x = DerivePConstantViaData <$> Ledger.fromData x
 
 ----------------------- HRecP and friends -----------------------------------------------
 

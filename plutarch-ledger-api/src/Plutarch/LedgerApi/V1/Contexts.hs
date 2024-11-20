@@ -4,17 +4,11 @@ module Plutarch.LedgerApi.V1.Contexts (
   PScriptPurpose (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
- )
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
@@ -45,15 +39,11 @@ data PScriptPurpose (s :: S)
 instance DerivePlutusType PScriptPurpose where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.1
-instance PUnsafeLiftDecl PScriptPurpose where
-  type PLifted PScriptPurpose = Plutus.ScriptPurpose
-
--- | @since 3.1.1
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.ScriptPurpose PScriptPurpose)
+  DeriveDataPLiftable PScriptPurpose Plutus.ScriptPurpose
   instance
-    PConstantDecl Plutus.ScriptPurpose
+    PLiftable PScriptPurpose
 
 -- | @since 3.1.1
 instance PTryFrom PData (PAsData PScriptPurpose)

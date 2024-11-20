@@ -21,7 +21,7 @@ tests =
             "primitives"
             [ goldenGroup
                 "bool"
-                [ goldenEval "true" (plam $ \_ -> pconstant True)
+                [ goldenEval "true" (plam $ \_ -> pconstant @PBool True)
                 ]
             , goldenGroup
                 "int"
@@ -32,13 +32,13 @@ tests =
                 ]
             , goldenGroup
                 "bytestring"
-                [ goldenEval "1" (plam $ \_ -> pconstant ("1" :: ByteString))
-                , goldenEval "1111111" (plam $ \_ -> pconstant ("1111111" :: ByteString))
+                [ goldenEval "1" (plam $ \_ -> pconstant @PByteString ("1" :: ByteString))
+                , goldenEval "1111111" (plam $ \_ -> pconstant @PByteString ("1111111" :: ByteString))
                 ]
             , goldenGroup
                 "unit"
-                [ goldenEval "list" (plam $ \_ -> pconstant ([()] :: [()]))
-                , goldenEval "()" (plam $ \_ -> pconstant ())
+                [ goldenEval "list" (plam $ \_ -> pconstant @(PBuiltinList PUnit) ([()] :: [()]))
+                , goldenEval "()" (plam $ \_ -> pconstant @PUnit ())
                 ]
             , goldenEval "id" (plam id)
             , goldenGroup

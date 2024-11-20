@@ -37,7 +37,22 @@ import Plutarch (
   type (:-->),
  )
 import Plutarch.Bool (PBool, PEq)
-import Plutarch.Lift (pconstant)
+import Plutarch.Internal.Lift (
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    fromPlutarch,
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
+  ),
+  PLiftedClosed,
+  fromPlutarchReprClosed,
+  getPLifted,
+  mkPLifted,
+  pconstant,
+  toPlutarchReprClosed,
+ )
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)
@@ -50,6 +65,28 @@ data PMaybe (a :: S -> Type) (s :: S)
   deriving anyclass (PlutusType, PEq, PShow)
 
 instance DerivePlutusType (PMaybe a) where type DPTStrat _ = PlutusTypeScott
+
+-- | @since WIP
+instance PLiftable a => PLiftable (PMaybe a) where
+  type AsHaskell (PMaybe a) = Maybe (AsHaskell a)
+  type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprClosed
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch (Just a) = mkPLifted $ pjust # pconstant @a a
+  toPlutarch Nothing = mkPLifted pnothing
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprClosed
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = do
+    isJust' <- fromPlutarch $ mkPLifted $ pisJust # getPLifted t
+    if isJust'
+      then fmap Just $ fromPlutarch $ mkPLifted $ pfromJust # getPLifted t
+      else Right Nothing
 
 -- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
 pfromJust ::

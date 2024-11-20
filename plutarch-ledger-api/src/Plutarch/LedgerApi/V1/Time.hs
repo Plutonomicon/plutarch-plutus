@@ -11,16 +11,12 @@ module Plutarch.LedgerApi.V1.Time (
 ) where
 
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.DataRepr (DerivePConstantViaData (DerivePConstantViaData))
 import Plutarch.Enum (
   PCountable (psuccessor, psuccessorN),
   PEnumerable (ppredecessor, ppredecessorN),
  )
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Num (PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
@@ -103,15 +99,11 @@ instance PNum PPosixTime where
 instance DerivePlutusType PPosixTime where
   type DPTStrat _ = PlutusTypeNewtype
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PPosixTime where
-  type PLifted PPosixTime = Plutus.POSIXTime
-
--- | @since 2.0.0
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.POSIXTime PPosixTime)
+  DeriveDataPLiftable PPosixTime Plutus.POSIXTime
   instance
-    PConstantDecl Plutus.POSIXTime
+    PLiftable PPosixTime
 
 -- | @since 3.1.0
 instance PTryFrom PData PPosixTime where

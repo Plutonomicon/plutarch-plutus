@@ -7,15 +7,9 @@ module Plutarch.LedgerApi.V1.Tx (
 ) where
 
 import Plutarch.Builtin (pasConstr)
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
@@ -49,15 +43,11 @@ newtype PTxId (s :: S) = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
 instance DerivePlutusType PTxId where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxId where
-  type PLifted PTxId = Plutus.TxId
-
--- | @since 3.1.0
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.TxId PTxId)
+  DeriveDataPLiftable PTxId Plutus.TxId
   instance
-    PConstantDecl Plutus.TxId
+    PLiftable PTxId
 
 -- | @since 3.1.0
 instance PTryFrom PData PTxId where
@@ -155,15 +145,11 @@ newtype PTxOutRef (s :: S)
 instance DerivePlutusType PTxOutRef where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 2.0.0
-instance PUnsafeLiftDecl PTxOutRef where
-  type PLifted PTxOutRef = Plutus.TxOutRef
-
--- | @since 2.0.0
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.TxOutRef PTxOutRef)
+  DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
   instance
-    PConstantDecl Plutus.TxOutRef
+    PLiftable PTxOutRef
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PTxOutRef)

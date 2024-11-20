@@ -32,17 +32,17 @@ tests =
         [ goldenGroup
             "auth_validator"
             [ goldenEval "0" authValidatorTerm
-            , goldenEval "hash" (pconstant validatorHashEncoded)
+            , goldenEval "hash" (pconstant @PString validatorHashEncoded)
             ]
         , goldenGroup
             "auth_policy"
             [ goldenEval "0" authPolicyTerm
-            , goldenEval "hash" (pconstant policySymEncoded)
+            , goldenEval "hash" (pconstant @PString policySymEncoded)
             ]
         , goldenGroup
             "auth_stake_validator"
             [ goldenEval "0" authStakeValidatorTerm
-            , goldenEval "hash" (pconstant stakeValidatorHashEncoded)
+            , goldenEval "hash" (pconstant @PString stakeValidatorHashEncoded)
             ]
         ]
     ]

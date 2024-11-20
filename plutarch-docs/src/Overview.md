@@ -75,9 +75,6 @@ The [Typeclasses section](./Typeclasses.md) discusses the primary typeclasses re
   - [Implementing `PlutusType` for your own types (Scott Encoding)](./Typeclasses/PlutusType,PCon,PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding)
   - [Implementing `PlutusType` for your own types (`Data` Encoding)](./Typeclasses/PlutusType,PCon,PMatch.md#implementing-plutustype-for-your-own-types-data-encoding)
   - [Implementing `PlutusType` for your own types (`newtype`)](./Typeclasses/PlutusType,PCon,PMatch.md#implementing-plutustype-for-your-own-types-newtype)
-- [`PConstant` & `PLift`](./Typeclasses/PConstant and PLift.md)
-  - [Implementing `PConstant` & `PLift`](./Typeclasses/PConstantAndPLift.md#implementing-pconstant--plift)
-  - [Implementing `PConstant` & `PLift` for types with type variables (generic types)](./Typeclasses/PConstantAndPLift.md#implementing-pconstant--plift-for-types-with-type-variables-generic-types)
 - [`PListLike`](./Typeclasses/PListLike.md)
 - [`PIsDataRepr` & `PDataFields`](./Typeclasses/PIsDataReprAndPDataFields.md)
   - [All about extracting fields](./Typeclasses/PIsDataReprAndPDataFields.md#all-about-extracting-fields)
@@ -137,7 +134,6 @@ Due to the highly abstracted nature of Plutarch and its utilization of advanced 
 - [Couldn't match type `Plutarch.DataRepr.Internal.PUnLabel ...` arising from a use of `pfield` (or `getField`, or `pletFields`)](./Troubleshooting.md#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-getField-or-pletfields)
 - [Expected a type, but "fieldName" has kind `GHC.Types.Symbol`](./Troubleshooting.md#expected-a-type-but-fieldname-has-kind-ghctypessymbol)
 - [Lifting `PAsData`](./Troubleshooting.md#lifting-pasdata)
-- [Couldn't match type `PLifted (PConstanted Foo)` with `Foo`](./Troubleshooting.md#couldnt-match-type-plifted-pconstanted-foo-with-foo)
 - [Type match errors when using `pfield`/`getField` (or `OverloadedRecordDot` to access field)](./Troubleshooting.md#type-match-errors-when-using-pfieldgetField-or-overloadedrecorddot-to-access-field)
 
 # Useful Links

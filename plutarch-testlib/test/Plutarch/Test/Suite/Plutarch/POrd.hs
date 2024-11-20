@@ -10,7 +10,6 @@ import Plutarch.LedgerApi.V1 (
   PPubKeyHash (PPubKeyHash),
   PScriptHash (PScriptHash),
  )
-import Plutarch.Lift (PUnsafeLiftDecl (PLifted))
 import Plutarch.Prelude
 import Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkHaskellOrdEquivalent)
@@ -29,13 +28,13 @@ tests =
             "pisdata.lt"
             [ goldenGroup
                 "PCredential"
-                [ goldenGroup "derived" (ltWith (#<) c1 c2)
+                [ goldenGroup "derived" (ltWith @PCredential (#<) c1 c2)
                 , goldenGroup "pmatch" (ltWith ltCred c1 c2)
                 , goldenGroup "pmatch-pdatarecord" (ltWith ltCred' c1 c2)
                 ]
             , goldenGroup
                 "PTriplet"
-                [ goldenGroup "derived" (ltWith (#<) t1 t2)
+                [ goldenGroup "derived" (ltWith @(PTriplet PInteger) (#<) t1 t2)
                 , goldenGroup "pmatch" (ltWith ltTrip t1 t2)
                 , goldenGroup "pmatch-pdatarecord" (ltWith ltTrip' t1 t2)
                 ]
@@ -45,13 +44,13 @@ tests =
             "pisdata.lte"
             [ goldenGroup
                 "PCredential"
-                [ goldenGroup "derived" (lteWith (#<=) c1 c2)
+                [ goldenGroup "derived" (lteWith @PCredential (#<=) c1 c2)
                 , goldenGroup "pmatch" (lteWith lteCred c1 c2)
                 , goldenGroup "pmatch-pdatarecord" (lteWith lteCred' c1 c2)
                 ]
             , goldenGroup
                 "PTriplet"
-                [ goldenGroup "derived" (lteWith (#<=) t1 t2)
+                [ goldenGroup "derived" (lteWith @(PTriplet PInteger) (#<=) t1 t2)
                 , goldenGroup "pmatch" (lteWith lteTrip t1 t2)
                 , goldenGroup "pmatch-pdatarecord" (lteWith lteTrip' t1 t2)
                 ]
@@ -199,27 +198,29 @@ pmatchDataRecHelperTrip f trip1 trip2 = unTermCont $ do
 -- Ord utils
 
 ltWith ::
-  PLift p =>
-  (forall s. Term s p -> Term s p -> Term s PBool) ->
-  PLifted p ->
-  PLifted p ->
+  forall (p :: S -> Type).
+  PLiftable p =>
+  (forall (s :: S). Term s p -> Term s p -> Term s PBool) ->
+  AsHaskell p ->
+  AsHaskell p ->
   [GoldenTestTree]
 ltWith f x y =
-  [ goldenEval "true" (pconstant x `f` pconstant y)
-  , goldenEval "false" (pconstant y `f` pconstant x)
+  [ goldenEval "true" (pconstant @p x `f` pconstant @p y)
+  , goldenEval "false" (pconstant @p y `f` pconstant @p x)
   ]
 
 lteWith ::
-  PLift p =>
-  (forall s. Term s p -> Term s p -> Term s PBool) ->
-  PLifted p ->
-  PLifted p ->
+  forall (p :: S -> Type).
+  PLiftable p =>
+  (forall (s :: S). Term s p -> Term s p -> Term s PBool) ->
+  AsHaskell p ->
+  AsHaskell p ->
   [GoldenTestTree]
 lteWith f x y =
   [ goldenGroup
       "true"
-      [ goldenEval "eq" (pconstant x `f` pconstant x)
-      , goldenEval "less" (pconstant x `f` pconstant y)
+      [ goldenEval "eq" (pconstant @p x `f` pconstant @p x)
+      , goldenEval "less" (pconstant @p x `f` pconstant @p y)
       ]
-  , goldenEval "false" (pconstant y `f` pconstant x)
+  , goldenEval "false" (pconstant @p y `f` pconstant @p x)
   ]

@@ -10,9 +10,6 @@ module Plutarch.DataRepr (
   I.PLabeledType ((:=)),
   I.pindexDataRecord,
   I.pdropDataRecord,
-  I.DerivePConstantViaData (DerivePConstantViaData),
-  I.PConstantData,
-  I.PLiftData,
   I.PlutusTypeData,
 
   -- * Fields

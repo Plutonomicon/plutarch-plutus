@@ -5,15 +5,9 @@ module Plutarch.LedgerApi.V1.DCert (
   PDCert (..),
 ) where
 
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
- )
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.LedgerApi.V1.Credential (PStakingCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
-import Plutarch.Lift (
-  PConstantDecl,
-  PUnsafeLiftDecl (PLifted),
- )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
@@ -47,15 +41,11 @@ data PDCert (s :: S)
 instance DerivePlutusType PDCert where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.0
-instance PUnsafeLiftDecl PDCert where
-  type PLifted _ = Plutus.DCert
-
--- | @since 3.1.0
+-- | @since WIP
 deriving via
-  (DerivePConstantViaData Plutus.DCert PDCert)
+  DeriveDataPLiftable PDCert Plutus.DCert
   instance
-    PConstantDecl Plutus.DCert
+    PLiftable PDCert
 
 -- | @since 3.1.0
 instance PTryFrom PData (PAsData PDCert)

@@ -30,6 +30,7 @@
 * `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
 * `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
 * `pmapMaybe` to `Plutarch.Maybe`
+* `PLiftable` type class
 
 ## Changed
 
@@ -46,6 +47,7 @@
 * `Plutarch.Bitwise` module, as its functionality has been superseded by more
   type-safe operations in `Plutarch.ByteString`, `Plutarch.BitString` and
   `Plutarch.Convert`
+* `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
 
 ### Fixed
 

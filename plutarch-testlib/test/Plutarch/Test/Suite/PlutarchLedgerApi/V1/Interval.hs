@@ -122,27 +122,27 @@ tests =
           , testGroup
               "Haskell equivalents"
               [ testProperty "contains = pcontains" $
-                  checkHaskellEquivalent2 (contains @POSIXTime) pcontains
+                  checkHaskellEquivalent2 @(PInterval PPosixTime) (contains @POSIXTime) pcontains
               , testProperty "member = pmember" $
-                  checkHaskellEquivalent2
+                  checkHaskellEquivalent2 @PPosixTime
                     (member @POSIXTime)
                     (plam $ \value interval -> pmember # pdata value # interval)
               , testProperty "intersection = pintersection" $
-                  checkHaskellEquivalent2 (intersection @POSIXTime) pintersection
+                  checkHaskellEquivalent2 @(PInterval PPosixTime) (intersection @POSIXTime) pintersection
               , testProperty "hull = phull" $
-                  checkHaskellEquivalent2 (hull @POSIXTime) phull
+                  checkHaskellEquivalent2 @(PInterval PPosixTime) (hull @POSIXTime) phull
               , testProperty "before = pbefore" $
-                  checkHaskellEquivalent2 (before @POSIXTime) pbefore
+                  checkHaskellEquivalent2 @PPosixTime (before @POSIXTime) pbefore
               , testProperty "after = pafter" $
-                  checkHaskellEquivalent2 (after @POSIXTime) pafter
+                  checkHaskellEquivalent2 @PPosixTime (after @POSIXTime) pafter
               , testProperty "isEmpty = pisEmpty" $
-                  checkHaskellEquivalent (isEmpty @POSIXTime) pisEmpty
+                  checkHaskellEquivalent @(PInterval PPosixTime) (isEmpty @POSIXTime) pisEmpty
               , testProperty "singleton = psingleton" $
-                  checkHaskellEquivalent (singleton @POSIXTime) (plam $ \t -> psingleton # pdata t)
+                  checkHaskellEquivalent @PPosixTime (singleton @POSIXTime) (plam $ \t -> psingleton # pdata t)
               , testProperty "from = pfrom" $
-                  checkHaskellEquivalent (from @POSIXTime) (plam $ \t -> pfrom # pdata t)
+                  checkHaskellEquivalent @PPosixTime (from @POSIXTime) (plam $ \t -> pfrom # pdata t)
               , testProperty "to = pto" $
-                  checkHaskellEquivalent (to @POSIXTime) (plam $ \t -> pto # pdata t)
+                  checkHaskellEquivalent @PPosixTime (to @POSIXTime) (plam $ \t -> pto # pdata t)
               ]
           ]
     ]

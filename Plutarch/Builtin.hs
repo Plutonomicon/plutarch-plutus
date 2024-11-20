@@ -32,6 +32,7 @@ module Plutarch.Builtin (
 ) where
 
 import Data.Functor.Const (Const)
+import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
 import Plutarch (
@@ -80,21 +81,16 @@ import Plutarch.Bool (
  )
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Lift (
+  DeriveBuiltinPLiftable,
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
+  PLifted (PLifted),
+  fromPlutarchUni,
+  pconstant,
+  toPlutarchUni,
+ )
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Internal.Witness (witness)
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstant,
-  PConstantDecl,
-  PConstantRepr,
-  PConstanted,
-  PLift,
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
-  pconstantFromRepr,
-  pconstantToRepr,
- )
 import Plutarch.List (
   PListLike (
     PElemConstraint,
@@ -133,18 +129,32 @@ instance PlutusType (PBuiltinPair a b) where
   pcon' (PBuiltinPair x) = x
   pmatch' x f = f (PBuiltinPair x)
 
-instance (PLift a, PLift b) => PUnsafeLiftDecl (PBuiltinPair a b) where
-  type PLifted (PBuiltinPair a b) = (PLifted a, PLifted b)
+-- | @since WIP
+instance
+  ( PLiftable a
+  , PLC.Contains PLC.DefaultUni (PlutusRepr a)
+  , PLiftable b
+  , PLC.Contains PLC.DefaultUni (PlutusRepr b)
+  ) =>
+  PLiftable (PBuiltinPair a b)
+  where
+  type AsHaskell (PBuiltinPair a b) = (AsHaskell a, AsHaskell b)
+  type PlutusRepr (PBuiltinPair a b) = (PlutusRepr a, PlutusRepr b)
 
--- FIXME: figure out good way of deriving this
-instance (PConstant a, PConstant b) => PConstantDecl (a, b) where
-  type PConstantRepr (a, b) = (PConstantRepr a, PConstantRepr b)
-  type PConstanted (a, b) = PBuiltinPair (PConstanted a) (PConstanted b)
-  pconstantToRepr (x, y) = (pconstantToRepr x, pconstantToRepr y)
-  pconstantFromRepr (x, y) = do
-    x' <- pconstantFromRepr @a x
-    y' <- pconstantFromRepr @b y
-    Just (x', y')
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr (a, b) = (toPlutarchRepr @a a, toPlutarchRepr @b b)
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr (ar, br) = do
+    a <- fromPlutarchRepr @a ar
+    b <- fromPlutarchRepr @b br
+    pure (a, b)
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
@@ -164,7 +174,13 @@ data PBuiltinList (a :: PType) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
 
-instance (PShow a, PLift a) => PShow (PBuiltinList a) where
+instance
+  ( PShow a
+  , PLiftable a
+  , PLC.Contains PLC.DefaultUni (PlutusRepr a)
+  ) =>
+  PShow (PBuiltinList a)
+  where
   pshow' _ x = pshowList @PBuiltinList @a # x
 
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
@@ -182,16 +198,29 @@ pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
 
-instance PConstant a => PConstantDecl [a] where
-  type PConstantRepr [a] = [PConstantRepr a]
-  type PConstanted [a] = PBuiltinList (PConstanted a)
-  pconstantToRepr x = pconstantToRepr <$> x
-  pconstantFromRepr = traverse (pconstantFromRepr @a)
+type role HAsData nominal
+newtype HAsData (a :: Type) = HAsData Data
 
-instance PUnsafeLiftDecl a => PUnsafeLiftDecl (PBuiltinList a) where
-  type PLifted (PBuiltinList a) = [PLifted a]
+instance PIsData a => PLiftable (PAsData a) where
+  type AsHaskell (PAsData a) = HAsData (AsHaskell a)
+  type PlutusRepr (PAsData a) = Data
 
-instance PLift a => PlutusType (PBuiltinList a) where
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr (HAsData d) = d
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = Just . HAsData
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
+
+instance PLC.Contains PLC.DefaultUni HAsData where
+  knownUni = PLC.knownUni :: forall k (uni :: Type -> Type) (a :: k). PLC.Contains @k uni a => uni (PLC.Esc @k a)
+
+instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
   type PCovariant' (PBuiltinList a) = PCovariant' a
   type PContravariant' (PBuiltinList a) = PContravariant' a
@@ -205,12 +234,30 @@ instance PLift a => PlutusType (PBuiltinList a) where
         # pdelay (f PNil)
         # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
 
+-- | @since WIP
+instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PLiftable (PBuiltinList a) where
+  type AsHaskell (PBuiltinList a) = [AsHaskell a]
+  type PlutusRepr (PBuiltinList a) = [PlutusRepr a]
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = map (toPlutarchRepr @a)
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = traverse (fromPlutarchRepr @a)
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
+
 instance PListLike PBuiltinList where
-  type PElemConstraint PBuiltinList a = PLift a
+  type PElemConstraint PBuiltinList a = (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a))
 
   pelimList match_cons match_nil ls = pmatch ls $ \case
     PCons x xs -> match_cons x xs
     PNil -> match_nil
+
   pcons = plam $ \x xs -> pcon (PCons x xs)
   pnil = pcon PNil
   phead = pheadBuiltin
@@ -225,7 +272,7 @@ type family F (a :: PType) :: Bool where
 class Fc (x :: Bool) (a :: PType) where
   fc :: Proxy x -> Term s (PBuiltinList a) -> Term s (PBuiltinList a) -> Term s PBool
 
-instance (PLift a, PEq a) => Fc 'False a where
+instance (PLiftable a, PEq a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => Fc 'False a where
   fc _ xs ys = plistEquals # xs # ys
 
 instance PIsData (PBuiltinList a) => Fc 'True a where
@@ -284,8 +331,11 @@ instance PlutusType PData where
   pcon' (PData t) = t
   pmatch' t f = f (PData t)
 
-instance PUnsafeLiftDecl PData where type PLifted PData = Data
-deriving via (DerivePConstantDirect Data PData) instance PConstantDecl Data
+-- | @since WIP
+deriving via
+  DeriveBuiltinPLiftable PData Data
+  instance
+    PLiftable PData
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y
@@ -333,17 +383,6 @@ instance PIsData a => PlutusType (PAsData a) where
   type PVariant' (PAsData a) = PVariant' a
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
-
-type role PAsDataLifted nominal
-data PAsDataLifted (a :: PType)
-
-instance PConstantDecl (PAsDataLifted a) where
-  type PConstantRepr (PAsDataLifted a) = Data
-  type PConstanted (PAsDataLifted a) = PAsData a
-  pconstantToRepr = \case {}
-  pconstantFromRepr _ = Nothing
-
-instance PUnsafeLiftDecl (PAsData a) where type PLifted (PAsData a) = PAsDataLifted a
 
 pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
@@ -496,8 +535,12 @@ pconstrBuiltin = punsafeBuiltin PLC.ConstrData
 Example:
 > pconstantData @PInteger 42
 -}
-pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
-pconstantData x = let _ = witness (Proxy @(PLifted p ~ h, PConstanted h ~ p)) in punsafeCoerce $ pconstant $ PlutusTx.toData x
+pconstantData ::
+  forall (p :: S -> Type) (h :: Type) (s :: S).
+  (ToData h, AsHaskell p ~ h) =>
+  h ->
+  Term s (PAsData p)
+pconstantData x = let _ = witness (Proxy @(AsHaskell p ~ h)) in punsafeCoerce $ pconstant @PData $ PlutusTx.toData x
 
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 

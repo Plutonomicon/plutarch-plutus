@@ -37,8 +37,11 @@ between the world that Plutus understands (Haskell, essentially) and Plutarch.
 ```haskell
 class PlutusType a => PLiftable (a :: S -> Type) where
     type AsHaskell a :: Type
+    type PlutusRepr a :: Type
     toPlutarch :: forall (s :: S) . AsHaskell a -> PLifted a s
+    toPlutarchRepr :: AsHaskell a -> PlutusRepr a
     fromPlutarch :: (forall (s :: S) . PLifted a s) -> Either LiftError (AsHaskell a)
+    fromPlutarchRepr :: PlutusRepr a -> Maybe (AsHaskell a)
 ```
 
 Even though we rarely need to interact with `PLiftable` and its methods
@@ -167,6 +170,36 @@ and Haskell-level equivalent `h`. Aside from `a` being an instance of
   out in a computation involving `Data`)
 * `h` is an instance of both `ToData` and `FromData` (namely, it has a `Data`
   encoding that we can decode from and encode into)
+
+### Via `DeriveNewtypePLiftable`
+
+This helper is for types that have the same representation as some other
+type that already defined `PLiftable`. Instance defined that way will have
+the same `PlutusRepr`.
+
+```haskell
+newtype PPositive s = PPositive (Term s PInteger)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+
+deriving via
+  DeriveNewtypePLiftable PPositive PInteger Positive
+  instance PLiftable PPositive
+```
+
+This defines that `PPositive`'s Haskell-level equivalent is `Positive` and `PPositive` has the same representation as `PInteger`.
+
+Implementation is not important but is useful to talk about its type parameters
+
+```haskell
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+  = DeriveNewtypePLiftable (wrapper s)
+```
+
+To use `DeriveNewtypePLiftable` the following must hold:
+
+* `inner` has `PLiftable` instance
+* `AsHaskell inner` is coercible to `h`
 
 ### Manual derivation
 

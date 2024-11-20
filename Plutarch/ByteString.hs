@@ -37,7 +37,6 @@ module Plutarch.ByteString (
   phexByteStr,
 ) where
 
-import Data.Bits (toIntegralSized)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Char (toLower)
@@ -66,6 +65,14 @@ import Plutarch.Internal (
   (#$),
   (:-->),
  )
+import Plutarch.Internal.Lift (
+  DeriveBuiltinPLiftable,
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
+  PLifted (PLifted),
+  fromPlutarchUni,
+  pconstant,
+  toPlutarchUni,
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pfix)
 import Plutarch.Internal.PLam (plam)
@@ -75,13 +82,6 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
   pmatch,
- )
-import Plutarch.Lift (
-  DerivePConstantDirect (DerivePConstantDirect),
-  PConstantDecl (PConstantRepr, PConstanted, pconstantFromRepr, pconstantToRepr),
-  PLifted,
-  PUnsafeLiftDecl,
-  pconstant,
  )
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
@@ -93,8 +93,11 @@ newtype PByteString s = PByteString (Term s POpaque)
 
 instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
 
-instance PUnsafeLiftDecl PByteString where type PLifted PByteString = ByteString
-deriving via (DerivePConstantDirect ByteString PByteString) instance PConstantDecl ByteString
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PByteString ByteString)
+  instance
+    PLiftable PByteString
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
@@ -137,17 +140,21 @@ instance DerivePlutusType PByte where
   type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
-instance PUnsafeLiftDecl PByte where
-  type PLifted PByte = Word8
+instance PLiftable PByte where
+  type AsHaskell PByte = Word8
+  type PlutusRepr PByte = Integer
 
--- | @since WIP
-instance PConstantDecl Word8 where
-  type PConstantRepr Word8 = Integer
-  type PConstanted Word8 = PByte
-  {-# INLINEABLE pconstantToRepr #-}
-  pconstantToRepr = fromIntegral
-  {-# INLINEABLE pconstantFromRepr #-}
-  pconstantFromRepr = toIntegralSized
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchRepr @PInteger . fromIntegral @_ @Integer
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fmap (fromIntegral @Integer @Word8) . fromPlutarchRepr @PInteger
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 -- | @since WIP
 instance PEq PByte where

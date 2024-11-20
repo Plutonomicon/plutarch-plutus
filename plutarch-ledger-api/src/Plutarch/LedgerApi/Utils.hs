@@ -34,17 +34,9 @@ import Plutarch.Builtin (
   pconstrBuiltin,
   pforgetData,
  )
-import Plutarch.DataRepr (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PDataFields,
- )
-import Plutarch.Internal.PlutusType (
-  PlutusType (pcon', pmatch'),
- )
-import Plutarch.Lift (
-  PConstantDecl (PConstanted),
-  PUnsafeLiftDecl (PLifted),
- )
+import Plutarch.DataRepr (PDataFields)
+import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
@@ -108,6 +100,12 @@ instance PlutusType (PMaybeData a) where
       (f . PDJust . punsafeCoerce $ phead #$ psndBuiltin # asConstr)
 
 -- | @since WIP
+deriving via
+  DeriveDataPLiftable (PMaybeData a) (Maybe (AsHaskell a))
+  instance
+    (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
+
+-- | @since WIP
 instance PIsData (PMaybeData a) where
   {-# INLINEABLE pdataImpl #-}
   pdataImpl = pto
@@ -119,16 +117,6 @@ instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
 
 -- | @since 2.0.0
 instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
-
--- | @since 2.0.0
-instance PLiftData a => PUnsafeLiftDecl (PMaybeData a) where
-  type PLifted (PMaybeData a) = Maybe (PLifted a)
-
--- | @since 2.0.0
-deriving via
-  (DerivePConstantViaData (Maybe a) (PMaybeData (PConstanted a)))
-  instance
-    PConstantData a => PConstantDecl (Maybe a)
 
 -- | @since 2.0.0
 instance (PIsData a, PPartialOrd a) => PPartialOrd (PMaybeData a) where
@@ -222,11 +210,11 @@ instance POrd PRationalData
 instance DerivePlutusType PRationalData where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.0
-instance PUnsafeLiftDecl PRationalData where type PLifted PRationalData = Plutus.Rational
-
--- | @since 3.1.0
-deriving via (DerivePConstantViaData Plutus.Rational PRationalData) instance PConstantDecl Plutus.Rational
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PRationalData Plutus.Rational
+  instance
+    PLiftable PRationalData
 
 -- | @since 3.1.0
 instance PTryFrom PData PRationalData where

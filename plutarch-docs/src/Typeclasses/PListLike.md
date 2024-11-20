@@ -37,7 +37,7 @@ pfoo = undefined
 when specialized to `PBuiltinList`, can be simplified as:
 
 ```haskell
-pfoo' :: PLift a => Term s (PBuiltinList a :--> PBuiltinList a)
+pfoo' :: PLiftable a => Term s (PBuiltinList a :--> PBuiltinList a)
 pfoo' = undefined
 ```
 

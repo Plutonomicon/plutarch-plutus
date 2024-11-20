@@ -1,4 +1,6 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 -- Because of the weird way the PlutusType derivation mechanisms work, we lose
 -- the PlutusType constraint. Kind of annoying, but we can't convince GHC
 -- otherwise.
@@ -17,20 +19,26 @@ module Plutarch.Internal.Lift (
   -- ** Via-helpers
   DeriveBuiltinPLiftable (..),
   DeriveDataPLiftable (..),
+  DeriveNewtypePLiftable (..),
 
   -- ** Manual instance helpers
-  PLifted (..),
-  unPLifted,
+  fromPlutarchUni,
+  toPlutarchUni,
+  fromPlutarchReprClosed,
+  toPlutarchReprClosed,
+  PLifted (PLifted),
+  mkPLifted,
+  getPLifted,
+  PLiftedClosed (..),
   LiftError (..),
-  unsafeToUni,
-  unsafeFromUni,
 ) where
 
+import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
-import Plutarch.Builtin (PData)
+import {-# SOURCE #-} Plutarch.Builtin (PData)
 import Plutarch.Internal (
   Config (Tracing),
   LogLevel (LogInfo),
@@ -42,13 +50,13 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Internal.Other (POpaque, popaque)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Script (Script (Script))
+import Plutarch.TryFrom (PSubtype)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant)
-import PlutusCore.Data qualified as PLCData
 import PlutusTx qualified as PTx
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
@@ -79,58 +87,111 @@ Plutus by extension), and we have the ability to move between them.
 
 = Important note
 
-Calling 'toPlutarch' and 'fromPlutarch' directly should rarely, if ever, be a
-thing you do. Prefer using 'pconstant' and 'plift', as these handle some of
-the oddities required without you having to think about them.
+Calling methods of 'PLiftable' directly should rarely, if ever, be a
+thing you do, unless defining your own instances without @via@-deriving
+helpers (below). Prefer using 'pconstant' and 'plift', as these handle
+some of the oddities required without you having to think about them.
 
 You should rarely, if ever, need to define 'PLiftable' instances by hand.
-Whenever possible, prefer using 'DeriveBuiltinPLiftable' and
-'DeriveDataPLiftable', as they have fewer complexities and caveats. See their
-documentation for when to use them.
+Whenever possible, prefer using 'DeriveBuiltinPLiftable',
+'DeriveDataPLiftable', and `DeriveNewtypePLiftable` as they have fewer
+complexities and caveats. See their documentation for when to use them.
 
 If you do want to define the methods yourself, there's a few key factors to
 keep in mind:
 
-1. 'PLifted' is a trivial wrapper to assist with @via@ derivations: it is
-   isomorphic to 'Identity' and should be treated as such. Use 'unPLifted' to
-   \'pull\' terms out.
-2. 'fromPlutarch' involves compilation and evaluation. When doing so, ensure
-   that you use the largest possible budgets to avoid weird problems.
-3. When choosing a type for 'AsHaskell', /any/ value of that type /must/ be
+1. You still shouldn't write every method by hand, there are helpers
+   @fromPlutarch*@ and @toPlutarch*@ to cover common cases like types
+   in Plutus universe or Scott encoding
+2. If defining 'toPlutarchRepr' and 'fromPlutarchRepr' you will need to define
+   an associated 'PlutusRepr' type, this is a Hasekll level type that is included
+   in the Plutus default universe.
+3. If defining 'toPlutarch' and 'fromPlutarch' for Scott encoded type you need to
+   set @'PlutusRepr' PMyType = 'PLiftedClosed' PMyType@
+4. When choosing a type for 'AsHaskell', /any/ value of that type /must/ be
    representable in Plutarch. If you have internal invariants to maintain on
    the Haskell side, make sure you do so with great care.
 
 = Laws
 
-1. @'fromPlutarch' '.' 'toPlutarch'@ @=@ @'Right'@
-2. @'fmap' 'toPlutarch' '.' 'fromPlutarch'@ @=@ @'Right'@
+1. @'fromPlutarchRepr' '.' 'toPlutarchRepr'@ @=@ @'Just'@
+2. @'fmap' 'toPlutarchRepr' '.' 'fromPlutarchRepr'@ @=@ @'Just'@
+3. @'fromPlutarch' '.' 'toPlutarch'@ @=@ @'Right'@
+4. @'fmap' 'toPlutarch' '.' 'fromPlutarch'@ @=@ @'Right'@
 
-Any derivations via 'DeriveBuiltinPLiftable' and 'DeriveDataPLiftable'
-automatically follow these laws.
+Any derivations via 'DeriveBuiltinPLiftable', 'DeriveDataPLiftable', and
+'DeriveNewtypePLiftable' automatically follow these laws.
 
 @since WIP
 -}
 class PlutusType a => PLiftable (a :: S -> Type) where
   type AsHaskell a :: Type
-  toPlutarch :: forall (s :: S). AsHaskell a -> PLifted a s
-  fromPlutarch :: (forall (s :: S). PLifted a s) -> Either LiftError (AsHaskell a)
 
-{- | Similar to 'Identity', but at the level of Plutarch. Only needed when
-writing manual instances of 'PLiftable', or if you want to use 'toPlutarch'
-and 'fromPlutarch' directly.
+  -- Implementation note: we need this second repr type because builtin
+  -- containers like 'PBuiltinList' and 'PBuiltinPair' are not actually
+  -- polymorphic. They can only hold types that are in 'DefaultUni'.
+  -- Thus to convert e.g. a list to plutarch we first need to convert
+  -- list elements to something that is in Plutus universe before it can
+  -- be processed further
+  type PlutusRepr a :: Type
+
+  toPlutarchRepr :: AsHaskell a -> PlutusRepr a
+  toPlutarch :: AsHaskell a -> PLifted s a
+  fromPlutarchRepr :: PlutusRepr a -> Maybe (AsHaskell a)
+  fromPlutarch :: (forall s. PLifted s a) -> Either LiftError (AsHaskell a)
+
+{- | Valid definition for 'toPlutarchRepr' if 'PlutusRepr' is Scott encoded
 
 @since WIP
 -}
-newtype PLifted a s = PLifted (Term s POpaque)
+toPlutarchReprClosed ::
+  forall (a :: S -> Type).
+  (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
+  AsHaskell a ->
+  PlutusRepr a
+toPlutarchReprClosed p = PLiftedClosed $ toPlutarch @a p
 
-type role PLifted nominal nominal
-
-{- | Wrapper around 'punsafeCoerce' to \'pull out\' a term inside a 'PLifted'.
+{- | Valid definition for 'fromPlutarchRepr' if 'PlutusRepr' is Scott encoded
 
 @since WIP
 -}
-unPLifted :: PLifted a s -> Term s a
-unPLifted (PLifted t) = punsafeCoerce t
+fromPlutarchReprClosed ::
+  forall (a :: S -> Type).
+  (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
+  PlutusRepr a ->
+  Maybe (AsHaskell a)
+fromPlutarchReprClosed (PLiftedClosed t) = either (const Nothing) Just $ fromPlutarch @a t
+
+{- | Valid definition for 'toPlutarch' if 'PlutusRepr' is in Plutus universe
+
+@since WIP
+-}
+toPlutarchUni ::
+  forall (a :: S -> Type) (s :: S).
+  (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) =>
+  AsHaskell a ->
+  PLifted s a
+toPlutarchUni p =
+  PLifted $ popaque $ punsafeCoerce $ punsafeConstantInternal $ PLC.someValue $ toPlutarchRepr @a p
+
+{- | Valid definition for 'fromPlutarch' if 'PlutusRepr' is in Plutus universe
+
+@since WIP
+-}
+fromPlutarchUni ::
+  forall (a :: S -> Type).
+  (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) =>
+  (forall s. PLifted s a) ->
+  Either LiftError (AsHaskell a)
+fromPlutarchUni t =
+  case compile (Tracing LogInfo DoTracing) $ unPLifted t of
+    Left err -> Left . CouldNotCompile $ err
+    Right compiled -> case evalScriptHuge compiled of
+      (evaluated, _, _) -> case evaluated of
+        Left err -> Left . CouldNotEvaluate $ err
+        Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
+          Left err -> Left . TypeError $ err
+          Right res -> maybe (Left CouldNotDecodeData) Right $ fromPlutarchRepr @a res
 
 {- | Given a Haskell-level representation of a Plutarch term, transform it into
 its equivalent term.
@@ -142,7 +203,7 @@ pconstant ::
   PLiftable a =>
   AsHaskell a ->
   Term s a
-pconstant = punsafeCoerce . unPLifted . toPlutarch @a
+pconstant = getPLifted . toPlutarch @a
 
 {- | Given a closed Plutarch term, compile and evaluate it, then produce the
 corresponding Haskell value. If compilation or evaluation fails somehow, this
@@ -156,7 +217,7 @@ plift ::
   PLiftable a =>
   (forall (s :: S). Term s a) ->
   AsHaskell a
-plift t = case fromPlutarch (PLifted @a (punsafeCoerce t)) of
+plift t = case fromPlutarch @a $ mkPLifted t of
   Left err ->
     error $
       "plift failed: "
@@ -191,10 +252,19 @@ instance
   PLiftable (DeriveBuiltinPLiftable a h)
   where
   type AsHaskell (DeriveBuiltinPLiftable a h) = h
+  type PlutusRepr (DeriveBuiltinPLiftable a h) = h
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = id
+
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch = unsafeFromUni
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = Just
+
   {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = unsafeToUni
+  fromPlutarch = fromPlutarchUni
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ by way of its @Data@ encoding, rather than by @h@ being directly part of
@@ -214,51 +284,86 @@ instance DerivePlutusType (DeriveDataPLiftable a h) where
 -- | @since WIP
 instance
   ( PlutusType a
-  , PInner a ~ PData
+  , PSubtype PData a
   , PTx.ToData h
   , PTx.FromData h
   ) =>
   PLiftable (DeriveDataPLiftable a h)
   where
   type AsHaskell (DeriveDataPLiftable a h) = h
+  type PlutusRepr (DeriveDataPLiftable a h) = PTx.Data
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = PTx.toData
+
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch = unsafeFromUni @_ @PLCData.Data . PTx.toData
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = PTx.fromData
+
   {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch t = do
-    res <- unsafeToUni t
-    case PTx.fromData res of
-      Nothing -> Left CouldNotDecodeData
-      Just res' -> pure res'
+  fromPlutarch = fromPlutarchUni
 
-{- | Helper for writing 'PLifted' instances. This is /highly/ unsafe, and only
-suitable for internal use!
+{- | @via@-deriving helper, indicating that @wrapper@ has a Haskell-level equivalent
+@h@ by way of encoding of @inner@. It requires that @AsHaskell inner@ has the same
+Haskell representation as @h@
 
 @since WIP
 -}
-unsafeFromUni ::
-  forall (a :: S -> Type) (h :: Type) (s :: S).
-  PLC.DefaultUni `Includes` h =>
-  h ->
-  PLifted a s
-unsafeFromUni =
-  PLifted . punsafeConstantInternal . PLC.someValue @h @PLC.DefaultUni
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+  = DeriveNewtypePLiftable (wrapper s)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType)
 
-{- | Helper for writing 'PLiftable' instances. This is /highly/ unsafe, and only
-suitable for internal use!
+-- | @since WIP
+instance DerivePlutusType (DeriveNewtypePLiftable w i h) where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance (PLiftable inner, Coercible (AsHaskell inner) h) => PLiftable (DeriveNewtypePLiftable wrapper inner h) where
+  type AsHaskell (DeriveNewtypePLiftable wrapper inner h) = h
+  type PlutusRepr (DeriveNewtypePLiftable wrapper inner h) = PlutusRepr inner
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchRepr @inner . coerce @h @(AsHaskell inner)
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = punsafeCoercePLifted . toPlutarch @inner . coerce @h @(AsHaskell inner)
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = coerce . fromPlutarchRepr @inner
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch p = coerce . fromPlutarch @inner $ punsafeCoercePLifted p
+
+{- | Similar to 'Identity', but at the level of Plutarch. Only needed when
+writing manual instances of 'PLiftable', or if you want to use 'toPlutarch'
+and 'fromPlutarch' directly.
+
+This is used for coercing Plutarch terms in Haskell level with
+`coerce :: PLifted s a -> PLifted s b` for @via@-deriving helpers
 
 @since WIP
 -}
-unsafeToUni ::
-  forall (a :: S -> Type) (h :: Type).
-  PLC.DefaultUni `Includes` h =>
-  (forall (s :: S). PLifted a s) ->
-  Either LiftError h
-unsafeToUni t =
-  case compile (Tracing LogInfo DoTracing) (unPLifted t) of
-    Left err -> Left . CouldNotCompile $ err
-    Right compiled -> case evalScriptHuge compiled of
-      (evaluated, _, _) -> case evaluated of
-        Left err -> Left . CouldNotEvaluate $ err
-        Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
-          Left err -> Left . TypeError $ err
-          Right res -> pure res
+type role PLifted nominal nominal
+
+newtype PLifted s a = PLifted {unPLifted :: Term s POpaque}
+
+-- | @since WIP
+punsafeCoercePLifted :: PLifted s a -> PLifted s b
+punsafeCoercePLifted (PLifted t) = PLifted t
+
+-- | @since WIP
+getPLifted :: PLifted s a -> Term s a
+getPLifted (PLifted t) = punsafeCoerce t
+
+-- | @since WIP
+mkPLifted :: Term s a -> PLifted s a
+mkPLifted t = PLifted (popaque t)
+
+{- |  Use this as 'PlutusRepr' when defining 'PLiftable' instance for Scott encoded type
+
+@since WIP
+-}
+newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed {unPLiftedClosed :: forall (s :: S). PLifted s a}

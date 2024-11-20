@@ -45,7 +45,7 @@ import Plutarch (
   (#$),
   type (:-->),
  )
-import Plutarch.Lift (DerivePConstantDirect (DerivePConstantDirect), PConstantDecl, PUnsafeLiftDecl (PLifted))
+import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted (PLifted))
 import Plutarch.Num (PNum (pfromInteger, (#-)))
 import Plutarch.TermCont (tcont)
 import Plutarch.Trace (ptraceInfoError)
@@ -54,7 +54,14 @@ import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 newtype PPositive s = PPositive (Term s PInteger)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PShow)
+
 instance DerivePlutusType PPositive where type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveNewtypePLiftable PPositive PInteger Positive
+  instance
+    PLiftable PPositive
 
 instance PNum PPositive where
   x #- y = ptryPositive #$ pto x #- pto y
@@ -78,12 +85,6 @@ instance PTryFrom PData (PAsData PPositive) where
     res <- tcont . plet $ ptryPositive # i
     resData <- tcont . plet $ pdata res
     pure (resData, res)
-
--- | @since WIP
-instance PUnsafeLiftDecl PPositive where type PLifted PPositive = Positive
-
--- | @since WIP
-deriving via (DerivePConstantDirect Integer PPositive) instance PConstantDecl Positive
 
 -- | Build a 'PPositive' from a 'PInteger'. Yields 'PNothing' if argument is zero.
 ppositive :: Term s (PInteger :--> PMaybe PPositive)

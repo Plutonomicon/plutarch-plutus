@@ -33,6 +33,7 @@ import Plutarch (
   S,
   Term,
   pcon,
+  perror,
   phoistAcyclic,
   plam,
   plet,
@@ -62,20 +63,31 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.DataRepr.Internal (
-  DerivePConstantViaData (DerivePConstantViaData),
-  PConstantData,
-  PLiftData,
+import Plutarch.Internal.Lift (
+  DeriveDataPLiftable,
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    fromPlutarch,
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
+  ),
+  PLifted (PLifted),
+  PLiftedClosed,
+  fromPlutarchReprClosed,
+  getPLifted,
+  mkPLifted,
+  pconstant,
+  toPlutarchReprClosed,
  )
-import Plutarch.Internal.PlutusType (
-  PlutusType (PInner, pcon', pmatch'),
- )
-import Plutarch.Lift (PConstantDecl (PConstanted), PUnsafeLiftDecl (PLifted))
+import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom)
 import Plutarch.Unsafe (punsafeCoerce)
+import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | Scott-encoded 'Either'.
 data PEither (a :: PType) (b :: PType) (s :: S)
@@ -86,6 +98,40 @@ data PEither (a :: PType) (b :: PType) (s :: S)
 
 instance DerivePlutusType (PEither a b) where
   type DPTStrat _ = PlutusTypeScott
+
+-- | @since WIP
+instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
+  type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
+  type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprClosed
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch (Left a) = mkPLifted $ plam (pcon . PLeft) # pconstant @a a
+  toPlutarch (Right b) = mkPLifted $ plam (pcon . PRight) # pconstant @b b
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprClosed
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = do
+    isLeft <-
+      fromPlutarch $
+        mkPLifted $
+          plam (\e -> pmatch e $ \case PLeft _ -> pconstant @PBool True; PRight _ -> pconstant @PBool False)
+            # getPLifted t
+    if isLeft
+      then
+        fmap Left $
+          fromPlutarch $
+            mkPLifted $
+              plam (\e -> pmatch e $ \case PLeft a -> a; PRight _ -> perror) # getPLifted t
+      else
+        fmap Right $
+          fromPlutarch $
+            mkPLifted $
+              plam (\e -> pmatch e $ \case PLeft _ -> perror; PRight b -> b) # getPLifted t
 
 {- | @Data@-encoded 'Either'.
 
@@ -147,6 +193,17 @@ instance PlutusType (PEitherData a b) where
         (f . PDRight . punsafeCoerce $ arg)
 
 -- | @since WIP
+deriving via
+  DeriveDataPLiftable (PEitherData a b) (Either (AsHaskell a) (AsHaskell b))
+  instance
+    ( Plutus.ToData (AsHaskell a)
+    , Plutus.FromData (AsHaskell a)
+    , Plutus.ToData (AsHaskell b)
+    , Plutus.FromData (AsHaskell b)
+    ) =>
+    PLiftable (PEitherData a b)
+
+-- | @since WIP
 instance PIsData (PEitherData a b) where
   {-# INLINEABLE pdataImpl #-}
   pdataImpl = pto
@@ -158,16 +215,6 @@ instance (PTryFrom PData a, PTryFrom PData b) => PTryFrom PData (PEitherData a b
 
 -- | @since WIP
 instance (PTryFrom PData a, PTryFrom PData b) => PTryFrom PData (PAsData (PEitherData a b))
-
--- | @since WIP
-instance (PLiftData a, PLiftData b) => PUnsafeLiftDecl (PEitherData a b) where
-  type PLifted (PEitherData a b) = Either (PLifted a) (PLifted b)
-
--- | @since WIP
-deriving via
-  (DerivePConstantViaData (Either a b) (PEitherData (PConstanted a) (PConstanted b)))
-  instance
-    (PConstantData a, PConstantData b) => PConstantDecl (Either a b)
 
 {- | Make a @Data@-encoded @Left@.
 

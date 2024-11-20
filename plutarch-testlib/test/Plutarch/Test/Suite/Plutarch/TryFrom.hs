@@ -58,14 +58,14 @@ tests =
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEvalFail
                 "PDataSum wrong record type"
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PByteString, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant $ Constr 2 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ Constr 2 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEvalFail
                 "[ByteString] (with length == 2) /= PRational"
@@ -123,7 +123,7 @@ tests =
                             (pdata $ pcons # numr #$ pcons # denm # pnil)
                         pguardC "non-zero should be as expected" $ pto nz #== pfromData denm
                         pguardC "drat should be as expected" $ pfromData drat #== pcon (PRational (pfromData numr) nz)
-                        pure $ pconstant ()
+                        pure $ pconstant @PUnit ()
                     )
                 )
             , goldenEval
@@ -152,14 +152,14 @@ tests =
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant $ Constr 0 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ Constr 0 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEval
                 "PDataSum constr 1"
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant $ Constr 1 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEval
                 "recover PWrapInt"
