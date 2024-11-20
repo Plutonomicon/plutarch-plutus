@@ -341,6 +341,9 @@ instance (PLiftable inner, Coercible (AsHaskell inner) h) => PLiftable (DeriveNe
 writing manual instances of 'PLiftable', or if you want to use 'toPlutarch'
 and 'fromPlutarch' directly.
 
+This is used for coercing Plutarch terms in Haskell level with
+`coerce :: PLifted s a -> PLifted s b` for @via@-deriving helpers
+
 @since WIP
 -}
 type role PLifted nominal nominal
