@@ -239,14 +239,14 @@ Commutative :: Commutativity
 NonCommutative :: Commutativity
 
 -- | Construct an empty <a>PMap</a>.
-pempty :: (PIsData k, PIsData v) => Term s (PMap 'Sorted k v)
+pempty :: Term s (PMap 'Sorted k v)
 
 -- | Construct a singleton <a>PMap</a> with the given key and value.
 psingleton :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (v :--> PMap 'Sorted k v))
 
 -- | Construct a singleton <a>PMap</a> with the given data-encoded key and
 --   value.
-psingletonData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (PAsData k :--> (PAsData v :--> PMap 'Sorted k v))
+psingletonData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PAsData k :--> (PAsData v :--> PMap 'Sorted k v))
 
 punsortedMapFromFoldable :: forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PMap 'Unsorted k v)
 
@@ -254,25 +254,25 @@ psortedMapFromFoldable :: forall (k :: PType) (v :: PType) (f :: Type -> Type) (
 
 -- | Given a <a>PMap</a> of uncertain order, yield a <a>PMap</a> that is
 --   known to be sorted.
-passertSorted :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). (POrd k, PIsData k, PIsData v) => Term s (PMap any k v :--> PMap 'Sorted k v)
+passertSorted :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). (POrd k, PIsData k) => Term s (PMap any k v :--> PMap 'Sorted k v)
 
 -- | Forget the knowledge that keys were sorted.
 pforgetSorted :: forall (g :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PMap 'Sorted k v) -> Term s (PMap g k v)
 
 -- | Applies a function to every value in the map, much like <a>map</a>.
-pmap :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((a :--> b) :--> (PMap g k a :--> PMap g k b))
+pmap :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmap</a>, but over Data representations.
-pmapData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((PAsData a :--> PAsData b) :--> (PMap g k a :--> PMap g k b))
+pmapData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PAsData b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmap</a>, but gives key access as well.
 pmapWithKey :: forall (k :: PType) (a :: PType) (b :: PType) (keysort :: KeyGuarantees) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((k :--> (a :--> b)) :--> (PMap keysort k a :--> PMap 'Unsorted k b))
 
 -- | Maps and filters the map, much like <a>mapMaybe</a>.
-pmapMaybe :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((a :--> PMaybe b) :--> (PMap g k a :--> PMap g k b))
+pmapMaybe :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> PMaybe b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmapMaybe</a>, but over Data representation.
-pmapMaybeData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((PAsData a :--> PMaybe (PAsData b)) :--> (PMap g k a :--> PMap g k b))
+pmapMaybeData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PMaybe (PAsData b)) :--> (PMap g k a :--> PMap g k b))
 
 -- | Given a comparison function and a "zero" value, check whether a binary
 --   relation holds over 2 sorted <a>PMap</a>s.
@@ -289,7 +289,7 @@ pcheckBinRel :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsD
 --   exactly the same set of keys. Requires a number of equality
 --   comparisons between keys proportional to the length of the shorter
 --   argument.
-pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k, PEq k, PIsData a, PIsData b) => Term s (PMap 'Sorted k a :--> (PMap 'Sorted k b :--> PBool))
+pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PEq k, PIsData k) => Term s (PMap 'Sorted k a :--> (PMap 'Sorted k b :--> PBool))
 
 -- | As <a>pkeysEqual</a>, but requires only <a>PEq</a> constraints for the
 --   keys, and works for <a>Unsorted</a> <a>PMap</a>s. This requires a
@@ -299,10 +299,10 @@ pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k
 pkeysEqualUnsorted :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s (PMap 'Unsorted k a :--> (PMap 'Unsorted k b :--> PBool))
 
 -- | Verifies all values in the map satisfy the given predicate.
-pall :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
+pall :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). PIsData v => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
 
 -- | Tests if anu value in the map satisfies the given predicate.
-pany :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
+pany :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). PIsData v => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
 
 -- | Project all key-value pairs into a <a>Monoid</a>, then combine. Keys
 --   and values will be presented in key order.
@@ -318,7 +318,7 @@ punionResolvingCollisionsWith :: forall (k :: S -> Type) (v :: S -> Type) (s :: 
 
 -- | Build the union of two <a>PMap</a>s, merging values that share the
 --   same key using the given function.
-punionResolvingCollisionsWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+punionResolvingCollisionsWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Build the union of two <a>PMap</a>s. Take the value from the left
 --   argument for colliding keys.
@@ -342,20 +342,20 @@ pintersectionWith :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k,
 
 -- | Build the intersection of two <a>PMap</a>s, merging data-encoded
 --   values that share the same key using the given function.
-pintersectionWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+pintersectionWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Tests whether the map is empty.
-pnull :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (PMap any k v :--> PBool)
+pnull :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PMap any k v :--> PBool)
 
 -- | Look up the given key in a <a>PMap</a>.
 plookup :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (PMap any k v :--> PMaybe v))
 
 -- | as <a>plookup</a>, except over Data representation.
-plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> (PMap any k v :--> PMaybe (PAsData v)))
+plookupData :: Term s (PAsData k :--> (PMap any k v :--> PMaybe (PAsData v)))
 
 -- | Look up the given key data in a <a>PMap</a>, applying the given
 --   function to the found key-value pair.
-plookupDataWith :: (PIsData k, PIsData v) => Term s ((PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x) :--> (PAsData k :--> (PMap any k v :--> PMaybe x)))
+plookupDataWith :: Term s ((PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x) :--> (PAsData k :--> (PMap any k v :--> PMaybe x)))
 
 -- | Look up the given key in a <a>PMap</a>, returning the default value if
 --   the key is absent.
@@ -363,12 +363,12 @@ pfindWithDefault :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarante
 
 -- | Look up the given key in a <a>PMap</a>; return the default if the key
 --   is absent or apply the argument function to the value data if present.
-pfoldAt :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
+pfoldAt :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). PIsData k => Term s (k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
 
 -- | Look up the given key data in a <a>PMap</a>; return the default if the
 --   key is absent or apply the argument function to the value data if
 --   present.
-pfoldAtData :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (PAsData k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
+pfoldAtData :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). Term s (PAsData k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
 
 -- | As <a>plookup</a>, but errors when the key is missing.
 ptryLookup :: forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (PMap keys k v :--> v))
@@ -378,7 +378,7 @@ ptryLookup :: forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S).
 pinsert :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Term s (k :--> (v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Delete a key from the map.
-pdelete :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Term s (k :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
+pdelete :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Term s (k :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
 
 -- | Given an 'updater' and a key, if the key exists in the <a>PMap</a>,
 --   apply the 'updater' to it, otherwise do nothing. If the 'updater'
@@ -414,7 +414,7 @@ pkvPairLt :: forall (k :: PType) (v :: PType) (s :: S). (PIsData k, PPartialOrd 
 --   You will need to specify what manner of list-like structure you want;
 --   we have arranged the type signature to make specifying this easy with
 --   <tt>TypeApplications</tt>.
-pkeys :: forall (ell :: PType -> PType) (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PListLike ell, PElemConstraint ell (PAsData k), PIsData k, PIsData v) => Term s (PMap keys k v :--> ell (PAsData k))
+pkeys :: forall (ell :: PType -> PType) (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PListLike ell, PElemConstraint ell (PAsData k)) => Term s (PMap keys k v :--> ell (PAsData k))
 instance (Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.Show.PShow k, Plutarch.Show.PShow v) => Plutarch.Show.PShow (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PMap keysort k v s)
@@ -431,8 +431,8 @@ instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Assoc
 instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell v), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell v)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance Plutarch.Bool.PEq (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v)
-instance (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.Builtin.PIsData k, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v), Plutarch.Builtin.PIsData v) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v))
-instance (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v))
+instance (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v))
+instance (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v))
 
 
 -- | Value-related functionality. In order to keep the interface efficient

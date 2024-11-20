@@ -3512,7 +3512,6 @@ argument multiple times without <code>plet</code>ing it - there's duplicate work
 <p>
 <pre><code class="language-haskell">module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where
 import Plutarch.Prelude hiding (pelimList)
-import PlutusCore (DefaultUni, Contains)
 </code></pre>
 </p>
 </details>
@@ -3521,12 +3520,7 @@ import PlutusCore (DefaultUni, Contains)
 <p>There is one simple and straightforward use case though, when you want a function argument to be lazily evaluated. In such a case, you should use a Haskell level function that <code>pdelay</code>s the argument before calling some Plutarch level function. Recall that <a href="Tricks/./PlutarchFunctionsStrict.html">Plutarch level functions are strict</a>.</p>
 <p>Outside of that straightforward use case, figuring out when to use Haskell level functions is quite complex. Haskell level functions will always be inlined when generating the Plutus Core. Unless the function is used <em>only once</em>, this sort of inlining will increase the script size - which is problematic.</p>
 <p>However, if the function is used <em>only once</em>, and making it Plutarch level causes extra <code>plam</code>s and <code>#</code>s to be introduced - you should just make it Haskell level. For example, consider the <code>pelimList</code> implementation:</p>
-<pre><code class="language-haskell">pelimList ::
-  (PLiftable a, DefaultUni `Contains` PlutusRepr a) =&gt;
-  Term s (a :--&gt; PBuiltinList a :--&gt; r) -&gt;
-  Term s r -&gt;
-  Term s (PBuiltinList a) -&gt;
-  Term s r
+<pre><code class="language-haskell">pelimList ::   PElemConstraint PBuiltinList a =&gt; Term s (a :--&gt; PBuiltinList a :--&gt; r) -&gt; Term s r -&gt; Term s (PBuiltinList a) -&gt; Term s r
 pelimList match_cons match_nil ls = pmatch ls $ \case
   PCons x xs -&gt; match_cons # x # xs
   PNil -&gt; match_nil
@@ -3545,7 +3539,7 @@ pelimList match_cons match_nil ls = pmatch ls $ \case
 <p>Extra <code>plam</code>s and <code>#</code>s have been introduced. Really, <code>pelimList</code> could have taken a Haskell level function instead:</p>
 <pre><code class="language-haskell">pelimList' ::
   forall (a :: PType) (r :: PType) (s :: S).
-  (PLiftable a, DefaultUni `Contains` PlutusRepr a)
+  PElemConstraint PBuiltinList a
   =&gt; (Term s a -&gt; Term s (PBuiltinList a) -&gt; Term s r)
   -&gt; Term s r -&gt; Term s (PBuiltinList a)
   -&gt; Term s r
