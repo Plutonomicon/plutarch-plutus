@@ -232,11 +232,6 @@ newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s
       PShow
     )
 
--- | @since WIP
-deriving anyclass instance PShow (PValue 'AssocMap.Unsorted amounts)
-
-deriving anyclass instance PShow (PValue 'AssocMap.Sorted amounts)
-
 type role PValue nominal nominal nominal
 
 -- | @since 2.0.0

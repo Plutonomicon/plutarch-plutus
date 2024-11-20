@@ -5,7 +5,6 @@
 ```haskell
 module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where
 import Plutarch.Prelude hiding (pelimList)
-import PlutusCore (DefaultUni, Contains)
 ```
 
 </p>

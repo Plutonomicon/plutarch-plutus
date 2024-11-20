@@ -126,17 +126,6 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
       PShow
     )
 
--- | @since WIP
-instance
-  ( Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData k
-  , PShow k
-  , PIsData v
-  , PShow v
-  ) =>
-  PShow (PMap keysort k v)
-
 -- | @since 2.0.0
 instance DerivePlutusType (PMap keysort k v) where
   type DPTStrat _ = PlutusTypeNewtype

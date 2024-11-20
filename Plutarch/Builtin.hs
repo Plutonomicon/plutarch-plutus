@@ -31,7 +31,6 @@ module Plutarch.Builtin (
   PDataNewtype (..),
 ) where
 
-import Data.ByteString (ByteString)
 import Data.Functor.Const (Const)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
@@ -85,8 +84,9 @@ import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
-  PLifted (PLifted, unPLifted),
+  PLifted (PLifted),
   fromPlutarchUni,
+  getPLifted,
   pconstant,
   toPlutarchUni,
   unsafeToUni,
@@ -206,7 +206,7 @@ instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList 
   type PContravariant' (PBuiltinList a) = PContravariant' a
   type PVariant' (PBuiltinList a) = PVariant' a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
-  pcon' PNil = punsafeCoerce $ unPLifted $ unsafeToUni @[PlutusRepr a] []
+  pcon' PNil = getPLifted $ unsafeToUni @[PlutusRepr a] []
   pmatch' xs' f = plet xs' $ \xs ->
     pforce $
       pchooseListBuiltin
@@ -383,7 +383,7 @@ instance {-# OVERLAPPING #-} PLiftable (PAsData PData) where
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch = fromPlutarchUni
 
-instance (ToData (AsHaskell a), FromData (AsHaskell a), PIsData a) => PLiftable (PAsData a) where
+instance (PlutusTx.ToData (AsHaskell a), PlutusTx.FromData (AsHaskell a), PIsData a) => PLiftable (PAsData a) where
   type AsHaskell (PAsData a) = AsHaskell a
   type PlutusRepr (PAsData a) = Data
 
@@ -547,12 +547,6 @@ instance PIsData PUnit where
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromDataImpl x = pasConstr # pupcast x
   pdataImpl x' = pupcast $ plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
-
-instance PEq (PAsData a) where
-  x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
-instance (PIsData a, PShow a) => PShow (PAsData a) where
-  pshow' w x = pshow' w (pfromData x)
 
 pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
 pconstrBuiltin = punsafeBuiltin PLC.ConstrData
