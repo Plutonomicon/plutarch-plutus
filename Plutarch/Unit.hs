@@ -4,10 +4,23 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch (Term, pcon, plet)
-import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd, (#<), (#<=), (#==))
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
-import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon', pmatch')
+import Plutarch.Bool (
+  PBool (PFalse, PTrue),
+  PEq,
+  POrd,
+  PPartialOrd,
+  (#<),
+  (#<=),
+  (#==),
+ )
+import Plutarch.Internal.Lift (
+  DeriveBuiltinPLiftable,
+  PLiftable,
+  PLifted (PLifted),
+  pconstant,
+ )
+import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch')
+import Plutarch.Internal.Term (Term, plet)
 import Plutarch.Show (PShow (pshow'))
 
 data PUnit s = PUnit

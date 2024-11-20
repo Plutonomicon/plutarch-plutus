@@ -15,7 +15,7 @@ import Plutarch.Prelude
 Plutarch also provides sophisticated generic deriving support for completely custom types. In particular, you can easily derive `PlutusType` for your own type:
 
 ```haskell
-data PMyType (a :: PType) (b :: PType) (s :: S)
+data PMyType (a :: S -> Type) (b :: S -> Type) (s :: S)
   = POne (Term s a)
   | PTwo (Term s b)
   deriving stock Generic

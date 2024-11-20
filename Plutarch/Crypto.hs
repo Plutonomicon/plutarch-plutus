@@ -14,14 +14,10 @@ module Plutarch.Crypto (
   pverifySchnorrSecp256k1Signature,
 ) where
 
-import Plutarch (
-  Term,
-  type (:-->),
- )
-import Plutarch.Unsafe (punsafeBuiltin)
-
 import Plutarch.Bool (PBool)
 import Plutarch.ByteString (PByteString)
+import Plutarch.Internal.Term (Term, (:-->))
+import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 -- | Hash a 'PByteString' using SHA-256.

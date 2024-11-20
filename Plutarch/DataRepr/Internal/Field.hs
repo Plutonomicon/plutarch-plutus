@@ -23,27 +23,12 @@ module Plutarch.DataRepr.Internal.Field (
   hrecField,
 ) where
 
+import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (
   KnownNat,
   Symbol,
  )
-
-import Data.Kind (Constraint, Type)
-import Plutarch (
-  PInner,
-  PType,
-  S,
-  Term,
-  TermCont (TermCont),
-  plam,
-  plet,
-  pto,
-  runTermCont,
-  (#),
-  type (:-->),
- )
-
 import Plutarch.Builtin (
   PAsData,
   PIsData,
@@ -70,12 +55,17 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexLabel,
   type IndexList,
  )
+import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (PInner)
+import Plutarch.Internal.Term (S, Term, plet, (#), (:-->))
+import Plutarch.Internal.TermCont (TermCont (TermCont), runTermCont)
 import Plutarch.Internal.Witness (witness)
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils
 
-type family Helper (x :: PType) :: [PLabeledType] where
+type family Helper (x :: S -> Type) :: [PLabeledType] where
   Helper (PDataSum '[y]) = y
   Helper (PDataRecord y) = y
 
@@ -83,7 +73,7 @@ type family Helper (x :: PType) :: [PLabeledType] where
   Class allowing 'letFields' to work for a PType, usually via
   `PIsDataRepr`, but is derived for some other types for convenience.
 -}
-class PDataFields (a :: PType) where
+class PDataFields (a :: S -> Type) where
   -- | Fields in HRec bound by 'letFields'
   type PFields a :: [PLabeledType]
 
@@ -144,13 +134,13 @@ foo :: PMemberFields PFooType '["scnd", "frst"] s as => HRec as -> Term s PInteg
 foo h = pif (getField @"scnd" h) (getField @"frst" h) 0
 @
 -}
-type PMemberFields :: PType -> [Symbol] -> S -> [(Symbol, Type)] -> Constraint
+type PMemberFields :: (S -> Type) -> [Symbol] -> S -> [(Symbol, Type)] -> Constraint
 type family PMemberFields t fs s as where
   PMemberFields _ '[] _ _ = ()
   PMemberFields t (name ': rest) s as = (PMemberField t name s as, PMemberFields t rest s as)
 
 -- | Single field version of 'PMemberFields'.
-type PMemberField :: PType -> Symbol -> S -> [(Symbol, Type)] -> Constraint
+type PMemberField :: (S -> Type) -> Symbol -> S -> [(Symbol, Type)] -> Constraint
 type family PMemberField t name s as where
   PMemberField t name s as =
     ( IndexLabel name as ~ Term s (PAsData (PLookupLabel name (PFields t)))

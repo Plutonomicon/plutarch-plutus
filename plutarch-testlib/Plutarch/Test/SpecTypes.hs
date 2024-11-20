@@ -29,7 +29,7 @@ instance Pretty a => Pretty (Triplet a) where
 
 @since WIP
 -}
-newtype PTriplet (a :: PType) (s :: S)
+newtype PTriplet (a :: S -> Type) (s :: S)
   = PTriplet
       ( Term
           s

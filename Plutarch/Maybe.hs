@@ -22,20 +22,6 @@ module Plutarch.Maybe (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch (
-  DPTStrat,
-  DerivePlutusType,
-  PlutusType,
-  PlutusTypeScott,
-  S,
-  Term,
-  pcon,
-  phoistAcyclic,
-  plam,
-  pmatch,
-  (#),
-  type (:-->),
- )
 import Plutarch.Bool (PBool, PEq)
 import Plutarch.Internal.Lift (
   PLiftable (
@@ -52,6 +38,21 @@ import Plutarch.Internal.Lift (
   mkPLifted,
   pconstant,
   toPlutarchReprClosed,
+ )
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  (#),
+  (:-->),
  )
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)

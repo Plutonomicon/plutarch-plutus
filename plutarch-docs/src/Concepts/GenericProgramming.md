@@ -111,12 +111,13 @@ Also - as parsing data costs computation resources, it is common to pass tagged 
 `PlutusType` typeclass serves 2 purposes:
 
 1. Adds derivation via anyclass for Haskell ADTs
-2. Manipulates given `PType` on its internal representation (provided as type `PInner`), rather than parsing/constructing the datatype back and forth.
+2. Manipulates given `S -> Type` on its internal representation (provided as type `PInner`), 
+  rather than parsing/constructing the datatype back and forth.
 
 Examples on how to derive `PlutusType` to either Data or Scott encoding:
 
 ```haskell
-data MyType (a :: PType) (b :: PType) (s :: S)
+data MyType (a :: S -> Type) (b :: S -> Type) (s :: S)
   = One (Term s a)
   | Two (Term s b)
   deriving stock Generic
@@ -125,7 +126,7 @@ instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 
 -- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
 
-data MyTypeD (a :: PType) (b :: PType) (s :: S)
+data MyTypeD (a :: S -> Type) (b :: S -> Type) (s :: S)
   = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
   | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
   deriving stock Generic

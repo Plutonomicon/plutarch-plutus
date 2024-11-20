@@ -13,6 +13,34 @@ import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
+import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<=))
+import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
+import Plutarch.Integer (PInteger, PIntegral)
+import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted (PLifted))
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+ )
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  plet,
+  pthrow,
+  (#),
+  (#$),
+  (:-->),
+ )
+import Plutarch.Internal.TermCont (runTermCont, tcont)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Num (PNum (pfromInteger, (#-)))
+import Plutarch.Show (PShow, pshow)
+import Plutarch.Trace (ptraceInfoError)
+import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary,
@@ -22,40 +50,20 @@ import Test.QuickCheck (
  )
 import Test.QuickCheck qualified as QuickCheck
 
-import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<=))
-import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
-import Plutarch.Integer (PInteger, PIntegral)
-
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (PShow, pshow)
-
-import Plutarch (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
-  PlutusTypeNewtype,
-  Term,
-  TermCont (runTermCont),
-  pcon,
-  phoistAcyclic,
-  plam,
-  plet,
-  pthrow,
-  pto,
-  (#),
-  (#$),
-  type (:-->),
- )
-import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted (PLifted))
-import Plutarch.Num (PNum (pfromInteger, (#-)))
-import Plutarch.TermCont (tcont)
-import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
-
-newtype PPositive s = PPositive (Term s PInteger)
+newtype PPositive (s :: S) = PPositive (Term s PInteger)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PIntegral, PShow)
+  deriving anyclass
+    ( PlutusType
+    , PIsData
+    , PEq
+    , PPartialOrd
+    , POrd
+    , PIntegral
+    , PShow
+    )
 
-instance DerivePlutusType PPositive where type DPTStrat _ = PlutusTypeNewtype
+instance DerivePlutusType PPositive where
+  type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
 deriving via

@@ -1,14 +1,14 @@
 module Plutarch.Monadic ((>>=), (>>), fail) where
 
-import Prelude hiding (fail, (>>), (>>=))
-
 import Data.String (fromString)
-import Plutarch (
+import Plutarch.Internal.Term (
   Config (Tracing),
+  Term,
   TracingMode (DetTracing),
   pgetConfig,
  )
-import Plutarch.Prelude
+import Plutarch.Trace (ptraceInfoError)
+import Prelude hiding (fail, (>>), (>>=))
 
 {- | Bind function used within do syntax.
 

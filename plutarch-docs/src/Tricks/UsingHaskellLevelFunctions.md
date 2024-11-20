@@ -48,7 +48,7 @@ Extra `plam`s and `#`s have been introduced. Really, `pelimList` could have take
 
 ```haskell
 pelimList' ::
-  forall (a :: PType) (r :: PType) (s :: S).
+  forall (a :: S -> Type) (r :: S -> Type) (s :: S).
   PElemConstraint PBuiltinList a
   => (Term s a -> Term s (PBuiltinList a) -> Term s r)
   -> Term s r -> Term s (PBuiltinList a)
