@@ -320,140 +320,6 @@ newtype NoReduce a
 NoReduce :: a -> NoReduce a
 reduce :: Coercible a (Reduce a) => a -> Reduce a
 
-
--- | This module defines functions, associated type families, and newtypes
---   for use with <a><tt>DerivingVia</tt></a> to allow Plutarch to convert
---   to and from PTypes and Haskell types.
-module Plutarch.Lift
-
--- | Create a Plutarch-level constant, from a Haskell value. Example: &gt;
---   pconstant @PInteger 42
-pconstant :: forall p s. PLift p => PLifted p -> Term s p
-
--- | Like <a>plift'</a> but throws on failure.
-plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
-
--- | Convert a Plutarch term to the associated Haskell value. Fail
---   otherwise. This will fully evaluate the arbitrary closed expression,
---   and convert the resulting value.
-plift' :: forall p. PUnsafeLiftDecl p => Config -> ClosedTerm p -> Either LiftError (PLifted p)
-
--- | Error during script evaluation.
-data LiftError
-LiftError_EvalError :: EvalError -> LiftError
-LiftError_KnownTypeError :: BuiltinError -> LiftError
-LiftError_FromRepr :: LiftError
-LiftError_CompilationError :: Text -> LiftError
-
--- | Class of Haskell types <tt>h</tt> that can be represented as a Plutus
---   core builtin and converted to a Plutarch type.
---   
---   The Plutarch type is determined by `PConstanted h`. Its Plutus Core
---   representation is given by `PConstantRepr h`.
---   
---   This typeclass is closely tied with <a>PLift</a>.
---   
---   Laws: - <tt>pconstantFromRepr . pconstantToRepr ≡ Just</tt> -
---   <tt>(pconstantToRepr <a>$</a>) . pconstantFromRepr ≡ Just</tt> -
---   <tt>plift . pfromData . flip ptryFrom fst . pconstant .
---   PlutusTx.toData ≡ id</tt> - <tt>PlutusTx.fromData . plift .
---   pforgetData . pdata . pconstant ≡ Just</tt>
---   
---   These laws must be upheld for the sake of soundness of the type
---   system.
-class (PUnsafeLiftDecl (PConstanted h), DefaultUni `Includes` PConstantRepr h) => PConstantDecl (h :: Type) where {
-    type PConstantRepr h :: Type;
-    type PConstanted h :: PType;
-}
-pconstantToRepr :: PConstantDecl h => h -> PConstantRepr h
-pconstantFromRepr :: PConstantDecl h => PConstantRepr h -> Maybe h
-
--- | Class of Plutarch types <tt>p</tt> that can be converted to/from a
---   Haskell type.
---   
---   The Haskell type is determined by `PLifted p`.
---   
---   This typeclass is closely tied with <a>PConstant</a>.
-type PLift = PUnsafeLiftDecl
-
--- | Type synonym to simplify deriving of <tt>PConstant</tt> via
---   <tt>DerivePConstantViaNewtype</tt>.
---   
---   A newtype <tt>Foo a</tt> is considered <a>Constantable</a> if:
---   
---   <ul>
---   <li>The wrapped type <tt>a</tt> has a <tt>PConstant</tt>
---   instance.</li>
---   <li>The lifted type of <tt>a</tt> has a <tt>PUnsafeLiftDecl</tt>
---   instance.</li>
---   <li>There is type equality between <tt>a</tt> and <tt>PLifted
---   (PConstanted a)</tt>.</li>
---   </ul>
---   
---   These constraints are sufficient to derive a <tt>PConstant</tt>
---   instance for the newtype.
---   
---   For deriving <tt>PConstant</tt> for a wrapped type represented in UPLC
---   as <tt>Data</tt>, see <tt>DerivePConstantViaData</tt>.
-type PConstant a = (a ~ PLifted (PConstanted a), PConstantDecl a)
-
--- | Newtype wrapper for deriving <tt>PConstant</tt> when the wrapped type
---   is directly represented by a builtin UPLC type that is <i>not</i>
---   <tt>Data</tt>.
---   
---   Ex: <tt>PInteger</tt> is directly represented as a builtin integer.
-newtype DerivePConstantDirect (h :: Type) (p :: PType)
-DerivePConstantDirect :: h -> DerivePConstantDirect (h :: Type) (p :: PType)
-
--- | Newtype wrapper for deriving <tt>PConstant</tt> when the wrapped type
---   is represented indirectly by a builtin UPLC type that is <i>not</i>
---   <tt>Data</tt>.
---   
---   Ex: <tt>PPubKeyHash</tt> is a newtype to a <tt>PByteString</tt> and
---   <tt>PByteString</tt> is directly represented as a builtin bytestring.
---   
---   Polymorphic types can be derived as follows:
---   
---   <pre>
---   newtype Foo a = Foo a
---   
---   newtype PFoo a s = PFoo (Term s a)
---   
---   instance forall a. PLift a =&gt; PUnsafeLiftDecl (PFoo a) where
---     type PLifted (PFoo a) = Foo (PLifted a)
---   
---   deriving via
---     ( DerivePConstantViaNewtype
---         (Foo a)
---         (PFoo (PConstanted a))
---         (PConstanted a)
---     )
---     instance
---       PConstant a =&gt;
---       PConstantDecl (Foo a)
---   </pre>
-newtype DerivePConstantViaNewtype (h :: Type) (p :: PType) (p' :: PType)
-
--- | The Haskell newtype we are deriving a <tt>PConstant</tt> instance for
-DerivePConstantViaNewtype :: h -> DerivePConstantViaNewtype (h :: Type) (p :: PType) (p' :: PType)
-newtype DerivePConstantViaBuiltin (h :: Type) (p :: PType) (p' :: PType)
-DerivePConstantViaBuiltin :: h -> DerivePConstantViaBuiltin (h :: Type) (p :: PType) (p' :: PType)
-
--- | Laws: - It must be that <tt>PConstantRepr (PLifted p)</tt> when
---   encoded as a constant in UPLC (via the <a>Constant</a> constructor) is
---   a valid <tt>p</tt>.
-class (PConstantDecl (PLifted p), PConstanted (PLifted p) ~ p) => PUnsafeLiftDecl (p :: PType) where {
-    type PLifted p = (r :: Type) | r -> p;
-}
-instance GHC.Classes.Eq Plutarch.Lift.LiftError
-instance forall (p :: Plutarch.Internal.PType) (p' :: Plutarch.Internal.PType) h h'. (Plutarch.Lift.PLift p, Plutarch.Lift.PLift p', GHC.Types.Coercible @GHC.Types.Type h h', Plutarch.Lift.ToBuiltin' (Plutarch.Lift.PLifted p') h', Plutarch.Lift.FromBuiltin' h' (Plutarch.Lift.PLifted p')) => Plutarch.Lift.PConstantDecl (Plutarch.Lift.DerivePConstantViaBuiltin h p p')
-instance forall arep a. (PlutusTx.Builtins.HasBuiltin.HasFromBuiltin arep, (a :: GHC.Types.Type) GHC.Types.~ (PlutusTx.Builtins.HasBuiltin.FromBuiltin arep :: GHC.Types.Type)) => Plutarch.Lift.FromBuiltin' arep a
-instance Plutarch.Lift.FromBuiltin' PlutusTx.Builtins.Internal.BuiltinData PlutusCore.Data.Data
-instance forall a arep. (PlutusTx.Builtins.HasBuiltin.HasToBuiltin a, (arep :: GHC.Types.Type) GHC.Types.~ (PlutusTx.Builtins.HasBuiltin.ToBuiltin a :: GHC.Types.Type)) => Plutarch.Lift.ToBuiltin' a arep
-instance Plutarch.Lift.ToBuiltin' PlutusCore.Data.Data PlutusTx.Builtins.Internal.BuiltinData
-instance forall (p :: Plutarch.Internal.PType) (p' :: Plutarch.Internal.PType) h. (Plutarch.Lift.PLift p, Plutarch.Lift.PLift p', GHC.Types.Coercible @GHC.Types.Type h (Plutarch.Lift.PLifted p')) => Plutarch.Lift.PConstantDecl (Plutarch.Lift.DerivePConstantViaNewtype h p p')
-instance forall (p :: Plutarch.Internal.PType) h. (Plutarch.Lift.PLift p, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni h) => Plutarch.Lift.PConstantDecl (Plutarch.Lift.DerivePConstantDirect h p)
-
 module Plutarch.Internal.TypeFamily
 
 -- | Convert a list of `Term s a` to a list of <tt>a</tt>.
@@ -942,6 +808,195 @@ pinl :: Term s a -> (Term s a -> Term s b) -> Term s b
 instance forall a' (s :: Plutarch.Internal.S) (a :: Plutarch.Internal.PType). ((a' :: GHC.Types.Type) GHC.Types.~ (Plutarch.Internal.Term s a :: GHC.Types.Type)) => Plutarch.Internal.PLam.PLamN a' a s
 instance forall a' (s :: Plutarch.Internal.S) (a :: Plutarch.Internal.PType) b' (b :: Plutarch.Internal.PType). ((a' :: GHC.Types.Type) GHC.Types.~ (Plutarch.Internal.Term s a :: GHC.Types.Type), Plutarch.Internal.PLam.PLamN b' b s) => Plutarch.Internal.PLam.PLamN (a' -> b') (a Plutarch.Internal.:--> b) s
 
+module Plutarch.Internal.Lift
+
+-- | Indicates that the given Plutarch type has an equivalent in Haskell
+--   (and Plutus by extension), and we have the ability to move between
+--   them.
+--   
+--   <h1>Important note</h1>
+--   
+--   Calling methods of <a>PLiftable</a> directly should rarely, if ever,
+--   be a thing you do, unless defining your own instances without
+--   <tt>via</tt>-deriving helpers (below). Prefer using <a>pconstant</a>
+--   and <a>plift</a>, as these handle some of the oddities required
+--   without you having to think about them.
+--   
+--   You should rarely, if ever, need to define <a>PLiftable</a> instances
+--   by hand. Whenever possible, prefer using
+--   <a>DeriveBuiltinPLiftable</a>, <a>DeriveDataPLiftable</a>, and
+--   <a>DeriveNewtypePLiftable</a> as they have fewer complexities and
+--   caveats. See their documentation for when to use them.
+--   
+--   If you do want to define the methods yourself, there's a few key
+--   factors to keep in mind:
+--   
+--   <ol>
+--   <li>You still shouldn't write every method by hand, there are helpers
+--   <tt>fromPlutarch*</tt> and <tt>toPlutarch*</tt> to cover common cases
+--   like types in Plutus universe or Scott encoding</li>
+--   <li>If defining <a>toPlutarchRepr</a> and <a>fromPlutarchRepr</a> you
+--   will need to define an associated <a>PlutusRepr</a> type, this is a
+--   Hasekll level type that is included in the Plutus default
+--   universe.</li>
+--   <li>If defining <a>toPlutarch</a> and <a>fromPlutarch</a> for Scott
+--   encoded type you need to set <tt><a>PlutusRepr</a> PMyType =
+--   <a>PLiftedClosed</a> PMyType</tt></li>
+--   <li>When choosing a type for <a>AsHaskell</a>, <i>any</i> value of
+--   that type <i>must</i> be representable in Plutarch. If you have
+--   internal invariants to maintain on the Haskell side, make sure you do
+--   so with great care.</li>
+--   </ol>
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt><a>fromPlutarchRepr</a> <a>.</a> <a>toPlutarchRepr</a></tt>
+--   <tt>=</tt> <tt><a>Just</a></tt></li>
+--   <li><tt><a>fmap</a> <a>toPlutarchRepr</a> <a>.</a>
+--   <a>fromPlutarchRepr</a></tt> <tt>=</tt> <tt><a>Just</a></tt></li>
+--   <li><tt><a>fromPlutarch</a> <a>.</a> <a>toPlutarch</a></tt> <tt>=</tt>
+--   <tt><a>Right</a></tt></li>
+--   <li><tt><a>fmap</a> <a>toPlutarch</a> <a>.</a>
+--   <a>fromPlutarch</a></tt> <tt>=</tt> <tt><a>Right</a></tt></li>
+--   </ol>
+--   
+--   Any derivations via <a>DeriveBuiltinPLiftable</a>,
+--   <a>DeriveDataPLiftable</a>, and <a>DeriveNewtypePLiftable</a>
+--   automatically follow these laws.
+--   
+--   @since WIP
+class PlutusType a => PLiftable (a :: S -> Type) where {
+    type AsHaskell a :: Type;
+    type PlutusRepr a :: Type;
+}
+toPlutarchRepr :: PLiftable a => AsHaskell a -> PlutusRepr a
+toPlutarch :: PLiftable a => AsHaskell a -> PLifted s a
+fromPlutarchRepr :: PLiftable a => PlutusRepr a -> Maybe (AsHaskell a)
+fromPlutarch :: PLiftable a => (forall s. PLifted s a) -> Either LiftError (AsHaskell a)
+
+-- | Given a Haskell-level representation of a Plutarch term, transform it
+--   into its equivalent term.
+--   
+--   @since WIP
+pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Term s a
+
+-- | Given a closed Plutarch term, compile and evaluate it, then produce
+--   the corresponding Haskell value. If compilation or evaluation fails
+--   somehow, this will call <a>error</a>: if you need to 'trap' these
+--   outcomes and handle them differently somehow, use <a>fromPlutarch</a>.
+--   
+--   @since WIP
+plift :: forall (a :: S -> Type). PLiftable a => (forall (s :: S). Term s a) -> AsHaskell a
+
+-- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
+--   Haskell-level equivalent <tt>h</tt> that is directly part of the
+--   Plutus default universe (instead of by way of a <tt>Data</tt>
+--   encoding).
+--   
+--   @since WIP
+newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+DeriveBuiltinPLiftable :: a s -> DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+
+-- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
+--   Haskell-level equivalent <tt>h</tt> by way of its <tt>Data</tt>
+--   encoding, rather than by <tt>h</tt> being directly part of the Plutus
+--   default universe.
+--   
+--   @since WIP
+newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+DeriveDataPLiftable :: a s -> DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+
+-- | <tt>via</tt>-deriving helper, indicating that <tt>wrapper</tt> has a
+--   Haskell-level equivalent <tt>h</tt> by way of encoding of
+--   <tt>inner</tt>. It requires that <tt>AsHaskell inner</tt> has the same
+--   Haskell representation as <tt>h</tt>
+--   
+--   @since WIP
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+DeriveNewtypePLiftable :: wrapper s -> DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+
+-- | Valid definition for <a>fromPlutarch</a> if <a>PlutusRepr</a> is in
+--   Plutus universe
+--   
+--   @since WIP
+fromPlutarchUni :: forall (a :: S -> Type). (PLiftable a, DefaultUni `Includes` PlutusRepr a) => (forall s. PLifted s a) -> Either LiftError (AsHaskell a)
+
+-- | Valid definition for <a>toPlutarch</a> if <a>PlutusRepr</a> is in
+--   Plutus universe
+--   
+--   @since WIP
+toPlutarchUni :: forall (a :: S -> Type) (s :: S). (PLiftable a, DefaultUni `Includes` PlutusRepr a) => AsHaskell a -> PLifted s a
+
+-- | Valid definition for <a>fromPlutarchRepr</a> if <a>PlutusRepr</a> is
+--   Scott encoded
+--   
+--   @since WIP
+fromPlutarchReprClosed :: forall (a :: S -> Type). (PLiftable a, PlutusRepr a ~ PLiftedClosed a) => PlutusRepr a -> Maybe (AsHaskell a)
+
+-- | Valid definition for <a>toPlutarchRepr</a> if <a>PlutusRepr</a> is
+--   Scott encoded
+--   
+--   @since WIP
+toPlutarchReprClosed :: forall (a :: S -> Type). (PLiftable a, PlutusRepr a ~ PLiftedClosed a) => AsHaskell a -> PlutusRepr a
+
+-- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
+--   needed when writing manual instances of <a>PLiftable</a>, or if you
+--   want to use <a>toPlutarch</a> and <a>fromPlutarch</a> directly.
+--   
+--   This is used for coercing Plutarch terms in Haskell level with `coerce
+--   :: PLifted s a -&gt; PLifted s b` for <tt>via</tt>-deriving helpers
+--   
+--   @since WIP
+newtype PLifted s a
+PLifted :: Term s POpaque -> PLifted s a
+
+-- | @since WIP
+mkPLifted :: Term s a -> PLifted s a
+
+-- | @since WIP
+getPLifted :: PLifted s a -> Term s a
+
+-- | Use this as <a>PlutusRepr</a> when defining <a>PLiftable</a> instance
+--   for Scott encoded type
+--   
+--   @since WIP
+newtype PLiftedClosed (a :: S -> Type)
+PLiftedClosed :: (forall (s :: S). PLifted s a) -> PLiftedClosed (a :: S -> Type)
+[$sel:unPLiftedClosed:PLiftedClosed] :: PLiftedClosed (a :: S -> Type) -> forall (s :: S). PLifted s a
+
+-- | Used with <a>fromPlutarch</a> methods to give additional information
+--   about why evaluating a Plutarch term into a Haskell value went wrong.
+--   
+--   @since WIP
+data LiftError
+
+-- | Evaluation failed for some reason.
+CouldNotEvaluate :: EvalError -> LiftError
+
+-- | We tried to use a builtin not part of the Plutus universe.
+TypeError :: BuiltinError -> LiftError
+
+-- | Compiling the term into a script failed.
+CouldNotCompile :: Text -> LiftError
+
+-- | <tt>Data</tt> encoding was invalid for our type
+CouldNotDecodeData :: LiftError
+instance GHC.Show.Show Plutarch.Internal.Lift.LiftError
+instance GHC.Classes.Eq Plutarch.Internal.Lift.LiftError
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h s)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveDataPLiftable a h s)
+instance forall (wrapper :: Plutarch.Internal.S -> GHC.Types.Type) (inner :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveNewtypePLiftable wrapper inner h)
+instance forall (wrapper :: Plutarch.Internal.S -> GHC.Types.Type) (inner :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveNewtypePLiftable wrapper inner h s)
+instance forall (a :: Plutarch.Internal.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
+instance forall (a :: Plutarch.Internal.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, Plutarch.TryFrom.PSubtype Plutarch.Builtin.PData a, PlutusTx.IsData.Class.ToData h, PlutusTx.IsData.Class.FromData h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
+instance forall (inner :: Plutarch.Internal.S -> GHC.Types.Type) h (wrapper :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable inner, GHC.Types.Coercible @GHC.Types.Type (Plutarch.Internal.Lift.AsHaskell inner) h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveNewtypePLiftable wrapper inner h)
+instance forall (w :: Plutarch.Internal.S -> GHC.Types.Type) (i :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveNewtypePLiftable w i h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
+
 module Plutarch.Bool
 
 -- | Plutus <tt>BuiltinBool</tt>
@@ -1105,13 +1160,12 @@ instance forall (s :: Plutarch.Internal.S). GHC.Show.Show (Plutarch.Bool.PBool s
 instance forall (s :: Plutarch.Internal.S). GHC.Show.Show (Plutarch.Bool.PSBool s)
 instance forall (s :: Plutarch.Internal.S). GHC.Classes.Ord (Plutarch.Bool.PSBool s)
 instance forall (s :: Plutarch.Internal.S). GHC.Classes.Eq (Plutarch.Bool.PSBool s)
-instance Plutarch.Lift.PConstantDecl GHC.Types.Bool
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Bool.PBool
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Bool.PSBool
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Bool.PSBoolRaw a)
 instance Plutarch.Bool.PPartialOrd Plutarch.Bool.PBool
 instance Plutarch.Bool.POrd Plutarch.Bool.PBool
 instance Plutarch.Bool.PEq Plutarch.Bool.PBool
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.Bool.PBool
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Bool.PBool
 
 module Plutarch.Integer
@@ -1142,10 +1196,9 @@ prem :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
 pexpModInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> (PInteger :--> PInteger)))
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Integer.PInteger
 instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Integer.PInteger s)
-instance Plutarch.Lift.PConstantDecl GHC.Num.Integer.Integer
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Integer.PInteger
 instance Plutarch.Integer.PIntegral Plutarch.Integer.PInteger
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Integer.PInteger
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.Integer.PInteger
 instance Plutarch.Bool.PEq Plutarch.Integer.PInteger
 instance Plutarch.Bool.PPartialOrd Plutarch.Integer.PInteger
 instance Plutarch.Bool.POrd Plutarch.Integer.PInteger
@@ -1293,16 +1346,14 @@ instance Plutarch.Bool.PPartialOrd Plutarch.ByteString.PLogicOpSemantics
 instance Plutarch.Bool.PEq Plutarch.ByteString.PLogicOpSemantics
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.ByteString.PLogicOpSemantics
 instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.ByteString.PLogicOpSemantics s)
-instance Plutarch.Lift.PConstantDecl Data.ByteString.Internal.Type.ByteString
+instance Plutarch.Internal.Lift.PLiftable Plutarch.ByteString.PByteString
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.ByteString.PLogicOpSemantics
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.ByteString.PByte
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.ByteString.PByte
-instance Plutarch.Lift.PConstantDecl GHC.Word.Word8
+instance Plutarch.Internal.Lift.PLiftable Plutarch.ByteString.PByte
 instance Plutarch.Bool.PEq Plutarch.ByteString.PByte
 instance Plutarch.Bool.PPartialOrd Plutarch.ByteString.PByte
 instance Plutarch.Bool.POrd Plutarch.ByteString.PByte
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.ByteString.PByteString
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.ByteString.PByteString
 instance Plutarch.Bool.PEq Plutarch.ByteString.PByteString
 instance Plutarch.Bool.PPartialOrd Plutarch.ByteString.PByteString
 instance Plutarch.Bool.POrd Plutarch.ByteString.PByteString
@@ -1338,9 +1389,8 @@ pencodeUtf8 :: Term s (PString :--> PByteString)
 pdecodeUtf8 :: Term s (PByteString :--> PString)
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.String.PString
 instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.String.PString s)
-instance Plutarch.Lift.PConstantDecl Data.Text.Internal.Text
+instance Plutarch.Internal.Lift.PLiftable Plutarch.String.PString
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.String.PString
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.String.PString
 instance forall (s :: Plutarch.Internal.S). Data.String.IsString (Plutarch.Internal.Term s Plutarch.String.PString)
 instance Plutarch.Bool.PEq Plutarch.String.PString
 instance forall (s :: Plutarch.Internal.S). GHC.Base.Semigroup (Plutarch.Internal.Term s Plutarch.String.PString)
@@ -1826,8 +1876,7 @@ type PVariant' a :: Constraint
 module Plutarch.Unit
 data PUnit s
 PUnit :: PUnit s
-instance Plutarch.Lift.PConstantDecl ()
-instance Plutarch.Lift.PUnsafeLiftDecl (Plutarch.Unit.PUnit @{Plutarch.Internal.S})
+instance Plutarch.Internal.Lift.PLiftable (Plutarch.Unit.PUnit @{Plutarch.Internal.S})
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.Unit.PUnit @{Plutarch.Internal.S})
 instance Plutarch.Bool.PEq (Plutarch.Unit.PUnit @{Plutarch.Internal.S})
 instance Plutarch.Bool.PPartialOrd (Plutarch.Unit.PUnit @{Plutarch.Internal.S})
@@ -1913,6 +1962,7 @@ instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Bool.PEq 
 instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybe a s)
 instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybe a)
 
 
 -- | Scott-encoded lists and ListLike typeclass
@@ -2118,7 +2168,7 @@ plistData :: Term s (PBuiltinList PData :--> PData)
 
 -- | Create a Plutarch-level <a>PAsData</a> constant, from a Haskell value.
 --   Example: &gt; pconstantData @PInteger 42
-pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
+pconstantData :: forall (p :: S -> Type) (h :: Type) (s :: S). (ToData h, AsHaskell p ~ h) => h -> Term s (PAsData p)
 pconstrBuiltin :: Term s (PInteger :--> (PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData))))
 pasByteStr :: Term s (PData :--> PByteString)
 
@@ -2174,7 +2224,7 @@ instance forall k1 k2 (f :: k2 -> k1 -> Plutarch.Internal.PType) (b :: k1) (a ::
 instance forall k1 k2 (f :: k2 -> k1 -> Plutarch.Internal.PType) (b :: k1) (a :: k2) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Builtin.Helper4 @{k2} @{k1} f b a s)
 instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Builtin.Flip @{k2} @{k1} f a b)
 instance forall (a :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Builtin.PDataNewtype a s)
-instance Plutarch.Lift.PConstantDecl PlutusCore.Data.Data
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.PData
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Builtin.PIsData (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Bool.PEq (Plutarch.Builtin.PDataNewtype a)
@@ -2192,6 +2242,7 @@ instance forall k1 k2 (f :: k1 -> k2 -> Plutarch.Internal.PType) (b :: k2) (a ::
 instance Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinPair Plutarch.Builtin.PData Plutarch.Builtin.PData)
 instance forall k1 k2 (f :: k1 -> k2 -> Plutarch.Internal.PType) (b :: k2) (a :: k1). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Builtin.Helper3 @{k1} @{k2} f b a)
 instance forall k (f :: k -> Plutarch.Internal.PType) (a :: k). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Builtin.Helper2 @{k} f a)
+instance forall (a :: Plutarch.Internal.PType). Plutarch.Builtin.PIsData a => Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.PAsData a)
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinList a) => Plutarch.Builtin.Fc 'GHC.Types.True a
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Builtin.PIsData a => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.PAsData a)
 instance Plutarch.Builtin.PIsData Plutarch.Builtin.PData
@@ -2203,167 +2254,24 @@ instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). P
 instance Plutarch.Builtin.PIsData (Plutarch.Unit.PUnit @{Plutarch.Internal.S})
 instance Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinPair Plutarch.Integer.PInteger (Plutarch.Builtin.PBuiltinList Plutarch.Builtin.PData))
 instance forall (a :: Plutarch.Internal.PType). (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.Builtin.PAsData a)
-instance forall (a :: Plutarch.Internal.PType). Plutarch.Lift.PConstantDecl (Plutarch.Builtin.PAsDataLifted a)
-instance forall (a :: Plutarch.Internal.PType). Plutarch.Lift.PUnsafeLiftDecl (Plutarch.Builtin.PAsData a)
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Builtin.Fc (Plutarch.Builtin.F a) a => Plutarch.Bool.PEq (Plutarch.Builtin.PBuiltinList a)
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Bool.PEq (Plutarch.Builtin.PAsData a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Builtin.PData)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Bool.PBool)
 instance Plutarch.Show.PShow Plutarch.Builtin.PData
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.PData
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.Builtin.PData
 instance Plutarch.Bool.PEq Plutarch.Builtin.PData
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.Builtin.PData
-instance forall (a :: Plutarch.Internal.PType). (Plutarch.Lift.PLift a, Plutarch.Bool.PEq a) => Plutarch.Builtin.Fc 'GHC.Types.False a
-instance forall (a :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Lift.PLift a) => Plutarch.Show.PShow (Plutarch.Builtin.PBuiltinList a)
-instance forall a. Plutarch.Lift.PConstant a => Plutarch.Lift.PConstantDecl [a]
-instance forall (a :: Plutarch.Internal.PType). Plutarch.Lift.PUnsafeLiftDecl a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.Builtin.PBuiltinList a)
-instance forall (a :: Plutarch.Internal.PType). Plutarch.Lift.PLift a => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.PBuiltinList a)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Plutarch.Bool.PEq a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Builtin.Fc 'GHC.Types.False a
+instance Universe.Core.Contains @(GHC.Types.Type -> GHC.Types.Type) PlutusCore.Default.Universe.DefaultUni Plutarch.Builtin.HAsData
+instance forall (a :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Internal.Lift.PLiftable a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Show.PShow (Plutarch.Builtin.PBuiltinList a)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.PBuiltinList a)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.PBuiltinList a)
 instance Plutarch.List.PListLike Plutarch.Builtin.PBuiltinList
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.PBuiltinPair a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Lift.PLift a, Plutarch.Lift.PLift b) => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.Builtin.PBuiltinPair a b)
-instance forall a b. (Plutarch.Lift.PConstant a, Plutarch.Lift.PConstant b) => Plutarch.Lift.PConstantDecl (a, b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a), Plutarch.Internal.Lift.PLiftable b, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr b)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.PBuiltinPair a b)
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Builtin.PBuiltinPair a b)
 instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PEq a, Plutarch.Bool.PEq b) => Plutarch.Bool.PEq (Plutarch.Builtin.PBuiltinPair a b)
-
-module Plutarch.Internal.Lift
-
--- | Indicates that the given Plutarch type has an equivalent in Haskell
---   (and Plutus by extension), and we have the ability to move between
---   them.
---   
---   <h1>Important note</h1>
---   
---   Calling <a>toPlutarch</a> and <a>fromPlutarch</a> directly should
---   rarely, if ever, be a thing you do. Prefer using <a>pconstant</a> and
---   <a>plift</a>, as these handle some of the oddities required without
---   you having to think about them.
---   
---   You should rarely, if ever, need to define <a>PLiftable</a> instances
---   by hand. Whenever possible, prefer using <a>DeriveBuiltinPLiftable</a>
---   and <a>DeriveDataPLiftable</a>, as they have fewer complexities and
---   caveats. See their documentation for when to use them.
---   
---   If you do want to define the methods yourself, there's a few key
---   factors to keep in mind:
---   
---   <ol>
---   <li><a>PLifted</a> is a trivial wrapper to assist with <tt>via</tt>
---   derivations: it is isomorphic to <tt>Identity</tt> and should be
---   treated as such. Use <a>unPLifted</a> to 'pull' terms out.</li>
---   <li><a>fromPlutarch</a> involves compilation and evaluation. When
---   doing so, ensure that you use the largest possible budgets to avoid
---   weird problems.</li>
---   <li>When choosing a type for <a>AsHaskell</a>, <i>any</i> value of
---   that type <i>must</i> be representable in Plutarch. If you have
---   internal invariants to maintain on the Haskell side, make sure you do
---   so with great care.</li>
---   </ol>
---   
---   <h1>Laws</h1>
---   
---   <ol>
---   <li><tt><a>fromPlutarch</a> <a>.</a> <a>toPlutarch</a></tt> <tt>=</tt>
---   <tt><a>Right</a></tt></li>
---   <li><tt><a>fmap</a> <a>toPlutarch</a> <a>.</a>
---   <a>fromPlutarch</a></tt> <tt>=</tt> <tt><a>Right</a></tt></li>
---   </ol>
---   
---   Any derivations via <a>DeriveBuiltinPLiftable</a> and
---   <a>DeriveDataPLiftable</a> automatically follow these laws.
---   
---   @since WIP
-class PlutusType a => PLiftable (a :: S -> Type) where {
-    type AsHaskell a :: Type;
-}
-toPlutarch :: forall (s :: S). PLiftable a => AsHaskell a -> PLifted a s
-fromPlutarch :: PLiftable a => (forall (s :: S). PLifted a s) -> Either LiftError (AsHaskell a)
-
--- | Given a Haskell-level representation of a Plutarch term, transform it
---   into its equivalent term.
---   
---   @since WIP
-pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Term s a
-
--- | Given a closed Plutarch term, compile and evaluate it, then produce
---   the corresponding Haskell value. If compilation or evaluation fails
---   somehow, this will call <a>error</a>: if you need to 'trap' these
---   outcomes and handle them differently somehow, use <a>fromPlutarch</a>.
---   
---   @since WIP
-plift :: forall (a :: S -> Type). PLiftable a => (forall (s :: S). Term s a) -> AsHaskell a
-
--- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
---   Haskell-level equivalent <tt>h</tt> that is directly part of the
---   Plutus default universe (instead of by way of a <tt>Data</tt>
---   encoding).
---   
---   @since WIP
-newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
-DeriveBuiltinPLiftable :: a s -> DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
-
--- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
---   Haskell-level equivalent <tt>h</tt> by way of its <tt>Data</tt>
---   encoding, rather than by <tt>h</tt> being directly part of the Plutus
---   default universe.
---   
---   @since WIP
-newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
-DeriveDataPLiftable :: a s -> DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
-
--- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
---   needed when writing manual instances of <a>PLiftable</a>, or if you
---   want to use <a>toPlutarch</a> and <a>fromPlutarch</a> directly.
---   
---   @since WIP
-newtype PLifted a s
-PLifted :: Term s POpaque -> PLifted a s
-
--- | Wrapper around <a>punsafeCoerce</a> to 'pull out' a term inside a
---   <a>PLifted</a>.
---   
---   @since WIP
-unPLifted :: PLifted a s -> Term s a
-
--- | Used with <a>fromPlutarch</a> methods to give additional information
---   about why evaluating a Plutarch term into a Haskell value went wrong.
---   
---   @since WIP
-data LiftError
-
--- | Evaluation failed for some reason.
-CouldNotEvaluate :: EvalError -> LiftError
-
--- | We tried to use a builtin not part of the Plutus universe.
-TypeError :: BuiltinError -> LiftError
-
--- | Compiling the term into a script failed.
-CouldNotCompile :: Text -> LiftError
-
--- | <tt>Data</tt> encoding was invalid for our type
-CouldNotDecodeData :: LiftError
-
--- | Helper for writing <a>PLiftable</a> instances. This is <i>highly</i>
---   unsafe, and only suitable for internal use!
---   
---   @since WIP
-unsafeToUni :: forall (a :: S -> Type) (h :: Type). DefaultUni `Includes` h => (forall (s :: S). PLifted a s) -> Either LiftError h
-
--- | Helper for writing <a>PLifted</a> instances. This is <i>highly</i>
---   unsafe, and only suitable for internal use!
---   
---   @since WIP
-unsafeFromUni :: forall (a :: S -> Type) (h :: Type) (s :: S). DefaultUni `Includes` h => h -> PLifted a s
-instance GHC.Show.Show Plutarch.Internal.Lift.LiftError
-instance GHC.Classes.Eq Plutarch.Internal.Lift.LiftError
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h s)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Internal.Lift.DeriveDataPLiftable a h s)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
-instance forall (a :: Plutarch.Internal.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, (Plutarch.Internal.PlutusType.PInner a :: Plutarch.Internal.PType) GHC.Types.~ (Plutarch.Builtin.PData :: Plutarch.Internal.PType), PlutusTx.IsData.Class.ToData h, PlutusTx.IsData.Class.FromData h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
-instance forall (a :: Plutarch.Internal.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni h) => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
 
 module Plutarch.FFI
 
@@ -2441,6 +2349,74 @@ instance forall (a :: Plutarch.Internal.PType) (r :: Plutarch.Internal.PType). P
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.FFI.PTxList a)
 instance forall (a :: Plutarch.Internal.PType). Plutarch.Bool.PEq a => Plutarch.Bool.PEq (Plutarch.FFI.PTxList a)
 instance Plutarch.List.PListLike Plutarch.FFI.PTxList
+
+module Plutarch.Either
+
+-- | Scott-encoded <a>Either</a>.
+data PEither (a :: PType) (b :: PType) (s :: S)
+PLeft :: Term s a -> PEither (a :: PType) (b :: PType) (s :: S)
+PRight :: Term s b -> PEither (a :: PType) (b :: PType) (s :: S)
+
+-- | <tt>Data</tt>-encoded <a>Either</a>.
+--   
+--   @since WIP
+data PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
+PDLeft :: Term s (PAsData a) -> PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
+PDRight :: Term s (PAsData b) -> PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
+
+-- | Make a <tt>Data</tt>-encoded <tt>Left</tt>.
+--   
+--   @since WIP
+pdleft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (a :--> PEitherData a b)
+
+-- | Make a <tt>Data</tt>-encoded <tt>Right</tt>.
+--   
+--   @since WIP
+pdright :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (b :--> PEitherData a b)
+
+-- | Eliminator for <a>PEitherData</a>.
+--   
+--   @since WIP
+peitherData :: forall (a :: S -> Type) (b :: S -> Type) (r :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> r) :--> ((b :--> r) :--> (PEitherData a b :--> r)))
+
+-- | Verifies if a <a>PEitherData</a> is a <a>PDLeft</a>. Less code than
+--   using <a>peitherData</a>, as it doesn't need to inspect the contents.
+--   
+--   @since WIP
+pdisLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEitherData a b :--> PBool)
+
+-- | As <a>pdisLeft</a>, except verifies whether we have a <a>PDRight</a>.
+--   
+--   @since WIP
+pdisRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEitherData a b :--> PBool)
+
+-- | Return the value inside a <tt>PDEither</tt> if it's a <a>PDLeft</a>,
+--   error otherwise.
+--   
+--   @since WIP
+pdfromLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (PEitherData a b :--> a)
+
+-- | As <a>pdfromLeft</a>, but yields a value if given a <a>PDRight</a>
+--   instead.
+--   
+--   @since WIP
+pdfromRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (PEitherData a b :--> b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Either.PEither a b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PEq a, Plutarch.Bool.PEq b) => Plutarch.Bool.PEq (Plutarch.Either.PEither a b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEither a b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Either.PEither a b s)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Bool.PPartialOrd a, Plutarch.Bool.PPartialOrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Bool.POrd (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b, Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Bool.PEq (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Either.PEitherData a b s)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell b), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell b)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PPartialOrd a, Plutarch.Bool.PPartialOrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Bool.PPartialOrd (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Builtin.PIsData (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData b) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData b) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Either.PEitherData a b))
+instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Either.PEither a b)
+instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Plutarch.Internal.Lift.PLiftable b) => Plutarch.Internal.Lift.PLiftable (Plutarch.Either.PEither a b)
 
 module Plutarch.DataRepr.Internal.FromData
 
@@ -2572,66 +2548,11 @@ data DataReprHandlers (out :: PType) (defs :: [[PLabeledType]]) (s :: S)
 [DRHNil] :: DataReprHandlers out '[] s
 [DRHCons] :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def ': defs) s
 
--- | Type synonym to simplify deriving of <tt>PConstant</tt> via
---   <tt>DerivePConstantViaData</tt>.
---   
---   A type <tt>Foo a</tt> is considered <a>ConstantableData</a> if:
---   
---   <ul>
---   <li>The wrapped type <tt>a</tt> has a <tt>PConstant</tt>
---   instance.</li>
---   <li>The lifted type of <tt>a</tt> has a <tt>PUnsafeLiftDecl</tt>
---   instance.</li>
---   <li>There is type equality between <tt>a</tt> and <tt>PLifted
---   (PConstanted a)</tt>.</li>
---   <li>The newtype has <tt>FromData</tt> and <tt>ToData</tt>
---   instances</li>
---   </ul>
---   
---   These constraints are sufficient to derive a <tt>PConstant</tt>
---   instance for the newtype.
---   
---   For deriving <tt>PConstant</tt> for a wrapped type represented in UPLC
---   as <tt>Data</tt>, see <tt>DerivePConstantViaData</tt>.
---   
---   Polymorphic types can be derived as follows:
---   
---   <pre>
---   data Bar a = Bar a deriving stock (GHC.Generic)
---   
---   PlutusTx.makeLift ''Bar
---   PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
---   
---   data PBar (a :: PType) (s :: S)
---     = PBar (Term s (PDataRecord '["_0" ':= a]))
---     deriving stock (GHC.Generic)
---     deriving anyclass (SOP.Generic, PIsDataRepr)
---     deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
---   
---   instance
---     forall a.
---     PLiftData a =&gt;
---     PUnsafeLiftDecl (PBar a)
---     where
---     type PLifted (PBar a) = Bar (PLifted a)
---   
---   deriving via
---     ( DerivePConstantViaData
---         (Bar a)
---         (PBar (PConstanted a))
---     )
---     instance
---       PConstantData a =&gt;
---       PConstantDecl (Bar a)
---   </pre>
-type PConstantData h = (PConstant h, FromData h, ToData h, PIsData (PConstanted h))
-
 -- | A "record" of `exists a. PAsData a`. The underlying representation is
 --   `PBuiltinList PData`.
 data PDataRecord (as :: [PLabeledType]) (s :: S)
 [PDCons] :: forall name_x x xs s. PUnLabel name_x ~ x => Term s (PAsData x) -> Term s (PDataRecord xs) -> PDataRecord (name_x ': xs) s
 [PDNil] :: PDataRecord '[] s
-type PLiftData p = (PLift p, FromData (PLifted p), ToData (PLifted p), PIsData p)
 data PLabeledType
 (:=) :: Symbol -> PType -> PLabeledType
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat
@@ -2643,13 +2564,6 @@ pindexDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord as) -> Term s (
 
 -- | Safely drop the first n items of a <a>PDataRecord</a>.
 pdropDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
-
--- | For deriving <tt>PConstant</tt> for a wrapped type represented by a
---   builtin type, see <tt>DerivePConstantViaNewtype</tt>.
-newtype DerivePConstantViaData (h :: Type) (p :: PType)
-
--- | The Haskell type for which @PConstant is being derived.
-DerivePConstantViaData :: h -> DerivePConstantViaData (h :: Type) (p :: PType)
 newtype DualReprHandler s out def
 DualRepr :: (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out) -> DualReprHandler s out def
 data PlutusTypeData
@@ -2667,7 +2581,6 @@ instance forall (pty :: Plutarch.Internal.PType) (as :: [Plutarch.DataRepr.Inter
 instance forall (a :: Plutarch.Internal.PType). Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData a) => Plutarch.DataRepr.Internal.Helper2 'Plutarch.TryFrom.PNoSubtypeRelation a
 instance forall (a :: Plutarch.Internal.PType). Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.DataRepr.Internal.Helper2 'Plutarch.TryFrom.PSubtypeRelation a
 instance Plutarch.TryFrom.PTryFrom (Plutarch.Builtin.PBuiltinList Plutarch.Builtin.PData) (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
-instance forall (p :: Plutarch.Internal.PType) h. (Plutarch.TryFrom.PSubtype Plutarch.Builtin.PData p, Plutarch.Lift.PLift p, PlutusTx.IsData.Class.FromData h, PlutusTx.IsData.Class.ToData h) => Plutarch.Lift.PConstantDecl (Plutarch.DataRepr.Internal.DerivePConstantViaData h p)
 instance forall (a :: Plutarch.Internal.PType). (Plutarch.DataRepr.Internal.IsPDataSum (Plutarch.Internal.Generic.PCode a), Data.SOP.Constraint.SListI @{[Plutarch.DataRepr.Internal.PLabeledType]} (Plutarch.DataRepr.Internal.IsPDataSumDefs (Plutarch.Internal.Generic.PCode a)), Plutarch.Internal.Generic.PGeneric a) => Plutarch.DataRepr.Internal.PlutusTypeDataConstraint a
 instance Plutarch.Internal.PlutusType.PlutusTypeStrat Plutarch.DataRepr.Internal.PlutusTypeData
 instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Data.SOP.Constraint.SListI @{[Plutarch.DataRepr.Internal.PLabeledType]} defs => Plutarch.Internal.PlutusType.PlutusType (Plutarch.DataRepr.Internal.PDataSum defs)
@@ -2693,74 +2606,6 @@ instance forall (x :: Plutarch.Internal.PType) (label :: GHC.Types.Symbol). (Plu
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (x :: Plutarch.Internal.PType) (x' :: Plutarch.DataRepr.Internal.PLabeledType) (label :: GHC.Types.Symbol). (Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} xs, Plutarch.Bool.POrd x, Plutarch.Builtin.PIsData x, Plutarch.Bool.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs))) => Plutarch.Bool.PPartialOrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs)))
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (x :: Plutarch.Internal.PType) (x' :: Plutarch.DataRepr.Internal.PLabeledType) (label :: GHC.Types.Symbol). (Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} xs, Plutarch.Bool.POrd x, Plutarch.Builtin.PIsData x, Plutarch.Bool.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs))) => Plutarch.Bool.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs)))
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Builtin.PIsData (Plutarch.DataRepr.Internal.PDataRecord xs)
-
-module Plutarch.Either
-
--- | Scott-encoded <a>Either</a>.
-data PEither (a :: PType) (b :: PType) (s :: S)
-PLeft :: Term s a -> PEither (a :: PType) (b :: PType) (s :: S)
-PRight :: Term s b -> PEither (a :: PType) (b :: PType) (s :: S)
-
--- | <tt>Data</tt>-encoded <a>Either</a>.
---   
---   @since WIP
-data PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
-PDLeft :: Term s (PAsData a) -> PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
-PDRight :: Term s (PAsData b) -> PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
-
--- | Make a <tt>Data</tt>-encoded <tt>Left</tt>.
---   
---   @since WIP
-pdleft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (a :--> PEitherData a b)
-
--- | Make a <tt>Data</tt>-encoded <tt>Right</tt>.
---   
---   @since WIP
-pdright :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (b :--> PEitherData a b)
-
--- | Eliminator for <a>PEitherData</a>.
---   
---   @since WIP
-peitherData :: forall (a :: S -> Type) (b :: S -> Type) (r :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> r) :--> ((b :--> r) :--> (PEitherData a b :--> r)))
-
--- | Verifies if a <a>PEitherData</a> is a <a>PDLeft</a>. Less code than
---   using <a>peitherData</a>, as it doesn't need to inspect the contents.
---   
---   @since WIP
-pdisLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEitherData a b :--> PBool)
-
--- | As <a>pdisLeft</a>, except verifies whether we have a <a>PDRight</a>.
---   
---   @since WIP
-pdisRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEitherData a b :--> PBool)
-
--- | Return the value inside a <tt>PDEither</tt> if it's a <a>PDLeft</a>,
---   error otherwise.
---   
---   @since WIP
-pdfromLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (PEitherData a b :--> a)
-
--- | As <a>pdfromLeft</a>, but yields a value if given a <a>PDRight</a>
---   instead.
---   
---   @since WIP
-pdfromRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (PEitherData a b :--> b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Either.PEither a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PEq a, Plutarch.Bool.PEq b) => Plutarch.Bool.PEq (Plutarch.Either.PEither a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEither a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Either.PEither a b s)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Bool.PPartialOrd a, Plutarch.Bool.PPartialOrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Bool.POrd (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b, Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Bool.PEq (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type) (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.Either.PEitherData a b s)
-instance forall a b. (Plutarch.DataRepr.Internal.PConstantData a, Plutarch.DataRepr.Internal.PConstantData b) => Plutarch.Lift.PConstantDecl (Data.Either.Either a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.Bool.PPartialOrd a, Plutarch.Bool.PPartialOrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Bool.PPartialOrd (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.S -> GHC.Types.Type) (b :: Plutarch.Internal.S -> GHC.Types.Type). Plutarch.Builtin.PIsData (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData b) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData b) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Either.PEitherData a b))
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). (Plutarch.DataRepr.Internal.PLiftData a, Plutarch.DataRepr.Internal.PLiftData b) => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.PType) (b :: Plutarch.Internal.PType). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Either.PEither a b)
 
 module Plutarch.DataRepr.Internal.Field
 
@@ -2918,68 +2763,6 @@ pindexDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord as) -> Term s (
 
 -- | Safely drop the first n items of a <a>PDataRecord</a>.
 pdropDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
-
--- | For deriving <tt>PConstant</tt> for a wrapped type represented by a
---   builtin type, see <tt>DerivePConstantViaNewtype</tt>.
-newtype DerivePConstantViaData (h :: Type) (p :: PType)
-
--- | The Haskell type for which @PConstant is being derived.
-DerivePConstantViaData :: h -> DerivePConstantViaData (h :: Type) (p :: PType)
-
--- | Type synonym to simplify deriving of <tt>PConstant</tt> via
---   <tt>DerivePConstantViaData</tt>.
---   
---   A type <tt>Foo a</tt> is considered <a>ConstantableData</a> if:
---   
---   <ul>
---   <li>The wrapped type <tt>a</tt> has a <tt>PConstant</tt>
---   instance.</li>
---   <li>The lifted type of <tt>a</tt> has a <tt>PUnsafeLiftDecl</tt>
---   instance.</li>
---   <li>There is type equality between <tt>a</tt> and <tt>PLifted
---   (PConstanted a)</tt>.</li>
---   <li>The newtype has <tt>FromData</tt> and <tt>ToData</tt>
---   instances</li>
---   </ul>
---   
---   These constraints are sufficient to derive a <tt>PConstant</tt>
---   instance for the newtype.
---   
---   For deriving <tt>PConstant</tt> for a wrapped type represented in UPLC
---   as <tt>Data</tt>, see <tt>DerivePConstantViaData</tt>.
---   
---   Polymorphic types can be derived as follows:
---   
---   <pre>
---   data Bar a = Bar a deriving stock (GHC.Generic)
---   
---   PlutusTx.makeLift ''Bar
---   PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
---   
---   data PBar (a :: PType) (s :: S)
---     = PBar (Term s (PDataRecord '["_0" ':= a]))
---     deriving stock (GHC.Generic)
---     deriving anyclass (SOP.Generic, PIsDataRepr)
---     deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
---   
---   instance
---     forall a.
---     PLiftData a =&gt;
---     PUnsafeLiftDecl (PBar a)
---     where
---     type PLifted (PBar a) = Bar (PLifted a)
---   
---   deriving via
---     ( DerivePConstantViaData
---         (Bar a)
---         (PBar (PConstanted a))
---     )
---     instance
---       PConstantData a =&gt;
---       PConstantDecl (Bar a)
---   </pre>
-type PConstantData h = (PConstant h, FromData h, ToData h, PIsData (PConstanted h))
-type PLiftData p = (PLift p, FromData (PLifted p), ToData (PLifted p), PIsData p)
 data PlutusTypeData
 
 -- | Class allowing <tt>letFields</tt> to work for a PType, usually via
@@ -3133,11 +2916,10 @@ instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC
 instance GHC.Classes.Ord Plutarch.Positive.Positive
 instance GHC.Classes.Eq Plutarch.Positive.Positive
 instance GHC.Show.Show Plutarch.Positive.Positive
-instance Plutarch.Lift.PConstantDecl Plutarch.Positive.Positive
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Positive.PPositive
 instance Test.QuickCheck.Arbitrary.Arbitrary Plutarch.Positive.Positive
 instance Test.QuickCheck.Arbitrary.CoArbitrary Plutarch.Positive.Positive
 instance Prettyprinter.Internal.Pretty Plutarch.Positive.Positive
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.Positive.PPositive
 instance Test.QuickCheck.Function.Function Plutarch.Positive.Positive
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Positive.PPositive)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Positive.PPositive
@@ -3977,100 +3759,95 @@ psha3_256 :: Term s (PByteString :--> PByteString)
 --   signature verification functions</i>
 pverifySignature :: Term s (PByteString :--> (PByteString :--> (PByteString :--> PBool)))
 
--- | Create a Plutarch-level constant, from a Haskell value. Example: &gt;
---   pconstant @PInteger 42
-pconstant :: forall p s. PLift p => PLifted p -> Term s p
+-- | Given a Haskell-level representation of a Plutarch term, transform it
+--   into its equivalent term.
+--   
+--   @since WIP
+pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Term s a
 
 -- | Create a Plutarch-level <a>PAsData</a> constant, from a Haskell value.
 --   Example: &gt; pconstantData @PInteger 42
-pconstantData :: forall p h s. (ToData h, PLifted p ~ h, PConstanted h ~ p) => h -> Term s (PAsData p)
+pconstantData :: forall (p :: S -> Type) (h :: Type) (s :: S). (ToData h, AsHaskell p ~ h) => h -> Term s (PAsData p)
 
--- | Like <a>plift'</a> but throws on failure.
-plift :: forall p. (HasCallStack, PLift p) => ClosedTerm p -> PLifted p
+-- | Given a closed Plutarch term, compile and evaluate it, then produce
+--   the corresponding Haskell value. If compilation or evaluation fails
+--   somehow, this will call <a>error</a>: if you need to 'trap' these
+--   outcomes and handle them differently somehow, use <a>fromPlutarch</a>.
+--   
+--   @since WIP
+plift :: forall (a :: S -> Type). PLiftable a => (forall (s :: S). Term s a) -> AsHaskell a
 
--- | Type synonym to simplify deriving of <tt>PConstant</tt> via
---   <tt>DerivePConstantViaNewtype</tt>.
+-- | Indicates that the given Plutarch type has an equivalent in Haskell
+--   (and Plutus by extension), and we have the ability to move between
+--   them.
 --   
---   A newtype <tt>Foo a</tt> is considered <a>Constantable</a> if:
+--   <h1>Important note</h1>
 --   
---   <ul>
---   <li>The wrapped type <tt>a</tt> has a <tt>PConstant</tt>
---   instance.</li>
---   <li>The lifted type of <tt>a</tt> has a <tt>PUnsafeLiftDecl</tt>
---   instance.</li>
---   <li>There is type equality between <tt>a</tt> and <tt>PLifted
---   (PConstanted a)</tt>.</li>
---   </ul>
+--   Calling methods of <a>PLiftable</a> directly should rarely, if ever,
+--   be a thing you do, unless defining your own instances without
+--   <tt>via</tt>-deriving helpers (below). Prefer using <a>pconstant</a>
+--   and <a>plift</a>, as these handle some of the oddities required
+--   without you having to think about them.
 --   
---   These constraints are sufficient to derive a <tt>PConstant</tt>
---   instance for the newtype.
+--   You should rarely, if ever, need to define <a>PLiftable</a> instances
+--   by hand. Whenever possible, prefer using
+--   <a>DeriveBuiltinPLiftable</a>, <a>DeriveDataPLiftable</a>, and
+--   <a>DeriveNewtypePLiftable</a> as they have fewer complexities and
+--   caveats. See their documentation for when to use them.
 --   
---   For deriving <tt>PConstant</tt> for a wrapped type represented in UPLC
---   as <tt>Data</tt>, see <tt>DerivePConstantViaData</tt>.
-type PConstant a = (a ~ PLifted (PConstanted a), PConstantDecl a)
+--   If you do want to define the methods yourself, there's a few key
+--   factors to keep in mind:
+--   
+--   <ol>
+--   <li>You still shouldn't write every method by hand, there are helpers
+--   <tt>fromPlutarch*</tt> and <tt>toPlutarch*</tt> to cover common cases
+--   like types in Plutus universe or Scott encoding</li>
+--   <li>If defining <a>toPlutarchRepr</a> and <a>fromPlutarchRepr</a> you
+--   will need to define an associated <a>PlutusRepr</a> type, this is a
+--   Hasekll level type that is included in the Plutus default
+--   universe.</li>
+--   <li>If defining <a>toPlutarch</a> and <a>fromPlutarch</a> for Scott
+--   encoded type you need to set <tt><a>PlutusRepr</a> PMyType =
+--   <a>PLiftedClosed</a> PMyType</tt></li>
+--   <li>When choosing a type for <a>AsHaskell</a>, <i>any</i> value of
+--   that type <i>must</i> be representable in Plutarch. If you have
+--   internal invariants to maintain on the Haskell side, make sure you do
+--   so with great care.</li>
+--   </ol>
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt><a>fromPlutarchRepr</a> <a>.</a> <a>toPlutarchRepr</a></tt>
+--   <tt>=</tt> <tt><a>Just</a></tt></li>
+--   <li><tt><a>fmap</a> <a>toPlutarchRepr</a> <a>.</a>
+--   <a>fromPlutarchRepr</a></tt> <tt>=</tt> <tt><a>Just</a></tt></li>
+--   <li><tt><a>fromPlutarch</a> <a>.</a> <a>toPlutarch</a></tt> <tt>=</tt>
+--   <tt><a>Right</a></tt></li>
+--   <li><tt><a>fmap</a> <a>toPlutarch</a> <a>.</a>
+--   <a>fromPlutarch</a></tt> <tt>=</tt> <tt><a>Right</a></tt></li>
+--   </ol>
+--   
+--   Any derivations via <a>DeriveBuiltinPLiftable</a>,
+--   <a>DeriveDataPLiftable</a>, and <a>DeriveNewtypePLiftable</a>
+--   automatically follow these laws.
+--   
+--   @since WIP
+class PlutusType a => PLiftable (a :: S -> Type) where {
+    type AsHaskell a :: Type;
+    type PlutusRepr a :: Type;
+}
 
--- | Class of Plutarch types <tt>p</tt> that can be converted to/from a
---   Haskell type.
+-- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
+--   needed when writing manual instances of <a>PLiftable</a>, or if you
+--   want to use <a>toPlutarch</a> and <a>fromPlutarch</a> directly.
 --   
---   The Haskell type is determined by `PLifted p`.
+--   This is used for coercing Plutarch terms in Haskell level with `coerce
+--   :: PLifted s a -&gt; PLifted s b` for <tt>via</tt>-deriving helpers
 --   
---   This typeclass is closely tied with <a>PConstant</a>.
-type PLift = PUnsafeLiftDecl
-
--- | Type synonym to simplify deriving of <tt>PConstant</tt> via
---   <tt>DerivePConstantViaData</tt>.
---   
---   A type <tt>Foo a</tt> is considered <a>ConstantableData</a> if:
---   
---   <ul>
---   <li>The wrapped type <tt>a</tt> has a <tt>PConstant</tt>
---   instance.</li>
---   <li>The lifted type of <tt>a</tt> has a <tt>PUnsafeLiftDecl</tt>
---   instance.</li>
---   <li>There is type equality between <tt>a</tt> and <tt>PLifted
---   (PConstanted a)</tt>.</li>
---   <li>The newtype has <tt>FromData</tt> and <tt>ToData</tt>
---   instances</li>
---   </ul>
---   
---   These constraints are sufficient to derive a <tt>PConstant</tt>
---   instance for the newtype.
---   
---   For deriving <tt>PConstant</tt> for a wrapped type represented in UPLC
---   as <tt>Data</tt>, see <tt>DerivePConstantViaData</tt>.
---   
---   Polymorphic types can be derived as follows:
---   
---   <pre>
---   data Bar a = Bar a deriving stock (GHC.Generic)
---   
---   PlutusTx.makeLift ''Bar
---   PlutusTx.makeIsDataIndexed ''Bar [('Bar, 0)]
---   
---   data PBar (a :: PType) (s :: S)
---     = PBar (Term s (PDataRecord '["_0" ':= a]))
---     deriving stock (GHC.Generic)
---     deriving anyclass (SOP.Generic, PIsDataRepr)
---     deriving (PlutusType, PIsData, PDataFields) via PIsDataReprInstances (PBar a)
---   
---   instance
---     forall a.
---     PLiftData a =&gt;
---     PUnsafeLiftDecl (PBar a)
---     where
---     type PLifted (PBar a) = Bar (PLifted a)
---   
---   deriving via
---     ( DerivePConstantViaData
---         (Bar a)
---         (PBar (PConstanted a))
---     )
---     instance
---       PConstantData a =&gt;
---       PConstantDecl (Bar a)
---   </pre>
-type PConstantData h = (PConstant h, FromData h, ToData h, PIsData (PConstanted h))
-type PLiftData p = (PLift p, FromData (PLifted p), ToData (PLifted p), PIsData p)
+--   @since WIP
+newtype PLifted s a
+PLifted :: Term s POpaque -> PLifted s a
 newtype TermCont :: forall (r :: PType). S -> Type -> Type
 [TermCont] :: forall r s a. ((a -> Term s r) -> Term s r) -> TermCont @r s a
 unTermCont :: TermCont @a s (Term s a) -> Term s a
@@ -4340,14 +4117,11 @@ instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BLS.PBuiltinBLS12_381_
 instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.BLS.PBuiltinBLS12_381_G2_Element s)
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BLS.PBuiltinBLS12_381_MlResult
 instance forall (s :: Plutarch.Internal.S). GHC.Generics.Generic (Plutarch.BLS.PBuiltinBLS12_381_MlResult s)
-instance Plutarch.Lift.PConstantDecl PlutusCore.Crypto.BLS12_381.G1.Element
-instance Plutarch.Lift.PConstantDecl PlutusCore.Crypto.BLS12_381.G2.Element
-instance Plutarch.Lift.PConstantDecl PlutusCore.Crypto.BLS12_381.Pairing.MlResult
+instance Plutarch.Internal.Lift.PLiftable Plutarch.BLS.PBuiltinBLS12_381_G1_Element
+instance Plutarch.Internal.Lift.PLiftable Plutarch.BLS.PBuiltinBLS12_381_G2_Element
+instance Plutarch.Internal.Lift.PLiftable Plutarch.BLS.PBuiltinBLS12_381_MlResult
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.BLS.PBuiltinBLS12_381_MlResult
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.BLS.PBuiltinBLS12_381_MlResult
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.BLS.PBuiltinBLS12_381_G2_Element
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.BLS.PBuiltinBLS12_381_G2_Element
 instance Plutarch.Bool.PEq Plutarch.BLS.PBuiltinBLS12_381_G2_Element
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.BLS.PBuiltinBLS12_381_G1_Element
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Bool.PEq Plutarch.BLS.PBuiltinBLS12_381_G1_Element

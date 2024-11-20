@@ -35,7 +35,7 @@ pfrom :: forall (a :: S -> Type) (s :: S). Term s (PAsData a :--> PInterval a)
 pto :: forall (a :: S -> Type) (s :: S). Term s (PAsData a :--> PInterval a)
 
 -- | Create the interval <tt>(-infty, +infty)</tt>.
-palways :: forall (a :: S -> Type) (s :: S). PLiftData a => Term s (PInterval a)
+palways :: forall (a :: S -> Type) (s :: S). (FromData (AsHaskell a), ToData (AsHaskell a)) => Term s (PInterval a)
 
 -- | <tt><a>pinterval</a> x y</tt> creates the interval <tt>[x, y]</tt>.
 pinterval :: forall (a :: S -> Type) (s :: S). Term s (PAsData a :--> (PAsData a :--> PInterval a))
@@ -110,28 +110,24 @@ instance Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.LedgerApi.Interv
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PInterval a)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PInterval a s)
-instance Plutarch.DataRepr.Internal.PConstantData a => Plutarch.Lift.PConstantDecl (PlutusLedgerApi.V1.Interval.Interval a)
-instance Plutarch.DataRepr.Internal.PConstantData a => Plutarch.Lift.PConstantDecl (PlutusLedgerApi.V1.Interval.LowerBound a)
-instance Plutarch.DataRepr.Internal.PConstantData a => Plutarch.Lift.PConstantDecl (PlutusLedgerApi.V1.Interval.UpperBound a)
-instance Plutarch.DataRepr.Internal.PConstantData a => Plutarch.Lift.PConstantDecl (PlutusLedgerApi.V1.Interval.Extended a)
+instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PInterval a)
+instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PInterval a)
-instance Plutarch.DataRepr.Internal.PLiftData a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PInterval a))
 instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Bool.PEq (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance Plutarch.DataRepr.Internal.PLiftData a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PLowerBound a))
 instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.PEq (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance Plutarch.DataRepr.Internal.PLiftData a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PUpperBound a))
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PExtended a)
-instance Plutarch.DataRepr.Internal.PLiftData a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PExtended a))
 
@@ -212,19 +208,17 @@ instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.Utils.P
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Utils.PRationalData
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PRationalData s)
-instance Plutarch.DataRepr.Internal.PConstantData a => Plutarch.Lift.PConstantDecl (GHC.Maybe.Maybe a)
-instance Plutarch.Lift.PConstantDecl PlutusTx.Ratio.Rational
+instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Bool.POrd Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Utils.PRationalData)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Utils.PMaybeData a))
-instance Plutarch.DataRepr.Internal.PLiftData a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Bool.PPartialOrd a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Bool.PPartialOrd a) => Plutarch.Bool.POrd (Plutarch.LedgerApi.Utils.PMaybeData a)
 
@@ -245,14 +239,14 @@ Commutative :: Commutativity
 NonCommutative :: Commutativity
 
 -- | Construct an empty <a>PMap</a>.
-pempty :: Term s (PMap 'Sorted k v)
+pempty :: (PIsData k, PIsData v) => Term s (PMap 'Sorted k v)
 
 -- | Construct a singleton <a>PMap</a> with the given key and value.
 psingleton :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (v :--> PMap 'Sorted k v))
 
 -- | Construct a singleton <a>PMap</a> with the given data-encoded key and
 --   value.
-psingletonData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PAsData k :--> (PAsData v :--> PMap 'Sorted k v))
+psingletonData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (PAsData k :--> (PAsData v :--> PMap 'Sorted k v))
 
 punsortedMapFromFoldable :: forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PMap 'Unsorted k v)
 
@@ -266,19 +260,19 @@ passertSorted :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees)
 pforgetSorted :: forall (g :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PMap 'Sorted k v) -> Term s (PMap g k v)
 
 -- | Applies a function to every value in the map, much like <a>map</a>.
-pmap :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> b) :--> (PMap g k a :--> PMap g k b))
+pmap :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((a :--> b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmap</a>, but over Data representations.
-pmapData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PAsData b) :--> (PMap g k a :--> PMap g k b))
+pmapData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((PAsData a :--> PAsData b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmap</a>, but gives key access as well.
 pmapWithKey :: forall (k :: PType) (a :: PType) (b :: PType) (keysort :: KeyGuarantees) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((k :--> (a :--> b)) :--> (PMap keysort k a :--> PMap 'Unsorted k b))
 
 -- | Maps and filters the map, much like <a>mapMaybe</a>.
-pmapMaybe :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> PMaybe b) :--> (PMap g k a :--> PMap g k b))
+pmapMaybe :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((a :--> PMaybe b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmapMaybe</a>, but over Data representation.
-pmapMaybeData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PMaybe (PAsData b)) :--> (PMap g k a :--> PMap g k b))
+pmapMaybeData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((PAsData a :--> PMaybe (PAsData b)) :--> (PMap g k a :--> PMap g k b))
 
 -- | Given a comparison function and a "zero" value, check whether a binary
 --   relation holds over 2 sorted <a>PMap</a>s.
@@ -295,7 +289,7 @@ pcheckBinRel :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsD
 --   exactly the same set of keys. Requires a number of equality
 --   comparisons between keys proportional to the length of the shorter
 --   argument.
-pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k, PEq k) => Term s (PMap 'Sorted k a :--> (PMap 'Sorted k b :--> PBool))
+pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k, PEq k, PIsData a, PIsData b) => Term s (PMap 'Sorted k a :--> (PMap 'Sorted k b :--> PBool))
 
 -- | As <a>pkeysEqual</a>, but requires only <a>PEq</a> constraints for the
 --   keys, and works for <a>Unsorted</a> <a>PMap</a>s. This requires a
@@ -305,10 +299,10 @@ pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k
 pkeysEqualUnsorted :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s (PMap 'Unsorted k a :--> (PMap 'Unsorted k b :--> PBool))
 
 -- | Verifies all values in the map satisfy the given predicate.
-pall :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). PIsData v => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
+pall :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
 
 -- | Tests if anu value in the map satisfies the given predicate.
-pany :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). PIsData v => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
+pany :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
 
 -- | Project all key-value pairs into a <a>Monoid</a>, then combine. Keys
 --   and values will be presented in key order.
@@ -324,7 +318,7 @@ punionResolvingCollisionsWith :: forall (k :: S -> Type) (v :: S -> Type) (s :: 
 
 -- | Build the union of two <a>PMap</a>s, merging values that share the
 --   same key using the given function.
-punionResolvingCollisionsWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+punionResolvingCollisionsWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Build the union of two <a>PMap</a>s. Take the value from the left
 --   argument for colliding keys.
@@ -348,20 +342,20 @@ pintersectionWith :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k,
 
 -- | Build the intersection of two <a>PMap</a>s, merging data-encoded
 --   values that share the same key using the given function.
-pintersectionWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+pintersectionWithData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Commutativity -> Term s ((PAsData v :--> (PAsData v :--> PAsData v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Tests whether the map is empty.
-pnull :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PMap any k v :--> PBool)
+pnull :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (PMap any k v :--> PBool)
 
 -- | Look up the given key in a <a>PMap</a>.
 plookup :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (PMap any k v :--> PMaybe v))
 
 -- | as <a>plookup</a>, except over Data representation.
-plookupData :: Term s (PAsData k :--> (PMap any k v :--> PMaybe (PAsData v)))
+plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> (PMap any k v :--> PMaybe (PAsData v)))
 
 -- | Look up the given key data in a <a>PMap</a>, applying the given
 --   function to the found key-value pair.
-plookupDataWith :: Term s ((PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x) :--> (PAsData k :--> (PMap any k v :--> PMaybe x)))
+plookupDataWith :: (PIsData k, PIsData v) => Term s ((PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x) :--> (PAsData k :--> (PMap any k v :--> PMaybe x)))
 
 -- | Look up the given key in a <a>PMap</a>, returning the default value if
 --   the key is absent.
@@ -369,12 +363,12 @@ pfindWithDefault :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarante
 
 -- | Look up the given key in a <a>PMap</a>; return the default if the key
 --   is absent or apply the argument function to the value data if present.
-pfoldAt :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). PIsData k => Term s (k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
+pfoldAt :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
 
 -- | Look up the given key data in a <a>PMap</a>; return the default if the
 --   key is absent or apply the argument function to the value data if
 --   present.
-pfoldAtData :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). Term s (PAsData k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
+pfoldAtData :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s (PAsData k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
 
 -- | As <a>plookup</a>, but errors when the key is missing.
 ptryLookup :: forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (PMap keys k v :--> v))
@@ -384,7 +378,7 @@ ptryLookup :: forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S).
 pinsert :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Term s (k :--> (v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Delete a key from the map.
-pdelete :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Term s (k :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
+pdelete :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData v) => Term s (k :--> (PMap 'Sorted k v :--> PMap 'Sorted k v))
 
 -- | Given an 'updater' and a key, if the key exists in the <a>PMap</a>,
 --   apply the 'updater' to it, otherwise do nothing. If the 'updater'
@@ -420,7 +414,7 @@ pkvPairLt :: forall (k :: PType) (v :: PType) (s :: S). (PIsData k, PPartialOrd 
 --   You will need to specify what manner of list-like structure you want;
 --   we have arranged the type signature to make specifying this easy with
 --   <tt>TypeApplications</tt>.
-pkeys :: forall (ell :: PType -> PType) (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PListLike ell, PElemConstraint ell (PAsData k)) => Term s (PMap keys k v :--> ell (PAsData k))
+pkeys :: forall (ell :: PType -> PType) (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PListLike ell, PElemConstraint ell (PAsData k), PIsData k, PIsData v) => Term s (PMap keys k v :--> ell (PAsData k))
 instance (Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.Show.PShow k, Plutarch.Show.PShow v) => Plutarch.Show.PShow (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PMap keysort k v s)
@@ -434,11 +428,10 @@ instance (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.LedgerAp
 instance (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.LedgerApi.AssocMap.BothPresentHandlerCommutative_ f k v)
 instance (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.LedgerApi.AssocMap.OnePresentHandler_ f k v)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
+instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell v), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell v)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance Plutarch.Bool.PEq (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v)
-instance (PlutusTx.Eq.Eq (Plutarch.Lift.PLifted k), Plutarch.DataRepr.Internal.PLiftData k, Plutarch.DataRepr.Internal.PLiftData v, GHC.Classes.Ord (Plutarch.Lift.PLifted k)) => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v)
-instance (PlutusTx.Eq.Eq k, Plutarch.DataRepr.Internal.PConstantData k, Plutarch.DataRepr.Internal.PConstantData v, GHC.Classes.Ord k) => Plutarch.Lift.PConstantDecl (PlutusTx.AssocMap.Map k v)
-instance (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v))
+instance (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.Builtin.PIsData k, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v), Plutarch.Builtin.PIsData v) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v))
 instance (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v))
 
 
@@ -590,17 +583,15 @@ instance Plutarch.Bool.PEq Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PAssetClass
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PAssetClass s)
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Value.Lovelace
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Value.TokenName
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Value.CurrencySymbol
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Value.Value
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Value.AssetClass
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PLovelace
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PTokenName
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PCurrencySymbol
+instance Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Unsorted 'Plutarch.LedgerApi.Value.NoGuarantees)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Value.PAssetClass
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Value.PAssetClass)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Value.PValue keys amounts)
-instance Plutarch.Lift.PUnsafeLiftDecl (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Unsorted 'Plutarch.LedgerApi.Value.NoGuarantees)
 instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
 instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)
 instance Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
@@ -625,13 +616,10 @@ instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsD
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Value.PCurrencySymbol
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.Value.PCurrencySymbol
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Value.PCurrencySymbol)
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.Value.PCurrencySymbol
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Value.PTokenName
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.Value.PTokenName
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.Value.PTokenName
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Value.PTokenName)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Value.PLovelace
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.Value.PLovelace
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Value.PLovelace)
 
 
@@ -1143,17 +1131,14 @@ instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V2.PScr
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PScriptContext
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PScriptContext s)
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V2.Contexts.TxInInfo
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V2.Contexts.TxInfo
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V2.Contexts.ScriptContext
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PTxInInfo
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PTxInfo
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V2.PScriptContext
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V2.PScriptContext)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V2.PTxInfo
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V2.PTxInfo
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V2.PTxInfo)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V2.PTxInInfo
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V2.PTxInInfo)
 
 module Plutarch.LedgerApi.V1
@@ -1344,19 +1329,15 @@ instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V1.PScr
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PScriptContext
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PScriptContext s)
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Tx.TxOut
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Contexts.TxInInfo
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Contexts.TxInfo
-instance Plutarch.Lift.PConstantDecl PlutusLedgerApi.V1.Contexts.ScriptContext
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxOut
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxInInfo
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V1.PScriptContext)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V1.PTxInfo
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V1.PTxInfo
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V1.PTxInfo)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V1.PTxInInfo
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V1.PTxInInfo)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.V1.PTxOut
-instance Plutarch.Lift.PUnsafeLiftDecl Plutarch.LedgerApi.V1.PTxOut
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.V1.PTxOut)

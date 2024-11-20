@@ -201,11 +201,10 @@ Triplet :: a -> a -> a -> Triplet a
 --   @since WIP
 newtype PTriplet (a :: PType) (s :: S)
 PTriplet :: Term s (PDataRecord '["x" ':= a, "y" ':= a, "z" ':= a]) -> PTriplet (a :: PType) (s :: S)
-instance forall a. Plutarch.DataRepr.Internal.PConstantData a => Plutarch.Lift.PConstantDecl (Plutarch.Test.SpecTypes.Triplet a)
+instance forall (a :: Plutarch.Internal.PType). (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Test.SpecTypes.PTriplet a)
 instance forall a. PlutusTx.IsData.Class.ToData a => PlutusTx.IsData.Class.ToData (Plutarch.Test.SpecTypes.Triplet a)
 instance forall a. PlutusTx.IsData.Class.FromData a => PlutusTx.IsData.Class.FromData (Plutarch.Test.SpecTypes.Triplet a)
 instance forall a. PlutusTx.IsData.Class.UnsafeFromData a => PlutusTx.IsData.Class.UnsafeFromData (Plutarch.Test.SpecTypes.Triplet a)
-instance forall (a :: Plutarch.Internal.PType). Plutarch.DataRepr.Internal.PLiftData a => Plutarch.Lift.PUnsafeLiftDecl (Plutarch.Test.SpecTypes.PTriplet a)
 instance forall a. Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Plutarch.Test.SpecTypes.Triplet a)
 instance forall a. GHC.Classes.Ord a => GHC.Classes.Ord (Plutarch.Test.SpecTypes.Triplet a)
 instance forall a. GHC.Classes.Eq a => GHC.Classes.Eq (Plutarch.Test.SpecTypes.Triplet a)
@@ -299,10 +298,10 @@ propCompileFail :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> T
 propEvalEqual :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> (a -> ClosedTerm b) -> TestTree
 
 -- | @since WIP
-checkHaskellEquivalent :: forall (plutarchInput :: S -> Type) (plutarchOutput :: S -> Type). (PUnsafeLiftDecl plutarchInput, Pretty (PLifted plutarchInput), Arbitrary (PLifted plutarchInput), PUnsafeLiftDecl plutarchOutput, Pretty (PLifted plutarchOutput), Eq (PLifted plutarchOutput)) => (PLifted plutarchInput -> PLifted plutarchOutput) -> ClosedTerm (plutarchInput :--> plutarchOutput) -> Property
+checkHaskellEquivalent :: forall (plutarchInput :: S -> Type) (plutarchOutput :: S -> Type). (PLiftable plutarchInput, PLiftable plutarchOutput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Pretty (AsHaskell plutarchOutput), Eq (AsHaskell plutarchOutput)) => (AsHaskell plutarchInput -> AsHaskell plutarchOutput) -> ClosedTerm (plutarchInput :--> plutarchOutput) -> Property
 
 -- | @since WIP
-checkHaskellEquivalent2 :: forall (plutarchInput1 :: S -> Type) (plutarchInput2 :: S -> Type) (plutarchOutput :: S -> Type). (PUnsafeLiftDecl plutarchInput1, Pretty (PLifted plutarchInput1), Arbitrary (PLifted plutarchInput1), PUnsafeLiftDecl plutarchInput2, Pretty (PLifted plutarchInput2), Arbitrary (PLifted plutarchInput2), PUnsafeLiftDecl plutarchOutput, Pretty (PLifted plutarchOutput), Eq (PLifted plutarchOutput)) => (PLifted plutarchInput1 -> PLifted plutarchInput2 -> PLifted plutarchOutput) -> ClosedTerm (plutarchInput1 :--> (plutarchInput2 :--> plutarchOutput)) -> Property
+checkHaskellEquivalent2 :: forall (plutarchInput1 :: S -> Type) (plutarchInput2 :: S -> Type) (plutarchOutput :: S -> Type). (PLiftable plutarchInput1, Pretty (AsHaskell plutarchInput1), Arbitrary (AsHaskell plutarchInput1), PLiftable plutarchInput2, Pretty (AsHaskell plutarchInput2), Arbitrary (AsHaskell plutarchInput2), PLiftable plutarchOutput, Pretty (AsHaskell plutarchOutput), Eq (AsHaskell plutarchOutput)) => (AsHaskell plutarchInput1 -> AsHaskell plutarchInput2 -> AsHaskell plutarchOutput) -> ClosedTerm (plutarchInput1 :--> (plutarchInput2 :--> plutarchOutput)) -> Property
 instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pretty (Test.QuickCheck.Modifiers.Positive a)
 instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pretty (Test.QuickCheck.Modifiers.Negative a)
 instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pretty (Test.QuickCheck.Modifiers.NonZero a)
@@ -328,23 +327,23 @@ checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesAssocMap :: TestTree
 
 -- | @since WIP
-checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PUnsafeLiftDecl a, PTryFrom PData a, Eq (PLifted a), Arbitrary (PLifted a), PIsData a, ToData (PLifted a), Typeable (PLifted a), Pretty (PLifted a)) => TestTree
+checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PLiftable a, PTryFrom PData a, Eq (AsHaskell a), PIsData a, ToData (AsHaskell a), Arbitrary (AsHaskell a), Pretty (AsHaskell a), Show (AsHaskell a)) => TestTree
 
 -- | @since WIP
-checkLedgerPropertiesPCountable :: forall (a :: S -> Type). (Typeable a, PCountable a, Arbitrary (PLifted a), Pretty (PLifted a), Eq (PLifted a), Show (PLifted a), PUnsafeLiftDecl a) => TestTree
+checkLedgerPropertiesPCountable :: forall (a :: S -> Type). (Typeable a, PCountable a, Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), Show (AsHaskell a), PLiftable a) => TestTree
 
 -- | @since WIP
-checkLedgerPropertiesPEnumerable :: forall (a :: S -> Type). (Typeable a, PEnumerable a, Arbitrary (PLifted a), Pretty (PLifted a), Eq (PLifted a), PUnsafeLiftDecl a) => TestTree
+checkLedgerPropertiesPEnumerable :: forall (a :: S -> Type). (Typeable a, PEnumerable a, Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a) => TestTree
 
 -- | @since WIP
-checkHaskellOrdEquivalent :: forall (plutarchInput :: S -> Type). (PUnsafeLiftDecl plutarchInput, Pretty (PLifted plutarchInput), Arbitrary (PLifted plutarchInput), Typeable (PLifted plutarchInput), Ord (PLifted plutarchInput), Typeable plutarchInput, PPartialOrd plutarchInput) => TestTree
-checkHaskellNumEquivalent :: forall (plutarchInput :: S -> Type). (PUnsafeLiftDecl plutarchInput, Pretty (PLifted plutarchInput), Arbitrary (PLifted plutarchInput), Eq (PLifted plutarchInput), Typeable (PLifted plutarchInput), Num (PLifted plutarchInput), Typeable plutarchInput, PNum plutarchInput) => TestTree
+checkHaskellOrdEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Ord (AsHaskell plutarchInput), Typeable plutarchInput, PPartialOrd plutarchInput) => TestTree
+checkHaskellNumEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Eq (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Num (AsHaskell plutarchInput), Typeable plutarchInput, PNum plutarchInput) => TestTree
 
 -- | @since WIP
-checkHaskellIntegralEquivalent :: forall (plutarchInput :: S -> Type). (PUnsafeLiftDecl plutarchInput, Pretty (PLifted plutarchInput), Arbitrary (PLifted plutarchInput), Typeable (PLifted plutarchInput), Integral (PLifted plutarchInput), Typeable plutarchInput, PIntegral plutarchInput) => TestTree
+checkHaskellIntegralEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Integral (AsHaskell plutarchInput), Typeable plutarchInput, PIntegral plutarchInput) => TestTree
 
 -- | Verifies that the specified Plutarch and Haskell types satisfy the
 --   laws of <a>PLiftable</a>.
 --   
 --   @since WIP
-checkPLiftableLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a, Show (AsHaskell a), Typeable a) => TestTree
+checkPLiftableLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a, Show (AsHaskell a)) => [TestTree]
