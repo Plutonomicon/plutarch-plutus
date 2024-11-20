@@ -60,7 +60,7 @@ checkPLiftableLaws =
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
         fromPlutarch @a (toPlutarch @a x) === Right x
-  , testProperty "fromPlutarchRepr . toPlutarchRepr = Right"
+  , testProperty "fromPlutarchRepr . toPlutarchRepr = Just"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
         fromPlutarchRepr @a (toPlutarchRepr @a x) === Just x
