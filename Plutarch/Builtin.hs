@@ -115,7 +115,7 @@ import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom'
 import Plutarch.Unit (PUnit)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
-import PlutusTx (Data (Constr), FromData, ToData)
+import PlutusTx (Data (Constr), ToData)
 import PlutusTx qualified
 
 -- | Plutus 'BuiltinPair'
@@ -197,6 +197,28 @@ pnullBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.NullList
 
 pconsBuiltin :: Term s (a :--> PBuiltinList a :--> PBuiltinList a)
 pconsBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MkCons
+
+type role HAsData nominal
+newtype HAsData (a :: Type) = HAsData Data
+
+instance PIsData a => PLiftable (PAsData a) where
+  type AsHaskell (PAsData a) = HAsData (AsHaskell a)
+  type PlutusRepr (PAsData a) = Data
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr (HAsData d) = d
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = Just . HAsData
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
+
+instance PLC.Contains PLC.DefaultUni HAsData where
+  knownUni = PLC.knownUni :: forall k (uni :: Type -> Type) (a :: k). PLC.Contains @k uni a => uni (PLC.Esc @k a)
 
 instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
@@ -349,6 +371,11 @@ pdataLiteral = pconstant
 
 newtype PAsData (a :: PType) (s :: S) = PAsData (Term s a)
 
+type family IfSameThenData (a :: PType) (b :: PType) :: PType where
+  IfSameThenData a a = PData
+  IfSameThenData _ POpaque = PData
+  IfSameThenData _ b = PAsData b
+
 instance PIsData a => PlutusType (PAsData a) where
   type PInner (PAsData a) = IfSameThenData a (PInner a)
   type PCovariant' (PAsData a) = PCovariant' a
@@ -356,33 +383,6 @@ instance PIsData a => PlutusType (PAsData a) where
   type PVariant' (PAsData a) = PVariant' a
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
-
-instance (ToData (AsHaskell a), FromData (AsHaskell a), PIsData a) => PLiftable (PAsData a) where
-  type AsHaskell (PAsData a) = AsHaskell a
-  type PlutusRepr (PAsData a) = Data
-
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = PlutusTx.toData
-
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
-
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = PlutusTx.fromData
-
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
-
-instance PEq (PAsData a) where
-  x #== y = punsafeBuiltin PLC.EqualsData # x # y
-
-instance (PIsData a, PShow a) => PShow (PAsData a) where
-  pshow' w x = pshow' w (pfromData x)
-
-type family IfSameThenData (a :: PType) (b :: PType) :: PType where
-  IfSameThenData a a = PData
-  IfSameThenData _ POpaque = PData
-  IfSameThenData _ b = PAsData b
 
 pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
@@ -522,6 +522,12 @@ instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromDataImpl x = pasConstr # pupcast x
   pdataImpl x' = pupcast $ plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
 
+instance PEq (PAsData a) where
+  x #== y = punsafeBuiltin PLC.EqualsData # x # y
+
+instance (PIsData a, PShow a) => PShow (PAsData a) where
+  pshow' w x = pshow' w (pfromData x)
+
 pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
 pconstrBuiltin = punsafeBuiltin PLC.ConstrData
 
@@ -569,8 +575,6 @@ instance PTryFrom PData (PAsData (PBuiltinList PData)) where
 instance
   ( PTryFrom PData (PAsData a)
   , PIsData a
-  , ToData (AsHaskell a)
-  , FromData (AsHaskell a)
   ) =>
   PTryFrom PData (PAsData (PBuiltinList (PAsData a)))
   where

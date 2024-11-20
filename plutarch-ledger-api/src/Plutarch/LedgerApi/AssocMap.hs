@@ -1,4 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE RankNTypes #-}
@@ -80,7 +79,6 @@ module Plutarch.LedgerApi.AssocMap (
 
 import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
-import Data.List (sortOn)
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (forM)
 import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
@@ -124,20 +122,9 @@ newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
   deriving anyclass
     ( -- | @since 2.0.0
       PlutusType
+    , -- | @since 2.0.0
+      PShow
     )
-
--- | @since WIP
-instance
-  ( Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData k
-  , PShow k
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  , PIsData v
-  , PShow v
-  ) =>
-  PShow (PMap keysort k v)
 
 -- | @since 2.0.0
 instance DerivePlutusType (PMap keysort k v) where
@@ -170,38 +157,6 @@ instance
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch = fromPlutarchUni
 
--- | @since WIP
-instance
-  ( Plutus.ToData (AsHaskell k)
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell k)
-  , Plutus.FromData (AsHaskell v)
-  , Ord (AsHaskell k)
-  , Eq (AsHaskell v)
-  ) =>
-  PLiftable (PMap 'Sorted k v)
-  where
-  type AsHaskell (PMap 'Sorted k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
-  type PlutusRepr (PMap 'Sorted k v) = [(Plutus.Data, Plutus.Data)]
-
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr m =
-    if sortOn fst (PlutusMap.toList m) == PlutusMap.toList m
-      then map (bimap Plutus.toData Plutus.toData) $ PlutusMap.toList m
-      else error "toPlutarchRepr @(PMap 'Sorted): not sorted"
-
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
-
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
-    k <- Plutus.fromData kd
-    v <- Plutus.fromData vd
-    pure (k, v)
-
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
-
 -- | @since 2.0.0
 instance PIsData (PMap keysort k v) where
   pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
@@ -220,12 +175,8 @@ instance PEq (PMap 'Sorted k v) where
 instance
   ( PTryFrom PData (PAsData k)
   , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
   , PTryFrom PData (PAsData v)
   , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
   ) =>
   PTryFrom PData (PAsData (PMap 'Unsorted k v))
   where
@@ -247,11 +198,7 @@ instance
 instance
   ( POrd k
   , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
   , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
   , PTryFrom PData (PAsData k)
   , PTryFrom PData (PAsData v)
   ) =>
@@ -283,17 +230,10 @@ sorted.
 -}
 passertSorted ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term s (PMap any k v :--> PMap 'Sorted k v)
 passertSorted =
-  let _ = witness (Proxy :: Proxy (PIsData v, Plutus.ToData (AsHaskell v), Plutus.FromData (AsHaskell v)))
+  let _ = witness (Proxy :: Proxy (PIsData v))
    in phoistAcyclic $
         plam $ \m ->
           precList
@@ -315,15 +255,7 @@ passertSorted =
 
 @since 2.0.0
 -}
-pempty ::
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
-  Term s (PMap 'Sorted k v)
+pempty :: (PIsData k, PIsData v) => Term s (PMap 'Sorted k v)
 pempty = punsafeDowncast pnil
 
 {- | Given a comparison function and a "zero" value, check whether a binary relation holds over
@@ -339,14 +271,7 @@ equivalence), and that the starting value does not break it. Use with extreme ca
 -}
 pcheckBinRel ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term
     s
     ( (v :--> v :--> PBool)
@@ -405,13 +330,7 @@ pcheckBinRel = phoistAcyclic $
 -}
 pall ::
   forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
   plam $ \pred m ->
@@ -424,14 +343,7 @@ given function.
 -}
 punionResolvingCollisionsWith ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 punionResolvingCollisionsWith commutativity =
@@ -446,14 +358,7 @@ given function.
 -}
 punionResolvingCollisionsWithData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term
     s
@@ -473,16 +378,7 @@ punionResolvingCollisionsWithData commutativity =
 -}
 pmapMaybe ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((a :--> PMaybe b) :--> PMap g k a :--> PMap g k b)
 pmapMaybe = phoistAcyclic $
   plam $ \f -> pmapMaybeData #$ plam $ \v -> pmatch (f # pfromData v) $ \case
@@ -495,16 +391,7 @@ pmapMaybe = phoistAcyclic $
 -}
 pmapMaybeData ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((PAsData a :--> PMaybe (PAsData b)) :--> PMap g k a :--> PMap g k b)
 pmapMaybeData = phoistAcyclic $
   plam $ \f m ->
@@ -525,13 +412,7 @@ pmapMaybeData = phoistAcyclic $
 -}
 pnull ::
   forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (PMap any k v :--> PBool)
 pnull = plam (\m -> List.pnull # pto m)
 
@@ -541,16 +422,7 @@ pnull = plam (\m -> List.pnull # pto m)
 -}
 pmap ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((a :--> b) :--> PMap g k a :--> PMap g k b)
 pmap = phoistAcyclic $
   plam $
@@ -562,16 +434,7 @@ pmap = phoistAcyclic $
 -}
 pmapWithKey ::
   forall (k :: PType) (a :: PType) (b :: PType) (keysort :: KeyGuarantees) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((k :--> a :--> b) :--> PMap keysort k a :--> PMap 'Unsorted k b)
 pmapWithKey = phoistAcyclic $
   plam $ \f kvs ->
@@ -594,16 +457,7 @@ pmapWithKey = phoistAcyclic $
 -}
 pmapData ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s ((PAsData a :--> PAsData b) :--> PMap g k a :--> PMap g k b)
 pmapData = phoistAcyclic $
   plam $ \f m ->
@@ -623,13 +477,7 @@ pmapData = phoistAcyclic $
 -}
 plookup ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (k :--> PMap any k v :--> PMaybe v)
 plookup = phoistAcyclic $
   plam $ \key ->
@@ -643,13 +491,7 @@ plookup = phoistAcyclic $
 -}
 ptryLookup ::
   forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (k :--> PMap keys k v :--> v)
 ptryLookup = phoistAcyclic $
   plam $ \k kvs ->
@@ -661,15 +503,7 @@ ptryLookup = phoistAcyclic $
 
 @since 2.1.1
 -}
-plookupData ::
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
-  Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
+plookupData :: (PIsData k, PIsData v) => Term s (PAsData k :--> PMap any k v :--> PMaybe (PAsData v))
 plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ psndBuiltin # pair)
 
 {- | Look up the given key data in a 'PMap', applying the given function to the found key-value pair.
@@ -677,13 +511,7 @@ plookupData = plookupDataWith # phoistAcyclic (plam $ \pair -> pcon $ PJust $ ps
 @since 2.1.1
 -}
 plookupDataWith ::
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term
     s
     ( (PBuiltinPair (PAsData k) (PAsData v) :--> PMaybe x)
@@ -709,13 +537,7 @@ plookupDataWith = phoistAcyclic $
 -}
 psingleton ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (k :--> v :--> PMap 'Sorted k v)
 psingleton = phoistAcyclic $ plam $ \key value -> psingletonData # pdata key # pdata value
 
@@ -725,13 +547,7 @@ psingleton = phoistAcyclic $ plam $ \key value -> psingletonData # pdata key # p
 -}
 psingletonData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (PAsData k :--> PAsData v :--> PMap 'Sorted k v)
 psingletonData = phoistAcyclic $
   plam $
@@ -744,13 +560,7 @@ psingletonData = phoistAcyclic $
 -}
 pfoldAt ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAt = phoistAcyclic $
   plam $
@@ -763,13 +573,7 @@ pfoldAt = phoistAcyclic $
 -}
 pfoldAtData ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> PMap any k v :--> r)
 pfoldAtData = phoistAcyclic $
   plam $ \key def apply m ->
@@ -791,14 +595,7 @@ pfoldAtData = phoistAcyclic $
 -}
 pleftBiasedUnion ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pleftBiasedUnion =
   phoistAcyclic $
@@ -812,14 +609,7 @@ pleftBiasedUnion =
 -}
 pdifference ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , POrd k
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, POrd k, PIsData v) =>
   Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pdifference =
   phoistAcyclic $
@@ -833,13 +623,7 @@ pdifference =
 -}
 pany ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
   plam $ \pred m ->
@@ -851,13 +635,7 @@ pany = phoistAcyclic $
 -}
 pfindWithDefault ::
   forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s (v :--> k :--> PMap any k v :--> v)
 pfindWithDefault = phoistAcyclic $ plam $ \def key -> pfoldAtData # pdata key # def # plam pfromData
 
@@ -867,14 +645,7 @@ pfindWithDefault = phoistAcyclic $ plam $ \def key -> pfoldAtData # pdata key # 
 -}
 pinsert ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term s (k :--> v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pinsert = phoistAcyclic $
   plam $ \key val ->
@@ -886,14 +657,7 @@ pinsert = phoistAcyclic $
 -}
 pdelete ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term s (k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pdelete = rebuildAtKey # plam id
 
@@ -904,14 +668,7 @@ pdelete = rebuildAtKey # plam id
 -}
 pzipWithDefaults ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   (forall (s' :: S). Term s' v) ->
   (forall (s' :: S). Term s' v) ->
   Term
@@ -933,14 +690,7 @@ given function.
 -}
 pintersectionWith ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term s ((v :--> v :--> v) :--> PMap 'Sorted k v :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pintersectionWith commutativity =
@@ -955,14 +705,7 @@ given function.
 -}
 pintersectionWithData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Commutativity ->
   Term
     s
@@ -994,17 +737,7 @@ pforgetSorted v = punsafeDowncast (pto v)
 -}
 pkeysEqual ::
   forall (k :: PType) (a :: PType) (b :: PType) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PEq k
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PEq k, PIsData a, PIsData b) =>
   Term s (PMap 'Sorted k a :--> PMap 'Sorted k b :--> PBool)
 pkeysEqual = phoistAcyclic $
   plam $ \kvs kvs' ->
@@ -1044,16 +777,7 @@ pkeysEqual = phoistAcyclic $
 -}
 pkeysEqualUnsorted ::
   forall (k :: PType) (a :: PType) (b :: PType) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData a
-  , Plutus.ToData (AsHaskell a)
-  , Plutus.FromData (AsHaskell a)
-  , PIsData b
-  , Plutus.ToData (AsHaskell b)
-  , Plutus.FromData (AsHaskell b)
-  ) =>
+  (PIsData k, PIsData a, PIsData b) =>
   Term s (PMap 'Unsorted k a :--> PMap 'Unsorted k b :--> PBool)
 pkeysEqualUnsorted = phoistAcyclic $
   plam $ \kvs kvs' ->
@@ -1125,14 +849,7 @@ pkvPairValue = phoistAcyclic $ plam $ \kv -> pfromData (psndBuiltin # kv)
 -- | @since 2.1.1
 punsortedMapFromFoldable ::
   forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
-  ( Foldable f
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (Foldable f, PIsData k, PIsData v) =>
   f (Term s k, Term s v) ->
   Term s (PMap 'Unsorted k v)
 punsortedMapFromFoldable = pcon . PMap . foldl' go (pcon PNil)
@@ -1148,15 +865,7 @@ punsortedMapFromFoldable = pcon . PMap . foldl' go (pcon PNil)
 -- | @since 2.1.1
 psortedMapFromFoldable ::
   forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
-  ( Foldable f
-  , POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (Foldable f, POrd k, PIsData k, PIsData v) =>
   f (Term s k, Term s v) ->
   Term s (PMap 'Sorted k v)
 psortedMapFromFoldable = foldl' go pempty
@@ -1179,14 +888,7 @@ psortedMapFromFoldable = foldl' go pempty
 -}
 pupdate ::
   forall (k :: PType) (v :: PType) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  , POrd k
-  ) =>
+  (PIsData k, PIsData v, POrd k) =>
   Term s ((v :--> PMaybe v) :--> k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pupdate = phoistAcyclic $
   plam $ \updater key kvs -> pmatch kvs $ \(PMap kvs') ->
@@ -1213,14 +915,7 @@ pupdate = phoistAcyclic $
 -}
 padjust ::
   forall (k :: PType) (v :: PType) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PEq k
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PEq k, PIsData v) =>
   Term s ((v :--> v) :--> k :--> PMap 'Unsorted k v :--> PMap 'Unsorted k v)
 padjust = phoistAcyclic $
   plam $ \f key kvs ->
@@ -1233,13 +928,7 @@ padjust = phoistAcyclic $
 -}
 pfoldlWithKey ::
   forall (a :: PType) (k :: PType) (v :: PType) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   Term s ((a :--> k :--> v :--> a) :--> a :--> PMap 'Sorted k v :--> a)
 pfoldlWithKey = phoistAcyclic $
   plam $ \f x kvs -> pmatch kvs $ \case
@@ -1253,14 +942,7 @@ pfoldlWithKey = phoistAcyclic $
 -}
 pfoldMapWithKey ::
   forall (m :: PType) (k :: PType) (v :: PType) (s :: S).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  , forall (s' :: S). Monoid (Term s' m)
-  ) =>
+  (PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' m)) =>
   Term s ((k :--> v :--> m) :--> PMap 'Sorted k v :--> m)
 pfoldMapWithKey = phoistAcyclic $
   plam $ \f kvs ->
@@ -1285,15 +967,7 @@ pkeys ::
     (v :: PType)
     (keys :: KeyGuarantees)
     (s :: S).
-  ( PListLike ell
-  , PElemConstraint ell (PAsData k)
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PListLike ell, PElemConstraint ell (PAsData k), PIsData k, PIsData v) =>
   Term s (PMap keys k v :--> ell (PAsData k))
 pkeys = phoistAcyclic $
   plam $ \kvs -> pmatch kvs $ \(PMap kvs') ->
@@ -1330,14 +1004,7 @@ pkvPairLt = phoistAcyclic $
 -- | Rebuild the map at the given key.
 rebuildAtKey ::
   forall (g :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   Term
     s
     ( ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
@@ -1468,14 +1135,7 @@ unionMergeHandler Commutative merge =
 -}
 pzipWith ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   SomeMergeHandler k v s ->
   Term
     s
@@ -1495,14 +1155,7 @@ pzipWith (SomeMergeHandlerCommutative mhc) =
 -}
 pzipWithData ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   SomeMergeHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1535,13 +1188,7 @@ mergeHandlerCommutativeOnData (MergeHandlerCommutative bothPresent onePresent) =
 
 zipMerge ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1574,14 +1221,7 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
 
 zipMergeInsert ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   MergeHandler (PAsData k) (PAsData v) s ->
   -- | 'PSTrue' means first arg is left, second arg is right.
   -- The first list gets passed in deconstructed form as head and tail
@@ -1663,13 +1303,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
 
 zipMergeCommutative ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (PIsData k, PIsData v) =>
   OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1701,14 +1335,7 @@ zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \ca
 
 zipMergeInsertCommutative ::
   forall (s :: S) (k :: PType) (v :: PType).
-  ( POrd k
-  , PIsData k
-  , Plutus.ToData (AsHaskell k)
-  , Plutus.FromData (AsHaskell k)
-  , PIsData v
-  , Plutus.ToData (AsHaskell v)
-  , Plutus.FromData (AsHaskell v)
-  ) =>
+  (POrd k, PIsData k, PIsData v) =>
   MergeHandlerCommutative (PAsData k) (PAsData v) s ->
   -- | 'PSTrue' means first arg is left, second arg is right.
   -- The first list gets passed in deconstructed form as head and tail

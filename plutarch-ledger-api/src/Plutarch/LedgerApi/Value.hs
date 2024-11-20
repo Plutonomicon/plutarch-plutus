@@ -228,10 +228,9 @@ newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s
       PlutusType
     , -- | @since 2.0.0
       PIsData
+    , -- | @since 2.0.0
+      PShow
     )
-
--- | @since WIP
-deriving anyclass instance PShow (PValue 'AssocMap.Unsorted amounts)
 
 type role PValue nominal nominal nominal
 
