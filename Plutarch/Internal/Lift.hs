@@ -24,12 +24,12 @@ module Plutarch.Internal.Lift (
   -- ** Manual instance helpers
   fromPlutarchUni,
   toPlutarchUni,
-  fromPlutarchReprScott,
-  toPlutarchReprScott,
+  fromPlutarchReprClosed,
+  toPlutarchReprClosed,
   PLifted (PLifted),
   mkPLifted,
   getPLifted,
-  PLiftedScott (..),
+  PLiftedClosed (..),
   LiftError (..),
 ) where
 
@@ -107,7 +107,7 @@ keep in mind:
    an associated 'PlutusRepr' type, this is a Hasekll level type that is included
    in the Plutus default universe.
 3. If defining 'toPlutarch' and 'fromPlutarch' for Scott encoded type you need to
-   set @'PlutusRepr' PMyType = 'PLiftedScott' PMyType@
+   set @'PlutusRepr' PMyType = 'PLiftedClosed' PMyType@
 4. When choosing a type for 'AsHaskell', /any/ value of that type /must/ be
    representable in Plutarch. If you have internal invariants to maintain on
    the Haskell side, make sure you do so with great care.
@@ -140,27 +140,27 @@ class PlutusType a => PLiftable (a :: S -> Type) where
   fromPlutarchRepr :: PlutusRepr a -> Maybe (AsHaskell a)
   fromPlutarch :: (forall s. PLifted s a) -> Either LiftError (AsHaskell a)
 
-{- | Valid definition for 'toPlutarchRepr' if 'PlutusRepr' is in Scott encoded
+{- | Valid definition for 'toPlutarchRepr' if 'PlutusRepr' is Scott encoded
 
 @since WIP
 -}
-toPlutarchReprScott ::
+toPlutarchReprClosed ::
   forall (a :: S -> Type).
-  (PLiftable a, PlutusRepr a ~ PLiftedScott a) =>
+  (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
   AsHaskell a ->
   PlutusRepr a
-toPlutarchReprScott p = PLiftedScott $ toPlutarch @a p
+toPlutarchReprClosed p = PLiftedClosed $ toPlutarch @a p
 
-{- | Valid definition for 'fromPlutarchRepr' if 'PlutusRepr' is in Scott encoded
+{- | Valid definition for 'fromPlutarchRepr' if 'PlutusRepr' is Scott encoded
 
 @since WIP
 -}
-fromPlutarchReprScott ::
+fromPlutarchReprClosed ::
   forall (a :: S -> Type).
-  (PLiftable a, PlutusRepr a ~ PLiftedScott a) =>
+  (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
   PlutusRepr a ->
   Maybe (AsHaskell a)
-fromPlutarchReprScott (PLiftedScott t) = either (const Nothing) Just $ fromPlutarch @a t
+fromPlutarchReprClosed (PLiftedClosed t) = either (const Nothing) Just $ fromPlutarch @a t
 
 {- | Valid definition for 'toPlutarch' if 'PlutusRepr' is in Plutus universe
 
@@ -363,4 +363,4 @@ mkPLifted t = PLifted (popaque t)
 
 @since WIP
 -}
-newtype PLiftedScott (a :: S -> Type) = PLiftedScott {unPLiftedClosed :: forall (s :: S). PLifted s a}
+newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed {unPLiftedClosed :: forall (s :: S). PLifted s a}
