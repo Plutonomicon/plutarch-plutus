@@ -105,7 +105,7 @@ keep in mind:
    in Plutus universe or Scott encoding
 2. If defining 'toPlutarchRepr' and 'fromPlutarchRepr' you will need to define
    an associated 'PlutusRepr' type, this is a Hasekll level type that is included
-   in 'DefaultUni' - universe of Plutus
+   in the Plutus default universe.
 3. If defining 'toPlutarch' and 'fromPlutarch' for Scott encoded type you need to
    set @'PlutusRepr' PMyType = 'PLiftedScott' PMyType@
 4. When choosing a type for 'AsHaskell', /any/ value of that type /must/ be
@@ -118,7 +118,6 @@ keep in mind:
 2. @'fmap' 'toPlutarchRepr' '.' 'fromPlutarchRepr'@ @=@ @'Just'@
 3. @'fromPlutarch' '.' 'toPlutarch'@ @=@ @'Right'@
 4. @'fmap' 'toPlutarch' '.' 'fromPlutarch'@ @=@ @'Right'@
-5. @'plift' '.' 'pconstant'@ @=@ @'id'@
 
 Any derivations via 'DeriveBuiltinPLiftable', 'DeriveDataPLiftable', and
 'DeriveNewtypePLiftable' automatically follow these laws.
