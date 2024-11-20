@@ -1,6 +1,6 @@
 module Plutarch.Internal.Quantification (PForall (PForall), PSome (PSome), PFix (PFix)) where
 
-import Plutarch.Internal (PType, Term)
+import Plutarch.Internal.Term (PType, Term)
 
 type PForall :: (a -> PType) -> PType
 newtype PForall (b :: a -> PType) s = PForall (forall (x :: a). Term s (b x))

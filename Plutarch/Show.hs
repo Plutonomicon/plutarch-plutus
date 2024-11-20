@@ -39,7 +39,14 @@ import Plutarch.ByteString (
   punsafeIntegerToByte,
  )
 import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
-import Plutarch.Internal (
+import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
+import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Other (
+  pfix,
+ )
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
+import Plutarch.Internal.Term (
   Term,
   perror,
   phoistAcyclic,
@@ -49,13 +56,6 @@ import Plutarch.Internal (
   (#$),
   (:-->),
  )
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Other (
-  pfix,
- )
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.String (PString, pdecodeUtf8, pencodeUtf8)
 
 class PShow t where

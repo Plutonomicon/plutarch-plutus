@@ -91,7 +91,6 @@ library
     Plutarch.Evaluate
     Plutarch.FFI
     Plutarch.Integer
-    Plutarch.Internal
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Lift
@@ -102,6 +101,7 @@ library
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Term
     Plutarch.Internal.TermCont
     Plutarch.Internal.Trace
     Plutarch.Internal.TypeFamily

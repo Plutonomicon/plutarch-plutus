@@ -16,7 +16,6 @@ import Generics.SOP (
   cpara_SList,
   para_SList,
  )
-import Plutarch.Internal (PDelayed, PType, Term, pdelay, pforce, plam', plet, (#), (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PlutusType (
   DerivedPInner,
@@ -32,6 +31,17 @@ import Plutarch.Internal.PlutusType (
   pmatch',
  )
 import Plutarch.Internal.Quantification (PForall (PForall))
+import Plutarch.Internal.Term (
+  PDelayed,
+  PType,
+  Term,
+  pdelay,
+  pforce,
+  plam',
+  plet,
+  (#),
+  (:-->),
+ )
 
 data PlutusTypeScott
 

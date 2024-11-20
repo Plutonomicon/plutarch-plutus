@@ -38,6 +38,8 @@
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 * `pexpModInteger` is now in `Plutarch.Integer`
 * `PMaybeData` no longer uses `PDataRecord`
+* `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
+  actual contents
 
 ## Removed
 

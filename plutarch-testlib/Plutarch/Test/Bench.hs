@@ -66,7 +66,7 @@ import GHC.Conc (TVar, atomically, forkIO, newTVarIO, readTVar, retry, writeTVar
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch (Config (NoTracing), compile)
 import Plutarch.Evaluate (evalScriptUnlimited)
-import Plutarch.Internal (compileOptimized)
+import Plutarch.Internal.Term (compileOptimized)
 import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))

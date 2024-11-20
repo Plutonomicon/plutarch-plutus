@@ -36,7 +36,7 @@ import Plutarch.DataRepr.Internal.HList.Utils (
   Labeled (Labeled, unLabeled),
   SingleItem,
  )
-import Plutarch.Internal (Term)
+import Plutarch.Internal.Term (Term)
 import Plutarch.Internal.TypeFamily (Snd)
 
 --------------------------------------------------------------------------------

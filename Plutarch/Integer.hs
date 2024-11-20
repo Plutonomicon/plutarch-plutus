@@ -15,18 +15,18 @@ module Plutarch.Integer (
 
 import GHC.Generics (Generic)
 import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
-import Plutarch.Internal (
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque, pto)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Internal.Term (
   S,
   Term,
   phoistAcyclic,
   (#),
   (:-->),
  )
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
 import PlutusCore qualified as PLC

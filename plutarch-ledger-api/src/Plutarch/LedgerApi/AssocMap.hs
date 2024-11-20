@@ -89,12 +89,12 @@ import Plutarch.Builtin (
   pfromDataImpl,
   ppairDataBuiltin,
  )
-import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Lift (
   PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
   fromPlutarchUni,
   toPlutarchUni,
  )
+import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.List qualified as List

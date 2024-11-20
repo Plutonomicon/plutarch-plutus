@@ -18,7 +18,6 @@ import GHC.Generics (Generic)
 import Plutarch.Bool (PBool (PFalse, PTrue), PEq, POrd, PPartialOrd)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (S, Term, (#), (:-->))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -28,6 +27,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Term (S, Term, (#), (:-->))
 import Plutarch.Positive (PPositive)
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC

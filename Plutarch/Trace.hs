@@ -23,7 +23,7 @@ module Plutarch.Trace (
 
 import Data.Kind (Type)
 import Plutarch.Bool (PBool, pif)
-import Plutarch.Internal (
+import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug, LogInfo),
   S,

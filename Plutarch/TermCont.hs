@@ -24,8 +24,8 @@ import Plutarch.DataRepr.Internal.Field (
   Bindings,
   BoundTerms,
  )
-import Plutarch.Internal (S, Term, plet)
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
+import Plutarch.Internal.Term (S, Term, plet)
 import Plutarch.Internal.TermCont (TermCont, tcont)
 import Plutarch.Internal.TermCont qualified as TC
 import Plutarch.Maybe (PMaybe (PJust, PNothing))

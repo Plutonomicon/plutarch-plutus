@@ -7,7 +7,9 @@ module Plutarch.Enum (
 import Data.Kind (Type)
 import Plutarch.Bool (POrd, pif, (#==))
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (
+import Plutarch.Internal.Other (pfix, pto)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.Term (
   S,
   Term,
   phoistAcyclic,
@@ -15,8 +17,6 @@ import Plutarch.Internal (
   (#$),
   (:-->),
  )
-import Plutarch.Internal.Other (pfix, pto)
-import Plutarch.Internal.PLam (plam)
 import Plutarch.Positive (PPositive)
 
 {- | A notion of \'next\' value. More formally, instances of this type class are

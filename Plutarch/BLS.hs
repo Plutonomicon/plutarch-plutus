@@ -31,11 +31,11 @@ import GHC.Generics (Generic)
 import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (Term, (#), (:-->))
 import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.Term (Term, (#), (:-->))
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1

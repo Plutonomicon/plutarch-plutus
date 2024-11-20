@@ -20,7 +20,7 @@ import GHC.Exts (Any)
 import GHC.Generics (Generic)
 import Generics.SOP (All2, I, SOP, Top)
 import Generics.SOP.GGP (GCode, GDatatypeInfo, GFrom, GTo, gfrom, gto)
-import Plutarch.Internal (PType, S, Term)
+import Plutarch.Internal.Term (PType, S, Term)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Unsafe.Coerce (unsafeCoerce)
 

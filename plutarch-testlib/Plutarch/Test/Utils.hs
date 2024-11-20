@@ -11,7 +11,13 @@ module Plutarch.Test.Utils (
   precompileTerm,
 ) where
 
-import Plutarch.Internal (Config (NoTracing), RawTerm (RCompiled), Term (Term), TermResult (TermResult), compile)
+import Plutarch.Internal.Term (
+  Config (NoTracing),
+  RawTerm (RCompiled),
+  Term (Term),
+  TermResult (TermResult),
+  compile,
+ )
 import Plutarch.Prelude
 import Plutarch.Script (Script (Script))
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutPretty, (<+>))

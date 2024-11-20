@@ -11,7 +11,6 @@ module Plutarch.Internal.Other (
 
 import Data.Text qualified as T
 import GHC.Stack (HasCallStack)
-import Plutarch.Internal (ClosedTerm, Config, Term, compile, phoistAcyclic, plam', punsafeCoerce, (#), (:-->))
 import Plutarch.Internal.PlutusType (
   PContravariant',
   PCovariant',
@@ -20,6 +19,17 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon',
   pmatch',
+ )
+import Plutarch.Internal.Term (
+  ClosedTerm,
+  Config,
+  Term,
+  compile,
+  phoistAcyclic,
+  plam',
+  punsafeCoerce,
+  (#),
+  (:-->),
  )
 import Plutarch.Script (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadable)

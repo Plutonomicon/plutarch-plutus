@@ -6,7 +6,7 @@ module Plutarch.Internal.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal (
+import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug),
   S,

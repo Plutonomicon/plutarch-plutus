@@ -31,9 +31,9 @@ import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
-import Plutarch.Internal (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
+import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Witness (witness)
 
 class PlutusTypeStrat (strategy :: Type) where

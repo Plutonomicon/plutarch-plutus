@@ -16,8 +16,8 @@ module Plutarch.TryFrom (
 import Data.Kind (Constraint)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
-import Plutarch.Internal (PType, Term, punsafeCoerce)
 import Plutarch.Internal.PlutusType (PContravariant, PCovariant, PInner)
+import Plutarch.Internal.Term (PType, Term, punsafeCoerce)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Reducible (Reduce)
 

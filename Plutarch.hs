@@ -60,13 +60,13 @@ module Plutarch (
   PP.PVariant',
 ) where
 
-import Plutarch.Internal qualified as PI
 import Plutarch.Internal.Newtype qualified as PN
 import Plutarch.Internal.Other qualified as PO
 import Plutarch.Internal.PLam qualified as PL
 import Plutarch.Internal.PlutusType qualified as PP
 import Plutarch.Internal.Quantification qualified as PQ
 import Plutarch.Internal.ScottEncoding qualified as PS
+import Plutarch.Internal.Term qualified as PI
 import Plutarch.Internal.TermCont qualified as PT
 import Plutarch.Num ()
 import Plutarch.Pretty qualified as PPR
