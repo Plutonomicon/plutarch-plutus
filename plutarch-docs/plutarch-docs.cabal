@@ -83,7 +83,6 @@ executable plutarch-docs
     Plutarch.Docs.PBuiltinList
     Plutarch.Docs.PBuiltinPair
     Plutarch.Docs.PByteString
-    Plutarch.Docs.PConstantAndPLift
     Plutarch.Docs.PData
     Plutarch.Docs.PDataFields
     Plutarch.Docs.PDataSumAndRecord

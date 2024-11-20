@@ -17,7 +17,7 @@ module Plutarch.Test.Laws (
 
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
-import Plutarch.Internal.Lift (PLiftable (fromPlutarch, toPlutarch))
+import Plutarch.Internal.Lift (PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr))
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Num (PNum (pabs, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Positive (PPositive, Positive)
@@ -60,6 +60,10 @@ checkPLiftableLaws =
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
         fromPlutarch @a (toPlutarch @a x) === Right x
+  , testProperty "fromPlutarchRepr . toPlutarchRepr = Right"
+      . forAllShrinkShow arbitrary shrink prettyShow
+      $ \(x :: AsHaskell a) ->
+        fromPlutarchRepr @a (toPlutarchRepr @a x) === Just x
   , testProperty "plift . pconstant = id" . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
       plift (pconstant @a x) `prettyEquals` x
   ]

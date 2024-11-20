@@ -67,9 +67,11 @@ import Plutarch.Internal (
  )
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
-  PLiftable (AsHaskell, PlutusRepr, fromPlutarchRepr, toPlutarchRepr),
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
   PLifted (PLifted),
+  fromPlutarchUni,
   pconstant,
+  toPlutarchUni,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pfix)
@@ -141,8 +143,18 @@ instance DerivePlutusType PByte where
 instance PLiftable PByte where
   type AsHaskell PByte = Word8
   type PlutusRepr PByte = Integer
+
+  {-# INLINEABLE toPlutarchRepr #-}
   toPlutarchRepr = toPlutarchRepr @PInteger . fromIntegral @_ @Integer
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr = fmap (fromIntegral @Integer @Word8) . fromPlutarchRepr @PInteger
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 -- | @since WIP
 instance PEq PByte where

@@ -13,7 +13,6 @@ Looking to contribute to Plutarch? Looking for functionalities that are not curr
   - [Plutus Core constants (UNSAFE)](#plutus-core-constants-unsafe)
   - [Plutus core builtin functions](#plutus-core-builtin-functions)
   - [Working with BuiltinData/Data/PData](#working-with-builtindatadatapdata)
-  - [`PConstant` and `PLift`](#pconstant-and-plift)
 - [Lower Level Examples](#lower-level-examples)
   - [Extracting `txInfoInputs` from `ScriptContext` manually (UNTYPED)](#extracting-txinfoinputs-from-scriptcontext-manually-untyped)
 - [Useful Links](#useful-links)
@@ -59,7 +58,7 @@ Parts of the [Pluto guide](https://github.com/Plutonomicon/pluto/blob/main/GUIDE
 
 ## Plutus Core constants (UNSAFE)
 
-> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/PlutarchTerms/PlutarchConstants.md) and [`PConstant`/`PLift`](./Typeclasses/PConstantAndPLift.md) section of the Plutarch user guide.
+> **NOTE**: The following information is almost never necessary with the existence of `pconstant`. Refer to [constant building](./Introduction/PlutarchTerms/PlutarchConstants.md) and [`PLiftable`](./Typeclasses/PLiftable.md) section of the Plutarch user guide.
 
 Often, you will need to build a Plutus core constant. You can do this using `Some` and `ValueOf`. Here's how `pcon PTrue` creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean:
 
@@ -164,10 +163,6 @@ Most of the time, you'll be working with `BuiltinData`/`Data` - this is the type
 Plutarch aims to hide these low level details from the user. Ideally, you will be using `PDataSum`/`PDataList` and `PAsData` - these are essentially just `BuiltinData`, but it is typed at the Plutarch level.
 
 If you want to work with `BuiltinData` directly however, which you may have to do during developing Plutarch, you can find all that you need to know at [Plutonomicon](https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md).
-
-## `PConstant` and `PLift`
-
-TODO
 
 # Lower Level Examples
 

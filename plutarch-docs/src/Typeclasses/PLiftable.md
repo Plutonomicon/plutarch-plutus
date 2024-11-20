@@ -175,7 +175,31 @@ and Haskell-level equivalent `h`. Aside from `a` being an instance of
 
 This helper is for types that have the same representation as some other
 type that already defined `PLiftable`. Instance defined that way will have
-the same `PlutusRepr`
+the same `PlutusRepr`.
+
+```haskell
+newtype PPositive s = PPositive (Term s PInteger)
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+
+deriving via
+  DeriveNewtypePLiftable PPositive PInteger Positive
+  instance PLiftable PPositive
+```
+
+This defines that `PPositive`'s Haskell-level equivalent is `Positive` and `PPositive` has the same representation as `PInteger`.
+
+Implementation is not important but is useful to talk about its type parameters
+
+```haskell
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+  = DeriveNewtypePLiftable (wrapper s)
+```
+
+To use `DeriveNewtypePLiftable` the following must hold:
+
+* `inner` has `PLiftable` instance
+* `AsHaskell inner` is coercible to `h`
 
 ### Manual derivation
 

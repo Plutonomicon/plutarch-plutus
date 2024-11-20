@@ -42,12 +42,16 @@ import Plutarch.Internal.Lift (
     AsHaskell,
     PlutusRepr,
     fromPlutarch,
-    toPlutarch
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
   ),
-  PLiftedClosed,
+  PLiftedScott,
+  fromPlutarchReprScott,
   getPLifted,
   mkPLifted,
   pconstant,
+  toPlutarchReprScott,
  )
 import Plutarch.Show (PShow)
 import Plutarch.String (PString)
@@ -65,11 +69,17 @@ instance DerivePlutusType (PMaybe a) where type DPTStrat _ = PlutusTypeScott
 -- | @since WIP
 instance PLiftable a => PLiftable (PMaybe a) where
   type AsHaskell (PMaybe a) = Maybe (AsHaskell a)
-  type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
+  type PlutusRepr (PMaybe a) = PLiftedScott (PMaybe a)
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprScott
 
   {-# INLINEABLE toPlutarch #-}
   toPlutarch (Just a) = mkPLifted $ pjust # pconstant @a a
   toPlutarch Nothing = mkPLifted pnothing
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprScott
 
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch t = do

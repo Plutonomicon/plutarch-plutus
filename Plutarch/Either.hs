@@ -69,13 +69,17 @@ import Plutarch.Internal.Lift (
     AsHaskell,
     PlutusRepr,
     fromPlutarch,
-    toPlutarch
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
   ),
   PLifted (PLifted),
-  PLiftedClosed,
+  PLiftedScott,
+  fromPlutarchReprScott,
   getPLifted,
   mkPLifted,
   pconstant,
+  toPlutarchReprScott,
  )
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.List (pcons, phead, pnil)
@@ -98,11 +102,17 @@ instance DerivePlutusType (PEither a b) where
 -- | @since WIP
 instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
-  type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
+  type PlutusRepr (PEither a b) = PLiftedScott (PEither a b)
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprScott
 
   {-# INLINEABLE toPlutarch #-}
   toPlutarch (Left a) = mkPLifted $ plam (pcon . PLeft) # pconstant @a a
   toPlutarch (Right b) = mkPLifted $ plam (pcon . PRight) # pconstant @b b
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprScott
 
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch t = do

@@ -23,24 +23,15 @@ When evaluated, a constant Plutarch `Term` will always yield the same result. Th
 
 If we know the desired value of a constant `Term` at compile-time, we can build the `Term` directly from [Haskell synonyms](../../Concepts/HaskellSynonym.md). The function to do so is `pconstant`.
 
-Constructing constants in this way utilizes the [`PConstant`/`PLift`](../../Typeclasses/PConstantAndPLift.md) typeclasses. These typeclasses expose the following [associated type families](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
+Constructing constants in this way utilizes the [`PLiftable`](../../Typeclasses/PLiftable.md) typeclasses. These typeclasses expose the following [associated type family](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
 
 ```hs
-type PLifted :: PType -> Type
-
-type PConstanted :: Type -> PType
+type AsHaskell :: PType -> Type
 ```
 
-`pconstant` takes a single argument: a regular Haskell type with a `PConstant`/`PLift` instance, and yields a Plutarch term tagged with the corresponding Plutarch type.
+`pconstant` takes a single argument: a regular Haskell type with a `PLiftable` instance, and yields a Plutarch term tagged with the corresponding Plutarch type. Note that you usually need to use type applications with `pconstant` as one Haskell type may have many Plutarch representations.
 
-The relation between the Plutarch type and its Haskell synonym is established by the type families. For any Haskell type `h`, `PConstanted h` is the corresponding Plutarch type. Similarly, for any Plutarch type `p`, `PLifted p` corresponds to the Haskell synonym.
-
-Lawful instances shall obey the following invariants:
-
-```hs
-PLifted (PConstanted h) ~ h
-PConstanted (PLifted p) ~ p
-```
+The relation between the Plutarch type and its Haskell synonym is established by the type family. For any Plutarch type `p`, `AsHaskell p` corresponds to the Haskell synonym.
 
 For example:
 
@@ -49,8 +40,6 @@ For example:
 x :: Term s PBool
 x = pconstant True
 ```
-
-The familiar `Bool` has a `PConstant` instance and it corresponds to `PBool` (which has a `PLift` instance). Therefore `PLifted PBool ~ Bool` and `PConstanted Bool ~ PBool`.
 
 You can also directly create a [`PAsData`](./../../Types/PAsData.md) term using `pconstantData`:
 

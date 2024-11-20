@@ -83,9 +83,11 @@ import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
-  PLiftable (AsHaskell, PlutusRepr, fromPlutarchRepr, toPlutarchRepr),
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
   PLifted (PLifted),
+  fromPlutarchUni,
   pconstant,
+  toPlutarchUni,
  )
 import Plutarch.Internal.PlutusType (pcon', pmatch')
 import Plutarch.Internal.Witness (witness)
@@ -138,11 +140,21 @@ instance
   where
   type AsHaskell (PBuiltinPair a b) = (AsHaskell a, AsHaskell b)
   type PlutusRepr (PBuiltinPair a b) = (PlutusRepr a, PlutusRepr b)
+
+  {-# INLINEABLE toPlutarchRepr #-}
   toPlutarchRepr (a, b) = (toPlutarchRepr @a a, toPlutarchRepr @b b)
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr (ar, br) = do
     a <- fromPlutarchRepr @a ar
     b <- fromPlutarchRepr @b br
     pure (a, b)
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
@@ -192,8 +204,18 @@ newtype HAsData (a :: Type) = HAsData Data
 instance PIsData a => PLiftable (PAsData a) where
   type AsHaskell (PAsData a) = HAsData (AsHaskell a)
   type PlutusRepr (PAsData a) = Data
+
+  {-# INLINEABLE toPlutarchRepr #-}
   toPlutarchRepr (HAsData d) = d
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr = Just . HAsData
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 instance PLC.Contains PLC.DefaultUni HAsData where
   knownUni = PLC.knownUni :: forall k (uni :: Type -> Type) (a :: k). PLC.Contains @k uni a => uni (PLC.Esc @k a)
@@ -216,8 +238,18 @@ instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PlutusType
 instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PLiftable (PBuiltinList a) where
   type AsHaskell (PBuiltinList a) = [AsHaskell a]
   type PlutusRepr (PBuiltinList a) = [PlutusRepr a]
+
+  {-# INLINEABLE toPlutarchRepr #-}
   toPlutarchRepr = map (toPlutarchRepr @a)
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr = traverse (fromPlutarchRepr @a)
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 instance PListLike PBuiltinList where
   type PElemConstraint PBuiltinList a = (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a))

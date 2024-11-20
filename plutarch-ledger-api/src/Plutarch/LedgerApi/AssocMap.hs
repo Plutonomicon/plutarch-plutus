@@ -90,7 +90,11 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
  )
 import Plutarch.Internal (punsafeBuiltin)
-import Plutarch.Internal.Lift (PLiftable (fromPlutarchRepr, toPlutarchRepr))
+import Plutarch.Internal.Lift (
+  PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
+  fromPlutarchUni,
+  toPlutarchUni,
+ )
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.List qualified as List
@@ -137,11 +141,21 @@ instance
   where
   type AsHaskell (PMap 'Unsorted k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
   type PlutusRepr (PMap 'Unsorted k v) = [(Plutus.Data, Plutus.Data)]
+
+  {-# INLINEABLE toPlutarchRepr #-}
   toPlutarchRepr = map (bimap Plutus.toData Plutus.toData) . PlutusMap.toList
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = toPlutarchUni
+
+  {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr lst = fmap PlutusMap.unsafeFromList $ forM lst $ \(kd, vd) -> do
     k <- Plutus.fromData kd
     v <- Plutus.fromData vd
     pure (k, v)
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch = fromPlutarchUni
 
 -- | @since 2.0.0
 instance PIsData (PMap keysort k v) where
