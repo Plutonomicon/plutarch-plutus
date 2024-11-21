@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch-orphanage
-version:  999.0.0
+version:  0
 author:
   Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
 
