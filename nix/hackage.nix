@@ -30,7 +30,7 @@
     };
 
     # Unstable
-    "999" = {
+    "0" = {
       timestamp = "2024-10-09T22:38:57Z";
       overrideVersion = true;
       src = ../.;
@@ -49,7 +49,7 @@
     };
 
     # Unstable
-    "999" = {
+    "0" = {
       timestamp = "2024-10-09T22:38:57Z";
       overrideVersion = true;
       subdir = "plutarch-ledger-api";
@@ -69,7 +69,7 @@
     };
 
     # Unstable
-    "999" = {
+    "0" = {
       timestamp = "2024-10-09T22:38:57Z";
       overrideVersion = true;
       subdir = "plutarch-orphanage";
