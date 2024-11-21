@@ -84,28 +84,28 @@ phull :: forall (a :: S -> Type) (s :: S). (POrd a, PIsData a) => Term s (PInter
 --   contained in both <tt>i1</tt> and <tt>i2</tt>.
 pintersection :: forall (a :: S -> Type) (s :: S). (POrd a, PIsData a) => Term s (PInterval a :--> (PInterval a :--> PInterval a))
 instance (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.LedgerApi.Interval.PExtended a)
-instance (Plutarch.Bool.POrd a, Plutarch.Builtin.PIsData a) => Plutarch.Bool.POrd (Plutarch.LedgerApi.Interval.PExtended a)
-instance (Plutarch.Bool.POrd a, Plutarch.Builtin.PIsData a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Interval.PExtended a)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Interval.PExtended a)
+instance (Plutarch.Internal.Ord.POrd a, Plutarch.Builtin.PIsData a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PExtended a)
+instance (Plutarch.Internal.Ord.POrd a, Plutarch.Builtin.PIsData a) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Interval.PExtended a)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PExtended a)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PExtended a s)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.POrd (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PUpperBound a s)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Bool.POrd (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PLowerBound a s)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.LedgerApi.Interval.PInterval a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.POrd (Plutarch.LedgerApi.Interval.PInterval a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Interval.PInterval a)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Interval.PInterval a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PInterval a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Interval.PInterval a)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PInterval a)
@@ -117,13 +117,13 @@ instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), P
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PInterval a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PInterval a))
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Bool.PEq (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PLowerBound a))
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.PEq (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Interval.PUpperBound a))
@@ -167,6 +167,13 @@ PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
 newtype PRationalData s
 PRationalData :: Term s (PDataRecord '["numerator" ':= PInteger, "denominator" ':= PPositive]) -> PRationalData s
 
+-- | Scott-encoded boolean.
+--   
+--   @since WIP
+data PSBool (s :: S)
+PSTrue :: PSBool (s :: S)
+PSFalse :: PSBool (s :: S)
+
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
 pfromDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
@@ -198,20 +205,69 @@ pmaybeDataToMaybe :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMay
 passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
+
+-- | Strict version of <a>pmatch</a> for <a>PSBool</a>.
+--   
+--   @since WIP
+pmatchStrict :: forall (r :: S -> Type) (s :: S). Term s PSBool -> (PSBool s -> Term s r) -> Term s r
+
+-- | @since WIP
+pstrue :: forall (s :: S). Term s PSBool
+
+-- | @since WIP
+psfalse :: forall (s :: S). Term s PSBool
+
+-- | Lazy <tt>if</tt> on Scott-encoded bool.
+--   
+--   @since WIP
+psif :: forall (s :: S) (a :: S -> Type). Term s PSBool -> Term s a -> Term s a -> Term s a
+
+-- | Strict <tt>if</tt> on Scott-encoded bool.
+--   
+--   @since WIP
+psif' :: forall (s :: S) (a :: S -> Type). Term s PSBool -> Term s a -> Term s a -> Term s a
+
+-- | <tt>not</tt> on Scott-encoded bool.
+--   
+--   @since WIP
+psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
+
+-- | Lazy AND on Scott-encoded bool.
+psand :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+
+-- | Strict AND on Scott-encoded bool.
+--   
+--   @since WIP
+psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+
+-- | Lazy OR on Scott-encoded bool
+--   
+--   @since WIP
+psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+
+-- | Strict OR on Scott-encoded bool.
+--   
+--   @since WIP
+psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.Mret a s)
 instance (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.LedgerApi.Utils.PMaybeData a)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PMaybeData a s)
 instance Plutarch.Show.PShow Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.Utils.PRationalData
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Utils.PRationalData
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PRationalData s)
+instance GHC.Show.Show (Plutarch.LedgerApi.Utils.PSBool s)
+instance GHC.Classes.Ord (Plutarch.LedgerApi.Utils.PSBool s)
+instance GHC.Classes.Eq (Plutarch.LedgerApi.Utils.PSBool s)
 instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Bool.POrd Plutarch.LedgerApi.Utils.PRationalData
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Utils.PSBool
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PSBoolRaw a)
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.LedgerApi.Utils.PRationalData
+instance Plutarch.Internal.Ord.POrd Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Utils.PRationalData)
@@ -219,8 +275,8 @@ instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PMayb
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Utils.PMaybeData a))
-instance (Plutarch.Builtin.PIsData a, Plutarch.Bool.PPartialOrd a) => Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Utils.PMaybeData a)
-instance (Plutarch.Builtin.PIsData a, Plutarch.Bool.PPartialOrd a) => Plutarch.Bool.POrd (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Internal.Ord.PPartialOrd a) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance (Plutarch.Builtin.PIsData a, Plutarch.Internal.Ord.PPartialOrd a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Utils.PMaybeData a)
 
 
 -- | This module is designed to be imported qualified, as many of its
@@ -430,9 +486,9 @@ instance (forall a b. GHC.Show.Show (f a b)) => GHC.Show.Show (Plutarch.LedgerAp
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell v), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell v)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v)
 instance (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Unsorted k v))
-instance (Plutarch.Bool.POrd k, Plutarch.Builtin.PIsData k, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v))
+instance (Plutarch.Internal.Ord.POrd k, Plutarch.Builtin.PIsData k, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData k), Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData v)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.AssocMap.PMap 'Plutarch.LedgerApi.AssocMap.Sorted k v))
 
 
 -- | Value-related functionality. In order to keep the interface efficient
@@ -553,22 +609,22 @@ plovelaceValueOf :: forall (v :: AmountGuarantees) (s :: S). Term s (PValue 'Sor
 pisAdaOnlyValue :: forall (s :: S). Term s (PValue 'Sorted 'Positive :--> PBool)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.Value.PLovelace
 instance Plutarch.Show.PShow Plutarch.LedgerApi.Value.PLovelace
-instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Value.PLovelace
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.Value.PLovelace
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.LedgerApi.Value.PLovelace
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PLovelace
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Value.PLovelace
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PLovelace
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PLovelace s)
 instance Plutarch.Show.PShow Plutarch.LedgerApi.Value.PTokenName
-instance Plutarch.Bool.POrd Plutarch.LedgerApi.Value.PTokenName
-instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Value.PTokenName
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.Value.PTokenName
+instance Plutarch.Internal.Ord.POrd Plutarch.LedgerApi.Value.PTokenName
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.LedgerApi.Value.PTokenName
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PTokenName
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Value.PTokenName
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PTokenName
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PTokenName s)
 instance Plutarch.Show.PShow Plutarch.LedgerApi.Value.PCurrencySymbol
-instance Plutarch.Bool.POrd Plutarch.LedgerApi.Value.PCurrencySymbol
-instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Value.PCurrencySymbol
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.Value.PCurrencySymbol
+instance Plutarch.Internal.Ord.POrd Plutarch.LedgerApi.Value.PCurrencySymbol
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.LedgerApi.Value.PCurrencySymbol
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PCurrencySymbol
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Value.PCurrencySymbol
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PCurrencySymbol
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PCurrencySymbol s)
@@ -576,10 +632,10 @@ instance Plutarch.Show.PShow (Plutarch.LedgerApi.Value.PValue keys amounts)
 instance Plutarch.Builtin.PIsData (Plutarch.LedgerApi.Value.PValue keys amounts)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Value.PValue keys amounts)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PValue keys amounts s)
-instance Plutarch.Bool.POrd Plutarch.LedgerApi.Value.PAssetClass
+instance Plutarch.Internal.Ord.POrd Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Show.PShow Plutarch.LedgerApi.Value.PAssetClass
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.Value.PAssetClass
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PAssetClass
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PAssetClass s)
@@ -588,15 +644,15 @@ instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PTokenName
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PCurrencySymbol
 instance Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Unsorted 'Plutarch.LedgerApi.Value.NoGuarantees)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PAssetClass
-instance Plutarch.Bool.PPartialOrd Plutarch.LedgerApi.Value.PAssetClass
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.LedgerApi.Value.PAssetClass
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.LedgerApi.Value.PAssetClass)
 instance Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.LedgerApi.Value.PValue keys amounts)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)
-instance Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
-instance Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)
-instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)
+instance Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
+instance Plutarch.Internal.Ord.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees)
 instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
 instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
 instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
@@ -1112,21 +1168,21 @@ passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V2.PTxInInfo
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V2.PTxInInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PTxInInfo
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PTxInInfo s)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V2.PTxInfo
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V2.PTxInfo
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V2.PTxInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PTxInfo
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V2.PTxInfo
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V2.PTxInfo
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PTxInfo
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PTxInfo s)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V2.PScriptContext
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V2.PScriptContext
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PScriptContext
@@ -1305,26 +1361,26 @@ passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V1.PTxOut
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V1.PTxOut
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V1.PTxOut
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxOut
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V1.PTxOut
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxOut
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxOut s)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V1.PTxInInfo
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V1.PTxInInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxInInfo
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V1.PTxInInfo
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxInInfo
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxInInfo s)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V1.PTxInfo
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V1.PTxInfo
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxInfo
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V1.PTxInfo
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V1.PTxInfo
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxInfo
 instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxInfo s)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.Show.PShow Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Bool.PEq Plutarch.LedgerApi.V1.PScriptContext
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.DataRepr.Internal.Field.PDataFields Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.Builtin.PIsData Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PScriptContext
