@@ -114,6 +114,10 @@
               '';
 
             };
+            # We do have keys for signing hackage set exposed in the repository. Once I figure out how to
+            # store secrets in Hercules CI, I'd have to fix this.
+            # However, since deployment of hackage sets are fully automatized using Hercules CI,
+            # This should remain secure as long as Plutonomicon/Plutarch repository is secure.
             hackage =
               herbage.genHackage
                 ./keys
