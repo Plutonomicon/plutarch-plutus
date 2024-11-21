@@ -53,7 +53,7 @@ import Generics.SOP (
   hmap,
   para_SList,
  )
-import Plutarch.Bool (POrd, PPartialOrd, pif, (#<), (#<=))
+import Plutarch.Bool (pif)
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -83,6 +83,7 @@ import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.Other (POpaque, popaque, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (

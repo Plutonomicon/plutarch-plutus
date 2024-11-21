@@ -209,8 +209,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Bool (
-  POrd (pmax, pmin),
-  PPartialOrd ((#<), (#<=), (#>), (#>=)),
   pif,
   pnot,
   (#&&),
@@ -278,6 +276,10 @@ import Plutarch.Internal.Lift (
   plift,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (
+  POrd (pmax, pmin),
+  PPartialOrd ((#<), (#<=), (#>), (#>=)),
+ )
 import Plutarch.Internal.Other (POpaque (POpaque), pfix, popaque, pto)
 import Plutarch.Internal.PLam (pinl, plam)
 import Plutarch.Internal.PlutusType (

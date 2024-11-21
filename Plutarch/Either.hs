@@ -25,11 +25,7 @@ module Plutarch.Either (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Bool (
-  POrd,
-  PPartialOrd ((#<), (#<=)),
-  pif,
- )
+import Plutarch.Bool (pif)
 import Plutarch.Builtin (
   PAsData,
   PData,
@@ -62,6 +58,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
+import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (

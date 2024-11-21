@@ -33,6 +33,7 @@
 * `PLiftable` type class
 * `Plutarch.Builtin.Bool` module
 * `Plutarch.Internal.Eq` module
+* `Plutarch.Internal.Ord` module
 
 ## Changed
 
@@ -44,6 +45,8 @@
   actual contents
 * `PBool` definition is now in `Plutarch.Builtin.Bool`
 * `PEq` type class definition is now in `Plutarch.Internal.Eq`
+* `PPartialOrd` and `POrd` type class definitions are now in
+  `Plutarch.Internal.Ord`
 
 ## Removed
 

@@ -27,6 +27,7 @@ import Plutarch.Internal.Term (
   Term,
   pforce,
   phoistAcyclic,
+  plet,
   punsafeBuiltin,
   (#),
   (:-->),
@@ -43,6 +44,11 @@ class PEq t where
   a #== b = gpeq # a # b
 
 infix 4 #==
+
+instance PEq PBool where
+  {-# INLINEABLE (#==) #-}
+  x #== y = plet y $ \y' ->
+    pforce $ punsafeBuiltin PLC.IfThenElse # x # y' # pforce (punsafeBuiltin PLC.IfThenElse # y' # x # pcon PTrue)
 
 -- Helpers
 

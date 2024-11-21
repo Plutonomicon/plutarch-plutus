@@ -96,6 +96,7 @@ library
     Plutarch.Internal.Generic
     Plutarch.Internal.Lift
     Plutarch.Internal.Newtype
+    Plutarch.Internal.Ord
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType

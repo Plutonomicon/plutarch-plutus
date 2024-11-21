@@ -35,16 +35,7 @@ import Data.Functor.Const (Const)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
-import Plutarch.Bool (
-  POrd,
-  PPartialOrd,
-  pif,
-  pif',
-  (#&&),
-  (#<),
-  (#<=),
-  (#||),
- )
+import Plutarch.Bool (pif, pif', (#&&), (#||))
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
@@ -60,6 +51,7 @@ import Plutarch.Internal.Lift (
   unsafeToUni,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.Other (POpaque, pfix, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
