@@ -16,7 +16,9 @@ import Generics.SOP (
  )
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
-  pbuiltinIfThenElse,
+  pif',
+  pnot,
+  (#&&),
  )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.PLam (plam)
@@ -26,16 +28,13 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.Term (
-  S,
   Term,
-  pforce,
   phoistAcyclic,
   plet,
-  punsafeBuiltin,
   (#),
+  (#$),
   (:-->),
  )
-import PlutusCore qualified as PLC
 
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
@@ -50,8 +49,7 @@ infix 4 #==
 
 instance PEq PBool where
   {-# INLINEABLE (#==) #-}
-  x #== y = plet y $ \y' ->
-    pforce $ pbuiltinIfThenElse # x # y' # pforce (pbuiltinIfThenElse # y' # x # pcon PTrue)
+  x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
 
 -- Helpers
 
@@ -86,8 +84,4 @@ pands :: [Term s PBool] -> Term s PBool
 pands ts' =
   case nonEmpty ts' of
     Nothing -> pcon PTrue
-    Just ts -> foldl1 pand ts
-
--- Needed to avoid a dependency cycle
-pand :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
-pand x y = pforce $ punsafeBuiltin PLC.IfThenElse # x # y # x
+    Just ts -> foldl1 (#&&) ts

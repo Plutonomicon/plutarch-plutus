@@ -70,8 +70,7 @@ instance PlutusType PBool where
       PTrue -> True
       PFalse -> False
   {-# INLINEABLE pmatch' #-}
-  pmatch' b f =
-    pforce . pforce $ pbuiltinIfThenElse # b # pdelay (f PTrue) # pdelay (f PFalse)
+  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 -- | @since WIP
 pbuiltinIfThenElse ::
@@ -86,8 +85,7 @@ pbuiltinIfThenElse = punsafeBuiltin PLC.IfThenElse
 pif' ::
   forall (a :: S -> Type) (s :: S).
   Term s (PBool :--> a :--> a :--> a)
-pif' = phoistAcyclic $ plam $ \cond ifT ifF ->
-  pforce $ pbuiltinIfThenElse # cond # ifT # ifF
+pif' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
 
 {- | Lazy if-then-else.
 
