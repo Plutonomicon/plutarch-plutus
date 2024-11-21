@@ -36,8 +36,8 @@ To regenerate golden tests it is enough to remove @./goldens@ directory and reru
 -}</span></span><span>
 </span><span id="line-37"></span><span class="hs-keyword">data</span><span> </span><span id="GoldenTestTree"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-var">GoldenTestTree</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-38"></span><span>  </span><span id="GoldenTestTree"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-var">GoldenTestTree</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span>
-</span><span id="line-39"></span><span>  </span><span id="local-6989586621679227004"><span id="GoldenTestTreeEval"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEval"><span class="hs-identifier hs-var">GoldenTestTreeEval</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227004"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
-</span><span id="line-40"></span><span>  </span><span id="local-6989586621679227006"><span id="GoldenTestTreeEvalFail"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEvalFail"><span class="hs-identifier hs-var">GoldenTestTreeEvalFail</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227006"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679227016"><span id="GoldenTestTreeEval"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEval"><span class="hs-identifier hs-var">GoldenTestTreeEval</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227016"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
+</span><span id="line-40"></span><span>  </span><span id="local-6989586621679227018"><span id="GoldenTestTreeEvalFail"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEvalFail"><span class="hs-identifier hs-var">GoldenTestTreeEvalFail</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227018"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span class="annot"><span class="hs-comment">{- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
 by nested golden tests
@@ -59,13 +59,13 @@ by nested golden tests
 </span><span id="line-59"></span><span>  </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-60"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span><span>
 </span><span id="line-61"></span><span id="plutarchGolden"><span class="annot"><span class="annottext">plutarchGolden :: TestName -&gt; TestName -&gt; [GoldenTestTree] -&gt; TestTree
-</span><a href="Plutarch.Test.Golden.html#plutarchGolden"><span class="hs-identifier hs-var hs-var">plutarchGolden</span></a></span></span><span> </span><span id="local-6989586621679227009"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227009"><span class="hs-identifier hs-var">topName</span></a></span></span><span> </span><span id="local-6989586621679227010"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span></span><span> </span><span id="local-6989586621679227011"><span class="annot"><span class="annottext">[GoldenTestTree]
-</span><a href="#local-6989586621679227011"><span class="hs-identifier hs-var">tests</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [TestTree] -&gt; TestTree
+</span><a href="Plutarch.Test.Golden.html#plutarchGolden"><span class="hs-identifier hs-var hs-var">plutarchGolden</span></a></span></span><span> </span><span id="local-6989586621679227021"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227021"><span class="hs-identifier hs-var">topName</span></a></span></span><span> </span><span id="local-6989586621679227022"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span></span><span> </span><span id="local-6989586621679227023"><span class="annot"><span class="annottext">[GoldenTestTree]
+</span><a href="#local-6989586621679227023"><span class="hs-identifier hs-var">tests</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [TestTree] -&gt; TestTree
 </span><span class="hs-identifier hs-var">testGroup</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227009"><span class="hs-identifier hs-var">topName</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree]
-</span><a href="#local-6989586621679227012"><span class="hs-identifier hs-var">testsWithGoldens</span></a></span><span>
+</span><a href="#local-6989586621679227021"><span class="hs-identifier hs-var">topName</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree]
+</span><a href="#local-6989586621679227024"><span class="hs-identifier hs-var">testsWithGoldens</span></a></span><span>
 </span><span id="line-62"></span><span>  </span><span class="hs-keyword">where</span><span>
 </span><span id="line-63"></span><span>    </span><span class="hs-comment">-- Implementation note: Because we want to collect all Benchmarks created by nested tests</span><span>
 </span><span id="line-64"></span><span>    </span><span class="hs-comment">-- we cannot use plain TestTree for these (without hacks like passing some MVars around)</span><span>
@@ -74,9 +74,9 @@ by nested golden tests
 </span><span id="line-67"></span><span>    </span><span class="hs-comment">-- when using `--pattern` to filter tests because even though assertions won't run the</span><span>
 </span><span id="line-68"></span><span>    </span><span class="hs-comment">-- scripts will still be evaluated</span><span>
 </span><span id="line-69"></span><span>
-</span><span id="line-70"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679227013"><span class="annot"><span class="annottext">[TestTree]
-</span><a href="#local-6989586621679227013"><span class="hs-identifier hs-var">tests'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227014"><span class="annot"><span class="annottext">[[(TestName, Benchmark)]]
-</span><a href="#local-6989586621679227014"><span class="hs-identifier hs-var">benchmarks'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(TestTree, [(TestName, Benchmark)])]
+</span><span id="line-70"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679227025"><span class="annot"><span class="annottext">[TestTree]
+</span><a href="#local-6989586621679227025"><span class="hs-identifier hs-var">tests'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227026"><span class="annot"><span class="annottext">[[(TestName, Benchmark)]]
+</span><a href="#local-6989586621679227026"><span class="hs-identifier hs-var">benchmarks'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(TestTree, [(TestName, Benchmark)])]
 -&gt; ([TestTree], [[(TestName, Benchmark)]])
 forall a b. [(a, b)] -&gt; ([a], [b])
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.List.html#unzip"><span class="hs-identifier hs-var">unzip</span></a></span><span> </span><span class="annot"><span class="annottext">([(TestTree, [(TestName, Benchmark)])]
@@ -89,14 +89,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="annot"><span class="annottext">GoldenTestTree -&gt; (TestTree, [(TestName, Benchmark)])
 </span><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var">mkTest</span></a></span><span> </span><span class="annot"><span class="annottext">[GoldenTestTree]
-</span><a href="#local-6989586621679227011"><span class="hs-identifier hs-var">tests</span></a></span><span>
-</span><span id="line-71"></span><span>    </span><span id="local-6989586621679227017"><span class="annot"><span class="annottext">benchmarks :: [(TestName, Benchmark)]
-</span><a href="#local-6989586621679227017"><span class="hs-identifier hs-var hs-var">benchmarks</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[(TestName, Benchmark)]] -&gt; [(TestName, Benchmark)]
+</span><a href="#local-6989586621679227023"><span class="hs-identifier hs-var">tests</span></a></span><span>
+</span><span id="line-71"></span><span>    </span><span id="local-6989586621679227029"><span class="annot"><span class="annottext">benchmarks :: [(TestName, Benchmark)]
+</span><a href="#local-6989586621679227029"><span class="hs-identifier hs-var hs-var">benchmarks</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[(TestName, Benchmark)]] -&gt; [(TestName, Benchmark)]
 forall a. Monoid a =&gt; [a] -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#mconcat"><span class="hs-identifier hs-var">mconcat</span></a></span><span> </span><span class="annot"><span class="annottext">[[(TestName, Benchmark)]]
-</span><a href="#local-6989586621679227014"><span class="hs-identifier hs-var">benchmarks'</span></a></span><span>
-</span><span id="line-72"></span><span>    </span><span id="local-6989586621679227018"><span class="annot"><span class="annottext">goldenTests :: [TestTree]
-</span><a href="#local-6989586621679227018"><span class="hs-identifier hs-var hs-var">goldenTests</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679227026"><span class="hs-identifier hs-var">benchmarks'</span></a></span><span>
+</span><span id="line-72"></span><span>    </span><span id="local-6989586621679227030"><span class="annot"><span class="annottext">goldenTests :: [TestTree]
+</span><a href="#local-6989586621679227030"><span class="hs-identifier hs-var hs-var">goldenTests</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-73"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [TestTree] -&gt; TestTree
 </span><span class="hs-identifier hs-var">testGroup</span></span><span>
 </span><span id="line-74"></span><span>          </span><span class="annot"><span class="annottext">TestName
@@ -104,14 +104,14 @@ forall a. Monoid a =&gt; [a] -&gt; a
 </span><span id="line-75"></span><span>          </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; IO ByteString -&gt; TestTree
 </span><span class="hs-identifier hs-var">goldenVsString</span></span><span>
 </span><span id="line-76"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.bench.golden&quot;</span></span><span class="hs-special">)</span><span>
 </span><span id="line-77"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;goldens&quot;</span></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.bench.golden&quot;</span></span><span class="hs-special">)</span><span>
@@ -122,18 +122,18 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)] -&gt; ByteString
 </span><a href="Plutarch.Test.Golden.html#mkBenchGoldenValue"><span class="hs-identifier hs-var">mkBenchGoldenValue</span></a></span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)]
-</span><a href="#local-6989586621679227017"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679227029"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>          </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; IO ByteString -&gt; TestTree
 </span><span class="hs-identifier hs-var">goldenVsString</span></span><span>
 </span><span id="line-80"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.uplc.golden&quot;</span></span><span class="hs-special">)</span><span>
 </span><span id="line-81"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;goldens&quot;</span></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.uplc.golden&quot;</span></span><span class="hs-special">)</span><span>
@@ -144,18 +144,18 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)] -&gt; ByteString
 </span><a href="Plutarch.Test.Golden.html#mkUplcGoldenValue"><span class="hs-identifier hs-var">mkUplcGoldenValue</span></a></span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)]
-</span><a href="#local-6989586621679227017"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679227029"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-83"></span><span>          </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; IO ByteString -&gt; TestTree
 </span><span class="hs-identifier hs-var">goldenVsString</span></span><span>
 </span><span id="line-84"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.uplc.eval.golden&quot;</span></span><span class="hs-special">)</span><span>
 </span><span id="line-85"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;goldens&quot;</span></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/filepath-1.4.300.1/src/System.FilePath.Posix.html#%3C%2F%3E"><span class="hs-operator hs-var">&lt;/&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227010"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227022"><span class="hs-identifier hs-var">goldenPath</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.uplc.eval.golden&quot;</span></span><span class="hs-special">)</span><span>
@@ -166,15 +166,15 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)] -&gt; ByteString
 </span><a href="Plutarch.Test.Golden.html#mkUplcEvalGoldenValue"><span class="hs-identifier hs-var">mkUplcEvalGoldenValue</span></a></span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)]
-</span><a href="#local-6989586621679227017"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679227029"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-87"></span><span>          </span><span class="hs-special">]</span><span>
 </span><span id="line-88"></span><span>      </span><span class="hs-special">]</span><span>
-</span><span id="line-89"></span><span>    </span><span id="local-6989586621679227012"><span class="annot"><span class="annottext">testsWithGoldens :: [TestTree]
-</span><a href="#local-6989586621679227012"><span class="hs-identifier hs-var hs-var">testsWithGoldens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[TestTree]
-</span><a href="#local-6989586621679227018"><span class="hs-identifier hs-var">goldenTests</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree] -&gt; [TestTree] -&gt; [TestTree]
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679227024"><span class="annot"><span class="annottext">testsWithGoldens :: [TestTree]
+</span><a href="#local-6989586621679227024"><span class="hs-identifier hs-var hs-var">testsWithGoldens</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[TestTree]
+</span><a href="#local-6989586621679227030"><span class="hs-identifier hs-var">goldenTests</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree] -&gt; [TestTree] -&gt; [TestTree]
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree]
-</span><a href="#local-6989586621679227013"><span class="hs-identifier hs-var">tests'</span></a></span><span>
+</span><a href="#local-6989586621679227025"><span class="hs-identifier hs-var">tests'</span></a></span><span>
 </span><span id="line-90"></span><span>
 </span><span id="line-91"></span><span class="annot"><span class="hs-comment">{- | Like `Test.Tasty.testGroup` but for golden tests
 
@@ -191,7 +191,7 @@ Goldens in the group will be prefixed by the group name
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-104"></span><span id="local-6989586621679226777"><span class="annot"><a href="Plutarch.Test.Golden.html#goldenEval"><span class="hs-identifier hs-type">goldenEval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679226777"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
+</span><span id="line-104"></span><span id="local-6989586621679226789"><span class="annot"><a href="Plutarch.Test.Golden.html#goldenEval"><span class="hs-identifier hs-type">goldenEval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679226789"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
 </span><span id="line-105"></span><span id="goldenEval"><span class="annot"><span class="annottext">goldenEval :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 </span><a href="Plutarch.Test.Golden.html#goldenEval"><span class="hs-identifier hs-var hs-var">goldenEval</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
@@ -201,7 +201,7 @@ forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-111"></span><span id="local-6989586621679227022"><span class="annot"><a href="Plutarch.Test.Golden.html#goldenEvalFail"><span class="hs-identifier hs-type">goldenEvalFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227022"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
+</span><span id="line-111"></span><span id="local-6989586621679227034"><span class="annot"><a href="Plutarch.Test.Golden.html#goldenEvalFail"><span class="hs-identifier hs-type">goldenEvalFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227034"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
 </span><span id="line-112"></span><span id="goldenEvalFail"><span class="annot"><span class="annottext">goldenEvalFail :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 </span><a href="Plutarch.Test.Golden.html#goldenEvalFail"><span class="hs-identifier hs-var hs-var">goldenEvalFail</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
@@ -209,15 +209,15 @@ forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 </span><span id="line-113"></span><span>
 </span><span id="line-114"></span><span class="hs-comment">-- Internals</span><span>
 </span><span id="line-115"></span><span>
-</span><span id="line-116"></span><span id="local-6989586621679226781"><span id="local-6989586621679226782"><span class="annot"><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-type">mkFailed</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679226781"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679226781"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679226782"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679226782"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-116"></span><span id="local-6989586621679226793"><span id="local-6989586621679226794"><span class="annot"><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-type">mkFailed</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679226793"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679226793"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679226794"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679226794"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-117"></span><span id="mkFailed"><span class="annot"><span class="annottext">mkFailed :: forall e a.
 TestName
 -&gt; (e -&gt; TestName)
 -&gt; Either e a
 -&gt; Either (TestTree, [(TestName, Benchmark)]) a
-</span><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-var hs-var">mkFailed</span></a></span></span><span> </span><span id="local-6989586621679227027"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227027"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227028"><span class="annot"><span class="annottext">e -&gt; TestName
-</span><a href="#local-6989586621679227028"><span class="hs-identifier hs-var">showErr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(e -&gt; Either (TestTree, [(TestName, Benchmark)]) a)
+</span><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-var hs-var">mkFailed</span></a></span></span><span> </span><span id="local-6989586621679227039"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227039"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227040"><span class="annot"><span class="annottext">e -&gt; TestName
+</span><a href="#local-6989586621679227040"><span class="hs-identifier hs-var">showErr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(e -&gt; Either (TestTree, [(TestName, Benchmark)]) a)
 -&gt; (a -&gt; Either (TestTree, [(TestName, Benchmark)]) a)
 -&gt; Either e a
 -&gt; Either (TestTree, [(TestName, Benchmark)]) a
@@ -236,30 +236,30 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227027"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; (e -&gt; Assertion) -&gt; e -&gt; TestTree
+</span><a href="#local-6989586621679227039"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; (e -&gt; Assertion) -&gt; e -&gt; TestTree
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; (e -&gt; TestName) -&gt; e -&gt; Assertion
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">e -&gt; TestName
-</span><a href="#local-6989586621679227028"><span class="hs-identifier hs-var">showErr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either (TestTree, [(TestName, Benchmark)]) a
+</span><a href="#local-6989586621679227040"><span class="hs-identifier hs-var">showErr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either (TestTree, [(TestName, Benchmark)]) a
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span>
 </span><span id="line-118"></span><span>
 </span><span id="line-119"></span><span class="annot"><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-type">mkTest</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-120"></span><span id="mkTest"><span class="annot"><span class="annottext">mkTest :: GoldenTestTree -&gt; (TestTree, [(TestName, Benchmark)])
-</span><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var hs-var">mkTest</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span> </span><span id="local-6989586621679227031"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227031"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227032"><span class="annot"><span class="annottext">[GoldenTestTree]
-</span><a href="#local-6989586621679227032"><span class="hs-identifier hs-var">tests</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName -&gt; [TestTree] -&gt; TestTree
+</span><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var hs-var">mkTest</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span> </span><span id="local-6989586621679227043"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227043"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227044"><span class="annot"><span class="annottext">[GoldenTestTree]
+</span><a href="#local-6989586621679227044"><span class="hs-identifier hs-var">tests</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName -&gt; [TestTree] -&gt; TestTree
 </span><span class="hs-identifier hs-var">testGroup</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227031"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree]
-</span><a href="#local-6989586621679227033"><span class="hs-identifier hs-var">tests'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)]
-</span><a href="#local-6989586621679227034"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679227043"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">[TestTree]
+</span><a href="#local-6989586621679227045"><span class="hs-identifier hs-var">tests'</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[(TestName, Benchmark)]
+</span><a href="#local-6989586621679227046"><span class="hs-identifier hs-var">benchmarks</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-121"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-122"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679227033"><span class="annot"><span class="annottext">[TestTree]
-</span><a href="#local-6989586621679227033"><span class="hs-identifier hs-var">tests'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227035"><span class="annot"><span class="annottext">[[(TestName, Benchmark)]]
-</span><a href="#local-6989586621679227035"><span class="hs-identifier hs-var">benchmarks'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(TestTree, [(TestName, Benchmark)])]
+</span><span id="line-122"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679227045"><span class="annot"><span class="annottext">[TestTree]
+</span><a href="#local-6989586621679227045"><span class="hs-identifier hs-var">tests'</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227047"><span class="annot"><span class="annottext">[[(TestName, Benchmark)]]
+</span><a href="#local-6989586621679227047"><span class="hs-identifier hs-var">benchmarks'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(TestTree, [(TestName, Benchmark)])]
 -&gt; ([TestTree], [[(TestName, Benchmark)]])
 forall a b. [(a, b)] -&gt; ([a], [b])
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.List.html#unzip"><span class="hs-identifier hs-var">unzip</span></a></span><span> </span><span class="annot"><span class="annottext">([(TestTree, [(TestName, Benchmark)])]
@@ -272,9 +272,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="annot"><span class="annottext">GoldenTestTree -&gt; (TestTree, [(TestName, Benchmark)])
 </span><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var">mkTest</span></a></span><span> </span><span class="annot"><span class="annottext">[GoldenTestTree]
-</span><a href="#local-6989586621679227032"><span class="hs-identifier hs-var">tests</span></a></span><span>
-</span><span id="line-123"></span><span>    </span><span id="local-6989586621679227034"><span class="annot"><span class="annottext">benchmarks :: [(TestName, Benchmark)]
-</span><a href="#local-6989586621679227034"><span class="hs-identifier hs-var hs-var">benchmarks</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([(TestName, Benchmark)] -&gt; [(TestName, Benchmark)])
+</span><a href="#local-6989586621679227044"><span class="hs-identifier hs-var">tests</span></a></span><span>
+</span><span id="line-123"></span><span>    </span><span id="local-6989586621679227046"><span class="annot"><span class="annottext">benchmarks :: [(TestName, Benchmark)]
+</span><a href="#local-6989586621679227046"><span class="hs-identifier hs-var hs-var">benchmarks</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([(TestName, Benchmark)] -&gt; [(TestName, Benchmark)])
 -&gt; [[(TestName, Benchmark)]] -&gt; [(TestName, Benchmark)]
 forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
 forall (t :: Type -&gt; Type) m a.
@@ -290,14 +290,14 @@ forall (p :: Type -&gt; Type -&gt; Type) a b c.
 Bifunctor p =&gt;
 (a -&gt; b) -&gt; p a c -&gt; p b c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Bifunctor.html#first"><span class="hs-identifier hs-var">first</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227031"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
+</span><a href="#local-6989586621679227043"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;.&quot;</span></span><span class="hs-special">)</span><span> </span><span class="hs-operator">&lt;&gt;</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[(TestName, Benchmark)]]
-</span><a href="#local-6989586621679227035"><span class="hs-identifier hs-var">benchmarks'</span></a></span><span>
-</span><span id="line-124"></span><span class="annot"><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var">mkTest</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEval"><span class="hs-identifier hs-type">GoldenTestTreeEval</span></a></span><span> </span><span id="local-6989586621679227145"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227145"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227146"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679227146"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((TestTree, [(TestName, Benchmark)])
+</span><a href="#local-6989586621679227047"><span class="hs-identifier hs-var">benchmarks'</span></a></span><span>
+</span><span id="line-124"></span><span class="annot"><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var">mkTest</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEval"><span class="hs-identifier hs-type">GoldenTestTreeEval</span></a></span><span> </span><span id="local-6989586621679227157"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227157"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227158"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679227158"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((TestTree, [(TestName, Benchmark)])
  -&gt; (TestTree, [(TestName, Benchmark)]))
 -&gt; ((TestTree, [(TestName, Benchmark)])
     -&gt; (TestTree, [(TestName, Benchmark)]))
@@ -322,8 +322,8 @@ forall a. a -&gt; a
 -&gt; (TestTree, [(TestName, Benchmark)])
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-125"></span><span>  </span><span id="local-6989586621679227148"><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227148"><span class="hs-identifier hs-var">benchmark</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TestName
+</span><span id="line-125"></span><span>  </span><span id="local-6989586621679227160"><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227160"><span class="hs-identifier hs-var">benchmark</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TestName
 -&gt; (Text -&gt; TestName)
 -&gt; Either Text Benchmark
 -&gt; Either (TestTree, [(TestName, Benchmark)]) Benchmark
@@ -333,7 +333,7 @@ TestName
 -&gt; Either e a
 -&gt; Either (TestTree, [(TestName, Benchmark)]) a
 </span><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-var">mkFailed</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227145"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
+</span><a href="#local-6989586621679227157"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">(Either Text Benchmark
  -&gt; Either (TestTree, [(TestName, Benchmark)]) Benchmark)
 -&gt; Either Text Benchmark
@@ -343,7 +343,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (a :: PType). ClosedTerm a -&gt; Either Text Benchmark
 </span><a href="Plutarch.Test.Golden.html#benchmarkTerm"><span class="hs-identifier hs-var">benchmarkTerm</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679227146"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621679227158"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-126"></span><span>  </span><span class="annot"><span class="annottext">Script
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TestName
 -&gt; (EvalError -&gt; TestName)
@@ -355,7 +355,7 @@ TestName
 -&gt; Either e a
 -&gt; Either (TestTree, [(TestName, Benchmark)]) a
 </span><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-var">mkFailed</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227145"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; TestName
+</span><a href="#local-6989586621679227157"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; TestName
 forall a. Show a =&gt; a -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">(Either EvalError Script
  -&gt; Either (TestTree, [(TestName, Benchmark)]) Script)
@@ -364,7 +364,7 @@ forall a. Show a =&gt; a -&gt; TestName
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark -&gt; Either EvalError Script
 </span><a href="Plutarch.Test.Golden.html#%24sel%3Aresult%3ABenchmark"><span class="hs-identifier hs-var">result</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227148"><span class="hs-identifier hs-var">benchmark</span></a></span><span>
+</span><a href="#local-6989586621679227160"><span class="hs-identifier hs-var">benchmark</span></a></span><span>
 </span><span id="line-127"></span><span>  </span><span class="annot"><span class="annottext">(TestTree, [(TestName, Benchmark)])
 -&gt; Either
      (TestTree, [(TestName, Benchmark)])
@@ -373,15 +373,15 @@ forall a. a -&gt; Either (TestTree, [(TestName, Benchmark)]) a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227145"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assertion
+</span><a href="#local-6989586621679227157"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assertion
 forall a. a -&gt; IO a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227145"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227148"><span class="hs-identifier hs-var">benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-128"></span><span class="annot"><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var">mkTest</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEvalFail"><span class="hs-identifier hs-type">GoldenTestTreeEvalFail</span></a></span><span> </span><span id="local-6989586621679227161"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227161"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227162"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679227162"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((TestTree, [(TestName, Benchmark)])
+</span><a href="#local-6989586621679227157"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227160"><span class="hs-identifier hs-var">benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-128"></span><span class="annot"><a href="Plutarch.Test.Golden.html#mkTest"><span class="hs-identifier hs-var">mkTest</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTreeEvalFail"><span class="hs-identifier hs-type">GoldenTestTreeEvalFail</span></a></span><span> </span><span id="local-6989586621679227173"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227173"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679227174"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679227174"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((TestTree, [(TestName, Benchmark)])
  -&gt; (TestTree, [(TestName, Benchmark)]))
 -&gt; ((TestTree, [(TestName, Benchmark)])
     -&gt; (TestTree, [(TestName, Benchmark)]))
@@ -406,8 +406,8 @@ forall a. a -&gt; a
 -&gt; (TestTree, [(TestName, Benchmark)])
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-129"></span><span>  </span><span id="local-6989586621679227163"><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227163"><span class="hs-identifier hs-var">benchmark</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TestName
+</span><span id="line-129"></span><span>  </span><span id="local-6989586621679227175"><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227175"><span class="hs-identifier hs-var">benchmark</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TestName
 -&gt; (Text -&gt; TestName)
 -&gt; Either Text Benchmark
 -&gt; Either (TestTree, [(TestName, Benchmark)]) Benchmark
@@ -417,7 +417,7 @@ TestName
 -&gt; Either e a
 -&gt; Either (TestTree, [(TestName, Benchmark)]) a
 </span><a href="Plutarch.Test.Golden.html#mkFailed"><span class="hs-identifier hs-var">mkFailed</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227161"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
+</span><a href="#local-6989586621679227173"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">(Either Text Benchmark
  -&gt; Either (TestTree, [(TestName, Benchmark)]) Benchmark)
 -&gt; Either Text Benchmark
@@ -427,7 +427,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (a :: PType). ClosedTerm a -&gt; Either Text Benchmark
 </span><a href="Plutarch.Test.Golden.html#benchmarkTerm"><span class="hs-identifier hs-var">benchmarkTerm</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679227162"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621679227174"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-130"></span><span>  </span><span class="annot"><span class="annottext">(TestTree, [(TestName, Benchmark)])
 -&gt; Either
      (TestTree, [(TestName, Benchmark)])
@@ -445,49 +445,49 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Benchmark -&gt; Either EvalError Script
 </span><a href="Plutarch.Test.Golden.html#%24sel%3Aresult%3ABenchmark"><span class="hs-identifier hs-var">result</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227163"><span class="hs-identifier hs-var">benchmark</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679227175"><span class="hs-identifier hs-var">benchmark</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-131"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227161"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assertion
+</span><a href="#local-6989586621679227173"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Assertion
 forall a. a -&gt; IO a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227161"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227163"><span class="hs-identifier hs-var">benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679227173"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227175"><span class="hs-identifier hs-var">benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-132"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="annot"><span class="annottext">Script
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-133"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227161"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
+</span><a href="#local-6989586621679227173"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;Script did not terminate with error as expected&quot;</span></span><span>
 </span><span id="line-134"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227161"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227163"><span class="hs-identifier hs-var">benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679227173"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227175"><span class="hs-identifier hs-var">benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
 </span><span id="line-135"></span><span>      </span><span class="hs-special">)</span><span>
 </span><span id="line-136"></span><span>
-</span><span id="line-137"></span><span id="local-6989586621679226895"><span class="annot"><a href="Plutarch.Test.Golden.html#benchmarkTerm"><span class="hs-identifier hs-type">benchmarkTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679226895"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span></span><span>
+</span><span id="line-137"></span><span id="local-6989586621679226907"><span class="annot"><a href="Plutarch.Test.Golden.html#benchmarkTerm"><span class="hs-identifier hs-type">benchmarkTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679226907"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span></span><span>
 </span><span id="line-138"></span><span id="benchmarkTerm"><span class="annot"><span class="annottext">benchmarkTerm :: forall (a :: PType). ClosedTerm a -&gt; Either Text Benchmark
-</span><a href="Plutarch.Test.Golden.html#benchmarkTerm"><span class="hs-identifier hs-var hs-var">benchmarkTerm</span></a></span></span><span> </span><span id="local-6989586621679227166"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679227166"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-139"></span><span>  </span><span id="local-6989586621679227167"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679227167"><span class="hs-identifier hs-var">compiled</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; Either Text Script
+</span><a href="Plutarch.Test.Golden.html#benchmarkTerm"><span class="hs-identifier hs-var hs-var">benchmarkTerm</span></a></span></span><span> </span><span id="local-6989586621679227178"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679227178"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-139"></span><span>  </span><span id="local-6989586621679227179"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679227179"><span class="hs-identifier hs-var">compiled</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; Either Text Script
 forall (a :: PType). Config -&gt; ClosedTerm a -&gt; Either Text Script
 </span><span class="hs-identifier hs-var">compile</span></span><span> </span><span class="annot"><span class="annottext">Config
 </span><a href="Plutarch.Test.Golden.html#testConfig"><span class="hs-identifier hs-var">testConfig</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679227166"><span class="hs-identifier hs-var">term</span></a></span><span>
-</span><span id="line-140"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679227169"><span class="annot"><span class="annottext">Either EvalError Script
-</span><a href="#local-6989586621679227169"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span id="local-6989586621679227170"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679227170"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679227171"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679227171"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227172"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679227172"><span class="hs-identifier hs-var">_traces</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
+</span><a href="#local-6989586621679227178"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><span id="line-140"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679227181"><span class="annot"><span class="annottext">Either EvalError Script
+</span><a href="#local-6989586621679227181"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span id="local-6989586621679227182"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621679227182"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679227183"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679227183"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227184"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679227184"><span class="hs-identifier hs-var">_traces</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
 </span><span class="hs-identifier hs-var">evalScript</span></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679227167"><span class="hs-identifier hs-var">compiled</span></a></span><span>
+</span><a href="#local-6989586621679227179"><span class="hs-identifier hs-var">compiled</span></a></span><span>
 </span><span id="line-141"></span><span>  </span><span class="annot"><span class="annottext">Benchmark -&gt; Either Text Benchmark
 forall a. a -&gt; Either Text a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -501,12 +501,12 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; Script
 -&gt; Benchmark
 </span><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-var">Benchmark</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679227170"><span class="hs-identifier hs-var">cpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679227171"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script -&gt; Int64
+</span><a href="#local-6989586621679227182"><span class="hs-identifier hs-var">cpu</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679227183"><span class="hs-identifier hs-var">mem</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script -&gt; Int64
 </span><a href="Plutarch.Test.Golden.html#scriptSize"><span class="hs-identifier hs-var">scriptSize</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679227167"><span class="hs-identifier hs-var">compiled</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either EvalError Script
-</span><a href="#local-6989586621679227169"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679227167"><span class="hs-identifier hs-var">compiled</span></a></span><span>
+</span><a href="#local-6989586621679227179"><span class="hs-identifier hs-var">compiled</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either EvalError Script
+</span><a href="#local-6989586621679227181"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679227179"><span class="hs-identifier hs-var">compiled</span></a></span><span>
 </span><span id="line-142"></span><span>
 </span><span id="line-143"></span><span class="annot"><a href="Plutarch.Test.Golden.html#testConfig"><span class="hs-identifier hs-type">testConfig</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Config</span></span><span>
 </span><span id="line-144"></span><span id="testConfig"><span class="annot"><span class="annottext">testConfig :: Config
@@ -549,7 +549,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-157"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="%24sel%3Aunevaluated%3ABenchmark"><span class="annot"><span class="annottext">Benchmark -&gt; Script
 </span><a href="Plutarch.Test.Golden.html#%24sel%3Aunevaluated%3ABenchmark"><span class="hs-identifier hs-var hs-var">unevaluated</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Script</span></span><span>
 </span><span id="line-158"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-159"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679227181"><span id="local-6989586621679227196"><span id="local-6989586621679227200"><span class="annot"><span class="annottext">Int -&gt; Benchmark -&gt; TestName -&gt; TestName
+</span><span id="line-159"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679227193"><span id="local-6989586621679227208"><span id="local-6989586621679227212"><span class="annot"><span class="annottext">Int -&gt; Benchmark -&gt; TestName -&gt; TestName
 [Benchmark] -&gt; TestName -&gt; TestName
 Benchmark -&gt; TestName
 (Int -&gt; Benchmark -&gt; TestName -&gt; TestName)
@@ -569,12 +569,12 @@ showList :: [Benchmark] -&gt; TestName -&gt; TestName
 </span><span id="line-160"></span><span>
 </span><span id="line-161"></span><span class="hs-keyword">newtype</span><span> </span><span id="PerfBenchmark"><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-var">PerfBenchmark</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PerfBenchmark"><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-var">PerfBenchmark</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span>
 </span><span id="line-162"></span><span>
-</span><span id="line-163"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679227276"><span id="local-6989586621679227279"><span id="local-6989586621679227282"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-type">PerfBenchmark</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-164"></span><span>  </span><span id="local-6989586621679227305"><span class="annot"><span class="annottext">toJSON :: PerfBenchmark -&gt; Value
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-type">PerfBenchmark</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span id="local-6989586621679227306"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679227306"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679227307"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679227307"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span id="local-6989586621679227308"><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679227308"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="annot"><span class="annottext">Either EvalError Script
+</span><span id="line-163"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679227288"><span id="local-6989586621679227291"><span id="local-6989586621679227294"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-type">PerfBenchmark</span></a></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-164"></span><span>  </span><span id="local-6989586621679227317"><span class="annot"><span class="annottext">toJSON :: PerfBenchmark -&gt; Value
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-type">PerfBenchmark</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span id="local-6989586621679227318"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621679227318"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679227319"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679227319"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span id="local-6989586621679227320"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679227320"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="annot"><span class="annottext">Either EvalError Script
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Script
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-165"></span><span>    </span><span class="annot"><span class="annottext">[Pair] -&gt; Value
@@ -584,25 +584,25 @@ showList :: [Benchmark] -&gt; TestName -&gt; TestName
 forall v. ToJSON v =&gt; Key -&gt; v -&gt; Item [Pair]
 forall e kv v. (KeyValue e kv, ToJSON v) =&gt; Key -&gt; v -&gt; kv
 </span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679227306"><span class="hs-identifier hs-var">cpu</span></a></span><span>
+</span><a href="#local-6989586621679227318"><span class="hs-identifier hs-var">cpu</span></a></span><span>
 </span><span id="line-167"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;exBudgetMemory&quot;</span></span><span> </span><span class="annot"><span class="annottext">Key -&gt; ExMemory -&gt; Item [Pair]
 forall v. ToJSON v =&gt; Key -&gt; v -&gt; Item [Pair]
 forall e kv v. (KeyValue e kv, ToJSON v) =&gt; Key -&gt; v -&gt; kv
 </span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679227307"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621679227319"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-168"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;scriptSizeBytes&quot;</span></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Int64 -&gt; Item [Pair]
 forall v. ToJSON v =&gt; Key -&gt; v -&gt; Item [Pair]
 forall e kv v. (KeyValue e kv, ToJSON v) =&gt; Key -&gt; v -&gt; kv
 </span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679227308"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><a href="#local-6989586621679227320"><span class="hs-identifier hs-var">size</span></a></span><span>
 </span><span id="line-169"></span><span>      </span><span class="hs-special">]</span><span>
-</span><span id="line-170"></span><span>  </span><span id="local-6989586621679227325"><span class="annot"><span class="annottext">toEncoding :: PerfBenchmark -&gt; Encoding
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toEncoding</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-type">PerfBenchmark</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span id="local-6989586621679227326"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679227326"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679227327"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679227327"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span id="local-6989586621679227328"><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679227328"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="annot"><span class="annottext">Either EvalError Script
+</span><span id="line-170"></span><span>  </span><span id="local-6989586621679227337"><span class="annot"><span class="annottext">toEncoding :: PerfBenchmark -&gt; Encoding
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">toEncoding</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#PerfBenchmark"><span class="hs-identifier hs-type">PerfBenchmark</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span id="local-6989586621679227338"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621679227338"><span class="hs-identifier hs-var">cpu</span></a></span></span><span> </span><span id="local-6989586621679227339"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621679227339"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span id="local-6989586621679227340"><span class="annot"><span class="annottext">Int64
+</span><a href="#local-6989586621679227340"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="annot"><span class="annottext">Either EvalError Script
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Script
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-171"></span><span>    </span><span class="annot"><span class="annottext">Series -&gt; Encoding
@@ -617,25 +617,25 @@ forall a. Monoid a =&gt; [a] -&gt; a
 forall v. ToJSON v =&gt; Key -&gt; v -&gt; Item [Series]
 forall e kv v. (KeyValue e kv, ToJSON v) =&gt; Key -&gt; v -&gt; kv
 </span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621679227326"><span class="hs-identifier hs-var">cpu</span></a></span><span>
+</span><a href="#local-6989586621679227338"><span class="hs-identifier hs-var">cpu</span></a></span><span>
 </span><span id="line-174"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;exBudgetMemory&quot;</span></span><span> </span><span class="annot"><span class="annottext">Key -&gt; ExMemory -&gt; Item [Series]
 forall v. ToJSON v =&gt; Key -&gt; v -&gt; Item [Series]
 forall e kv v. (KeyValue e kv, ToJSON v) =&gt; Key -&gt; v -&gt; kv
 </span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621679227327"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621679227339"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-175"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;scriptSizeBytes&quot;</span></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Int64 -&gt; Item [Series]
 forall v. ToJSON v =&gt; Key -&gt; v -&gt; Item [Series]
 forall e kv v. (KeyValue e kv, ToJSON v) =&gt; Key -&gt; v -&gt; kv
 </span><span class="hs-operator hs-var">.=</span></span><span> </span><span class="annot"><span class="annottext">Int64
-</span><a href="#local-6989586621679227328"><span class="hs-identifier hs-var">size</span></a></span><span>
+</span><a href="#local-6989586621679227340"><span class="hs-identifier hs-var">size</span></a></span><span>
 </span><span id="line-176"></span><span>        </span><span class="hs-special">]</span><span>
 </span><span id="line-177"></span><span>
 </span><span id="line-178"></span><span class="annot"><a href="Plutarch.Test.Golden.html#mkBenchmarkValue"><span class="hs-identifier hs-type">mkBenchmarkValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Lazy.Internal.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#Benchmark"><span class="hs-identifier hs-type">Benchmark</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Lazy.Internal.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
 </span><span id="line-179"></span><span id="mkBenchmarkValue"><span class="annot"><span class="annottext">mkBenchmarkValue :: (Benchmark -&gt; ByteString) -&gt; [(TestName, Benchmark)] -&gt; ByteString
-</span><a href="Plutarch.Test.Golden.html#mkBenchmarkValue"><span class="hs-identifier hs-var hs-var">mkBenchmarkValue</span></a></span></span><span> </span><span id="local-6989586621679227330"><span class="annot"><span class="annottext">Benchmark -&gt; ByteString
-</span><a href="#local-6989586621679227330"><span class="hs-identifier hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Test.Golden.html#mkBenchmarkValue"><span class="hs-identifier hs-var hs-var">mkBenchmarkValue</span></a></span></span><span> </span><span id="local-6989586621679227342"><span class="annot"><span class="annottext">Benchmark -&gt; ByteString
+</span><a href="#local-6989586621679227342"><span class="hs-identifier hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-180"></span><span>  </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
 </span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Lazy.Char8.html#unlines"><span class="hs-identifier hs-var">LBS.unlines</span></a></span><span>
 </span><span id="line-181"></span><span>    </span><span class="annot"><span class="annottext">([ByteString] -&gt; ByteString)
@@ -647,21 +647,21 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; [(TestName, Benchmark)] -&gt; [ByteString]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span>
-</span><span id="line-182"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679227332"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227332"><span class="hs-identifier hs-var">testName</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227333"><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227333"><span class="hs-identifier hs-var">benchmark</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-182"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679227344"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679227344"><span class="hs-identifier hs-var">testName</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679227345"><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227345"><span class="hs-identifier hs-var">benchmark</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-183"></span><span>          </span><span class="annot"><span class="annottext">[ByteString] -&gt; ByteString
 forall a. Monoid a =&gt; [a] -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#mconcat"><span class="hs-identifier hs-var">mconcat</span></a></span><span>
 </span><span id="line-184"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; ByteString
 </span><a href="Plutarch.Test.Golden.html#encodeStringUtf8"><span class="hs-identifier hs-var">encodeStringUtf8</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679227332"><span class="hs-identifier hs-var">testName</span></a></span><span>
+</span><a href="#local-6989586621679227344"><span class="hs-identifier hs-var">testName</span></a></span><span>
 </span><span id="line-185"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Item [ByteString]
 ByteString
 </span><span class="hs-string">&quot; &quot;</span></span><span>
 </span><span id="line-186"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Benchmark -&gt; ByteString
-</span><a href="#local-6989586621679227330"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
-</span><a href="#local-6989586621679227333"><span class="hs-identifier hs-var">benchmark</span></a></span><span>
+</span><a href="#local-6989586621679227342"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Benchmark
+</span><a href="#local-6989586621679227345"><span class="hs-identifier hs-var">benchmark</span></a></span><span>
 </span><span id="line-187"></span><span>            </span><span class="hs-special">]</span><span>
 </span><span id="line-188"></span><span>      </span><span class="hs-special">)</span><span>
 </span><span id="line-189"></span><span>

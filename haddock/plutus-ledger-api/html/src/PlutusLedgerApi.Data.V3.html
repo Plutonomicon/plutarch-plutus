@@ -169,13 +169,13 @@ ready to be evaluated on-chain.
 Called inside phase-1 validation (i.e., deserialisation error is a phase-1 error).
 -}</span></span><span>
 </span><span id="line-169"></span><span class="annot"><a href="PlutusLedgerApi.Data.V3.html#deserialiseScript"><span class="hs-identifier hs-type">deserialiseScript</span></a></span><span> </span><span class="hs-glyph">::</span><span>
-</span><span id="line-170"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621681399442"><span class="annot"><a href="#local-6989586621681399442"><span class="hs-identifier hs-type">m</span></a></span></span><span class="hs-operator">.</span><span>
-</span><span id="line-171"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">Common.MonadError</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.SerialisedScript.html#ScriptDecodeError"><span class="hs-identifier hs-type">Common.ScriptDecodeError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681399442"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-170"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621681399407"><span class="annot"><a href="#local-6989586621681399407"><span class="hs-identifier hs-type">m</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-171"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">Common.MonadError</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.SerialisedScript.html#ScriptDecodeError"><span class="hs-identifier hs-type">Common.ScriptDecodeError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681399407"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
 </span><span id="line-172"></span><span>  </span><span class="annot"><span class="hs-comment">-- | which major protocol version the script was submitted in.</span></span><span>
 </span><span id="line-173"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">Common.MajorProtocolVersion</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-174"></span><span>  </span><span class="annot"><span class="hs-comment">-- | the script to deserialise.</span></span><span>
 </span><span id="line-175"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Common.SerialisedScript.html#SerialisedScript"><span class="hs-identifier hs-type">Common.SerialisedScript</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-176"></span><span>  </span><span class="annot"><a href="#local-6989586621681399442"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.SerialisedScript.html#ScriptForEvaluation"><span class="hs-identifier hs-type">Common.ScriptForEvaluation</span></a></span><span>
+</span><span id="line-176"></span><span>  </span><span class="annot"><a href="#local-6989586621681399407"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.SerialisedScript.html#ScriptForEvaluation"><span class="hs-identifier hs-type">Common.ScriptForEvaluation</span></a></span><span>
 </span><span id="line-177"></span><span id="deserialiseScript"><span class="annot"><span class="annottext">deserialiseScript :: forall (m :: * -&gt; *).
 MonadError ScriptDecodeError m =&gt;
 MajorProtocolVersion -&gt; SerialisedScript -&gt; m ScriptForEvaluation
@@ -215,12 +215,12 @@ also returns the used budget.
 -&gt; ScriptForEvaluation
 -&gt; Data
 -&gt; (LogOutput, Either EvaluationError ExBudget)
-</span><a href="PlutusLedgerApi.Data.V3.html#evaluateScriptCounting"><span class="hs-identifier hs-var hs-var">evaluateScriptCounting</span></a></span></span><span> </span><span id="local-6989586621681399555"><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681399555"><span class="hs-identifier hs-var">mpv</span></a></span></span><span> </span><span id="local-6989586621681399556"><span class="annot"><span class="annottext">VerboseMode
-</span><a href="#local-6989586621681399556"><span class="hs-identifier hs-var">verbose</span></a></span></span><span> </span><span id="local-6989586621681399557"><span class="annot"><span class="annottext">EvaluationContext
-</span><a href="#local-6989586621681399557"><span class="hs-identifier hs-var">ec</span></a></span></span><span> </span><span id="local-6989586621681399558"><span class="annot"><span class="annottext">ScriptForEvaluation
-</span><a href="#local-6989586621681399558"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621681399559"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681399559"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusLedgerApi.Data.V3.html#evaluateScriptCounting"><span class="hs-identifier hs-var hs-var">evaluateScriptCounting</span></a></span></span><span> </span><span id="local-6989586621681399520"><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="#local-6989586621681399520"><span class="hs-identifier hs-var">mpv</span></a></span></span><span> </span><span id="local-6989586621681399521"><span class="annot"><span class="annottext">VerboseMode
+</span><a href="#local-6989586621681399521"><span class="hs-identifier hs-var">verbose</span></a></span></span><span> </span><span id="local-6989586621681399522"><span class="annot"><span class="annottext">EvaluationContext
+</span><a href="#local-6989586621681399522"><span class="hs-identifier hs-var">ec</span></a></span></span><span> </span><span id="local-6989586621681399523"><span class="annot"><span class="annottext">ScriptForEvaluation
+</span><a href="#local-6989586621681399523"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621681399524"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621681399524"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-197"></span><span>  </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 -&gt; MajorProtocolVersion
 -&gt; VerboseMode
@@ -230,11 +230,11 @@ also returns the used budget.
 -&gt; (LogOutput, Either EvaluationError ExBudget)
 </span><a href="PlutusLedgerApi.Common.Eval.html#evaluateScriptCounting"><span class="hs-identifier hs-var">Common.evaluateScriptCounting</span></a></span><span> </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Data.V3.html#thisLedgerLanguage"><span class="hs-identifier hs-var">thisLedgerLanguage</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681399555"><span class="hs-identifier hs-var">mpv</span></a></span><span> </span><span class="annot"><span class="annottext">VerboseMode
-</span><a href="#local-6989586621681399556"><span class="hs-identifier hs-var">verbose</span></a></span><span> </span><span class="annot"><span class="annottext">EvaluationContext
-</span><a href="#local-6989586621681399557"><span class="hs-identifier hs-var">ec</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptForEvaluation
-</span><a href="#local-6989586621681399558"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681399559"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621681399520"><span class="hs-identifier hs-var">mpv</span></a></span><span> </span><span class="annot"><span class="annottext">VerboseMode
+</span><a href="#local-6989586621681399521"><span class="hs-identifier hs-var">verbose</span></a></span><span> </span><span class="annot"><span class="annottext">EvaluationContext
+</span><a href="#local-6989586621681399522"><span class="hs-identifier hs-var">ec</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptForEvaluation
+</span><a href="#local-6989586621681399523"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621681399524"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-198"></span><span>
 </span><span id="line-199"></span><span class="annot"><span class="hs-comment">{- | Evaluates a script, with a cost model and a budget that restricts how many
 resources it can use according to the cost model. Also returns the budget that
@@ -264,13 +264,13 @@ a limit to guard against scripts that run for a long time or loop.
 -&gt; ScriptForEvaluation
 -&gt; Data
 -&gt; (LogOutput, Either EvaluationError ExBudget)
-</span><a href="PlutusLedgerApi.Data.V3.html#evaluateScriptRestricting"><span class="hs-identifier hs-var hs-var">evaluateScriptRestricting</span></a></span></span><span> </span><span id="local-6989586621681399561"><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681399561"><span class="hs-identifier hs-var">mpv</span></a></span></span><span> </span><span id="local-6989586621681399562"><span class="annot"><span class="annottext">VerboseMode
-</span><a href="#local-6989586621681399562"><span class="hs-identifier hs-var">verbose</span></a></span></span><span> </span><span id="local-6989586621681399563"><span class="annot"><span class="annottext">EvaluationContext
-</span><a href="#local-6989586621681399563"><span class="hs-identifier hs-var">ec</span></a></span></span><span> </span><span id="local-6989586621681399564"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681399564"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span id="local-6989586621681399565"><span class="annot"><span class="annottext">ScriptForEvaluation
-</span><a href="#local-6989586621681399565"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621681399566"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681399566"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusLedgerApi.Data.V3.html#evaluateScriptRestricting"><span class="hs-identifier hs-var hs-var">evaluateScriptRestricting</span></a></span></span><span> </span><span id="local-6989586621681399526"><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="#local-6989586621681399526"><span class="hs-identifier hs-var">mpv</span></a></span></span><span> </span><span id="local-6989586621681399527"><span class="annot"><span class="annottext">VerboseMode
+</span><a href="#local-6989586621681399527"><span class="hs-identifier hs-var">verbose</span></a></span></span><span> </span><span id="local-6989586621681399528"><span class="annot"><span class="annottext">EvaluationContext
+</span><a href="#local-6989586621681399528"><span class="hs-identifier hs-var">ec</span></a></span></span><span> </span><span id="local-6989586621681399529"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681399529"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span id="local-6989586621681399530"><span class="annot"><span class="annottext">ScriptForEvaluation
+</span><a href="#local-6989586621681399530"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span id="local-6989586621681399531"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621681399531"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-221"></span><span>  </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 -&gt; MajorProtocolVersion
 -&gt; VerboseMode
@@ -281,10 +281,10 @@ a limit to guard against scripts that run for a long time or loop.
 -&gt; (LogOutput, Either EvaluationError ExBudget)
 </span><a href="PlutusLedgerApi.Common.Eval.html#evaluateScriptRestricting"><span class="hs-identifier hs-var">Common.evaluateScriptRestricting</span></a></span><span> </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Data.V3.html#thisLedgerLanguage"><span class="hs-identifier hs-var">thisLedgerLanguage</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681399561"><span class="hs-identifier hs-var">mpv</span></a></span><span> </span><span class="annot"><span class="annottext">VerboseMode
-</span><a href="#local-6989586621681399562"><span class="hs-identifier hs-var">verbose</span></a></span><span> </span><span class="annot"><span class="annottext">EvaluationContext
-</span><a href="#local-6989586621681399563"><span class="hs-identifier hs-var">ec</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621681399564"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptForEvaluation
-</span><a href="#local-6989586621681399565"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681399566"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621681399526"><span class="hs-identifier hs-var">mpv</span></a></span><span> </span><span class="annot"><span class="annottext">VerboseMode
+</span><a href="#local-6989586621681399527"><span class="hs-identifier hs-var">verbose</span></a></span><span> </span><span class="annot"><span class="annottext">EvaluationContext
+</span><a href="#local-6989586621681399528"><span class="hs-identifier hs-var">ec</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621681399529"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptForEvaluation
+</span><a href="#local-6989586621681399530"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621681399531"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-222"></span></pre></body></html>
