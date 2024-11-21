@@ -22,7 +22,8 @@ module Plutarch.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Bool (PBool, pif)
+import Plutarch.Bool (pif)
+import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogDebug, LogInfo),

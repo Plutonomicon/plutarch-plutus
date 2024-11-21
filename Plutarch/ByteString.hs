@@ -44,7 +44,6 @@ import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Bool (
-  PBool (PFalse, PTrue),
   PEq,
   POrd,
   PPartialOrd,
@@ -54,6 +53,7 @@ import Plutarch.Bool (
   (#==),
   (#||),
  )
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,

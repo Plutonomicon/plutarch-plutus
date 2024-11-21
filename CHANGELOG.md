@@ -31,6 +31,7 @@
 * `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
 * `pmapMaybe` to `Plutarch.Maybe`
 * `PLiftable` type class
+* `Plutarch.Builtin.Bool` module
 
 ## Changed
 
@@ -40,6 +41,7 @@
 * `PMaybeData` no longer uses `PDataRecord`
 * `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
   actual contents
+* `PBool` definition is now in `Plutarch.Builtin.Bool`
 
 ## Removed
 

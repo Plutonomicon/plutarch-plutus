@@ -2,7 +2,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Bool (
-  PBool (..),
   PEq (..),
   PPartialOrd (..),
   POrd (..),
@@ -40,8 +39,9 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
+import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (
   pto,
  )
@@ -63,22 +63,6 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
-
--- | Plutus 'BuiltinBool'
-data PBool (s :: S) = PTrue | PFalse
-  deriving stock (Show)
-
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PBool Bool)
-  instance
-    PLiftable PBool
-
-instance PlutusType PBool where
-  type PInner PBool = PBool
-  pcon' PTrue = pconstant True
-  pcon' PFalse = pconstant False
-  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool

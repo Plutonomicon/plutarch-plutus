@@ -27,7 +27,8 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
-import Plutarch.Bool (PBool, PEq, pif, pif', (#<), (#==))
+import Plutarch.Bool (PEq, pif, pif', (#<), (#==))
+import Plutarch.Builtin.Bool (PBool)
 import Plutarch.ByteString (
   PByte,
   PByteString,

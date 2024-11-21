@@ -5,7 +5,6 @@
 module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch.Bool (
-  PBool (PFalse, PTrue),
   PEq,
   POrd,
   PPartialOrd,
@@ -13,6 +12,7 @@ import Plutarch.Bool (
   (#<=),
   (#==),
  )
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable,

@@ -58,7 +58,6 @@ import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
 import Plutarch.Bool (
-  PBool (PFalse, PTrue),
   PEq,
   POrd,
   pif,
@@ -67,6 +66,9 @@ import Plutarch.Bool (
   (#<=),
   (#==),
   (#||),
+ )
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
  )
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (pconstant)

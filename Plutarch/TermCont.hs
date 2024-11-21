@@ -17,7 +17,8 @@ module Plutarch.TermCont (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Bool (PBool, pif)
+import Plutarch.Bool (pif)
+import Plutarch.Builtin.Bool (PBool)
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,

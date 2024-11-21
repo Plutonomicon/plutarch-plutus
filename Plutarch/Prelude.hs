@@ -209,7 +209,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Bool (
-  PBool (PFalse, PTrue),
   PEq ((#==)),
   POrd (pmax, pmin),
   PPartialOrd ((#<), (#<=), (#>), (#>=)),
@@ -229,6 +228,9 @@ import Plutarch.Builtin (
   pfromData,
   pfstBuiltin,
   psndBuiltin,
+ )
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
  )
 import Plutarch.ByteString (
   PByte,

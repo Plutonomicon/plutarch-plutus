@@ -36,7 +36,6 @@ import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
 import Plutarch.Bool (
-  PBool (..),
   PEq,
   POrd,
   PPartialOrd,
@@ -48,6 +47,7 @@ import Plutarch.Bool (
   (#==),
   (#||),
  )
+import Plutarch.Builtin.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Lift (
