@@ -33,12 +33,7 @@
     "999.0.0" = {
       timestamp = "2024-10-09T22:38:57Z";
       overrideVersion = true;
-      src = pkgs.fetchFromGitHub {
-        owner = "plutonomicon";
-        repo = "plutarch-plutus";
-        rev = "0b5791848aac9d8a8c2d5f0dc53f35faf6ff1c84";
-        hash = "sha256-BcqNHF4LCHwGs+Q+nPKNDOAPZwPvBhKDb7f3s/kkFho=";
-      };
+      src = ../.;
     };
   };
   plutarch-ledger-api = {
@@ -58,12 +53,7 @@
       timestamp = "2024-10-09T22:38:57Z";
       overrideVersion = true;
       subdir = "plutarch-ledger-api";
-      src = pkgs.fetchFromGitHub {
-        owner = "plutonomicon";
-        repo = "plutarch-plutus";
-        rev = "0b5791848aac9d8a8c2d5f0dc53f35faf6ff1c84";
-        hash = "sha256-BcqNHF4LCHwGs+Q+nPKNDOAPZwPvBhKDb7f3s/kkFho=";
-      };
+      src = ../.;
     };
   };
   plutarch-orphanage = {
@@ -83,12 +73,7 @@
       timestamp = "2024-10-09T22:38:57Z";
       overrideVersion = true;
       subdir = "plutarch-orphanage";
-      src = pkgs.fetchFromGitHub {
-        owner = "plutonomicon";
-        repo = "plutarch-plutus";
-        rev = "e50661e24670974b398be19426617bc6389fdac6";
-        hash = "sha256-BcqNHF4LCHwGs+Q+nPKNDOAPZwPvBhKDb7f3s/kkFho=";
-      };
+      src = ../.;
     };
   };
 }
