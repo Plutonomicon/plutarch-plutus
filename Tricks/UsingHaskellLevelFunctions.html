@@ -204,7 +204,7 @@ pelimList match_cons match_nil ls = pmatch ls $ \case
 </code></pre>
 <p>Extra <code>plam</code>s and <code>#</code>s have been introduced. Really, <code>pelimList</code> could have taken a Haskell level function instead:</p>
 <pre><code class="language-haskell">pelimList' ::
-  forall (a :: PType) (r :: PType) (s :: S).
+  forall (a :: S -&gt; Type) (r :: S -&gt; Type) (s :: S).
   PElemConstraint PBuiltinList a
   =&gt; (Term s a -&gt; Term s (PBuiltinList a) -&gt; Term s r)
   -&gt; Term s r -&gt; Term s (PBuiltinList a)

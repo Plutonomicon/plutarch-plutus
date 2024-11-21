@@ -183,7 +183,7 @@ import Plutarch.Prelude
 </details>
 <h1 id="deriving-typeclasses-with-generics"><a class="header" href="#deriving-typeclasses-with-generics">Deriving typeclasses with generics</a></h1>
 <p>Plutarch also provides sophisticated generic deriving support for completely custom types. In particular, you can easily derive <code>PlutusType</code> for your own type:</p>
-<pre><code class="language-haskell">data PMyType (a :: PType) (b :: PType) (s :: S)
+<pre><code class="language-haskell">data PMyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
   = POne (Term s a)
   | PTwo (Term s b)
   deriving stock Generic

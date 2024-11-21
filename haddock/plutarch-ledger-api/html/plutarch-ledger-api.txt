@@ -169,33 +169,33 @@ PRationalData :: Term s (PDataRecord '["numerator" ':= PInteger, "denominator" '
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
-pfromDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
+pfromDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
 
 -- | Yield <a>PTrue</a> if a given <a>PMaybeData</a> is of the form
 --   <tt><a>PDJust</a> _</tt>.
-pisDJust :: forall (a :: PType) (s :: S). Term s (PMaybeData a :--> PBool)
+pisDJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a :--> PBool)
 
 -- | Special version of <tt>pmaybe</tt> that works with <a>PMaybeData</a>.
-pmaybeData :: forall (a :: PType) (b :: PType) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
+pmaybeData :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
 
 -- | Construct a <a>PDJust</a> value.
-pdjust :: forall (a :: PType) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
+pdjust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
 
 -- | Construct a <a>PDNothing</a> value.
-pdnothing :: forall (a :: PType) (s :: S). Term s (PMaybeData a)
+pdnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a)
 
 -- | Construct a <a>PMaybeData</a> given a <a>PMaybe</a>. Could be useful
 --   if you want to "lift" from <a>PMaybe</a> to <a>Maybe</a>.
-pmaybeToMaybeData :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
+pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
 
 -- | Inverse of <a>pmaybeToMaybeData</a>
 --   
 --   @since WIP
-pmaybeDataToMaybe :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybeData a :--> PMaybe a)
+pmaybeDataToMaybe :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> PMaybe a)
 
 -- | Extract the value stored in a <a>PMaybeData</a> container. If there's
 --   no value, throw an error with the given message.
-passertPDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
+passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.Mret a s)
@@ -227,8 +227,8 @@ instance (Plutarch.Builtin.PIsData a, Plutarch.Bool.PPartialOrd a) => Plutarch.B
 --   identifiers clash with the Plutarch prelude.
 module Plutarch.LedgerApi.AssocMap
 
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
-PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
+newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
+PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
 
 data KeyGuarantees
 Sorted :: KeyGuarantees
@@ -248,9 +248,9 @@ psingleton :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIs
 --   value.
 psingletonData :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). Term s (PAsData k :--> (PAsData v :--> PMap 'Sorted k v))
 
-punsortedMapFromFoldable :: forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PMap 'Unsorted k v)
+punsortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PMap 'Unsorted k v)
 
-psortedMapFromFoldable :: forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S). (Foldable f, POrd k, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PMap 'Sorted k v)
+psortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S). (Foldable f, POrd k, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PMap 'Sorted k v)
 
 -- | Given a <a>PMap</a> of uncertain order, yield a <a>PMap</a> that is
 --   known to be sorted.
@@ -266,7 +266,7 @@ pmap :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S ->
 pmapData :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PAsData b) :--> (PMap g k a :--> PMap g k b))
 
 -- | As <a>pmap</a>, but gives key access as well.
-pmapWithKey :: forall (k :: PType) (a :: PType) (b :: PType) (keysort :: KeyGuarantees) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((k :--> (a :--> b)) :--> (PMap keysort k a :--> PMap 'Unsorted k b))
+pmapWithKey :: forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (keysort :: KeyGuarantees) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s ((k :--> (a :--> b)) :--> (PMap keysort k a :--> PMap 'Unsorted k b))
 
 -- | Maps and filters the map, much like <a>mapMaybe</a>.
 pmapMaybe :: forall (g :: KeyGuarantees) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> PMaybe b) :--> (PMap g k a :--> PMap g k b))
@@ -289,14 +289,14 @@ pcheckBinRel :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsD
 --   exactly the same set of keys. Requires a number of equality
 --   comparisons between keys proportional to the length of the shorter
 --   argument.
-pkeysEqual :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PEq k, PIsData k) => Term s (PMap 'Sorted k a :--> (PMap 'Sorted k b :--> PBool))
+pkeysEqual :: forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PEq k, PIsData k) => Term s (PMap 'Sorted k a :--> (PMap 'Sorted k b :--> PBool))
 
 -- | As <a>pkeysEqual</a>, but requires only <a>PEq</a> constraints for the
 --   keys, and works for <a>Unsorted</a> <a>PMap</a>s. This requires a
 --   number of equality comparisons between keys proportional to the
 --   product of the lengths of both arguments: that is, this function is
 --   quadratic.
-pkeysEqualUnsorted :: forall (k :: PType) (a :: PType) (b :: PType) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s (PMap 'Unsorted k a :--> (PMap 'Unsorted k b :--> PBool))
+pkeysEqualUnsorted :: forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S). (PIsData k, PIsData a, PIsData b) => Term s (PMap 'Unsorted k a :--> (PMap 'Unsorted k b :--> PBool))
 
 -- | Verifies all values in the map satisfy the given predicate.
 pall :: forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S). PIsData v => Term s ((v :--> PBool) :--> (PMap any k v :--> PBool))
@@ -306,11 +306,11 @@ pany :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (s :: S)
 
 -- | Project all key-value pairs into a <a>Monoid</a>, then combine. Keys
 --   and values will be presented in key order.
-pfoldMapWithKey :: forall (m :: PType) (k :: PType) (v :: PType) (s :: S). (PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' m)) => Term s ((k :--> (v :--> m)) :--> (PMap 'Sorted k v :--> m))
+pfoldMapWithKey :: forall (m :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' m)) => Term s ((k :--> (v :--> m)) :--> (PMap 'Sorted k v :--> m))
 
 -- | Left-associative fold of a <a>PMap</a> with keys. Keys and values will
 --   be presented in key order.
-pfoldlWithKey :: forall (a :: PType) (k :: PType) (v :: PType) (s :: S). (PIsData k, PIsData v) => Term s ((a :--> (k :--> (v :--> a))) :--> (a :--> (PMap 'Sorted k v :--> a)))
+pfoldlWithKey :: forall (a :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v) => Term s ((a :--> (k :--> (v :--> a))) :--> (a :--> (PMap 'Sorted k v :--> a)))
 
 -- | Build the union of two <a>PMap</a>s, merging values that share the
 --   same key using the given function.
@@ -334,7 +334,7 @@ pdifference :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PO
 -- | Zip two <a>PMap</a>s, using the given potentially non-commutative
 --   value merge function for key collisions, and different values for the
 --   sides.
-pzipWithDefaults :: forall (s :: S) (k :: PType) (v :: PType). (POrd k, PIsData k, PIsData v) => (forall (s' :: S). Term s' v) -> (forall (s' :: S). Term s' v) -> Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+pzipWithDefaults :: forall (s :: S) (k :: S -> Type) (v :: S -> Type). (POrd k, PIsData k, PIsData v) => (forall (s' :: S). Term s' v) -> (forall (s' :: S). Term s' v) -> Term s ((v :--> (v :--> v)) :--> (PMap 'Sorted k v :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | Build the intersection of two <a>PMap</a>s, merging values that share
 --   the same key using the given function.
@@ -371,7 +371,7 @@ pfoldAt :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r ::
 pfoldAtData :: forall (k :: S -> Type) (v :: S -> Type) (any :: KeyGuarantees) (r :: S -> Type) (s :: S). Term s (PAsData k :--> (r :--> ((PAsData v :--> r) :--> (PMap any k v :--> r))))
 
 -- | As <a>plookup</a>, but errors when the key is missing.
-ptryLookup :: forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (PMap keys k v :--> v))
+ptryLookup :: forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S). (PIsData k, PIsData v) => Term s (k :--> (PMap keys k v :--> v))
 
 -- | Insert a new key/value pair into the map, overriding the previous if
 --   any.
@@ -387,22 +387,22 @@ pdelete :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k
 --   
 --   Performance will be equivalent to a lookup followed by an insert (or
 --   delete), as well as the cost of calling the 'updater'.
-pupdate :: forall (k :: PType) (v :: PType) (s :: S). (PIsData k, PIsData v, POrd k) => Term s ((v :--> PMaybe v) :--> (k :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
+pupdate :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v, POrd k) => Term s ((v :--> PMaybe v) :--> (k :--> (PMap 'Sorted k v :--> PMap 'Sorted k v)))
 
 -- | If a value exists at the specified key, apply the function argument to
 --   it; otherwise, do nothing.
-padjust :: forall (k :: PType) (v :: PType) (s :: S). (PIsData k, PEq k, PIsData v) => Term s ((v :--> v) :--> (k :--> (PMap 'Unsorted k v :--> PMap 'Unsorted k v)))
+padjust :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PEq k, PIsData v) => Term s ((v :--> v) :--> (k :--> (PMap 'Unsorted k v :--> PMap 'Unsorted k v)))
 
 -- | Get the key of a key-value pair.
-pkvPairKey :: forall (k :: PType) (v :: PType) (s :: S). PIsData k => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> k)
+pkvPairKey :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). PIsData k => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> k)
 
 -- | Get the value of a key-value pair.
-pkvPairValue :: forall (k :: PType) (v :: PType) (s :: S). PIsData v => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> v)
+pkvPairValue :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). PIsData v => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> v)
 
 -- | Compare two key-value pairs by their keys. Gives <a>PTrue</a> if the
 --   key of the first argument pair is less than the key of the second
 --   argument pair.
-pkvPairLt :: forall (k :: PType) (v :: PType) (s :: S). (PIsData k, PPartialOrd k) => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> (PBuiltinPair (PAsData k) (PAsData v) :--> PBool))
+pkvPairLt :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PPartialOrd k) => Term s (PBuiltinPair (PAsData k) (PAsData v) :--> (PBuiltinPair (PAsData k) (PAsData v) :--> PBool))
 
 -- | Get a list-like structure full of the keys of the argument
 --   <a>PMap</a>. If the <a>PMap</a> is <a>Sorted</a>, the keys will
@@ -414,7 +414,7 @@ pkvPairLt :: forall (k :: PType) (v :: PType) (s :: S). (PIsData k, PPartialOrd 
 --   You will need to specify what manner of list-like structure you want;
 --   we have arranged the type signature to make specifying this easy with
 --   <tt>TypeApplications</tt>.
-pkeys :: forall (ell :: PType -> PType) (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S). (PListLike ell, PElemConstraint ell (PAsData k)) => Term s (PMap keys k v :--> ell (PAsData k))
+pkeys :: forall (ell :: (S -> Type) -> S -> Type) (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S). (PListLike ell, PElemConstraint ell (PAsData k)) => Term s (PMap keys k v :--> ell (PAsData k))
 instance (Plutarch.Builtin.PIsData k, Plutarch.Builtin.PIsData v, Plutarch.Show.PShow k, Plutarch.Show.PShow v) => Plutarch.Show.PShow (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PMap keysort k v)
 instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PMap keysort k v s)
@@ -597,16 +597,16 @@ instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.
 instance Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive)
 instance Plutarch.Bool.PPartialOrd (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)
 instance Plutarch.Bool.PEq (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees)
-instance GHC.Base.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
-instance GHC.Base.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
-instance GHC.Base.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
-instance GHC.Base.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization)) => GHC.Base.Monoid (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization))
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization)) => PlutusTx.Monoid.Monoid (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization))
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees)) => PlutusTx.Monoid.Group (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)) => PlutusTx.Monoid.Group (Plutarch.Internal.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
+instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
+instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
+instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
+instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization)) => GHC.Base.Monoid (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization))
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization)) => PlutusTx.Monoid.Monoid (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted normalization))
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees)) => PlutusTx.Monoid.Group (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero)) => PlutusTx.Monoid.Group (Plutarch.Internal.Term.Term s (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NonZero))
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Unsorted 'Plutarch.LedgerApi.Value.NoGuarantees))
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.NoGuarantees))
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.LedgerApi.Value.PValue 'Plutarch.LedgerApi.AssocMap.Sorted 'Plutarch.LedgerApi.Value.Positive))
@@ -770,8 +770,8 @@ PTokenName :: Term s (PDataNewtype PByteString) -> PTokenName (s :: S)
 newtype PLovelace (s :: S)
 PLovelace :: Term s (PDataNewtype PInteger) -> PLovelace (s :: S)
 
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
-PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
+newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
+PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
 
 data KeyGuarantees
 Sorted :: KeyGuarantees
@@ -914,28 +914,28 @@ PRationalData :: Term s (PDataRecord '["numerator" ':= PInteger, "denominator" '
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
-pfromDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
+pfromDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
 
 -- | Yield <a>PTrue</a> if a given <a>PMaybeData</a> is of the form
 --   <tt><a>PDJust</a> _</tt>.
-pisDJust :: forall (a :: PType) (s :: S). Term s (PMaybeData a :--> PBool)
+pisDJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a :--> PBool)
 
 -- | Special version of <tt>pmaybe</tt> that works with <a>PMaybeData</a>.
-pmaybeData :: forall (a :: PType) (b :: PType) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
+pmaybeData :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
 
 -- | Construct a <a>PDJust</a> value.
-pdjust :: forall (a :: PType) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
+pdjust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
 
 -- | Construct a <a>PDNothing</a> value.
-pdnothing :: forall (a :: PType) (s :: S). Term s (PMaybeData a)
+pdnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a)
 
 -- | Construct a <a>PMaybeData</a> given a <a>PMaybe</a>. Could be useful
 --   if you want to "lift" from <a>PMaybe</a> to <a>Maybe</a>.
-pmaybeToMaybeData :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
+pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
 
 -- | Extract the value stored in a <a>PMaybeData</a> container. If there's
 --   no value, throw an error with the given message.
-passertPDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
+passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 instance GHC.Show.Show Plutarch.LedgerApi.V3.PubKey
@@ -1063,8 +1063,8 @@ POutputDatumHash :: Term s (PDataRecord '["datumHash" ':= PDatumHash]) -> POutpu
 -- | Inline datum as per <a>CIP-0032</a>
 POutputDatum :: Term s (PDataRecord '["outputDatum" ':= PDatum]) -> POutputDatum (s :: S)
 
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
-PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
+newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
+PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
 
 data KeyGuarantees
 Sorted :: KeyGuarantees
@@ -1086,28 +1086,28 @@ PRationalData :: Term s (PDataRecord '["numerator" ':= PInteger, "denominator" '
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
-pfromDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
+pfromDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
 
 -- | Yield <a>PTrue</a> if a given <a>PMaybeData</a> is of the form
 --   <tt><a>PDJust</a> _</tt>.
-pisDJust :: forall (a :: PType) (s :: S). Term s (PMaybeData a :--> PBool)
+pisDJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a :--> PBool)
 
 -- | Special version of <tt>pmaybe</tt> that works with <a>PMaybeData</a>.
-pmaybeData :: forall (a :: PType) (b :: PType) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
+pmaybeData :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
 
 -- | Construct a <a>PDJust</a> value.
-pdjust :: forall (a :: PType) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
+pdjust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
 
 -- | Construct a <a>PDNothing</a> value.
-pdnothing :: forall (a :: PType) (s :: S). Term s (PMaybeData a)
+pdnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a)
 
 -- | Construct a <a>PMaybeData</a> given a <a>PMaybe</a>. Could be useful
 --   if you want to "lift" from <a>PMaybe</a> to <a>Maybe</a>.
-pmaybeToMaybeData :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
+pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
 
 -- | Extract the value stored in a <a>PMaybeData</a> container. If there's
 --   no value, throw an error with the given message.
-passertPDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
+passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V2.PTxInInfo
@@ -1256,8 +1256,8 @@ PPubKeyHash :: Term s (PDataNewtype PByteString) -> PPubKeyHash (s :: S)
 newtype PTxInfo (s :: S)
 PTxInfo :: Term s (PDataRecord '["inputs" ':= PBuiltinList (PAsData PTxInInfo), "outputs" ':= PBuiltinList (PAsData PTxOut), "fee" ':= PValue 'Sorted 'Positive, "mint" ':= PValue 'Sorted 'NoGuarantees, "dCert" ':= PBuiltinList (PAsData PDCert), "wdrl" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData PStakingCredential) (PAsData PInteger))), "validRange" ':= PInterval PPosixTime, "signatories" ':= PBuiltinList (PAsData PPubKeyHash), "data" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum))), "id" ':= PTxId]) -> PTxInfo (s :: S)
 
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
-PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
+newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
+PMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
 
 data KeyGuarantees
 Sorted :: KeyGuarantees
@@ -1279,28 +1279,28 @@ PRationalData :: Term s (PDataRecord '["numerator" ':= PInteger, "denominator" '
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
-pfromDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
+pfromDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> a)
 
 -- | Yield <a>PTrue</a> if a given <a>PMaybeData</a> is of the form
 --   <tt><a>PDJust</a> _</tt>.
-pisDJust :: forall (a :: PType) (s :: S). Term s (PMaybeData a :--> PBool)
+pisDJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a :--> PBool)
 
 -- | Special version of <tt>pmaybe</tt> that works with <a>PMaybeData</a>.
-pmaybeData :: forall (a :: PType) (b :: PType) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
+pmaybeData :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (b :--> ((a :--> b) :--> (PMaybeData a :--> b)))
 
 -- | Construct a <a>PDJust</a> value.
-pdjust :: forall (a :: PType) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
+pdjust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (a :--> PMaybeData a)
 
 -- | Construct a <a>PDNothing</a> value.
-pdnothing :: forall (a :: PType) (s :: S). Term s (PMaybeData a)
+pdnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a)
 
 -- | Construct a <a>PMaybeData</a> given a <a>PMaybe</a>. Could be useful
 --   if you want to "lift" from <a>PMaybe</a> to <a>Maybe</a>.
-pmaybeToMaybeData :: forall (a :: PType) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
+pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
 
 -- | Extract the value stored in a <a>PMaybeData</a> container. If there's
 --   no value, throw an error with the given message.
-passertPDJust :: forall (a :: PType) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
+passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData Plutarch.LedgerApi.V1.PTxOut

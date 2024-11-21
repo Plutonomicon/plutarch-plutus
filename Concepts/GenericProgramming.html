@@ -254,10 +254,11 @@ Under the hood all necessary transformations are done to be able to access the d
 <code>PlutusType</code> typeclass serves 2 purposes:</p>
 <ol>
 <li>Adds derivation via anyclass for Haskell ADTs</li>
-<li>Manipulates given <code>PType</code> on its internal representation (provided as type <code>PInner</code>), rather than parsing/constructing the datatype back and forth.</li>
+<li>Manipulates given <code>S -&gt; Type</code> on its internal representation (provided as type <code>PInner</code>),
+rather than parsing/constructing the datatype back and forth.</li>
 </ol>
 <p>Examples on how to derive <code>PlutusType</code> to either Data or Scott encoding:</p>
-<pre><code class="language-haskell">data MyType (a :: PType) (b :: PType) (s :: S)
+<pre><code class="language-haskell">data MyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
   = One (Term s a)
   | Two (Term s b)
   deriving stock Generic
@@ -266,7 +267,7 @@ instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
 
 -- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
 
-data MyTypeD (a :: PType) (b :: PType) (s :: S)
+data MyTypeD (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
   = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
   | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
   deriving stock Generic

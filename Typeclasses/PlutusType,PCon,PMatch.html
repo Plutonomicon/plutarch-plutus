@@ -189,7 +189,7 @@ import Plutarch.Prelude
 <p>NOTE: It's essentially a combination of <code>PCon</code> (for term construction) and <code>PMatch</code> (for term deconstruction). Nowadays, <code>PCon</code> and <code>PMatch</code> are actually both
 just an alias for <code>PlutusType</code> and you'll get a deprecation warning if you use them.</p>
 </blockquote>
-<pre><code class="language-hs">class PlutusType (a :: PType) where
+<pre><code class="language-hs">class PlutusType (a :: S -&gt; Type) where
   {-
     snip
   -}
@@ -217,7 +217,7 @@ out the <code>PByteString</code> using <code>pto</code>!</p>
 <h2 id="implementing-plutustype-for-your-own-types-scott-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-scott-encoding">Implementing <code>PlutusType</code> for your own types (Scott Encoding)</a></h2>
 <p>If you want to represent your data type with <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding</a> (and therefore
 don't need to make it <code>Data</code> encoded), you should simply derive it generically:</p>
-<pre><code class="language-haskell">data PMyType (a :: PType) (b :: PType) (s :: S)
+<pre><code class="language-haskell">data PMyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
   = POne (Term s a)
   | PTwo (Term s b)
   deriving stock (Generic)
@@ -232,7 +232,7 @@ type that you put after <code>DPTStrat _ =</code>, in this case Scottencoding</p
 <h2 id="implementing-plutustype-for-your-own-types-data-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-data-encoding">Implementing <code>PlutusType</code> for your own types (<code>Data</code> Encoding)</a></h2>
 <p>If your type is supposed to be represented using <a href="./../Concepts/DataAndScottEncoding.html#data-encoding"><code>Data</code> encoding</a> instead,
 you can derive <code>PlutusType</code> via <code>PlutusTypeData</code>:</p>
-<pre><code class="language-haskell">data PMyTypeData (a :: PType) (b :: PType) (s :: S)
+<pre><code class="language-haskell">data PMyTypeData (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
   = POneD (Term s (PDataRecord '[ "_0" ':= a ]))
   | PTwoD (Term s (PDataRecord '[ "_0" ':= b ]))
   deriving stock Generic
