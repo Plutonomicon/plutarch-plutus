@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `PAssetClass` in `LedgerApi.Value`, parallelling `AssetClass` from
   `plutus-ledger-api`
 * `pmaybeDataToMaybe` to `Plutarch.LedgerApi.Utils`
+* `PSBool` and functionality, originally from Plutarch, now in
+  `Plutarch.LedgerApi.Utils`
 
 ### Changed
 

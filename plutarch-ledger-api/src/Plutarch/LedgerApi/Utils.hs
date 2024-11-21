@@ -10,6 +10,7 @@ module Plutarch.LedgerApi.Utils (
   Mret (..),
   PMaybeData (..),
   PRationalData (..),
+  PSBool (..),
 
   -- * Functions
 
@@ -25,6 +26,18 @@ module Plutarch.LedgerApi.Utils (
 
   -- ** PRationalData
   prationalFromData,
+
+  -- ** PSBool
+  pmatchStrict,
+  pstrue,
+  psfalse,
+  psif,
+  psif',
+  psnot,
+  psand,
+  psand',
+  psor,
+  psor',
 ) where
 
 import Data.Bifunctor (first)
@@ -346,7 +359,124 @@ passertPDJust = phoistAcyclic $
     PDJust t' -> pfromData t'
     PDNothing -> ptraceInfoError emsg
 
+{- | Scott-encoded boolean.
+
+@since WIP
+-}
+data PSBool (s :: S)
+  = PSTrue
+  | PSFalse
+  deriving stock
+    ( -- | @since WIP
+      Eq
+    , -- | @since WIP
+      Ord
+    , -- | @since WIP
+      Show
+    )
+
+-- | @since WIP
+instance PlutusType PSBool where
+  type PInner PSBool = PForall PSBoolRaw
+  {-# INLINEABLE pcon' #-}
+  pcon' = \case
+    PSTrue -> pcon $ PForall $ pcon $ PSBoolRaw (plam const)
+    PSFalse -> pcon $ PForall $ pcon $ PSBoolRaw (plam (const id))
+  {-# INLINEABLE pmatch' #-}
+  pmatch' x' f =
+    pmatch x' $ \(PForall raw) ->
+      pmatch raw $ \(PSBoolRaw x) ->
+        pforce $ x # pdelay (f PSTrue) # pdelay (f PSFalse)
+
+{- | Strict version of 'pmatch' for 'PSBool'.
+
+@since WIP
+-}
+pmatchStrict ::
+  forall (r :: S -> Type) (s :: S).
+  Term s PSBool ->
+  (PSBool s -> Term s r) ->
+  Term s r
+pmatchStrict x' f =
+  pmatch (pto x') $ \(PForall raw) ->
+    pmatch raw $ \(PSBoolRaw x) ->
+      x # f PSTrue # f PSFalse
+
+-- | @since WIP
+pstrue :: forall (s :: S). Term s PSBool
+pstrue = pcon PSTrue
+
+-- | @since WIP
+psfalse :: forall (s :: S). Term s PSBool
+psfalse = pcon PSFalse
+
+{- | Strict @if@ on Scott-encoded bool.
+
+@since WIP
+-}
+psif' ::
+  forall (s :: S) (a :: S -> Type).
+  Term s PSBool ->
+  Term s a ->
+  Term s a ->
+  Term s a
+psif' b t f = pmatchStrict b $ \case
+  PSTrue -> t
+  PSFalse -> f
+
+{- | Lazy @if@ on Scott-encoded bool.
+
+@since WIP
+-}
+psif ::
+  forall (s :: S) (a :: S -> Type).
+  Term s PSBool ->
+  Term s a ->
+  Term s a ->
+  Term s a
+psif b t f = pforce $ psif' b (pdelay t) (pdelay f)
+
+{- | @not@ on Scott-encoded bool.
+
+@since WIP
+-}
+psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
+psnot b = psif' b psfalse pstrue
+
+{- | Strict AND on Scott-encoded bool.
+
+@since WIP
+-}
+psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psand' a b = psif' a b psfalse
+
+-- | Lazy AND on Scott-encoded bool.
+psand :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psand a b = psif a b psfalse
+
+{- | Strict OR on Scott-encoded bool.
+
+@since WIP
+-}
+psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psor' a = psif' a pstrue
+
+{- | Lazy OR on Scott-encoded bool
+
+@since WIP
+-}
+psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
+psor a = psif a pstrue
+
 -- Helpers
+
+newtype PSBoolRaw (a :: S -> Type) (s :: S)
+  = PSBoolRaw (Term s (a :--> a :--> a))
+
+instance PlutusType (PSBoolRaw a) where
+  type PInner (PSBoolRaw a) = a :--> a :--> a
+  pcon' (PSBoolRaw x) = x
+  pmatch' x f = f (PSBoolRaw x)
 
 liftCompareOp ::
   forall (s :: S).
