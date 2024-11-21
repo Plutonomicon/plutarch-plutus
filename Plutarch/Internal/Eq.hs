@@ -14,7 +14,10 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
+  pbuiltinIfThenElse,
+ )
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -48,7 +51,7 @@ infix 4 #==
 instance PEq PBool where
   {-# INLINEABLE (#==) #-}
   x #== y = plet y $ \y' ->
-    pforce $ punsafeBuiltin PLC.IfThenElse # x # y' # pforce (punsafeBuiltin PLC.IfThenElse # y' # x # pcon PTrue)
+    pforce $ pbuiltinIfThenElse # x # y' # pforce (pbuiltinIfThenElse # y' # x # pcon PTrue)
 
 -- Helpers
 

@@ -13,9 +13,8 @@ module Plutarch.BitString (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (pif)
 import Plutarch.Builtin (PBuiltinList)
-import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)

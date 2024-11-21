@@ -47,6 +47,7 @@ module Plutarch.Prelude (
   PPartialOrd (..),
   POrd (..),
   pif,
+  pif',
   pnot,
   (#&&),
   (#||),
@@ -208,12 +209,6 @@ module Plutarch.Prelude (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
-import Plutarch.Bool (
-  pif,
-  pnot,
-  (#&&),
-  (#||),
- )
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList (PCons, PNil),
@@ -228,6 +223,11 @@ import Plutarch.Builtin (
  )
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
+  pif,
+  pif',
+  pnot,
+  (#&&),
+  (#||),
  )
 import Plutarch.ByteString (
   PByte,

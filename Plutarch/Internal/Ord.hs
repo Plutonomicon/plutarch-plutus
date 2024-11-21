@@ -3,8 +3,7 @@ module Plutarch.Internal.Ord (
   POrd (..),
 ) where
 
-import Plutarch.Bool (pif', pnot)
-import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Bool (PBool, pif', pnot)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (pto)
@@ -91,7 +90,9 @@ class PPartialOrd t => POrd t where
   pmin x y = pif' # (x #< y) # x # y
 
 instance PPartialOrd PBool where
+  {-# INLINEABLE (#<) #-}
   x #< y = pif' # x # pconstant False # y
+  {-# INLINEABLE (#<=) #-}
   x #<= y = pif' # x # y # pconstant True
 
 instance POrd PBool

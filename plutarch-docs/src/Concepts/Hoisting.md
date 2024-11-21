@@ -4,9 +4,7 @@
 
 ```haskell
 module Plutarch.Docs.Hoisting (hor, (#||)) where
-
 import Plutarch.Prelude hiding ((#||))
-import Plutarch.Bool (pif')
 ```
 
 </p>

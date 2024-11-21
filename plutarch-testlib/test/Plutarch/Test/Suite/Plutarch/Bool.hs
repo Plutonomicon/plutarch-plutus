@@ -1,6 +1,6 @@
 module Plutarch.Test.Suite.Plutarch.Bool (tests) where
 
-import Plutarch.Bool (pand, por)
+import Plutarch.Builtin.Bool (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)

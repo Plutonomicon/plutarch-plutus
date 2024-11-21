@@ -2,15 +2,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Bool (
-  pif,
-  pif',
-  pnot,
-  (#&&),
-  (#||),
-  por,
-  pand,
-  pand',
-  por',
   PSBool (..),
   pmatchStrict,
   pstrue,
@@ -24,70 +15,19 @@ module Plutarch.Bool (
   psor',
 ) where
 
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
-import Plutarch.Internal.Other (
-  pto,
- )
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
 import Plutarch.Internal.Quantification (PForall (PForall))
 import Plutarch.Internal.Term (
-  PDelayed,
   PType,
   S,
   Term,
   pdelay,
   pforce,
-  phoistAcyclic,
   (#),
   (:-->),
  )
-import Plutarch.Unsafe (punsafeBuiltin)
-import PlutusCore qualified as PLC
-
-{- | Strict version of 'pif'.
- Emits slightly less code.
--}
-pif' :: Term s (PBool :--> a :--> a :--> a)
-pif' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
-
--- | Lazy if-then-else.
-pif :: Term s PBool -> Term s a -> Term s a -> Term s a
-pif b case_true case_false = pmatch b $ \case
-  PTrue -> case_true
-  PFalse -> case_false
-
--- | Boolean negation for 'PBool' terms.
-pnot :: Term s (PBool :--> PBool)
-pnot = phoistAcyclic $ plam $ \x -> pif' # x # pcon PFalse # pcon PTrue
-
--- | Lazily evaluated boolean and for 'PBool' terms.
-infixr 3 #&&
-
-(#&&) :: Term s PBool -> Term s PBool -> Term s PBool
-x #&& y = pforce $ pand # x # pdelay y
-
--- | Lazily evaluated boolean or for 'PBool' terms.
-infixr 2 #||
-
-(#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pforce $ por # x # pdelay y
-
--- | Hoisted, Plutarch level, lazily evaluated boolean and function.
-pand :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # phoistAcyclic (pdelay $ pcon PFalse)
-
--- | Hoisted, Plutarch level, strictly evaluated boolean and function.
-pand' :: Term s (PBool :--> PBool :--> PBool)
-pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # pcon PFalse
-
--- | Hoisted, Plutarch level, lazily evaluated boolean or function.
-por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay $ pcon PTrue)
-
--- | Hoisted, Plutarch level, strictly evaluated boolean or function.
-por' :: Term s (PBool :--> PBool :--> PBool)
-por' = phoistAcyclic $ plam $ \x -> pif' # x # pcon PTrue
 
 -- | 'PInner' of 'PSBool'.
 newtype PSBoolRaw (a :: PType) (s :: S) = PSBoolRaw (Term s (a :--> a :--> a))

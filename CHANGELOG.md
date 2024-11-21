@@ -34,6 +34,7 @@
 * `Plutarch.Builtin.Bool` module
 * `Plutarch.Internal.Eq` module
 * `Plutarch.Internal.Ord` module
+* `pif'` to `Plutarch.Prelude`
 
 ## Changed
 
@@ -47,6 +48,8 @@
 * `PEq` type class definition is now in `Plutarch.Internal.Eq`
 * `PPartialOrd` and `POrd` type class definitions are now in
   `Plutarch.Internal.Ord`
+* `pif`, `pif'`, `pand`, `pand'`, `por`, `por'`, `pnot`, `#&&`, `#||` are 
+   now in `Plutarch.Builtin.Bool`
 
 ## Removed
 

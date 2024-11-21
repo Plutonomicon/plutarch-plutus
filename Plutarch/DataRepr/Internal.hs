@@ -53,7 +53,6 @@ import Generics.SOP (
   hmap,
   para_SList,
  )
-import Plutarch.Bool (pif)
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
@@ -70,7 +69,7 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   HRecGeneric (HRecGeneric),
