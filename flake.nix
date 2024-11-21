@@ -27,6 +27,8 @@
 
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+
+    herbage.url = "github:seungheonoh/herbage";
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
@@ -48,9 +50,13 @@
                 haskell-nix.overlay
                 iohk-nix.overlays.crypto
                 iohk-nix.overlays.haskell-nix-crypto
+                inputs.herbage.overlays.default
               ];
               inherit (haskell-nix) config;
             };
+
+          herbage = inputs.herbage.lib { inherit pkgs; };
+
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
             compiler-nix-name = "ghc966";
@@ -67,6 +73,7 @@
               shellHook = config.pre-commit.installationScript;
               nativeBuildInputs = with pkgs; [
                 mdbook
+                hackage-repo-tool
               ];
               tools = {
                 cabal = { };
@@ -105,7 +112,12 @@
                 = Plutarch Documentation
                 Documentation of Plutarch /and/ Documentation of Plutus libraries.
               '';
+
             };
+            hackage =
+              herbage.genHackage
+                ./keys
+                (import ./nix/hackage.nix { inherit pkgs; });
             combined-docs = pkgs.runCommand "combined-docs"
               { } ''
               mkdir -p $out/haddock
