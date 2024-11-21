@@ -4,7 +4,7 @@ module Plutarch.Internal.TypeFamily (ToPType, ToPType2, UnTerm, Snd) where
 
 import Data.Kind (Type)
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
-import Plutarch.Internal (PType, Term)
+import Plutarch.Internal.Term (PType, Term)
 
 -- | Convert a list of `Term s a` to a list of `a`.
 type ToPType :: [Type] -> [PType]

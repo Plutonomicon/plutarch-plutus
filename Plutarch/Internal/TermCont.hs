@@ -10,7 +10,7 @@ module Plutarch.Internal.TermCont (
 
 import Data.Kind (Type)
 import Data.String (fromString)
-import Plutarch.Internal (
+import Plutarch.Internal.Term (
   Config (Tracing),
   Dig,
   PType,

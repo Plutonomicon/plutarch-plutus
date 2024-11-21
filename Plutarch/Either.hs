@@ -25,24 +25,6 @@ module Plutarch.Either (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch (
-  DPTStrat,
-  DerivePlutusType,
-  PType,
-  PlutusTypeScott,
-  S,
-  Term,
-  pcon,
-  perror,
-  phoistAcyclic,
-  plam,
-  plet,
-  pmatch,
-  pto,
-  (#),
-  (#$),
-  (:-->),
- )
 import Plutarch.Bool (
   PBool (PFalse, PTrue),
   PEq,
@@ -81,7 +63,25 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
-import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType (PInner, pcon', pmatch'),
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  perror,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
 import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Show (PShow)
 import Plutarch.Trace (ptraceInfoError)
@@ -90,7 +90,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | Scott-encoded 'Either'.
-data PEither (a :: PType) (b :: PType) (s :: S)
+data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLeft (Term s a)
   | PRight (Term s b)
   deriving stock (Generic)

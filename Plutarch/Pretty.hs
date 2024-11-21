@@ -11,26 +11,8 @@ import Data.Functor (($>), (<&>))
 import Data.Text (Text)
 import Data.Text qualified as Txt
 import Data.Traversable (for)
-
-import System.Random.Stateful (mkStdGen, newSTGenM)
-
-import Prettyprinter ((<+>))
-import Prettyprinter qualified as PP
-
 import Plutarch.Evaluate (evalTerm)
-import Plutarch.Internal (ClosedTerm, Config, compile)
-import Plutarch.Script (Script (unScript))
-import PlutusCore qualified as PLC
-import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
-import PlutusLedgerApi.Common (serialiseUPLC)
-import UntypedPlutusCore (
-  DeBruijn (DeBruijn),
-  DefaultFun,
-  DefaultUni,
-  Program (_progTerm),
-  Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
- )
-
+import Plutarch.Internal.Term (ClosedTerm, Config, compile)
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
 import Plutarch.Pretty.Internal.Config (indentWidth)
 import Plutarch.Pretty.Internal.Name (freshVarName, smartName)
@@ -51,6 +33,20 @@ import Plutarch.Pretty.Internal.Types (
   nameOfRef,
   normalizeCursor,
   specializeCursor,
+ )
+import Plutarch.Script (Script (unScript))
+import PlutusCore qualified as PLC
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusLedgerApi.Common (serialiseUPLC)
+import Prettyprinter ((<+>))
+import Prettyprinter qualified as PP
+import System.Random.Stateful (mkStdGen, newSTGenM)
+import UntypedPlutusCore (
+  DeBruijn (DeBruijn),
+  DefaultFun,
+  DefaultUni,
+  Program (_progTerm),
+  Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
  )
 
 -- | 'prettyTerm' for pre-compiled 'Script's.

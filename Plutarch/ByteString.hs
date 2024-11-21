@@ -55,16 +55,6 @@ import Plutarch.Bool (
   (#||),
  )
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (
-  S,
-  Term,
-  perror,
-  phoistAcyclic,
-  plet,
-  (#),
-  (#$),
-  (:-->),
- )
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
@@ -82,6 +72,16 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
   pmatch,
+ )
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  perror,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
  )
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC

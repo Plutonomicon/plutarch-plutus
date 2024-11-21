@@ -1,6 +1,6 @@
 module Plutarch.Test.Suite.Plutarch.Tracing (tests) where
 
-import Plutarch (LogLevel (LogDebug, LogInfo))
+import Plutarch.Internal.Term (LogLevel (LogDebug, LogInfo))
 import Plutarch.Prelude
 import Plutarch.Test.Unit (testEvalEqualTraces)
 import Test.Tasty (TestTree, testGroup)

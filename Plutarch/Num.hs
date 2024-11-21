@@ -2,15 +2,15 @@
 
 module Plutarch.Num (PNum (..)) where
 
-import Plutarch.Internal (
+import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.PlutusType (PInner)
+import Plutarch.Internal.Term (
   PType,
   Term,
   punsafeCoerce,
   (#),
   (:-->),
  )
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Unsafe (punsafeDowncast)
 
 class PNum (a :: PType) where

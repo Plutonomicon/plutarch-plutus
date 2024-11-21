@@ -1,7 +1,7 @@
 {-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE ViewPatterns #-}
 
-module Plutarch.Internal (
+module Plutarch.Internal.Term (
   -- | \$hoisted
   (:-->) (PLam),
   PDelayed,

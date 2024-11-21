@@ -17,15 +17,6 @@ import Plutarch.Bool (PBool, PEq, POrd, PPartialOrd, pif, (#<))
 import Plutarch.Builtin (PBuiltinList)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (
-  S,
-  Term,
-  phoistAcyclic,
-  plet,
-  punsafeBuiltin,
-  (#),
-  (:-->),
- )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -33,6 +24,15 @@ import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PlutusType,
   pcon,
+ )
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  plet,
+  punsafeBuiltin,
+  (#),
+  (:-->),
  )
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import PlutusCore qualified as PLC

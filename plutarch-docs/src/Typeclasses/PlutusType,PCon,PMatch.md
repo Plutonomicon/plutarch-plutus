@@ -20,7 +20,7 @@ import Plutarch.Prelude
 > just an alias for `PlutusType` and you'll get a deprecation warning if you use them.
 
 ```hs
-class PlutusType (a :: PType) where
+class PlutusType (a :: S -> Type) where
   {-
     snip
   -}
@@ -55,7 +55,7 @@ If you want to represent your data type with [Scott encoding](./../Concepts/Data
 don't need to make it `Data` encoded), you should simply derive it generically:
 
 ```haskell
-data PMyType (a :: PType) (b :: PType) (s :: S)
+data PMyType (a :: S -> Type) (b :: S -> Type) (s :: S)
   = POne (Term s a)
   | PTwo (Term s b)
   deriving stock (Generic)
@@ -73,7 +73,7 @@ If your type is supposed to be represented using [`Data` encoding](./../Concepts
 you can derive `PlutusType` via `PlutusTypeData`:
 
 ```haskell
-data PMyTypeData (a :: PType) (b :: PType) (s :: S)
+data PMyTypeData (a :: S -> Type) (b :: S -> Type) (s :: S)
   = POneD (Term s (PDataRecord '[ "_0" ':= a ]))
   | PTwoD (Term s (PDataRecord '[ "_0" ':= b ]))
   deriving stock Generic

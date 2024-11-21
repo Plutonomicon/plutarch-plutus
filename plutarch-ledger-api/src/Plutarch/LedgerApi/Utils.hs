@@ -250,7 +250,7 @@ argument is 'PDNothing'.
 @since 2.1.1
 -}
 pfromDJust ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   PIsData a =>
   Term s (PMaybeData a :--> a)
 pfromDJust = phoistAcyclic $
@@ -263,7 +263,7 @@ pfromDJust = phoistAcyclic $
 @since 2.1.1
 -}
 pisDJust ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   Term s (PMaybeData a :--> PBool)
 pisDJust = phoistAcyclic $
   plam $ \x -> pmatch x $ \case
@@ -275,7 +275,7 @@ pisDJust = phoistAcyclic $
 @since 2.1.1
 -}
 pmaybeData ::
-  forall (a :: PType) (b :: PType) (s :: S).
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   PIsData a =>
   Term s (b :--> (a :--> b) :--> PMaybeData a :--> b)
 pmaybeData = phoistAcyclic $
@@ -289,7 +289,7 @@ pmaybeData = phoistAcyclic $
 @since 2.1.1
 -}
 pdjust ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   PIsData a =>
   Term s (a :--> PMaybeData a)
 pdjust = phoistAcyclic $
@@ -301,7 +301,7 @@ pdjust = phoistAcyclic $
 @since 2.1.1
 -}
 pdnothing ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   Term s (PMaybeData a)
 pdnothing = pcon PDNothing
 
@@ -311,7 +311,7 @@ pdnothing = pcon PDNothing
 @since 2.1.1
 -}
 pmaybeToMaybeData ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   PIsData a =>
   Term s (PMaybe a :--> PMaybeData a)
 pmaybeToMaybeData = phoistAcyclic $
@@ -324,7 +324,7 @@ pmaybeToMaybeData = phoistAcyclic $
 @since WIP
 -}
 pmaybeDataToMaybe ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   PIsData a =>
   Term s (PMaybeData a :--> PMaybe a)
 pmaybeDataToMaybe = phoistAcyclic $
@@ -338,7 +338,7 @@ throw an error with the given message.
 @since 2.1.1
 -}
 passertPDJust ::
-  forall (a :: PType) (s :: S).
+  forall (a :: S -> Type) (s :: S).
   PIsData a =>
   Term s (PString :--> PMaybeData a :--> a)
 passertPDJust = phoistAcyclic $

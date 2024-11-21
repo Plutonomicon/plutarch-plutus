@@ -89,12 +89,12 @@ import Plutarch.Builtin (
   pfromDataImpl,
   ppairDataBuiltin,
  )
-import Plutarch.Internal (punsafeBuiltin)
 import Plutarch.Internal.Lift (
   PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
   fromPlutarchUni,
   toPlutarchUni,
  )
+import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.List qualified as List
@@ -113,7 +113,7 @@ import Prelude hiding (pred)
 data KeyGuarantees = Sorted | Unsorted
 
 -- | @since 2.0.0
-newtype PMap (keysort :: KeyGuarantees) (k :: PType) (v :: PType) (s :: S)
+newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
   = PMap (Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))))
   deriving stock
     ( -- | @since 2.0.0
@@ -442,7 +442,7 @@ pmap = phoistAcyclic $
 @since 2.1.1
 -}
 pmapWithKey ::
-  forall (k :: PType) (a :: PType) (b :: PType) (keysort :: KeyGuarantees) (s :: S).
+  forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (keysort :: KeyGuarantees) (s :: S).
   ( PIsData k
   , PIsData a
   , PIsData b
@@ -503,7 +503,7 @@ plookup = phoistAcyclic $
 @since 2.1.1
 -}
 ptryLookup ::
-  forall (k :: PType) (v :: PType) (keys :: KeyGuarantees) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (keys :: KeyGuarantees) (s :: S).
   ( PIsData k
   , PIsData v
   ) =>
@@ -695,7 +695,7 @@ pdelete = rebuildAtKey # plam id
  @since 2.1.1
 -}
 pzipWithDefaults ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   ( POrd k
   , PIsData k
   , PIsData v
@@ -772,7 +772,7 @@ pforgetSorted v = punsafeDowncast (pto v)
  @since 2.1.1
 -}
 pkeysEqual ::
-  forall (k :: PType) (a :: PType) (b :: PType) (s :: S).
+  forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
   ( PEq k
   , PIsData k
   ) =>
@@ -814,7 +814,7 @@ pkeysEqual = phoistAcyclic $
  @since 2.1.1
 -}
 pkeysEqualUnsorted ::
-  forall (k :: PType) (a :: PType) (b :: PType) (s :: S).
+  forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
   ( PIsData k
   , PIsData a
   , PIsData b
@@ -872,7 +872,7 @@ pkeysEqualUnsorted = phoistAcyclic $
 @since 2.1.1
 -}
 pkvPairKey ::
-  forall (k :: PType) (v :: PType) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   PIsData k =>
   Term s (PBuiltinPair (PAsData k) (PAsData v) :--> k)
 pkvPairKey = phoistAcyclic $ plam $ \kv -> pfromData (pfstBuiltin # kv)
@@ -882,14 +882,14 @@ pkvPairKey = phoistAcyclic $ plam $ \kv -> pfromData (pfstBuiltin # kv)
 @since 2.1.1
 -}
 pkvPairValue ::
-  forall (k :: PType) (v :: PType) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   PIsData v =>
   Term s (PBuiltinPair (PAsData k) (PAsData v) :--> v)
 pkvPairValue = phoistAcyclic $ plam $ \kv -> pfromData (psndBuiltin # kv)
 
 -- | @since 2.1.1
 punsortedMapFromFoldable ::
-  forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S).
   ( Foldable f
   , PIsData k
   , PIsData v
@@ -908,7 +908,7 @@ punsortedMapFromFoldable = pcon . PMap . foldl' go (pcon PNil)
 
 -- | @since 2.1.1
 psortedMapFromFoldable ::
-  forall (k :: PType) (v :: PType) (f :: Type -> Type) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S).
   ( Foldable f
   , POrd k
   , PIsData k
@@ -935,7 +935,7 @@ psortedMapFromFoldable = foldl' go pempty
  @since 2.1.1
 -}
 pupdate ::
-  forall (k :: PType) (v :: PType) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( PIsData k
   , PIsData v
   , POrd k
@@ -965,7 +965,7 @@ pupdate = phoistAcyclic $
  @since 2.1.1
 -}
 padjust ::
-  forall (k :: PType) (v :: PType) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( PIsData k
   , PEq k
   , PIsData v
@@ -981,7 +981,7 @@ padjust = phoistAcyclic $
  @since 2.1.1
 -}
 pfoldlWithKey ::
-  forall (a :: PType) (k :: PType) (v :: PType) (s :: S).
+  forall (a :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( PIsData k
   , PIsData v
   ) =>
@@ -997,7 +997,7 @@ pfoldlWithKey = phoistAcyclic $
  @since 2.1.1
 -}
 pfoldMapWithKey ::
-  forall (m :: PType) (k :: PType) (v :: PType) (s :: S).
+  forall (m :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( PIsData k
   , PIsData v
   , forall (s' :: S). Monoid (Term s' m)
@@ -1021,9 +1021,9 @@ pfoldMapWithKey = phoistAcyclic $
 -}
 pkeys ::
   forall
-    (ell :: PType -> PType)
-    (k :: PType)
-    (v :: PType)
+    (ell :: (S -> Type) -> S -> Type)
+    (k :: S -> Type)
+    (v :: S -> Type)
     (keys :: KeyGuarantees)
     (s :: S).
   ( PListLike ell
@@ -1048,7 +1048,7 @@ pkeys = phoistAcyclic $
  @since 2.1.1
 -}
 pkvPairLt ::
-  forall (k :: PType) (v :: PType) (s :: S).
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   (PIsData k, PPartialOrd k) =>
   Term
     s
@@ -1181,7 +1181,7 @@ deriving stock instance
   Show (OnePresentHandler_ f k v)
 
 unionMergeHandler ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   Commutativity ->
   Term s (v :--> (v :--> v)) ->
   SomeMergeHandler k v s
@@ -1197,7 +1197,7 @@ unionMergeHandler Commutative merge =
  Note that using a 'MergeHandlerCommutative' is less costly than a 'MergeHandler'.
 -}
 pzipWith ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   ( POrd k
   , PIsData k
   , PIsData v
@@ -1220,7 +1220,7 @@ pzipWith (SomeMergeHandlerCommutative mhc) =
  Note that using a 'MergeHandlerCommutative' is less costly than a 'MergeHandler'.
 -}
 pzipWithData ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   ( POrd k
   , PIsData k
   ) =>
@@ -1239,7 +1239,7 @@ pzipWithData (SomeMergeHandlerCommutative mh@(MergeHandlerCommutative _ onePrese
     pcon $ PMap $ zipMergeCommutative onePresent (zipMergeInsertCommutative mh) # pto x # pto y
 
 mergeHandlerOnData ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   (PIsData k, PIsData v) =>
   MergeHandler k v s ->
   MergeHandler (PAsData k) (PAsData v) s
@@ -1247,7 +1247,7 @@ mergeHandlerOnData (MergeHandler bothPresent leftPresent rightPresent) =
   MergeHandler (bothPresentOnData bothPresent) (onePresentOnData leftPresent) (onePresentOnData rightPresent)
 
 mergeHandlerCommutativeOnData ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   (PIsData k, PIsData v) =>
   MergeHandlerCommutative k v s ->
   MergeHandlerCommutative (PAsData k) (PAsData v) s
@@ -1255,7 +1255,7 @@ mergeHandlerCommutativeOnData (MergeHandlerCommutative bothPresent onePresent) =
   MergeHandlerCommutative (bothPresentCommutativeOnData bothPresent) (onePresentOnData onePresent)
 
 zipMerge ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1287,7 +1287,7 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
   PCons l ls' -> mergeInsertRec # pstrue # l # ls' # rs
 
 zipMergeInsert ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   ( POrd k
   , PIsData k
   ) =>
@@ -1371,7 +1371,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
             )
 
 zipMergeCommutative ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   OnePresentHandler (PAsData k) (PAsData v) s ->
   Term
     s
@@ -1402,7 +1402,7 @@ zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \ca
   PCons l ls' -> mergeInsertRec # l # ls' # rs
 
 zipMergeInsertCommutative ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   ( POrd k
   , PIsData k
   ) =>
@@ -1477,7 +1477,7 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
             )
 
 bothPresentOnData ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   (PIsData k, PIsData v) =>
   BothPresentHandler k v s ->
   BothPresentHandler (PAsData k) (PAsData v) s
@@ -1487,7 +1487,7 @@ bothPresentOnData = \case
   HandleBoth f -> HandleBoth \k x y -> pdata $ f (pfromData k) (pfromData x) (pfromData y)
 
 onePresentOnData ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   (PIsData k, PIsData v) =>
   OnePresentHandler k v s ->
   OnePresentHandler (PAsData k) (PAsData v) s
@@ -1497,7 +1497,7 @@ onePresentOnData = \case
   HandleOne f -> HandleOne \x y -> pdata $ f (pfromData x) (pfromData y)
 
 bothPresentCommutativeOnData ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   (PIsData k, PIsData v) =>
   BothPresentHandlerCommutative k v s ->
   BothPresentHandlerCommutative (PAsData k) (PAsData v) s
@@ -1508,7 +1508,7 @@ bothPresentCommutativeOnData = \case
 
 -- | Apply given Plutarch fun with given reified (on Haskell-level) arg order.
 applyOrder ::
-  forall (s :: S) (a :: PType) (b :: PType).
+  forall (s :: S) (a :: S -> Type) (b :: S -> Type).
   -- | 'PSTrue' means first arg is left, second arg is right.
   PSBool s ->
   -- | A function that expects argument order 'left right'.
@@ -1538,7 +1538,7 @@ applyOrder' ::
 applyOrder' argOrder fun a b = branchOrder argOrder (fun a b) (fun b a)
 
 defaultMergeHandlerNonCommutative ::
-  forall (s :: S) (v :: PType) (k :: PType).
+  forall (s :: S) (v :: S -> Type) (k :: S -> Type).
   Term s v ->
   Term s v ->
   Term s (v :--> (v :--> v)) ->
@@ -1551,7 +1551,7 @@ defaultMergeHandlerNonCommutative defLeft defRight combine =
       (HandleOne \_ vr -> combine # defLeft # vr)
 
 intersectionMergeHandler ::
-  forall (s :: S) (k :: PType) (v :: PType).
+  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
   Commutativity ->
   Term s (v :--> (v :--> v)) ->
   SomeMergeHandler k v s
@@ -1562,7 +1562,7 @@ intersectionMergeHandler Commutative merge =
     MergeHandlerCommutative (HandleBothCommutative \_ vl vr -> merge # vl # vr) DropOne
 
 -- We have to clone this in here or we get a dependency cycle
-passertPJust :: forall (a :: PType) (s :: S). Term s (PString :--> PMaybe a :--> a)
+passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> PMaybe a :--> a)
 passertPJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PJust v -> v

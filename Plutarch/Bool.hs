@@ -40,7 +40,6 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.Internal (PDelayed, PType, S, Term, pdelay, pforce, phoistAcyclic, plet, (#), (#$), (:-->))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Other (
@@ -49,6 +48,19 @@ import Plutarch.Internal.Other (
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch, pmatch')
 import Plutarch.Internal.Quantification (PForall (PForall))
+import Plutarch.Internal.Term (
+  PDelayed,
+  PType,
+  S,
+  Term,
+  pdelay,
+  pforce,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 

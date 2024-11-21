@@ -6,7 +6,7 @@ module Plutarch.Reducible (Reduce, NoReduce (..), reduce) where
 import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
 import GHC.Generics (C1, D1, Rec0, Rep, S1, pattern MetaData)
-import Plutarch.Internal (Term)
+import Plutarch.Internal.Term (Term)
 
 newtype NoReduce a = NoReduce a
 

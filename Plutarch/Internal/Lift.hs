@@ -40,7 +40,11 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
 import {-# SOURCE #-} Plutarch.Builtin (PData)
-import Plutarch.Internal (
+import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque, popaque)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.Term (
   Config (Tracing),
   LogLevel (LogInfo),
   S,
@@ -49,10 +53,6 @@ import Plutarch.Internal (
   compile,
   punsafeConstantInternal,
  )
-import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, popaque)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Script (Script (Script))
 import Plutarch.TryFrom (PSubtype)
 import Plutarch.Unsafe (punsafeCoerce)

@@ -1,6 +1,5 @@
 module Plutarch.Test.Suite.Plutarch.Unit (tests) where
 
-import Plutarch
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)

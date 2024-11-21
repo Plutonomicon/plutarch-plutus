@@ -9,7 +9,8 @@ module Plutarch.Internal.PLam (
 import Data.Kind (Type)
 import Data.Text qualified as Text
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
-import Plutarch.Internal (
+import Plutarch.Internal.PrettyStack (prettyStack)
+import Plutarch.Internal.Term (
   Config (Tracing),
   PType,
   S,
@@ -20,7 +21,6 @@ import Plutarch.Internal (
   (:-->),
   pattern DoTracingAndBinds,
  )
-import Plutarch.Internal.PrettyStack (prettyStack)
 import Plutarch.Internal.Trace (ptraceInfo)
 import PlutusCore qualified as PLC
 

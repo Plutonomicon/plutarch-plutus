@@ -38,6 +38,8 @@
 * `pindexBS` now returns a `PByte` instead of a `PInteger`
 * `pexpModInteger` is now in `Plutarch.Integer`
 * `PMaybeData` no longer uses `PDataRecord`
+* `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
+  actual contents
 
 ## Removed
 
@@ -48,6 +50,8 @@
   type-safe operations in `Plutarch.ByteString`, `Plutarch.BitString` and
   `Plutarch.Convert`
 * `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
+* `Plutarch` module, as it served no useful purpose and was just confusing
+* `PType` synonym (use `S -> Type` honestly instead)
 
 ### Fixed
 

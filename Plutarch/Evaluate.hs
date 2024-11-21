@@ -11,11 +11,10 @@ module Plutarch.Evaluate (
   applyArguments,
 ) where
 
-import Plutarch.Internal.Evaluate qualified as E
-
 import Control.Lens.Combinators (over)
 import Data.Text (Text)
-import Plutarch.Internal (
+import Plutarch.Internal.Evaluate qualified as E
+import Plutarch.Internal.Term (
   ClosedTerm,
   Config,
   RawTerm (RCompiled),

@@ -10,7 +10,7 @@ module Plutarch.Test.QuickCheck (
 ) where
 
 import Data.Text qualified as Text
-import Plutarch (Config (NoTracing))
+import Plutarch.Internal.Term (Config (NoTracing))
 import Plutarch.Prelude
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
 import Plutarch.Test.Utils (precompileTerm, prettyEquals, prettyShow)

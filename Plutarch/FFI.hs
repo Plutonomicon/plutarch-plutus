@@ -35,7 +35,20 @@ import Plutarch.Bool (PBool, PEq, (#==))
 import Plutarch.Builtin (PData)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
-import Plutarch.Internal (
+import Plutarch.Internal.Generic (PCode)
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Other (POpaque, pto)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (
+  DPTStrat,
+  DerivePlutusType,
+  PlutusType (PInner, pcon', pmatch'),
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.Quantification (PForall (PForall))
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Term (
   ClosedTerm,
   Config,
   PDelayed,
@@ -51,19 +64,6 @@ import Plutarch.Internal (
   (#),
   (:-->),
  )
-import Plutarch.Internal.Generic (PCode)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DPTStrat,
-  DerivePlutusType,
-  PlutusType (PInner, pcon', pmatch'),
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.Quantification (PForall (PForall))
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))

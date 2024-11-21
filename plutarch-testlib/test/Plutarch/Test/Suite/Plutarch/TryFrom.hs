@@ -260,21 +260,21 @@ tests =
 ------------------- Checking deeply, shallowly and unwrapping ----------------------
 
 checkDeep ::
-  forall (target :: PType) (actual :: PType).
+  forall (target :: S -> Type) (actual :: S -> Type).
   PTryFrom PData (PAsData target) =>
   ClosedTerm (PAsData actual) ->
   ClosedTerm (PAsData target)
 checkDeep t = unTermCont $ fst <$> checkDeep' t
 
 checkDeep' ::
-  forall (target :: PType) (actual :: PType) (s :: S).
+  forall (target :: S -> Type) (actual :: S -> Type) (s :: S).
   PTryFrom PData (PAsData target) =>
   ClosedTerm (PAsData actual) ->
   TermCont s (Term s (PAsData target), Reduce (PTryFromExcess PData (PAsData target) s))
 checkDeep' t = TermCont (ptryFrom @(PAsData target) $ pforgetData t)
 
 checkDeepUnwrap ::
-  forall (target :: PType) (actual :: PType) (s :: S).
+  forall (target :: S -> Type) (actual :: S -> Type) (s :: S).
   PTryFrom PData (PAsData target) =>
   Term s (PAsData actual) ->
   Term s (PAsData target)
