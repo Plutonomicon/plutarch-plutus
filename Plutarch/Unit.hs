@@ -5,14 +5,13 @@
 module Plutarch.Unit (PUnit (..)) where
 
 import Plutarch.Bool (
-  PEq,
   POrd,
   PPartialOrd,
   (#<),
   (#<=),
-  (#==),
  )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable,

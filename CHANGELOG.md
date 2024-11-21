@@ -32,6 +32,7 @@
 * `pmapMaybe` to `Plutarch.Maybe`
 * `PLiftable` type class
 * `Plutarch.Builtin.Bool` module
+* `Plutarch.Internal.Eq` module
 
 ## Changed
 
@@ -42,6 +43,7 @@
 * `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
   actual contents
 * `PBool` definition is now in `Plutarch.Builtin.Bool`
+* `PEq` type class definition is now in `Plutarch.Internal.Eq`
 
 ## Removed
 

@@ -58,19 +58,18 @@ import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
 import Plutarch.Bool (
-  PEq,
   POrd,
   pif,
   (#&&),
   (#<),
   (#<=),
-  (#==),
   (#||),
  )
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
  )
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (pfix)
 import Plutarch.Internal.PLam (plam)

@@ -5,8 +5,9 @@ module Plutarch.Enum (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Bool (POrd, pif, (#==))
+import Plutarch.Bool (POrd, pif)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Other (pfix, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (

@@ -44,17 +44,16 @@ import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Bool (
-  PEq,
   POrd,
   PPartialOrd,
   pif,
   (#<),
   (#<=),
-  (#==),
   (#||),
  )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),

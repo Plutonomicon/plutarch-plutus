@@ -91,6 +91,7 @@ library
     Plutarch.Evaluate
     Plutarch.FFI
     Plutarch.Integer
+    Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Lift

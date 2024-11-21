@@ -36,7 +36,6 @@ import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
 import Plutarch.Bool (
-  PEq,
   POrd,
   PPartialOrd,
   pif,
@@ -44,12 +43,12 @@ import Plutarch.Bool (
   (#&&),
   (#<),
   (#<=),
-  (#==),
   (#||),
  )
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),

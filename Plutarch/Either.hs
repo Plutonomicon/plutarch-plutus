@@ -26,11 +26,9 @@ module Plutarch.Either (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Bool (
-  PEq,
   POrd,
   PPartialOrd ((#<), (#<=)),
   pif,
-  (#==),
  )
 import Plutarch.Builtin (
   PAsData,
@@ -45,6 +43,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   PLiftable (

@@ -31,11 +31,11 @@ import Generics.SOP.Type.Metadata (
   ConstructorName,
   DatatypeInfo (ADT, Newtype),
  )
-import Plutarch.Bool (PEq, (#==))
 import Plutarch.Builtin (PData)
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)

@@ -14,7 +14,8 @@ module Plutarch.Integer (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (PEq, POrd, PPartialOrd, pif, (#<), (#<=), (#==))
+import Plutarch.Bool (POrd, PPartialOrd, pif, (#<), (#<=))
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, pto)

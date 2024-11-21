@@ -1,7 +1,7 @@
 module Plutarch.Pair (PPair (..)) where
 
 import GHC.Generics (Generic)
-import Plutarch.Bool (PEq)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
 import Plutarch.Internal.Term (PType, S, Term)

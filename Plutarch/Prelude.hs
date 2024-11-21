@@ -209,7 +209,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
 import Plutarch.Bool (
-  PEq ((#==)),
   POrd (pmax, pmin),
   PPartialOrd ((#<), (#<=), (#>), (#>=)),
   pif,
@@ -271,6 +270,7 @@ import Plutarch.Integer (
   PInteger,
   PIntegral (pdiv, pmod, pquot, prem),
  )
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   PLiftable (AsHaskell, PlutusRepr),
   PLifted (PLifted),
