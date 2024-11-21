@@ -47,6 +47,7 @@ module Plutarch.Prelude (
   PPartialOrd (..),
   POrd (..),
   pif,
+  pif',
   pnot,
   (#&&),
   (#||),
@@ -208,16 +209,6 @@ module Plutarch.Prelude (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
-import Plutarch.Bool (
-  PBool (PFalse, PTrue),
-  PEq ((#==)),
-  POrd (pmax, pmin),
-  PPartialOrd ((#<), (#<=), (#>), (#>=)),
-  pif,
-  pnot,
-  (#&&),
-  (#||),
- )
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList (PCons, PNil),
@@ -229,6 +220,14 @@ import Plutarch.Builtin (
   pfromData,
   pfstBuiltin,
   psndBuiltin,
+ )
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
+  pif,
+  pif',
+  pnot,
+  (#&&),
+  (#||),
  )
 import Plutarch.ByteString (
   PByte,
@@ -269,6 +268,7 @@ import Plutarch.Integer (
   PInteger,
   PIntegral (pdiv, pmod, pquot, prem),
  )
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   PLiftable (AsHaskell, PlutusRepr),
   PLifted (PLifted),
@@ -276,6 +276,10 @@ import Plutarch.Internal.Lift (
   plift,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (
+  POrd (pmax, pmin),
+  PPartialOrd ((#<), (#<=), (#>), (#>=)),
+ )
 import Plutarch.Internal.Other (POpaque (POpaque), pfix, popaque, pto)
 import Plutarch.Internal.PLam (pinl, plam)
 import Plutarch.Internal.PlutusType (

@@ -81,7 +81,6 @@ import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (forM)
-import Plutarch.Bool (PSBool (PSFalse, PSTrue), psfalse, pstrue)
 import Plutarch.Builtin (
   pasMap,
   pdataImpl,
@@ -96,7 +95,12 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
-import Plutarch.LedgerApi.Utils (Mret)
+import Plutarch.LedgerApi.Utils (
+  Mret,
+  PSBool (PSFalse, PSTrue),
+  psfalse,
+  pstrue,
+ )
 import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude

@@ -5,7 +5,6 @@
 ```haskell
 module Plutarch.Docs.DelayAndForce (hif, pif') where 
 import Plutarch.Prelude
-import Plutarch.Bool (pif')
 ```
 
 </p>

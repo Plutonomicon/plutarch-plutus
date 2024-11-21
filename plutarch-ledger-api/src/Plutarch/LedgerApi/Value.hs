@@ -60,8 +60,8 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Bool (pand', pif')
 import Plutarch.Builtin (PDataNewtype (PDataNewtype))
+import Plutarch.Builtin.Bool (pand')
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   DeriveNewtypePLiftable,

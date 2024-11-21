@@ -33,7 +33,6 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
-import Plutarch.Bool (pif')
 import Plutarch.DataRepr (PDataFields)
 import Plutarch.Enum (
   PCountable (psuccessor),

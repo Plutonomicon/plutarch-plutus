@@ -22,7 +22,8 @@ module Plutarch.Maybe (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Bool (PBool, PEq)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,

@@ -31,6 +31,10 @@
 * `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
 * `pmapMaybe` to `Plutarch.Maybe`
 * `PLiftable` type class
+* `Plutarch.Builtin.Bool` module
+* `Plutarch.Internal.Eq` module
+* `Plutarch.Internal.Ord` module
+* `pif'` to `Plutarch.Prelude`
 
 ## Changed
 
@@ -40,6 +44,12 @@
 * `PMaybeData` no longer uses `PDataRecord`
 * `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
   actual contents
+* `PBool` definition is now in `Plutarch.Builtin.Bool`
+* `PEq` type class definition is now in `Plutarch.Internal.Eq`
+* `PPartialOrd` and `POrd` type class definitions are now in
+  `Plutarch.Internal.Ord`
+* `pif`, `pif'`, `pand`, `pand'`, `por`, `por'`, `pnot`, `#&&`, `#||` are 
+   now in `Plutarch.Builtin.Bool`
 
 ## Removed
 
@@ -52,6 +62,7 @@
 * `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
 * `Plutarch` module, as it served no useful purpose and was just confusing
 * `PType` synonym (use `S -> Type` honestly instead)
+* `PSBool` and functionality (now in `plutarch-ledger-api`)
 
 ### Fixed
 

@@ -43,18 +43,9 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Bool (
-  PBool (PFalse, PTrue),
-  PEq,
-  POrd,
-  PPartialOrd,
-  pif,
-  (#<),
-  (#<=),
-  (#==),
-  (#||),
- )
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, (#||))
 import Plutarch.Integer (PInteger)
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
@@ -64,6 +55,7 @@ import Plutarch.Internal.Lift (
   toPlutarchUni,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.Other (POpaque, pfix)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (

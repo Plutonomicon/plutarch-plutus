@@ -74,8 +74,8 @@ library
   exposed-modules:
     Plutarch.BitString
     Plutarch.BLS
-    Plutarch.Bool
     Plutarch.Builtin
+    Plutarch.Builtin.Bool
     Plutarch.ByteString
     Plutarch.Convert
     Plutarch.Crypto
@@ -90,10 +90,12 @@ library
     Plutarch.Evaluate
     Plutarch.FFI
     Plutarch.Integer
+    Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
     Plutarch.Internal.Lift
     Plutarch.Internal.Newtype
+    Plutarch.Internal.Ord
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType

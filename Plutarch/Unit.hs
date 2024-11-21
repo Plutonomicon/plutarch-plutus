@@ -4,21 +4,15 @@
 
 module Plutarch.Unit (PUnit (..)) where
 
-import Plutarch.Bool (
-  PBool (PFalse, PTrue),
-  PEq,
-  POrd,
-  PPartialOrd,
-  (#<),
-  (#<=),
-  (#==),
- )
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
+import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable,
   PLifted (PLifted),
   pconstant,
  )
+import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch')
 import Plutarch.Internal.Term (Term, plet)
 import Plutarch.Show (PShow (pshow'))
