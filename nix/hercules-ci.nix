@@ -5,6 +5,7 @@
 
   hercules-ci.flake-update = {
     enable = true;
+    baseBranch = "staging";
     updateBranch = "updated-flake-lock";
     # Next two parameters should always be set explicitly
     createPullRequest = true;
