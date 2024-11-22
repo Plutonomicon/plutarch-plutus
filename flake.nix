@@ -29,17 +29,27 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
     herbage.url = "github:seungheonoh/herbage";
+    agenix-shell.url = "github:aciceri/agenix-shell";
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
+        inputs.agenix-shell.flakeModules.default
         ./nix/pre-commit.nix
         ./nix/hercules-ci.nix
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
       hercules-ci.github-pages.branch = "staging";
+
+      agenix-shell = {
+        flakeName = "plutarch-plutus";
+        secretsPath = "secrets";
+        secrets = {
+          hackageKeys.file = ./secrets/hackage-keys.tar.age;
+        };
+      };
 
       perSystem = { config, system, lib, self', ... }:
         let
@@ -70,7 +80,9 @@
               withHaddock = true;
               exactDeps = false;
               # TODO(peter-mlabs): Use `apply-refact` for repo wide refactoring `find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +``
-              shellHook = config.pre-commit.installationScript;
+              shellHook = ''
+                source ${config.pre-commit.installationScript}
+              '';
               nativeBuildInputs = with pkgs; [
                 mdbook
                 hackage-repo-tool
@@ -119,8 +131,20 @@
             # However, since deployment of hackage sets are fully automatized using Hercules CI,
             # This should remain secure as long as Plutonomicon/Plutarch repository is secure.
             hackage =
+              let
+                keys =
+                  pkgs.runCommand "combined-docs"
+                    {
+                      buildInputs = with pkgs; [ util-linux git ];
+                    } ''
+                    source ${lib.getExe config.agenix-shell.installationScript}
+                    tar -xvf $hackageKeys_PATH
+                    mkdir -p $out
+                    mv hackage-keys/* $out
+                  '';
+              in
               herbage.genHackage
-                ./keys
+                keys
                 (import ./nix/hackage.nix { inherit pkgs; });
 
             combined-docs = pkgs.runCommand "combined-docs"
