@@ -9,7 +9,6 @@ erroneous.[Integer] (with length == 3) /= PRational program 1.0.0 error
 erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational program 1.0.0 error
 working.(String, String) == (String, String) program 1.0.0 (Constr 0 [B #666f6f, B #626172])
 working.[String] == [String] program 1.0.0 (List [B #666f6f, B #626172])
-working.[Integer] (with length == 2) == PRational program 1.0.0 ()
 working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } program 1.0.0 (List [I 7, I 42])
 working.A { test := Integer, test2 := Integer } == [Integer] program 1.0.0 (List [I 7, I 42])
 working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } program 1.0.0 (List [B #62617a, I 42])

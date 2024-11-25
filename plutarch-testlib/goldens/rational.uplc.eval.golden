@@ -4,6 +4,8 @@ ops.- program 1.0.0 (\!0 -> !1 1 6)
 ops.* program 1.0.0 (\!0 -> !1 1 4)
 ops.harmonic-sum program 1.0.0 (\!0 -> !1 77 60)
 ops.multi-product program 1.0.0 (\!0 -> !1 1 6)
+ops.abs program 1.0.0 (\!0 -> !1 1 2)
+ops.signum program 1.0.0 (\!0 -> !1 -1 1)
 compare program 1.0.0 True
 round.5/3 program 1.0.0 2
 round.4/3 program 1.0.0 1

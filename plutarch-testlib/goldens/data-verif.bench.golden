@@ -9,7 +9,6 @@ erroneous.[Integer] (with length == 3) /= PRational {"exBudgetCPU":1650812,"exBu
 erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational {"exBudgetCPU":8524073,"exBudgetMemory":20520,"scriptSizeBytes":503}
 working.(String, String) == (String, String) {"exBudgetCPU":4159141,"exBudgetMemory":14428,"scriptSizeBytes":123}
 working.[String] == [String] {"exBudgetCPU":3917533,"exBudgetMemory":16904,"scriptSizeBytes":114}
-working.[Integer] (with length == 2) == PRational {"exBudgetCPU":6332850,"exBudgetMemory":23384,"scriptSizeBytes":652}
 working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } {"exBudgetCPU":2420489,"exBudgetMemory":9876,"scriptSizeBytes":147}
 working.A { test := Integer, test2 := Integer } == [Integer] {"exBudgetCPU":2420489,"exBudgetMemory":9876,"scriptSizeBytes":147}
 working.A { test := String, test2 := Integer } == { test := String, test2 := Integer } {"exBudgetCPU":2459655,"exBudgetMemory":10176,"scriptSizeBytes":153}
