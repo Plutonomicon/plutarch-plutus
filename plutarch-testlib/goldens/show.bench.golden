@@ -1,4 +1,4 @@
-unit {"exBudgetCPU":64100,"exBudgetMemory":500,"scriptSizeBytes":13}
+unit {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":11}
 bool.true {"exBudgetCPU":284149,"exBudgetMemory":1401,"scriptSizeBytes":33}
 bool.false {"exBudgetCPU":284149,"exBudgetMemory":1401,"scriptSizeBytes":33}
 int.0 {"exBudgetCPU":3230792,"exBudgetMemory":14417,"scriptSizeBytes":304}
@@ -23,9 +23,9 @@ str.slash {"exBudgetCPU":14134535,"exBudgetMemory":57643,"scriptSizeBytes":136}
 str.unicode {"exBudgetCPU":19470845,"exBudgetMemory":79932,"scriptSizeBytes":139}
 str.unicode-quoted {"exBudgetCPU":23649227,"exBudgetMemory":95604,"scriptSizeBytes":141}
 maybe.nothing {"exBudgetCPU":880100,"exBudgetMemory":5600,"scriptSizeBytes":340}
-maybe.just {"exBudgetCPU":9002174,"exBudgetMemory":34572,"scriptSizeBytes":345}
-either.right {"exBudgetCPU":9110131,"exBudgetMemory":34873,"scriptSizeBytes":358}
-maybe.either {"exBudgetCPU":12356196,"exBudgetMemory":38334,"scriptSizeBytes":421}
+maybe.just {"exBudgetCPU":8954174,"exBudgetMemory":34272,"scriptSizeBytes":342}
+either.right {"exBudgetCPU":9062131,"exBudgetMemory":34573,"scriptSizeBytes":356}
+maybe.either {"exBudgetCPU":12308196,"exBudgetMemory":38034,"scriptSizeBytes":419}
 list.nil {"exBudgetCPU":2202965,"exBudgetMemory":11943,"scriptSizeBytes":395}
 list.1 {"exBudgetCPU":6059760,"exBudgetMemory":26860,"scriptSizeBytes":396}
 list.1,2,3 {"exBudgetCPU":17441292,"exBudgetMemory":66744,"scriptSizeBytes":399}
@@ -33,6 +33,6 @@ builtinlist.nil {"exBudgetCPU":2058965,"exBudgetMemory":11043,"scriptSizeBytes":
 builtinlist.1,2,3 {"exBudgetCPU":16174606,"exBudgetMemory":56272,"scriptSizeBytes":390}
 pshowAndErr.nil {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":21}
 pshowAndErr.1,2,3 {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":24}
-pair.int-str {"exBudgetCPU":21607683,"exBudgetMemory":77897,"scriptSizeBytes":452}
-pair.int-list {"exBudgetCPU":26976874,"exBudgetMemory":86294,"scriptSizeBytes":432}
-rational.1/2 {"exBudgetCPU":13417220,"exBudgetMemory":55484,"scriptSizeBytes":566}
+pair.int-str {"exBudgetCPU":21559683,"exBudgetMemory":77597,"scriptSizeBytes":450}
+pair.int-list {"exBudgetCPU":26928874,"exBudgetMemory":85994,"scriptSizeBytes":429}
+rational.1/2 {"exBudgetCPU":13225220,"exBudgetMemory":54284,"scriptSizeBytes":556}

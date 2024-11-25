@@ -12,8 +12,8 @@ eq.true.just program
       !2
         (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
         (delay (!1 (\!0 -> False) (delay True))))
-     ((\!0 !0 !0 -> !2 !3) 42)
-     ((\!0 !0 !0 -> !2 !3) 42))
+     (\!0 !0 -> !2 42)
+     (\!0 !0 -> !2 42))
 eq.false.nothing-just program
   1.0.0
   ((\!0 !0 ->
@@ -21,12 +21,12 @@ eq.false.nothing-just program
         (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
         (delay (!1 (\!0 -> False) (delay True))))
      (\!0 !0 -> force !1)
-     ((\!0 !0 !0 -> !2 !3) 42))
+     (\!0 !0 -> !2 42))
 eq.false.just-just program
   1.0.0
   ((\!0 !0 ->
       !2
         (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (delay False))
         (delay (!1 (\!0 -> False) (delay True))))
-     ((\!0 !0 !0 -> !2 !3) 24)
-     ((\!0 !0 !0 -> !2 !3) 42))
+     (\!0 !0 -> !2 24)
+     (\!0 !0 -> !2 42))
