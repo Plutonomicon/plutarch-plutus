@@ -10,29 +10,39 @@ module Plutarch.Rational (
   pround,
   ptruncate,
   pproperFraction,
-  PFractional (..),
 ) where
 
-import Data.Kind (Type)
-import Data.Ratio (denominator, numerator)
 import GHC.Generics (Generic)
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
   PData,
-  PIsData,
-  pasInt,
-  pasList,
   pdata,
-  pdataImpl,
-  pforgetData,
-  pfromDataImpl,
+  ppairDataBuiltin,
  )
-import Plutarch.Builtin.Bool (pif, pnot)
+import Plutarch.Builtin.Bool (pif)
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Lift (
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    fromPlutarch,
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
+  ),
+  PLiftedClosed,
+  fromPlutarchReprClosed,
+  getPLifted,
+  mkPLifted,
+  pconstant,
+  toPlutarchReprClosed,
+ )
+import Plutarch.Internal.Ord (
+  POrd (pmax, pmin),
+  PPartialOrd ((#<), (#<=)),
+ )
 import Plutarch.Internal.Other (pfix, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -51,33 +61,62 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.List (pcons, phead, pnil, ptail)
-import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
-import Plutarch.Pair (PPair (PPair))
-import Plutarch.Positive (PPositive, ptryPositive)
-import Plutarch.Show (PShow, pshow, pshow')
-import Plutarch.TermCont (
-  pguardC,
+import Plutarch.Internal.TermCont (
   runTermCont,
   tcont,
   unTermCont,
  )
+import Plutarch.List (phead, pnil, ptail)
+import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
+import Plutarch.Pair (PPair (PPair))
+import Plutarch.Positive (PPositive, ptryPositive)
+import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusTx.Ratio qualified as PlutusTx
 
-class PFractional (a :: S -> Type) where
-  (#/) :: Term s a -> Term s a -> Term s a
-  precip :: Term s (a :--> a)
-  pfromRational :: Term s (PRational :--> a)
+{- | A Scott-encoded rational number, with a guaranteed positive denominator
+(and thus, a canonical form).
 
--- | Note: This type is _not_ the synonym of 'PlutusTx.Rational'.
+= Note
+
+This is not the Plutarch equivalent of a Plutus @Rational@; for this, you
+want @PRationalData@ from @plutarch-ledger-api@. 'PRational' is designed to
+optimize for computation: if you want to do any serious work with rational
+numbers that isn't just passing them around, you want to use (or convert to)
+'PRational'.
+-}
 data PRational s
   = PRational (Term s PInteger) (Term s PPositive)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
-instance DerivePlutusType PRational where type DPTStrat _ = PlutusTypeScott
+instance DerivePlutusType PRational where
+  type DPTStrat _ = PlutusTypeScott
+
+-- | @since WIP
+instance PLiftable PRational where
+  type AsHaskell PRational = PlutusTx.Rational
+  type PlutusRepr PRational = PLiftedClosed PRational
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprClosed
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch r =
+    let n = PlutusTx.numerator r
+        d = PlutusTx.denominator r
+     in mkPLifted . pcon $
+          if
+            | n == 0 -> PRational 0 1
+            | d < 0 -> PRational (pconstant . negate $ n) . punsafeCoerce . pconstant @PInteger . negate $ d
+            | otherwise -> PRational (pconstant n) . punsafeCoerce . pconstant @PInteger $ d
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprClosed
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = do
+    (n, d) <- fromPlutarch $ mkPLifted $ pmatch (getPLifted t) $ \(PRational n' d') ->
+      ppairDataBuiltin # pdata n' # pdata (pto d')
+    pure . PlutusTx.unsafeRatio n $ d
 
 instance PEq PRational where
   l' #== r' =
@@ -90,14 +129,40 @@ instance PEq PRational where
       # l'
       # r'
 
-instance (PNum a, PFractional a) => Fractional (Term s a) where
-  (/) = (#/)
-  recip x = precip # x
-  fromRational x =
-    pfromRational #$ pcon $
-      PRational
-        (pconstant $ numerator x)
-        (punsafeDowncast . pconstant $ denominator x)
+-- | @since WIP
+instance Fractional (Term s PRational) where
+  {-# INLINEABLE (/) #-}
+  x / y = inner # x # y
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PRational)
+      inner = phoistAcyclic $ plam $ \x y -> pmatch x $ \(PRational xn xd) ->
+        pmatch y $ \(PRational yn yd) ->
+          plet (pto xd * yn) $ \denm ->
+            pif
+              (denm #== 0)
+              (ptraceInfoError "Cannot divide by zero")
+              ( plet (xn * pto yd) $ \numm ->
+                  preduce
+                    #$ pif
+                      (denm #< 0)
+                      (pcon $ PRational (pnegate #$ numm) (punsafeCoerce $ pnegate # denm))
+                      (pcon $ PRational numm (punsafeCoerce denm))
+              )
+  {-# INLINEABLE recip #-}
+  recip x = inner # x
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational)
+      inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
+        pif
+          (xn #== 0)
+          (ptraceInfoError "attempted to construct the reciprocal of zero")
+          ( pif
+              (xn #< 0)
+              (pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+              (pcon $ PRational (pto xd) (punsafeCoerce xn))
+          )
+  {-# INLINEABLE fromRational #-}
+  fromRational = pconstant . PlutusTx.fromGHC
 
 instance PShow PRational where
   pshow' _ x =
@@ -106,26 +171,6 @@ instance PShow PRational where
       pshowRat = phoistAcyclic $
         plam $ \n -> pmatch n $ \(PRational x y) ->
           pshow x <> "/" <> pshow (pto y)
-
--- | This instance _does not_ correspond to 'PlutusTx.Rational's data encoding.
-instance PIsData PRational where
-  pfromDataImpl x' = phoistAcyclic (plam $ \x -> plistToRat #$ pasList # pforgetData x) # x'
-    where
-      plistToRat :: Term s (PBuiltinList PData :--> PRational)
-      plistToRat = plam $ \x ->
-        pcon
-          $ PRational (pasInt #$ phead # x)
-            . punsafeDowncast
-          $ pasInt #$ phead #$ ptail # x
-  pdataImpl x' =
-    phoistAcyclic
-      ( plam $ \x -> unTermCont $ do
-          PRational a b <- tcont $ pmatch x
-          let res :: Term _ (PBuiltinList (PAsData PInteger))
-              res = pcons # pdata a #$ pcons # pdata (pto b) #$ pnil
-          pure $ pdataImpl res
-      )
-      # x'
 
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
@@ -164,6 +209,7 @@ instance PPartialOrd PRational where
 instance POrd PRational
 
 instance PNum PRational where
+  {-# INLINEABLE (#+) #-}
   x' #+ y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -180,8 +226,7 @@ instance PNum PRational where
       )
       # x'
       # y'
-
-  -- TODO (Optimize): Could this be optimized with an impl in terms of `#+`.
+  {-# INLINEABLE (#-) #-}
   x' #- y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -198,7 +243,7 @@ instance PNum PRational where
       )
       # x'
       # y'
-
+  {-# INLINEABLE (#*) #-}
   x' #* y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -213,62 +258,31 @@ instance PNum PRational where
       )
       # x'
       # y'
-
+  {-# INLINEABLE pnegate #-}
   pnegate =
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
           pcon $ PRational (negate xn) xd
-
+  {-# INLINEABLE pabs #-}
   pabs =
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (abs xn) (abs xd)
-
-  psignum =
-    phoistAcyclic $
-      plam $ \x' -> plet x' $ \x ->
-        pif
-          (x #== 0)
-          0
-          $ pif
-            (x #< 0)
+          pcon $ PRational (abs xn) xd
+  {-# INLINEABLE psignum #-}
+  psignum = phoistAcyclic $ plam $ \x ->
+    pmatch x $ \(PRational n _) ->
+      pif
+        (n #== 0)
+        0
+        ( pif
+            (n #< 0)
             (-1)
             1
-
+        )
+  {-# INLINEABLE pfromInteger #-}
   pfromInteger n = pcon $ PRational (fromInteger n) 1
-
-instance PFractional PRational where
-  precip =
-    phoistAcyclic $
-      plam $ \x ->
-        pmatch x $ \(PRational xn xd) ->
-          pif (xn #== 0) (ptraceInfoError "precip: attempts to construct reciprocal of zero") $
-            pif
-              (xn #< 0)
-              (pcon $ PRational (pnegate #$ pto xd) $ ptryPositive #$ pnegate # xn)
-              (pcon $ PRational (pto xd) $ ptryPositive # xn)
-
-  -- TODO (Optimize): Could this be optimized with an impl in terms of `#*`.
-  x' #/ y' =
-    phoistAcyclic
-      ( plam $ \x y -> unTermCont $ do
-          PRational xn xd <- tcont $ pmatch x
-          PRational yn yd <- tcont $ pmatch y
-          denm <- tcont . plet $ pto xd * yn
-          pguardC "Cannot divide by zero" $ pnot #$ denm #== 0
-          pure $
-            preduce
-              #$ pif
-                (denm #< 0)
-                (pcon $ PRational (pnegate #$ xn * pto yd) (ptryPositive #$ pnegate # denm))
-                (pcon $ PRational (xn * pto yd) (ptryPositive # denm))
-      )
-      # x'
-      # y'
-
-  pfromRational = phoistAcyclic $ plam id
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
@@ -284,7 +298,7 @@ pgcd = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
     x <- tcont . plet $ pabs # x'
     y <- tcont . plet $ pabs # y'
-    pure $ pgcd' # (pmax # x # y) #$ pmin # x # y
+    pure $ pgcd' # pmax x y #$ pmin x y
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
@@ -295,12 +309,6 @@ pgcd' = phoistAcyclic $ pfix #$ plam f
         (b #== 0)
         a
         $ self # b #$ pmod # a # b
-
-pmin :: POrd a => Term s (a :--> a :--> a)
-pmin = phoistAcyclic $ plam $ \a b -> pif (a #<= b) a b
-
-pmax :: POrd a => Term s (a :--> a :--> a)
-pmax = phoistAcyclic $ plam $ \a b -> pif (a #<= b) b a
 
 pnumerator :: Term s (PRational :--> PInteger)
 pnumerator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational n _) -> n

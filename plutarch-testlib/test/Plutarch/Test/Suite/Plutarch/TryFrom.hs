@@ -113,20 +113,6 @@ tests =
                     (pdata $ (pcons # pdata (pconstant "foo")) #$ (psingleton # pdata (pconstant "bar")))
                 )
             , goldenEval
-                "[Integer] (with length == 2) == PRational"
-                ( unTermCont
-                    ( do
-                        let numr = pconstantData 42
-                        let denm = pconstantData 31
-                        (drat, nz) <-
-                          checkDeep' @PRational @(PBuiltinList (PAsData PInteger))
-                            (pdata $ pcons # numr #$ pcons # denm # pnil)
-                        pguardC "non-zero should be as expected" $ pto nz #== pfromData denm
-                        pguardC "drat should be as expected" $ pfromData drat #== pcon (PRational (pfromData numr) nz)
-                        pure $ pconstant @PUnit ()
-                    )
-                )
-            , goldenEval
                 "A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer }"
                 ( checkDeep
                     @(PDataRecord (("foo" ':= PInteger) ': ("bar" ':= PInteger) ': '[]))

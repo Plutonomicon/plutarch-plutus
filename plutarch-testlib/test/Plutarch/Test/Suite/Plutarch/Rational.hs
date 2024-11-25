@@ -20,6 +20,8 @@ tests =
             , goldenEval "*" (rat ((1 - 3 / 2) * (2 - 5 / 2)))
             , goldenEval "harmonic-sum" (rat (1 / 2 + 1 / 3 + 1 / 4 + 1 / 5))
             , goldenEval "multi-product" (rat (1 / 2 * 2 / 3 * 3 / 4 * 4 / 5 * 5 / 6))
+            , goldenEval "abs" (rat (abs ((-1) / 2)))
+            , goldenEval "signum" (rat (signum ((-1) / 2)))
             ]
         , goldenEval "compare" (rat (2 / 9) #< (3 / 10))
         , goldenGroup
