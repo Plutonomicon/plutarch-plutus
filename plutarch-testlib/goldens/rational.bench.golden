@@ -4,6 +4,8 @@ ops.- {"exBudgetCPU":18964237,"exBudgetMemory":81693,"scriptSizeBytes":391}
 ops.* {"exBudgetCPU":32279794,"exBudgetMemory":137461,"scriptSizeBytes":449}
 ops.harmonic-sum {"exBudgetCPU":47474585,"exBudgetMemory":201135,"scriptSizeBytes":453}
 ops.multi-product {"exBudgetCPU":53618307,"exBudgetMemory":229563,"scriptSizeBytes":475}
+ops.abs {"exBudgetCPU":7700187,"exBudgetMemory":33039,"scriptSizeBytes":308}
+ops.signum {"exBudgetCPU":8740740,"exBudgetMemory":37845,"scriptSizeBytes":402}
 compare {"exBudgetCPU":15551718,"exBudgetMemory":67773,"scriptSizeBytes":375}
 round.5/3 {"exBudgetCPU":9649272,"exBudgetMemory":39247,"scriptSizeBytes":384}
 round.4/3 {"exBudgetCPU":8892960,"exBudgetMemory":36144,"scriptSizeBytes":384}
