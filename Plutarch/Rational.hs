@@ -12,17 +12,33 @@ module Plutarch.Rational (
   pproperFraction,
 ) where
 
-import Data.Ratio (denominator, numerator)
 import GHC.Generics (Generic)
 import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
   PData,
+  pdata,
+  ppairDataBuiltin,
  )
 import Plutarch.Builtin.Bool (pif)
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Lift (
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    fromPlutarch,
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
+  ),
+  PLiftedClosed,
+  fromPlutarchReprClosed,
+  getPLifted,
+  mkPLifted,
+  pconstant,
+  toPlutarchReprClosed,
+ )
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
 import Plutarch.Internal.Other (pfix, pto)
 import Plutarch.Internal.PLam (plam)
@@ -55,6 +71,7 @@ import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusTx.Ratio qualified as PlutusTx
 
 {- | A Scott-encoded rational number, with a guaranteed positive denominator
 (and thus, a canonical form).
@@ -72,7 +89,31 @@ data PRational s
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
-instance DerivePlutusType PRational where type DPTStrat _ = PlutusTypeScott
+instance DerivePlutusType PRational where
+  type DPTStrat _ = PlutusTypeScott
+
+-- | @since WIP
+instance PLiftable PRational where
+  type AsHaskell PRational = PlutusTx.Rational
+  type PlutusRepr PRational = PLiftedClosed PRational
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprClosed
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch r =
+    let n = PlutusTx.numerator r
+        d = PlutusTx.denominator r
+     in mkPLifted . pcon $
+          if
+            | n == 0 -> PRational 0 1
+            | d < 0 -> PRational (pconstant . negate $ n) . punsafeCoerce . pconstant @PInteger . negate $ d
+            | otherwise -> PRational (pconstant n) . punsafeCoerce . pconstant @PInteger $ d
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprClosed
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = do
+    (n, d) <- fromPlutarch $ mkPLifted $ pmatch (getPLifted t) $ \(PRational n' d') ->
+      ppairDataBuiltin # pdata n' # pdata (pto d')
+    pure . PlutusTx.unsafeRatio n $ d
 
 instance PEq PRational where
   l' #== r' =
@@ -118,8 +159,7 @@ instance Fractional (Term s PRational) where
               (pcon $ PRational (pto xd) (punsafeCoerce xn))
           )
   {-# INLINEABLE fromRational #-}
-  fromRational r =
-    pcon $ PRational (pconstant $ numerator r) (punsafeDowncast . pconstant $ denominator r)
+  fromRational = pconstant . PlutusTx.fromGHC
 
 instance PShow PRational where
   pshow' _ x =

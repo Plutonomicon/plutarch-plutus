@@ -35,6 +35,7 @@
 * `Plutarch.Internal.Eq` module
 * `Plutarch.Internal.Ord` module
 * `pif'` to `Plutarch.Prelude`
+* `PLiftable PRational` instance
 
 ## Changed
 
