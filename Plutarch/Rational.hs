@@ -10,10 +10,8 @@ module Plutarch.Rational (
   pround,
   ptruncate,
   pproperFraction,
-  PFractional (..),
 ) where
 
-import Data.Kind (Type)
 import Data.Ratio (denominator, numerator)
 import GHC.Generics (Generic)
 import Plutarch.Builtin (
@@ -28,7 +26,7 @@ import Plutarch.Builtin (
   pforgetData,
   pfromDataImpl,
  )
-import Plutarch.Builtin.Bool (pif, pnot)
+import Plutarch.Builtin.Bool (pif)
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (pconstant)
@@ -51,25 +49,19 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
+import Plutarch.Internal.TermCont (
+  runTermCont,
+  tcont,
+  unTermCont,
+ )
 import Plutarch.List (pcons, phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')
-import Plutarch.TermCont (
-  pguardC,
-  runTermCont,
-  tcont,
-  unTermCont,
- )
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
-
-class PFractional (a :: S -> Type) where
-  (#/) :: Term s a -> Term s a -> Term s a
-  precip :: Term s (a :--> a)
-  pfromRational :: Term s (PRational :--> a)
 
 -- | Note: This type is _not_ the synonym of 'PlutusTx.Rational'.
 data PRational s
@@ -90,14 +82,41 @@ instance PEq PRational where
       # l'
       # r'
 
-instance (PNum a, PFractional a) => Fractional (Term s a) where
-  (/) = (#/)
-  recip x = precip # x
-  fromRational x =
-    pfromRational #$ pcon $
-      PRational
-        (pconstant $ numerator x)
-        (punsafeDowncast . pconstant $ denominator x)
+-- | @since WIP
+instance Fractional (Term s PRational) where
+  {-# INLINEABLE (/) #-}
+  x / y = inner # x # y
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PRational)
+      inner = phoistAcyclic $ plam $ \x y -> pmatch x $ \(PRational xn xd) ->
+        pmatch y $ \(PRational yn yd) ->
+          plet (pto xd * yn) $ \denm ->
+            pif
+              (denm #== 0)
+              (ptraceInfoError "Cannot divide by zero")
+              ( plet (xn * pto yd) $ \numm ->
+                  preduce
+                    #$ pif
+                      (denm #< 0)
+                      (pcon $ PRational (pnegate #$ numm) (punsafeCoerce $ pnegate # denm))
+                      (pcon $ PRational numm (punsafeCoerce denm))
+              )
+  {-# INLINEABLE recip #-}
+  recip x = inner # x
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational)
+      inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
+        pif
+          (xn #== 0)
+          (ptraceInfoError "attempted to construct the reciprocal of zero")
+          ( pif
+              (xn #< 0)
+              (pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+              (pcon $ PRational (pto xd) (punsafeCoerce xn))
+          )
+  {-# INLINEABLE fromRational #-}
+  fromRational r =
+    pcon $ PRational (pconstant $ numerator r) (punsafeDowncast . pconstant $ denominator r)
 
 instance PShow PRational where
   pshow' _ x =
@@ -238,37 +257,6 @@ instance PNum PRational where
             1
 
   pfromInteger n = pcon $ PRational (fromInteger n) 1
-
-instance PFractional PRational where
-  precip =
-    phoistAcyclic $
-      plam $ \x ->
-        pmatch x $ \(PRational xn xd) ->
-          pif (xn #== 0) (ptraceInfoError "precip: attempts to construct reciprocal of zero") $
-            pif
-              (xn #< 0)
-              (pcon $ PRational (pnegate #$ pto xd) $ ptryPositive #$ pnegate # xn)
-              (pcon $ PRational (pto xd) $ ptryPositive # xn)
-
-  -- TODO (Optimize): Could this be optimized with an impl in terms of `#*`.
-  x' #/ y' =
-    phoistAcyclic
-      ( plam $ \x y -> unTermCont $ do
-          PRational xn xd <- tcont $ pmatch x
-          PRational yn yd <- tcont $ pmatch y
-          denm <- tcont . plet $ pto xd * yn
-          pguardC "Cannot divide by zero" $ pnot #$ denm #== 0
-          pure $
-            preduce
-              #$ pif
-                (denm #< 0)
-                (pcon $ PRational (pnegate #$ xn * pto yd) (ptryPositive #$ pnegate # denm))
-                (pcon $ PRational (xn * pto yd) (ptryPositive # denm))
-      )
-      # x'
-      # y'
-
-  pfromRational = phoistAcyclic $ plam id
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $
