@@ -206,6 +206,7 @@ instance PPartialOrd PRational where
 instance POrd PRational
 
 instance PNum PRational where
+  {-# INLINEABLE (#+) #-}
   x' #+ y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -222,8 +223,7 @@ instance PNum PRational where
       )
       # x'
       # y'
-
-  -- TODO (Optimize): Could this be optimized with an impl in terms of `#+`.
+  {-# INLINEABLE (#-) #-}
   x' #- y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -240,7 +240,7 @@ instance PNum PRational where
       )
       # x'
       # y'
-
+  {-# INLINEABLE (#*) #-}
   x' #* y' =
     phoistAcyclic
       ( plam $ \x y -> unTermCont $ do
@@ -255,30 +255,30 @@ instance PNum PRational where
       )
       # x'
       # y'
-
+  {-# INLINEABLE pnegate #-}
   pnegate =
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
           pcon $ PRational (negate xn) xd
-
+  {-# INLINEABLE pabs #-}
   pabs =
     phoistAcyclic $
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (abs xn) (abs xd)
-
-  psignum =
-    phoistAcyclic $
-      plam $ \x' -> plet x' $ \x ->
-        pif
-          (x #== 0)
-          0
-          $ pif
-            (x #< 0)
+          pcon $ PRational (abs xn) xd
+  {-# INLINEABLE psignum #-}
+  psignum = phoistAcyclic $ plam $ \x ->
+    pmatch x $ \(PRational n _) ->
+      pif
+        (n #== 0)
+        0
+        ( pif
+            (n #< 0)
             (-1)
             1
-
+        )
+  {-# INLINEABLE pfromInteger #-}
   pfromInteger n = pcon $ PRational (fromInteger n) 1
 
 preduce :: Term s (PRational :--> PRational)
