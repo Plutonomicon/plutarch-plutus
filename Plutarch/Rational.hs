@@ -39,7 +39,10 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Ord (
+  POrd (pmax, pmin),
+  PPartialOrd ((#<), (#<=)),
+ )
 import Plutarch.Internal.Other (pfix, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -295,7 +298,7 @@ pgcd = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
     x <- tcont . plet $ pabs # x'
     y <- tcont . plet $ pabs # y'
-    pure $ pgcd' # (pmax # x # y) #$ pmin # x # y
+    pure $ pgcd' # pmax x y #$ pmin x y
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
@@ -306,12 +309,6 @@ pgcd' = phoistAcyclic $ pfix #$ plam f
         (b #== 0)
         a
         $ self # b #$ pmod # a # b
-
-pmin :: POrd a => Term s (a :--> a :--> a)
-pmin = phoistAcyclic $ plam $ \a b -> pif (a #<= b) a b
-
-pmax :: POrd a => Term s (a :--> a :--> a)
-pmax = phoistAcyclic $ plam $ \a b -> pif (a #<= b) b a
 
 pnumerator :: Term s (PRational :--> PInteger)
 pnumerator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational n _) -> n
