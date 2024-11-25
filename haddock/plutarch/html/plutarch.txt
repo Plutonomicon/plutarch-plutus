@@ -1977,6 +1977,41 @@ instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Positive.PPositi
 instance Plutarch.Num.PNum Plutarch.Positive.PPositive
 instance Plutarch.TryFrom.PTryFrom Plutarch.Integer.PInteger Plutarch.Positive.PPositive
 
+module Plutarch.Rational
+
+-- | A Scott-encoded rational number, with a guaranteed positive
+--   denominator (and thus, a canonical form).
+--   
+--   <h1>Note</h1>
+--   
+--   This is not the Plutarch equivalent of a Plutus <tt>Rational</tt>; for
+--   this, you want <tt>PRationalData</tt> from
+--   <tt>plutarch-ledger-api</tt>. <a>PRational</a> is designed to optimize
+--   for computation: if you want to do any serious work with rational
+--   numbers that isn't just passing them around, you want to use (or
+--   convert to) <a>PRational</a>.
+data PRational s
+PRational :: Term s PInteger -> Term s PPositive -> PRational s
+preduce :: Term s (PRational :--> PRational)
+pnumerator :: Term s (PRational :--> PInteger)
+pdenominator :: Term s (PRational :--> PPositive)
+pfromInteger :: Term s (PInteger :--> PRational)
+pround :: Term s (PRational :--> PInteger)
+ptruncate :: Term s (PRational :--> PInteger)
+pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Rational.PRational
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Rational.PRational s)
+instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Rational.Flip @{k2} @{k1} f a b)
+instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Rational.PRational)
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Rational.PRational
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Rational.PRational
+instance Plutarch.Internal.Eq.PEq Plutarch.Rational.PRational
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Real.Fractional (Plutarch.Internal.Term.Term s Plutarch.Rational.PRational)
+instance Plutarch.Show.PShow Plutarch.Rational.PRational
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Rational.PRational
+instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational
+instance Plutarch.Num.PNum Plutarch.Rational.PRational
+
 module Plutarch.Enum
 
 -- | A notion of 'next' value. More formally, instances of this type class
@@ -2734,36 +2769,6 @@ ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b
 --   @since WIP
 pexpectJustC :: forall (a :: S -> Type) (r :: S -> Type) (s :: S). Term s r -> Term s (PMaybe a) -> TermCont @r s (Term s a)
 
-module Plutarch.Rational
-
--- | Note: This type is _not_ the synonym of <a>Rational</a>.
-data PRational s
-PRational :: Term s PInteger -> Term s PPositive -> PRational s
-preduce :: Term s (PRational :--> PRational)
-pnumerator :: Term s (PRational :--> PInteger)
-pdenominator :: Term s (PRational :--> PPositive)
-pfromInteger :: Term s (PInteger :--> PRational)
-pround :: Term s (PRational :--> PInteger)
-ptruncate :: Term s (PRational :--> PInteger)
-pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
-class PFractional (a :: S -> Type)
-(#/) :: PFractional a => Term s a -> Term s a -> Term s a
-precip :: PFractional a => Term s (a :--> a)
-pfromRational :: PFractional a => Term s (PRational :--> a)
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Rational.PRational
-instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Rational.PRational s)
-instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Rational.Flip @{k2} @{k1} f a b)
-instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Rational.PRational)
-instance forall (a :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). (Plutarch.Num.PNum a, Plutarch.Rational.PFractional a) => GHC.Real.Fractional (Plutarch.Internal.Term.Term s a)
-instance Plutarch.Rational.PFractional Plutarch.Rational.PRational
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Rational.PRational
-instance Plutarch.Internal.Eq.PEq Plutarch.Rational.PRational
-instance Plutarch.Show.PShow Plutarch.Rational.PRational
-instance Plutarch.Builtin.PIsData Plutarch.Rational.PRational
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Rational.PRational
-instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational
-instance Plutarch.Num.PNum Plutarch.Rational.PRational
-
 module Plutarch.Prelude
 data (:-->) (a :: PType) (b :: PType) (s :: S)
 infixr 0 :-->
@@ -2889,7 +2894,17 @@ pquot :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
 prem :: PIntegral a => Term s (a :--> (a :--> a))
 prem :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
 
--- | Note: This type is _not_ the synonym of <a>Rational</a>.
+-- | A Scott-encoded rational number, with a guaranteed positive
+--   denominator (and thus, a canonical form).
+--   
+--   <h1>Note</h1>
+--   
+--   This is not the Plutarch equivalent of a Plutus <tt>Rational</tt>; for
+--   this, you want <tt>PRationalData</tt> from
+--   <tt>plutarch-ledger-api</tt>. <a>PRational</a> is designed to optimize
+--   for computation: if you want to do any serious work with rational
+--   numbers that isn't just passing them around, you want to use (or
+--   convert to) <a>PRational</a>.
 data PRational s
 PRational :: Term s PInteger -> Term s PPositive -> PRational s
 pnumerator :: Term s (PRational :--> PInteger)
