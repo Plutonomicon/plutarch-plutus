@@ -6,7 +6,10 @@
 
 module Plutarch.Fun where
 
+import Generics.SOP qualified as SOP
+
 import Control.Monad
+import Data.Aeson (toJSON, (.=))
 import Data.Aeson qualified as Aeson
 import Data.ByteString.Lazy qualified as LBS
 import Data.Coerce
@@ -36,7 +39,7 @@ import PlutusLedgerApi.V3
 
 import GHC.Stack
 
-{-# ANN module "HLint: ignore" #-}
+-- {-# ANN module "HLint: ignore" #-}
 
 cs :: HasCallStack => String -> String
 cs s = s <> prettyCallStack callStack
@@ -53,8 +56,15 @@ myAdd = plam $ \x y -> x + x + y
 mySub :: HasCallStack => Term s (PInteger :--> PInteger :--> PInteger)
 mySub = plam $ \x y -> x - y - y
 
+fibo :: HasCallStack => Term s (PInteger :--> PInteger)
+fibo = pfix #$ plam $ \r x ->
+  pif
+    (x #== 0 #|| x #== 1)
+    1
+    (r # (x - 1) + r # (x - 2))
+
 foo :: HasCallStack => Term s PInteger
-foo = myAdd # (myAdd # 10 # 20) # (myAdd # 10 # 20)
+foo = fibo # 10
 
 -- (plamNamed "outer" $ \y -> plamNamed "foo" (\_x _z -> _x) # (pconstant @PInteger 0) #$ (myAdd # 10 # y)) # 2
 
@@ -82,8 +92,8 @@ raToList x =
 unboundVariables :: UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> [UPLC.NamedDeBruijn]
 unboundVariables t = nub $ go 0 t
   where
-    go :: Integer -> UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> ([UPLC.NamedDeBruijn])
-    go idx (UPLC.Var () ndb@(UPLC.NamedDeBruijn _ n)) = if n > fromIntegral idx then [ndb] else []
+    go :: Integer -> UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> [UPLC.NamedDeBruijn]
+    go idx (UPLC.Var () ndb@(UPLC.NamedDeBruijn _ n)) = [ndb | n > fromIntegral idx]
     go idx (UPLC.Apply () f t) = go idx f <> go idx t
     go idx (UPLC.LamAbs () n body) = go (idx + 1) body
     go idx (UPLC.Force () t) = go idx t
@@ -92,16 +102,16 @@ unboundVariables t = nub $ go 0 t
     go idx (UPLC.Builtin _ _) = []
     go idx (UPLC.Error _) = []
     go idx (UPLC.Constr _ _ ts) = mconcat $ go idx <$> ts
-    go idx (UPLC.Case _ t ts) = go idx t <> (mconcat $ Vector.toList (go idx <$> ts))
+    go idx (UPLC.Case _ t ts) = go idx t <> mconcat (Vector.toList (go idx <$> ts))
 
-envWithMatchingVariables :: CekValEnv UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> [((CekValue UPLC.DefaultUni UPLC.DefaultFun ()), UPLC.NamedDeBruijn)]
+envWithMatchingVariables :: CekValEnv UPLC.DefaultUni UPLC.DefaultFun () -> UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> [(CekValue UPLC.DefaultUni UPLC.DefaultFun (), UPLC.NamedDeBruijn)]
 envWithMatchingVariables env term =
   let
     unboundVars = unboundVariables term
-    minIdx = foldr1 min $ (\(UPLC.NamedDeBruijn _ idx) -> idx) <$> unboundVars
+    minIdx = minimum $ (\(UPLC.NamedDeBruijn _ idx) -> idx) <$> unboundVars
     f ndb@(UPLC.NamedDeBruijn name idx) =
       case RAL.indexOne env (coerce $ idx - minIdx + 1) of
-        Nothing -> error "impossible, cek machine produced open term without matching environment"
+        Nothing -> error $ "impossible, cek machine produced open term without matching environment" <> show minIdx
         Just x -> (x, ndb)
    in
     if null unboundVars then [] else f <$> unboundVars
@@ -123,40 +133,36 @@ prettyNamedDeBruijn (UPLC.NamedDeBruijn name idx) =
 prettyCekContext :: Context UPLC.DefaultUni UPLC.DefaultFun () -> Pretty.Doc ()
 prettyCekContext (FrameAwaitArg _ val ctx) =
   "(Frame Awaiting Arg\n"
-    <> ( Pretty.indent 2 $
-          Pretty.vcat
-            [ "Val:" Pretty.<+> Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) val
-            , prettyCekContext ctx
-            ]
-       )
-    <> ")"
+    <> Pretty.indent 2
+    $ Pretty.vcat
+      [ "Val:" Pretty.<+> Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) val
+      , prettyCekContext ctx
+      ]
+      <> ")"
 prettyCekContext (FrameAwaitFunTerm _ env term ctx) =
   "(Frame Await Function Term:\n"
-    <> ( Pretty.indent 2 $
-          Pretty.vcat
-            [ "Env:" Pretty.<+> prettyCekEnv env
-            , "Term:" Pretty.<+> Pretty.pretty term
-            , prettyCekContext ctx
-            ]
-       )
-    <> ")"
+    <> Pretty.indent 2
+    $ Pretty.vcat
+      [ "Env:" Pretty.<+> prettyCekEnv env
+      , "Term:" Pretty.<+> Pretty.pretty term
+      , prettyCekContext ctx
+      ]
+      <> ")"
 prettyCekContext (FrameAwaitFunValue _ val ctx) =
   "(Frame Awaiting Function Value:\n"
-    <> ( Pretty.indent 2 $
-          Pretty.vcat
-            [ "Val: " Pretty.<+> Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) val
-            , prettyCekContext ctx
-            ]
-       )
-    <> ")"
+    <> Pretty.indent 2
+    $ Pretty.vcat
+      [ "Val: " Pretty.<+> Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) val
+      , prettyCekContext ctx
+      ]
+      <> ")"
 prettyCekContext (FrameForce _ ctx) =
   "(Frame Force:\n"
-    <> ( Pretty.indent 2 $
-          Pretty.vcat
-            [ prettyCekContext ctx
-            ]
-       )
-    <> ")"
+    <> Pretty.indent 2
+    $ Pretty.vcat
+      [ prettyCekContext ctx
+      ]
+      <> ")"
 prettyCekContext (FrameConstr _ val n terms argstack ctx) = undefined
 prettyCekContext (FrameCases _ val terms ctx) = undefined
 prettyCekContext NoFrame = "(NoFrame)"
@@ -166,7 +172,7 @@ prettyCekEnv env =
   let
     envs :: [Pretty.Doc ann]
     envs =
-      (Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions))
+      Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions)
         <$> raToList env
    in
     Pretty.encloseSep "[" "]" "," envs
@@ -176,23 +182,21 @@ prettyCekState (Starting t) =
   "Starting: " Pretty.<+> Pretty.pretty t
 prettyCekState (Computing ctx env t) =
   "Computing:\n"
-    <> ( Pretty.indent 2 $
-          Pretty.vcat
-            [ "Term:" Pretty.<+> (Pretty.align (Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) t))
-            , "Env:" Pretty.<+> envWithMatchingVariablesPretty env t
-            , "EnvRaw:" Pretty.<+> prettyCekEnv env
-            , -- prettyCekEnv env
-              prettyCekContext ctx
-            ]
-       )
+    <> Pretty.indent 2
+    $ Pretty.vcat
+      [ "Term:" Pretty.<+> Pretty.align (Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) t)
+      , "Env:" Pretty.<+> envWithMatchingVariablesPretty env t
+      , "EnvRaw:" Pretty.<+> prettyCekEnv env
+      , -- prettyCekEnv env
+        prettyCekContext ctx
+      ]
 prettyCekState (Returning ctx val) =
   "Returning:\n"
-    <> ( Pretty.indent 2 $
-          Pretty.vcat
-            [ "Value:" Pretty.<+> Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) val
-            , prettyCekContext ctx
-            ]
-       )
+    <> Pretty.indent 2
+    $ Pretty.vcat
+      [ "Value:" Pretty.<+> Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) val
+      , prettyCekContext ctx
+      ]
 prettyCekState (Terminating t) =
   "Terminating: " Pretty.<+> Pretty.pretty t
 
@@ -200,7 +204,7 @@ generateExecutionSteps ::
   NamedScript ->
   ( Either
       (CekEvaluationException UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun)
-      [((CekState UPLC.DefaultUni UPLC.DefaultFun ()), ExBudget)]
+      [(CekState UPLC.DefaultUni UPLC.DefaultFun (), ExBudget)]
   , Cek.RestrictingSt
   , [Text.Text]
   )
@@ -222,10 +226,9 @@ generateExecutionSteps term = runCekM (defaultCekParametersForTesting @()) Cek.r
 
       ((x, nextCost) :) <$> go nextState
 
-  (unCekBudgetSpender spender) BStartup (runIdentity $ cekStartupCost ?cekCosts)
+  unCekBudgetSpender spender BStartup (runIdentity $ cekStartupCost ?cekCosts)
 
-  steps <- go (Starting (UPLC._progTerm . unNamedScript $ term))
-  pure steps
+  go (Starting (UPLC._progTerm . unNamedScript $ term))
 
 newtype TermText
   = TermText (UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
@@ -234,17 +237,17 @@ newtype TermText
 instance Aeson.ToJSON TermText where
   toJSON (TermText t) =
     -- Pretty instance given by plutus doesn't respect Pretty.group
-    Aeson.toJSON $ unwords $ words $ show $ Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) t
+    toJSON $ unwords $ words $ show $ Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) t
 
-data DebuggerBudget
+newtype DebuggerBudget
   = DebuggerBudget ExBudget
   deriving stock (Generic, Show)
 
 instance Aeson.ToJSON DebuggerBudget where
   toJSON (DebuggerBudget (ExBudget cpu mem)) = do
     Aeson.object
-      [ "cpu" Aeson..= Aeson.toJSON cpu
-      , "mem" Aeson..= Aeson.toJSON mem
+      [ "cpu" .= toJSON cpu
+      , "mem" .= toJSON mem
       ]
 
 data DebuggerContext
@@ -257,10 +260,48 @@ data DebuggerContext
   | DebuggerContextNoFrame
   deriving stock (Generic, Show)
 
-instance Aeson.ToJSON DebuggerContext
+instance Aeson.ToJSON DebuggerContext where
+  toJSON (DebuggerContextAwaitArg val) =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitArg"
+      , "val" .= toJSON val
+      ]
+  toJSON (DebuggerContextAwaitFunTerm env term) =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitFunTerm"
+      , "env" .= toJSON env
+      , "term" .= toJSON term
+      ]
+  toJSON (DebuggerContextAwaitFunValue val) =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitFunValue"
+      , "val" .= toJSON val
+      ]
+  toJSON DebuggerContextForce =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitForce"
+      ]
+  toJSON (DebuggerContextConstr env idx terms vals) =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitConstr"
+      , "env" .= toJSON env
+      , "idx" .= toJSON idx
+      , "terms" .= toJSON terms
+      , "vals" .= toJSON vals
+      ]
+  toJSON (DebuggerContextCases env terms) =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitCases"
+      , "env" .= toJSON env
+      , "terms" .= toJSON terms
+      ]
+  toJSON DebuggerContextNoFrame =
+    Aeson.object
+      [ "tag" .= toJSON @String "FrameAwaitConstr"
+      ]
 
-data DebuggerEnv
-  = DebuggerEnv ([(DebuggerValue, UPLC.NamedDeBruijn)])
+newtype DebuggerEnv
+  = DebuggerEnv [(DebuggerValue, UPLC.NamedDeBruijn)]
   deriving stock (Generic, Show)
 
 instance Aeson.ToJSON DebuggerEnv where
@@ -269,16 +310,16 @@ instance Aeson.ToJSON DebuggerEnv where
       f (val, ndb) =
         (show $ prettyNamedDeBruijn ndb, val)
      in
-      Aeson.toJSON $ Map.fromList $ f <$> xs
+      toJSON $ Map.fromList $ f <$> xs
 
-data DebuggerValue
+newtype DebuggerValue
   = DebuggerValue (CekValue UPLC.DefaultUni UPLC.DefaultFun ())
   deriving stock (Generic, Show)
 
 instance Aeson.ToJSON DebuggerValue where
   toJSON (DebuggerValue t) =
     -- Pretty instance given by plutus doesn't respect Pretty.group
-    Aeson.toJSON $ unwords $ words $ show $ Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) t
+    toJSON $ unwords $ words $ show $ Pretty.prettyBy (Pretty.prettyConfigPlcClassic Pretty.prettyConfigPlcOptions) t
 
 data DebuggerState
   = DebuggerStateStarting TermText
@@ -287,29 +328,57 @@ data DebuggerState
   | DebuggerStateTerminating TermText
   deriving stock (Generic, Show)
 
-instance Aeson.ToJSON DebuggerState
+instance Aeson.ToJSON DebuggerState where
+  toJSON (DebuggerStateStarting term) =
+    Aeson.object
+      [ "tag" .= toJSON @String "Starting"
+      , "term" .= toJSON term
+      ]
+  toJSON (DebuggerStateComputing ctx env term) =
+    Aeson.object
+      [ "tag" .= toJSON @String "Computing"
+      , "ctx" .= toJSON ctx
+      , "env" .= toJSON env
+      , "term" .= toJSON term
+      ]
+  toJSON (DebuggerStateReturning ctx val) =
+    Aeson.object
+      [ "tag" .= toJSON @String "Returning"
+      , "ctx" .= toJSON ctx
+      , "val" .= toJSON val
+      ]
+  toJSON (DebuggerStateTerminating term) =
+    Aeson.object
+      [ "tag" .= toJSON @String "Terminating"
+      , "term" .= toJSON term
+      ]
 
 data DebuggerStep = DebuggerStep {debuggerBudget :: DebuggerBudget, debuggerState :: DebuggerState}
   deriving stock (Generic, Show)
 
-instance Aeson.ToJSON DebuggerStep
+instance Aeson.ToJSON DebuggerStep where
+  toJSON (DebuggerStep budget state) =
+    Aeson.object
+      [ "budget" .= toJSON budget
+      , "state" .= toJSON state
+      ]
 
 cekStateToDebuggerEnv :: [UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun ()] -> CekValEnv UPLC.DefaultUni UPLC.DefaultFun () -> DebuggerEnv
 cekStateToDebuggerEnv ts env =
   let
     unboundVars = foldMap unboundVariables ts
-    minIdx = foldr1 min $ (\(UPLC.NamedDeBruijn _ idx) -> idx) <$> unboundVars
+    minIdx = minimum $ (\(UPLC.NamedDeBruijn _ idx) -> idx) <$> unboundVars
     f ndb@(UPLC.NamedDeBruijn name idx) =
       case RAL.indexOne env (coerce $ idx - minIdx + 1) of
-        Nothing -> error "impossible, cek machine produced open term without matching environment"
-        Just x -> trace (show ndb) $ (DebuggerValue x, ndb)
+        Nothing -> [] -- error $ "impossible, cek machine produced open term without matching environment \n" <> show env <> "\n" <> show unboundVars
+        Just x -> [(DebuggerValue x, ndb)]
    in
     -- TODO: Must this only take what's in environment that is also an unbound variable of given term.
     -- Need to include everything
     DebuggerEnv $
       if null unboundVars
         then []
-        else f <$> unboundVars
+        else concatMap f unboundVars
 
 cekStateToDebuggerContext :: Context UPLC.DefaultUni UPLC.DefaultFun () -> [DebuggerContext]
 cekStateToDebuggerContext (FrameAwaitArg () val ctx) =
@@ -342,7 +411,7 @@ c =
     (Left err, _, _) -> error $ show err
     (Right res, x, y) -> res
 
-d = Aeson.encode $ Aeson.toJSON $ cekStateToDebuggerStep <$> c
+d = Aeson.encode $ toJSON $ cekStateToDebuggerStep <$> c
 
 a =
   case generateExecutionSteps fun of
@@ -360,7 +429,7 @@ a =
 
 -- $> :set -Wno-incomplete-uni-patterns
 
--- $> LBS.putStrLn d
+-- $> LBS.putStr d
 
 -- $> b
 
