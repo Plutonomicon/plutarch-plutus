@@ -18,13 +18,6 @@ import Plutarch.Builtin (
   PAsData,
   PBuiltinList,
   PData,
-  PIsData,
-  pasInt,
-  pasList,
-  pdata,
-  pdataImpl,
-  pforgetData,
-  pfromDataImpl,
  )
 import Plutarch.Builtin.Bool (pif)
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
@@ -54,7 +47,7 @@ import Plutarch.Internal.TermCont (
   tcont,
   unTermCont,
  )
-import Plutarch.List (pcons, phead, pnil, ptail)
+import Plutarch.List (phead, pnil, ptail)
 import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
@@ -63,7 +56,17 @@ import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
--- | Note: This type is _not_ the synonym of 'PlutusTx.Rational'.
+{- | A Scott-encoded rational number, with a guaranteed positive denominator
+(and thus, a canonical form).
+
+= Note
+
+This is not the Plutarch equivalent of a Plutus @Rational@; for this, you
+want @PRationalData@ from @plutarch-ledger-api@. 'PRational' is designed to
+optimize for computation: if you want to do any serious work with rational
+numbers that isn't just passing them around, you want to use (or convert to)
+'PRational'.
+-}
 data PRational s
   = PRational (Term s PInteger) (Term s PPositive)
   deriving stock (Generic)
@@ -125,26 +128,6 @@ instance PShow PRational where
       pshowRat = phoistAcyclic $
         plam $ \n -> pmatch n $ \(PRational x y) ->
           pshow x <> "/" <> pshow (pto y)
-
--- | This instance _does not_ correspond to 'PlutusTx.Rational's data encoding.
-instance PIsData PRational where
-  pfromDataImpl x' = phoistAcyclic (plam $ \x -> plistToRat #$ pasList # pforgetData x) # x'
-    where
-      plistToRat :: Term s (PBuiltinList PData :--> PRational)
-      plistToRat = plam $ \x ->
-        pcon
-          $ PRational (pasInt #$ phead # x)
-            . punsafeDowncast
-          $ pasInt #$ phead #$ ptail # x
-  pdataImpl x' =
-    phoistAcyclic
-      ( plam $ \x -> unTermCont $ do
-          PRational a b <- tcont $ pmatch x
-          let res :: Term _ (PBuiltinList (PAsData PInteger))
-              res = pcons # pdata a #$ pcons # pdata (pto b) #$ pnil
-          pure $ pdataImpl res
-      )
-      # x'
 
 newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 

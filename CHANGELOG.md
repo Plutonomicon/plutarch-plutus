@@ -66,6 +66,7 @@
 * `PType` synonym (use `S -> Type` honestly instead)
 * `PSBool` and functionality (now in `plutarch-ledger-api`)
 * `PFractional` type class (only one instance, unlikely to ever have more)
+* `PIsData PRational` instance (made no sense)
 
 ### Fixed
 
