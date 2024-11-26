@@ -10,8 +10,8 @@ eq.true program
                      ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
                         (equalsInteger !4 !2)
                         (delay (equalsString !3 !1))))))
-        ((\!0 !0 -> !1 !2 !3) 42)
-        ((\!0 !0 -> !1 !2 !3) 42))
+        (\!0 -> !1 42 !2)
+        (\!0 -> !1 42 !2))
      "Hello")
 eq.false.fst program
   1.0.0
@@ -25,8 +25,8 @@ eq.false.fst program
                      ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
                         (equalsInteger !4 !2)
                         (delay (equalsString !3 !1))))))
-        ((\!0 !0 -> !1 !2 !3) 42)
-        ((\!0 !0 -> !1 !2 !3) 24))
+        (\!0 -> !1 42 !2)
+        (\!0 -> !1 24 !2))
      "Hello")
 eq.false.snd program
   1.0.0
@@ -39,8 +39,8 @@ eq.false.snd program
                   ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
                      (equalsInteger !4 !2)
                      (delay (equalsString !3 !1))))))
-     ((\!0 !0 -> !1 !2 "Hello") 42)
-     ((\!0 !0 -> !1 !2 "World") 42))
+     (\!0 -> !1 42 "Hello")
+     (\!0 -> !1 42 "World"))
 eq.false.both program
   1.0.0
   ((\!0 !0 ->
@@ -52,5 +52,5 @@ eq.false.both program
                   ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
                      (equalsInteger !4 !2)
                      (delay (equalsString !3 !1))))))
-     ((\!0 !0 -> !1 !2 "Hello") 42)
-     ((\!0 !0 -> !1 !2 "World") 24))
+     (\!0 -> !1 42 "Hello")
+     (\!0 -> !1 24 "World"))

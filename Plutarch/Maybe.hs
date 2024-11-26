@@ -77,8 +77,8 @@ instance PLiftable a => PLiftable (PMaybe a) where
   toPlutarchRepr = toPlutarchReprClosed
 
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch (Just a) = mkPLifted $ pjust # pconstant @a a
-  toPlutarch Nothing = mkPLifted pnothing
+  toPlutarch (Just a) = mkPLifted $ pcon $ PJust $ pconstant @a a
+  toPlutarch Nothing = mkPLifted $ pcon PNothing
 
   {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr = fromPlutarchReprClosed

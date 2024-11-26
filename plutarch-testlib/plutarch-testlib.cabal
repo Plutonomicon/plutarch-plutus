@@ -2,6 +2,7 @@ cabal-version: 3.0
 name:          plutarch-testlib
 version:       1.0.0
 license:       MIT
+data-files:    goldens/*.golden
 
 common lang
   default-language:   GHC2021
