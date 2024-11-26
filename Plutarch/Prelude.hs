@@ -268,7 +268,6 @@ import Plutarch.Either (
  )
 import Plutarch.Integer (
   PInteger,
-  PIntegral (pdiv, pmod, pquot, prem),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
@@ -278,6 +277,7 @@ import Plutarch.Internal.Lift (
   plift,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Numeric (PIntegral (pdiv, pmod, pquot, prem))
 import Plutarch.Internal.Ord (
   POrd (pmax, pmin),
   PPartialOrd ((#<), (#<=), (#>), (#>=)),

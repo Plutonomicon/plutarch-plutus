@@ -6,31 +6,24 @@ module Plutarch.Integer (
   -- * Type
   PInteger,
 
-  -- * Type class
-  PIntegral (..),
-
   -- * Functions
   pexpModInteger,
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (pif)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
+import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
-import Plutarch.Internal.Other (POpaque, pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
+import Plutarch.Internal.Other (POpaque)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Internal.Term (
   S,
   Term,
-  phoistAcyclic,
   (#),
   (:-->),
  )
-import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
-import Plutarch.Unsafe (punsafeBuiltin, punsafeDowncast)
+import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 -- | Plutus BuiltinInteger
@@ -46,26 +39,6 @@ deriving via
   instance
     PLiftable PInteger
 
-class PIntegral a where
-  pdiv :: Term s (a :--> a :--> a)
-  default pdiv :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  pdiv = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pdiv # pto x # pto y
-  pmod :: Term s (a :--> a :--> a)
-  default pmod :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  pmod = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pmod # pto x # pto y
-  pquot :: Term s (a :--> a :--> a)
-  default pquot :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  pquot = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pquot # pto x # pto y
-  prem :: Term s (a :--> a :--> a)
-  default prem :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  prem = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ prem # pto x # pto y
-
-instance PIntegral PInteger where
-  pdiv = punsafeBuiltin PLC.DivideInteger
-  pmod = punsafeBuiltin PLC.ModInteger
-  pquot = punsafeBuiltin PLC.QuotientInteger
-  prem = punsafeBuiltin PLC.RemainderInteger
-
 instance PEq PInteger where
   x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
 
@@ -74,22 +47,6 @@ instance PPartialOrd PInteger where
   x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
 
 instance POrd PInteger
-
-instance PNum PInteger where
-  x #+ y = punsafeBuiltin PLC.AddInteger # x # y
-  x #- y = punsafeBuiltin PLC.SubtractInteger # x # y
-  x #* y = punsafeBuiltin PLC.MultiplyInteger # x # y
-  pabs = phoistAcyclic $ plam \x -> pif (x #<= -1) (negate x) x
-  pnegate = phoistAcyclic $ plam (0 #-)
-  psignum = plam \x ->
-    pif
-      (x #== 0)
-      0
-      $ pif
-        (x #<= 0)
-        (-1)
-        1
-  pfromInteger = pconstant
 
 {- | Performs modulo exponentiation. More precisely, @pexpModInteger b e m@
 performs @b@ to the power of @e@, modulo @m@. The result is always
