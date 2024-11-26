@@ -1,11 +1,11 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (tests) where
 
 import Data.Bifunctor (bimap)
+import Plutarch.Internal.Numeric ((#+), (#-))
 import Plutarch.LedgerApi.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.Maybe (pjust, pmapMaybe, pnothing)
-import Plutarch.Num ((#+), (#-))
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, propEvalEqual)

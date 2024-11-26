@@ -36,8 +36,8 @@ import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool, pif, pif', (#&&), (#||))
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.ByteString (PByteString)
-import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,

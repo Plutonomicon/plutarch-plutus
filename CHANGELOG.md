@@ -54,6 +54,9 @@
    now in `Plutarch.Builtin.Bool`
 * `Term s PRational` is now `Fractional` directly, instead of by way of
   `PFractional`
+* `Plutarch.Num` is now `Plutarch.Internal.Numeric`
+* `PIntegral` type class is now in `Plutarch.Internal.Numeric`
+* `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
 
 ## Removed
 

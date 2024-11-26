@@ -28,6 +28,7 @@ import Generics.SOP (
  )
 import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Builtin.Bool (PBool, pif, pif')
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.ByteString (
   PByte,
   PByteString,
@@ -38,10 +39,10 @@ import Plutarch.ByteString (
   psliceBS,
   punsafeIntegerToByte,
  )
-import Plutarch.Integer (PInteger, PIntegral (pquot, prem))
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Numeric (PIntegral (pquot, prem))
 import Plutarch.Internal.Ord ((#<))
 import Plutarch.Internal.Other (
   pfix,

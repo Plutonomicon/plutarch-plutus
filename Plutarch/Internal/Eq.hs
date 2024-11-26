@@ -20,6 +20,7 @@ import Plutarch.Builtin.Bool (
   pnot,
   (#&&),
  )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -31,10 +32,12 @@ import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
   plet,
+  punsafeBuiltin,
   (#),
   (#$),
   (:-->),
  )
+import PlutusCore qualified as PLC
 
 class PEq t where
   (#==) :: Term s t -> Term s t -> Term s PBool
@@ -50,6 +53,11 @@ infix 4 #==
 instance PEq PBool where
   {-# INLINEABLE (#==) #-}
   x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
+
+-- | @since WIP
+instance PEq PInteger where
+  {-# INLINEABLE (#==) #-}
+  x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
 
 -- Helpers
 

@@ -231,6 +231,9 @@ import Plutarch.Builtin.Bool (
   (#&&),
   (#||),
  )
+import Plutarch.Builtin.Integer (
+  PInteger,
+ )
 import Plutarch.ByteString (
   PByte,
   PByteString,
@@ -266,10 +269,6 @@ import Plutarch.DataRepr (
 import Plutarch.Either (
   PEither (PLeft, PRight),
  )
-import Plutarch.Integer (
-  PInteger,
-  PIntegral (pdiv, pmod, pquot, prem),
- )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   PLiftable (AsHaskell, PlutusRepr),
@@ -278,6 +277,7 @@ import Plutarch.Internal.Lift (
   plift,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Numeric (PIntegral (pdiv, pmod, pquot, prem))
 import Plutarch.Internal.Ord (
   POrd (pmax, pmin),
   PPartialOrd ((#<), (#<=), (#>), (#>=)),

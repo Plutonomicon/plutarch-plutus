@@ -70,6 +70,7 @@ import Plutarch.Builtin (
   psndBuiltin,
  )
 import Plutarch.Builtin.Bool (PBool, pif)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   HRecGeneric (HRecGeneric),
@@ -77,7 +78,6 @@ import Plutarch.DataRepr.Internal.HList (
   type Drop,
   type IndexList,
  )
-import Plutarch.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.Lift (pconstant)

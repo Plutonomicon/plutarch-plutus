@@ -21,7 +21,7 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
  )
 import Plutarch.Builtin.Bool (pcond, pif)
-import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   PLiftable (
@@ -38,6 +38,12 @@ import Plutarch.Internal.Lift (
   mkPLifted,
   pconstant,
   toPlutarchReprClosed,
+ )
+import Plutarch.Internal.Numeric (
+  PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
+  pdiv,
+  pmod,
+  pquot,
  )
 import Plutarch.Internal.Ord (
   POrd (pmax, pmin),
@@ -67,7 +73,6 @@ import Plutarch.Internal.TermCont (
   unTermCont,
  )
 import Plutarch.List (phead, pnil, ptail)
-import Plutarch.Num (PNum, pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Show (PShow, pshow, pshow')

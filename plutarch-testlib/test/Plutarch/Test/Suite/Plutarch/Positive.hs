@@ -1,7 +1,7 @@
 module Plutarch.Test.Suite.Plutarch.Positive (tests) where
 
+import Plutarch.Internal.Numeric (PNum (pfromInteger))
 import Plutarch.Maybe (pnothing)
-import Plutarch.Num (PNum (pfromInteger))
 import Plutarch.Positive (PPositive, ppositive, ptryPositive)
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerPropertiesPCountable)

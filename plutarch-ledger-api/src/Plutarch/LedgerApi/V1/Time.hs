@@ -16,8 +16,10 @@ import Plutarch.Enum (
   PEnumerable (ppredecessor, ppredecessorN),
  )
 import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Plutarch.Internal.Numeric (
+  PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
+ )
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.Num (PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)))
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
