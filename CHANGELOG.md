@@ -36,7 +36,6 @@
 * `Plutarch.Internal.Ord` module
 * `pif'` to `Plutarch.Prelude`
 * `pcond` as a Plutarch equivalent to multi-way if
-* `potherwise`, with a similar purpose to `otherwise` in Haskell
 * `PLiftable PRational` instance
 
 ## Changed
