@@ -37,6 +37,7 @@
 * `pif'` to `Plutarch.Prelude`
 * `pcond` as a Plutarch equivalent to multi-way if
 * `potherwise`, with a similar purpose to `otherwise` in Haskell
+* `PLiftable PRational` instance
 
 ## Changed
 
@@ -52,6 +53,8 @@
   `Plutarch.Internal.Ord`
 * `pif`, `pif'`, `pand`, `pand'`, `por`, `por'`, `pnot`, `#&&`, `#||` are 
    now in `Plutarch.Builtin.Bool`
+* `Term s PRational` is now `Fractional` directly, instead of by way of
+  `PFractional`
 
 ## Removed
 
@@ -65,6 +68,8 @@
 * `Plutarch` module, as it served no useful purpose and was just confusing
 * `PType` synonym (use `S -> Type` honestly instead)
 * `PSBool` and functionality (now in `plutarch-ledger-api`)
+* `PFractional` type class (only one instance, unlikely to ever have more)
+* `PIsData PRational` instance (made no sense)
 
 ### Fixed
 
