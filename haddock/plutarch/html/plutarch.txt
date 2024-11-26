@@ -765,27 +765,6 @@ punsafeConstant :: Some (ValueOf DefaultUni) -> Term s a
 --   assuming that the value is a safe construction of the Term.
 punsafeDowncast :: Term s (PInner a) -> Term s a
 
-module Plutarch.Num
-class PNum (a :: PType)
-(#+) :: PNum a => Term s a -> Term s a -> Term s a
-(#+) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-(#-) :: PNum a => Term s a -> Term s a -> Term s a
-(#-) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-(#*) :: PNum a => Term s a -> Term s a -> Term s a
-(#*) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-pnegate :: PNum a => Term s (a :--> a)
-pnegate :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-pabs :: PNum a => Term s (a :--> a)
-pabs :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-psignum :: PNum a => Term s (a :--> a)
-psignum :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-pfromInteger :: PNum a => Integer -> Term s a
-pfromInteger :: (PNum a, PNum (PInner a)) => Integer -> Term s a
-infix 6 #+
-infix 6 #-
-infix 6 #*
-instance forall (a :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). Plutarch.Num.PNum a => GHC.Num.Num (Plutarch.Internal.Term.Term s a)
-
 module Plutarch.Internal.Trace
 
 -- | Trace the given message at the info level before evaluating the given
@@ -1079,12 +1058,37 @@ instance forall (s :: Plutarch.Internal.Term.S). GHC.Show.Show (Plutarch.Builtin
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.Bool.PBool
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Bool.PBool
 
+module Plutarch.Builtin.Integer
+
+-- | A builtin Plutus integer.
+--   
+--   @since WIP
+data PInteger s
+
+-- | Performs modulo exponentiation. More precisely, <tt>pexpModInteger b e
+--   m</tt> performs <tt>b</tt> to the power of <tt>e</tt>, modulo
+--   <tt>m</tt>. The result is always non-negative.
+--   
+--   <h1>Note</h1>
+--   
+--   This will error if the modulus is zero. When given a negative
+--   exponent, this will try to find a modular multiplicative inverse, and
+--   will error if none exists.
+--   
+--   @since WIP
+pexpModInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> (PInteger :--> PInteger)))
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Integer.PInteger
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.Integer.PInteger s)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Builtin.Integer.PInteger
+
 module Plutarch.Internal.Eq
 class PEq t
 (#==) :: PEq t => Term s t -> Term s t -> Term s PBool
 (#==) :: (PEq t, PGeneric t, PlutusType t, All2 PEq (PCode t)) => Term s t -> Term s t -> Term s PBool
 infix 4 #==
 instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.Bool.PBool
+instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.Integer.PInteger
 
 module Plutarch.Internal.Ord
 
@@ -1186,11 +1190,28 @@ pmax :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 pmin :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Builtin.Bool.PBool
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Bool.PBool
+instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Integer.PInteger
 
-module Plutarch.Integer
-
--- | Plutus BuiltinInteger
-data PInteger s
+module Plutarch.Internal.Numeric
+class PNum (a :: S -> Type)
+(#+) :: PNum a => Term s a -> Term s a -> Term s a
+(#+) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
+(#-) :: PNum a => Term s a -> Term s a -> Term s a
+(#-) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
+(#*) :: PNum a => Term s a -> Term s a -> Term s a
+(#*) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
+pnegate :: PNum a => Term s (a :--> a)
+pnegate :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
+pabs :: PNum a => Term s (a :--> a)
+pabs :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
+psignum :: PNum a => Term s (a :--> a)
+psignum :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
+pfromInteger :: PNum a => Integer -> Term s a
+pfromInteger :: (PNum a, PNum (PInner a)) => Integer -> Term s a
+infix 6 #+
+infix 6 #-
+infix 6 #*
 class PIntegral a
 pdiv :: PIntegral a => Term s (a :--> (a :--> a))
 pdiv :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
@@ -1200,28 +1221,9 @@ pquot :: PIntegral a => Term s (a :--> (a :--> a))
 pquot :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
 prem :: PIntegral a => Term s (a :--> (a :--> a))
 prem :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-
--- | Performs modulo exponentiation. More precisely, <tt>pexpModInteger b e
---   m</tt> performs <tt>b</tt> to the power of <tt>e</tt>, modulo
---   <tt>m</tt>. The result is always non-negative.
---   
---   <h1>Note</h1>
---   
---   This will error if the modulus is zero. When given a negative
---   exponent, this will try to find a modular multiplicative inverse, and
---   will error if none exists.
---   
---   @since WIP
-pexpModInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> (PInteger :--> PInteger)))
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Integer.PInteger
-instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Integer.PInteger s)
-instance Plutarch.Internal.Lift.PLiftable Plutarch.Integer.PInteger
-instance Plutarch.Integer.PIntegral Plutarch.Integer.PInteger
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Integer.PInteger
-instance Plutarch.Internal.Eq.PEq Plutarch.Integer.PInteger
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Integer.PInteger
-instance Plutarch.Internal.Ord.POrd Plutarch.Integer.PInteger
-instance Plutarch.Num.PNum Plutarch.Integer.PInteger
+instance Plutarch.Internal.Numeric.PIntegral Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PNum Plutarch.Builtin.Integer.PInteger
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Plutarch.Internal.Numeric.PNum a => GHC.Num.Num (Plutarch.Internal.Term.Term s a)
 
 module Plutarch.ByteString
 
@@ -1438,7 +1440,7 @@ pshow :: PShow a => Term s a -> Term s PString
 pshowAndErr :: Term s a -> Term s b
 instance Plutarch.Show.PShow Plutarch.String.PString
 instance Plutarch.Show.PShow Plutarch.Builtin.Bool.PBool
-instance Plutarch.Show.PShow Plutarch.Integer.PInteger
+instance Plutarch.Show.PShow Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Show.PShow Plutarch.ByteString.PByteString
 
 module Plutarch.Unit
@@ -1918,7 +1920,7 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Bui
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData a)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Builtin.PDataNewtype a))
-instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Integer.PInteger)
+instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Builtin.Integer.PInteger)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.ByteString.PByteString)
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Builtin.PBuiltinList Plutarch.Builtin.PData))
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData a), Plutarch.Builtin.PIsData a) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Builtin.PBuiltinList (Plutarch.Builtin.PAsData a)))
@@ -1933,12 +1935,12 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (PlutusTx.IsD
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.Builtin.PAsData a)
 instance Plutarch.Builtin.PIsData Plutarch.Builtin.PData
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.TryFrom.PSubtype Plutarch.Builtin.PData a => Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinList a)
-instance Plutarch.Builtin.PIsData Plutarch.Integer.PInteger
+instance Plutarch.Builtin.PIsData Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Builtin.PIsData Plutarch.ByteString.PByteString
 instance Plutarch.Builtin.PIsData Plutarch.Builtin.Bool.PBool
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinPair (Plutarch.Builtin.PAsData a) (Plutarch.Builtin.PAsData b))
 instance Plutarch.Builtin.PIsData (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S})
-instance Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinPair Plutarch.Integer.PInteger (Plutarch.Builtin.PBuiltinList Plutarch.Builtin.PData))
+instance Plutarch.Builtin.PIsData (Plutarch.Builtin.PBuiltinPair Plutarch.Builtin.Integer.PInteger (Plutarch.Builtin.PBuiltinList Plutarch.Builtin.PData))
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Builtin.Fc (Plutarch.Builtin.F a) a => Plutarch.Internal.Eq.PEq (Plutarch.Builtin.PBuiltinList a)
 instance Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.PAsData Plutarch.ByteString.PByteString)
 instance Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.PAsData Plutarch.Builtin.PData)
@@ -1975,7 +1977,7 @@ data Positive
 -- | @since WIP
 mkPositive :: Integer -> Maybe Positive
 instance Plutarch.Show.PShow Plutarch.Positive.PPositive
-instance Plutarch.Integer.PIntegral Plutarch.Positive.PPositive
+instance Plutarch.Internal.Numeric.PIntegral Plutarch.Positive.PPositive
 instance Plutarch.Internal.Ord.POrd Plutarch.Positive.PPositive
 instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Positive.PPositive
 instance Plutarch.Internal.Eq.PEq Plutarch.Positive.PPositive
@@ -1993,8 +1995,8 @@ instance Prettyprinter.Internal.Pretty Plutarch.Positive.Positive
 instance Test.QuickCheck.Function.Function Plutarch.Positive.Positive
 instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData Plutarch.Positive.PPositive)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Positive.PPositive
-instance Plutarch.Num.PNum Plutarch.Positive.PPositive
-instance Plutarch.TryFrom.PTryFrom Plutarch.Integer.PInteger Plutarch.Positive.PPositive
+instance Plutarch.Internal.Numeric.PNum Plutarch.Positive.PPositive
+instance Plutarch.TryFrom.PTryFrom Plutarch.Builtin.Integer.PInteger Plutarch.Positive.PPositive
 
 module Plutarch.Rational
 
@@ -2029,7 +2031,7 @@ instance forall (s :: Plutarch.Internal.Term.S). GHC.Real.Fractional (Plutarch.I
 instance Plutarch.Show.PShow Plutarch.Rational.PRational
 instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Rational.PRational
 instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational
-instance Plutarch.Num.PNum Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PNum Plutarch.Rational.PRational
 
 module Plutarch.Enum
 
@@ -2108,8 +2110,8 @@ ppredecessor :: forall (s :: S). PEnumerable a => Term s (a :--> a)
 --   
 --   @since WIP
 ppredecessorN :: forall (s :: S). PEnumerable a => Term s (PPositive :--> (a :--> a))
-instance Plutarch.Enum.PEnumerable Plutarch.Integer.PInteger
-instance Plutarch.Enum.PCountable Plutarch.Integer.PInteger
+instance Plutarch.Enum.PEnumerable Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Enum.PCountable Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Enum.PCountable Plutarch.Positive.PPositive
 
 
@@ -2901,7 +2903,9 @@ pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
 newtype PForall (b :: a -> PType) s
 PForall :: (forall (x :: a). Term s (b x)) -> PForall (b :: a -> PType) s
 
--- | Plutus BuiltinInteger
+-- | A builtin Plutus integer.
+--   
+--   @since WIP
 data PInteger s
 class PIntegral a
 pdiv :: PIntegral a => Term s (a :--> (a :--> a))
