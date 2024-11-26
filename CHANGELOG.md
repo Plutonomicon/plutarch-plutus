@@ -35,6 +35,7 @@
 * `Plutarch.Internal.Eq` module
 * `Plutarch.Internal.Ord` module
 * `pif'` to `Plutarch.Prelude`
+* `pcond` as a Plutarch equivalent to multi-way if
 * `PLiftable PRational` instance
 
 ## Changed

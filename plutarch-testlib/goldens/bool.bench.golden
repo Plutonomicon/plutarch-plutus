@@ -15,3 +15,9 @@ por.laziness.por {"exBudgetCPU":252149,"exBudgetMemory":1201,"scriptSizeBytes":1
 por.laziness.op {"exBudgetCPU":284149,"exBudgetMemory":1401,"scriptSizeBytes":15}
 por.laziness.pand.perror.op.true {"exBudgetCPU":284149,"exBudgetMemory":1401,"scriptSizeBytes":15}
 por.laziness.pand.perror.op.false {"exBudgetCPU":76149,"exBudgetMemory":101,"scriptSizeBytes":15}
+pcond.direct-1 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
+pcond.pcond-1 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
+pcond.direct-2 {"exBudgetCPU":345439,"exBudgetMemory":1502,"scriptSizeBytes":21}
+pcond.pcond-2 {"exBudgetCPU":345439,"exBudgetMemory":1502,"scriptSizeBytes":21}
+pcond.direct-3 {"exBudgetCPU":393439,"exBudgetMemory":1802,"scriptSizeBytes":38}
+pcond.pcond-3 {"exBudgetCPU":393439,"exBudgetMemory":1802,"scriptSizeBytes":38}

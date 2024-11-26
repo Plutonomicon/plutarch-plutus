@@ -59,5 +59,14 @@ tests =
                     ]
                 ]
             ]
+        , goldenGroup
+            "pcond"
+            [ goldenEval "direct-1" (pconstant @PInteger 1)
+            , goldenEval "pcond-1" (pcond [] (pconstant @PInteger 1))
+            , goldenEval "direct-2" (pif (pconstant @PInteger 1 #< 2) (pconstant @PInteger 1) (pconstant 2))
+            , goldenEval "pcond-2" (pcond [(pconstant @PInteger 1 #< 2, pconstant @PInteger 1)] 2)
+            , goldenEval "direct-3" (pif (pconstant @PInteger 1 #< 2) (pconstant @PInteger 1) (pif (pconstant @PInteger 2 #< 3) 2 3))
+            , goldenEval "pcond-3" (pcond [(pconstant @PInteger 1 #< 2, pconstant @PInteger 1), (pconstant @PInteger 2 #< 3, 2)] 3)
+            ]
         ]
     ]

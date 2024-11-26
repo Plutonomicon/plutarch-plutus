@@ -20,7 +20,7 @@ import Plutarch.Builtin (
   pdata,
   ppairDataBuiltin,
  )
-import Plutarch.Builtin.Bool (pif)
+import Plutarch.Builtin.Bool (pcond, pif)
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
@@ -153,14 +153,11 @@ instance Fractional (Term s PRational) where
     where
       inner :: forall (s :: S). Term s (PRational :--> PRational)
       inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
-        pif
-          (xn #== 0)
-          (ptraceInfoError "attempted to construct the reciprocal of zero")
-          ( pif
-              (xn #< 0)
-              (pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
-              (pcon $ PRational (pto xd) (punsafeCoerce xn))
-          )
+        pcond
+          [ (xn #== 0, ptraceInfoError "attempted to construct the reciprocal of zero")
+          , (xn #< 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+          ]
+          (pcon $ PRational (pto xd) (punsafeCoerce xn))
   {-# INLINEABLE fromRational #-}
   fromRational = pconstant . PlutusTx.fromGHC
 
@@ -273,14 +270,11 @@ instance PNum PRational where
   {-# INLINEABLE psignum #-}
   psignum = phoistAcyclic $ plam $ \x ->
     pmatch x $ \(PRational n _) ->
-      pif
-        (n #== 0)
-        0
-        ( pif
-            (n #< 0)
-            (-1)
-            1
-        )
+      pcond
+        [ (n #== 0, 0)
+        , (n #< 0, -1)
+        ]
+        1
   {-# INLINEABLE pfromInteger #-}
   pfromInteger n = pcon $ PRational (fromInteger n) 1
 
@@ -328,13 +322,12 @@ pround = phoistAcyclic $
     base <- tcont . plet $ pdiv # a # pto b
     rem <- tcont . plet $ pmod # a # pto b
     let result =
-          pif
-            (pmod # pto b # 2 #== 1)
-            (pif (pdiv # pto b # 2 #< rem) 1 0)
-            $ pif
-              (pdiv # pto b # 2 #== rem)
-              (pmod # base # 2)
-              (pif (rem #< pdiv # pto b # 2) 0 1)
+          pcond
+            [ (pmod # pto b # 2 #== 1, pif (pdiv # pto b # 2 #< rem) 1 0)
+            , (pdiv # pto b # 2 #== rem, pmod # base # 2)
+            , (rem #< pdiv # pto b # 2, 0)
+            ]
+            1
     pure $ base + result
 
 ptruncate :: Term s (PRational :--> PInteger)

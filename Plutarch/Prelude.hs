@@ -51,6 +51,7 @@ module Plutarch.Prelude (
   pnot,
   (#&&),
   (#||),
+  pcond,
 
   -- * Bytestrings and bytestring utilities
 
@@ -223,6 +224,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
+  pcond,
   pif,
   pif',
   pnot,

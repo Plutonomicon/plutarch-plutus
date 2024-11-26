@@ -17,6 +17,7 @@ module Plutarch.Builtin.Bool (
   pand,
   pand',
   por',
+  pcond,
 ) where
 
 import Data.Kind (Type)
@@ -156,3 +157,26 @@ por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay $ pcon PTrue
 -}
 por' :: Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x -> pif' # x # pcon PTrue
+
+{- | Essentially multi-way 'pif'. More precisely, given a list of
+condition-action pairs, and an \'action of last resort\', construct a
+left-to-right \'chain\' of @pif@s, using the conditions to determine which
+action gets taken. The \'action of last resort\' finishes the \'chain\'. For
+example:
+
+> pcond [(cond1, act1), (cond2, act2)] act3
+
+does the same thing as
+
+> pif cond1 act1 (pif cond2 act2 act3)
+
+@since WIP
+-}
+pcond ::
+  forall (a :: S -> Type) (s :: S).
+  [(Term s PBool, Term s a)] ->
+  Term s a ->
+  Term s a
+pcond conds lastResort = case conds of
+  [] -> lastResort
+  (cond, action) : conds' -> pif cond action (pcond conds' lastResort)
