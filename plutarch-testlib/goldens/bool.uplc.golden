@@ -43,3 +43,29 @@ por.laziness.pand.perror.op.true program
 por.laziness.pand.perror.op.false program
   1.0.0
   (force ((\!0 -> force ifThenElse !1 (delay True)) False (delay error)))
+pcond.direct-1 program 1.0.0 1
+pcond.pcond-1 program 1.0.0 1
+pcond.direct-2 program
+  1.0.0
+  (force (force ifThenElse (lessThanInteger 1 2) (delay 1) (delay 2)))
+pcond.pcond-2 program
+  1.0.0
+  (force (force ifThenElse (lessThanInteger 1 2) (delay 1) (delay 2)))
+pcond.direct-3 program
+  1.0.0
+  ((\!0 ->
+      force
+        (!1
+           (lessThanInteger 1 2)
+           (delay 1)
+           (delay (force (!1 (lessThanInteger 2 3) (delay 2) (delay 3))))))
+     (force ifThenElse))
+pcond.pcond-3 program
+  1.0.0
+  ((\!0 ->
+      force
+        (!1
+           (lessThanInteger 1 2)
+           (delay 1)
+           (delay (force (!1 (lessThanInteger 2 3) (delay 2) (delay 3))))))
+     (force ifThenElse))

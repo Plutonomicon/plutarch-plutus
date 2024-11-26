@@ -15,3 +15,9 @@ por.laziness.por program 1.0.0 (delay True)
 por.laziness.op program 1.0.0 True
 por.laziness.pand.perror.op.true program 1.0.0 True
 por.laziness.pand.perror.op.false program 1.0.0 error
+pcond.direct-1 program 1.0.0 1
+pcond.pcond-1 program 1.0.0 1
+pcond.direct-2 program 1.0.0 1
+pcond.pcond-2 program 1.0.0 1
+pcond.direct-3 program 1.0.0 1
+pcond.pcond-3 program 1.0.0 1

@@ -17,9 +17,12 @@ module Plutarch.Builtin.Bool (
   pand,
   pand',
   por',
+  pcond,
+  potherwise,
 ) where
 
 import Data.Kind (Type)
+import Data.List.NonEmpty (NonEmpty ((:|)))
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable,
@@ -156,3 +159,33 @@ por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay $ pcon PTrue
 -}
 por' :: Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x -> pif' # x # pcon PTrue
+
+{- | Multi-way @if@ equivalent for Plutarch. Equivalent to a sequential nesting
+of 'pif' from left to right.
+
+= Note
+
+The last entry will be treated as unconditional (effectively, a catch-all
+@else@). Thus, what @PBool@ term goes on the end is not relevant.
+
+@since WIP
+-}
+pcond ::
+  forall (a :: S -> Type) (s :: S).
+  NonEmpty (Term s PBool, Term s a) ->
+  Term s a
+pcond = \case
+  (_, t) :| [] -> t
+  condPair :| condPairs -> go condPair condPairs
+    where
+      go :: (Term s PBool, Term s a) -> [(Term s PBool, Term s a)] -> Term s a
+      go (cond, ifT) = \case
+        [] -> ifT
+        condPair : condPairs -> pif cond ifT . go condPair $ condPairs
+
+{- | Shorthand for @pcon PTrue@, provided for clarity when using 'pcond'.
+
+@since WIP
+-}
+potherwise :: forall (s :: S). Term s PBool
+potherwise = pcon PTrue
