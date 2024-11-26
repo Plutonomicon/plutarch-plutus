@@ -1,8 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
 
-module Plutarch.Integer (
+module Plutarch.Builtin.Integer (
   -- * Type
   PInteger,
 
@@ -26,12 +25,16 @@ import Plutarch.Internal.Term (
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
--- | Plutus BuiltinInteger
+{- | A builtin Plutus integer.
+
+@since WIP
+-}
 newtype PInteger s = PInteger (Term s POpaque)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
-instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
+instance DerivePlutusType PInteger where
+  type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
 deriving via

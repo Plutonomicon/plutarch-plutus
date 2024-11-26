@@ -7,7 +7,7 @@ module Plutarch.Internal.Numeric (
 
 import Data.Kind (Type)
 import Plutarch.Builtin.Bool (pcond, pif)
-import Plutarch.Integer (PInteger)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord ((#<=))

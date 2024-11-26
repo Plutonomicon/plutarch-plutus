@@ -231,6 +231,9 @@ import Plutarch.Builtin.Bool (
   (#&&),
   (#||),
  )
+import Plutarch.Builtin.Integer (
+  PInteger,
+ )
 import Plutarch.ByteString (
   PByte,
   PByteString,
@@ -265,9 +268,6 @@ import Plutarch.DataRepr (
  )
 import Plutarch.Either (
   PEither (PLeft, PRight),
- )
-import Plutarch.Integer (
-  PInteger,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (

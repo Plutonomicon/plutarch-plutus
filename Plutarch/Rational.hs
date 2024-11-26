@@ -21,7 +21,7 @@ import Plutarch.Builtin (
   ppairDataBuiltin,
  )
 import Plutarch.Builtin.Bool (pcond, pif)
-import Plutarch.Integer (PInteger)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   PLiftable (

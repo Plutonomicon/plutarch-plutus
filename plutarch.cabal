@@ -76,6 +76,7 @@ library
     Plutarch.BLS
     Plutarch.Builtin
     Plutarch.Builtin.Bool
+    Plutarch.Builtin.Integer
     Plutarch.ByteString
     Plutarch.Convert
     Plutarch.Crypto
@@ -89,7 +90,6 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.FFI
-    Plutarch.Integer
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
