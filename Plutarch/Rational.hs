@@ -20,7 +20,7 @@ import Plutarch.Builtin (
   pdata,
   ppairDataBuiltin,
  )
-import Plutarch.Builtin.Bool (pif)
+import Plutarch.Builtin.Bool (pcond, pif)
 import Plutarch.Integer (PInteger, PIntegral (pquot), pdiv, pmod)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
@@ -153,14 +153,22 @@ instance Fractional (Term s PRational) where
     where
       inner :: forall (s :: S). Term s (PRational :--> PRational)
       inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
-        pif
-          (xn #== 0)
-          (ptraceInfoError "attempted to construct the reciprocal of zero")
-          ( pif
-              (xn #< 0)
-              (pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
-              (pcon $ PRational (pto xd) (punsafeCoerce xn))
-          )
+        pcond
+          [ (xn #== 0, ptraceInfoError "attempted to construct the reciprocal of zero")
+          , (xn #< 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+          ]
+          (pcon $ PRational (pto xd) (punsafeCoerce xn))
+
+  {-
+  pif
+    (xn #== 0)
+    (ptraceInfoError "attempted to construct the reciprocal of zero")
+    ( pif
+        (xn #< 0)
+        (pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+        (pcon $ PRational (pto xd) (punsafeCoerce xn))
+    )
+  -}
   {-# INLINEABLE fromRational #-}
   fromRational = pconstant . PlutusTx.fromGHC
 

@@ -52,7 +52,6 @@ module Plutarch.Prelude (
   (#&&),
   (#||),
   pcond,
-  potherwise,
 
   -- * Bytestrings and bytestring utilities
 
@@ -229,7 +228,6 @@ import Plutarch.Builtin.Bool (
   pif,
   pif',
   pnot,
-  potherwise,
   (#&&),
   (#||),
  )

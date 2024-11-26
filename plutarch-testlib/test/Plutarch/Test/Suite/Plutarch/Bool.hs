@@ -1,6 +1,5 @@
 module Plutarch.Test.Suite.Plutarch.Bool (tests) where
 
-import Data.List.NonEmpty (NonEmpty ((:|)))
 import Plutarch.Builtin.Bool (pand, por)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
@@ -63,11 +62,11 @@ tests =
         , goldenGroup
             "pcond"
             [ goldenEval "direct-1" (pconstant @PInteger 1)
-            , goldenEval "pcond-1" (pcond $ (potherwise, pconstant @PInteger 1) :| [])
+            , goldenEval "pcond-1" (pcond [] (pconstant @PInteger 1))
             , goldenEval "direct-2" (pif (pconstant @PInteger 1 #< 2) (pconstant @PInteger 1) (pconstant 2))
-            , goldenEval "pcond-2" (pcond $ (pconstant @PInteger 1 #< 2, pconstant @PInteger 1) :| [(potherwise, 2)])
+            , goldenEval "pcond-2" (pcond [(pconstant @PInteger 1 #< 2, pconstant @PInteger 1)] 2)
             , goldenEval "direct-3" (pif (pconstant @PInteger 1 #< 2) (pconstant @PInteger 1) (pif (pconstant @PInteger 2 #< 3) 2 3))
-            , goldenEval "pcond-3" (pcond $ (pconstant @PInteger 1 #< 2, pconstant @PInteger 1) :| [(pconstant @PInteger 2 #< 3, 2), (potherwise, 3)])
+            , goldenEval "pcond-3" (pcond [(pconstant @PInteger 1 #< 2, pconstant @PInteger 1), (pconstant @PInteger 2 #< 3, 2)] 3)
             ]
         ]
     ]
