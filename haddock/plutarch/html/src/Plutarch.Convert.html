@@ -41,10 +41,10 @@ for more details on this.
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-44"></span><span class="hs-keyword">newtype</span><span> </span><span id="PEndianness"><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-var">PEndianness</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557568"><span class="annot"><a href="#local-6989586621679557568"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PEndianness"><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-var">PEndianness</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557568"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span class="hs-keyword">newtype</span><span> </span><span id="PEndianness"><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-var">PEndianness</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557306"><span class="annot"><a href="#local-6989586621679557306"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PEndianness"><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-var">PEndianness</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557306"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-46"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-47"></span><span>      </span><span id="local-6989586621679557623"><span id="local-6989586621679557625"><span class="annot"><span class="annottext">(forall x. PEndianness s -&gt; Rep (PEndianness s) x)
+</span><span id="line-47"></span><span>      </span><span id="local-6989586621679557361"><span id="local-6989586621679557363"><span class="annot"><span class="annottext">(forall x. PEndianness s -&gt; Rep (PEndianness s) x)
 -&gt; (forall x. Rep (PEndianness s) x -&gt; PEndianness s)
 -&gt; Generic (PEndianness s)
 forall x. Rep (PEndianness s) x -&gt; PEndianness s
@@ -61,7 +61,7 @@ to :: forall x. Rep (PEndianness s) x -&gt; PEndianness s
 </span><span id="line-48"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-49"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
 </span><span id="line-50"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-51"></span><span>      </span><span id="local-6989586621679557629"><span id="local-6989586621679557635"><span class="annot"><span class="annottext">(forall (s :: S). PEndianness s -&gt; Term s (PInner PEndianness))
+</span><span id="line-51"></span><span>      </span><span id="local-6989586621679557367"><span id="local-6989586621679557373"><span class="annot"><span class="annottext">(forall (s :: S). PEndianness s -&gt; Term s (PInner PEndianness))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PEndianness)
     -&gt; (PEndianness s -&gt; Term s b) -&gt; Term s b)
@@ -85,7 +85,7 @@ Term s (PInner PEndianness)
 -&gt; (PEndianness s -&gt; Term s b) -&gt; Term s b
 </span><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span>
 </span><span id="line-52"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-53"></span><span>      </span><span id="local-6989586621679557640"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-53"></span><span>      </span><span id="local-6989586621679557378"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PBool)
 -&gt; PEq PEndianness
 forall (s :: S).
@@ -98,7 +98,7 @@ Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PBool
 Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PBool
 </span><a href="Plutarch.Internal.Eq.html#PEq"><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></a></span></span><span>
 </span><span id="line-54"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-55"></span><span>      </span><span id="local-6989586621679557660"><span id="local-6989586621679557666"><span id="local-6989586621679557671"><span id="local-6989586621679557674"><span class="annot"><span class="annottext">PEq PEndianness
+</span><span id="line-55"></span><span>      </span><span id="local-6989586621679557398"><span id="local-6989586621679557404"><span id="local-6989586621679557409"><span id="local-6989586621679557412"><span class="annot"><span class="annottext">PEq PEndianness
 PEq PEndianness =&gt;
 (forall (s :: S).
  Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PBool)
@@ -136,7 +136,7 @@ Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PBool
 Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PBool
 </span><a href="Plutarch.Internal.Ord.html#PPartialOrd"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PPartialOrd</span></a></span></span></span></span></span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-57"></span><span>      </span><span id="local-6989586621679557681"><span id="local-6989586621679557685"><span class="annot"><span class="annottext">PPartialOrd PEndianness
+</span><span id="line-57"></span><span>      </span><span id="local-6989586621679557419"><span id="local-6989586621679557423"><span class="annot"><span class="annottext">PPartialOrd PEndianness
 PPartialOrd PEndianness =&gt;
 (forall (s :: S).
  Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PEndianness)
@@ -168,7 +168,7 @@ Term s PEndianness -&gt; Term s PEndianness -&gt; Term s PEndianness
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-68"></span><span class="annot"><a href="Plutarch.Convert.html#pmostSignificantFirst"><span class="hs-identifier hs-type">pmostSignificantFirst</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557561"><span class="annot"><a href="#local-6989586621679557561"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557561"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Plutarch.Convert.html#pmostSignificantFirst"><span class="hs-identifier hs-type">pmostSignificantFirst</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557299"><span class="annot"><a href="#local-6989586621679557299"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557299"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span>
 </span><span id="line-69"></span><span id="pmostSignificantFirst"><span class="annot"><span class="annottext">pmostSignificantFirst :: forall (s :: S). Term s PEndianness
 </span><a href="Plutarch.Convert.html#pmostSignificantFirst"><span class="hs-identifier hs-var hs-var">pmostSignificantFirst</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PEndianness s -&gt; Term s PEndianness
 forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
@@ -192,7 +192,7 @@ forall (s :: S). PBool s
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-75"></span><span class="annot"><a href="Plutarch.Convert.html#pmostSignificantLast"><span class="hs-identifier hs-type">pmostSignificantLast</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557710"><span class="annot"><a href="#local-6989586621679557710"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557710"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span>
+</span><span id="line-75"></span><span class="annot"><a href="Plutarch.Convert.html#pmostSignificantLast"><span class="hs-identifier hs-type">pmostSignificantLast</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557448"><span class="annot"><a href="#local-6989586621679557448"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557448"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span>
 </span><span id="line-76"></span><span id="pmostSignificantLast"><span class="annot"><span class="annottext">pmostSignificantLast :: forall (s :: S). Term s PEndianness
 </span><a href="Plutarch.Convert.html#pmostSignificantLast"><span class="hs-identifier hs-var hs-var">pmostSignificantLast</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PEndianness s -&gt; Term s PEndianness
 forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
@@ -218,13 +218,13 @@ forall (s :: S). PBool s
 @since WIP
 -}</span></span><span>
 </span><span id="line-83"></span><span class="annot"><a href="Plutarch.Convert.html#pbyteStringToInteger"><span class="hs-identifier hs-type">pbyteStringToInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span>
-</span><span id="line-84"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557574"><span class="annot"><a href="#local-6989586621679557574"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
-</span><span id="line-85"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557574"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-86"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557574"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557312"><span class="annot"><a href="#local-6989586621679557312"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-85"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557312"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-86"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557312"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-87"></span><span id="pbyteStringToInteger"><span class="annot"><span class="annottext">pbyteStringToInteger :: forall (s :: S).
 Term s PEndianness -&gt; Term s (PByteString :--&gt; PInteger)
-</span><a href="Plutarch.Convert.html#pbyteStringToInteger"><span class="hs-identifier hs-var hs-var">pbyteStringToInteger</span></a></span></span><span> </span><span id="local-6989586621679557718"><span class="annot"><span class="annottext">Term s PEndianness
-</span><a href="#local-6989586621679557718"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PByteString -&gt; Term s PInteger)
+</span><a href="Plutarch.Convert.html#pbyteStringToInteger"><span class="hs-identifier hs-var hs-var">pbyteStringToInteger</span></a></span></span><span> </span><span id="local-6989586621679557456"><span class="annot"><span class="annottext">Term s PEndianness
+</span><a href="#local-6989586621679557456"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PByteString -&gt; Term s PInteger)
 -&gt; Term s (PByteString :--&gt; PInteger)
 forall a (b :: PType) (s :: S) (c :: PType).
 (PLamN a b s, HasCallStack) =&gt;
@@ -237,8 +237,8 @@ HasCallStack =&gt;
 -&gt; (Term s PByteString -&gt; Term s PInteger)
 -&gt; Term s (PByteString :--&gt; PInteger)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679557719"><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679557719"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679557457"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679557457"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-88"></span><span>  </span><span class="annot"><span class="annottext">DefaultFun
 -&gt; Term s (PInner PEndianness :--&gt; (PByteString :--&gt; PInteger))
 forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
@@ -251,12 +251,12 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PEndianness -&gt; Term s (PInner PEndianness)
 forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PEndianness
-</span><a href="#local-6989586621679557718"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
+</span><a href="#local-6989586621679557456"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
 -&gt; Term s PByteString -&gt; Term s PInteger
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679557719"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621679557457"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-89"></span><span>
 </span><span id="line-90"></span><span class="annot"><span class="hs-comment">{- | Convert a (non-negative) 'PInteger' into a 'PByteString'. This will produce
 a result of the minimal size required: if you want to specify a size, use
@@ -269,13 +269,13 @@ This conversion is unsafe, as it will error when given a non-negative
 integer.
 -}</span></span><span>
 </span><span id="line-100"></span><span class="annot"><a href="Plutarch.Convert.html#pintegerToByteString"><span class="hs-identifier hs-type">pintegerToByteString</span></a></span><span> </span><span class="hs-glyph">::</span><span>
-</span><span id="line-101"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557596"><span class="annot"><a href="#local-6989586621679557596"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
-</span><span id="line-102"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557596"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-103"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557596"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557334"><span class="annot"><a href="#local-6989586621679557334"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-102"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557334"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-103"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557334"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-104"></span><span id="pintegerToByteString"><span class="annot"><span class="annottext">pintegerToByteString :: forall (s :: S).
 Term s PEndianness -&gt; Term s (PInteger :--&gt; PByteString)
-</span><a href="Plutarch.Convert.html#pintegerToByteString"><span class="hs-identifier hs-var hs-var">pintegerToByteString</span></a></span></span><span> </span><span id="local-6989586621679557729"><span class="annot"><span class="annottext">Term s PEndianness
-</span><a href="#local-6989586621679557729"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PInteger -&gt; Term s PByteString)
+</span><a href="Plutarch.Convert.html#pintegerToByteString"><span class="hs-identifier hs-var hs-var">pintegerToByteString</span></a></span></span><span> </span><span id="local-6989586621679557467"><span class="annot"><span class="annottext">Term s PEndianness
+</span><a href="#local-6989586621679557467"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PInteger -&gt; Term s PByteString)
 -&gt; Term s (PInteger :--&gt; PByteString)
 forall a (b :: PType) (s :: S) (c :: PType).
 (PLamN a b s, HasCallStack) =&gt;
@@ -288,8 +288,8 @@ HasCallStack =&gt;
 -&gt; (Term s PInteger -&gt; Term s PByteString)
 -&gt; Term s (PInteger :--&gt; PByteString)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679557730"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679557730"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679557468"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679557468"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-105"></span><span>  </span><span class="annot"><span class="annottext">DefaultFun
 -&gt; Term
      s
@@ -308,17 +308,17 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PEndianness -&gt; Term s (PInner PEndianness)
 forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PEndianness
-</span><a href="#local-6989586621679557729"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; (PInteger :--&gt; PByteString))
+</span><a href="#local-6989586621679557467"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; (PInteger :--&gt; PByteString))
 -&gt; Term s PInteger -&gt; Term s (PInteger :--&gt; PByteString)
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557596"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PByteString)
+</span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557334"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PByteString)
 -&gt; Term s PInteger -&gt; Term s PByteString
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679557730"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621679557468"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-106"></span><span>
 </span><span id="line-107"></span><span class="annot"><span class="hs-comment">{- | As 'pintegerToByteString', but allows specifying a required size. If
 a size larger than the minimum is specified, the result will be padded with zero
@@ -334,14 +334,14 @@ requested size is too large (currently 8192 is the limit) or too small to fit
 the specified 'PInteger'.
 -}</span></span><span>
 </span><span id="line-120"></span><span class="annot"><a href="Plutarch.Convert.html#pintegerToByteStringSized"><span class="hs-identifier hs-type">pintegerToByteStringSized</span></a></span><span> </span><span class="hs-glyph">::</span><span>
-</span><span id="line-121"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557601"><span class="annot"><a href="#local-6989586621679557601"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
-</span><span id="line-122"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557601"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-123"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557601"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Positive.html#PPositive"><span class="hs-identifier hs-type">PPositive</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-121"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679557339"><span class="annot"><a href="#local-6989586621679557339"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-122"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557339"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Convert.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-123"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679557339"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Positive.html#PPositive"><span class="hs-identifier hs-type">PPositive</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-124"></span><span id="pintegerToByteStringSized"><span class="annot"><span class="annottext">pintegerToByteStringSized :: forall (s :: S).
 Term s PEndianness
 -&gt; Term s (PPositive :--&gt; (PInteger :--&gt; PByteString))
-</span><a href="Plutarch.Convert.html#pintegerToByteStringSized"><span class="hs-identifier hs-var hs-var">pintegerToByteStringSized</span></a></span></span><span> </span><span id="local-6989586621679557739"><span class="annot"><span class="annottext">Term s PEndianness
-</span><a href="#local-6989586621679557739"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PPositive -&gt; Term s PInteger -&gt; Term s PByteString)
+</span><a href="Plutarch.Convert.html#pintegerToByteStringSized"><span class="hs-identifier hs-var hs-var">pintegerToByteStringSized</span></a></span></span><span> </span><span id="local-6989586621679557477"><span class="annot"><span class="annottext">Term s PEndianness
+</span><a href="#local-6989586621679557477"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PPositive -&gt; Term s PInteger -&gt; Term s PByteString)
 -&gt; Term s (PPositive :--&gt; (PInteger :--&gt; PByteString))
 forall a (b :: PType) (s :: S) (c :: PType).
 (PLamN a b s, HasCallStack) =&gt;
@@ -350,9 +350,9 @@ forall (c :: PType).
 HasCallStack =&gt;
 (Term s c -&gt; Term s PInteger -&gt; Term s PByteString)
 -&gt; Term s (c :--&gt; (PInteger :--&gt; PByteString))
-</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679557740"><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679557740"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span id="local-6989586621679557741"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679557741"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679557478"><span class="annot"><span class="annottext">Term s PPositive
+</span><a href="#local-6989586621679557478"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span id="local-6989586621679557479"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679557479"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-125"></span><span>  </span><span class="annot"><span class="annottext">DefaultFun
 -&gt; Term
      s
@@ -371,17 +371,17 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PEndianness -&gt; Term s (PInner PEndianness)
 forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PEndianness
-</span><a href="#local-6989586621679557739"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInner PPositive :--&gt; (PInteger :--&gt; PByteString))
+</span><a href="#local-6989586621679557477"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInner PPositive :--&gt; (PInteger :--&gt; PByteString))
 -&gt; Term s (PInner PPositive) -&gt; Term s (PInteger :--&gt; PByteString)
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive -&gt; Term s (PInner PPositive)
 forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679557740"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PByteString)
+</span><a href="#local-6989586621679557478"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PByteString)
 -&gt; Term s PInteger -&gt; Term s PByteString
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679557741"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621679557479"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-126"></span></pre></body></html>
