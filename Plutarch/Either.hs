@@ -103,8 +103,8 @@ instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   toPlutarchRepr = toPlutarchReprClosed
 
   {-# INLINEABLE toPlutarch #-}
-  toPlutarch (Left a) = mkPLifted $ plam (pcon . PLeft) # pconstant @a a
-  toPlutarch (Right b) = mkPLifted $ plam (pcon . PRight) # pconstant @b b
+  toPlutarch (Left a) = mkPLifted $ pcon $ PLeft $ pconstant @a a
+  toPlutarch (Right b) = mkPLifted $ pcon $ PRight $ pconstant @b b
 
   {-# INLINEABLE fromPlutarchRepr #-}
   fromPlutarchRepr = fromPlutarchReprClosed

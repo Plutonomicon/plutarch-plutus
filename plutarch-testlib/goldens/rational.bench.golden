@@ -1,26 +1,26 @@
-literal {"exBudgetCPU":112100,"exBudgetMemory":800,"scriptSizeBytes":17}
-ops.+ {"exBudgetCPU":18964237,"exBudgetMemory":81693,"scriptSizeBytes":391}
-ops.- {"exBudgetCPU":18964237,"exBudgetMemory":81693,"scriptSizeBytes":391}
-ops.* {"exBudgetCPU":32279794,"exBudgetMemory":137461,"scriptSizeBytes":449}
-ops.harmonic-sum {"exBudgetCPU":47474585,"exBudgetMemory":201135,"scriptSizeBytes":453}
-ops.multi-product {"exBudgetCPU":53618307,"exBudgetMemory":229563,"scriptSizeBytes":475}
-ops.abs {"exBudgetCPU":7292301,"exBudgetMemory":31237,"scriptSizeBytes":304}
-ops.signum {"exBudgetCPU":7400928,"exBudgetMemory":31737,"scriptSizeBytes":352}
-compare {"exBudgetCPU":15551718,"exBudgetMemory":67773,"scriptSizeBytes":375}
-round.5/3 {"exBudgetCPU":9649272,"exBudgetMemory":39247,"scriptSizeBytes":384}
-round.4/3 {"exBudgetCPU":8892960,"exBudgetMemory":36144,"scriptSizeBytes":384}
-round.-5/2 {"exBudgetCPU":9309141,"exBudgetMemory":37247,"scriptSizeBytes":384}
-round.-1/4 {"exBudgetCPU":8866168,"exBudgetMemory":35346,"scriptSizeBytes":384}
-truncate.5/4 {"exBudgetCPU":7314241,"exBudgetMemory":30935,"scriptSizeBytes":294}
-truncate.7/4 {"exBudgetCPU":8070553,"exBudgetMemory":34038,"scriptSizeBytes":294}
-truncate.1/4 {"exBudgetCPU":6557929,"exBudgetMemory":27832,"scriptSizeBytes":294}
-truncate.-7/4 {"exBudgetCPU":8283761,"exBudgetMemory":34740,"scriptSizeBytes":294}
-properFraction.-1/2 {"exBudgetCPU":21314412,"exBudgetMemory":91407,"scriptSizeBytes":450}
-properFraction.-3/2 {"exBudgetCPU":22070724,"exBudgetMemory":94510,"scriptSizeBytes":450}
-properFraction.-4/3 {"exBudgetCPU":22070724,"exBudgetMemory":94510,"scriptSizeBytes":450}
-data.id.0.5 {"exBudgetCPU":112100,"exBudgetMemory":800,"scriptSizeBytes":17}
-data.id.2 {"exBudgetCPU":112100,"exBudgetMemory":800,"scriptSizeBytes":17}
-data.id.11/3 {"exBudgetCPU":7778623,"exBudgetMemory":33037,"scriptSizeBytes":289}
-div by 0.1/0 {"exBudgetCPU":278933,"exBudgetMemory":136,"scriptSizeBytes":289}
-div by 0.recip 0 {"exBudgetCPU":187980,"exBudgetMemory":134,"scriptSizeBytes":128}
-div by 0.1/(1-1) {"exBudgetCPU":5154960,"exBudgetMemory":20164,"scriptSizeBytes":368}
+literal {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":12}
+ops.+ {"exBudgetCPU":17724955,"exBudgetMemory":73893,"scriptSizeBytes":353}
+ops.- {"exBudgetCPU":17724955,"exBudgetMemory":73893,"scriptSizeBytes":353}
+ops.* {"exBudgetCPU":30342324,"exBudgetMemory":125261,"scriptSizeBytes":401}
+ops.harmonic-sum {"exBudgetCPU":44838927,"exBudgetMemory":184535,"scriptSizeBytes":395}
+ops.multi-product {"exBudgetCPU":50284461,"exBudgetMemory":208563,"scriptSizeBytes":407}
+ops.abs {"exBudgetCPU":7039207,"exBudgetMemory":29637,"scriptSizeBytes":291}
+ops.signum {"exBudgetCPU":7051834,"exBudgetMemory":29537,"scriptSizeBytes":324}
+compare {"exBudgetCPU":14565530,"exBudgetMemory":61573,"scriptSizeBytes":337}
+round.5/3 {"exBudgetCPU":9396178,"exBudgetMemory":37647,"scriptSizeBytes":371}
+round.4/3 {"exBudgetCPU":8639866,"exBudgetMemory":34544,"scriptSizeBytes":371}
+round.-5/2 {"exBudgetCPU":9056047,"exBudgetMemory":35647,"scriptSizeBytes":371}
+round.-1/4 {"exBudgetCPU":8613074,"exBudgetMemory":33746,"scriptSizeBytes":371}
+truncate.5/4 {"exBudgetCPU":7061147,"exBudgetMemory":29335,"scriptSizeBytes":281}
+truncate.7/4 {"exBudgetCPU":7817459,"exBudgetMemory":32438,"scriptSizeBytes":281}
+truncate.1/4 {"exBudgetCPU":6304835,"exBudgetMemory":26232,"scriptSizeBytes":281}
+truncate.-7/4 {"exBudgetCPU":8030667,"exBudgetMemory":33140,"scriptSizeBytes":281}
+properFraction.-1/2 {"exBudgetCPU":20027130,"exBudgetMemory":83307,"scriptSizeBytes":409}
+properFraction.-3/2 {"exBudgetCPU":20783442,"exBudgetMemory":86410,"scriptSizeBytes":409}
+properFraction.-4/3 {"exBudgetCPU":20783442,"exBudgetMemory":86410,"scriptSizeBytes":409}
+data.id.0.5 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":12}
+data.id.2 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":12}
+data.id.11/3 {"exBudgetCPU":7525529,"exBudgetMemory":31437,"scriptSizeBytes":276}
+div by 0.1/0 {"exBudgetCPU":278933,"exBudgetMemory":136,"scriptSizeBytes":276}
+div by 0.recip 0 {"exBudgetCPU":187980,"exBudgetMemory":134,"scriptSizeBytes":123}
+div by 0.1/(1-1) {"exBudgetCPU":5157866,"exBudgetMemory":20164,"scriptSizeBytes":335}

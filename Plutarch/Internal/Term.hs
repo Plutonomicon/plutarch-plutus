@@ -638,14 +638,8 @@ punsafeConstant = punsafeConstantInternal
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
 punsafeConstantInternal c = Term \_ ->
-  pure $ case c of
-    -- These constants are smaller than variable references.
-    Some (ValueOf PLC.DefaultUniBool _) -> mkTermRes $ RConstant c
-    Some (ValueOf PLC.DefaultUniUnit _) -> mkTermRes $ RConstant c
-    Some (ValueOf PLC.DefaultUniInteger n) | n < 256 -> mkTermRes $ RConstant c
-    _ ->
-      let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
-       in TermResult (RHoisted hoisted) [hoisted]
+  let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
+   in pure $ TermResult (RHoisted hoisted) [hoisted]
 
 asClosedRawTerm :: ClosedTerm a -> TermMonad TermResult
 asClosedRawTerm t = asRawTerm t 0
@@ -700,6 +694,13 @@ rawTermToUPLC _ _ RError = UPLC.Error ()
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
+smallEnoughToInline :: RawTerm -> Bool
+smallEnoughToInline = \case
+  RConstant (Some (ValueOf PLC.DefaultUniBool _)) -> True
+  RConstant (Some (ValueOf PLC.DefaultUniUnit _)) -> True
+  RConstant (Some (ValueOf PLC.DefaultUniInteger n)) | n < 256 -> True
+  _ -> False
+
 -- The logic is mostly for hoisting
 compile' :: TermResult -> UTerm
 compile' t =
@@ -718,12 +719,15 @@ compile' t =
         (True, m) -> (m, (n, term) : defs, n + 1)
         (False, m) -> (m, defs, n)
 
+      hoistedTermRaw :: HoistedTerm -> RawTerm
+      hoistedTermRaw (HoistedTerm _ t) = t
+
       toInline :: S.Set Dig
       toInline =
         S.fromList
           . fmap (\(HoistedTerm hash _) -> hash)
           . (head <$>)
-          . filter ((== 1) . length)
+          . filter (\terms -> length terms == 1 || smallEnoughToInline (hoistedTermRaw $ head terms))
           . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y)
           . sortOn (\(HoistedTerm hash _) -> hash)
           $ deps
