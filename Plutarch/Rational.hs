@@ -46,8 +46,7 @@ import Plutarch.Internal.Numeric (
   pquot,
  )
 import Plutarch.Internal.Ord (
-  POrd (pmax, pmin),
-  PPartialOrd ((#<), (#<=)),
+  POrd (pmax, pmin, (#<), (#<=)),
  )
 import Plutarch.Internal.Other (pfix, pto)
 import Plutarch.Internal.PLam (plam)
@@ -187,7 +186,8 @@ instance PTryFrom PData (PAsData PRational) where
     res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
 
-instance PPartialOrd PRational where
+instance POrd PRational where
+  {-# INLINEABLE (#<=) #-}
   l' #<= r' =
     phoistAcyclic
       ( plam $ \l r -> unTermCont $ do
@@ -197,7 +197,7 @@ instance PPartialOrd PRational where
       )
       # l'
       # r'
-
+  {-# INLINEABLE (#<) #-}
   l' #< r' =
     phoistAcyclic
       ( plam $ \l r -> unTermCont $ do
@@ -207,8 +207,6 @@ instance PPartialOrd PRational where
       )
       # l'
       # r'
-
-instance POrd PRational
 
 instance PNum PRational where
   {-# INLINEABLE (#+) #-}

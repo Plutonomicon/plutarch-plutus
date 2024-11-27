@@ -1053,7 +1053,7 @@ pkeys = phoistAcyclic $
 -}
 pkvPairLt ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  (PIsData k, PPartialOrd k) =>
+  (PIsData k, POrd k) =>
   Term
     s
     ( PBuiltinPair (PAsData k) (PAsData v)

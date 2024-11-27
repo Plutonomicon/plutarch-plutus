@@ -43,8 +43,7 @@ module Plutarch.Prelude (
 
   -- * Booleans and boolean functions
   PBool (..),
-  PEq ((#==)),
-  PPartialOrd (..),
+  PEq (..),
   POrd (..),
   pif,
   pif',
@@ -279,8 +278,7 @@ import Plutarch.Internal.Lift (
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (PIntegral (pdiv, pmod, pquot, prem))
 import Plutarch.Internal.Ord (
-  POrd (pmax, pmin),
-  PPartialOrd ((#<), (#<=), (#>), (#>=)),
+  POrd (pmax, pmin, (#<), (#<=), (#>), (#>=)),
  )
 import Plutarch.Internal.Other (POpaque (POpaque), pfix, popaque, pto)
 import Plutarch.Internal.PLam (pinl, plam)

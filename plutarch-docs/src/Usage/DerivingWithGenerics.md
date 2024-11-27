@@ -33,7 +33,7 @@ Currently, generic deriving supports the following typeclasses:
 
 - [`PlutusType`](./../Typeclasses/PlutusType,PCon,PMatch.md#implementing-plutustype-for-your-own-types-scott-encoding) (Scott encoding only)
 - [`PEq`](./../Typeclasses/PEqAndPOrd.md)
-- [`POrd`/ `PPartialOrd`](./../Typeclasses/PEqAndPOrd.md)
+- [`POrd`](./../Typeclasses/PEqAndPOrd.md)
 - [`PTryFrom`](./../Typeclasses/PTryFrom.md)
 - `PShow`
 - `PIsData`

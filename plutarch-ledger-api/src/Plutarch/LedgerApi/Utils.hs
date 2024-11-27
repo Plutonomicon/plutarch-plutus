@@ -132,7 +132,7 @@ instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
 instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
 
 -- | @since 2.0.0
-instance (PIsData a, PPartialOrd a) => PPartialOrd (PMaybeData a) where
+instance (PIsData a, POrd a) => POrd (PMaybeData a) where
   {-# INLINEABLE (#<=) #-}
   t1 #<= t2 = pmatch t1 $ \case
     PDNothing -> pcon PTrue
@@ -147,9 +147,14 @@ instance (PIsData a, PPartialOrd a) => PPartialOrd (PMaybeData a) where
     PDJust t1' -> pmatch t2 $ \case
       PDNothing -> pcon PFalse
       PDJust t2' -> pfromData t1' #< pfromData t2'
-
--- | @since 2.0.0
-instance (PIsData a, PPartialOrd a) => POrd (PMaybeData a) where
+  {-# INLINEABLE (#>=) #-}
+  t1 #>= t2 = pmatch t1 $ \case
+    PDNothing -> pmatch t2 $ \case
+      PDNothing -> pcon PTrue
+      PDJust _ -> pcon PFalse
+    PDJust t1' -> pmatch t2 $ \case
+      PDNothing -> pcon PTrue
+      PDJust t2' -> pfromData t1' #>= pfromData t2'
   {-# INLINEABLE pmin #-}
   pmin t1 t2 = pmatch t1 $ \case
     PDNothing -> t1
@@ -170,15 +175,6 @@ instance (PIsData a, PPartialOrd a) => POrd (PMaybeData a) where
           (pfromData t1' #< pfromData t2')
           t2
           t1
-
-{-
-instance (PIsData a, POrd a) => PPartialOrd (PMaybeData a) where
-  x #< y = pmaybeLT False (#<) # x # y
-  x #<= y = pmaybeLT True (#<=) # x # y
-
--- | @since 2.0.0
-instance (PIsData a, POrd a) => POrd (PMaybeData a)
--}
 
 {- | A Rational type that corresponds to the data encoding used by 'Plutus.Rational'.
 
@@ -212,12 +208,13 @@ newtype PRationalData s
     )
 
 -- | @since 3.1.0
-instance PPartialOrd PRationalData where
+instance POrd PRationalData where
+  {-# INLINEABLE (#<=) #-}
   (#<=) = liftCompareOp (#<=)
+  {-# INLINEABLE (#<) #-}
   (#<) = liftCompareOp (#<)
-
--- | @since 3.1.0
-instance POrd PRationalData
+  {-# INLINEABLE (#>=) #-}
+  (#>=) = liftCompareOp (#>=)
 
 -- | @since 3.1.0
 instance DerivePlutusType PRationalData where

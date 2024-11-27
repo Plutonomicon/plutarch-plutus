@@ -56,7 +56,7 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric ()
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
 import Plutarch.Internal.Other (POpaque, pfix)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -95,11 +95,12 @@ deriving via
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
 
-instance PPartialOrd PByteString where
+-- | @since WIP
+instance POrd PByteString where
+  {-# INLINEABLE (#<=) #-}
   x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
+  {-# INLINEABLE (#<) #-}
   x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
-
-instance POrd PByteString
 
 instance Semigroup (Term s PByteString) where
   x <> y = punsafeBuiltin PLC.AppendByteString # x # y
@@ -155,14 +156,11 @@ instance PEq PByte where
   x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
 
 -- | @since WIP
-instance PPartialOrd PByte where
+instance POrd PByte where
   {-# INLINEABLE (#<=) #-}
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
   {-# INLINEABLE (#<) #-}
   x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
-
--- | @since WIP
-instance POrd PByte
 
 {- | Type designating whether logical operations should use padding or
 truncation semantics. See
@@ -181,8 +179,6 @@ newtype PLogicOpSemantics (s :: S) = PLogicOpSemantics (Term s PBool)
       PlutusType
     , -- | @since WIP
       PEq
-    , -- | @since WIP
-      PPartialOrd
     , -- | @since WIP
       POrd
     )

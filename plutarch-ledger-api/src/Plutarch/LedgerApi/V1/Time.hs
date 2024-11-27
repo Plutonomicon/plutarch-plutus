@@ -40,8 +40,6 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s (PDataNewtype PInteger))
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow

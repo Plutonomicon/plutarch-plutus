@@ -82,7 +82,7 @@ import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=), (#>=)))
 import Plutarch.Internal.Other (POpaque, popaque, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -172,11 +172,17 @@ instance PEq (PDataRecord xs) where
 
 -- Lexicographic ordering based 'Ord' instances for 'PDataRecord'.
 
-instance PPartialOrd (PDataRecord '[]) where
+instance POrd (PDataRecord '[]) where
+  {-# INLINEABLE (#<=) #-}
   _ #<= _ = pconstant True
+  {-# INLINEABLE (#<) #-}
   _ #< _ = pconstant False
-
-instance POrd (PDataRecord '[])
+  {-# INLINEABLE (#>=) #-}
+  (#>=) = (#<=)
+  {-# INLINEABLE pmin #-}
+  pmin t _ = t
+  {-# INLINEABLE pmax #-}
+  pmax = pmin
 
 instance PShow (PDataRecord '[]) where
   pshow' _ _ = "[]"
@@ -224,46 +230,36 @@ instance
         showWithLabel (Proxy @label) b y
           <> pshow' b (pcon $ PDataRecordShowHelper ys)
 
-instance (POrd x, PIsData x) => PPartialOrd (PDataRecord '[label ':= x]) where
+instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x]) where
+  {-# INLINEABLE (#<) #-}
   l1 #< l2 = unTermCont $ do
     PDCons x _ <- tcont $ pmatch l1
     PDCons y _ <- tcont $ pmatch l2
-
     pure $ pfromData x #< pfromData y
-
+  {-# INLINEABLE (#<=) #-}
   l1 #<= l2 = unTermCont $ do
     PDCons x _ <- tcont $ pmatch l1
     PDCons y _ <- tcont $ pmatch l2
-
     pure $ pfromData x #<= pfromData y
-
-instance (POrd x, PIsData x) => POrd (PDataRecord '[label ':= x])
-
-instance
-  (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) =>
-  PPartialOrd (PDataRecord ((label ':= x) ': x' ': xs))
-  where
-  l1 #< l2 = unTermCont $ do
-    PDCons x xs <- tcont $ pmatch l1
-    PDCons y ys <- tcont $ pmatch l2
-
-    a <- tcont . plet $ pfromData x
-    b <- tcont . plet $ pfromData y
-
-    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #< ys) $ pconstant False
-
-  l1 #<= l2 = unTermCont $ do
-    PDCons x xs <- tcont $ pmatch l1
-    PDCons y ys <- tcont $ pmatch l2
-
-    a <- tcont . plet $ pfromData x
-    b <- tcont . plet $ pfromData y
-
-    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #<= ys) $ pconstant False
 
 instance
   (SListI xs, POrd x, PIsData x, POrd (PDataRecord (x' ': xs))) =>
   POrd (PDataRecord ((label ':= x) ': x' ': xs))
+  where
+  {-# INLINEABLE (#<) #-}
+  l1 #< l2 = unTermCont $ do
+    PDCons x xs <- tcont $ pmatch l1
+    PDCons y ys <- tcont $ pmatch l2
+    a <- tcont . plet $ pfromData x
+    b <- tcont . plet $ pfromData y
+    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #< ys) $ pconstant False
+  {-# INLINEABLE (#<=) #-}
+  l1 #<= l2 = unTermCont $ do
+    PDCons x xs <- tcont $ pmatch l1
+    PDCons y ys <- tcont $ pmatch l2
+    a <- tcont . plet $ pfromData x
+    b <- tcont . plet $ pfromData y
+    pure $ pif (a #< b) (pconstant True) $ pif (a #== b) (xs #<= ys) $ pconstant False
 
 {- | Cons a field to a data record.
 
@@ -385,17 +381,17 @@ instance PIsData (PDataSum defs) where
 instance PEq (PDataSum defs) where
   x #== y = pdata x #== pdata y
 
-instance All (Compose POrd PDataRecord) defs => PPartialOrd (PDataSum defs) where
+instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs) where
+  {-# INLINEABLE (#<) #-}
   x' #< y' = f # x' # y'
     where
       f :: Term s (PDataSum defs :--> PDataSum defs :--> PBool)
       f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTHandler
+  {-# INLINEABLE (#<=) #-}
   x' #<= y' = f # x' # y'
     where
       f :: Term s (PDataSum defs :--> PDataSum defs :--> PBool)
       f = phoistAcyclic $ plam $ \x y -> pmatchLT x y mkLTEHandler
-
-instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs)
 
 -- | If there is only a single variant, then we can safely extract it.
 punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)

@@ -57,6 +57,7 @@
 * `Plutarch.Num` is now `Plutarch.Internal.Numeric`
 * `PIntegral` type class is now in `Plutarch.Internal.Numeric`
 * `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
+* `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
 
 ## Removed
 
@@ -72,6 +73,7 @@
 * `PSBool` and functionality (now in `plutarch-ledger-api`)
 * `PFractional` type class (only one instance, unlikely to ever have more)
 * `PIsData PRational` instance (made no sense)
+* `PPartialOrd` (all its functionality is now in `POrd`)
 
 ### Fixed
 

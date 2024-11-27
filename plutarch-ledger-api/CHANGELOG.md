@@ -17,6 +17,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `pmaybeDataToMaybe` to `Plutarch.LedgerApi.Utils`
 * `PSBool` and functionality, originally from Plutarch, now in
   `Plutarch.LedgerApi.Utils`
+* `POrd` instance for `PLovelace`
+* `pltPositive`, `pltNonZero`, `pleqPositive`, `pleqNonZero` to replace the old
+  `PPartialOrd` instances for `PValue`
 
 ### Changed
 

@@ -46,6 +46,10 @@ module Plutarch.LedgerApi.Value (
   pnoAdaValue,
 
   -- ** Partial ordering
+  pltPositive,
+  pltNonZero,
+  pleqPositive,
+  pleqNonZero,
   pcheckBinRel,
 
   -- ** Combination
@@ -89,8 +93,8 @@ newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
       PIsData
     , -- | @since 2.2.0
       PEq
-    , -- | @since 2.2.0
-      PPartialOrd
+    , -- | @since WIP
+      POrd
     , -- | @since 2.2.0
       PShow
     , -- | @since 3.1.0
@@ -123,8 +127,6 @@ newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- | @wsince 2.0.0
-      PPartialOrd
     , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
@@ -172,8 +174,6 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteSt
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- | @since 2.0.0
-      PPartialOrd
     , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
@@ -255,61 +255,51 @@ instance PEq (PValue 'AssocMap.Sorted 'Positive) where
 instance PEq (PValue 'AssocMap.Sorted 'NonZero) where
   a #== b = pto a #== pto b
 
-{- | Partial ordering implementation for sorted 'PValue' with 'Positive' amounts.
+{- | Mimics the @lt@ operation on @plutus-ledger-api@'s @Value@.
 
-Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
-
-@since 2.0.0
+@since WIP
 -}
-instance PPartialOrd (PValue 'AssocMap.Sorted 'Positive) where
-  (#<) ::
-    forall (s :: S).
-    Term s (PValue 'AssocMap.Sorted 'Positive) ->
-    Term s (PValue 'AssocMap.Sorted 'Positive) ->
-    Term s PBool
-  a #< b = a' #< pforgetPositive b
-    where
-      a' :: Term s (PValue 'AssocMap.Sorted 'NonZero)
-      a' = pforgetPositive a
-  (#<=) ::
-    forall (s :: S).
-    Term s (PValue 'AssocMap.Sorted 'Positive) ->
-    Term s (PValue 'AssocMap.Sorted 'Positive) ->
-    Term s PBool
-  a #<= b = a' #<= pforgetPositive b
-    where
-      a' :: Term s (PValue 'AssocMap.Sorted 'NonZero)
-      a' = pforgetPositive a
+pltPositive ::
+  forall (s :: S).
+  Term s (PValue 'AssocMap.Sorted 'Positive) ->
+  Term s (PValue 'AssocMap.Sorted 'Positive) ->
+  Term s PBool
+pltPositive t1 t2 = pltNonZero (pforgetPositive t1) (pforgetPositive t2)
 
-{- | Partial ordering implementation for sorted 'PValue' with 'NonZero' amounts.
+{- | As 'pltPositive', but for nonzero guaranteed 'PValue's instead.
 
-Use 'pcheckBinRel' if 'AmountGuarantees' is 'NoGuarantees'.
-
-@since 2.0.0
+@since WIP
 -}
-instance PPartialOrd (PValue 'AssocMap.Sorted 'NonZero) where
-  a #< b = f # a # b
-    where
-      f ::
-        forall (s :: S).
-        Term
-          s
-          ( PValue 'AssocMap.Sorted 'NonZero
-              :--> PValue 'AssocMap.Sorted 'NonZero
-              :--> PBool
-          )
-      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<)
-  a #<= b = f # a # b
-    where
-      f ::
-        forall (s :: S).
-        Term
-          s
-          ( PValue 'AssocMap.Sorted 'NonZero
-              :--> PValue 'AssocMap.Sorted 'NonZero
-              :--> PBool
-          )
-      f = phoistAcyclic $ pcheckBinRel #$ phoistAcyclic $ plam (#<=)
+pltNonZero ::
+  forall (s :: S).
+  Term s (PValue 'AssocMap.Sorted 'NonZero) ->
+  Term s (PValue 'AssocMap.Sorted 'NonZero) ->
+  Term s PBool
+pltNonZero t1 t2 =
+  phoistAcyclic (pcheckBinRel #$ phoistAcyclic $ plam (#<)) # t1 # t2
+
+{- | Mimics the @leq@ operation on @plutus-ledger-api@'s @Value@.
+
+@since WIP
+-}
+pleqPositive ::
+  forall (s :: S).
+  Term s (PValue 'AssocMap.Sorted 'Positive) ->
+  Term s (PValue 'AssocMap.Sorted 'Positive) ->
+  Term s PBool
+pleqPositive t1 t2 = pleqNonZero (pforgetPositive t1) (pforgetPositive t2)
+
+{- | As 'pletPositive', but for nonzero guaranteed 'PValue's instead.
+
+@since WIP
+-}
+pleqNonZero ::
+  forall (s :: S).
+  Term s (PValue 'AssocMap.Sorted 'NonZero) ->
+  Term s (PValue 'AssocMap.Sorted 'NonZero) ->
+  Term s PBool
+pleqNonZero t1 t2 =
+  phoistAcyclic (pcheckBinRel #$ phoistAcyclic $ plam (#<=)) # t1 # t2
 
 -- | @since 2.0.0
 instance PEq (PValue 'AssocMap.Sorted 'NoGuarantees) where
@@ -434,12 +424,10 @@ newtype PAssetClass (s :: S) = PAssetClass (Term s (PDataNewtype (PBuiltinPair (
       PShow
     , -- | @since WIP
       PTryFrom PData
-    , -- | @since WIP
-      POrd
     )
 
 -- | @since WIP
-instance PPartialOrd PAssetClass where
+instance POrd PAssetClass where
   {-# INLINEABLE (#<=) #-}
   ac1 #<= ac2 = pmatch ac1 $ \(PAssetClass ac1') ->
     pmatch ac2 $ \(PAssetClass ac2') ->
