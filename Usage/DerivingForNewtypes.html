@@ -193,7 +193,7 @@ import Plutarch.Builtin (PDataNewtype)
 <code>PPubKeyHash</code> as well. In this case, you can simply derive all those typeclasses for your <code>PPubKeyHash</code> type as well:</p>
 <pre><code class="language-haskell">newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PShow)
 instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
 
 </code></pre>
@@ -215,7 +215,6 @@ under the hood anyway - but how do you obtain that? Using <code>pto</code>!</p>
 <li><code>PIsData</code></li>
 <li><code>PNum</code></li>
 <li><code>POrd</code></li>
-<li><code>PPartialOrd</code></li>
 <li><code>PShow</code></li>
 <li><code>PlutusType</code></li>
 </ul>

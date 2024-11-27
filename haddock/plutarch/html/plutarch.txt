@@ -1092,105 +1092,83 @@ instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.Integer.PInteger
 
 module Plutarch.Internal.Ord
 
--- | Partial ordering relation.
---   
---   <h1>Laws</h1>
---   
---   <a>#&lt;=</a> must form a partial order. More precisely:
---   
---   <ol>
---   <li><tt>x #&lt;= x</tt> <tt>=</tt> <tt>True</tt> (<tt>#&lt;=</tt> is
---   reflexive)</li>
---   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= x)</tt> <tt>=</tt> <tt>x
---   #== y</tt> (<tt>#&lt;=</tt> is anti-symmetric)</li>
---   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= z)</tt> <tt>=</tt> <tt>x
---   #&lt;= z</tt> (@#&lt;= is transitive)</li>
---   </ol>
---   
---   Furthermore, <a>#&lt;</a> must be an equivalent strict partial order
---   to <a>#&lt;=</a>:
---   
---   <ol>
---   <li><tt>x #&lt;= y</tt> <tt>=</tt> <tt>(x #&lt; y) #|| (x #==
---   y)</tt></li>
---   <li><tt>x #&lt; x</tt> <tt>=</tt> <tt>False</tt> (<tt>#&lt;</tt> is
---   irreflexive)</li>
---   <li><tt>x #&lt; y</tt> <tt>=</tt> <tt>pnot (y #&lt; x)</tt>
---   (<tt>#&lt;</tt> is asymmetric)</li>
---   <li><tt>(x #&lt; y) #&amp;&amp; (y #&lt; z)</tt> <tt>=</tt> <tt>x
---   #&lt; z</tt> (<tt>#&lt;</tt> is transitive)</li>
---   </ol>
---   
---   Lastly, if you define <a>#&gt;=</a> or <a>#&gt;</a>, ensure that the
---   following also hold:
---   
---   <ol>
---   <li><tt>x #&gt; y</tt> <tt>=</tt> <tt>y #&lt; x</tt></li>
---   <li><tt>x #&gt;= y</tt> <tt>=</tt> <tt>pnot (x #&lt; y)</tt></li>
---   </ol>
---   
---   The default implementations of <a>#&gt;=</a> and <a>#&gt;</a> ensure
---   these laws.
-class PEq t => PPartialOrd t
-(#<=) :: PPartialOrd t => Term s t -> Term s t -> Term s PBool
-(#<=) :: (PPartialOrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
-(#<) :: PPartialOrd t => Term s t -> Term s t -> Term s PBool
-(#<) :: (PPartialOrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
-
--- | @since WIP
-(#>=) :: forall (s :: S). PPartialOrd t => Term s t -> Term s t -> Term s PBool
-
--- | @since WIP
-(#>) :: forall (s :: S). PPartialOrd t => Term s t -> Term s t -> Term s PBool
-infix 4 #<=
-infix 4 #<
-infix 4 #>=
-infix 4 #>
-
 -- | Total ordering relation.
 --   
 --   <h1>Laws</h1>
 --   
---   <a>pmax</a> and <a>pmin</a> must form a commutative semiring without
---   identity elements, where addition also distributes over
---   multiplication. More precisely:
+--   <a>#&lt;=</a> must form a total order. More precisely:
 --   
 --   <ol>
---   <li><tt>pmax x y</tt> <tt>=</tt> <tt>pmax y x</tt> (<tt>pmax</tt> is
---   commutative)</li>
---   <li><tt>pmin x y</tt> <tt>=</tt> <tt>pmin y x</tt> (<tt>pmin</tt> is
---   commutative)</li>
---   <li><tt>pmax x (pmax y z)</tt> <tt>=</tt> <tt>pmax (pmax x y) z</tt>
---   (<tt>pmax</tt> is associative)</li>
---   <li><tt>pmin x (pmin y z)</tt> <tt>=</tt> <tt>pmin (pmin x y) z</tt>
---   (<tt>pmin</tt> is associative)</li>
---   <li><tt>pmax x (pmin y z)</tt> <tt>=</tt> <tt>pmin (pmax x y) (pmax x
---   z)</tt> (<tt>pmax</tt> distributes over <tt>pmin</tt>)</li>
---   <li><tt>pmin x (pmax y z)</tt> <tt>=</tt> <tt>pmax (pmin x y) (pmin x
---   z)</tt> (<tt>pmin</tt> distributes over <tt>pmax</tt>)</li>
+--   <li><tt>x #&lt;= x</tt> <tt>=</tt> <tt>pcon PTrue</tt>
+--   (reflexivity)</li>
+--   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= z)</tt> <tt>=</tt> <tt>x
+--   #&lt;= z</tt> (transitivity)</li>
+--   <li><tt>(x #&lt;= y) #|| (y #&lt;= x)</tt> <tt>=</tt> <tt>pcon
+--   PTrue</tt> (totality)</li>
 --   </ol>
 --   
---   Furthermore, the following must hold relative <a>#&lt;</a>:
+--   Furthermore, <a>#&lt;</a> must be an equivalent strict total order to
+--   <a>#&lt;=</a>:
 --   
 --   <ol>
---   <li><tt>pmin x y</tt> <tt>=</tt> <tt>if (x #&lt; y) then x else
---   y</tt></li>
---   <li><tt>pmax x y</tt> <tt>=</tt> <tt>if (x #&lt; y) then y else
---   x</tt></li>
+--   <li><tt>x #&lt; x</tt> <tt>=</tt> <tt>pcon PFalse</tt>
+--   (irreflexivity)</li>
+--   <li><tt>(x #&lt; y) #&amp;&amp; (y #&lt; z)</tt> <tt>=</tt> <tt>x
+--   #&lt; z</tt> (transitivity)</li>
+--   <li><tt>(x #&lt; y) #|| (y #&lt; x) #|| (x #== z)</tt> <tt>=</tt>
+--   <tt>pcon PTrue</tt> (trichotomy)</li>
+--   <li><tt>x #&lt;= y</tt> <tt>=</tt> <tt>(x #&lt; y) #|| (x #== y)</tt>
+--   (strict equivalence)</li>
 --   </ol>
 --   
---   Laws 7 and 8 are also the defaults, as for most types, this is the
---   best you can do.
-class PPartialOrd t => POrd t
+--   If you define <a>pmax</a> or <a>pmin</a>, ensure the following also
+--   hold:
+--   
+--   <ol>
+--   <li><tt>pmax # x # y</tt> <tt>=</tt> <tt>pmax # y # x</tt>
+--   (commutativity, also for @pmin)</li>
+--   <li><tt>pmax # x #$ pmax y z</tt> <tt>=</tt> <tt>pmax # (pmax # x # y)
+--   # z</tt> (associativity, also for @pmin)</li>
+--   <li><tt>pmax # x #$ pmin # y # z</tt> <tt>=</tt> <tt>pmin # (pmax # x
+--   # y) # (pmax # x # z)</tt> (<a>pmax</a> distributes over <a>pmin</a>,
+--   also equivalent for <a>pmin</a>)</li>
+--   <li><tt>pmin x y</tt> <tt>=</tt> <tt>pif' (x #&lt;= y) x y</tt></li>
+--   <li><tt>pmax x y</tt> <tt>=</tt> <tt>pif' (x #&lt;= y) y x</tt></li>
+--   </ol>
+--   
+--   Laws 8-12 hold if you use the defaults provided by this type class.
+--   
+--   @since WIP
+class PEq t => POrd t
+
+-- | @since WIP
+(#<=) :: POrd t => Term s t -> Term s t -> Term s PBool
+
+-- | @since WIP
+(#<=) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+
+-- | @since WIP
+(#<) :: POrd t => Term s t -> Term s t -> Term s PBool
+
+-- | @since WIP
+(#<) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
 
 -- | @since WIP
 pmax :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 
 -- | @since WIP
 pmin :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Builtin.Bool.PBool
+infix 4 #<=
+infix 4 #<
+
+-- | @since WIP
+(#>) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
+infix 4 #>
+
+-- | @since WIP
+(#>=) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
+infix 4 #>=
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Bool.PBool
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Integer.PInteger
 
 module Plutarch.Internal.Numeric
@@ -1363,7 +1341,6 @@ instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.ByteString.PByte
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.ByteString.PByte s)
 instance Plutarch.Internal.Ord.POrd Plutarch.ByteString.PLogicOpSemantics
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.ByteString.PLogicOpSemantics
 instance Plutarch.Internal.Eq.PEq Plutarch.ByteString.PLogicOpSemantics
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.ByteString.PLogicOpSemantics
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.ByteString.PLogicOpSemantics s)
@@ -1372,11 +1349,9 @@ instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.ByteString.PLogi
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.ByteString.PByte
 instance Plutarch.Internal.Lift.PLiftable Plutarch.ByteString.PByte
 instance Plutarch.Internal.Eq.PEq Plutarch.ByteString.PByte
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.ByteString.PByte
 instance Plutarch.Internal.Ord.POrd Plutarch.ByteString.PByte
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.ByteString.PByteString
 instance Plutarch.Internal.Eq.PEq Plutarch.ByteString.PByteString
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.ByteString.PByteString
 instance Plutarch.Internal.Ord.POrd Plutarch.ByteString.PByteString
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Base.Semigroup (Plutarch.Internal.Term.Term s Plutarch.ByteString.PByteString)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Base.Monoid (Plutarch.Internal.Term.Term s Plutarch.ByteString.PByteString)
@@ -1449,7 +1424,6 @@ PUnit :: PUnit s
 instance Plutarch.Internal.Lift.PLiftable (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S})
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S})
 instance Plutarch.Internal.Eq.PEq (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S})
-instance Plutarch.Internal.Ord.PPartialOrd (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S})
 instance Plutarch.Internal.Ord.POrd (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S})
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Base.Semigroup (Plutarch.Internal.Term.Term s (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S}))
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Base.Monoid (Plutarch.Internal.Term.Term s (Plutarch.Unit.PUnit @{Plutarch.Internal.Term.S}))
@@ -1915,8 +1889,7 @@ instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.PData
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Builtin.PIsData (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq (Plutarch.Builtin.PDataNewtype a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Internal.Ord.PPartialOrd a) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.Builtin.PDataNewtype a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Internal.Ord.PPartialOrd a) => Plutarch.Internal.Ord.POrd (Plutarch.Builtin.PDataNewtype a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Internal.Ord.POrd a) => Plutarch.Internal.Ord.POrd (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Show.PShow a) => Plutarch.Show.PShow (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData a)) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PDataNewtype a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.Builtin.PDataNewtype a))
@@ -1979,7 +1952,6 @@ mkPositive :: Integer -> Maybe Positive
 instance Plutarch.Show.PShow Plutarch.Positive.PPositive
 instance Plutarch.Internal.Numeric.PIntegral Plutarch.Positive.PPositive
 instance Plutarch.Internal.Ord.POrd Plutarch.Positive.PPositive
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Positive.PPositive
 instance Plutarch.Internal.Eq.PEq Plutarch.Positive.PPositive
 instance Plutarch.Builtin.PIsData Plutarch.Positive.PPositive
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Positive.PPositive
@@ -2029,7 +2001,6 @@ instance Plutarch.Internal.Lift.PLiftable Plutarch.Rational.PRational
 instance Plutarch.Internal.Eq.PEq Plutarch.Rational.PRational
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Real.Fractional (Plutarch.Internal.Term.Term s Plutarch.Rational.PRational)
 instance Plutarch.Show.PShow Plutarch.Rational.PRational
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Rational.PRational
 instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational
 instance Plutarch.Internal.Numeric.PNum Plutarch.Rational.PRational
 
@@ -2168,7 +2139,6 @@ pintegerToByteString :: forall (s :: S). Term s PEndianness -> Term s (PInteger 
 --   too small to fit the specified <a>PInteger</a>.
 pintegerToByteStringSized :: forall (s :: S). Term s PEndianness -> Term s (PPositive :--> (PInteger :--> PByteString))
 instance Plutarch.Internal.Ord.POrd Plutarch.Convert.PEndianness
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.Convert.PEndianness
 instance Plutarch.Internal.Eq.PEq Plutarch.Convert.PEndianness
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Convert.PEndianness
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Convert.PEndianness s)
@@ -2306,12 +2276,11 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Eq.PEq a, Plutarch.Internal.Eq.PEq b) => Plutarch.Internal.Eq.PEq (Plutarch.Either.PEither a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEither a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Either.PEither a b s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Ord.PPartialOrd a, Plutarch.Internal.Ord.PPartialOrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Internal.Ord.POrd (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b, Plutarch.Show.PShow a, Plutarch.Show.PShow b) => Plutarch.Show.PShow (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Either.PEitherData a b s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell b), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell b)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Either.PEitherData a b)
-instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Ord.PPartialOrd a, Plutarch.Internal.Ord.PPartialOrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.Either.PEitherData a b)
+instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Ord.POrd a, Plutarch.Internal.Ord.POrd b, Plutarch.Builtin.PIsData a, Plutarch.Builtin.PIsData b) => Plutarch.Internal.Ord.POrd (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Builtin.PIsData (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData a, Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData b) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Either.PEitherData a b)
@@ -2490,7 +2459,6 @@ instance forall (xs :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) (l :: [Pl
 instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). (Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Top @{[Plutarch.DataRepr.Internal.PLabeledType]}) defs, Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Compose @{Plutarch.Internal.Term.PType} @{[Plutarch.DataRepr.Internal.PLabeledType]} Plutarch.Show.PShow Plutarch.DataRepr.Internal.PDataRecord) defs) => Plutarch.Show.PShow (Plutarch.DataRepr.Internal.PDataSum defs)
 instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.Builtin.PIsData (Plutarch.DataRepr.Internal.PDataSum defs)
 instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.Internal.Eq.PEq (Plutarch.DataRepr.Internal.PDataSum defs)
-instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Compose @{Plutarch.Internal.Term.PType} @{[Plutarch.DataRepr.Internal.PLabeledType]} Plutarch.Internal.Ord.POrd Plutarch.DataRepr.Internal.PDataRecord) defs => Plutarch.Internal.Ord.PPartialOrd (Plutarch.DataRepr.Internal.PDataSum defs)
 instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Compose @{Plutarch.Internal.Term.PType} @{[Plutarch.DataRepr.Internal.PLabeledType]} Plutarch.Internal.Ord.POrd Plutarch.DataRepr.Internal.PDataRecord) defs => Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataSum defs)
 instance forall (ys :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.DataRepr.Internal.PDataSum ys) => Plutarch.TryFrom.PTryFrom Plutarch.Builtin.PData (Plutarch.Builtin.PAsData (Plutarch.DataRepr.Internal.PDataSum ys))
 instance forall (l :: [Plutarch.DataRepr.Internal.PLabeledType]). Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} l => Plutarch.Internal.PlutusType.PlutusType (Plutarch.DataRepr.Internal.PDataRecord l)
@@ -2499,12 +2467,9 @@ instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Inte
 instance Plutarch.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper ('[] @Plutarch.DataRepr.Internal.PLabeledType))
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (label :: GHC.Types.Symbol) (x :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Data.SOP.Constraint.All @Plutarch.DataRepr.Internal.PLabeledType (Data.SOP.Constraint.Top @{Plutarch.DataRepr.Internal.PLabeledType}) xs, GHC.TypeLits.KnownSymbol label, Plutarch.Builtin.PIsData x, Plutarch.Show.PShow x, Plutarch.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper xs)) => Plutarch.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) xs))
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Internal.Eq.PEq (Plutarch.DataRepr.Internal.PDataRecord xs)
-instance Plutarch.Internal.Ord.PPartialOrd (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
 instance Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
 instance Plutarch.Show.PShow (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
-instance forall (x :: Plutarch.Internal.Term.PType) (label :: GHC.Types.Symbol). (Plutarch.Internal.Ord.POrd x, Plutarch.Builtin.PIsData x) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ('[] @Plutarch.DataRepr.Internal.PLabeledType)))
 instance forall (x :: Plutarch.Internal.Term.PType) (label :: GHC.Types.Symbol). (Plutarch.Internal.Ord.POrd x, Plutarch.Builtin.PIsData x) => Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ('[] @Plutarch.DataRepr.Internal.PLabeledType)))
-instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (x :: Plutarch.Internal.Term.PType) (x' :: Plutarch.DataRepr.Internal.PLabeledType) (label :: GHC.Types.Symbol). (Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} xs, Plutarch.Internal.Ord.POrd x, Plutarch.Builtin.PIsData x, Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs))) => Plutarch.Internal.Ord.PPartialOrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs)))
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (x :: Plutarch.Internal.Term.PType) (x' :: Plutarch.DataRepr.Internal.PLabeledType) (label :: GHC.Types.Symbol). (Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} xs, Plutarch.Internal.Ord.POrd x, Plutarch.Builtin.PIsData x, Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs))) => Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs)))
 instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Builtin.PIsData (Plutarch.DataRepr.Internal.PDataRecord xs)
 
@@ -2945,102 +2910,82 @@ class PEq t
 (#==) :: (PEq t, PGeneric t, PlutusType t, All2 PEq (PCode t)) => Term s t -> Term s t -> Term s PBool
 infix 4 #==
 
--- | Partial ordering relation.
---   
---   <h1>Laws</h1>
---   
---   <a>#&lt;=</a> must form a partial order. More precisely:
---   
---   <ol>
---   <li><tt>x #&lt;= x</tt> <tt>=</tt> <tt>True</tt> (<tt>#&lt;=</tt> is
---   reflexive)</li>
---   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= x)</tt> <tt>=</tt> <tt>x
---   #== y</tt> (<tt>#&lt;=</tt> is anti-symmetric)</li>
---   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= z)</tt> <tt>=</tt> <tt>x
---   #&lt;= z</tt> (@#&lt;= is transitive)</li>
---   </ol>
---   
---   Furthermore, <a>#&lt;</a> must be an equivalent strict partial order
---   to <a>#&lt;=</a>:
---   
---   <ol>
---   <li><tt>x #&lt;= y</tt> <tt>=</tt> <tt>(x #&lt; y) #|| (x #==
---   y)</tt></li>
---   <li><tt>x #&lt; x</tt> <tt>=</tt> <tt>False</tt> (<tt>#&lt;</tt> is
---   irreflexive)</li>
---   <li><tt>x #&lt; y</tt> <tt>=</tt> <tt>pnot (y #&lt; x)</tt>
---   (<tt>#&lt;</tt> is asymmetric)</li>
---   <li><tt>(x #&lt; y) #&amp;&amp; (y #&lt; z)</tt> <tt>=</tt> <tt>x
---   #&lt; z</tt> (<tt>#&lt;</tt> is transitive)</li>
---   </ol>
---   
---   Lastly, if you define <a>#&gt;=</a> or <a>#&gt;</a>, ensure that the
---   following also hold:
---   
---   <ol>
---   <li><tt>x #&gt; y</tt> <tt>=</tt> <tt>y #&lt; x</tt></li>
---   <li><tt>x #&gt;= y</tt> <tt>=</tt> <tt>pnot (x #&lt; y)</tt></li>
---   </ol>
---   
---   The default implementations of <a>#&gt;=</a> and <a>#&gt;</a> ensure
---   these laws.
-class PEq t => PPartialOrd t
-(#<=) :: PPartialOrd t => Term s t -> Term s t -> Term s PBool
-(#<=) :: (PPartialOrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
-(#<) :: PPartialOrd t => Term s t -> Term s t -> Term s PBool
-(#<) :: (PPartialOrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
-
--- | @since WIP
-(#>=) :: forall (s :: S). PPartialOrd t => Term s t -> Term s t -> Term s PBool
-
--- | @since WIP
-(#>) :: forall (s :: S). PPartialOrd t => Term s t -> Term s t -> Term s PBool
-infix 4 #<=
-infix 4 #<
-infix 4 #>=
-infix 4 #>
-
 -- | Total ordering relation.
 --   
 --   <h1>Laws</h1>
 --   
---   <a>pmax</a> and <a>pmin</a> must form a commutative semiring without
---   identity elements, where addition also distributes over
---   multiplication. More precisely:
+--   <a>#&lt;=</a> must form a total order. More precisely:
 --   
 --   <ol>
---   <li><tt>pmax x y</tt> <tt>=</tt> <tt>pmax y x</tt> (<tt>pmax</tt> is
---   commutative)</li>
---   <li><tt>pmin x y</tt> <tt>=</tt> <tt>pmin y x</tt> (<tt>pmin</tt> is
---   commutative)</li>
---   <li><tt>pmax x (pmax y z)</tt> <tt>=</tt> <tt>pmax (pmax x y) z</tt>
---   (<tt>pmax</tt> is associative)</li>
---   <li><tt>pmin x (pmin y z)</tt> <tt>=</tt> <tt>pmin (pmin x y) z</tt>
---   (<tt>pmin</tt> is associative)</li>
---   <li><tt>pmax x (pmin y z)</tt> <tt>=</tt> <tt>pmin (pmax x y) (pmax x
---   z)</tt> (<tt>pmax</tt> distributes over <tt>pmin</tt>)</li>
---   <li><tt>pmin x (pmax y z)</tt> <tt>=</tt> <tt>pmax (pmin x y) (pmin x
---   z)</tt> (<tt>pmin</tt> distributes over <tt>pmax</tt>)</li>
+--   <li><tt>x #&lt;= x</tt> <tt>=</tt> <tt>pcon PTrue</tt>
+--   (reflexivity)</li>
+--   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= z)</tt> <tt>=</tt> <tt>x
+--   #&lt;= z</tt> (transitivity)</li>
+--   <li><tt>(x #&lt;= y) #|| (y #&lt;= x)</tt> <tt>=</tt> <tt>pcon
+--   PTrue</tt> (totality)</li>
 --   </ol>
 --   
---   Furthermore, the following must hold relative <a>#&lt;</a>:
+--   Furthermore, <a>#&lt;</a> must be an equivalent strict total order to
+--   <a>#&lt;=</a>:
 --   
 --   <ol>
---   <li><tt>pmin x y</tt> <tt>=</tt> <tt>if (x #&lt; y) then x else
---   y</tt></li>
---   <li><tt>pmax x y</tt> <tt>=</tt> <tt>if (x #&lt; y) then y else
---   x</tt></li>
+--   <li><tt>x #&lt; x</tt> <tt>=</tt> <tt>pcon PFalse</tt>
+--   (irreflexivity)</li>
+--   <li><tt>(x #&lt; y) #&amp;&amp; (y #&lt; z)</tt> <tt>=</tt> <tt>x
+--   #&lt; z</tt> (transitivity)</li>
+--   <li><tt>(x #&lt; y) #|| (y #&lt; x) #|| (x #== z)</tt> <tt>=</tt>
+--   <tt>pcon PTrue</tt> (trichotomy)</li>
+--   <li><tt>x #&lt;= y</tt> <tt>=</tt> <tt>(x #&lt; y) #|| (x #== y)</tt>
+--   (strict equivalence)</li>
 --   </ol>
 --   
---   Laws 7 and 8 are also the defaults, as for most types, this is the
---   best you can do.
-class PPartialOrd t => POrd t
+--   If you define <a>pmax</a> or <a>pmin</a>, ensure the following also
+--   hold:
+--   
+--   <ol>
+--   <li><tt>pmax # x # y</tt> <tt>=</tt> <tt>pmax # y # x</tt>
+--   (commutativity, also for @pmin)</li>
+--   <li><tt>pmax # x #$ pmax y z</tt> <tt>=</tt> <tt>pmax # (pmax # x # y)
+--   # z</tt> (associativity, also for @pmin)</li>
+--   <li><tt>pmax # x #$ pmin # y # z</tt> <tt>=</tt> <tt>pmin # (pmax # x
+--   # y) # (pmax # x # z)</tt> (<a>pmax</a> distributes over <a>pmin</a>,
+--   also equivalent for <a>pmin</a>)</li>
+--   <li><tt>pmin x y</tt> <tt>=</tt> <tt>pif' (x #&lt;= y) x y</tt></li>
+--   <li><tt>pmax x y</tt> <tt>=</tt> <tt>pif' (x #&lt;= y) y x</tt></li>
+--   </ol>
+--   
+--   Laws 8-12 hold if you use the defaults provided by this type class.
+--   
+--   @since WIP
+class PEq t => POrd t
+
+-- | @since WIP
+(#<=) :: POrd t => Term s t -> Term s t -> Term s PBool
+
+-- | @since WIP
+(#<=) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
+
+-- | @since WIP
+(#<) :: POrd t => Term s t -> Term s t -> Term s PBool
+
+-- | @since WIP
+(#<) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
 
 -- | @since WIP
 pmax :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 
 -- | @since WIP
 pmin :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
+infix 4 #<=
+infix 4 #<
+
+-- | @since WIP
+(#>) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
+infix 4 #>
+
+-- | @since WIP
+(#>=) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
+infix 4 #>=
 
 -- | Lazy if-then-else.
 --   
@@ -3726,7 +3671,6 @@ pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 --   @since WIP
 pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--> PInteger)
 instance Plutarch.Internal.Ord.POrd Plutarch.BitString.PBitString
-instance Plutarch.Internal.Ord.PPartialOrd Plutarch.BitString.PBitString
 instance Plutarch.Internal.Eq.PEq Plutarch.BitString.PBitString
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BitString.PBitString
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.BitString.PBitString s)

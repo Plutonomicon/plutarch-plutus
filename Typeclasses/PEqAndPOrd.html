@@ -191,13 +191,11 @@ import Plutarch.Prelude
 <pre><code class="language-hs">1 #== 2
 </code></pre>
 <p>That would yield a <code>Term s PBool</code>, which you would probably use with <code>pif</code> (or similar).</p>
-<p>Similarly, <code>PPartialOrd</code> (and <code>POrd</code>) emulates <code>Ord</code>: (where <code>PPartialOrd</code> represents partial orders
-and <code>POrd</code> represents total orders)</p>
-<pre><code class="language-hs">class PEq =&gt; PPartialOrd t where
+<p>Similarly, <code>POrd</code> emulates <code>Ord</code>:</p>
+<pre><code class="language-hs">-- The actual POrd has more methods, but these are the only required ones.
+class PEq =&gt; POrd t where
   (#&lt;) :: Term s t -&gt; Term s t -&gt; Term s PBool
   (#&lt;=) :: Term s t -&gt; Term s t -&gt; Term s PBool
-
-class PPartialOrd =&gt; POrd t
 </code></pre>
 <p>It works as you would expect:</p>
 <pre><code class="language-hs">pif (1 #&lt; 7) "indeed" "what"
@@ -211,7 +209,7 @@ class PPartialOrd =&gt; POrd t
   deriving anyclass (PlutusType, PEq)
 instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
 </code></pre>
-<p>For data encoded types, you can derive <code>PEq</code>, <code>PPartialOrd</code> and <code>POrd</code> via there data representation:</p>
+<p>For data encoded types, you can derive <code>PEq</code> and <code>POrd</code> via their data representation:</p>
 <pre><code class="language-haskell">newtype PTriplet a s
   = PTriplet
       ( Term
@@ -224,7 +222,7 @@ instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
           )
       )
   deriving stock Generic
-  deriving anyclass (PlutusType, PEq, PPartialOrd)
+  deriving anyclass (PlutusType, PEq)
 
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 </code></pre>

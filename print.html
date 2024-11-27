@@ -2151,13 +2151,11 @@ import Plutarch.Prelude
 <pre><code class="language-hs">1 #== 2
 </code></pre>
 <p>That would yield a <code>Term s PBool</code>, which you would probably use with <code>pif</code> (or similar).</p>
-<p>Similarly, <code>PPartialOrd</code> (and <code>POrd</code>) emulates <code>Ord</code>: (where <code>PPartialOrd</code> represents partial orders
-and <code>POrd</code> represents total orders)</p>
-<pre><code class="language-hs">class PEq =&gt; PPartialOrd t where
+<p>Similarly, <code>POrd</code> emulates <code>Ord</code>:</p>
+<pre><code class="language-hs">-- The actual POrd has more methods, but these are the only required ones.
+class PEq =&gt; POrd t where
   (#&lt;) :: Term s t -&gt; Term s t -&gt; Term s PBool
   (#&lt;=) :: Term s t -&gt; Term s t -&gt; Term s PBool
-
-class PPartialOrd =&gt; POrd t
 </code></pre>
 <p>It works as you would expect:</p>
 <pre><code class="language-hs">pif (1 #&lt; 7) "indeed" "what"
@@ -2171,7 +2169,7 @@ class PPartialOrd =&gt; POrd t
   deriving anyclass (PlutusType, PEq)
 instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
 </code></pre>
-<p>For data encoded types, you can derive <code>PEq</code>, <code>PPartialOrd</code> and <code>POrd</code> via there data representation:</p>
+<p>For data encoded types, you can derive <code>PEq</code> and <code>POrd</code> via their data representation:</p>
 <pre><code class="language-haskell">newtype PTriplet a s
   = PTriplet
       ( Term
@@ -2184,7 +2182,7 @@ instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
           )
       )
   deriving stock Generic
-  deriving anyclass (PlutusType, PEq, PPartialOrd)
+  deriving anyclass (PlutusType, PEq)
 
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 </code></pre>
@@ -2809,7 +2807,7 @@ import Plutarch.Builtin (PDataNewtype)
 <code>PPubKeyHash</code> as well. In this case, you can simply derive all those typeclasses for your <code>PPubKeyHash</code> type as well:</p>
 <pre><code class="language-haskell">newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PShow)
 instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
 
 </code></pre>
@@ -2831,7 +2829,6 @@ under the hood anyway - but how do you obtain that? Using <code>pto</code>!</p>
 <li><code>PIsData</code></li>
 <li><code>PNum</code></li>
 <li><code>POrd</code></li>
-<li><code>PPartialOrd</code></li>
 <li><code>PShow</code></li>
 <li><code>PlutusType</code></li>
 </ul>
@@ -2866,7 +2863,7 @@ using <code>PlutusTypeData</code>. Check out: <a href="Usage/./../Typeclasses/PI
 <ul>
 <li><a href="Usage/./../Typeclasses/PlutusType,PCon,PMatch.html#implementing-plutustype-for-your-own-types-scott-encoding"><code>PlutusType</code></a> (Scott encoding only)</li>
 <li><a href="Usage/./../Typeclasses/PEqAndPOrd.html"><code>PEq</code></a></li>
-<li><a href="Usage/./../Typeclasses/PEqAndPOrd.html"><code>POrd</code>/ <code>PPartialOrd</code></a></li>
+<li><a href="Usage/./../Typeclasses/PEqAndPOrd.html"><code>POrd</code></a></li>
 <li><a href="Usage/./../Typeclasses/PTryFrom.html"><code>PTryFrom</code></a></li>
 <li><code>PShow</code></li>
 <li><code>PIsData</code></li>

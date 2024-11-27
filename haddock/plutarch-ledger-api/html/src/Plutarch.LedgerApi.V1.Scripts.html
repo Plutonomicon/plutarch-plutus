@@ -18,10 +18,10 @@
 </span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V3</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
 </span><span id="line-19"></span><span>
 </span><span id="line-20"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">newtype</span><span> </span><span id="PScriptHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-var">PScriptHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679287533"><span class="annot"><a href="#local-6989586621679287533"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PScriptHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-var">PScriptHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679287533"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">newtype</span><span> </span><span id="PScriptHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-var">PScriptHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679285642"><span class="annot"><a href="#local-6989586621679285642"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PScriptHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-var">PScriptHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285642"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-23"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-24"></span><span>      </span><span id="local-6989586621679287569"><span id="local-6989586621679287571"><span class="annot"><span class="annottext">(forall x. PScriptHash s -&gt; Rep (PScriptHash s) x)
+</span><span id="line-24"></span><span>      </span><span id="local-6989586621679285678"><span id="local-6989586621679285680"><span class="annot"><span class="annottext">(forall x. PScriptHash s -&gt; Rep (PScriptHash s) x)
 -&gt; (forall x. Rep (PScriptHash s) x -&gt; PScriptHash s)
 -&gt; Generic (PScriptHash s)
 forall x. Rep (PScriptHash s) x -&gt; PScriptHash s
@@ -38,7 +38,7 @@ to :: forall x. Rep (PScriptHash s) x -&gt; PScriptHash s
 </span><span id="line-25"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-26"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
 </span><span id="line-27"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-28"></span><span>      </span><span id="local-6989586621679287575"><span id="local-6989586621679287581"><span class="annot"><span class="annottext">(forall (s :: S). PScriptHash s -&gt; Term s (PInner PScriptHash))
+</span><span id="line-28"></span><span>      </span><span id="local-6989586621679285684"><span id="local-6989586621679285690"><span class="annot"><span class="annottext">(forall (s :: S). PScriptHash s -&gt; Term s (PInner PScriptHash))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PScriptHash)
     -&gt; (PScriptHash s -&gt; Term s b) -&gt; Term s b)
@@ -62,7 +62,7 @@ Term s (PInner PScriptHash)
 -&gt; (PScriptHash s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
 </span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-30"></span><span>      </span><span id="local-6989586621679287586"><span id="local-6989586621679287592"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-30"></span><span>      </span><span id="local-6989586621679285695"><span id="local-6989586621679285701"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PAsData PScriptHash) -&gt; Term s PScriptHash)
 -&gt; (forall (s :: S). Term s PScriptHash -&gt; Term s PData)
 -&gt; PIsData PScriptHash
@@ -77,7 +77,7 @@ $cpdataImpl :: forall (s :: S). Term s PScriptHash -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PScriptHash -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
 </span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-32"></span><span>      </span><span id="local-6989586621679287599"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-32"></span><span>      </span><span id="local-6989586621679285708"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool)
 -&gt; PEq PScriptHash
 forall (s :: S).
@@ -90,26 +90,28 @@ Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-34"></span><span>      </span><span id="local-6989586621679287619"><span id="local-6989586621679287625"><span id="local-6989586621679287630"><span id="local-6989586621679287633"><span class="annot"><span class="annottext">PEq PScriptHash
+</span><span id="line-34"></span><span>      </span><span id="local-6989586621679285728"><span id="local-6989586621679285734"><span id="local-6989586621679285739"><span id="local-6989586621679285742"><span class="annot"><span class="annottext">PEq PScriptHash
 PEq PScriptHash =&gt;
 (forall (s :: S).
  Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool)
 -&gt; (forall (s :: S).
     Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool)
 -&gt; (forall (s :: S).
-    Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool)
+    Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash)
 -&gt; (forall (s :: S).
-    Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool)
--&gt; PPartialOrd PScriptHash
+    Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash)
+-&gt; POrd PScriptHash
 forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
+forall (s :: S).
+Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash
 forall (t :: PType).
 PEq t =&gt;
 (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
 -&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; PPartialOrd t
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; POrd t
 $c#&lt;= :: forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
 #&lt;= :: forall (s :: S).
@@ -118,29 +120,6 @@ $c#&lt; :: forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
 #&lt; :: forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
-$c#&gt;= :: forall (s :: S).
-Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
-#&gt;= :: forall (s :: S).
-Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
-$c#&gt; :: forall (s :: S).
-Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
-#&gt; :: forall (s :: S).
-Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PBool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PPartialOrd</span></span></span></span></span></span><span>
-</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-36"></span><span>      </span><span id="local-6989586621679287646"><span id="local-6989586621679287650"><span class="annot"><span class="annottext">PPartialOrd PScriptHash
-PPartialOrd PScriptHash =&gt;
-(forall (s :: S).
- Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash)
--&gt; (forall (s :: S).
-    Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash)
--&gt; POrd PScriptHash
-forall (s :: S).
-Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash
-forall (t :: PType).
-PPartialOrd t =&gt;
-(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t) -&gt; POrd t
 $cpmax :: forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash
 pmax :: forall (s :: S).
@@ -149,9 +128,9 @@ $cpmin :: forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash
 pmin :: forall (s :: S).
 Term s PScriptHash -&gt; Term s PScriptHash -&gt; Term s PScriptHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span><span>
-</span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-38"></span><span>      </span><span id="local-6989586621679287654"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PScriptHash -&gt; Term s PString)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-36"></span><span>      </span><span id="local-6989586621679285753"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PScriptHash -&gt; Term s PString)
 -&gt; PShow PScriptHash
 forall (s :: S). Bool -&gt; Term s PScriptHash -&gt; Term s PString
 forall (t :: PType).
@@ -159,29 +138,29 @@ forall (t :: PType).
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PScriptHash -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PScriptHash -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-39"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-40"></span><span>
-</span><span id="line-41"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-43"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
-</span><span id="line-44"></span><span>
-</span><span id="line-45"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-46"></span><span id="local-6989586621679287692"><span id="local-6989586621679287702"><span id="local-6989586621679287711"><span id="local-6989586621679287720"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-47"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptHash</span></span><span>
-</span><span id="line-48"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-49"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span></span></span></span></span><span>
-</span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-52"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-53"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PTryFromExcess"><span class="annot"><span class="hs-identifier hs-var">PTryFromExcess</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier hs-type">Mret</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span>
-</span><span id="line-54"></span><span>  </span><span id="local-6989586621679287771"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: PType).
+</span><span id="line-37"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-44"></span><span id="local-6989586621679285791"><span id="local-6989586621679285801"><span id="local-6989586621679285810"><span id="local-6989586621679285819"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-45"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptHash</span></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-47"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span></span></span></span></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PTryFromExcess"><span class="annot"><span class="hs-identifier hs-var">PTryFromExcess</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier hs-type">Mret</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679285870"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: PType).
 Term s PData
 -&gt; ((Term s PScriptHash,
      Reduce (PTryFromExcess PData PScriptHash s))
     -&gt; Term s r)
 -&gt; Term s r
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></span></span><span> </span><span id="local-6989586621679287772"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679287772"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></span></span><span> </span><span id="local-6989586621679285871"><span class="annot"><span class="annottext">Term s PData
+</span><a href="#local-6989586621679285871"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
   s (Term s PScriptHash, Reduce (PTryFromExcess PData PScriptHash s))
 -&gt; ((Term s PScriptHash,
      Reduce (PTryFromExcess PData PScriptHash s))
@@ -203,8 +182,8 @@ TermCont s a -&gt; (a -&gt; Term s r) -&gt; Term s r
 -&gt; Term s r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-55"></span><span>    </span><span id="local-6989586621679287774"><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679287774"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PByteString -&gt; Term s r) -&gt; Term s r)
+</span><span id="line-53"></span><span>    </span><span id="local-6989586621679285873"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679285873"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PByteString -&gt; Term s r) -&gt; Term s r)
 -&gt; TermCont s (Term s PByteString)
 forall a (s :: S) (r :: PType).
 ((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
@@ -227,53 +206,53 @@ Term s a
 -&gt; ((Term s b, Reduce (PTryFromExcess a b s)) -&gt; Term s r)
 -&gt; Term s r
 </span><span class="hs-identifier hs-var">ptryFrom</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679287772"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString), Term s PByteString)
+</span><a href="#local-6989586621679285871"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString), Term s PByteString)
 -&gt; Term s PByteString
 (Term s (PAsData PByteString),
  Reduce (PTryFromExcess PData (PAsData PByteString) s))
 -&gt; Term s PByteString
 forall a b. (a, b) -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#snd"><span class="hs-identifier hs-var">snd</span></a></span><span>
-</span><span id="line-56"></span><span>    </span><span class="annot"><span class="annottext">((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
+</span><span id="line-54"></span><span>    </span><span class="annot"><span class="annottext">((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
 forall a (s :: S) (r :: PType).
 ((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
 </span><span class="hs-identifier hs-var">tcont</span></span><span> </span><span class="annot"><span class="annottext">(((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ())
 -&gt; ((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679287780"><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679287780"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-57"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679285879"><span class="annot"><span class="annottext">() -&gt; Term s r
+</span><a href="#local-6989586621679285879"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-55"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
 forall (a :: PType) (s :: S).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
-</span><span id="line-58"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
+</span><span id="line-56"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
 forall (s :: S). Term s (PByteString :--&gt; PInteger)
 </span><span class="hs-identifier hs-var">plengthBS</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
 -&gt; Term s PByteString -&gt; Term s PInteger
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679287774"><span class="hs-identifier hs-var">unwrapped</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679285873"><span class="hs-identifier hs-var">unwrapped</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: PType) (s :: S).
 PEq t =&gt;
 Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#==</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 </span><span class="hs-number">28</span></span><span class="hs-special">)</span><span>
-</span><span id="line-59"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679287780"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-60"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s r
+</span><span id="line-57"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Term s r
+</span><a href="#local-6989586621679285879"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s r
 forall (a :: PType) (s :: S). Term s PString -&gt; Term s a
 </span><span class="hs-identifier hs-var">ptraceInfoError</span></span><span> </span><span class="annot"><span class="annottext">Term s PString
 </span><span class="hs-string">&quot;ptryFrom(PScriptHash): must be 28 bytes long&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-61"></span><span>    </span><span class="annot"><span class="annottext">(Term s PScriptHash, Term s PScriptHash)
+</span><span id="line-59"></span><span>    </span><span class="annot"><span class="annottext">(Term s PScriptHash, Term s PScriptHash)
 -&gt; TermCont s (Term s PScriptHash, Term s PScriptHash)
 forall a. a -&gt; TermCont s a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PData -&gt; Term s PScriptHash
 forall (s :: S) (a :: PType) (b :: PType). Term s a -&gt; Term s b
 </span><span class="hs-identifier hs-var">punsafeCoerce</span></span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679287772"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PScriptHash s -&gt; Term s PScriptHash
+</span><a href="#local-6989586621679285871"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PScriptHash s -&gt; Term s PScriptHash
 forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
 </span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PScriptHash s -&gt; Term s PScriptHash)
 -&gt; (Term s PByteString -&gt; PScriptHash s)
@@ -310,19 +289,19 @@ Term s a -&gt; Term s (PAsData a)
 -&gt; Term s PByteString -&gt; Term s PScriptHash
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679287774"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-62"></span><span>
-</span><span id="line-63"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-64"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-65"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PTryFromExcess"><span class="annot"><span class="hs-identifier hs-var">PTryFromExcess</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier hs-type">Mret</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span>
-</span><span id="line-66"></span><span>  </span><span id="local-6989586621679287806"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: PType).
+</span><a href="#local-6989586621679285873"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-62"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-63"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PTryFromExcess"><span class="annot"><span class="hs-identifier hs-var">PTryFromExcess</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier hs-type">Mret</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PScriptHash"><span class="hs-identifier hs-type">PScriptHash</span></a></span><span>
+</span><span id="line-64"></span><span>  </span><span id="local-6989586621679285905"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: PType).
 Term s PData
 -&gt; ((Term s (PAsData PScriptHash),
      Reduce (PTryFromExcess PData (PAsData PScriptHash) s))
     -&gt; Term s r)
 -&gt; Term s r
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></span></span><span> </span><span id="local-6989586621679287807"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679287807"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></span></span><span> </span><span id="local-6989586621679285906"><span class="annot"><span class="annottext">Term s PData
+</span><a href="#local-6989586621679285906"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
   s
   (Term s (PAsData PScriptHash),
    Reduce (PTryFromExcess PData (PAsData PScriptHash) s))
@@ -350,8 +329,8 @@ TermCont s a -&gt; (a -&gt; Term s r) -&gt; Term s r
 -&gt; Term s r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-67"></span><span>    </span><span id="local-6989586621679287808"><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679287808"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PByteString -&gt; Term s r) -&gt; Term s r)
+</span><span id="line-65"></span><span>    </span><span id="local-6989586621679285907"><span class="annot"><span class="annottext">Term s PByteString
+</span><a href="#local-6989586621679285907"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PByteString -&gt; Term s r) -&gt; Term s r)
 -&gt; TermCont s (Term s PByteString)
 forall a (s :: S) (r :: PType).
 ((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
@@ -374,53 +353,53 @@ Term s a
 -&gt; ((Term s b, Reduce (PTryFromExcess a b s)) -&gt; Term s r)
 -&gt; Term s r
 </span><span class="hs-identifier hs-var">ptryFrom</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679287807"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString), Term s PByteString)
+</span><a href="#local-6989586621679285906"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString), Term s PByteString)
 -&gt; Term s PByteString
 (Term s (PAsData PByteString),
  Reduce (PTryFromExcess PData (PAsData PByteString) s))
 -&gt; Term s PByteString
 forall a b. (a, b) -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#snd"><span class="hs-identifier hs-var">snd</span></a></span><span>
-</span><span id="line-68"></span><span>    </span><span class="annot"><span class="annottext">((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
+</span><span id="line-66"></span><span>    </span><span class="annot"><span class="annottext">((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
 forall a (s :: S) (r :: PType).
 ((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
 </span><span class="hs-identifier hs-var">tcont</span></span><span> </span><span class="annot"><span class="annottext">(((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ())
 -&gt; ((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679287809"><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679287809"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-69"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679285908"><span class="annot"><span class="annottext">() -&gt; Term s r
+</span><a href="#local-6989586621679285908"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-67"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
 forall (a :: PType) (s :: S).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
-</span><span id="line-70"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
+</span><span id="line-68"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
 forall (s :: S). Term s (PByteString :--&gt; PInteger)
 </span><span class="hs-identifier hs-var">plengthBS</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
 -&gt; Term s PByteString -&gt; Term s PInteger
 forall (s :: S) (a :: PType) (b :: PType).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679287808"><span class="hs-identifier hs-var">unwrapped</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679285907"><span class="hs-identifier hs-var">unwrapped</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: PType) (s :: S).
 PEq t =&gt;
 Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#==</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 </span><span class="hs-number">28</span></span><span class="hs-special">)</span><span>
-</span><span id="line-71"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679287809"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-72"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s r
+</span><span id="line-69"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Term s r
+</span><a href="#local-6989586621679285908"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s r
 forall (a :: PType) (s :: S). Term s PString -&gt; Term s a
 </span><span class="hs-identifier hs-var">ptraceInfoError</span></span><span> </span><span class="annot"><span class="annottext">Term s PString
 </span><span class="hs-string">&quot;ptryFrom(PScriptHash): must be 28 bytes long&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-73"></span><span>    </span><span class="annot"><span class="annottext">(Term s (PAsData PScriptHash), Term s PScriptHash)
+</span><span id="line-71"></span><span>    </span><span class="annot"><span class="annottext">(Term s (PAsData PScriptHash), Term s PScriptHash)
 -&gt; TermCont s (Term s (PAsData PScriptHash), Term s PScriptHash)
 forall a. a -&gt; TermCont s a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PData -&gt; Term s (PAsData PScriptHash)
 forall (s :: S) (a :: PType) (b :: PType). Term s a -&gt; Term s b
 </span><span class="hs-identifier hs-var">punsafeCoerce</span></span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679287807"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PScriptHash s -&gt; Term s PScriptHash
+</span><a href="#local-6989586621679285906"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PScriptHash s -&gt; Term s PScriptHash
 forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
 </span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PScriptHash s -&gt; Term s PScriptHash)
 -&gt; (Term s PByteString -&gt; PScriptHash s)
@@ -457,13 +436,13 @@ Term s a -&gt; Term s (PAsData a)
 -&gt; Term s PByteString -&gt; Term s PScriptHash
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679287808"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-76"></span><span class="hs-keyword">newtype</span><span> </span><span id="PDatum"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-var">PDatum</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679287810"><span class="annot"><a href="#local-6989586621679287810"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PDatum"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-var">PDatum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679287810"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span class="hs-special">)</span><span>
-</span><span id="line-77"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-78"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-79"></span><span>      </span><span id="local-6989586621679287813"><span id="local-6989586621679287815"><span class="annot"><span class="annottext">(forall x. PDatum s -&gt; Rep (PDatum s) x)
+</span><a href="#local-6989586621679285907"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-74"></span><span class="hs-keyword">newtype</span><span> </span><span id="PDatum"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-var">PDatum</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679285909"><span class="annot"><a href="#local-6989586621679285909"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PDatum"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-var">PDatum</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679285909"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-76"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-77"></span><span>      </span><span id="local-6989586621679285912"><span id="local-6989586621679285914"><span class="annot"><span class="annottext">(forall x. PDatum s -&gt; Rep (PDatum s) x)
 -&gt; (forall x. Rep (PDatum s) x -&gt; PDatum s) -&gt; Generic (PDatum s)
 forall x. Rep (PDatum s) x -&gt; PDatum s
 forall x. PDatum s -&gt; Rep (PDatum s) x
@@ -476,10 +455,10 @@ from :: forall x. PDatum s -&gt; Rep (PDatum s) x
 $cto :: forall (s :: S) x. Rep (PDatum s) x -&gt; PDatum s
 to :: forall x. Rep (PDatum s) x -&gt; PDatum s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-80"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-81"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-82"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-83"></span><span>      </span><span id="local-6989586621679287818"><span id="local-6989586621679287824"><span class="annot"><span class="annottext">(forall (s :: S). PDatum s -&gt; Term s (PInner PDatum))
+</span><span id="line-78"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-80"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-81"></span><span>      </span><span id="local-6989586621679285917"><span id="local-6989586621679285923"><span class="annot"><span class="annottext">(forall (s :: S). PDatum s -&gt; Term s (PInner PDatum))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PDatum) -&gt; (PDatum s -&gt; Term s b) -&gt; Term s b)
 -&gt; PlutusType PDatum
@@ -498,8 +477,8 @@ Term s (PInner PDatum) -&gt; (PDatum s -&gt; Term s b) -&gt; Term s b
 pmatch' :: forall (s :: S) (b :: PType).
 Term s (PInner PDatum) -&gt; (PDatum s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-84"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-85"></span><span>      </span><span id="local-6989586621679287828"><span id="local-6989586621679287834"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PDatum) -&gt; Term s PDatum)
+</span><span id="line-82"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-83"></span><span>      </span><span id="local-6989586621679285927"><span id="local-6989586621679285933"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PDatum) -&gt; Term s PDatum)
 -&gt; (forall (s :: S). Term s PDatum -&gt; Term s PData)
 -&gt; PIsData PDatum
 forall (s :: S). Term s (PAsData PDatum) -&gt; Term s PDatum
@@ -512,8 +491,8 @@ pfromDataImpl :: forall (s :: S). Term s (PAsData PDatum) -&gt; Term s PDatum
 $cpdataImpl :: forall (s :: S). Term s PDatum -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PDatum -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-86"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-87"></span><span>      </span><span id="local-6989586621679287840"><span class="annot"><span class="annottext">(forall (s :: S). Term s PDatum -&gt; Term s PDatum -&gt; Term s PBool)
+</span><span id="line-84"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-85"></span><span>      </span><span id="local-6989586621679285939"><span class="annot"><span class="annottext">(forall (s :: S). Term s PDatum -&gt; Term s PDatum -&gt; Term s PBool)
 -&gt; PEq PDatum
 forall (s :: S). Term s PDatum -&gt; Term s PDatum -&gt; Term s PBool
 forall (t :: PType).
@@ -521,8 +500,8 @@ forall (t :: PType).
 $c#== :: forall (s :: S). Term s PDatum -&gt; Term s PDatum -&gt; Term s PBool
 #== :: forall (s :: S). Term s PDatum -&gt; Term s PDatum -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
-</span><span id="line-88"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-89"></span><span>      </span><span id="local-6989586621679287854"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PDatum -&gt; Term s PString)
+</span><span id="line-86"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-87"></span><span>      </span><span id="local-6989586621679285953"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PDatum -&gt; Term s PString)
 -&gt; PShow PDatum
 forall (s :: S). Bool -&gt; Term s PDatum -&gt; Term s PString
 forall (t :: PType).
@@ -530,28 +509,28 @@ forall (t :: PType).
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PDatum -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PDatum -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-90"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-91"></span><span>      </span><span id="local-6989586621679287871"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
-</span><span id="line-92"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-93"></span><span>
-</span><span id="line-94"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-95"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-96"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
-</span><span id="line-97"></span><span>
-</span><span id="line-98"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-99"></span><span id="local-6989586621679287899"><span id="local-6989586621679287908"><span id="local-6989586621679287917"><span id="local-6989586621679287926"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-100"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Datum</span></span><span>
-</span><span id="line-101"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-102"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span></span></span></span></span><span>
-</span><span id="line-103"></span><span>
-</span><span id="line-104"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-105"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679287953"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-106"></span><span>
-</span><span id="line-107"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-108"></span><span class="hs-keyword">newtype</span><span> </span><span id="PDatumHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-var">PDatumHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679287963"><span class="annot"><a href="#local-6989586621679287963"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PDatumHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-var">PDatumHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679287963"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-109"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-110"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-111"></span><span>      </span><span id="local-6989586621679287966"><span id="local-6989586621679287968"><span class="annot"><span class="annottext">(forall x. PDatumHash s -&gt; Rep (PDatumHash s) x)
+</span><span id="line-88"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-89"></span><span>      </span><span id="local-6989586621679285970"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
+</span><span id="line-90"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-93"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-94"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-97"></span><span id="local-6989586621679285998"><span id="local-6989586621679286007"><span id="local-6989586621679286016"><span id="local-6989586621679286025"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-98"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Datum</span></span><span>
+</span><span id="line-99"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-100"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span></span></span></span></span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-103"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679286052"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatum"><span class="hs-identifier hs-type">PDatum</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-104"></span><span>
+</span><span id="line-105"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-106"></span><span class="hs-keyword">newtype</span><span> </span><span id="PDatumHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-var">PDatumHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679286062"><span class="annot"><a href="#local-6989586621679286062"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PDatumHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-var">PDatumHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679286062"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-108"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-109"></span><span>      </span><span id="local-6989586621679286065"><span id="local-6989586621679286067"><span class="annot"><span class="annottext">(forall x. PDatumHash s -&gt; Rep (PDatumHash s) x)
 -&gt; (forall x. Rep (PDatumHash s) x -&gt; PDatumHash s)
 -&gt; Generic (PDatumHash s)
 forall x. Rep (PDatumHash s) x -&gt; PDatumHash s
@@ -565,10 +544,10 @@ from :: forall x. PDatumHash s -&gt; Rep (PDatumHash s) x
 $cto :: forall (s :: S) x. Rep (PDatumHash s) x -&gt; PDatumHash s
 to :: forall x. Rep (PDatumHash s) x -&gt; PDatumHash s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-112"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-113"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-114"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-115"></span><span>      </span><span id="local-6989586621679287971"><span id="local-6989586621679287977"><span class="annot"><span class="annottext">(forall (s :: S). PDatumHash s -&gt; Term s (PInner PDatumHash))
+</span><span id="line-110"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-111"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-112"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-113"></span><span>      </span><span id="local-6989586621679286070"><span id="local-6989586621679286076"><span class="annot"><span class="annottext">(forall (s :: S). PDatumHash s -&gt; Term s (PInner PDatumHash))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PDatumHash)
     -&gt; (PDatumHash s -&gt; Term s b) -&gt; Term s b)
@@ -591,8 +570,8 @@ pmatch' :: forall (s :: S) (b :: PType).
 Term s (PInner PDatumHash)
 -&gt; (PDatumHash s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-116"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-117"></span><span>      </span><span id="local-6989586621679287981"><span id="local-6989586621679287987"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PDatumHash) -&gt; Term s PDatumHash)
+</span><span id="line-114"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-115"></span><span>      </span><span id="local-6989586621679286080"><span id="local-6989586621679286086"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PDatumHash) -&gt; Term s PDatumHash)
 -&gt; (forall (s :: S). Term s PDatumHash -&gt; Term s PData)
 -&gt; PIsData PDatumHash
 forall (s :: S). Term s (PAsData PDatumHash) -&gt; Term s PDatumHash
@@ -605,8 +584,8 @@ pfromDataImpl :: forall (s :: S). Term s (PAsData PDatumHash) -&gt; Term s PDatu
 $cpdataImpl :: forall (s :: S). Term s PDatumHash -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PDatumHash -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-118"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-119"></span><span>      </span><span id="local-6989586621679287992"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-116"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-117"></span><span>      </span><span id="local-6989586621679286091"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool)
 -&gt; PEq PDatumHash
 forall (s :: S).
@@ -618,27 +597,29 @@ Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
 #== :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
-</span><span id="line-120"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-121"></span><span>      </span><span id="local-6989586621679288007"><span id="local-6989586621679288013"><span id="local-6989586621679288018"><span id="local-6989586621679288021"><span class="annot"><span class="annottext">PEq PDatumHash
+</span><span id="line-118"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-119"></span><span>      </span><span id="local-6989586621679286106"><span id="local-6989586621679286112"><span id="local-6989586621679286117"><span id="local-6989586621679286120"><span class="annot"><span class="annottext">PEq PDatumHash
 PEq PDatumHash =&gt;
 (forall (s :: S).
  Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool)
 -&gt; (forall (s :: S).
     Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool)
 -&gt; (forall (s :: S).
-    Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool)
+    Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash)
 -&gt; (forall (s :: S).
-    Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool)
--&gt; PPartialOrd PDatumHash
+    Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash)
+-&gt; POrd PDatumHash
 forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
+forall (s :: S).
+Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash
 forall (t :: PType).
 PEq t =&gt;
 (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
 -&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; PPartialOrd t
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; POrd t
 $c#&lt;= :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
 #&lt;= :: forall (s :: S).
@@ -647,29 +628,6 @@ $c#&lt; :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
 #&lt; :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
-$c#&gt;= :: forall (s :: S).
-Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
-#&gt;= :: forall (s :: S).
-Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
-$c#&gt; :: forall (s :: S).
-Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
-#&gt; :: forall (s :: S).
-Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PBool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PPartialOrd</span></span></span></span></span></span><span>
-</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-123"></span><span>      </span><span id="local-6989586621679288030"><span id="local-6989586621679288034"><span class="annot"><span class="annottext">PPartialOrd PDatumHash
-PPartialOrd PDatumHash =&gt;
-(forall (s :: S).
- Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash)
--&gt; (forall (s :: S).
-    Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash)
--&gt; POrd PDatumHash
-forall (s :: S).
-Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash
-forall (t :: PType).
-PPartialOrd t =&gt;
-(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t) -&gt; POrd t
 $cpmax :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash
 pmax :: forall (s :: S).
@@ -678,9 +636,9 @@ $cpmin :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash
 pmin :: forall (s :: S).
 Term s PDatumHash -&gt; Term s PDatumHash -&gt; Term s PDatumHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span><span>
-</span><span id="line-124"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-125"></span><span>      </span><span id="local-6989586621679288037"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PDatumHash -&gt; Term s PString)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
+</span><span id="line-120"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-121"></span><span>      </span><span id="local-6989586621679286127"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PDatumHash -&gt; Term s PString)
 -&gt; PShow PDatumHash
 forall (s :: S). Bool -&gt; Term s PDatumHash -&gt; Term s PString
 forall (t :: PType).
@@ -688,28 +646,28 @@ forall (t :: PType).
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PDatumHash -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PDatumHash -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-126"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-127"></span><span>      </span><span id="local-6989586621679288055"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
-</span><span id="line-128"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-123"></span><span>      </span><span id="local-6989586621679286145"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
+</span><span id="line-124"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-125"></span><span>
+</span><span id="line-126"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-127"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-128"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
 </span><span id="line-129"></span><span>
-</span><span id="line-130"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-131"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-132"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
-</span><span id="line-133"></span><span>
-</span><span id="line-134"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-135"></span><span id="local-6989586621679288085"><span id="local-6989586621679288094"><span id="local-6989586621679288103"><span id="local-6989586621679288112"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-136"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.DatumHash</span></span><span>
-</span><span id="line-137"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-138"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span></span></span></span></span><span>
-</span><span id="line-139"></span><span>
-</span><span id="line-140"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-141"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679288139"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-142"></span><span>
-</span><span id="line-143"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-144"></span><span class="hs-keyword">newtype</span><span> </span><span id="PRedeemer"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-var">PRedeemer</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679288149"><span class="annot"><a href="#local-6989586621679288149"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PRedeemer"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-var">PRedeemer</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679288149"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span class="hs-special">)</span><span>
-</span><span id="line-145"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-146"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-147"></span><span>      </span><span id="local-6989586621679288152"><span id="local-6989586621679288154"><span class="annot"><span class="annottext">(forall x. PRedeemer s -&gt; Rep (PRedeemer s) x)
+</span><span id="line-130"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-131"></span><span id="local-6989586621679286175"><span id="local-6989586621679286184"><span id="local-6989586621679286193"><span id="local-6989586621679286202"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-132"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.DatumHash</span></span><span>
+</span><span id="line-133"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-134"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span></span></span></span></span><span>
+</span><span id="line-135"></span><span>
+</span><span id="line-136"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-137"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679286229"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PDatumHash"><span class="hs-identifier hs-type">PDatumHash</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-140"></span><span class="hs-keyword">newtype</span><span> </span><span id="PRedeemer"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-var">PRedeemer</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679286239"><span class="annot"><a href="#local-6989586621679286239"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PRedeemer"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-var">PRedeemer</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679286239"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span class="hs-special">)</span><span>
+</span><span id="line-141"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-142"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-143"></span><span>      </span><span id="local-6989586621679286242"><span id="local-6989586621679286244"><span class="annot"><span class="annottext">(forall x. PRedeemer s -&gt; Rep (PRedeemer s) x)
 -&gt; (forall x. Rep (PRedeemer s) x -&gt; PRedeemer s)
 -&gt; Generic (PRedeemer s)
 forall x. Rep (PRedeemer s) x -&gt; PRedeemer s
@@ -723,10 +681,10 @@ from :: forall x. PRedeemer s -&gt; Rep (PRedeemer s) x
 $cto :: forall (s :: S) x. Rep (PRedeemer s) x -&gt; PRedeemer s
 to :: forall x. Rep (PRedeemer s) x -&gt; PRedeemer s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-148"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-149"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-150"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-151"></span><span>      </span><span id="local-6989586621679288157"><span id="local-6989586621679288163"><span class="annot"><span class="annottext">(forall (s :: S). PRedeemer s -&gt; Term s (PInner PRedeemer))
+</span><span id="line-144"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-145"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-146"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-147"></span><span>      </span><span id="local-6989586621679286247"><span id="local-6989586621679286253"><span class="annot"><span class="annottext">(forall (s :: S). PRedeemer s -&gt; Term s (PInner PRedeemer))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PRedeemer) -&gt; (PRedeemer s -&gt; Term s b) -&gt; Term s b)
 -&gt; PlutusType PRedeemer
@@ -745,8 +703,8 @@ Term s (PInner PRedeemer) -&gt; (PRedeemer s -&gt; Term s b) -&gt; Term s b
 pmatch' :: forall (s :: S) (b :: PType).
 Term s (PInner PRedeemer) -&gt; (PRedeemer s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-152"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-153"></span><span>      </span><span id="local-6989586621679288167"><span id="local-6989586621679288173"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PRedeemer) -&gt; Term s PRedeemer)
+</span><span id="line-148"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-149"></span><span>      </span><span id="local-6989586621679286257"><span id="local-6989586621679286263"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PRedeemer) -&gt; Term s PRedeemer)
 -&gt; (forall (s :: S). Term s PRedeemer -&gt; Term s PData)
 -&gt; PIsData PRedeemer
 forall (s :: S). Term s (PAsData PRedeemer) -&gt; Term s PRedeemer
@@ -759,8 +717,8 @@ pfromDataImpl :: forall (s :: S). Term s (PAsData PRedeemer) -&gt; Term s PRedee
 $cpdataImpl :: forall (s :: S). Term s PRedeemer -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PRedeemer -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-154"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-155"></span><span>      </span><span id="local-6989586621679288178"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-150"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-151"></span><span>      </span><span id="local-6989586621679286268"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PRedeemer -&gt; Term s PRedeemer -&gt; Term s PBool)
 -&gt; PEq PRedeemer
 forall (s :: S).
@@ -772,8 +730,8 @@ Term s PRedeemer -&gt; Term s PRedeemer -&gt; Term s PBool
 #== :: forall (s :: S).
 Term s PRedeemer -&gt; Term s PRedeemer -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
-</span><span id="line-156"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-157"></span><span>      </span><span id="local-6989586621679288191"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PRedeemer -&gt; Term s PString)
+</span><span id="line-152"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-153"></span><span>      </span><span id="local-6989586621679286281"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PRedeemer -&gt; Term s PString)
 -&gt; PShow PRedeemer
 forall (s :: S). Bool -&gt; Term s PRedeemer -&gt; Term s PString
 forall (t :: PType).
@@ -781,28 +739,28 @@ forall (t :: PType).
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PRedeemer -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PRedeemer -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-158"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-159"></span><span>      </span><span id="local-6989586621679288207"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
-</span><span id="line-160"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-154"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-155"></span><span>      </span><span id="local-6989586621679286297"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
+</span><span id="line-156"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-157"></span><span>
+</span><span id="line-158"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-159"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-160"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
 </span><span id="line-161"></span><span>
-</span><span id="line-162"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-163"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-164"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
-</span><span id="line-165"></span><span>
-</span><span id="line-166"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-167"></span><span id="local-6989586621679288234"><span id="local-6989586621679288243"><span id="local-6989586621679288252"><span id="local-6989586621679288261"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-168"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Redeemer</span></span><span>
-</span><span id="line-169"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-170"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span></span></span></span></span><span>
-</span><span id="line-171"></span><span>
-</span><span id="line-172"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-173"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679288288"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-174"></span><span>
-</span><span id="line-175"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-176"></span><span class="hs-keyword">newtype</span><span> </span><span id="PRedeemerHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-var">PRedeemerHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679288297"><span class="annot"><a href="#local-6989586621679288297"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PRedeemerHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-var">PRedeemerHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679288297"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-177"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-178"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-179"></span><span>      </span><span id="local-6989586621679288300"><span id="local-6989586621679288302"><span class="annot"><span class="annottext">(forall x. PRedeemerHash s -&gt; Rep (PRedeemerHash s) x)
+</span><span id="line-162"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-163"></span><span id="local-6989586621679286324"><span id="local-6989586621679286333"><span id="local-6989586621679286342"><span id="local-6989586621679286351"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-164"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Redeemer</span></span><span>
+</span><span id="line-165"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-166"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span></span></span></span></span><span>
+</span><span id="line-167"></span><span>
+</span><span id="line-168"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-169"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679286378"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemer"><span class="hs-identifier hs-type">PRedeemer</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-170"></span><span>
+</span><span id="line-171"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-172"></span><span class="hs-keyword">newtype</span><span> </span><span id="PRedeemerHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-var">PRedeemerHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679286387"><span class="annot"><a href="#local-6989586621679286387"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PRedeemerHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-var">PRedeemerHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679286387"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-173"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-174"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-175"></span><span>      </span><span id="local-6989586621679286390"><span id="local-6989586621679286392"><span class="annot"><span class="annottext">(forall x. PRedeemerHash s -&gt; Rep (PRedeemerHash s) x)
 -&gt; (forall x. Rep (PRedeemerHash s) x -&gt; PRedeemerHash s)
 -&gt; Generic (PRedeemerHash s)
 forall x. Rep (PRedeemerHash s) x -&gt; PRedeemerHash s
@@ -816,10 +774,10 @@ from :: forall x. PRedeemerHash s -&gt; Rep (PRedeemerHash s) x
 $cto :: forall (s :: S) x. Rep (PRedeemerHash s) x -&gt; PRedeemerHash s
 to :: forall x. Rep (PRedeemerHash s) x -&gt; PRedeemerHash s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-180"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-181"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-182"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-183"></span><span>      </span><span id="local-6989586621679288305"><span id="local-6989586621679288311"><span class="annot"><span class="annottext">(forall (s :: S). PRedeemerHash s -&gt; Term s (PInner PRedeemerHash))
+</span><span id="line-176"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-177"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-178"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-179"></span><span>      </span><span id="local-6989586621679286395"><span id="local-6989586621679286401"><span class="annot"><span class="annottext">(forall (s :: S). PRedeemerHash s -&gt; Term s (PInner PRedeemerHash))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PRedeemerHash)
     -&gt; (PRedeemerHash s -&gt; Term s b) -&gt; Term s b)
@@ -842,8 +800,8 @@ pmatch' :: forall (s :: S) (b :: PType).
 Term s (PInner PRedeemerHash)
 -&gt; (PRedeemerHash s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-184"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-185"></span><span>      </span><span id="local-6989586621679288315"><span id="local-6989586621679288321"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-180"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-181"></span><span>      </span><span id="local-6989586621679286405"><span id="local-6989586621679286411"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PAsData PRedeemerHash) -&gt; Term s PRedeemerHash)
 -&gt; (forall (s :: S). Term s PRedeemerHash -&gt; Term s PData)
 -&gt; PIsData PRedeemerHash
@@ -860,8 +818,8 @@ Term s (PAsData PRedeemerHash) -&gt; Term s PRedeemerHash
 $cpdataImpl :: forall (s :: S). Term s PRedeemerHash -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PRedeemerHash -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-186"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-187"></span><span>      </span><span id="local-6989586621679288326"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-182"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-183"></span><span>      </span><span id="local-6989586621679286416"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool)
 -&gt; PEq PRedeemerHash
 forall (s :: S).
@@ -873,27 +831,32 @@ Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
 #== :: forall (s :: S).
 Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
-</span><span id="line-188"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-189"></span><span>      </span><span id="local-6989586621679288341"><span id="local-6989586621679288347"><span id="local-6989586621679288352"><span id="local-6989586621679288355"><span class="annot"><span class="annottext">PEq PRedeemerHash
+</span><span id="line-184"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-185"></span><span>      </span><span id="local-6989586621679286431"><span id="local-6989586621679286437"><span id="local-6989586621679286442"><span id="local-6989586621679286445"><span class="annot"><span class="annottext">PEq PRedeemerHash
 PEq PRedeemerHash =&gt;
 (forall (s :: S).
  Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool)
 -&gt; (forall (s :: S).
     Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool)
 -&gt; (forall (s :: S).
-    Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool)
+    Term s PRedeemerHash
+    -&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash)
 -&gt; (forall (s :: S).
-    Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool)
--&gt; PPartialOrd PRedeemerHash
+    Term s PRedeemerHash
+    -&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash)
+-&gt; POrd PRedeemerHash
 forall (s :: S).
 Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
+forall (s :: S).
+Term s PRedeemerHash
+-&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash
 forall (t :: PType).
 PEq t =&gt;
 (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
 -&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; PPartialOrd t
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; POrd t
 $c#&lt;= :: forall (s :: S).
 Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
 #&lt;= :: forall (s :: S).
@@ -902,32 +865,6 @@ $c#&lt; :: forall (s :: S).
 Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
 #&lt; :: forall (s :: S).
 Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
-$c#&gt;= :: forall (s :: S).
-Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
-#&gt;= :: forall (s :: S).
-Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
-$c#&gt; :: forall (s :: S).
-Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
-#&gt; :: forall (s :: S).
-Term s PRedeemerHash -&gt; Term s PRedeemerHash -&gt; Term s PBool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PPartialOrd</span></span></span></span></span></span><span>
-</span><span id="line-190"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-191"></span><span>      </span><span id="local-6989586621679288364"><span id="local-6989586621679288368"><span class="annot"><span class="annottext">PPartialOrd PRedeemerHash
-PPartialOrd PRedeemerHash =&gt;
-(forall (s :: S).
- Term s PRedeemerHash
- -&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash)
--&gt; (forall (s :: S).
-    Term s PRedeemerHash
-    -&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash)
--&gt; POrd PRedeemerHash
-forall (s :: S).
-Term s PRedeemerHash
--&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash
-forall (t :: PType).
-PPartialOrd t =&gt;
-(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t) -&gt; POrd t
 $cpmax :: forall (s :: S).
 Term s PRedeemerHash
 -&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash
@@ -940,9 +877,9 @@ Term s PRedeemerHash
 pmin :: forall (s :: S).
 Term s PRedeemerHash
 -&gt; Term s PRedeemerHash -&gt; Term s PRedeemerHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span><span>
-</span><span id="line-192"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-193"></span><span>      </span><span id="local-6989586621679288371"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PRedeemerHash -&gt; Term s PString)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
+</span><span id="line-186"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-187"></span><span>      </span><span id="local-6989586621679286452"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PRedeemerHash -&gt; Term s PString)
 -&gt; PShow PRedeemerHash
 forall (s :: S). Bool -&gt; Term s PRedeemerHash -&gt; Term s PString
 forall (t :: PType).
@@ -950,20 +887,20 @@ forall (t :: PType).
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PRedeemerHash -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PRedeemerHash -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-194"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-195"></span><span>      </span><span id="local-6989586621679288389"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
-</span><span id="line-196"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-197"></span><span>
-</span><span id="line-198"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-199"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-200"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
+</span><span id="line-188"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-189"></span><span>      </span><span id="local-6989586621679286470"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
+</span><span id="line-190"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-191"></span><span>
+</span><span id="line-192"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-193"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-194"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
+</span><span id="line-195"></span><span>
+</span><span id="line-196"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-197"></span><span id="local-6989586621679286499"><span id="local-6989586621679286508"><span id="local-6989586621679286517"><span id="local-6989586621679286526"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-198"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.RedeemerHash</span></span><span>
+</span><span id="line-199"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-200"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span></span></span></span></span><span>
 </span><span id="line-201"></span><span>
-</span><span id="line-202"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-203"></span><span id="local-6989586621679288418"><span id="local-6989586621679288427"><span id="local-6989586621679288436"><span id="local-6989586621679288445"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-204"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.RedeemerHash</span></span><span>
-</span><span id="line-205"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-206"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span></span></span></span></span><span>
-</span><span id="line-207"></span><span>
-</span><span id="line-208"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-209"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679288472"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-210"></span></pre></body></html>
+</span><span id="line-202"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
+</span><span id="line-203"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679286553"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Scripts.html#PRedeemerHash"><span class="hs-identifier hs-type">PRedeemerHash</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-204"></span></pre></body></html>
