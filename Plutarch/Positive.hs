@@ -20,7 +20,7 @@ import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted (PLifted))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (PIntegral, PNum (pfromInteger, (#-)))
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<=)))
+import Plutarch.Internal.Ord (POrd ((#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -58,7 +58,6 @@ newtype PPositive (s :: S) = PPositive (Term s PInteger)
     ( PlutusType
     , PIsData
     , PEq
-    , PPartialOrd
     , POrd
     , PIntegral
     , PShow

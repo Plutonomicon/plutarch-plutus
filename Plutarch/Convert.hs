@@ -20,7 +20,7 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd, PPartialOrd)
+import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -51,8 +51,6 @@ newtype PEndianness (s :: S) = PEndianness (Term s PBool)
       PlutusType
     , -- | @since WIP
       PEq
-    , -- | @since WIP
-      PPartialOrd
     , -- | @since WIP
       POrd
     )

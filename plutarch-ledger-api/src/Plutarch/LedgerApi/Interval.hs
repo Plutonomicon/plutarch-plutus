@@ -67,10 +67,6 @@ newtype PInterval (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
       PShow
     )
 
@@ -113,8 +109,6 @@ newtype PLowerBound (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PDataFields
     , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
       PShow
     )
 
@@ -129,7 +123,7 @@ instance (PIsData a, PCountable a) => PEq (PLowerBound a) where
   lb1 #== lb2 = (pinclusiveLowerBound # lb1) #== (pinclusiveLowerBound # lb2)
 
 -- | @since WIP
-instance (PIsData a, PCountable a) => PPartialOrd (PLowerBound a) where
+instance (PIsData a, PCountable a) => POrd (PLowerBound a) where
   {-# INLINEABLE (#<=) #-}
   lb1 #<= lb2 = (pinclusiveLowerBound # lb1) #<= (pinclusiveLowerBound # lb2)
   {-# INLINEABLE (#<) #-}
@@ -168,8 +162,6 @@ newtype PUpperBound (a :: S -> Type) (s :: S)
     , -- | @since 2.0.0
       PDataFields
     , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
       PShow
     )
 
@@ -184,7 +176,7 @@ instance (PIsData a, PEnumerable a) => PEq (PUpperBound a) where
   ub1 #== ub2 = (pinclusiveUpperBound # ub1) #== (pinclusiveUpperBound # ub2)
 
 -- | @since WIP
-instance (PIsData a, PEnumerable a) => PPartialOrd (PUpperBound a) where
+instance (PIsData a, PEnumerable a) => POrd (PUpperBound a) where
   {-# INLINEABLE (#<=) #-}
   ub1 #<= ub2 = (pinclusiveUpperBound # ub1) #<= (pinclusiveUpperBound # ub2)
   {-# INLINEABLE (#<) #-}
@@ -216,8 +208,6 @@ data PExtended (a :: S -> Type) (s :: S)
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- | @since 2.0.0
-      PPartialOrd
     , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0

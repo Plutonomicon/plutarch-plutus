@@ -1,9 +1,11 @@
 module Plutarch.Internal.Ord (
-  PPartialOrd (..),
   POrd (..),
+  (#>),
+  (#>=),
 ) where
 
-import Plutarch.Builtin.Bool (PBool, pif', pnot)
+import Data.Kind (Type)
+import Plutarch.Builtin.Bool (PBool, pand', pif', por')
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (pconstant)
@@ -14,102 +16,100 @@ import Plutarch.Internal.Term (
   Term,
   punsafeBuiltin,
   (#),
-  (#$),
  )
 import PlutusCore qualified as PLC
-
-{- | Partial ordering relation.
-
-= Laws
-
-'#<=' must form a partial order. More precisely:
-
-1. @x #<= x@ @=@ @True@ (@#<=@ is reflexive)
-2. @(x #<= y) #&& (y #<= x)@ @=@ @x #== y@ (@#<=@ is anti-symmetric)
-3. @(x #<= y) #&& (y #<= z)@ @=@ @x #<= z@ (@#<= is transitive)
-
-Furthermore, '#<' must be an equivalent strict partial order to '#<=':
-
-4. @x #<= y@ @=@ @(x #< y) #|| (x #== y)@
-5. @x #< x@ @=@ @False@ (@#<@ is irreflexive)
-6. @x #< y@ @=@ @pnot (y #< x)@ (@#<@ is asymmetric)
-7. @(x #< y) #&& (y #< z)@ @=@ @x #< z@ (@#<@ is transitive)
-
-Lastly, if you define '#>=' or '#>', ensure that the following also hold:
-
-8. @x #> y@ @=@ @y #< x@
-9. @x #>= y@ @=@ @pnot (x #< y)@
-
-The default implementations of '#>=' and '#>' ensure these laws.
--}
-class PEq t => PPartialOrd t where
-  (#<=) :: Term s t -> Term s t -> Term s PBool
-  default (#<=) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
-  x #<= y = pto x #<= pto y
-  (#<) :: Term s t -> Term s t -> Term s PBool
-  default (#<) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
-  x #< y = pto x #< pto y
-
-  -- | @since WIP
-  (#>=) :: forall (s :: S). Term s t -> Term s t -> Term s PBool
-  x #>= y = pnot #$ x #< y
-
-  -- | @since WIP
-  (#>) :: forall (s :: S). Term s t -> Term s t -> Term s PBool
-  x #> y = y #< x
-
-infix 4 #<=
-infix 4 #<
-infix 4 #>=
-infix 4 #>
 
 {- | Total ordering relation.
 
 = Laws
 
-'pmax' and 'pmin' must form a commutative semiring without identity
-elements, where addition also distributes over multiplication. More
-precisely:
+'#<=' must form a total order. More precisely:
 
-1. @pmax x y@ @=@ @pmax y x@ (@pmax@ is commutative)
-2. @pmin x y@ @=@ @pmin y x@ (@pmin@ is commutative)
-3. @pmax x (pmax y z)@ @=@ @pmax (pmax x y) z@ (@pmax@ is associative)
-4. @pmin x (pmin y z)@ @=@ @pmin (pmin x y) z@ (@pmin@ is associative)
-5. @pmax x (pmin y z)@ @=@ @pmin (pmax x y) (pmax x z)@ (@pmax@ distributes
-   over @pmin@)
-6. @pmin x (pmax y z)@ @=@ @pmax (pmin x y) (pmin x z)@ (@pmin@ distributes
-   over @pmax@)
+1. @x #<= x@ @=@ @pcon PTrue@ (reflexivity)
+2. @(x #<= y) #&& (y #<= z)@ @=@ @x #<= z@ (transitivity)
+3. @(x #<= y) #|| (y #<= x)@ @=@ @pcon PTrue@ (totality)
 
-Furthermore, the following must hold relative '#<':
+Furthermore, '#<' must be an equivalent strict total order to '#<=':
 
-7. @pmin x y@ @=@ @if (x #< y) then x else y@
-8. @pmax x y@ @=@ @if (x #< y) then y else x@
+4. @x #< x@ @=@ @pcon PFalse@ (irreflexivity)
+5. @(x #< y) #&& (y #< z)@ @=@ @x #< z@ (transitivity)
+6. @(x #< y) #|| (y #< x) #|| (x #== z)@ @=@ @pcon PTrue@ (trichotomy)
+7. @x #<= y@ @=@ @(x #< y) #|| (x #== y)@ (strict equivalence)
 
-Laws 7 and 8 are also the defaults, as for most types, this is the best you
-can do.
+If you define 'pmax' or 'pmin', ensure the following also hold:
+
+8. @pmax # x # y@ @=@ @pmax # y # x@ (commutativity, also for @pmin)
+9. @pmax # x #$ pmax y z@ @=@ @pmax # (pmax # x # y) # z@ (associativity,
+    also for @pmin)
+10. @pmax # x #$ pmin # y # z@ @=@ @pmin # (pmax # x # y) # (pmax # x # z)@
+    ('pmax' distributes over 'pmin', also equivalent for 'pmin')
+11. @pmin x y@ @=@ @pif' (x #<= y) x y@
+12. @pmax x y@ @=@ @pif' (x #<= y) y x@
+
+Laws 8-12 hold if you use the defaults provided by this type class.
+
+@since WIP
 -}
-class PPartialOrd t => POrd t where
+class PEq t => POrd t where
   -- | @since WIP
+  {-# INLINEABLE (#<=) #-}
+  (#<=) :: Term s t -> Term s t -> Term s PBool
+  default (#<=) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
+  x #<= y = pto x #<= pto y
+
+  -- | @since WIP
+  {-# INLINEABLE (#<) #-}
+  (#<) :: Term s t -> Term s t -> Term s PBool
+  default (#<) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
+  x #< y = pto x #< pto y
+
+  -- | @since WIP
+  {-# INLINEABLE pmax #-}
   pmax :: forall (s :: S). Term s t -> Term s t -> Term s t
-  pmax x y = pif' # (x #< y) # y # x
+  pmax x y = pif' # (x #<= y) # y # x
 
   -- | @since WIP
+  {-# INLINEABLE pmin #-}
   pmin :: forall (s :: S). Term s t -> Term s t -> Term s t
-  pmin x y = pif' # (x #< y) # x # y
+  pmin x y = pif' # (x #<= y) # x # y
 
-instance PPartialOrd PBool where
+infix 4 #<=
+infix 4 #<
+
+-- | @since WIP
+(#>) ::
+  forall (a :: S -> Type) (s :: S).
+  POrd a =>
+  Term s a ->
+  Term s a ->
+  Term s PBool
+x #> y = y #< x
+
+infix 4 #>
+
+-- | @since WIP
+(#>=) ::
+  forall (a :: S -> Type) (s :: S).
+  POrd a =>
+  Term s a ->
+  Term s a ->
+  Term s PBool
+x #>= y = y #<= x
+
+infix 4 #>=
+
+instance POrd PBool where
   {-# INLINEABLE (#<) #-}
   x #< y = pif' # x # pconstant False # y
   {-# INLINEABLE (#<=) #-}
   x #<= y = pif' # x # y # pconstant True
+  {-# INLINEABLE pmin #-}
+  pmin x y = pand' # x # y
+  {-# INLINEABLE pmax #-}
+  pmax x y = por' # x # y
 
-instance POrd PBool
-
-instance PPartialOrd PInteger where
+instance POrd PInteger where
   {-# INLINEABLE (#<=) #-}
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
-
-  {-# INLIENABLE (#<) #-}
+  {-# INLINEABLE (#<) #-}
   x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
-
-instance POrd PInteger

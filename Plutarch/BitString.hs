@@ -19,7 +19,7 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.ByteString (PByteString)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<)))
+import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -60,8 +60,6 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
       PlutusType
     , -- | @since WIP
       PEq
-    , -- | @since WIP
-      PPartialOrd
     , -- | @since WIP
       POrd
     )

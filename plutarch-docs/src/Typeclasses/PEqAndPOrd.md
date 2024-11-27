@@ -27,15 +27,13 @@ class PEq t where
 ```
 That would yield a `Term s PBool`, which you would probably use with `pif` (or similar).
 
-Similarly, `PPartialOrd` (and `POrd`) emulates `Ord`: (where `PPartialOrd` represents partial orders
-and `POrd` represents total orders)
+Similarly, `POrd` emulates `Ord`: 
 
 ```hs
-class PEq => PPartialOrd t where
+-- The actual POrd has more methods, but these are the only required ones.
+class PEq => POrd t where
   (#<) :: Term s t -> Term s t -> Term s PBool
   (#<=) :: Term s t -> Term s t -> Term s PBool
-
-class PPartialOrd => POrd t
 ```
 
 It works as you would expect:
@@ -57,7 +55,7 @@ data PMaybe' a s
 instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
 ```
 
-For data encoded types, you can derive `PEq`, `PPartialOrd` and `POrd` via there data representation:
+For data encoded types, you can derive `PEq` and `POrd` via their data representation:
 
 ```haskell
 newtype PTriplet a s
@@ -72,7 +70,7 @@ newtype PTriplet a s
           )
       )
   deriving stock Generic
-  deriving anyclass (PlutusType, PEq, PPartialOrd)
+  deriving anyclass (PlutusType, PEq)
 
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 ```

@@ -37,7 +37,11 @@ import Plutarch.Builtin (
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif)
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
+  pif,
+  pif',
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
@@ -57,7 +61,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -144,14 +148,12 @@ data PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
       PEq
     , -- | @since WIP
       PShow
-    , -- | @since WIP
-      POrd
     )
 
 -- | @since WIP
 instance
-  (PPartialOrd a, PPartialOrd b, PIsData a, PIsData b) =>
-  PPartialOrd (PEitherData a b)
+  (POrd a, POrd b, PIsData a, PIsData b) =>
+  POrd (PEitherData a b)
   where
   {-# INLINEABLE (#<=) #-}
   t1 #<= t2 = pmatch t1 $ \case
@@ -169,6 +171,22 @@ instance
     PDRight t1' -> pmatch t2 $ \case
       PDLeft _ -> pcon PFalse
       PDRight t2' -> pfromData t1' #< pfromData t2'
+  {-# INLINEABLE pmax #-}
+  pmax t1 t2 = pmatch t1 $ \case
+    PDLeft t1' -> pmatch t2 $ \case
+      PDLeft t2' -> pif' # (pfromData t1' #< pfromData t2') # t2 # t1
+      PDRight _ -> t2
+    PDRight t1' -> pmatch t2 $ \case
+      PDLeft _ -> t1
+      PDRight t2' -> pif' # (pfromData t1' #< pfromData t2') # t2 # t1
+  {-# INLINEABLE pmin #-}
+  pmin t1 t2 = pmatch t1 $ \case
+    PDLeft t1' -> pmatch t2 $ \case
+      PDLeft t2' -> pif' # (pfromData t1' #< pfromData t2') # t1 # t2
+      PDRight _ -> t1
+    PDRight t1' -> pmatch t2 $ \case
+      PDLeft _ -> t2
+      PDRight t2' -> pif' # (pfromData t1' #< pfromData t2') # t1 # t2
 
 -- | @since WIP
 instance PlutusType (PEitherData a b) where

@@ -158,7 +158,7 @@ checkHaskellOrdEquivalent ::
   , Typeable (AsHaskell plutarchInput)
   , Ord (AsHaskell plutarchInput)
   , Typeable plutarchInput
-  , PPartialOrd plutarchInput
+  , POrd plutarchInput
   ) =>
   TestTree
 checkHaskellOrdEquivalent =

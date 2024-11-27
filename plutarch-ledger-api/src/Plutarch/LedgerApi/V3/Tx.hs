@@ -31,8 +31,6 @@ newtype PTxId (s :: S) = PTxId (Term s (PDataNewtype PByteString))
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow
@@ -96,8 +94,6 @@ newtype PTxOutRef (s :: S)
       PDataFields
     , -- | @since 3.1.0
       PEq
-    , -- | @since 3.1.0
-      PPartialOrd
     , -- | @since 3.1.0
       POrd
     , -- | @since 3.1.0

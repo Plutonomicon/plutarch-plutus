@@ -28,7 +28,7 @@ You ideally want to just have this `newtype` be represented as a `PByteString` u
 ```haskell
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, PPartialOrd, POrd, PShow)
+  deriving anyclass (PlutusType, PIsData, PEq, POrd, PShow)
 instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
 
 ```
@@ -49,7 +49,6 @@ Currently, `DerivePNewtype` lets you derive the following typeclasses for your P
 - `PIsData`
 - `PNum`
 - `POrd`
-- `PPartialOrd`
 - `PShow`
 - `PlutusType`
 

@@ -50,7 +50,7 @@ import Plutarch.Internal.Lift (
   unsafeToUni,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
 import Plutarch.Internal.Other (POpaque, pfix, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -663,18 +663,17 @@ instance PEq (PDataNewtype a) where
   a #== b = pto a #== pto b
 
 -- | @since 1.7.0
-instance (PIsData a, PPartialOrd a) => PPartialOrd (PDataNewtype a) where
+instance (PIsData a, POrd a) => POrd (PDataNewtype a) where
+  {-# INLINEABLE (#<=) #-}
   a #<= b =
-    pmatch a \(PDataNewtype a') ->
-      pmatch b \(PDataNewtype b') ->
+    pmatch a $ \(PDataNewtype a') ->
+      pmatch b $ \(PDataNewtype b') ->
         pfromData a' #<= pfromData b'
+  {-# INLINEABLE (#<) #-}
   a #< b =
-    pmatch a \(PDataNewtype a') ->
-      pmatch b \(PDataNewtype b') ->
+    pmatch a $ \(PDataNewtype a') ->
+      pmatch b $ \(PDataNewtype b') ->
         pfromData a' #< pfromData b'
-
--- | @since 1.7.0
-instance (PIsData a, PPartialOrd a) => POrd (PDataNewtype a)
 
 -- | @since 1.7.0
 instance (PIsData a, PShow a) => PShow (PDataNewtype a) where

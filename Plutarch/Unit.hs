@@ -12,7 +12,7 @@ import Plutarch.Internal.Lift (
   PLifted (PLifted),
   pconstant,
  )
-import Plutarch.Internal.Ord (POrd, PPartialOrd ((#<), (#<=)))
+import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch')
 import Plutarch.Internal.Term (Term, plet)
 import Plutarch.Show (PShow (pshow'))
@@ -33,11 +33,16 @@ deriving via
 instance PEq PUnit where
   x #== y = plet x \_ -> plet y \_ -> pcon PTrue
 
-instance PPartialOrd PUnit where
-  x #<= y = plet x \_ -> plet y \_ -> pcon PTrue
-  x #< y = plet x \_ -> plet y \_ -> pcon PFalse
-
-instance POrd PUnit
+-- | @since WIP
+instance POrd PUnit where
+  {-# INLINEABLE (#<=) #-}
+  x #<= y = plet x $ \_ -> plet y $ \_ -> pcon PTrue
+  {-# INLINEABLE (#<) #-}
+  x #< y = plet x $ \_ -> plet y $ \_ -> pcon PFalse
+  {-# INLINEABLE pmax #-}
+  pmax x y = plet x $ \_ -> plet y $ const x
+  {-# INLINEABLE pmin #-}
+  pmin = pmax
 
 instance Semigroup (Term s PUnit) where
   x <> y = plet x \_ -> plet y \_ -> pcon PUnit

@@ -37,8 +37,6 @@ newtype PAddress (s :: S)
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow

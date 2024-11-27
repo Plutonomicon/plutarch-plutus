@@ -31,8 +31,6 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s (PDataNewtype PByteString))
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow
@@ -118,8 +116,6 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s (PDataNewtype PByteString))
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      PPartialOrd
-    , -- | @since 2.0.0
       POrd
     , -- | @since 2.0.0
       PShow
@@ -185,8 +181,6 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s (PDataNewtype PByteString
       PIsData
     , -- | @since 3.1.0
       PEq
-    , -- | @since 3.1.0
-      PPartialOrd
     , -- | @since 3.1.0
       POrd
     , -- | @since 3.1.0
