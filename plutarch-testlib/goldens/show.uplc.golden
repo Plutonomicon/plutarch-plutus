@@ -5219,13 +5219,13 @@ rational.1/2 program
                                                                                                                             !2
                                                                                                                             !1)))))
                                                                                                            (!30
-                                                                                                              (lessThanInteger
+                                                                                                              (lessThanEqualsInteger
                                                                                                                  !2
                                                                                                                  !1)
                                                                                                               !1
                                                                                                               !2)
                                                                                                            (!30
-                                                                                                              (lessThanInteger
+                                                                                                              (lessThanEqualsInteger
                                                                                                                  !2
                                                                                                                  !1)
                                                                                                               !2

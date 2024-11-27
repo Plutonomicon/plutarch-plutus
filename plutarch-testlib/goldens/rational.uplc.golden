@@ -99,8 +99,8 @@ ops.+ program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -217,8 +217,8 @@ ops.- program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -354,8 +354,8 @@ ops.* program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -480,8 +480,8 @@ ops.harmonic-sum program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -614,8 +614,8 @@ ops.multi-product program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -716,13 +716,13 @@ ops.abs program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -843,13 +843,13 @@ ops.signum program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -968,8 +968,8 @@ compare program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -1104,13 +1104,13 @@ round.5/3 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -1253,13 +1253,13 @@ round.4/3 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -1402,13 +1402,13 @@ round.-5/2 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -1551,13 +1551,13 @@ round.-1/4 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -1666,13 +1666,13 @@ truncate.5/4 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -1781,13 +1781,13 @@ truncate.7/4 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -1896,13 +1896,13 @@ truncate.1/4 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -2011,13 +2011,13 @@ truncate.-7/4 program
                                                                                !2
                                                                                !1)))))
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !1
                                                                  !2)
                                                               (!15
-                                                                 (lessThanInteger
+                                                                 (lessThanEqualsInteger
                                                                     !2
                                                                     !1)
                                                                  !2
@@ -2171,8 +2171,8 @@ properFraction.-1/2 program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -2318,8 +2318,8 @@ properFraction.-3/2 program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -2465,8 +2465,8 @@ properFraction.-4/3 program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1
@@ -2563,13 +2563,13 @@ data.id.11/3 program
                                                                             !2
                                                                             !1)))))
                                                            (!15
-                                                              (lessThanInteger
+                                                              (lessThanEqualsInteger
                                                                  !2
                                                                  !1)
                                                               !1
                                                               !2)
                                                            (!15
-                                                              (lessThanInteger
+                                                              (lessThanEqualsInteger
                                                                  !2
                                                                  !1)
                                                               !2
@@ -2672,13 +2672,13 @@ div by 0.1/0 program
                                                                             !2
                                                                             !1)))))
                                                            (!15
-                                                              (lessThanInteger
+                                                              (lessThanEqualsInteger
                                                                  !2
                                                                  !1)
                                                               !1
                                                               !2)
                                                            (!15
-                                                              (lessThanInteger
+                                                              (lessThanEqualsInteger
                                                                  !2
                                                                  !1)
                                                               !2
@@ -2814,8 +2814,8 @@ div by 0.1/(1-1) program
                        (\!0 ->
                           (\!0 ->
                              !5
-                               (!8 (lessThanInteger !2 !1) !1 !2)
-                               (!8 (lessThanInteger !2 !1) !2 !1))
+                               (!8 (lessThanEqualsInteger !2 !1) !1 !2)
+                               (!8 (lessThanEqualsInteger !2 !1) !2 !1))
                             (!6 !2))
                          (!5 !2)))
                  (!1

@@ -45,6 +45,7 @@ module Plutarch.Prelude (
   PBool (..),
   PEq (..),
   POrd (..),
+  (#>),
   pif,
   pif',
   pnot,
@@ -278,7 +279,8 @@ import Plutarch.Internal.Lift (
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (PIntegral (pdiv, pmod, pquot, prem))
 import Plutarch.Internal.Ord (
-  POrd (pmax, pmin, (#<), (#<=), (#>), (#>=)),
+  POrd (pmax, pmin, (#<), (#<=), (#>=)),
+  (#>),
  )
 import Plutarch.Internal.Other (POpaque (POpaque), pfix, popaque, pto)
 import Plutarch.Internal.PLam (pinl, plam)
