@@ -12,7 +12,7 @@ import Plutarch.Internal.Lift (
   PLifted (PLifted),
   pconstant,
  )
-import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=), (#>=)))
+import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.PlutusType (PInner, PlutusType, pcon, pcon', pmatch')
 import Plutarch.Internal.Term (Term, plet)
 import Plutarch.Show (PShow (pshow'))
@@ -39,8 +39,6 @@ instance POrd PUnit where
   x #<= y = plet x $ \_ -> plet y $ \_ -> pcon PTrue
   {-# INLINEABLE (#<) #-}
   x #< y = plet x $ \_ -> plet y $ \_ -> pcon PFalse
-  {-# INLINEABLE (#>=) #-}
-  (#>=) = (#<=)
   {-# INLINEABLE pmax #-}
   pmax x y = plet x $ \_ -> plet y $ const x
   {-# INLINEABLE pmin #-}

@@ -61,7 +61,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
-import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=), (#>=)))
+import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -171,14 +171,6 @@ instance
     PDRight t1' -> pmatch t2 $ \case
       PDLeft _ -> pcon PFalse
       PDRight t2' -> pfromData t1' #< pfromData t2'
-  {-# INLINEABLE (#>=) #-}
-  t1 #>= t2 = pmatch t1 $ \case
-    PDLeft t1' -> pmatch t2 $ \case
-      PDLeft t2' -> pfromData t1' #>= pfromData t2'
-      PDRight _ -> pcon PFalse
-    PDRight t1' -> pmatch t2 $ \case
-      PDLeft _ -> pcon PTrue
-      PDRight t2' -> pfromData t1' #>= pfromData t2'
   {-# INLINEABLE pmax #-}
   pmax t1 t2 = pmatch t1 $ \case
     PDLeft t1' -> pmatch t2 $ \case

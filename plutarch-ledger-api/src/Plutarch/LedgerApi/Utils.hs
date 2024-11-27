@@ -147,14 +147,6 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a) where
     PDJust t1' -> pmatch t2 $ \case
       PDNothing -> pcon PFalse
       PDJust t2' -> pfromData t1' #< pfromData t2'
-  {-# INLINEABLE (#>=) #-}
-  t1 #>= t2 = pmatch t1 $ \case
-    PDNothing -> pmatch t2 $ \case
-      PDNothing -> pcon PTrue
-      PDJust _ -> pcon PFalse
-    PDJust t1' -> pmatch t2 $ \case
-      PDNothing -> pcon PTrue
-      PDJust t2' -> pfromData t1' #>= pfromData t2'
   {-# INLINEABLE pmin #-}
   pmin t1 t2 = pmatch t1 $ \case
     PDNothing -> t1
@@ -213,8 +205,6 @@ instance POrd PRationalData where
   (#<=) = liftCompareOp (#<=)
   {-# INLINEABLE (#<) #-}
   (#<) = liftCompareOp (#<)
-  {-# INLINEABLE (#>=) #-}
-  (#>=) = liftCompareOp (#>=)
 
 -- | @since 3.1.0
 instance DerivePlutusType PRationalData where

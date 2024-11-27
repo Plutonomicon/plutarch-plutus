@@ -82,7 +82,7 @@ import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=), (#>=)))
+import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (POpaque, popaque, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -177,8 +177,6 @@ instance POrd (PDataRecord '[]) where
   _ #<= _ = pconstant True
   {-# INLINEABLE (#<) #-}
   _ #< _ = pconstant False
-  {-# INLINEABLE (#>=) #-}
-  (#>=) = (#<=)
   {-# INLINEABLE pmin #-}
   pmin t _ = t
   {-# INLINEABLE pmax #-}

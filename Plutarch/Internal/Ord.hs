@@ -1,10 +1,11 @@
 module Plutarch.Internal.Ord (
   POrd (..),
   (#>),
+  (#>=),
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (PBool, pand', pif', pnot, por')
+import Plutarch.Builtin.Bool (PBool, pand', pif', por')
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (pconstant)
@@ -15,7 +16,6 @@ import Plutarch.Internal.Term (
   Term,
   punsafeBuiltin,
   (#),
-  (#$),
  )
 import PlutusCore qualified as PLC
 
@@ -36,21 +36,17 @@ Furthermore, '#<' must be an equivalent strict total order to '#<=':
 6. @(x #< y) #|| (y #< x) #|| (x #== z)@ @=@ @pcon PTrue@ (trichotomy)
 7. @x #<= y@ @=@ @(x #< y) #|| (x #== y)@ (strict equivalence)
 
-If you define '#>=', ensure the following holds:
+If you define 'pmax' or 'pmin', ensure the following also hold:
 
-8. @x #>= y@ @=@ @pnot (x #< y)@
-
-Lastly, if you define 'pmax' or 'pmin', ensure the following also hold:
-
-9. @pmax # x # y@ @=@ @pmax # y # x@ (commutativity, also for @pmin)
-10. @pmax # x #$ pmax y z@ @=@ @pmax # (pmax # x # y) # z@ (associativity,
+8. @pmax # x # y@ @=@ @pmax # y # x@ (commutativity, also for @pmin)
+9. @pmax # x #$ pmax y z@ @=@ @pmax # (pmax # x # y) # z@ (associativity,
     also for @pmin)
-11. @pmax # x #$ pmin # y # z@ @=@ @pmin # (pmax # x # y) # (pmax # x # z)@
+10. @pmax # x #$ pmin # y # z@ @=@ @pmin # (pmax # x # y) # (pmax # x # z)@
     ('pmax' distributes over 'pmin', also equivalent for 'pmin')
-12. @pmin x y@ @=@ @pif' (x #<= y) x y@
-13. @pmax x y@ @=@ @pif' (x #<= y) y x@
+11. @pmin x y@ @=@ @pif' (x #<= y) x y@
+12. @pmax x y@ @=@ @pif' (x #<= y) y x@
 
-Laws 8-13 hold if you use the defaults provided by this type class.
+Laws 8-12 hold if you use the defaults provided by this type class.
 
 @since WIP
 -}
@@ -68,11 +64,6 @@ class PEq t => POrd t where
   x #< y = pto x #< pto y
 
   -- | @since WIP
-  {-# INLINEABLE (#>=) #-}
-  (#>=) :: forall (s :: S). Term s t -> Term s t -> Term s PBool
-  x #>= y = pnot #$ x #< y
-
-  -- | @since WIP
   {-# INLINEABLE pmax #-}
   pmax :: forall (s :: S). Term s t -> Term s t -> Term s t
   pmax x y = pif' # (x #<= y) # y # x
@@ -84,7 +75,6 @@ class PEq t => POrd t where
 
 infix 4 #<=
 infix 4 #<
-infix 4 #>=
 
 -- | @since WIP
 (#>) ::
@@ -96,6 +86,17 @@ infix 4 #>=
 x #> y = y #< x
 
 infix 4 #>
+
+-- | @since WIP
+(#>=) ::
+  forall (a :: S -> Type) (s :: S).
+  POrd a =>
+  Term s a ->
+  Term s a ->
+  Term s PBool
+x #>= y = y #<= x
+
+infix 4 #>=
 
 instance POrd PBool where
   {-# INLINEABLE (#<) #-}
