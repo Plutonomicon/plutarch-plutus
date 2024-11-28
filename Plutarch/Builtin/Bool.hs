@@ -21,18 +21,7 @@ module Plutarch.Builtin.Bool (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Lift (
-  DeriveBuiltinPLiftable,
-  PLiftable,
-  PLifted (PLifted),
-  pconstant,
- )
 import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  PlutusType (PInner, pcon', pmatch'),
-  pcon,
-  pmatch,
- )
 import Plutarch.Internal.Term (
   PDelayed,
   S,
@@ -55,23 +44,6 @@ data PBool (s :: S) = PTrue | PFalse
     ( -- | @since WIP
       Show
     )
-
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PBool Bool)
-  instance
-    PLiftable PBool
-
--- | @since WIP
-instance PlutusType PBool where
-  type PInner PBool = PBool
-  {-# INLINEABLE pcon' #-}
-  pcon' =
-    pconstant . \case
-      PTrue -> True
-      PFalse -> False
-  {-# INLINEABLE pmatch' #-}
-  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 -- | @since WIP
 pbuiltinIfThenElse ::
@@ -98,9 +70,13 @@ pif ::
   Term s a ->
   Term s a ->
   Term s a
-pif cond ifT ifF = pmatch cond $ \case
-  PTrue -> ifT
-  PFalse -> ifF
+pif cond ifT ifF =
+  -- TODO: fix. Yes, this is definition of pmatch inlined. Golfing module structure.
+  (pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse))
+    cond
+    $ \case
+      PTrue -> ifT
+      PFalse -> ifF
 
 {- | Boolean negation.
 

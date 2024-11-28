@@ -39,7 +39,10 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
+
 import {-# SOURCE #-} Plutarch.Builtin (PData)
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, popaque)
@@ -375,3 +378,18 @@ mkPLifted t = PLifted (popaque t)
 @since WIP
 -}
 newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed {unPLiftedClosed :: forall (s :: S). PLifted s a}
+
+--------------------------------------------------------------------------------
+-- Instances
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBool Bool)
+  instance
+    PLiftable PBool
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PInteger Integer)
+  instance
+    PLiftable PInteger

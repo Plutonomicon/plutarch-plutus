@@ -31,6 +31,8 @@ import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
+import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Pool (PBool)
 import Plutarch.Internal.Generic (PCode)
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
@@ -124,3 +126,24 @@ instance PlutusType (PFix f) where
   type PInner (PFix f) = f (PFix f)
   pcon' (PFix x) = x
   pmatch' x f = f (PFix x)
+
+--------------------------------------------------------------------------------
+
+-- | @since WIP
+instance PlutusType PBool where
+  type PInner PBool = PBool
+  {-# INLINEABLE pcon' #-}
+  pcon' =
+    _
+      pconstant
+      . \case
+        PTrue -> True
+        PFalse -> False
+  {-# INLINEABLE pmatch' #-}
+  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+
+-- | @since WIP
+deriving instance anyclass PlutusType PInteger
+
+instance DerivePlutusType PInteger where
+  type DPTStrat _ = PlutusTypeNewtype
