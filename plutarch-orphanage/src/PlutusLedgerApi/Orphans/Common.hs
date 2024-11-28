@@ -18,6 +18,7 @@ import PlutusPrelude (Pretty)
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
+import PlutusTx.Ratio (fromGHC, toGHC)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   Arbitrary1 (liftArbitrary, liftShrink),
@@ -34,6 +35,13 @@ import Test.QuickCheck (
   sized,
   variant,
  )
+
+-- | @since WIP
+instance Arbitrary PlutusTx.Rational where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = fromGHC <$> arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink = fmap fromGHC . shrink . toGHC
 
 -- | @since 1.0.0
 instance Arbitrary PlutusTx.BuiltinByteString where
