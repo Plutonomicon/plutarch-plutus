@@ -12,8 +12,9 @@ import Plutarch.LedgerApi.V1 (
  )
 import Plutarch.Prelude
 import Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
-import Plutarch.Test.Laws (checkHaskellOrdEquivalent)
+import Plutarch.Test.Laws (checkHaskellOrdEquivalent, checkPOrdLaws)
 import Plutarch.Test.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
+import PlutusLedgerApi.QuickCheck.Utils ()
 import PlutusLedgerApi.V1 (Credential (PubKeyCredential, ScriptCredential))
 import Test.Tasty (TestTree, testGroup)
 
@@ -62,6 +63,10 @@ tests =
         , checkHaskellOrdEquivalent @(PMaybeData PInteger)
         , checkHaskellOrdEquivalent @(PTriplet PInteger)
         , checkHaskellOrdEquivalent @PAddress
+        ]
+    , testGroup
+        "Laws"
+        [ testGroup "PRational" (checkPOrdLaws @PRational)
         ]
     ]
 
