@@ -38,6 +38,7 @@ module Plutarch.LedgerApi.Value (
 
   -- ** Transformation
   passertPositive,
+  passertNonZero,
   passertSorted,
   pforgetPositive,
   pforgetSorted,

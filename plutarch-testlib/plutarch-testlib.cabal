@@ -131,6 +131,7 @@ test-suite tests
     Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
     Plutarch.Test.Suite.PlutarchLedgerApi.V3
+    Plutarch.Test.Suite.PlutarchLedgerApi.V3.Value
 
   build-depends:
     , base16-bytestring
