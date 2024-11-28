@@ -128,6 +128,7 @@ newtype UTxOValue = UTxOValue PLA.Value
       Show
     )
 
+-- @since WIP
 deriving via PLA.Value instance Pretty UTxOValue
 
 -- | @since 1.0.2
@@ -392,6 +393,7 @@ newtype MintValue = MintValue PLA.Value
       Show
     )
 
+-- @since WIP
 deriving via PLA.Value instance Pretty MintValue
 
 -- | @since 1.0.3
