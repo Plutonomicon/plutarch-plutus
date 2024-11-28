@@ -73,52 +73,52 @@ checkPOrdLaws =
   where
     leqReflexive :: Property
     leqReflexive = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
-      plift (pconstant @a x #<= pconstant x)
+      plift (precompileTerm (plam $ \arg1 -> arg1 #<= arg1) # pconstant @a x)
     -- We have to restate (x <= y && y <= z) -> x <= z, which gives (after some
     -- DeMorganing) x > y || y > z || x <= z
     leqTransitive :: Property
     leqTransitive = forAllShrinkShow arbitrary shrink prettyShow $ \(t :: Triplet (AsHaskell a)) ->
       let (x, y, z) = toTriple t
        in plift
-            ( let liftedX = pconstant @a x
-                  liftedY = pconstant y
-                  liftedZ = pconstant z
-               in (liftedX #> liftedY) #|| (liftedY #> liftedZ) #|| (liftedX #<= liftedZ)
+            ( precompileTerm (plam $ \arg1 arg2 arg3 -> (arg1 #> arg2) #|| (arg2 #> arg3) #|| (arg1 #<= arg3))
+                # pconstant @a x
+                # pconstant y
+                # pconstant z
             )
     leqTotal :: Property
     leqTotal = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
       plift
-        ( let liftedX = pconstant @a x
-              liftedY = pconstant y
-           in (liftedX #<= liftedY) #|| (liftedY #<= liftedX)
+        ( precompileTerm (plam $ \arg1 arg2 -> (arg1 #<= arg2) #|| (arg2 #<= arg1))
+            # pconstant @a x
+            # pconstant y
         )
     ltIrreflexive :: Property
     ltIrreflexive = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
-      plift (pnot #$ pconstant @a x #< pconstant x)
+      plift (precompileTerm (plam $ \arg1 -> pnot #$ arg1 #< arg1) # pconstant @a x)
     -- We have to restate (x < y && y < z) -> x < z, which gives (after some
     -- DeMorganing) x >= y || y >= z || x < z
     ltTransitive :: Property
     ltTransitive = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a, z :: AsHaskell a) ->
       plift
-        ( let liftedX = pconstant @a x
-              liftedY = pconstant y
-              liftedZ = pconstant z
-           in (liftedX #>= liftedY) #|| (liftedY #>= liftedZ) #|| (liftedX #< liftedZ)
+        ( precompileTerm (plam $ \arg1 arg2 arg3 -> (arg1 #>= arg2) #|| (arg2 #>= arg3) #|| (arg1 #< arg3))
+            # pconstant @a x
+            # pconstant y
+            # pconstant z
         )
     ltTrichotomous :: Property
     ltTrichotomous = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
       plift
-        ( let liftedX = pconstant @a x
-              liftedY = pconstant y
-           in (liftedX #< liftedY) #|| (liftedY #< liftedX) #|| (liftedX #== liftedY)
+        ( precompileTerm (plam $ \arg1 arg2 -> (arg1 #< arg2) #|| (arg2 #< arg1) #|| (arg1 #== arg2))
+            # pconstant @a x
+            # pconstant y
         )
     ltEquivLeq :: Property
     ltEquivLeq = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
-      plift (pconstant @a x #<= pconstant y)
+      plift (precompileTerm (plam $ \arg1 arg2 -> arg1 #<= arg2) # pconstant @a x # pconstant y)
         === plift
-          ( let liftedX = pconstant @a x
-                liftedY = pconstant y
-             in (liftedX #< liftedY) #|| (liftedX #== liftedY)
+          ( precompileTerm (plam $ \arg1 arg2 -> (arg1 #< arg2) #|| (arg1 #== arg2))
+              # pconstant @a x
+              # pconstant y
           )
 
 {- | Verifies that the specified Plutarch and Haskell types satisfy the laws of
