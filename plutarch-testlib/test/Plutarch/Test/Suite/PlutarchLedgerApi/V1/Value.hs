@@ -10,7 +10,7 @@ import Plutarch.Test.QuickCheck (propEval)
 import Plutarch.Test.Utils (precompileTerm, prettyEquals, prettyShow)
 import PlutusLedgerApi.V1.Orphans (getUtxoValue)
 import PlutusLedgerApi.V1.Value qualified as Value
-import Test.Tasty (DependencyType (AllFinish), TestTree, after, testGroup)
+import Test.Tasty (DependencyType (AllSucceed), TestTree, after, testGroup)
 import Test.Tasty.QuickCheck (arbitrary, forAllShrinkShow, shrink, testProperty)
 
 tests :: TestTree
@@ -29,7 +29,7 @@ tests =
               precompileTerm (PValue.passertPositive @Unsorted @NoGuarantees)
                 # pconstant (getUtxoValue val)
         ]
-    , after AllFinish "$NF == \"Generators sanity tests\"" $
+    , after AllSucceed "$(NF-1) == \"Generators sanity tests\" && $(NF-2) == \"Value\" && $(NF-3) == \"V1\"" $
         testGroup
           "Haskell Equivalents"
           [ testProperty "leq = pleNonZero" $
