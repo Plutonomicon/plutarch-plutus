@@ -77,6 +77,7 @@ library
     , plutus-core           >=1.30.0.0
     , plutus-ledger-api
     , plutus-tx
+    , prettyprinter
     , QuickCheck
     , quickcheck-instances
 

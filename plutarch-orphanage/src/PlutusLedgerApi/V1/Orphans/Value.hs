@@ -22,6 +22,7 @@ import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Prelude qualified as PlutusTx
+import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   Arbitrary1 (liftArbitrary, liftShrink),
@@ -127,6 +128,8 @@ newtype UTxOValue = UTxOValue PLA.Value
       Show
     )
 
+deriving via PLA.Value instance Pretty UTxOValue
+
 -- | @since 1.0.2
 instance Arbitrary UTxOValue where
   {-# INLINEABLE arbitrary #-}
@@ -141,7 +144,7 @@ instance Arbitrary UTxOValue where
       table <- traverse (scale (`quot` 8) . mkInner) cses
       -- Jam the Ada value in there
       let table' = (Value.adaSymbol, [(Value.adaToken, adaQuantity)]) : table
-      pure . Value.Value . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ table'
+      pure . pruneZeros . Value.Value . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ table'
     where
       mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
       mkInner cs =
@@ -389,6 +392,8 @@ newtype MintValue = MintValue PLA.Value
       Show
     )
 
+deriving via PLA.Value instance Pretty MintValue
+
 -- | @since 1.0.3
 instance Arbitrary MintValue where
   {-# INLINEABLE arbitrary #-}
@@ -444,3 +449,14 @@ getMintValue = coerce
 
 withZeroAda :: Value.Value -> Value.Value
 withZeroAda = (Value.singleton Value.adaSymbol Value.adaToken 0 <>)
+
+pruneZeros :: Value.Value -> Value.Value
+pruneZeros (Value.Value assets) =
+  Value.Value $
+    AssocMap.unsafeFromList $
+      filter (not . AssocMap.null . snd) $ -- After removing tokens now we may have empty currency list, so clear that as well
+        AssocMap.toList (AssocMap.mapMaybe (assocMapNonEmpty . filter ((/= 0) . snd) . AssocMap.toList) assets) -- Remove all zero tokens
+  where
+    assocMapNonEmpty :: [(k, v)] -> Maybe (AssocMap.Map k v)
+    assocMapNonEmpty [] = Nothing
+    assocMapNonEmpty lst = Just $ AssocMap.unsafeFromList lst

@@ -128,6 +128,7 @@ test-suite tests
     Plutarch.Test.Suite.PlutarchLedgerApi.Utils
     Plutarch.Test.Suite.PlutarchLedgerApi.V1
     Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval
+    Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
     Plutarch.Test.Suite.PlutarchLedgerApi.V3
 

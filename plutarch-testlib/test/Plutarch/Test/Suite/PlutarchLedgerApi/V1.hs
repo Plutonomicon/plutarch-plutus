@@ -10,9 +10,9 @@ import Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
-  checkLedgerPropertiesValue,
  )
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval qualified as Interval
+import Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value qualified as Value
 import Plutarch.Test.Utils (fewerTests, typeName)
 import PlutusLedgerApi.V1.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
@@ -66,6 +66,6 @@ tests =
     , checkLedgerProperties @PLA.PTxOutRef
     , checkLedgerProperties @PLA.PPubKeyHash
     , adjustOption (fewerTests 16) $ checkLedgerProperties @PLA.PTxInfo
-    , checkLedgerPropertiesValue
+    , Value.tests
     , checkLedgerProperties @Value.PAssetClass
     ]
