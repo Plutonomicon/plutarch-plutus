@@ -26,13 +26,13 @@ import PlutusCore qualified as PLC
 '#<=' must form a total order. More precisely:
 
 1. @x #<= x@ @=@ @pcon PTrue@ (reflexivity)
-2. @(x #<= y) #&& (y #<= z)@ @=@ @x #<= z@ (transitivity)
+2. @(y #< x) #|| (z #< y) #|| (x #<= z)@ @=@ @pcon PTrue@ (transitivity)
 3. @(x #<= y) #|| (y #<= x)@ @=@ @pcon PTrue@ (totality)
 
 Furthermore, '#<' must be an equivalent strict total order to '#<=':
 
 4. @x #< x@ @=@ @pcon PFalse@ (irreflexivity)
-5. @(x #< y) #&& (y #< z)@ @=@ @x #< z@ (transitivity)
+5. @(y #<= x) #|| (z #<= y) #|| (x #< z)@ @=@ @pcon PTrue@ (transitivity)
 6. @(x #< y) #|| (y #< x) #|| (x #== z)@ @=@ @pcon PTrue@ (trichotomy)
 7. @x #<= y@ @=@ @(x #< y) #|| (x #== y)@ (strict equivalence)
 

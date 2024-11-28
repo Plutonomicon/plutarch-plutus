@@ -13,8 +13,10 @@ module Plutarch.Test.Laws (
   checkHaskellNumEquivalent,
   checkHaskellIntegralEquivalent,
   checkPLiftableLaws,
+  checkPOrdLaws,
 ) where
 
+import Control.Applicative ((<|>))
 import Plutarch.Builtin (pforgetData)
 import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
 import Plutarch.Internal.Lift (PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr))
@@ -31,17 +33,93 @@ import PlutusLedgerApi.Common qualified as Plutus
 import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()
 import PlutusTx.AssocMap qualified as AssocMap
-import Prettyprinter (Pretty)
+import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
+  Arbitrary1 (liftArbitrary, liftShrink),
   NonZero (getNonZero),
+  Property,
   forAllShrinkShow,
+  oneof,
   (=/=),
   (===),
  )
 import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
+
+{- | Verifies that the specified Plutarch type satisfies the 'POrd' laws for
+mandatory methods.
+
+@since WIP
+-}
+checkPOrdLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PLiftable a
+  , POrd a
+  ) =>
+  [TestTree]
+checkPOrdLaws =
+  [ testProperty "#<= is reflexive" leqReflexive
+  , testProperty "#<= is transitive" leqTransitive
+  , testProperty "#<= is total" leqTotal
+  , testProperty "#< is irreflexive" ltIrreflexive
+  , testProperty "#< is transitive" ltTransitive
+  , testProperty "#< is trichotomous" ltTrichotomous
+  , testProperty "#< is the equivalent strict order to #<=" ltEquivLeq
+  ]
+  where
+    leqReflexive :: Property
+    leqReflexive = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
+      plift (pconstant @a x #<= pconstant x)
+    -- We have to restate (x <= y && y <= z) -> x <= z, which gives (after some
+    -- DeMorganing) x > y || y > z || x <= z
+    leqTransitive :: Property
+    leqTransitive = forAllShrinkShow arbitrary shrink prettyShow $ \(t :: Triplet (AsHaskell a)) ->
+      let (x, y, z) = toTriple t
+       in plift
+            ( let liftedX = pconstant @a x
+                  liftedY = pconstant y
+                  liftedZ = pconstant z
+               in (liftedX #> liftedY) #|| (liftedY #> liftedZ) #|| (liftedX #<= liftedZ)
+            )
+    leqTotal :: Property
+    leqTotal = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
+      plift
+        ( let liftedX = pconstant @a x
+              liftedY = pconstant y
+           in (liftedX #<= liftedY) #|| (liftedY #<= liftedX)
+        )
+    ltIrreflexive :: Property
+    ltIrreflexive = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
+      plift (pnot #$ pconstant @a x #< pconstant x)
+    -- We have to restate (x < y && y < z) -> x < z, which gives (after some
+    -- DeMorganing) x >= y || y >= z || x < z
+    ltTransitive :: Property
+    ltTransitive = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a, z :: AsHaskell a) ->
+      plift
+        ( let liftedX = pconstant @a x
+              liftedY = pconstant y
+              liftedZ = pconstant z
+           in (liftedX #>= liftedY) #|| (liftedY #>= liftedZ) #|| (liftedX #< liftedZ)
+        )
+    ltTrichotomous :: Property
+    ltTrichotomous = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
+      plift
+        ( let liftedX = pconstant @a x
+              liftedY = pconstant y
+           in (liftedX #< liftedY) #|| (liftedY #< liftedX) #|| (liftedX #== liftedY)
+        )
+    ltEquivLeq :: Property
+    ltEquivLeq = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
+      plift (pconstant @a x #<= pconstant y)
+        === plift
+          ( let liftedX = pconstant @a x
+                liftedY = pconstant y
+             in (liftedX #< liftedY) #|| (liftedX #== liftedY)
+          )
 
 {- | Verifies that the specified Plutarch and Haskell types satisfy the laws of
 'PLiftable'.
@@ -390,3 +468,38 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
       $ \(v :: AssocMap.Map Integer Integer) ->
         plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) d $ fst) # pconstant @PData (Plutus.toData v))
           `prettyEquals` v
+
+-- Helpers
+
+-- Effectively (,,), but with a 50% chance to generate three copies of the same
+-- thing. This ensures transitivity tests aren't vacuously true.
+data Triplet (a :: Type)
+  = AllSame a
+  | AllDifferent a a a
+  deriving stock (Eq, Show)
+
+instance Pretty a => Pretty (Triplet a) where
+  {-# INLINEABLE pretty #-}
+  pretty = pretty . toTriple
+
+instance Arbitrary1 Triplet where
+  {-# INLINEABLE liftArbitrary #-}
+  liftArbitrary gen = oneof [AllSame <$> gen, AllDifferent <$> gen <*> gen <*> gen]
+  {-# INLINEABLE liftShrink #-}
+  liftShrink shr = \case
+    AllSame x -> AllSame <$> shr x
+    AllDifferent x y z ->
+      (AllDifferent <$> shr x <*> pure y <*> pure z)
+        <|> (AllDifferent x <$> shr y <*> pure z)
+        <|> (AllDifferent x y <$> shr z)
+
+instance Arbitrary a => Arbitrary (Triplet a) where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = liftArbitrary arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink = liftShrink shrink
+
+toTriple :: forall (a :: Type). Triplet a -> (a, a, a)
+toTriple = \case
+  AllSame x -> (x, x, x)
+  AllDifferent x y z -> (x, y, z)
