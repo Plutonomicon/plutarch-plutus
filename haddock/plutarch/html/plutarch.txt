@@ -1101,8 +1101,8 @@ module Plutarch.Internal.Ord
 --   <ol>
 --   <li><tt>x #&lt;= x</tt> <tt>=</tt> <tt>pcon PTrue</tt>
 --   (reflexivity)</li>
---   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= z)</tt> <tt>=</tt> <tt>x
---   #&lt;= z</tt> (transitivity)</li>
+--   <li><tt>(y #&lt; x) #|| (z #&lt; y) #|| (x #&lt;= z)</tt> <tt>=</tt>
+--   <tt>pcon PTrue</tt> (transitivity)</li>
 --   <li><tt>(x #&lt;= y) #|| (y #&lt;= x)</tt> <tt>=</tt> <tt>pcon
 --   PTrue</tt> (totality)</li>
 --   </ol>
@@ -1113,8 +1113,8 @@ module Plutarch.Internal.Ord
 --   <ol>
 --   <li><tt>x #&lt; x</tt> <tt>=</tt> <tt>pcon PFalse</tt>
 --   (irreflexivity)</li>
---   <li><tt>(x #&lt; y) #&amp;&amp; (y #&lt; z)</tt> <tt>=</tt> <tt>x
---   #&lt; z</tt> (transitivity)</li>
+--   <li><tt>(y #&lt;= x) #|| (z #&lt;= y) #|| (x #&lt; z)</tt> <tt>=</tt>
+--   <tt>pcon PTrue</tt> (transitivity)</li>
 --   <li><tt>(x #&lt; y) #|| (y #&lt; x) #|| (x #== z)</tt> <tt>=</tt>
 --   <tt>pcon PTrue</tt> (trichotomy)</li>
 --   <li><tt>x #&lt;= y</tt> <tt>=</tt> <tt>(x #&lt; y) #|| (x #== y)</tt>
@@ -2919,8 +2919,8 @@ infix 4 #==
 --   <ol>
 --   <li><tt>x #&lt;= x</tt> <tt>=</tt> <tt>pcon PTrue</tt>
 --   (reflexivity)</li>
---   <li><tt>(x #&lt;= y) #&amp;&amp; (y #&lt;= z)</tt> <tt>=</tt> <tt>x
---   #&lt;= z</tt> (transitivity)</li>
+--   <li><tt>(y #&lt; x) #|| (z #&lt; y) #|| (x #&lt;= z)</tt> <tt>=</tt>
+--   <tt>pcon PTrue</tt> (transitivity)</li>
 --   <li><tt>(x #&lt;= y) #|| (y #&lt;= x)</tt> <tt>=</tt> <tt>pcon
 --   PTrue</tt> (totality)</li>
 --   </ol>
@@ -2931,8 +2931,8 @@ infix 4 #==
 --   <ol>
 --   <li><tt>x #&lt; x</tt> <tt>=</tt> <tt>pcon PFalse</tt>
 --   (irreflexivity)</li>
---   <li><tt>(x #&lt; y) #&amp;&amp; (y #&lt; z)</tt> <tt>=</tt> <tt>x
---   #&lt; z</tt> (transitivity)</li>
+--   <li><tt>(y #&lt;= x) #|| (z #&lt;= y) #|| (x #&lt; z)</tt> <tt>=</tt>
+--   <tt>pcon PTrue</tt> (transitivity)</li>
 --   <li><tt>(x #&lt; y) #|| (y #&lt; x) #|| (x #== z)</tt> <tt>=</tt>
 --   <tt>pcon PTrue</tt> (trichotomy)</li>
 --   <li><tt>x #&lt;= y</tt> <tt>=</tt> <tt>(x #&lt; y) #|| (x #== y)</tt>

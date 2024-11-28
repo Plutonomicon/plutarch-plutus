@@ -45,15 +45,15 @@
 </span><span id="line-45"></span><span> </span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>
 </span><span id="line-47"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-48"></span><span id="local-6989586621679136384"><span id="local-6989586621679136391"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span></span></span><span>
+</span><span id="line-48"></span><span id="local-6989586621679136440"><span id="local-6989586621679136447"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span></span></span><span>
 </span><span id="line-49"></span><span>
 </span><span id="line-50"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-51"></span><span id="local-6989586621679136401"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span></span><span>
+</span><span id="line-51"></span><span id="local-6989586621679136457"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span></span><span>
 </span><span id="line-52"></span><span>
 </span><span id="line-53"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
 </span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-55"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-56"></span><span>  </span><span id="local-6989586621679136422"><span class="annot"><span class="annottext">function :: forall b. (AssetClass -&gt; b) -&gt; AssetClass :-&gt; b
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679136478"><span class="annot"><span class="annottext">function :: forall b. (AssetClass -&gt; b) -&gt; AssetClass :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(AssetClass -&gt; (CurrencySymbol, TokenName))
 -&gt; ((CurrencySymbol, TokenName) -&gt; AssetClass)
 -&gt; (AssetClass -&gt; b)
@@ -62,30 +62,30 @@ forall b a c.
 Function b =&gt;
 (a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
 </span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">AssetClass -&gt; (CurrencySymbol, TokenName)
-</span><a href="#local-6989586621679136423"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol, TokenName) -&gt; AssetClass
-</span><a href="#local-6989586621679136424"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><a href="#local-6989586621679136479"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol, TokenName) -&gt; AssetClass
+</span><a href="#local-6989586621679136480"><span class="hs-identifier hs-var">outOf</span></a></span><span>
 </span><span id="line-57"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-58"></span><span>      </span><span class="annot"><a href="#local-6989586621679136423"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span>
-</span><span id="line-59"></span><span>      </span><span id="local-6989586621679136423"><span class="annot"><span class="annottext">into :: AssetClass -&gt; (CurrencySymbol, TokenName)
-</span><a href="#local-6989586621679136423"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AssetClass -&gt; (CurrencySymbol, TokenName)
+</span><span id="line-58"></span><span>      </span><span class="annot"><a href="#local-6989586621679136479"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>      </span><span id="local-6989586621679136479"><span class="annot"><span class="annottext">into :: AssetClass -&gt; (CurrencySymbol, TokenName)
+</span><a href="#local-6989586621679136479"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AssetClass -&gt; (CurrencySymbol, TokenName)
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
-</span><span id="line-60"></span><span>      </span><span class="annot"><a href="#local-6989586621679136424"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span><span>
-</span><span id="line-61"></span><span>      </span><span id="local-6989586621679136424"><span class="annot"><span class="annottext">outOf :: (CurrencySymbol, TokenName) -&gt; AssetClass
-</span><a href="#local-6989586621679136424"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol, TokenName) -&gt; AssetClass
+</span><span id="line-60"></span><span>      </span><span class="annot"><a href="#local-6989586621679136480"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span><span>
+</span><span id="line-61"></span><span>      </span><span id="local-6989586621679136480"><span class="annot"><span class="annottext">outOf :: (CurrencySymbol, TokenName) -&gt; AssetClass
+</span><a href="#local-6989586621679136480"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol, TokenName) -&gt; AssetClass
 forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span>
 </span><span id="line-62"></span><span>
 </span><span id="line-63"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-64"></span><span id="local-6989586621679136426"><span id="local-6989586621679136431"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Lovelace</span></span></span></span><span>
+</span><span id="line-64"></span><span id="local-6989586621679136482"><span id="local-6989586621679136487"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Lovelace</span></span></span></span><span>
 </span><span id="line-65"></span><span>
 </span><span id="line-66"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-67"></span><span id="local-6989586621679136436"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Lovelace</span></span></span><span>
+</span><span id="line-67"></span><span id="local-6989586621679136492"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Lovelace</span></span></span><span>
 </span><span id="line-68"></span><span>
 </span><span id="line-69"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-70"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Lovelace</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-72"></span><span>  </span><span id="local-6989586621679136446"><span class="annot"><span class="annottext">function :: forall b. (Lovelace -&gt; b) -&gt; Lovelace :-&gt; b
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679136502"><span class="annot"><span class="annottext">function :: forall b. (Lovelace -&gt; b) -&gt; Lovelace :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Lovelace -&gt; Integer)
 -&gt; (Integer -&gt; Lovelace) -&gt; (Lovelace -&gt; b) -&gt; Lovelace :-&gt; b
 forall b a c.
@@ -107,9 +107,9 @@ symbol (indeed, we don't shrink at all).
 
 @since 1.0.0
 -}</span></span><span>
-</span><span id="line-85"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679136450"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-85"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679136506"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-86"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-87"></span><span>  </span><span id="local-6989586621679136465"><span class="annot"><span class="annottext">arbitrary :: Gen CurrencySymbol
+</span><span id="line-87"></span><span>  </span><span id="local-6989586621679136521"><span class="annot"><span class="annottext">arbitrary :: Gen CurrencySymbol
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-88"></span><span>    </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; CurrencySymbol
 </span><span class="hs-identifier hs-var">PLA.CurrencySymbol</span></span><span>
@@ -137,12 +137,12 @@ forall a. Arbitrary a =&gt; Gen a
 </span><span id="line-92"></span><span>        </span><span class="hs-special">]</span><span>
 </span><span id="line-93"></span><span>
 </span><span id="line-94"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-95"></span><span id="local-6989586621679136470"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span></span><span>
+</span><span id="line-95"></span><span id="local-6989586621679136526"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span></span><span>
 </span><span id="line-96"></span><span>
 </span><span id="line-97"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-98"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-99"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-100"></span><span>  </span><span id="local-6989586621679136478"><span class="annot"><span class="annottext">function :: forall b. (CurrencySymbol -&gt; b) -&gt; CurrencySymbol :-&gt; b
+</span><span id="line-100"></span><span>  </span><span id="local-6989586621679136534"><span class="annot"><span class="annottext">function :: forall b. (CurrencySymbol -&gt; b) -&gt; CurrencySymbol :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; BuiltinByteString)
 -&gt; (BuiltinByteString -&gt; CurrencySymbol)
 -&gt; (CurrencySymbol -&gt; b)
@@ -175,7 +175,7 @@ the table.
 </span><span id="line-119"></span><span class="hs-keyword">newtype</span><span> </span><span id="UTxOValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-var">UTxOValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="UTxOValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-var">UTxOValue</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-120"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-121"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-122"></span><span>      </span><span id="local-6989586621679136485"><span id="local-6989586621679136490"><span class="annot"><span class="annottext">UTxOValue -&gt; UTxOValue -&gt; Bool
+</span><span id="line-122"></span><span>      </span><span id="local-6989586621679136541"><span id="local-6989586621679136546"><span class="annot"><span class="annottext">UTxOValue -&gt; UTxOValue -&gt; Bool
 (UTxOValue -&gt; UTxOValue -&gt; Bool)
 -&gt; (UTxOValue -&gt; UTxOValue -&gt; Bool) -&gt; Eq UTxOValue
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -188,7 +188,7 @@ $c/= :: UTxOValue -&gt; UTxOValue -&gt; Bool
 </span><span id="line-124"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-125"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-126"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-127"></span><span>      </span><span id="local-6989586621679136496"><span id="local-6989586621679136502"><span id="local-6989586621679136506"><span class="annot"><span class="annottext">Int -&gt; UTxOValue -&gt; ShowS
+</span><span id="line-127"></span><span>      </span><span id="local-6989586621679136552"><span id="local-6989586621679136558"><span id="local-6989586621679136562"><span class="annot"><span class="annottext">Int -&gt; UTxOValue -&gt; ShowS
 [UTxOValue] -&gt; ShowS
 UTxOValue -&gt; String
 (Int -&gt; UTxOValue -&gt; ShowS)
@@ -209,19 +209,19 @@ showList :: [UTxOValue] -&gt; ShowS
 </span><span id="line-130"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-131"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-132"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-133"></span><span>  </span><span id="local-6989586621679136564"><span class="annot"><span class="annottext">arbitrary :: Gen UTxOValue
+</span><span id="line-133"></span><span>  </span><span id="local-6989586621679136620"><span class="annot"><span class="annottext">arbitrary :: Gen UTxOValue
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-134"></span><span>    </span><span class="annot"><span class="annottext">Value -&gt; UTxOValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-var">UTxOValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; UTxOValue) -&gt; Gen Value -&gt; Gen UTxOValue
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-135"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Positive</span></span><span> </span><span id="local-6989586621679136565"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136565"><span class="hs-identifier hs-var">adaQuantity</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen (Positive Integer)
+</span><span id="line-135"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Positive</span></span><span> </span><span id="local-6989586621679136621"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679136621"><span class="hs-identifier hs-var">adaQuantity</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen (Positive Integer)
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
 </span><span id="line-136"></span><span>      </span><span class="hs-comment">-- Set of non-Ada currency symbols</span><span>
-</span><span id="line-137"></span><span>      </span><span id="local-6989586621679136566"><span class="annot"><span class="annottext">Set CurrencySymbol
-</span><a href="#local-6989586621679136566"><span class="hs-identifier hs-var">csSet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol] -&gt; Set CurrencySymbol
+</span><span id="line-137"></span><span>      </span><span id="local-6989586621679136622"><span class="annot"><span class="annottext">Set CurrencySymbol
+</span><a href="#local-6989586621679136622"><span class="hs-identifier hs-var">csSet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol] -&gt; Set CurrencySymbol
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#fromList"><span class="hs-identifier hs-var">Set.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">([CurrencySymbol] -&gt; Set CurrencySymbol)
 -&gt; Gen [CurrencySymbol] -&gt; Gen (Set CurrencySymbol)
@@ -242,15 +242,15 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Blake2b244Hash
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
-</span><span id="line-138"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136569"><span class="annot"><span class="annottext">cses :: [CurrencySymbol]
-</span><a href="#local-6989586621679136569"><span class="hs-identifier hs-var hs-var">cses</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol -&gt; [CurrencySymbol]
+</span><span id="line-138"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136625"><span class="annot"><span class="annottext">cses :: [CurrencySymbol]
+</span><a href="#local-6989586621679136625"><span class="hs-identifier hs-var hs-var">cses</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol -&gt; [CurrencySymbol]
 forall a. Set a -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol
-</span><a href="#local-6989586621679136566"><span class="hs-identifier hs-var">csSet</span></a></span><span>
+</span><a href="#local-6989586621679136622"><span class="hs-identifier hs-var">csSet</span></a></span><span>
 </span><span id="line-139"></span><span>      </span><span class="hs-comment">-- For each key, generate a set of token names that aren't Ada, and a</span><span>
 </span><span id="line-140"></span><span>      </span><span class="hs-comment">-- positive value</span><span>
-</span><span id="line-141"></span><span>      </span><span id="local-6989586621679136571"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136571"><span class="hs-identifier hs-var">table</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)]))
+</span><span id="line-141"></span><span>      </span><span id="local-6989586621679136627"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679136627"><span class="hs-identifier hs-var">table</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; [CurrencySymbol]
 -&gt; Gen [(CurrencySymbol, [(TokenName, Integer)])]
 forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
@@ -273,19 +273,19 @@ forall a. Integral a =&gt; a -&gt; a -&gt; a
 -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
-</span><a href="#local-6989586621679136574"><span class="hs-identifier hs-var">mkInner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol]
-</span><a href="#local-6989586621679136569"><span class="hs-identifier hs-var">cses</span></a></span><span>
+</span><a href="#local-6989586621679136630"><span class="hs-identifier hs-var">mkInner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol]
+</span><a href="#local-6989586621679136625"><span class="hs-identifier hs-var">cses</span></a></span><span>
 </span><span id="line-142"></span><span>      </span><span class="hs-comment">-- Jam the Ada value in there</span><span>
-</span><span id="line-143"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136575"><span class="annot"><span class="annottext">table' :: [(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136575"><span class="hs-identifier hs-var hs-var">table'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
+</span><span id="line-143"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136631"><span class="annot"><span class="annottext">table' :: [(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679136631"><span class="hs-identifier hs-var hs-var">table'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
 </span><span class="hs-identifier hs-var">Value.adaSymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
 </span><span class="hs-identifier hs-var">Value.adaToken</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136565"><span class="hs-identifier hs-var">adaQuantity</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol, [(TokenName, Integer)])
+</span><a href="#local-6989586621679136621"><span class="hs-identifier hs-var">adaQuantity</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol, [(TokenName, Integer)])
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])]
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])]
 forall a. a -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136571"><span class="hs-identifier hs-var">table</span></a></span><span>
+</span><a href="#local-6989586621679136627"><span class="hs-identifier hs-var">table</span></a></span><span>
 </span><span id="line-144"></span><span>      </span><span class="annot"><span class="annottext">Value -&gt; Gen Value
 forall a. a -&gt; Gen a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -328,22 +328,22 @@ forall k v. [(k, v)] -&gt; Map k v
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])] -&gt; Gen Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136575"><span class="hs-identifier hs-var">table'</span></a></span><span>
+</span><a href="#local-6989586621679136631"><span class="hs-identifier hs-var">table'</span></a></span><span>
 </span><span id="line-145"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-146"></span><span>      </span><span class="annot"><a href="#local-6989586621679136574"><span class="hs-identifier hs-type">mkInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-147"></span><span>      </span><span id="local-6989586621679136574"><span class="annot"><span class="annottext">mkInner :: CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
-</span><a href="#local-6989586621679136574"><span class="hs-identifier hs-var hs-var">mkInner</span></a></span></span><span> </span><span id="local-6989586621679136579"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136579"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-146"></span><span>      </span><span class="annot"><a href="#local-6989586621679136630"><span class="hs-identifier hs-type">mkInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-147"></span><span>      </span><span id="local-6989586621679136630"><span class="annot"><span class="annottext">mkInner :: CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
+</span><a href="#local-6989586621679136630"><span class="hs-identifier hs-var hs-var">mkInner</span></a></span></span><span> </span><span id="local-6989586621679136635"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679136635"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-148"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136579"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
+</span><a href="#local-6989586621679136635"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
  -&gt; (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; Gen [(TokenName, Integer)]
 -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-149"></span><span>          </span><span class="hs-comment">-- Set of non-Ada token names</span><span>
-</span><span id="line-150"></span><span>          </span><span id="local-6989586621679136580"><span class="annot"><span class="annottext">Set TokenName
-</span><a href="#local-6989586621679136580"><span class="hs-identifier hs-var">tnSet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[TokenName] -&gt; Set TokenName
+</span><span id="line-150"></span><span>          </span><span id="local-6989586621679136636"><span class="annot"><span class="annottext">Set TokenName
+</span><a href="#local-6989586621679136636"><span class="hs-identifier hs-var">tnSet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[TokenName] -&gt; Set TokenName
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#fromList"><span class="hs-identifier hs-var">Set.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">([TokenName] -&gt; Set TokenName)
 -&gt; Gen [TokenName] -&gt; Gen (Set TokenName)
@@ -352,12 +352,12 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 forall a. Gen a -&gt; Gen [a]
 forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
 </span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen TokenName
-</span><a href="#local-6989586621679136581"><span class="hs-identifier hs-var">genNonAdaTokenName</span></a></span><span>
-</span><span id="line-151"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136582"><span class="annot"><span class="annottext">asList :: [TokenName]
-</span><a href="#local-6989586621679136582"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set TokenName -&gt; [TokenName]
+</span><a href="#local-6989586621679136637"><span class="hs-identifier hs-var">genNonAdaTokenName</span></a></span><span>
+</span><span id="line-151"></span><span>          </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136638"><span class="annot"><span class="annottext">asList :: [TokenName]
+</span><a href="#local-6989586621679136638"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set TokenName -&gt; [TokenName]
 forall a. Set a -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">Set TokenName
-</span><a href="#local-6989586621679136580"><span class="hs-identifier hs-var">tnSet</span></a></span><span>
+</span><a href="#local-6989586621679136636"><span class="hs-identifier hs-var">tnSet</span></a></span><span>
 </span><span id="line-152"></span><span>          </span><span class="annot"><span class="annottext">(TokenName -&gt; Gen (TokenName, Integer))
 -&gt; [TokenName] -&gt; Gen [(TokenName, Integer)]
 forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
@@ -366,9 +366,9 @@ forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
 forall (f :: Type -&gt; Type) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; [a] -&gt; f [b]
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679136583"><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136583"><span class="hs-identifier hs-var">tn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136583"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; (TokenName, Integer))
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679136639"><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679136639"><span class="hs-identifier hs-var">tn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679136639"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; (TokenName, Integer))
 -&gt; (Positive Integer -&gt; Integer)
 -&gt; Positive Integer
 -&gt; (TokenName, Integer)
@@ -381,10 +381,10 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Positive Integer)
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[TokenName]
-</span><a href="#local-6989586621679136582"><span class="hs-identifier hs-var">asList</span></a></span><span>
-</span><span id="line-153"></span><span>      </span><span class="annot"><a href="#local-6989586621679136581"><span class="hs-identifier hs-type">genNonAdaTokenName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span>
-</span><span id="line-154"></span><span>      </span><span id="local-6989586621679136581"><span class="annot"><span class="annottext">genNonAdaTokenName :: Gen TokenName
-</span><a href="#local-6989586621679136581"><span class="hs-identifier hs-var hs-var">genNonAdaTokenName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679136638"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><span id="line-153"></span><span>      </span><span class="annot"><a href="#local-6989586621679136637"><span class="hs-identifier hs-type">genNonAdaTokenName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span>
+</span><span id="line-154"></span><span>      </span><span id="local-6989586621679136637"><span class="annot"><span class="annottext">genNonAdaTokenName :: Gen TokenName
+</span><a href="#local-6989586621679136637"><span class="hs-identifier hs-var hs-var">genNonAdaTokenName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-155"></span><span>        </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; TokenName
 </span><span class="hs-identifier hs-var">PLA.TokenName</span></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; TokenName)
 -&gt; ([Word8] -&gt; BuiltinByteString) -&gt; [Word8] -&gt; TokenName
@@ -397,8 +397,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#pack"><span class="hs-identifier hs-var">BS.pack</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; TokenName) -&gt; Gen [Word8] -&gt; Gen TokenName
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-156"></span><span>          </span><span id="local-6989586621679136586"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136586"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
+</span><span id="line-156"></span><span>          </span><span id="local-6989586621679136642"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136642"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
 </span><span class="hs-identifier hs-var">chooseInt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">32</span></span><span class="hs-special">)</span><span>
@@ -406,7 +406,7 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><span id="line-158"></span><span>          </span><span class="annot"><span class="annottext">Int -&gt; Gen Word8 -&gt; Gen [Word8]
 forall a. Int -&gt; Gen a -&gt; Gen [a]
 </span><span class="hs-identifier hs-var">vectorOf</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136586"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
+</span><a href="#local-6989586621679136642"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
 -&gt; ((Word8, Word8) -&gt; Gen Word8) -&gt; (Word8, Word8) -&gt; Gen [Word8]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Word8, Word8) -&gt; Gen Word8
@@ -417,9 +417,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-number">33</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">126</span></span><span class="hs-special">)</span><span>
 </span><span id="line-159"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-160"></span><span>  </span><span id="local-6989586621679136604"><span class="annot"><span class="annottext">shrink :: UTxOValue -&gt; [UTxOValue]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.Value</span></span><span> </span><span id="local-6989586621679136605"><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
-</span><a href="#local-6989586621679136605"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-160"></span><span>  </span><span id="local-6989586621679136660"><span class="annot"><span class="annottext">shrink :: UTxOValue -&gt; [UTxOValue]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.Value</span></span><span> </span><span id="local-6989586621679136661"><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
+</span><a href="#local-6989586621679136661"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-161"></span><span>    </span><span class="annot"><span class="annottext">Value -&gt; UTxOValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-var">UTxOValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; UTxOValue)
 -&gt; (Map CurrencySymbol (Map TokenName Integer) -&gt; Value)
@@ -439,8 +439,8 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><span id="line-167"></span><span>      </span><span class="hs-comment">-- To make this a bit easier on ourselves, we first 'unpack' the Value</span><span>
 </span><span id="line-168"></span><span>      </span><span class="hs-comment">-- completely, shrink the resulting (nested) list, then 'repack'. As neither</span><span>
 </span><span id="line-169"></span><span>      </span><span class="hs-comment">-- of these changes affect order or uniqueness, we're safe.</span><span>
-</span><span id="line-170"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136606"><span class="annot"><span class="annottext">asList :: [(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136606"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map TokenName Integer -&gt; [(TokenName, Integer)])
+</span><span id="line-170"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136662"><span class="annot"><span class="annottext">asList :: [(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679136662"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map TokenName Integer -&gt; [(TokenName, Integer)])
 -&gt; (CurrencySymbol, Map TokenName Integer)
 -&gt; (CurrencySymbol, [(TokenName, Integer)])
 forall a b. (a -&gt; b) -&gt; (CurrencySymbol, a) -&gt; (CurrencySymbol, b)
@@ -456,9 +456,9 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 -&gt; [(CurrencySymbol, Map TokenName Integer)]
 forall k v. Map k v -&gt; [(k, v)]
 </span><span class="hs-identifier hs-var">AssocMap.toList</span></span><span> </span><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
-</span><a href="#local-6989586621679136605"><span class="hs-identifier hs-var">v</span></a></span><span>
-</span><span id="line-171"></span><span>      </span><span id="local-6989586621679136608"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136608"><span class="hs-identifier hs-var">shrunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((CurrencySymbol, [(TokenName, Integer)])
+</span><a href="#local-6989586621679136661"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-171"></span><span>      </span><span id="local-6989586621679136664"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679136664"><span class="hs-identifier hs-var">shrunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((CurrencySymbol, [(TokenName, Integer)])
  -&gt; [(CurrencySymbol, [(TokenName, Integer)])])
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])]
 -&gt; [[(CurrencySymbol, [(TokenName, Integer)])]]
@@ -466,10 +466,10 @@ forall a. (a -&gt; [a]) -&gt; [a] -&gt; [[a]]
 forall (f :: Type -&gt; Type) a.
 Arbitrary1 f =&gt;
 (a -&gt; [a]) -&gt; f a -&gt; [f a]
-</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136609"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136609"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136610"><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136610"><span class="hs-identifier hs-var">inner</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136609"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136665"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679136665"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136666"><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679136666"><span class="hs-identifier hs-var">inner</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679136665"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
  -&gt; (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; [[(TokenName, Integer)]]
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])]
@@ -480,10 +480,10 @@ forall a. (a -&gt; [a]) -&gt; [a] -&gt; [[a]]
 forall (f :: Type -&gt; Type) a.
 Arbitrary1 f =&gt;
 (a -&gt; [a]) -&gt; f a -&gt; [f a]
-</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136611"><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136611"><span class="hs-identifier hs-var">tn</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136612"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136612"><span class="hs-identifier hs-var">amount</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136611"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; (TokenName, Integer))
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136667"><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679136667"><span class="hs-identifier hs-var">tn</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136668"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679136668"><span class="hs-identifier hs-var">amount</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679136667"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; (TokenName, Integer))
 -&gt; (Positive Integer -&gt; Integer)
 -&gt; Positive Integer
 -&gt; (TokenName, Integer)
@@ -498,9 +498,9 @@ forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Positive Integer
 forall a. a -&gt; Positive a
 </span><span class="hs-identifier hs-var">Positive</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136612"><span class="hs-identifier hs-var">amount</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136610"><span class="hs-identifier hs-var">inner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136606"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><a href="#local-6989586621679136668"><span class="hs-identifier hs-var">amount</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679136666"><span class="hs-identifier hs-var">inner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679136662"><span class="hs-identifier hs-var">asList</span></a></span><span>
 </span><span id="line-172"></span><span>      </span><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
 -&gt; [Map CurrencySymbol (Map TokenName Integer)]
 forall a. a -&gt; [a]
@@ -541,15 +541,15 @@ forall k v. [(k, v)] -&gt; Map k v
 -&gt; [Map CurrencySymbol (Map TokenName Integer)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136608"><span class="hs-identifier hs-var">shrunk</span></a></span><span>
+</span><a href="#local-6989586621679136664"><span class="hs-identifier hs-var">shrunk</span></a></span><span>
 </span><span id="line-173"></span><span>
 </span><span id="line-174"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-175"></span><span id="local-6989586621679136614"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span></span><span>
+</span><span id="line-175"></span><span id="local-6989586621679136670"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span></span><span>
 </span><span id="line-176"></span><span>
 </span><span id="line-177"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-178"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-179"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-180"></span><span>  </span><span id="local-6989586621679136624"><span class="annot"><span class="annottext">function :: forall b. (UTxOValue -&gt; b) -&gt; UTxOValue :-&gt; b
+</span><span id="line-180"></span><span>  </span><span id="local-6989586621679136680"><span class="annot"><span class="annottext">function :: forall b. (UTxOValue -&gt; b) -&gt; UTxOValue :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(UTxOValue -&gt; Value)
 -&gt; (Value -&gt; UTxOValue) -&gt; (UTxOValue -&gt; b) -&gt; UTxOValue :-&gt; b
 forall b a c.
@@ -582,7 +582,7 @@ the table.
 </span><span id="line-198"></span><span class="hs-keyword">newtype</span><span> </span><span id="NonAdaValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-var">NonAdaValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="NonAdaValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-var">NonAdaValue</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-199"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-200"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-201"></span><span>      </span><span id="local-6989586621679136627"><span id="local-6989586621679136631"><span class="annot"><span class="annottext">NonAdaValue -&gt; NonAdaValue -&gt; Bool
+</span><span id="line-201"></span><span>      </span><span id="local-6989586621679136683"><span id="local-6989586621679136687"><span class="annot"><span class="annottext">NonAdaValue -&gt; NonAdaValue -&gt; Bool
 (NonAdaValue -&gt; NonAdaValue -&gt; Bool)
 -&gt; (NonAdaValue -&gt; NonAdaValue -&gt; Bool) -&gt; Eq NonAdaValue
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -595,7 +595,7 @@ $c/= :: NonAdaValue -&gt; NonAdaValue -&gt; Bool
 </span><span id="line-203"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-204"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-205"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-206"></span><span>      </span><span id="local-6989586621679136636"><span id="local-6989586621679136640"><span id="local-6989586621679136644"><span class="annot"><span class="annottext">Int -&gt; NonAdaValue -&gt; ShowS
+</span><span id="line-206"></span><span>      </span><span id="local-6989586621679136692"><span id="local-6989586621679136696"><span id="local-6989586621679136700"><span class="annot"><span class="annottext">Int -&gt; NonAdaValue -&gt; ShowS
 [NonAdaValue] -&gt; ShowS
 NonAdaValue -&gt; String
 (Int -&gt; NonAdaValue -&gt; ShowS)
@@ -616,15 +616,15 @@ showList :: [NonAdaValue] -&gt; ShowS
 </span><span id="line-209"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-210"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-type">NonAdaValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-211"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-212"></span><span>  </span><span id="local-6989586621679136687"><span class="annot"><span class="annottext">arbitrary :: Gen NonAdaValue
+</span><span id="line-212"></span><span>  </span><span id="local-6989586621679136743"><span class="annot"><span class="annottext">arbitrary :: Gen NonAdaValue
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-213"></span><span>    </span><span class="annot"><span class="annottext">Value -&gt; NonAdaValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-var">NonAdaValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; NonAdaValue) -&gt; Gen Value -&gt; Gen NonAdaValue
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-214"></span><span>      </span><span class="hs-comment">-- Generate a set of currency symbols that aren't Ada</span><span>
-</span><span id="line-215"></span><span>      </span><span id="local-6989586621679136688"><span class="annot"><span class="annottext">Set CurrencySymbol
-</span><a href="#local-6989586621679136688"><span class="hs-identifier hs-var">keySet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol] -&gt; Set CurrencySymbol
+</span><span id="line-215"></span><span>      </span><span id="local-6989586621679136744"><span class="annot"><span class="annottext">Set CurrencySymbol
+</span><a href="#local-6989586621679136744"><span class="hs-identifier hs-var">keySet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol] -&gt; Set CurrencySymbol
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#fromList"><span class="hs-identifier hs-var">Set.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">([CurrencySymbol] -&gt; Set CurrencySymbol)
 -&gt; Gen [CurrencySymbol] -&gt; Gen (Set CurrencySymbol)
@@ -645,14 +645,14 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Blake2b244Hash
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
-</span><span id="line-216"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136689"><span class="annot"><span class="annottext">keyList :: [CurrencySymbol]
-</span><a href="#local-6989586621679136689"><span class="hs-identifier hs-var hs-var">keyList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol -&gt; [CurrencySymbol]
+</span><span id="line-216"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136745"><span class="annot"><span class="annottext">keyList :: [CurrencySymbol]
+</span><a href="#local-6989586621679136745"><span class="hs-identifier hs-var hs-var">keyList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol -&gt; [CurrencySymbol]
 forall a. Set a -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol
-</span><a href="#local-6989586621679136688"><span class="hs-identifier hs-var">keySet</span></a></span><span>
+</span><a href="#local-6989586621679136744"><span class="hs-identifier hs-var">keySet</span></a></span><span>
 </span><span id="line-217"></span><span>      </span><span class="hs-comment">-- For each key, generate a set of token name keys that aren't Ada</span><span>
-</span><span id="line-218"></span><span>      </span><span id="local-6989586621679136690"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136690"><span class="hs-identifier hs-var">keyVals</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)]))
+</span><span id="line-218"></span><span>      </span><span id="local-6989586621679136746"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679136746"><span class="hs-identifier hs-var">keyVals</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; [CurrencySymbol]
 -&gt; Gen [(CurrencySymbol, [(TokenName, Integer)])]
 forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
@@ -675,8 +675,8 @@ forall a. Integral a =&gt; a -&gt; a -&gt; a
 -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
-</span><a href="#local-6989586621679136691"><span class="hs-identifier hs-var">mkInner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol]
-</span><a href="#local-6989586621679136689"><span class="hs-identifier hs-var">keyList</span></a></span><span>
+</span><a href="#local-6989586621679136747"><span class="hs-identifier hs-var">mkInner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol]
+</span><a href="#local-6989586621679136745"><span class="hs-identifier hs-var">keyList</span></a></span><span>
 </span><span id="line-219"></span><span>      </span><span class="annot"><span class="annottext">Value -&gt; Gen Value
 forall a. a -&gt; Gen a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -699,9 +699,9 @@ forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
 forall (t :: Type -&gt; Type) m a.
 (Foldable t, Monoid m) =&gt;
 (a -&gt; m) -&gt; t a -&gt; m
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Foldable.html#foldMap"><span class="hs-identifier hs-var">foldMap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136694"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136694"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136695"><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136695"><span class="hs-identifier hs-var">vals</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((TokenName, Integer) -&gt; Value) -&gt; [(TokenName, Integer)] -&gt; Value
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Foldable.html#foldMap"><span class="hs-identifier hs-var">foldMap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136750"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679136750"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136751"><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679136751"><span class="hs-identifier hs-var">vals</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((TokenName, Integer) -&gt; Value) -&gt; [(TokenName, Integer)] -&gt; Value
 forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
 forall (t :: Type -&gt; Type) m a.
 (Foldable t, Monoid m) =&gt;
@@ -710,20 +710,20 @@ forall (t :: Type -&gt; Type) m a.
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol -&gt; TokenName -&gt; Integer -&gt; Value
 </span><span class="hs-identifier hs-var">Value.singleton</span></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136694"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136695"><span class="hs-identifier hs-var">vals</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679136750"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679136751"><span class="hs-identifier hs-var">vals</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-222"></span><span>        </span><span class="annot"><span class="annottext">([(CurrencySymbol, [(TokenName, Integer)])] -&gt; Gen Value)
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])] -&gt; Gen Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136690"><span class="hs-identifier hs-var">keyVals</span></a></span><span>
+</span><a href="#local-6989586621679136746"><span class="hs-identifier hs-var">keyVals</span></a></span><span>
 </span><span id="line-223"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-224"></span><span>      </span><span class="annot"><a href="#local-6989586621679136691"><span class="hs-identifier hs-type">mkInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-225"></span><span>      </span><span id="local-6989586621679136691"><span class="annot"><span class="annottext">mkInner :: CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
-</span><a href="#local-6989586621679136691"><span class="hs-identifier hs-var hs-var">mkInner</span></a></span></span><span> </span><span id="local-6989586621679136698"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136698"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-224"></span><span>      </span><span class="annot"><a href="#local-6989586621679136747"><span class="hs-identifier hs-type">mkInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-225"></span><span>      </span><span id="local-6989586621679136747"><span class="annot"><span class="annottext">mkInner :: CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
+</span><a href="#local-6989586621679136747"><span class="hs-identifier hs-var hs-var">mkInner</span></a></span></span><span> </span><span id="local-6989586621679136754"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679136754"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-226"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136698"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
+</span><a href="#local-6989586621679136754"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
  -&gt; (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; (NonEmptyList (TokenName, Integer) -&gt; [(TokenName, Integer)])
 -&gt; NonEmptyList (TokenName, Integer)
@@ -757,7 +757,7 @@ forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
 -&gt; Gen TokenName -&gt; Gen (Integer -&gt; (TokenName, Integer))
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen TokenName
-</span><a href="#local-6989586621679136699"><span class="hs-identifier hs-var">genNonAdaTokenName</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Integer -&gt; (TokenName, Integer))
+</span><a href="#local-6989586621679136755"><span class="hs-identifier hs-var">genNonAdaTokenName</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Integer -&gt; (TokenName, Integer))
 -&gt; Gen Integer -&gt; Gen (TokenName, Integer)
 forall a b. Gen (a -&gt; b) -&gt; Gen a -&gt; Gen b
 forall (f :: Type -&gt; Type) a b.
@@ -766,9 +766,9 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Integer
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
-</span><span id="line-227"></span><span>      </span><span class="annot"><a href="#local-6989586621679136699"><span class="hs-identifier hs-type">genNonAdaTokenName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span>
-</span><span id="line-228"></span><span>      </span><span id="local-6989586621679136699"><span class="annot"><span class="annottext">genNonAdaTokenName :: Gen TokenName
-</span><a href="#local-6989586621679136699"><span class="hs-identifier hs-var hs-var">genNonAdaTokenName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; TokenName) -&gt; Gen [Word8] -&gt; Gen TokenName
+</span><span id="line-227"></span><span>      </span><span class="annot"><a href="#local-6989586621679136755"><span class="hs-identifier hs-type">genNonAdaTokenName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span>
+</span><span id="line-228"></span><span>      </span><span id="local-6989586621679136755"><span class="annot"><span class="annottext">genNonAdaTokenName :: Gen TokenName
+</span><a href="#local-6989586621679136755"><span class="hs-identifier hs-var hs-var">genNonAdaTokenName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; TokenName) -&gt; Gen [Word8] -&gt; Gen TokenName
 forall a b. (a -&gt; b) -&gt; Gen a -&gt; Gen b
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">BuiltinByteString -&gt; TokenName
@@ -790,13 +790,13 @@ forall a. (Int -&gt; Gen a) -&gt; Gen a
 </span><span class="hs-identifier hs-var">sized</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Gen [Word8]) -&gt; Gen TokenName)
 -&gt; (Int -&gt; Gen [Word8]) -&gt; Gen TokenName
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679136700"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136700"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-229"></span><span>        </span><span id="local-6989586621679136701"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136701"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Int -&gt; Gen Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679136756"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136756"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-229"></span><span>        </span><span id="local-6989586621679136757"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136757"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Int -&gt; Gen Int
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136700"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Int -&gt; Gen Int)
+</span><a href="#local-6989586621679136756"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Int -&gt; Gen Int)
 -&gt; ((Int, Int) -&gt; Gen Int) -&gt; (Int, Int) -&gt; Gen Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
@@ -808,7 +808,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-230"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Gen Word8 -&gt; Gen [Word8]
 forall a. Int -&gt; Gen a -&gt; Gen [a]
 </span><span class="hs-identifier hs-var">vectorOf</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136701"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
+</span><a href="#local-6989586621679136757"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
 -&gt; ((Word8, Word8) -&gt; Gen Word8) -&gt; (Word8, Word8) -&gt; Gen [Word8]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Word8, Word8) -&gt; Gen Word8
@@ -820,9 +820,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-number">126</span></span><span class="hs-special">)</span><span>
 </span><span id="line-231"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-232"></span><span>  </span><span class="hs-comment">-- Since we can't shrink keys anyway, we just borrow the stock shrinker</span><span>
-</span><span id="line-233"></span><span>  </span><span id="local-6989586621679136705"><span class="annot"><span class="annottext">shrink :: NonAdaValue -&gt; [NonAdaValue]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-type">NonAdaValue</span></a></span><span> </span><span id="local-6989586621679136706"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679136706"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; NonAdaValue
+</span><span id="line-233"></span><span>  </span><span id="local-6989586621679136761"><span class="annot"><span class="annottext">shrink :: NonAdaValue -&gt; [NonAdaValue]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-type">NonAdaValue</span></a></span><span> </span><span id="local-6989586621679136762"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679136762"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; NonAdaValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-var">NonAdaValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; NonAdaValue) -&gt; (Value -&gt; Value) -&gt; Value -&gt; NonAdaValue
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Value
@@ -831,15 +831,15 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; [Value]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679136706"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><a href="#local-6989586621679136762"><span class="hs-identifier hs-var">v</span></a></span><span>
 </span><span id="line-234"></span><span>
 </span><span id="line-235"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-236"></span><span id="local-6989586621679136708"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-type">NonAdaValue</span></a></span></span><span>
+</span><span id="line-236"></span><span id="local-6989586621679136764"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-type">NonAdaValue</span></a></span></span><span>
 </span><span id="line-237"></span><span>
 </span><span id="line-238"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-239"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#NonAdaValue"><span class="hs-identifier hs-type">NonAdaValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-240"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-241"></span><span>  </span><span id="local-6989586621679136716"><span class="annot"><span class="annottext">function :: forall b. (NonAdaValue -&gt; b) -&gt; NonAdaValue :-&gt; b
+</span><span id="line-241"></span><span>  </span><span id="local-6989586621679136772"><span class="annot"><span class="annottext">function :: forall b. (NonAdaValue -&gt; b) -&gt; NonAdaValue :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NonAdaValue -&gt; Value)
 -&gt; (Value -&gt; NonAdaValue)
 -&gt; (NonAdaValue -&gt; b)
@@ -867,7 +867,7 @@ specially.
 -}</span></span><span>
 </span><span id="line-253"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-254"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-255"></span><span>  </span><span id="local-6989586621679136731"><span class="annot"><span class="annottext">arbitrary :: Gen Value
+</span><span id="line-255"></span><span>  </span><span id="local-6989586621679136787"><span class="annot"><span class="annottext">arbitrary :: Gen Value
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer) -&gt; Value
 </span><span class="hs-identifier hs-var">PLA.Value</span></span><span> </span><span class="annot"><span class="annottext">(Map CurrencySymbol (Map TokenName Integer) -&gt; Value)
 -&gt; Gen (Map CurrencySymbol (Map TokenName Integer)) -&gt; Gen Value
@@ -886,7 +886,7 @@ forall a. Integral a =&gt; a -&gt; a -&gt; a
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
 </span><span id="line-256"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-257"></span><span>  </span><span id="local-6989586621679136740"><span class="annot"><span class="annottext">shrink :: Value -&gt; [Value]
+</span><span id="line-257"></span><span>  </span><span id="local-6989586621679136796"><span class="annot"><span class="annottext">shrink :: Value -&gt; [Value]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map CurrencySymbol (Map TokenName Integer) -&gt; Value)
 -&gt; [Map CurrencySymbol (Map TokenName Integer)] -&gt; [Value]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
@@ -910,7 +910,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-identifier hs-var">PLA.getValue</span></span><span>
 </span><span id="line-258"></span><span>
 </span><span id="line-259"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-260"></span><span id="local-6989586621679136743"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-260"></span><span id="local-6989586621679136799"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
 </span><span id="line-261"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AssocMap.Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-262"></span><span>  </span><span class="hs-keyword">instance</span><span>
 </span><span id="line-263"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span></span><span>
@@ -918,7 +918,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-265"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-266"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-267"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-268"></span><span>  </span><span id="local-6989586621679136759"><span class="annot"><span class="annottext">function :: forall b. (Value -&gt; b) -&gt; Value :-&gt; b
+</span><span id="line-268"></span><span>  </span><span id="local-6989586621679136815"><span class="annot"><span class="annottext">function :: forall b. (Value -&gt; b) -&gt; Value :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Value -&gt; Map CurrencySymbol (Map TokenName Integer))
 -&gt; (Map CurrencySymbol (Map TokenName Integer) -&gt; Value)
 -&gt; (Value -&gt; b)
@@ -944,7 +944,7 @@ range. We did this for two reasons:
 -}</span></span><span>
 </span><span id="line-281"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-282"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-283"></span><span>  </span><span id="local-6989586621679136771"><span class="annot"><span class="annottext">arbitrary :: Gen TokenName
+</span><span id="line-283"></span><span>  </span><span id="local-6989586621679136827"><span class="annot"><span class="annottext">arbitrary :: Gen TokenName
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-284"></span><span>    </span><span class="annot"><span class="annottext">([Word8] -&gt; TokenName) -&gt; Gen [Word8] -&gt; Gen TokenName
 forall a b. (a -&gt; b) -&gt; Gen a -&gt; Gen b
@@ -968,14 +968,14 @@ forall a. (Int -&gt; Gen a) -&gt; Gen a
 </span><span class="hs-identifier hs-var">sized</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Gen [Word8]) -&gt; Gen TokenName)
 -&gt; (Int -&gt; Gen [Word8]) -&gt; Gen TokenName
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679136772"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136772"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679136828"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136828"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-285"></span><span>      </span><span class="hs-comment">-- We want the length to be size-dependent</span><span>
-</span><span id="line-286"></span><span>      </span><span id="local-6989586621679136773"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136773"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Int -&gt; Gen Int
+</span><span id="line-286"></span><span>      </span><span id="local-6989586621679136829"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679136829"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Int -&gt; Gen Int
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136772"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Int -&gt; Gen Int)
+</span><a href="#local-6989586621679136828"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Int -&gt; Gen Int)
 -&gt; ((Int, Int) -&gt; Gen Int) -&gt; (Int, Int) -&gt; Gen Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
@@ -989,7 +989,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-289"></span><span>      </span><span class="annot"><span class="annottext">Int -&gt; Gen Word8 -&gt; Gen [Word8]
 forall a. Int -&gt; Gen a -&gt; Gen [a]
 </span><span class="hs-identifier hs-var">vectorOf</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136773"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
+</span><a href="#local-6989586621679136829"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
 -&gt; ((Word8, Word8) -&gt; Gen Word8) -&gt; (Word8, Word8) -&gt; Gen [Word8]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Word8, Word8) -&gt; Gen Word8
@@ -1000,9 +1000,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-number">33</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">126</span></span><span class="hs-special">)</span><span>
 </span><span id="line-290"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-291"></span><span>  </span><span id="local-6989586621679136794"><span class="annot"><span class="annottext">shrink :: TokenName -&gt; [TokenName]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span id="local-6989586621679136795"><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136795"><span class="hs-identifier hs-var">tn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-291"></span><span>  </span><span id="local-6989586621679136850"><span class="annot"><span class="annottext">shrink :: TokenName -&gt; [TokenName]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span id="local-6989586621679136851"><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679136851"><span class="hs-identifier hs-var">tn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-292"></span><span>    </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; TokenName
 </span><span class="hs-identifier hs-var">PLA.TokenName</span></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; TokenName)
 -&gt; (ByteString -&gt; BuiltinByteString) -&gt; ByteString -&gt; TokenName
@@ -1011,8 +1011,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; TokenName) -&gt; [ByteString] -&gt; [TokenName]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-293"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136796"><span class="annot"><span class="annottext">asList :: [Word8]
-</span><a href="#local-6989586621679136796"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
+</span><span id="line-293"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136852"><span class="annot"><span class="annottext">asList :: [Word8]
+</span><a href="#local-6989586621679136852"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
 </span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#unpack"><span class="hs-identifier hs-var">BS.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; [Word8])
 -&gt; (TokenName -&gt; ByteString) -&gt; TokenName -&gt; [Word8]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -1025,43 +1025,43 @@ forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(TokenName -&gt; [Word8]) -&gt; TokenName -&gt; [Word8]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136795"><span class="hs-identifier hs-var">tn</span></a></span><span>
-</span><span id="line-294"></span><span>      </span><span id="local-6989586621679136799"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679136799"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
+</span><a href="#local-6989586621679136851"><span class="hs-identifier hs-var">tn</span></a></span><span>
+</span><span id="line-294"></span><span>      </span><span id="local-6989586621679136855"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679136855"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; ByteString
 </span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#pack"><span class="hs-identifier hs-var">BS.pack</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; ByteString) -&gt; [[Word8]] -&gt; [ByteString]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; [[Word8]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[Word8]
-</span><a href="#local-6989586621679136796"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><a href="#local-6989586621679136852"><span class="hs-identifier hs-var">asList</span></a></span><span>
 </span><span id="line-295"></span><span>      </span><span class="annot"><span class="annottext">Bool -&gt; [()]
 forall (f :: Type -&gt; Type). Alternative f =&gt; Bool -&gt; f ()
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Control.Monad.html#guard"><span class="hs-identifier hs-var">guard</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Word8 -&gt; Bool) -&gt; ByteString -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#all"><span class="hs-identifier hs-var">BS.all</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679136801"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621679136801"><span class="hs-identifier hs-var">w8</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621679136801"><span class="hs-identifier hs-var">w8</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html#all"><span class="hs-identifier hs-var">BS.all</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679136857"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679136857"><span class="hs-identifier hs-var">w8</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621679136857"><span class="hs-identifier hs-var">w8</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">33</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621679136801"><span class="hs-identifier hs-var">w8</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621679136857"><span class="hs-identifier hs-var">w8</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">126</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679136799"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679136855"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-296"></span><span>      </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
 forall a. a -&gt; [a]
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679136799"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621679136855"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-297"></span><span>
 </span><span id="line-298"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-299"></span><span id="local-6989586621679136805"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span></span><span>
+</span><span id="line-299"></span><span id="local-6989586621679136861"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span></span><span>
 </span><span id="line-300"></span><span>
 </span><span id="line-301"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-302"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-303"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-304"></span><span>  </span><span id="local-6989586621679136811"><span class="annot"><span class="annottext">function :: forall b. (TokenName -&gt; b) -&gt; TokenName :-&gt; b
+</span><span id="line-304"></span><span>  </span><span id="local-6989586621679136867"><span class="annot"><span class="annottext">function :: forall b. (TokenName -&gt; b) -&gt; TokenName :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TokenName -&gt; BuiltinByteString)
 -&gt; (BuiltinByteString -&gt; TokenName)
 -&gt; (TokenName -&gt; b)
@@ -1079,52 +1079,52 @@ forall a b. Coercible a b =&gt; a -&gt; b
 </span><span id="line-308"></span><span class="hs-comment">-- This is frankly a bizarre omission</span><span>
 </span><span id="line-309"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary1</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">NonEmptyList</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-310"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftArbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-311"></span><span>  </span><span id="local-6989586621679136820"><span class="annot"><span class="annottext">liftArbitrary :: forall a. Gen a -&gt; Gen (NonEmptyList a)
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftArbitrary</span></span></span><span> </span><span id="local-6989586621679136821"><span class="annot"><span class="annottext">Gen a
-</span><a href="#local-6989586621679136821"><span class="hs-identifier hs-var">genInner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-311"></span><span>  </span><span id="local-6989586621679136876"><span class="annot"><span class="annottext">liftArbitrary :: forall a. Gen a -&gt; Gen (NonEmptyList a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftArbitrary</span></span></span><span> </span><span id="local-6989586621679136877"><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679136877"><span class="hs-identifier hs-var">genInner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-312"></span><span>    </span><span class="annot"><span class="annottext">[a] -&gt; NonEmptyList a
 forall a. [a] -&gt; NonEmptyList a
 </span><span class="hs-identifier hs-var">NonEmpty</span></span><span> </span><span class="annot"><span class="annottext">([a] -&gt; NonEmptyList a) -&gt; Gen [a] -&gt; Gen (NonEmptyList a)
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-313"></span><span>      </span><span id="local-6989586621679136822"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679136822"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen a
-</span><a href="#local-6989586621679136821"><span class="hs-identifier hs-var">genInner</span></a></span><span>
-</span><span id="line-314"></span><span>      </span><span id="local-6989586621679136823"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679136823"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen a -&gt; Gen [a]
+</span><span id="line-313"></span><span>      </span><span id="local-6989586621679136878"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679136878"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679136877"><span class="hs-identifier hs-var">genInner</span></a></span><span>
+</span><span id="line-314"></span><span>      </span><span id="local-6989586621679136879"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679136879"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Gen a -&gt; Gen [a]
 forall a. Gen a -&gt; Gen [a]
 forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
 </span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">Gen a
-</span><a href="#local-6989586621679136821"><span class="hs-identifier hs-var">genInner</span></a></span><span>
+</span><a href="#local-6989586621679136877"><span class="hs-identifier hs-var">genInner</span></a></span><span>
 </span><span id="line-315"></span><span>      </span><span class="annot"><span class="annottext">[a] -&gt; Gen [a]
 forall a. a -&gt; Gen a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">([a] -&gt; Gen [a]) -&gt; [a] -&gt; Gen [a]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679136822"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679136878"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a] -&gt; [a]
 forall a. a -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679136823"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679136879"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-316"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">liftShrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-317"></span><span>  </span><span id="local-6989586621679136828"><span class="annot"><span class="annottext">liftShrink :: forall a. (a -&gt; [a]) -&gt; NonEmptyList a -&gt; [NonEmptyList a]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShrink</span></span></span><span> </span><span id="local-6989586621679136829"><span class="annot"><span class="annottext">a -&gt; [a]
-</span><a href="#local-6989586621679136829"><span class="hs-identifier hs-var">shrinkInner</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span id="local-6989586621679136830"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679136830"><span class="hs-identifier hs-var">ell</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-317"></span><span>  </span><span id="local-6989586621679136884"><span class="annot"><span class="annottext">liftShrink :: forall a. (a -&gt; [a]) -&gt; NonEmptyList a -&gt; [NonEmptyList a]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">liftShrink</span></span></span><span> </span><span id="local-6989586621679136885"><span class="annot"><span class="annottext">a -&gt; [a]
+</span><a href="#local-6989586621679136885"><span class="hs-identifier hs-var">shrinkInner</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span id="local-6989586621679136886"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679136886"><span class="hs-identifier hs-var">ell</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-318"></span><span>    </span><span class="annot"><span class="annottext">[a] -&gt; NonEmptyList a
 forall a. [a] -&gt; NonEmptyList a
 </span><span class="hs-identifier hs-var">NonEmpty</span></span><span> </span><span class="annot"><span class="annottext">([a] -&gt; NonEmptyList a) -&gt; [[a]] -&gt; [NonEmptyList a]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679136830"><span class="hs-identifier hs-var">ell</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679136886"><span class="hs-identifier hs-var">ell</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-319"></span><span>      </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-320"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679136831"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679136831"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621679136832"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679136832"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a -&gt; [a] -&gt; [a]) -&gt; [a] -&gt; [[a] -&gt; [a]]
+</span><span id="line-320"></span><span>      </span><span class="hs-special">(</span><span id="local-6989586621679136887"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679136887"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621679136888"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679136888"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(a -&gt; [a] -&gt; [a]) -&gt; [a] -&gt; [[a] -&gt; [a]]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a]
-</span><a href="#local-6989586621679136829"><span class="hs-identifier hs-var">shrinkInner</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679136831"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[[a] -&gt; [a]] -&gt; [[a]] -&gt; [[a]]
+</span><a href="#local-6989586621679136885"><span class="hs-identifier hs-var">shrinkInner</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679136887"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[[a] -&gt; [a]] -&gt; [[a]] -&gt; [[a]]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b.
 Applicative f =&gt;
@@ -1135,8 +1135,8 @@ forall (f :: Type -&gt; Type) a.
 Arbitrary1 f =&gt;
 (a -&gt; [a]) -&gt; f a -&gt; [f a]
 </span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [a]
-</span><a href="#local-6989586621679136829"><span class="hs-identifier hs-var">shrinkInner</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621679136832"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679136885"><span class="hs-identifier hs-var">shrinkInner</span></a></span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621679136888"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-321"></span><span>
 </span><span id="line-322"></span><span class="annot"><span class="hs-comment">{- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
 Ada quantity is positive.
@@ -1154,7 +1154,7 @@ the table.
 </span><span id="line-335"></span><span class="hs-keyword">newtype</span><span> </span><span id="FeeValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-var">FeeValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FeeValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-var">FeeValue</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-336"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-337"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-338"></span><span>      </span><span id="local-6989586621679136835"><span id="local-6989586621679136839"><span class="annot"><span class="annottext">FeeValue -&gt; FeeValue -&gt; Bool
+</span><span id="line-338"></span><span>      </span><span id="local-6989586621679136891"><span id="local-6989586621679136895"><span class="annot"><span class="annottext">FeeValue -&gt; FeeValue -&gt; Bool
 (FeeValue -&gt; FeeValue -&gt; Bool)
 -&gt; (FeeValue -&gt; FeeValue -&gt; Bool) -&gt; Eq FeeValue
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -1167,7 +1167,7 @@ $c/= :: FeeValue -&gt; FeeValue -&gt; Bool
 </span><span id="line-340"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-341"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-342"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-343"></span><span>      </span><span id="local-6989586621679136844"><span id="local-6989586621679136848"><span id="local-6989586621679136852"><span class="annot"><span class="annottext">Int -&gt; FeeValue -&gt; ShowS
+</span><span id="line-343"></span><span>      </span><span id="local-6989586621679136900"><span id="local-6989586621679136904"><span id="local-6989586621679136908"><span class="annot"><span class="annottext">Int -&gt; FeeValue -&gt; ShowS
 [FeeValue] -&gt; ShowS
 FeeValue -&gt; String
 (Int -&gt; FeeValue -&gt; ShowS)
@@ -1186,7 +1186,7 @@ showList :: [FeeValue] -&gt; ShowS
 </span><span id="line-346"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-347"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">FeeValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-348"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-349"></span><span>  </span><span id="local-6989586621679136862"><span class="annot"><span class="annottext">arbitrary :: Gen FeeValue
+</span><span id="line-349"></span><span>  </span><span id="local-6989586621679136918"><span class="annot"><span class="annottext">arbitrary :: Gen FeeValue
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; FeeValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-var">FeeValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; FeeValue)
 -&gt; (Positive Integer -&gt; Value) -&gt; Positive Integer -&gt; FeeValue
@@ -1206,9 +1206,9 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
 </span><span id="line-350"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-351"></span><span>  </span><span id="local-6989586621679136870"><span class="annot"><span class="annottext">shrink :: FeeValue -&gt; [FeeValue]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">FeeValue</span></a></span><span> </span><span id="local-6989586621679136871"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679136871"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-351"></span><span>  </span><span id="local-6989586621679136926"><span class="annot"><span class="annottext">shrink :: FeeValue -&gt; [FeeValue]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">FeeValue</span></a></span><span> </span><span id="local-6989586621679136927"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679136927"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-352"></span><span>    </span><span class="annot"><span class="annottext">Value -&gt; FeeValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-var">FeeValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; FeeValue) -&gt; (Integer -&gt; Value) -&gt; Integer -&gt; FeeValue
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -1218,32 +1218,32 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-identifier hs-var">PLA.adaToken</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; FeeValue) -&gt; [Integer] -&gt; [FeeValue]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-353"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136872"><span class="annot"><span class="annottext">adaAmount :: Integer
-</span><a href="#local-6989586621679136872"><span class="hs-identifier hs-var hs-var">adaAmount</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; CurrencySymbol -&gt; TokenName -&gt; Integer
+</span><span id="line-353"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136928"><span class="annot"><span class="annottext">adaAmount :: Integer
+</span><a href="#local-6989586621679136928"><span class="hs-identifier hs-var hs-var">adaAmount</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; CurrencySymbol -&gt; TokenName -&gt; Integer
 </span><span class="hs-identifier hs-var">Value.valueOf</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679136871"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679136927"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
 </span><span class="hs-identifier hs-var">PLA.adaSymbol</span></span><span> </span><span class="annot"><span class="annottext">TokenName
 </span><span class="hs-identifier hs-var">PLA.adaToken</span></span><span>
-</span><span id="line-354"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Positive</span></span><span> </span><span id="local-6989586621679136874"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136874"><span class="hs-identifier hs-var">adaAmount'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Positive Integer -&gt; [Positive Integer]
+</span><span id="line-354"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Positive</span></span><span> </span><span id="local-6989586621679136930"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679136930"><span class="hs-identifier hs-var">adaAmount'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Positive Integer -&gt; [Positive Integer]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Positive Integer
 forall a. a -&gt; Positive a
 </span><span class="hs-identifier hs-var">Positive</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136872"><span class="hs-identifier hs-var">adaAmount</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679136928"><span class="hs-identifier hs-var">adaAmount</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-355"></span><span>      </span><span class="annot"><span class="annottext">Integer -&gt; [Integer]
 forall a. a -&gt; [a]
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136874"><span class="hs-identifier hs-var">adaAmount'</span></a></span><span>
+</span><a href="#local-6989586621679136930"><span class="hs-identifier hs-var">adaAmount'</span></a></span><span>
 </span><span id="line-356"></span><span>
 </span><span id="line-357"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-358"></span><span id="local-6989586621679136876"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">FeeValue</span></a></span></span><span>
+</span><span id="line-358"></span><span id="local-6989586621679136932"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">FeeValue</span></a></span></span><span>
 </span><span id="line-359"></span><span>
 </span><span id="line-360"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-361"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">FeeValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-362"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-363"></span><span>  </span><span id="local-6989586621679136884"><span class="annot"><span class="annottext">function :: forall b. (FeeValue -&gt; b) -&gt; FeeValue :-&gt; b
+</span><span id="line-363"></span><span>  </span><span id="local-6989586621679136940"><span class="annot"><span class="annottext">function :: forall b. (FeeValue -&gt; b) -&gt; FeeValue :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FeeValue -&gt; Value)
 -&gt; (Value -&gt; FeeValue) -&gt; (FeeValue -&gt; b) -&gt; FeeValue :-&gt; b
 forall b a c.
@@ -1276,7 +1276,7 @@ the table.
 </span><span id="line-381"></span><span class="hs-keyword">newtype</span><span> </span><span id="MintValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MintValue"><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-382"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-383"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.3</span></span><span>
-</span><span id="line-384"></span><span>      </span><span id="local-6989586621679136887"><span id="local-6989586621679136891"><span class="annot"><span class="annottext">MintValue -&gt; MintValue -&gt; Bool
+</span><span id="line-384"></span><span>      </span><span id="local-6989586621679136943"><span id="local-6989586621679136947"><span class="annot"><span class="annottext">MintValue -&gt; MintValue -&gt; Bool
 (MintValue -&gt; MintValue -&gt; Bool)
 -&gt; (MintValue -&gt; MintValue -&gt; Bool) -&gt; Eq MintValue
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -1289,7 +1289,7 @@ $c/= :: MintValue -&gt; MintValue -&gt; Bool
 </span><span id="line-386"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-387"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-388"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.3</span></span><span>
-</span><span id="line-389"></span><span>      </span><span id="local-6989586621679136896"><span id="local-6989586621679136900"><span id="local-6989586621679136904"><span class="annot"><span class="annottext">Int -&gt; MintValue -&gt; ShowS
+</span><span id="line-389"></span><span>      </span><span id="local-6989586621679136952"><span id="local-6989586621679136956"><span id="local-6989586621679136960"><span class="annot"><span class="annottext">Int -&gt; MintValue -&gt; ShowS
 [MintValue] -&gt; ShowS
 MintValue -&gt; String
 (Int -&gt; MintValue -&gt; ShowS)
@@ -1310,15 +1310,15 @@ showList :: [MintValue] -&gt; ShowS
 </span><span id="line-392"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.3</span></span><span>
 </span><span id="line-393"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-394"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-395"></span><span>  </span><span id="local-6989586621679136949"><span class="annot"><span class="annottext">arbitrary :: Gen MintValue
+</span><span id="line-395"></span><span>  </span><span id="local-6989586621679137005"><span class="annot"><span class="annottext">arbitrary :: Gen MintValue
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-396"></span><span>    </span><span class="annot"><span class="annottext">Value -&gt; MintValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; MintValue) -&gt; Gen Value -&gt; Gen MintValue
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-397"></span><span>      </span><span class="hs-comment">-- Generate a set of currency symbols that aren't Ada</span><span>
-</span><span id="line-398"></span><span>      </span><span id="local-6989586621679136950"><span class="annot"><span class="annottext">Set CurrencySymbol
-</span><a href="#local-6989586621679136950"><span class="hs-identifier hs-var">keySet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol] -&gt; Set CurrencySymbol
+</span><span id="line-398"></span><span>      </span><span id="local-6989586621679137006"><span class="annot"><span class="annottext">Set CurrencySymbol
+</span><a href="#local-6989586621679137006"><span class="hs-identifier hs-var">keySet</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol] -&gt; Set CurrencySymbol
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#fromList"><span class="hs-identifier hs-var">Set.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">([CurrencySymbol] -&gt; Set CurrencySymbol)
 -&gt; Gen [CurrencySymbol] -&gt; Gen (Set CurrencySymbol)
@@ -1339,14 +1339,14 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Blake2b244Hash
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span>
-</span><span id="line-399"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136951"><span class="annot"><span class="annottext">keyList :: [CurrencySymbol]
-</span><a href="#local-6989586621679136951"><span class="hs-identifier hs-var hs-var">keyList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol -&gt; [CurrencySymbol]
+</span><span id="line-399"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679137007"><span class="annot"><span class="annottext">keyList :: [CurrencySymbol]
+</span><a href="#local-6989586621679137007"><span class="hs-identifier hs-var hs-var">keyList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol -&gt; [CurrencySymbol]
 forall a. Set a -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">Set CurrencySymbol
-</span><a href="#local-6989586621679136950"><span class="hs-identifier hs-var">keySet</span></a></span><span>
+</span><a href="#local-6989586621679137006"><span class="hs-identifier hs-var">keySet</span></a></span><span>
 </span><span id="line-400"></span><span>      </span><span class="hs-comment">-- For each key, generate a set of token name keys that aren't Ada</span><span>
-</span><span id="line-401"></span><span>      </span><span id="local-6989586621679136952"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136952"><span class="hs-identifier hs-var">keyVals</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)]))
+</span><span id="line-401"></span><span>      </span><span id="local-6989586621679137008"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679137008"><span class="hs-identifier hs-var">keyVals</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; [CurrencySymbol]
 -&gt; Gen [(CurrencySymbol, [(TokenName, Integer)])]
 forall (t :: Type -&gt; Type) (f :: Type -&gt; Type) a b.
@@ -1369,8 +1369,8 @@ forall a. Integral a =&gt; a -&gt; a -&gt; a
 -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
-</span><a href="#local-6989586621679136953"><span class="hs-identifier hs-var">mkInner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol]
-</span><a href="#local-6989586621679136951"><span class="hs-identifier hs-var">keyList</span></a></span><span>
+</span><a href="#local-6989586621679137009"><span class="hs-identifier hs-var">mkInner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CurrencySymbol]
+</span><a href="#local-6989586621679137007"><span class="hs-identifier hs-var">keyList</span></a></span><span>
 </span><span id="line-402"></span><span>      </span><span class="annot"><span class="annottext">Value -&gt; Gen Value
 forall a. a -&gt; Gen a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -1393,9 +1393,9 @@ forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
 forall (t :: Type -&gt; Type) m a.
 (Foldable t, Monoid m) =&gt;
 (a -&gt; m) -&gt; t a -&gt; m
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Foldable.html#foldMap"><span class="hs-identifier hs-var">foldMap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136954"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136954"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136955"><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136955"><span class="hs-identifier hs-var">vals</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((TokenName, Integer) -&gt; Value) -&gt; [(TokenName, Integer)] -&gt; Value
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Foldable.html#foldMap"><span class="hs-identifier hs-var">foldMap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679137010"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137010"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137011"><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679137011"><span class="hs-identifier hs-var">vals</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((TokenName, Integer) -&gt; Value) -&gt; [(TokenName, Integer)] -&gt; Value
 forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
 forall (t :: Type -&gt; Type) m a.
 (Foldable t, Monoid m) =&gt;
@@ -1404,20 +1404,20 @@ forall (t :: Type -&gt; Type) m a.
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol -&gt; TokenName -&gt; Integer -&gt; Value
 </span><span class="hs-identifier hs-var">Value.singleton</span></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136954"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136955"><span class="hs-identifier hs-var">vals</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679137010"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679137011"><span class="hs-identifier hs-var">vals</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-405"></span><span>        </span><span class="annot"><span class="annottext">([(CurrencySymbol, [(TokenName, Integer)])] -&gt; Gen Value)
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])] -&gt; Gen Value
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136952"><span class="hs-identifier hs-var">keyVals</span></a></span><span>
+</span><a href="#local-6989586621679137008"><span class="hs-identifier hs-var">keyVals</span></a></span><span>
 </span><span id="line-406"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-407"></span><span>      </span><span class="annot"><a href="#local-6989586621679136953"><span class="hs-identifier hs-type">mkInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-408"></span><span>      </span><span id="local-6989586621679136953"><span class="annot"><span class="annottext">mkInner :: CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
-</span><a href="#local-6989586621679136953"><span class="hs-identifier hs-var hs-var">mkInner</span></a></span></span><span> </span><span id="local-6989586621679136956"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136956"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-407"></span><span>      </span><span class="annot"><a href="#local-6989586621679137009"><span class="hs-identifier hs-type">mkInner</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-408"></span><span>      </span><span id="local-6989586621679137009"><span class="annot"><span class="annottext">mkInner :: CurrencySymbol -&gt; Gen (CurrencySymbol, [(TokenName, Integer)])
+</span><a href="#local-6989586621679137009"><span class="hs-identifier hs-var hs-var">mkInner</span></a></span></span><span> </span><span id="local-6989586621679137012"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137012"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-409"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136956"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679137012"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span>
 </span><span id="line-410"></span><span>          </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
  -&gt; (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; (NonEmptyList (TokenName, Integer) -&gt; [(TokenName, Integer)])
@@ -1455,7 +1455,7 @@ forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
 -&gt; Gen TokenName -&gt; Gen (Integer -&gt; (TokenName, Integer))
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen TokenName
-</span><a href="#local-6989586621679136957"><span class="hs-identifier hs-var">genNonAdaTokenName</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Integer -&gt; (TokenName, Integer))
+</span><a href="#local-6989586621679137013"><span class="hs-identifier hs-var">genNonAdaTokenName</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Integer -&gt; (TokenName, Integer))
 -&gt; Gen Integer -&gt; Gen (TokenName, Integer)
 forall a b. Gen (a -&gt; b) -&gt; Gen a -&gt; Gen b
 forall (f :: Type -&gt; Type) a b.
@@ -1469,9 +1469,9 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (NonZero Integer)
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-414"></span><span>      </span><span class="annot"><a href="#local-6989586621679136957"><span class="hs-identifier hs-type">genNonAdaTokenName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span>
-</span><span id="line-415"></span><span>      </span><span id="local-6989586621679136957"><span class="annot"><span class="annottext">genNonAdaTokenName :: Gen TokenName
-</span><a href="#local-6989586621679136957"><span class="hs-identifier hs-var hs-var">genNonAdaTokenName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; TokenName) -&gt; Gen [Word8] -&gt; Gen TokenName
+</span><span id="line-414"></span><span>      </span><span class="annot"><a href="#local-6989586621679137013"><span class="hs-identifier hs-type">genNonAdaTokenName</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TokenName</span></span><span>
+</span><span id="line-415"></span><span>      </span><span id="local-6989586621679137013"><span class="annot"><span class="annottext">genNonAdaTokenName :: Gen TokenName
+</span><a href="#local-6989586621679137013"><span class="hs-identifier hs-var hs-var">genNonAdaTokenName</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; TokenName) -&gt; Gen [Word8] -&gt; Gen TokenName
 forall a b. (a -&gt; b) -&gt; Gen a -&gt; Gen b
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">BuiltinByteString -&gt; TokenName
@@ -1493,13 +1493,13 @@ forall a. (Int -&gt; Gen a) -&gt; Gen a
 </span><span class="hs-identifier hs-var">sized</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Gen [Word8]) -&gt; Gen TokenName)
 -&gt; (Int -&gt; Gen [Word8]) -&gt; Gen TokenName
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679136958"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136958"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-416"></span><span>        </span><span id="local-6989586621679136959"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136959"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Int -&gt; Gen Int
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679137014"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679137014"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-416"></span><span>        </span><span id="local-6989586621679137015"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679137015"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Int -&gt; Gen Int
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136958"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Int -&gt; Gen Int)
+</span><a href="#local-6989586621679137014"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Int -&gt; Gen Int)
 -&gt; ((Int, Int) -&gt; Gen Int) -&gt; (Int, Int) -&gt; Gen Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
@@ -1511,7 +1511,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-417"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Gen Word8 -&gt; Gen [Word8]
 forall a. Int -&gt; Gen a -&gt; Gen [a]
 </span><span class="hs-identifier hs-var">vectorOf</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679136959"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
+</span><a href="#local-6989586621679137015"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen Word8 -&gt; Gen [Word8])
 -&gt; ((Word8, Word8) -&gt; Gen Word8) -&gt; (Word8, Word8) -&gt; Gen [Word8]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Word8, Word8) -&gt; Gen Word8
@@ -1522,9 +1522,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-number">33</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">126</span></span><span class="hs-special">)</span><span>
 </span><span id="line-418"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-419"></span><span>  </span><span id="local-6989586621679136975"><span class="annot"><span class="annottext">shrink :: MintValue -&gt; [MintValue]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.Value</span></span><span> </span><span id="local-6989586621679136976"><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
-</span><a href="#local-6989586621679136976"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-419"></span><span>  </span><span id="local-6989586621679137031"><span class="annot"><span class="annottext">shrink :: MintValue -&gt; [MintValue]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.Value</span></span><span> </span><span id="local-6989586621679137032"><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
+</span><a href="#local-6989586621679137032"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-420"></span><span>    </span><span class="annot"><span class="annottext">Value -&gt; MintValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span><span> </span><span class="annot"><span class="annottext">(Value -&gt; MintValue)
 -&gt; (Map CurrencySymbol (Map TokenName Integer) -&gt; Value)
@@ -1550,8 +1550,8 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><span id="line-426"></span><span>      </span><span class="hs-comment">-- To make this a bit easier on ourselves, we first 'unpack' the Value</span><span>
 </span><span id="line-427"></span><span>      </span><span class="hs-comment">-- completely, shrink the resulting (nested) list, then 'repack'. As neither</span><span>
 </span><span id="line-428"></span><span>      </span><span class="hs-comment">-- of these changes affect order or uniqueness, we're safe.</span><span>
-</span><span id="line-429"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679136977"><span class="annot"><span class="annottext">asList :: [(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136977"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map TokenName Integer -&gt; [(TokenName, Integer)])
+</span><span id="line-429"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679137033"><span class="annot"><span class="annottext">asList :: [(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679137033"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map TokenName Integer -&gt; [(TokenName, Integer)])
 -&gt; (CurrencySymbol, Map TokenName Integer)
 -&gt; (CurrencySymbol, [(TokenName, Integer)])
 forall a b. (a -&gt; b) -&gt; (CurrencySymbol, a) -&gt; (CurrencySymbol, b)
@@ -1567,9 +1567,9 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 -&gt; [(CurrencySymbol, Map TokenName Integer)]
 forall k v. Map k v -&gt; [(k, v)]
 </span><span class="hs-identifier hs-var">AssocMap.toList</span></span><span> </span><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
-</span><a href="#local-6989586621679136976"><span class="hs-identifier hs-var">v</span></a></span><span>
-</span><span id="line-430"></span><span>      </span><span id="local-6989586621679136978"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136978"><span class="hs-identifier hs-var">shrunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((CurrencySymbol, [(TokenName, Integer)])
+</span><a href="#local-6989586621679137032"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-430"></span><span>      </span><span id="local-6989586621679137034"><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679137034"><span class="hs-identifier hs-var">shrunk</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((CurrencySymbol, [(TokenName, Integer)])
  -&gt; [(CurrencySymbol, [(TokenName, Integer)])])
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])]
 -&gt; [[(CurrencySymbol, [(TokenName, Integer)])]]
@@ -1577,10 +1577,10 @@ forall a. (a -&gt; [a]) -&gt; [a] -&gt; [[a]]
 forall (f :: Type -&gt; Type) a.
 Arbitrary1 f =&gt;
 (a -&gt; [a]) -&gt; f a -&gt; [f a]
-</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136979"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136979"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136980"><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136980"><span class="hs-identifier hs-var">inner</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679136979"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679137035"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137035"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137036"><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679137036"><span class="hs-identifier hs-var">inner</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137035"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(TokenName, Integer)]
  -&gt; (CurrencySymbol, [(TokenName, Integer)]))
 -&gt; [[(TokenName, Integer)]]
 -&gt; [(CurrencySymbol, [(TokenName, Integer)])]
@@ -1591,10 +1591,10 @@ forall a. (a -&gt; [a]) -&gt; [a] -&gt; [[a]]
 forall (f :: Type -&gt; Type) a.
 Arbitrary1 f =&gt;
 (a -&gt; [a]) -&gt; f a -&gt; [f a]
-</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679136981"><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136981"><span class="hs-identifier hs-var">tn</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679136982"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136982"><span class="hs-identifier hs-var">amount</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
-</span><a href="#local-6989586621679136981"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; (TokenName, Integer))
+</span><span class="hs-identifier hs-var">liftShrink</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679137037"><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679137037"><span class="hs-identifier hs-var">tn</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137038"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679137038"><span class="hs-identifier hs-var">amount</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TokenName
+</span><a href="#local-6989586621679137037"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; (TokenName, Integer))
 -&gt; (NonZero Integer -&gt; Integer)
 -&gt; NonZero Integer
 -&gt; (TokenName, Integer)
@@ -1609,9 +1609,9 @@ forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; NonZero Integer
 forall a. a -&gt; NonZero a
 </span><span class="hs-identifier hs-var">NonZero</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679136982"><span class="hs-identifier hs-var">amount</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
-</span><a href="#local-6989586621679136980"><span class="hs-identifier hs-var">inner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136977"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><a href="#local-6989586621679137038"><span class="hs-identifier hs-var">amount</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(TokenName, Integer)]
+</span><a href="#local-6989586621679137036"><span class="hs-identifier hs-var">inner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
+</span><a href="#local-6989586621679137033"><span class="hs-identifier hs-var">asList</span></a></span><span>
 </span><span id="line-431"></span><span>      </span><span class="annot"><span class="annottext">Map CurrencySymbol (Map TokenName Integer)
 -&gt; [Map CurrencySymbol (Map TokenName Integer)]
 forall a. a -&gt; [a]
@@ -1652,15 +1652,15 @@ forall k v. [(k, v)] -&gt; Map k v
 -&gt; [Map CurrencySymbol (Map TokenName Integer)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
-</span><a href="#local-6989586621679136978"><span class="hs-identifier hs-var">shrunk</span></a></span><span>
+</span><a href="#local-6989586621679137034"><span class="hs-identifier hs-var">shrunk</span></a></span><span>
 </span><span id="line-432"></span><span>
 </span><span id="line-433"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.3</span></span><span>
-</span><span id="line-434"></span><span id="local-6989586621679136984"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span></span><span>
+</span><span id="line-434"></span><span id="local-6989586621679137040"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span></span><span>
 </span><span id="line-435"></span><span>
 </span><span id="line-436"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.3</span></span><span>
 </span><span id="line-437"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-438"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-439"></span><span>  </span><span id="local-6989586621679136992"><span class="annot"><span class="annottext">function :: forall b. (MintValue -&gt; b) -&gt; MintValue :-&gt; b
+</span><span id="line-439"></span><span>  </span><span id="local-6989586621679137048"><span class="annot"><span class="annottext">function :: forall b. (MintValue -&gt; b) -&gt; MintValue :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(MintValue -&gt; Value)
 -&gt; (Value -&gt; MintValue) -&gt; (MintValue -&gt; b) -&gt; MintValue :-&gt; b
 forall b a c.

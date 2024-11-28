@@ -346,3 +346,14 @@ checkHaskellIntegralEquivalent :: forall (plutarchInput :: S -> Type). (PLiftabl
 --   
 --   @since WIP
 checkPLiftableLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a, Show (AsHaskell a)) => [TestTree]
+
+-- | Verifies that the specified Plutarch type satisfies the <a>POrd</a>
+--   laws for mandatory methods.
+--   
+--   @since WIP
+checkPOrdLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PLiftable a, POrd a) => [TestTree]
+instance forall a. GHC.Show.Show a => GHC.Show.Show (Plutarch.Test.Laws.Triplet a)
+instance forall a. GHC.Classes.Eq a => GHC.Classes.Eq (Plutarch.Test.Laws.Triplet a)
+instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pretty (Plutarch.Test.Laws.Triplet a)
+instance Test.QuickCheck.Arbitrary.Arbitrary1 Plutarch.Test.Laws.Triplet
+instance forall a. Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Plutarch.Test.Laws.Triplet a)

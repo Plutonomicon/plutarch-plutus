@@ -19,7 +19,7 @@
 </span><span id="line-19"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-20"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-21"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-22"></span><span>  </span><span id="local-6989586621679135628"><span class="annot"><span class="annottext">arbitrary :: Gen DCert
+</span><span id="line-22"></span><span>  </span><span id="local-6989586621679135684"><span class="annot"><span class="annottext">arbitrary :: Gen DCert
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-23"></span><span>    </span><span class="annot"><span class="annottext">[Gen DCert] -&gt; Gen DCert
 forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
@@ -93,36 +93,36 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">PLA.DCertMir</span></span><span>
 </span><span id="line-31"></span><span>      </span><span class="hs-special">]</span><span>
 </span><span id="line-32"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-33"></span><span>  </span><span id="local-6989586621679135656"><span class="annot"><span class="annottext">shrink :: DCert -&gt; [DCert]
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679135712"><span class="annot"><span class="annottext">shrink :: DCert -&gt; [DCert]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-34"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegRegKey</span></span><span> </span><span id="local-6989586621679135657"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135657"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
+</span><span id="line-34"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegRegKey</span></span><span> </span><span id="local-6989586621679135713"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135713"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertDelegRegKey</span></span><span> </span><span class="annot"><span class="annottext">(StakingCredential -&gt; DCert) -&gt; [StakingCredential] -&gt; [DCert]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; [StakingCredential]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135657"><span class="hs-identifier hs-var">sc</span></a></span><span>
-</span><span id="line-35"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDeRegKey</span></span><span> </span><span id="local-6989586621679135658"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135658"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
+</span><a href="#local-6989586621679135713"><span class="hs-identifier hs-var">sc</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDeRegKey</span></span><span> </span><span id="local-6989586621679135714"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135714"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertDelegDeRegKey</span></span><span> </span><span class="annot"><span class="annottext">(StakingCredential -&gt; DCert) -&gt; [StakingCredential] -&gt; [DCert]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; [StakingCredential]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135658"><span class="hs-identifier hs-var">sc</span></a></span><span>
+</span><a href="#local-6989586621679135714"><span class="hs-identifier hs-var">sc</span></a></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-comment">-- PubKeyHash can't shrink, so we just pass it through, as otherwise, the</span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-comment">-- semantics of shrinking would mean the whole think can't shrink.</span><span>
-</span><span id="line-38"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDelegate</span></span><span> </span><span id="local-6989586621679135659"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135659"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679135660"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135660"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; PubKeyHash -&gt; DCert
+</span><span id="line-38"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDelegate</span></span><span> </span><span id="local-6989586621679135715"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135715"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679135716"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135716"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; PubKeyHash -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertDelegDelegate</span></span><span> </span><span class="annot"><span class="annottext">(StakingCredential -&gt; PubKeyHash -&gt; DCert)
 -&gt; [StakingCredential] -&gt; [PubKeyHash -&gt; DCert]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; [StakingCredential]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135659"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash -&gt; DCert] -&gt; [PubKeyHash] -&gt; [DCert]
+</span><a href="#local-6989586621679135715"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash -&gt; DCert] -&gt; [PubKeyHash] -&gt; [DCert]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b.
 Applicative f =&gt;
@@ -131,19 +131,19 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 forall a. a -&gt; [a]
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135660"><span class="hs-identifier hs-var">pkh</span></a></span><span>
+</span><a href="#local-6989586621679135716"><span class="hs-identifier hs-var">pkh</span></a></span><span>
 </span><span id="line-39"></span><span>    </span><span class="hs-comment">-- PubKeyHash can't shrink, so neither can this.</span><span>
 </span><span id="line-40"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRegister</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-41"></span><span>    </span><span class="hs-comment">-- PubKeyHash can't shrink, so we just pass it through, as otherwise, the</span><span>
 </span><span id="line-42"></span><span>    </span><span class="hs-comment">-- semantics of shrinking would mean the whole think can't shrink.</span><span>
-</span><span id="line-43"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRetire</span></span><span> </span><span id="local-6989586621679135661"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135661"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135662"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135662"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-43"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRetire</span></span><span> </span><span id="local-6989586621679135717"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135717"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135718"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679135718"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-44"></span><span>      </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Integer -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertPoolRetire</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135661"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; DCert)
+</span><a href="#local-6989586621679135717"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; DCert)
 -&gt; (NonNegative Integer -&gt; Integer) -&gt; NonNegative Integer -&gt; DCert
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">NonNegative Integer -&gt; Integer
@@ -155,7 +155,7 @@ forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; NonNegative Integer
 forall a. a -&gt; NonNegative a
 </span><span class="hs-identifier hs-var">NonNegative</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135662"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679135718"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-45"></span><span>    </span><span class="hs-comment">-- None of the other constructors have any data, so we don't shrink them.</span><span>
 </span><span id="line-46"></span><span>    </span><span class="annot"><span class="annottext">DCert
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
@@ -163,10 +163,10 @@ forall a. a -&gt; NonNegative a
 </span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-49"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-50"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-51"></span><span>  </span><span id="local-6989586621679135686"><span class="annot"><span class="annottext">coarbitrary :: forall b. DCert -&gt; Gen b -&gt; Gen b
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679135742"><span class="annot"><span class="annottext">coarbitrary :: forall b. DCert -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-52"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegRegKey</span></span><span> </span><span id="local-6989586621679135687"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135687"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegRegKey</span></span><span> </span><span id="local-6989586621679135743"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135743"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -175,9 +175,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. StakingCredential -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135687"><span class="hs-identifier hs-var">sc</span></a></span><span>
-</span><span id="line-53"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDeRegKey</span></span><span> </span><span id="local-6989586621679135688"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135688"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135743"><span class="hs-identifier hs-var">sc</span></a></span><span>
+</span><span id="line-53"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDeRegKey</span></span><span> </span><span id="local-6989586621679135744"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135744"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -186,10 +186,10 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. StakingCredential -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135688"><span class="hs-identifier hs-var">sc</span></a></span><span>
-</span><span id="line-54"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDelegate</span></span><span> </span><span id="local-6989586621679135689"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135689"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679135690"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135690"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135744"><span class="hs-identifier hs-var">sc</span></a></span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDelegate</span></span><span> </span><span id="local-6989586621679135745"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135745"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679135746"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135746"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -198,16 +198,16 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. StakingCredential -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135689"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135745"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. PubKeyHash -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135690"><span class="hs-identifier hs-var">pkh</span></a></span><span>
-</span><span id="line-55"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRegister</span></span><span> </span><span id="local-6989586621679135691"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135691"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135692"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135692"><span class="hs-identifier hs-var">pkh'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135746"><span class="hs-identifier hs-var">pkh</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRegister</span></span><span> </span><span id="local-6989586621679135747"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135747"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135748"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135748"><span class="hs-identifier hs-var">pkh'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -216,16 +216,16 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. PubKeyHash -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135691"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135747"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. PubKeyHash -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135692"><span class="hs-identifier hs-var">pkh'</span></a></span><span>
-</span><span id="line-56"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRetire</span></span><span> </span><span id="local-6989586621679135693"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135693"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135694"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135694"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135748"><span class="hs-identifier hs-var">pkh'</span></a></span><span>
+</span><span id="line-56"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRetire</span></span><span> </span><span id="local-6989586621679135749"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135749"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135750"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679135750"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">4</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -234,13 +234,13 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. PubKeyHash -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135693"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679135749"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Gen b -&gt; Gen b
 forall b. Integer -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135694"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679135750"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">DCert
 </span><span class="hs-identifier hs-var">PLA.DCertGenesis</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
@@ -255,7 +255,7 @@ forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-62"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-63"></span><span>  </span><span id="local-6989586621679135716"><span class="annot"><span class="annottext">function :: forall b. (DCert -&gt; b) -&gt; DCert :-&gt; b
+</span><span id="line-63"></span><span>  </span><span id="local-6989586621679135772"><span class="annot"><span class="annottext">function :: forall b. (DCert -&gt; b) -&gt; DCert :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(DCert
  -&gt; Maybe
       (Maybe
@@ -291,7 +291,7 @@ Function b =&gt;
               (Either
                  (StakingCredential, PubKeyHash)
                  (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer))))))
-</span><a href="#local-6989586621679135717"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe
+</span><a href="#local-6989586621679135773"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe
   (Maybe
      (Either
         StakingCredential
@@ -301,9 +301,9 @@ Function b =&gt;
               (StakingCredential, PubKeyHash)
               (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer))))))
 -&gt; DCert
-</span><a href="#local-6989586621679135718"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><a href="#local-6989586621679135774"><span class="hs-identifier hs-var">outOf</span></a></span><span>
 </span><span id="line-64"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-65"></span><span>      </span><span class="annot"><a href="#local-6989586621679135717"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-65"></span><span>      </span><span class="annot"><a href="#local-6989586621679135773"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-66"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-67"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span>
 </span><span id="line-68"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span>
@@ -319,7 +319,7 @@ Function b =&gt;
 </span><span id="line-78"></span><span>                  </span><span class="hs-special">)</span><span>
 </span><span id="line-79"></span><span>              </span><span class="hs-special">)</span><span>
 </span><span id="line-80"></span><span>          </span><span class="hs-special">)</span><span>
-</span><span id="line-81"></span><span>      </span><span id="local-6989586621679135717"><span class="annot"><span class="annottext">into :: DCert
+</span><span id="line-81"></span><span>      </span><span id="local-6989586621679135773"><span class="annot"><span class="annottext">into :: DCert
 -&gt; Maybe
      (Maybe
         (Either
@@ -329,7 +329,7 @@ Function b =&gt;
               (Either
                  (StakingCredential, PubKeyHash)
                  (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer))))))
-</span><a href="#local-6989586621679135717"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><a href="#local-6989586621679135773"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-82"></span><span>        </span><span class="annot"><span class="annottext">DCert
 </span><span class="hs-identifier hs-var">PLA.DCertGenesis</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
   (Maybe
@@ -371,8 +371,8 @@ forall a. a -&gt; Maybe a
            (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer)))))
 forall a. Maybe a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
-</span><span id="line-84"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegRegKey</span></span><span> </span><span id="local-6989586621679135719"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135719"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
+</span><span id="line-84"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegRegKey</span></span><span> </span><span id="local-6989586621679135775"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135775"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
   (Either
      StakingCredential
      (Either
@@ -416,9 +416,9 @@ forall a. a -&gt; Maybe a
            (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer))))
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135719"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-85"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDeRegKey</span></span><span> </span><span id="local-6989586621679135720"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135720"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
+</span><a href="#local-6989586621679135775"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-85"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDeRegKey</span></span><span> </span><span id="local-6989586621679135776"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135776"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
   (Either
      StakingCredential
      (Either
@@ -473,10 +473,10 @@ forall a b. b -&gt; Either a b
         (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer)))
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135720"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-86"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDelegate</span></span><span> </span><span id="local-6989586621679135721"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135721"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679135722"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135722"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
+</span><a href="#local-6989586621679135776"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-86"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertDelegDelegate</span></span><span> </span><span id="local-6989586621679135777"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135777"><span class="hs-identifier hs-var">sc</span></a></span></span><span> </span><span id="local-6989586621679135778"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135778"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
   (Either
      StakingCredential
      (Either
@@ -538,11 +538,11 @@ forall a b. b -&gt; Either a b
      (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer))
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135721"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135722"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-87"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRegister</span></span><span> </span><span id="local-6989586621679135723"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135723"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135724"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135724"><span class="hs-identifier hs-var">pkh'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
+</span><a href="#local-6989586621679135777"><span class="hs-identifier hs-var">sc</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135778"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-87"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRegister</span></span><span> </span><span id="local-6989586621679135779"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135779"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135780"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135780"><span class="hs-identifier hs-var">pkh'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
   (Either
      StakingCredential
      (Either
@@ -607,11 +607,11 @@ forall a b. b -&gt; Either a b
 -&gt; Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer)
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135723"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135724"><span class="hs-identifier hs-var">pkh'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-88"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRetire</span></span><span> </span><span id="local-6989586621679135725"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135725"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135726"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135726"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
+</span><a href="#local-6989586621679135779"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135780"><span class="hs-identifier hs-var">pkh'</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-88"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCertPoolRetire</span></span><span> </span><span id="local-6989586621679135781"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135781"><span class="hs-identifier hs-var">pkh</span></a></span></span><span> </span><span id="local-6989586621679135782"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679135782"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe
   (Either
      StakingCredential
      (Either
@@ -676,9 +676,9 @@ forall a b. b -&gt; Either a b
 -&gt; Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer)
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135725"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135726"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-89"></span><span>      </span><span class="annot"><a href="#local-6989586621679135718"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><a href="#local-6989586621679135781"><span class="hs-identifier hs-var">pkh</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679135782"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span>      </span><span class="annot"><a href="#local-6989586621679135774"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-90"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span>
 </span><span id="line-91"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span>
 </span><span id="line-92"></span><span>              </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
@@ -694,7 +694,7 @@ forall a b. b -&gt; Either a b
 </span><span id="line-102"></span><span>              </span><span class="hs-special">)</span><span>
 </span><span id="line-103"></span><span>          </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-104"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span>
-</span><span id="line-105"></span><span>      </span><span id="local-6989586621679135718"><span class="annot"><span class="annottext">outOf :: Maybe
+</span><span id="line-105"></span><span>      </span><span id="local-6989586621679135774"><span class="annot"><span class="annottext">outOf :: Maybe
   (Maybe
      (Either
         StakingCredential
@@ -704,7 +704,7 @@ forall a b. b -&gt; Either a b
               (StakingCredential, PubKeyHash)
               (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer))))))
 -&gt; DCert
-</span><a href="#local-6989586621679135718"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><a href="#local-6989586621679135774"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-106"></span><span>        </span><span class="annot"><span class="annottext">Maybe
   (Maybe
      (Either
@@ -726,30 +726,30 @@ forall a b. b -&gt; Either a b
            (Either (PubKeyHash, PubKeyHash) (PubKeyHash, Integer)))))
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DCert
 </span><span class="hs-identifier hs-var">PLA.DCertMir</span></span><span>
-</span><span id="line-108"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679135727"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135727"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
+</span><span id="line-108"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679135783"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135783"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertDelegRegKey</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135727"><span class="hs-identifier hs-var">sc</span></a></span><span>
-</span><span id="line-109"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679135728"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135728"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
+</span><a href="#local-6989586621679135783"><span class="hs-identifier hs-var">sc</span></a></span><span>
+</span><span id="line-109"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679135784"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135784"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertDelegDeRegKey</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135728"><span class="hs-identifier hs-var">sc</span></a></span><span>
-</span><span id="line-110"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679135729"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135729"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679135730"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135730"><span class="hs-identifier hs-var">pkh</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; PubKeyHash -&gt; DCert
+</span><a href="#local-6989586621679135784"><span class="hs-identifier hs-var">sc</span></a></span><span>
+</span><span id="line-110"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679135785"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679135785"><span class="hs-identifier hs-var">sc</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679135786"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135786"><span class="hs-identifier hs-var">pkh</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; PubKeyHash -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertDelegDelegate</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679135729"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135730"><span class="hs-identifier hs-var">pkh</span></a></span><span>
-</span><span id="line-111"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679135731"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135731"><span class="hs-identifier hs-var">pkh</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679135732"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135732"><span class="hs-identifier hs-var">pkh'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; PubKeyHash -&gt; DCert
+</span><a href="#local-6989586621679135785"><span class="hs-identifier hs-var">sc</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135786"><span class="hs-identifier hs-var">pkh</span></a></span><span>
+</span><span id="line-111"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679135787"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135787"><span class="hs-identifier hs-var">pkh</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679135788"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135788"><span class="hs-identifier hs-var">pkh'</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; PubKeyHash -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertPoolRegister</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135731"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135732"><span class="hs-identifier hs-var">pkh'</span></a></span><span>
-</span><span id="line-112"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679135733"><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135733"><span class="hs-identifier hs-var">pkh</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679135734"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135734"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Integer -&gt; DCert
+</span><a href="#local-6989586621679135787"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135788"><span class="hs-identifier hs-var">pkh'</span></a></span><span>
+</span><span id="line-112"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679135789"><span class="annot"><span class="annottext">PubKeyHash
+</span><a href="#local-6989586621679135789"><span class="hs-identifier hs-var">pkh</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679135790"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679135790"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Integer -&gt; DCert
 </span><span class="hs-identifier hs-var">PLA.DCertPoolRetire</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash
-</span><a href="#local-6989586621679135733"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679135734"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679135789"><span class="hs-identifier hs-var">pkh</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679135790"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-113"></span></pre></body></html>

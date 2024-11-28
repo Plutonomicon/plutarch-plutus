@@ -26,13 +26,13 @@
 '#&lt;=' must form a total order. More precisely:
 
 1. @x #&lt;= x@ @=@ @pcon PTrue@ (reflexivity)
-2. @(x #&lt;= y) #&amp;&amp; (y #&lt;= z)@ @=@ @x #&lt;= z@ (transitivity)
+2. @(y #&lt; x) #|| (z #&lt; y) #|| (x #&lt;= z)@ @=@ @pcon PTrue@ (transitivity)
 3. @(x #&lt;= y) #|| (y #&lt;= x)@ @=@ @pcon PTrue@ (totality)
 
 Furthermore, '#&lt;' must be an equivalent strict total order to '#&lt;=':
 
 4. @x #&lt; x@ @=@ @pcon PFalse@ (irreflexivity)
-5. @(x #&lt; y) #&amp;&amp; (y #&lt; z)@ @=@ @x #&lt; z@ (transitivity)
+5. @(y #&lt;= x) #|| (z #&lt;= y) #|| (x #&lt; z)@ @=@ @pcon PTrue@ (transitivity)
 6. @(x #&lt; y) #|| (y #&lt; x) #|| (x #== z)@ @=@ @pcon PTrue@ (trichotomy)
 7. @x #&lt;= y@ @=@ @(x #&lt; y) #|| (x #== y)@ (strict equivalence)
 

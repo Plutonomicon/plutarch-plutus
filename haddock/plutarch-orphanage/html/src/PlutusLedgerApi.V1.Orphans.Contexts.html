@@ -22,7 +22,7 @@
 </span><span id="line-22"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-23"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-24"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-25"></span><span>  </span><span id="local-6989586621679137325"><span class="annot"><span class="annottext">arbitrary :: Gen TxInInfo
+</span><span id="line-25"></span><span>  </span><span id="local-6989586621679137381"><span class="annot"><span class="annottext">arbitrary :: Gen TxInInfo
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; TxOut -&gt; TxInInfo
 </span><span class="hs-identifier hs-var">PLA.TxInInfo</span></span><span> </span><span class="annot"><span class="annottext">(TxOutRef -&gt; TxOut -&gt; TxInInfo)
 -&gt; Gen TxOutRef -&gt; Gen (TxOut -&gt; TxInInfo)
@@ -38,10 +38,10 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
 </span><span id="line-26"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-27"></span><span>  </span><span id="local-6989586621679137334"><span class="annot"><span class="annottext">shrink :: TxInInfo -&gt; [TxInInfo]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span id="local-6989586621679137335"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137335"><span class="hs-identifier hs-var">outref</span></a></span></span><span> </span><span id="local-6989586621679137336"><span class="annot"><span class="annottext">TxOut
-</span><a href="#local-6989586621679137336"><span class="hs-identifier hs-var">resolved</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679137390"><span class="annot"><span class="annottext">shrink :: TxInInfo -&gt; [TxInInfo]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span id="local-6989586621679137391"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137391"><span class="hs-identifier hs-var">outref</span></a></span></span><span> </span><span id="local-6989586621679137392"><span class="annot"><span class="annottext">TxOut
+</span><a href="#local-6989586621679137392"><span class="hs-identifier hs-var">resolved</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-28"></span><span>    </span><span class="annot"><span class="annottext">TxOutRef -&gt; TxOut -&gt; TxInInfo
 </span><span class="hs-identifier hs-var">PLA.TxInInfo</span></span><span> </span><span class="annot"><span class="annottext">(TxOutRef -&gt; TxOut -&gt; TxInInfo)
 -&gt; [TxOutRef] -&gt; [TxOut -&gt; TxInInfo]
@@ -49,7 +49,7 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; [TxOutRef]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137335"><span class="hs-identifier hs-var">outref</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut -&gt; TxInInfo] -&gt; [TxOut] -&gt; [TxInInfo]
+</span><a href="#local-6989586621679137391"><span class="hs-identifier hs-var">outref</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut -&gt; TxInInfo] -&gt; [TxOut] -&gt; [TxInInfo]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b.
 Applicative f =&gt;
@@ -57,31 +57,31 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TxOut -&gt; [TxOut]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TxOut
-</span><a href="#local-6989586621679137336"><span class="hs-identifier hs-var">resolved</span></a></span><span>
+</span><a href="#local-6989586621679137392"><span class="hs-identifier hs-var">resolved</span></a></span><span>
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-31"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-32"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-33"></span><span>  </span><span id="local-6989586621679137344"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxInInfo -&gt; Gen b -&gt; Gen b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span id="local-6989586621679137345"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137345"><span class="hs-identifier hs-var">outref</span></a></span></span><span> </span><span id="local-6989586621679137346"><span class="annot"><span class="annottext">TxOut
-</span><a href="#local-6989586621679137346"><span class="hs-identifier hs-var">resolved</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621679137400"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxInInfo -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span id="local-6989586621679137401"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137401"><span class="hs-identifier hs-var">outref</span></a></span></span><span> </span><span id="local-6989586621679137402"><span class="annot"><span class="annottext">TxOut
+</span><a href="#local-6989586621679137402"><span class="hs-identifier hs-var">resolved</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-34"></span><span>    </span><span class="annot"><span class="annottext">TxOutRef -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. TxOutRef -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137345"><span class="hs-identifier hs-var">outref</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137401"><span class="hs-identifier hs-var">outref</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">TxOut -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. TxOut -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">TxOut
-</span><a href="#local-6989586621679137346"><span class="hs-identifier hs-var">resolved</span></a></span><span>
+</span><a href="#local-6989586621679137402"><span class="hs-identifier hs-var">resolved</span></a></span><span>
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
 </span><span id="line-37"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-38"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-39"></span><span>  </span><span id="local-6989586621679137357"><span class="annot"><span class="annottext">function :: forall b. (TxInInfo -&gt; b) -&gt; TxInInfo :-&gt; b
+</span><span id="line-39"></span><span>  </span><span id="local-6989586621679137413"><span class="annot"><span class="annottext">function :: forall b. (TxInInfo -&gt; b) -&gt; TxInInfo :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-40"></span><span>    </span><span class="annot"><span class="annottext">(TxInInfo -&gt; (TxOutRef, TxOut))
 -&gt; ((TxOutRef, TxOut) -&gt; TxInInfo)
@@ -91,11 +91,11 @@ forall b a c.
 Function b =&gt;
 (a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
 </span><span class="hs-identifier hs-var">functionMap</span></span><span>
-</span><span id="line-41"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span id="local-6989586621679137358"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137358"><span class="hs-identifier hs-var">outref</span></a></span></span><span> </span><span id="local-6989586621679137359"><span class="annot"><span class="annottext">TxOut
-</span><a href="#local-6989586621679137359"><span class="hs-identifier hs-var">resolved</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137358"><span class="hs-identifier hs-var">outref</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TxOut
-</span><a href="#local-6989586621679137359"><span class="hs-identifier hs-var">resolved</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span> </span><span id="local-6989586621679137414"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137414"><span class="hs-identifier hs-var">outref</span></a></span></span><span> </span><span id="local-6989586621679137415"><span class="annot"><span class="annottext">TxOut
+</span><a href="#local-6989586621679137415"><span class="hs-identifier hs-var">resolved</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137414"><span class="hs-identifier hs-var">outref</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TxOut
+</span><a href="#local-6989586621679137415"><span class="hs-identifier hs-var">resolved</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(TxOutRef -&gt; TxOut -&gt; TxInInfo) -&gt; (TxOutRef, TxOut) -&gt; TxInInfo
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; TxOut -&gt; TxInInfo
@@ -104,7 +104,7 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><span id="line-44"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-47"></span><span>  </span><span id="local-6989586621679137414"><span class="annot"><span class="annottext">arbitrary :: Gen TxInfo
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679137470"><span class="annot"><span class="annottext">arbitrary :: Gen TxInfo
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-48"></span><span>    </span><span class="annot"><span class="annottext">[TxInInfo]
 -&gt; [TxOut]
@@ -348,61 +348,61 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span> </span><span class="hs-comment">-- tid</span><span>
 </span><span id="line-59"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-60"></span><span>  </span><span id="local-6989586621679137454"><span class="annot"><span class="annottext">shrink :: TxInfo -&gt; [TxInfo]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span id="local-6989586621679137455"><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137455"><span class="hs-identifier hs-var">ins</span></a></span></span><span> </span><span id="local-6989586621679137456"><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137456"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span id="local-6989586621679137457"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137457"><span class="hs-identifier hs-var">fee</span></a></span></span><span> </span><span id="local-6989586621679137458"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137458"><span class="hs-identifier hs-var">mint</span></a></span></span><span> </span><span id="local-6989586621679137459"><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137459"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span id="local-6989586621679137460"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137460"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span> </span><span id="local-6989586621679137461"><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137461"><span class="hs-identifier hs-var">validRange</span></a></span></span><span> </span><span id="local-6989586621679137462"><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137462"><span class="hs-identifier hs-var">sigs</span></a></span></span><span> </span><span id="local-6989586621679137463"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137463"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span id="local-6989586621679137464"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137464"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-61"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span id="local-6989586621679137465"><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137465"><span class="hs-identifier hs-var">ins'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NonEmptyList TxInInfo -&gt; [NonEmptyList TxInInfo]
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679137510"><span class="annot"><span class="annottext">shrink :: TxInfo -&gt; [TxInfo]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span id="local-6989586621679137511"><span class="annot"><span class="annottext">[TxInInfo]
+</span><a href="#local-6989586621679137511"><span class="hs-identifier hs-var">ins</span></a></span></span><span> </span><span id="local-6989586621679137512"><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137512"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span id="local-6989586621679137513"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137513"><span class="hs-identifier hs-var">fee</span></a></span></span><span> </span><span id="local-6989586621679137514"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137514"><span class="hs-identifier hs-var">mint</span></a></span></span><span> </span><span id="local-6989586621679137515"><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137515"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span id="local-6989586621679137516"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137516"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span> </span><span id="local-6989586621679137517"><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137517"><span class="hs-identifier hs-var">validRange</span></a></span></span><span> </span><span id="local-6989586621679137518"><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137518"><span class="hs-identifier hs-var">sigs</span></a></span></span><span> </span><span id="local-6989586621679137519"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137519"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span id="local-6989586621679137520"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137520"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-61"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span id="local-6989586621679137521"><span class="annot"><span class="annottext">[TxInInfo]
+</span><a href="#local-6989586621679137521"><span class="hs-identifier hs-var">ins'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NonEmptyList TxInInfo -&gt; [NonEmptyList TxInInfo]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[TxInInfo] -&gt; NonEmptyList TxInInfo
 forall a. [a] -&gt; NonEmptyList a
 </span><span class="hs-identifier hs-var">NonEmpty</span></span><span> </span><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137455"><span class="hs-identifier hs-var">ins</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-62"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span id="local-6989586621679137466"><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137466"><span class="hs-identifier hs-var">outs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NonEmptyList TxOut -&gt; [NonEmptyList TxOut]
+</span><a href="#local-6989586621679137511"><span class="hs-identifier hs-var">ins</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span id="local-6989586621679137522"><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137522"><span class="hs-identifier hs-var">outs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">NonEmptyList TxOut -&gt; [NonEmptyList TxOut]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[TxOut] -&gt; NonEmptyList TxOut
 forall a. [a] -&gt; NonEmptyList a
 </span><span class="hs-identifier hs-var">NonEmpty</span></span><span> </span><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137456"><span class="hs-identifier hs-var">outs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-63"></span><span>    </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">Value.FeeValue</span></a></span><span> </span><span id="local-6989586621679137468"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137468"><span class="hs-identifier hs-var">fee'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FeeValue -&gt; [FeeValue]
+</span><a href="#local-6989586621679137512"><span class="hs-identifier hs-var">outs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>    </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-type">Value.FeeValue</span></a></span><span> </span><span id="local-6989586621679137524"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137524"><span class="hs-identifier hs-var">fee'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">FeeValue -&gt; [FeeValue]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Value -&gt; FeeValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#FeeValue"><span class="hs-identifier hs-var">Value.FeeValue</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137457"><span class="hs-identifier hs-var">fee</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-64"></span><span>    </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">Value.MintValue</span></a></span><span> </span><span id="local-6989586621679137470"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137470"><span class="hs-identifier hs-var">mint'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MintValue -&gt; [MintValue]
+</span><a href="#local-6989586621679137513"><span class="hs-identifier hs-var">fee</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span>    </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">Value.MintValue</span></a></span><span> </span><span id="local-6989586621679137526"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137526"><span class="hs-identifier hs-var">mint'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MintValue -&gt; [MintValue]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Value -&gt; MintValue
 </span><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">Value.MintValue</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137458"><span class="hs-identifier hs-var">mint</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-65"></span><span>    </span><span id="local-6989586621679137471"><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137471"><span class="hs-identifier hs-var">dcert'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[DCert] -&gt; [[DCert]]
+</span><a href="#local-6989586621679137514"><span class="hs-identifier hs-var">mint</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span>    </span><span id="local-6989586621679137527"><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137527"><span class="hs-identifier hs-var">dcert'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[DCert] -&gt; [[DCert]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137459"><span class="hs-identifier hs-var">dcert</span></a></span><span>
-</span><span id="line-66"></span><span>    </span><span id="local-6989586621679137472"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137472"><span class="hs-identifier hs-var">wdrl'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)] -&gt; [[(StakingCredential, Integer)]]
+</span><a href="#local-6989586621679137515"><span class="hs-identifier hs-var">dcert</span></a></span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679137528"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137528"><span class="hs-identifier hs-var">wdrl'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)] -&gt; [[(StakingCredential, Integer)]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137460"><span class="hs-identifier hs-var">wdrl</span></a></span><span>
-</span><span id="line-67"></span><span>    </span><span id="local-6989586621679137473"><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137473"><span class="hs-identifier hs-var">validRange'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange -&gt; [POSIXTimeRange]
+</span><a href="#local-6989586621679137516"><span class="hs-identifier hs-var">wdrl</span></a></span><span>
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621679137529"><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137529"><span class="hs-identifier hs-var">validRange'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange -&gt; [POSIXTimeRange]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137461"><span class="hs-identifier hs-var">validRange</span></a></span><span>
-</span><span id="line-68"></span><span>    </span><span id="local-6989586621679137474"><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137474"><span class="hs-identifier hs-var">sigs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set PubKeyHash -&gt; [PubKeyHash]
+</span><a href="#local-6989586621679137517"><span class="hs-identifier hs-var">validRange</span></a></span><span>
+</span><span id="line-68"></span><span>    </span><span id="local-6989586621679137530"><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137530"><span class="hs-identifier hs-var">sigs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set PubKeyHash -&gt; [PubKeyHash]
 forall a. Set a -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">(Set PubKeyHash -&gt; [PubKeyHash])
 -&gt; [Set PubKeyHash] -&gt; [[PubKeyHash]]
@@ -412,17 +412,17 @@ forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[PubKeyHash] -&gt; Set PubKeyHash
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Set.Internal.html#fromList"><span class="hs-identifier hs-var">Set.fromList</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137462"><span class="hs-identifier hs-var">sigs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679137476"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137476"><span class="hs-identifier hs-var">dats'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)] -&gt; [[(DatumHash, Datum)]]
+</span><a href="#local-6989586621679137518"><span class="hs-identifier hs-var">sigs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679137532"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137532"><span class="hs-identifier hs-var">dats'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)] -&gt; [[(DatumHash, Datum)]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137463"><span class="hs-identifier hs-var">dats</span></a></span><span>
-</span><span id="line-70"></span><span>    </span><span id="local-6989586621679137477"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137477"><span class="hs-identifier hs-var">tid'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TxId -&gt; [TxId]
+</span><a href="#local-6989586621679137519"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span id="local-6989586621679137533"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137533"><span class="hs-identifier hs-var">tid'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">TxId -&gt; [TxId]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137464"><span class="hs-identifier hs-var">tid</span></a></span><span>
+</span><a href="#local-6989586621679137520"><span class="hs-identifier hs-var">tid</span></a></span><span>
 </span><span id="line-71"></span><span>    </span><span class="annot"><span class="annottext">TxInfo -&gt; [TxInfo]
 forall a. a -&gt; [a]
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -440,107 +440,107 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; TxId
 -&gt; TxInfo
 </span><span class="hs-identifier hs-var">PLA.TxInfo</span></span><span> </span><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137465"><span class="hs-identifier hs-var">ins'</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137466"><span class="hs-identifier hs-var">outs'</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137468"><span class="hs-identifier hs-var">fee'</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137470"><span class="hs-identifier hs-var">mint'</span></a></span><span> </span><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137471"><span class="hs-identifier hs-var">dcert'</span></a></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137472"><span class="hs-identifier hs-var">wdrl'</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137473"><span class="hs-identifier hs-var">validRange'</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137474"><span class="hs-identifier hs-var">sigs'</span></a></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137476"><span class="hs-identifier hs-var">dats'</span></a></span><span> </span><span class="annot"><span class="annottext">(TxId -&gt; [TxInfo]) -&gt; TxId -&gt; [TxInfo]
+</span><a href="#local-6989586621679137521"><span class="hs-identifier hs-var">ins'</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137522"><span class="hs-identifier hs-var">outs'</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137524"><span class="hs-identifier hs-var">fee'</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137526"><span class="hs-identifier hs-var">mint'</span></a></span><span> </span><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137527"><span class="hs-identifier hs-var">dcert'</span></a></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137528"><span class="hs-identifier hs-var">wdrl'</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137529"><span class="hs-identifier hs-var">validRange'</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137530"><span class="hs-identifier hs-var">sigs'</span></a></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137532"><span class="hs-identifier hs-var">dats'</span></a></span><span> </span><span class="annot"><span class="annottext">(TxId -&gt; [TxInfo]) -&gt; TxId -&gt; [TxInfo]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137477"><span class="hs-identifier hs-var">tid'</span></a></span><span>
+</span><a href="#local-6989586621679137533"><span class="hs-identifier hs-var">tid'</span></a></span><span>
 </span><span id="line-72"></span><span>
 </span><span id="line-73"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-74"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-75"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-76"></span><span>  </span><span id="local-6989586621679137513"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxInfo -&gt; Gen b -&gt; Gen b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span id="local-6989586621679137514"><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137514"><span class="hs-identifier hs-var">ins</span></a></span></span><span> </span><span id="local-6989586621679137515"><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137515"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span id="local-6989586621679137516"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137516"><span class="hs-identifier hs-var">fee</span></a></span></span><span> </span><span id="local-6989586621679137517"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137517"><span class="hs-identifier hs-var">mint</span></a></span></span><span> </span><span id="local-6989586621679137518"><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137518"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span id="local-6989586621679137519"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137519"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span> </span><span id="local-6989586621679137520"><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137520"><span class="hs-identifier hs-var">validRange</span></a></span></span><span> </span><span id="local-6989586621679137521"><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137521"><span class="hs-identifier hs-var">sigs</span></a></span></span><span> </span><span id="local-6989586621679137522"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137522"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span id="local-6989586621679137523"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137523"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-76"></span><span>  </span><span id="local-6989586621679137569"><span class="annot"><span class="annottext">coarbitrary :: forall b. TxInfo -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span id="local-6989586621679137570"><span class="annot"><span class="annottext">[TxInInfo]
+</span><a href="#local-6989586621679137570"><span class="hs-identifier hs-var">ins</span></a></span></span><span> </span><span id="local-6989586621679137571"><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137571"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span id="local-6989586621679137572"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137572"><span class="hs-identifier hs-var">fee</span></a></span></span><span> </span><span id="local-6989586621679137573"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137573"><span class="hs-identifier hs-var">mint</span></a></span></span><span> </span><span id="local-6989586621679137574"><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137574"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span id="local-6989586621679137575"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137575"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span> </span><span id="local-6989586621679137576"><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137576"><span class="hs-identifier hs-var">validRange</span></a></span></span><span> </span><span id="local-6989586621679137577"><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137577"><span class="hs-identifier hs-var">sigs</span></a></span></span><span> </span><span id="local-6989586621679137578"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137578"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span id="local-6989586621679137579"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137579"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-77"></span><span>    </span><span class="annot"><span class="annottext">[TxInInfo] -&gt; Gen b -&gt; Gen b
 forall b. [TxInInfo] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137514"><span class="hs-identifier hs-var">ins</span></a></span><span>
+</span><a href="#local-6989586621679137570"><span class="hs-identifier hs-var">ins</span></a></span><span>
 </span><span id="line-78"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut] -&gt; Gen b -&gt; Gen b
 forall b. [TxOut] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137515"><span class="hs-identifier hs-var">outs</span></a></span><span>
+</span><a href="#local-6989586621679137571"><span class="hs-identifier hs-var">outs</span></a></span><span>
 </span><span id="line-79"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. Value -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137516"><span class="hs-identifier hs-var">fee</span></a></span><span>
+</span><a href="#local-6989586621679137572"><span class="hs-identifier hs-var">fee</span></a></span><span>
 </span><span id="line-80"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. Value -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137517"><span class="hs-identifier hs-var">mint</span></a></span><span>
+</span><a href="#local-6989586621679137573"><span class="hs-identifier hs-var">mint</span></a></span><span>
 </span><span id="line-81"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[DCert] -&gt; Gen b -&gt; Gen b
 forall b. [DCert] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137518"><span class="hs-identifier hs-var">dcert</span></a></span><span>
+</span><a href="#local-6989586621679137574"><span class="hs-identifier hs-var">dcert</span></a></span><span>
 </span><span id="line-82"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)] -&gt; Gen b -&gt; Gen b
 forall b. [(StakingCredential, Integer)] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137519"><span class="hs-identifier hs-var">wdrl</span></a></span><span>
+</span><a href="#local-6989586621679137575"><span class="hs-identifier hs-var">wdrl</span></a></span><span>
 </span><span id="line-83"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. POSIXTimeRange -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137520"><span class="hs-identifier hs-var">validRange</span></a></span><span>
+</span><a href="#local-6989586621679137576"><span class="hs-identifier hs-var">validRange</span></a></span><span>
 </span><span id="line-84"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash] -&gt; Gen b -&gt; Gen b
 forall b. [PubKeyHash] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137521"><span class="hs-identifier hs-var">sigs</span></a></span><span>
+</span><a href="#local-6989586621679137577"><span class="hs-identifier hs-var">sigs</span></a></span><span>
 </span><span id="line-85"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)] -&gt; Gen b -&gt; Gen b
 forall b. [(DatumHash, Datum)] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137522"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><a href="#local-6989586621679137578"><span class="hs-identifier hs-var">dats</span></a></span><span>
 </span><span id="line-86"></span><span>      </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">TxId -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. TxId -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137523"><span class="hs-identifier hs-var">tid</span></a></span><span>
+</span><a href="#local-6989586621679137579"><span class="hs-identifier hs-var">tid</span></a></span><span>
 </span><span id="line-87"></span><span>
 </span><span id="line-88"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-89"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-90"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-91"></span><span>  </span><span id="local-6989586621679137562"><span class="annot"><span class="annottext">function :: forall b. (TxInfo -&gt; b) -&gt; TxInfo :-&gt; b
+</span><span id="line-91"></span><span>  </span><span id="local-6989586621679137618"><span class="annot"><span class="annottext">function :: forall b. (TxInfo -&gt; b) -&gt; TxInfo :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(TxInfo
  -&gt; ([TxInInfo], [TxOut], Value, Value, [DCert],
      ([(StakingCredential, Integer)], POSIXTimeRange, [PubKeyHash],
@@ -558,61 +558,61 @@ Function b =&gt;
 -&gt; ([TxInInfo], [TxOut], Value, Value, [DCert],
     ([(StakingCredential, Integer)], POSIXTimeRange, [PubKeyHash],
      [(DatumHash, Datum)], TxId))
-</span><a href="#local-6989586621679137563"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">([TxInInfo], [TxOut], Value, Value, [DCert],
+</span><a href="#local-6989586621679137619"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">([TxInInfo], [TxOut], Value, Value, [DCert],
  ([(StakingCredential, Integer)], POSIXTimeRange, [PubKeyHash],
   [(DatumHash, Datum)], TxId))
 -&gt; TxInfo
-</span><a href="#local-6989586621679137564"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><a href="#local-6989586621679137620"><span class="hs-identifier hs-var">outOf</span></a></span><span>
 </span><span id="line-92"></span><span>    </span><span class="hs-keyword">where</span><span>
 </span><span id="line-93"></span><span>      </span><span class="hs-comment">-- We have to nest tuples as Function doesn't have instances for anything</span><span>
 </span><span id="line-94"></span><span>      </span><span class="hs-comment">-- bigger than a 6-tuple.</span><span>
-</span><span id="line-95"></span><span>      </span><span class="annot"><a href="#local-6989586621679137563"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-95"></span><span>      </span><span class="annot"><a href="#local-6989586621679137619"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-96"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-97"></span><span>        </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.StakingCredential</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.POSIXTimeRange</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.DatumHash</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Datum</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-98"></span><span>      </span><span id="local-6989586621679137563"><span class="annot"><span class="annottext">into :: TxInfo
+</span><span id="line-98"></span><span>      </span><span id="local-6989586621679137619"><span class="annot"><span class="annottext">into :: TxInfo
 -&gt; ([TxInInfo], [TxOut], Value, Value, [DCert],
     ([(StakingCredential, Integer)], POSIXTimeRange, [PubKeyHash],
      [(DatumHash, Datum)], TxId))
-</span><a href="#local-6989586621679137563"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span id="local-6989586621679137565"><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137565"><span class="hs-identifier hs-var">ins</span></a></span></span><span> </span><span id="local-6989586621679137566"><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137566"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span id="local-6989586621679137567"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137567"><span class="hs-identifier hs-var">fee</span></a></span></span><span> </span><span id="local-6989586621679137568"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137568"><span class="hs-identifier hs-var">mint</span></a></span></span><span> </span><span id="local-6989586621679137569"><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137569"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span id="local-6989586621679137570"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137570"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span> </span><span id="local-6989586621679137571"><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137571"><span class="hs-identifier hs-var">validRange</span></a></span></span><span> </span><span id="local-6989586621679137572"><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137572"><span class="hs-identifier hs-var">sigs</span></a></span></span><span> </span><span id="local-6989586621679137573"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137573"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span id="local-6989586621679137574"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137574"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679137619"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span> </span><span id="local-6989586621679137621"><span class="annot"><span class="annottext">[TxInInfo]
+</span><a href="#local-6989586621679137621"><span class="hs-identifier hs-var">ins</span></a></span></span><span> </span><span id="local-6989586621679137622"><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137622"><span class="hs-identifier hs-var">outs</span></a></span></span><span> </span><span id="local-6989586621679137623"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137623"><span class="hs-identifier hs-var">fee</span></a></span></span><span> </span><span id="local-6989586621679137624"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137624"><span class="hs-identifier hs-var">mint</span></a></span></span><span> </span><span id="local-6989586621679137625"><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137625"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span id="local-6989586621679137626"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137626"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span> </span><span id="local-6989586621679137627"><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137627"><span class="hs-identifier hs-var">validRange</span></a></span></span><span> </span><span id="local-6989586621679137628"><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137628"><span class="hs-identifier hs-var">sigs</span></a></span></span><span> </span><span id="local-6989586621679137629"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137629"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span id="local-6989586621679137630"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137630"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-99"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137565"><span class="hs-identifier hs-var">ins</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137566"><span class="hs-identifier hs-var">outs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137567"><span class="hs-identifier hs-var">fee</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137568"><span class="hs-identifier hs-var">mint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137569"><span class="hs-identifier hs-var">dcert</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137570"><span class="hs-identifier hs-var">wdrl</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137571"><span class="hs-identifier hs-var">validRange</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137572"><span class="hs-identifier hs-var">sigs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137573"><span class="hs-identifier hs-var">dats</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137574"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-100"></span><span>      </span><span class="annot"><a href="#local-6989586621679137564"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><a href="#local-6989586621679137621"><span class="hs-identifier hs-var">ins</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137622"><span class="hs-identifier hs-var">outs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137623"><span class="hs-identifier hs-var">fee</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137624"><span class="hs-identifier hs-var">mint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137625"><span class="hs-identifier hs-var">dcert</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137626"><span class="hs-identifier hs-var">wdrl</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137627"><span class="hs-identifier hs-var">validRange</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137628"><span class="hs-identifier hs-var">sigs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137629"><span class="hs-identifier hs-var">dats</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137630"><span class="hs-identifier hs-var">tid</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-100"></span><span>      </span><span class="annot"><a href="#local-6989586621679137620"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-101"></span><span>        </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInInfo</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOut</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.StakingCredential</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.POSIXTimeRange</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.DatumHash</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Datum</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxId</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-102"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxInfo</span></span><span>
-</span><span id="line-103"></span><span>      </span><span id="local-6989586621679137564"><span class="annot"><span class="annottext">outOf :: ([TxInInfo], [TxOut], Value, Value, [DCert],
+</span><span id="line-103"></span><span>      </span><span id="local-6989586621679137620"><span class="annot"><span class="annottext">outOf :: ([TxInInfo], [TxOut], Value, Value, [DCert],
  ([(StakingCredential, Integer)], POSIXTimeRange, [PubKeyHash],
   [(DatumHash, Datum)], TxId))
 -&gt; TxInfo
-</span><a href="#local-6989586621679137564"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679137575"><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137575"><span class="hs-identifier hs-var">ins</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137576"><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137576"><span class="hs-identifier hs-var">outs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137577"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137577"><span class="hs-identifier hs-var">fee</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137578"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137578"><span class="hs-identifier hs-var">mint</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137579"><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137579"><span class="hs-identifier hs-var">dcert</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679137580"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137580"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137581"><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137581"><span class="hs-identifier hs-var">validRange</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137582"><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137582"><span class="hs-identifier hs-var">sigs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137583"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137583"><span class="hs-identifier hs-var">dats</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137584"><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137584"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679137620"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679137631"><span class="annot"><span class="annottext">[TxInInfo]
+</span><a href="#local-6989586621679137631"><span class="hs-identifier hs-var">ins</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137632"><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137632"><span class="hs-identifier hs-var">outs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137633"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137633"><span class="hs-identifier hs-var">fee</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137634"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137634"><span class="hs-identifier hs-var">mint</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137635"><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137635"><span class="hs-identifier hs-var">dcert</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679137636"><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137636"><span class="hs-identifier hs-var">wdrl</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137637"><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137637"><span class="hs-identifier hs-var">validRange</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137638"><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137638"><span class="hs-identifier hs-var">sigs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137639"><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137639"><span class="hs-identifier hs-var">dats</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679137640"><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137640"><span class="hs-identifier hs-var">tid</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-104"></span><span>        </span><span class="annot"><span class="annottext">[TxInInfo]
 -&gt; [TxOut]
 -&gt; Value
@@ -625,21 +625,21 @@ Function b =&gt;
 -&gt; TxId
 -&gt; TxInfo
 </span><span class="hs-identifier hs-var">PLA.TxInfo</span></span><span> </span><span class="annot"><span class="annottext">[TxInInfo]
-</span><a href="#local-6989586621679137575"><span class="hs-identifier hs-var">ins</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut]
-</span><a href="#local-6989586621679137576"><span class="hs-identifier hs-var">outs</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137577"><span class="hs-identifier hs-var">fee</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621679137578"><span class="hs-identifier hs-var">mint</span></a></span><span> </span><span class="annot"><span class="annottext">[DCert]
-</span><a href="#local-6989586621679137579"><span class="hs-identifier hs-var">dcert</span></a></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
-</span><a href="#local-6989586621679137580"><span class="hs-identifier hs-var">wdrl</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
-</span><a href="#local-6989586621679137581"><span class="hs-identifier hs-var">validRange</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
-</span><a href="#local-6989586621679137582"><span class="hs-identifier hs-var">sigs</span></a></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
-</span><a href="#local-6989586621679137583"><span class="hs-identifier hs-var">dats</span></a></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621679137584"><span class="hs-identifier hs-var">tid</span></a></span><span>
+</span><a href="#local-6989586621679137631"><span class="hs-identifier hs-var">ins</span></a></span><span> </span><span class="annot"><span class="annottext">[TxOut]
+</span><a href="#local-6989586621679137632"><span class="hs-identifier hs-var">outs</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137633"><span class="hs-identifier hs-var">fee</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679137634"><span class="hs-identifier hs-var">mint</span></a></span><span> </span><span class="annot"><span class="annottext">[DCert]
+</span><a href="#local-6989586621679137635"><span class="hs-identifier hs-var">dcert</span></a></span><span> </span><span class="annot"><span class="annottext">[(StakingCredential, Integer)]
+</span><a href="#local-6989586621679137636"><span class="hs-identifier hs-var">wdrl</span></a></span><span> </span><span class="annot"><span class="annottext">POSIXTimeRange
+</span><a href="#local-6989586621679137637"><span class="hs-identifier hs-var">validRange</span></a></span><span> </span><span class="annot"><span class="annottext">[PubKeyHash]
+</span><a href="#local-6989586621679137638"><span class="hs-identifier hs-var">sigs</span></a></span><span> </span><span class="annot"><span class="annottext">[(DatumHash, Datum)]
+</span><a href="#local-6989586621679137639"><span class="hs-identifier hs-var">dats</span></a></span><span> </span><span class="annot"><span class="annottext">TxId
+</span><a href="#local-6989586621679137640"><span class="hs-identifier hs-var">tid</span></a></span><span>
 </span><span id="line-105"></span><span>
 </span><span id="line-106"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-107"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptPurpose</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-108"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-109"></span><span>  </span><span id="local-6989586621679137599"><span class="annot"><span class="annottext">arbitrary :: Gen ScriptPurpose
+</span><span id="line-109"></span><span>  </span><span id="local-6989586621679137655"><span class="annot"><span class="annottext">arbitrary :: Gen ScriptPurpose
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-110"></span><span>    </span><span class="annot"><span class="annottext">[Gen ScriptPurpose] -&gt; Gen ScriptPurpose
 forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
@@ -672,50 +672,50 @@ forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
 </span><span id="line-115"></span><span>      </span><span class="hs-special">]</span><span>
 </span><span id="line-116"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-117"></span><span>  </span><span id="local-6989586621679137612"><span class="annot"><span class="annottext">shrink :: ScriptPurpose -&gt; [ScriptPurpose]
+</span><span id="line-117"></span><span>  </span><span id="local-6989586621679137668"><span class="annot"><span class="annottext">shrink :: ScriptPurpose -&gt; [ScriptPurpose]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-118"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Minting</span></span><span> </span><span id="local-6989586621679137613"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137613"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; ScriptPurpose
+</span><span id="line-118"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Minting</span></span><span> </span><span id="local-6989586621679137669"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137669"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Minting</span></span><span> </span><span class="annot"><span class="annottext">(CurrencySymbol -&gt; ScriptPurpose)
 -&gt; [CurrencySymbol] -&gt; [ScriptPurpose]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; [CurrencySymbol]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137613"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-119"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Spending</span></span><span> </span><span id="local-6989586621679137614"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137614"><span class="hs-identifier hs-var">txo</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137669"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-119"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Spending</span></span><span> </span><span id="local-6989586621679137670"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137670"><span class="hs-identifier hs-var">txo</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Spending</span></span><span> </span><span class="annot"><span class="annottext">(TxOutRef -&gt; ScriptPurpose) -&gt; [TxOutRef] -&gt; [ScriptPurpose]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; [TxOutRef]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137614"><span class="hs-identifier hs-var">txo</span></a></span><span>
-</span><span id="line-120"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Rewarding</span></span><span> </span><span id="local-6989586621679137615"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137615"><span class="hs-identifier hs-var">scred</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137670"><span class="hs-identifier hs-var">txo</span></a></span><span>
+</span><span id="line-120"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Rewarding</span></span><span> </span><span id="local-6989586621679137671"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679137671"><span class="hs-identifier hs-var">scred</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Rewarding</span></span><span> </span><span class="annot"><span class="annottext">(StakingCredential -&gt; ScriptPurpose)
 -&gt; [StakingCredential] -&gt; [ScriptPurpose]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; [StakingCredential]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137615"><span class="hs-identifier hs-var">scred</span></a></span><span>
-</span><span id="line-121"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Certifying</span></span><span> </span><span id="local-6989586621679137616"><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137616"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DCert -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137671"><span class="hs-identifier hs-var">scred</span></a></span><span>
+</span><span id="line-121"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Certifying</span></span><span> </span><span id="local-6989586621679137672"><span class="annot"><span class="annottext">DCert
+</span><a href="#local-6989586621679137672"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DCert -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Certifying</span></span><span> </span><span class="annot"><span class="annottext">(DCert -&gt; ScriptPurpose) -&gt; [DCert] -&gt; [ScriptPurpose]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">DCert -&gt; [DCert]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137616"><span class="hs-identifier hs-var">dcert</span></a></span><span>
+</span><a href="#local-6989586621679137672"><span class="hs-identifier hs-var">dcert</span></a></span><span>
 </span><span id="line-122"></span><span>
 </span><span id="line-123"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-124"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptPurpose</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-125"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-126"></span><span>  </span><span id="local-6989586621679137629"><span class="annot"><span class="annottext">coarbitrary :: forall b. ScriptPurpose -&gt; Gen b -&gt; Gen b
+</span><span id="line-126"></span><span>  </span><span id="local-6989586621679137685"><span class="annot"><span class="annottext">coarbitrary :: forall b. ScriptPurpose -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-127"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Minting</span></span><span> </span><span id="local-6989586621679137630"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137630"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><span id="line-127"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Minting</span></span><span> </span><span id="local-6989586621679137686"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137686"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -724,9 +724,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. CurrencySymbol -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137630"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-128"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Spending</span></span><span> </span><span id="local-6989586621679137631"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137631"><span class="hs-identifier hs-var">txo</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137686"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-128"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Spending</span></span><span> </span><span id="local-6989586621679137687"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137687"><span class="hs-identifier hs-var">txo</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -735,9 +735,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. TxOutRef -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137631"><span class="hs-identifier hs-var">txo</span></a></span><span>
-</span><span id="line-129"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Rewarding</span></span><span> </span><span id="local-6989586621679137632"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137632"><span class="hs-identifier hs-var">scred</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137687"><span class="hs-identifier hs-var">txo</span></a></span><span>
+</span><span id="line-129"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Rewarding</span></span><span> </span><span id="local-6989586621679137688"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679137688"><span class="hs-identifier hs-var">scred</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -746,9 +746,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. StakingCredential -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137632"><span class="hs-identifier hs-var">scred</span></a></span><span>
-</span><span id="line-130"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Certifying</span></span><span> </span><span id="local-6989586621679137633"><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137633"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679137688"><span class="hs-identifier hs-var">scred</span></a></span><span>
+</span><span id="line-130"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLA.Certifying</span></span><span> </span><span id="local-6989586621679137689"><span class="annot"><span class="annottext">DCert
+</span><a href="#local-6989586621679137689"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -757,12 +757,12 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. DCert -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137633"><span class="hs-identifier hs-var">dcert</span></a></span><span>
+</span><a href="#local-6989586621679137689"><span class="hs-identifier hs-var">dcert</span></a></span><span>
 </span><span id="line-131"></span><span>
 </span><span id="line-132"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-133"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptPurpose</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-134"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-135"></span><span>  </span><span id="local-6989586621679137645"><span class="annot"><span class="annottext">function :: forall b. (ScriptPurpose -&gt; b) -&gt; ScriptPurpose :-&gt; b
+</span><span id="line-135"></span><span>  </span><span id="local-6989586621679137701"><span class="annot"><span class="annottext">function :: forall b. (ScriptPurpose -&gt; b) -&gt; ScriptPurpose :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ScriptPurpose
  -&gt; Either
       CurrencySymbol (Either TxOutRef (Either StakingCredential DCert)))
@@ -777,36 +777,36 @@ Function b =&gt;
 </span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">ScriptPurpose
 -&gt; Either
      CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
-</span><a href="#local-6989586621679137646"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679137702"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Either
   CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
 -&gt; ScriptPurpose
-</span><a href="#local-6989586621679137647"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><a href="#local-6989586621679137703"><span class="hs-identifier hs-var">outOf</span></a></span><span>
 </span><span id="line-136"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-137"></span><span>      </span><span class="annot"><a href="#local-6989586621679137646"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-137"></span><span>      </span><span class="annot"><a href="#local-6989586621679137702"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-138"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptPurpose</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-139"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.StakingCredential</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-140"></span><span>      </span><span id="local-6989586621679137646"><span class="annot"><span class="annottext">into :: ScriptPurpose
+</span><span id="line-140"></span><span>      </span><span id="local-6989586621679137702"><span class="annot"><span class="annottext">into :: ScriptPurpose
 -&gt; Either
      CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
-</span><a href="#local-6989586621679137646"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-141"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Minting</span></span><span> </span><span id="local-6989586621679137648"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137648"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137702"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-141"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Minting</span></span><span> </span><span id="local-6989586621679137704"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137704"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
 -&gt; Either
      CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137648"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-142"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Spending</span></span><span> </span><span id="local-6989586621679137649"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137649"><span class="hs-identifier hs-var">txo</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TxOutRef (Either StakingCredential DCert)
+</span><a href="#local-6989586621679137704"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-142"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Spending</span></span><span> </span><span id="local-6989586621679137705"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137705"><span class="hs-identifier hs-var">txo</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TxOutRef (Either StakingCredential DCert)
 -&gt; Either
      CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxOutRef -&gt; Either TxOutRef (Either StakingCredential DCert)
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137649"><span class="hs-identifier hs-var">txo</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-143"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Rewarding</span></span><span> </span><span id="local-6989586621679137650"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137650"><span class="hs-identifier hs-var">scred</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TxOutRef (Either StakingCredential DCert)
+</span><a href="#local-6989586621679137705"><span class="hs-identifier hs-var">txo</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-143"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Rewarding</span></span><span> </span><span id="local-6989586621679137706"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679137706"><span class="hs-identifier hs-var">scred</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TxOutRef (Either StakingCredential DCert)
 -&gt; Either
      CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
 forall a b. b -&gt; Either a b
@@ -816,9 +816,9 @@ forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">StakingCredential -&gt; Either StakingCredential DCert
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137650"><span class="hs-identifier hs-var">scred</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-144"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Certifying</span></span><span> </span><span id="local-6989586621679137651"><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137651"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TxOutRef (Either StakingCredential DCert)
+</span><a href="#local-6989586621679137706"><span class="hs-identifier hs-var">scred</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Certifying</span></span><span> </span><span id="local-6989586621679137707"><span class="annot"><span class="annottext">DCert
+</span><a href="#local-6989586621679137707"><span class="hs-identifier hs-var">dcert</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either TxOutRef (Either StakingCredential DCert)
 -&gt; Either
      CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
 forall a b. b -&gt; Either a b
@@ -828,28 +828,28 @@ forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DCert -&gt; Either StakingCredential DCert
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137651"><span class="hs-identifier hs-var">dcert</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-145"></span><span>      </span><span class="annot"><a href="#local-6989586621679137647"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><a href="#local-6989586621679137707"><span class="hs-identifier hs-var">dcert</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-145"></span><span>      </span><span class="annot"><a href="#local-6989586621679137703"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-146"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.CurrencySymbol</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.TxOutRef</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.StakingCredential</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.DCert</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-147"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptPurpose</span></span><span>
-</span><span id="line-148"></span><span>      </span><span id="local-6989586621679137647"><span class="annot"><span class="annottext">outOf :: Either
+</span><span id="line-148"></span><span>      </span><span id="local-6989586621679137703"><span class="annot"><span class="annottext">outOf :: Either
   CurrencySymbol (Either TxOutRef (Either StakingCredential DCert))
 -&gt; ScriptPurpose
-</span><a href="#local-6989586621679137647"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-149"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679137652"><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137652"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137703"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-149"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679137708"><span class="annot"><span class="annottext">CurrencySymbol
+</span><a href="#local-6989586621679137708"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Minting</span></span><span> </span><span class="annot"><span class="annottext">CurrencySymbol
-</span><a href="#local-6989586621679137652"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-150"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679137653"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137653"><span class="hs-identifier hs-var">txo</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137708"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-150"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679137709"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621679137709"><span class="hs-identifier hs-var">txo</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Spending</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621679137653"><span class="hs-identifier hs-var">txo</span></a></span><span>
-</span><span id="line-151"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679137654"><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137654"><span class="hs-identifier hs-var">scred</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137709"><span class="hs-identifier hs-var">txo</span></a></span><span>
+</span><span id="line-151"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679137710"><span class="annot"><span class="annottext">StakingCredential
+</span><a href="#local-6989586621679137710"><span class="hs-identifier hs-var">scred</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StakingCredential -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Rewarding</span></span><span> </span><span class="annot"><span class="annottext">StakingCredential
-</span><a href="#local-6989586621679137654"><span class="hs-identifier hs-var">scred</span></a></span><span>
-</span><span id="line-152"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679137655"><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137655"><span class="hs-identifier hs-var">dcert</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DCert -&gt; ScriptPurpose
+</span><a href="#local-6989586621679137710"><span class="hs-identifier hs-var">scred</span></a></span><span>
+</span><span id="line-152"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679137711"><span class="annot"><span class="annottext">DCert
+</span><a href="#local-6989586621679137711"><span class="hs-identifier hs-var">dcert</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DCert -&gt; ScriptPurpose
 </span><span class="hs-identifier hs-var">PLA.Certifying</span></span><span> </span><span class="annot"><span class="annottext">DCert
-</span><a href="#local-6989586621679137655"><span class="hs-identifier hs-var">dcert</span></a></span><span>
+</span><a href="#local-6989586621679137711"><span class="hs-identifier hs-var">dcert</span></a></span><span>
 </span><span id="line-153"></span></pre></body></html>
