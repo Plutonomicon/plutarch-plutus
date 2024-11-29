@@ -9,6 +9,7 @@ import Plutarch.Maybe (pjust, pmapMaybe, pnothing)
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, propEvalEqual)
+import Plutarch.Test.Unit (testEvalEqual)
 import Plutarch.Test.Utils (fewerTests, prettyEquals, prettyShow)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1.Orphans (UnsortedAssocMap, getUnsortedAssocMap)
@@ -23,6 +24,36 @@ tests =
   testGroup
     "AssocMap"
     [ checkLedgerPropertiesAssocMap
+    , testGroup
+        "pcheckBinRel"
+        [ testEvalEqual
+            "pcheckBinRel (#<=) 0 [(0, 1)] [(0, 1), (1, 1)] = True"
+            ( AssocMap.pcheckBinRel
+                # plam ((#<=) @PInteger)
+                # pconstant @PInteger 0
+                # AssocMap.psortedMapFromFoldable @PInteger @PInteger @[] [(pconstant 0, pconstant 1)]
+                # AssocMap.psortedMapFromFoldable @PInteger @PInteger @[] [(pconstant 0, pconstant 1), (pconstant 1, pconstant 1)]
+            )
+            (pconstant @PBool True)
+        , testEvalEqual
+            "pcheckBinRel (#<) 0 [(0, 1)] [(0, 1), (1, 1)] = False"
+            ( AssocMap.pcheckBinRel
+                # plam ((#<) @PInteger)
+                # pconstant @PInteger 0
+                # AssocMap.psortedMapFromFoldable @PInteger @PInteger @[] [(pconstant 0, pconstant 1)]
+                # AssocMap.psortedMapFromFoldable @PInteger @PInteger @[] [(pconstant 0, pconstant 1), (pconstant 1, pconstant 1)]
+            )
+            (pconstant @PBool False)
+        , testEvalEqual
+            "pcheckBinRel (#<) 0 [(0, 1)] [(0, 2), (1, 1)] = True"
+            ( AssocMap.pcheckBinRel
+                # plam ((#<) @PInteger)
+                # pconstant @PInteger 0
+                # AssocMap.psortedMapFromFoldable @PInteger @PInteger @[] [(pconstant 0, pconstant 1)]
+                # AssocMap.psortedMapFromFoldable @PInteger @PInteger @[] [(pconstant 0, pconstant 2), (pconstant 1, pconstant 1)]
+            )
+            (pconstant @PBool True)
+        ]
     , propEval "Ledger AssocMap is sorted (sanity check for punsafeCoerce below)" $
         \(m :: PlutusMap.Map Integer Integer) -> AssocMap.passertSorted # pconstant @(PMap 'Unsorted PInteger PInteger) m
     , adjustOption (fewerTests 4) $
