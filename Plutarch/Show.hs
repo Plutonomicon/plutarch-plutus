@@ -28,17 +28,17 @@ import Generics.SOP (
  )
 import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Builtin.Bool (PBool, pif, pif')
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.ByteString (
+import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
   pbyteToInteger,
   pconsBS,
   pindexBS,
+  pintegerToByte,
   plengthBS,
   psliceBS,
-  punsafeIntegerToByte,
  )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.Lift (pconstant)
@@ -96,8 +96,8 @@ instance PShow PString where
                   escapeSlash :: Term _ PInteger = 92 -- `\`
                   rec_ = pconsBS # x #$ self # xs
                in pif
-                    (x #== (punsafeIntegerToByte # doubleQuote))
-                    (pconsBS # (punsafeIntegerToByte # escapeSlash) # rec_)
+                    (x #== (pintegerToByte # doubleQuote))
+                    (pconsBS # (pintegerToByte # escapeSlash) # rec_)
                     rec_
 
 instance PShow PBool where

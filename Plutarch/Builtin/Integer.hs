@@ -10,12 +10,11 @@ module Plutarch.Builtin.Integer (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted))
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
-import Plutarch.Internal.Term (S, Term, (:-->))
-import Plutarch.Unsafe (punsafeBuiltin)
+
+-- import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted))
+-- import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Internal.Term (S, Term, punsafeBuiltin, (#), (:-->))
 import PlutusCore qualified as PLC
 
 {- | A builtin Plutus integer.
@@ -24,16 +23,6 @@ import PlutusCore qualified as PLC
 -}
 newtype PInteger s = PInteger (Term s POpaque)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType PInteger where
-  type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PInteger Integer)
-  instance
-    PLiftable PInteger
 
 {- | Performs modulo exponentiation. More precisely, @pexpModInteger b e m@
 performs @b@ to the power of @e@, modulo @m@. The result is always

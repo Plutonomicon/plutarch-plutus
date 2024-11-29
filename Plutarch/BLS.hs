@@ -29,8 +29,8 @@ module Plutarch.BLS (
 
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.ByteString (PByteString)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)

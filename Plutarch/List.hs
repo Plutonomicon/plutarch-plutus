@@ -57,11 +57,12 @@ module Plutarch.List (
 import Data.Kind (Constraint, Type)
 import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, (#&&), (#||))
-import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Bool
+import Plutarch.Builtin.Integer
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Ord (POrd, (#<), (#<=))
+import Plutarch.Internal.Lift
+import Plutarch.Internal.ListLike
+import Plutarch.Internal.Ord
 import Plutarch.Internal.Other (pfix)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -85,11 +86,11 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Pair (PPair (PPair))
+import Plutarch.Internal.Trace
+import Plutarch.Maybe
+import Plutarch.Pair
 import Plutarch.Show (PShow (pshow'), pshow)
 import Plutarch.String (PString)
-import Plutarch.Trace (ptraceInfoError)
 
 data PList (a :: S -> Type) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
@@ -126,39 +127,6 @@ instance PEq a => PEq (PList a) where
 
 --------------------------------------------------------------------------------
 
--- | 'PIsListLike list a' constraints 'list' be a 'PListLike' with valid element type, 'a'.
-type PIsListLike list a = (PListLike list, PElemConstraint list a)
-
--- | Plutarch types that behave like lists.
-class PListLike (list :: (S -> Type) -> S -> Type) where
-  type PElemConstraint list (a :: S -> Type) :: Constraint
-
-  -- | Canonical eliminator for list-likes.
-  pelimList ::
-    PElemConstraint list a =>
-    (Term s a -> Term s (list a) -> Term s r) ->
-    Term s r ->
-    Term s (list a) ->
-    Term s r
-
-  -- | Cons an element onto an existing list.
-  pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
-
-  -- | The empty list
-  pnil :: PElemConstraint list a => Term s (list a)
-
-  -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
-  phead :: PElemConstraint list a => Term s (list a :--> a)
-  phead = phoistAcyclic $ plam $ pelimList const perror
-
-  -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
-  ptail :: PElemConstraint list a => Term s (list a :--> list a)
-  ptail = phoistAcyclic $ plam $ pelimList (\_ xs -> xs) perror
-
-  -- | / O(1) /. Check if a list is empty
-  pnull :: PElemConstraint list a => Term s (list a :--> PBool)
-  pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pconstant False) $ pconstant True
-
 instance PListLike PList where
   type PElemConstraint PList _ = ()
   pelimList match_cons match_nil ls = pmatch ls $ \case
@@ -166,6 +134,8 @@ instance PListLike PList where
     PSNil -> match_nil
   pcons = phoistAcyclic $ plam $ \x xs -> pcon (PSCons x xs)
   pnil = pcon PSNil
+
+--------------------------------------------------------------------------------
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists ::
@@ -438,7 +408,7 @@ pelemAt = phoistAcyclic $
   plam $ \n xs ->
     pif
       (n #< 0)
-      (ptraceInfoError "pelemAt: negative index")
+      (ptraceInfo "pelemAt: negative index" perror)
       (pelemAt' # n # xs)
 
 -- | / O(n) /. like `pelemAt` but doesn't fail on negative indexes

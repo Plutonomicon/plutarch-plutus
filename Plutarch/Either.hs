@@ -25,24 +25,25 @@ module Plutarch.Either (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin (
-  PAsData,
-  PData,
-  PIsData (pdataImpl, pfromDataImpl),
-  pasConstr,
-  pconstrBuiltin,
-  pdata,
-  pforgetData,
-  pfromData,
-  pfstBuiltin,
-  psndBuiltin,
- )
+import Plutarch.Builtin ()
+
+-- TODO: Kill this, this is for PShow (PAsData a)
+
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
   pif,
   pif',
  )
+import Plutarch.Builtin.Data (
+  PAsData,
+  PData,
+  pasConstr,
+  pconstrBuiltin,
+  pfstBuiltin,
+  psndBuiltin,
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl), pdata, pforgetData, pfromData)
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   PLiftable (

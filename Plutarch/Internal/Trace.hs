@@ -6,20 +6,8 @@ module Plutarch.Internal.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Term (
-  Config (NoTracing, Tracing),
-  LogLevel (LogDebug),
-  S,
-  Term,
-  pdelay,
-  pforce,
-  pgetConfig,
-  phoistAcyclic,
-  (#),
-  type (:-->),
- )
+import Plutarch.Internal.Term (Config (NoTracing, Tracing), LogLevel (LogDebug), S, Term, pdelay, pforce, pgetConfig, phoistAcyclic, punsafeBuiltin, (#), type (:-->))
 import {-# SOURCE #-} Plutarch.String (PString)
-import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
 
 ptrace' :: Term s (PString :--> a :--> a)

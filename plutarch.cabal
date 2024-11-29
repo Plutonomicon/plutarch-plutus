@@ -68,6 +68,7 @@ common c
     -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
     -Wno-operator-whitespace -fprint-equality-relations
     -fprint-explicit-kinds -fprint-explicit-foralls
+    -Wno-missing-export-lists -Wno-unused-imports
 
 library
   import:          c
@@ -76,7 +77,11 @@ library
     Plutarch.BLS
     Plutarch.Builtin
     Plutarch.Builtin.Bool
+    Plutarch.Builtin.ByteString
+    Plutarch.Builtin.Data
     Plutarch.Builtin.Integer
+    Plutarch.Builtin.Opaque
+    Plutarch.Builtin.Unit
     Plutarch.ByteString
     Plutarch.Convert
     Plutarch.Crypto
@@ -93,13 +98,16 @@ library
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
+    Plutarch.Internal.IsData
     Plutarch.Internal.Lift
+    Plutarch.Internal.ListLike
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
+    Plutarch.Internal.PlutusTypeDerive
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
@@ -128,7 +136,6 @@ library
     Plutarch.TermCont
     Plutarch.Trace
     Plutarch.TryFrom
-    Plutarch.Unit
     Plutarch.Unsafe
 
   build-depends:

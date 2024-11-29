@@ -85,7 +85,8 @@ module Plutarch.Prelude (
   pintegerToByte,
 
   -- *** Other
-  phexByteStr,
+
+  --  phexByteStr,
 
   -- * String and string utilities
   PString,
@@ -232,10 +233,7 @@ import Plutarch.Builtin.Bool (
   (#&&),
   (#||),
  )
-import Plutarch.Builtin.Integer (
-  PInteger,
- )
-import Plutarch.ByteString (
+import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
   PLogicOpSemantics,
@@ -243,7 +241,7 @@ import Plutarch.ByteString (
   pbyteToInteger,
   pcomplementBS,
   pconsBS,
-  phexByteStr,
+  --  phexByteStr,
   pindexBS,
   pintegerToByte,
   plengthBS,
@@ -256,6 +254,10 @@ import Plutarch.ByteString (
   pxorBS,
   pzeroesBS,
  )
+import Plutarch.Builtin.Integer (
+  PInteger,
+ )
+import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.Crypto (psha2_256, psha3_256, pverifySignature)
 import Plutarch.DataRepr (
   PDataRecord,
@@ -402,5 +404,4 @@ import Plutarch.TryFrom (
   ptryFrom,
   pupcast,
  )
-import Plutarch.Unit (PUnit (PUnit))
 import Prelude ()

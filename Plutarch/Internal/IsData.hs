@@ -1,0 +1,139 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+
+module Plutarch.Internal.IsData where
+
+import Plutarch.Builtin.Bool
+import Plutarch.Builtin.ByteString
+import Plutarch.Builtin.Data
+import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Unit
+
+import Data.Kind (Type)
+import Data.Proxy (Proxy (Proxy))
+
+import Plutarch.Internal.Eq
+import Plutarch.Internal.ListLike
+import Plutarch.Internal.Numeric
+import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.PLam
+import Plutarch.Internal.PlutusType
+import Plutarch.Internal.Term
+import Plutarch.Internal.Witness (witness)
+import Plutarch.TryFrom
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+
+import PlutusCore qualified as PLC
+import PlutusTx qualified as PTx
+
+{- | Laws:
+ - If @PSubtype PData a@, then @pdataImpl a@ must be `pupcast`.
+ - pdataImpl . pupcast . pfromDataImpl ≡ id
+ - pfromDataImpl . punsafeDowncast . pdataImpl ≡ id
+-}
+class PIsData a where
+  pfromDataImpl :: Term s (PAsData a) -> Term s a
+  default pfromDataImpl :: PIsData (PInner a) => Term s (PAsData a) -> Term s a
+  pfromDataImpl x = punsafeDowncast $ pfromDataImpl (punsafeCoerce x :: Term _ (PAsData (PInner a)))
+
+  pdataImpl :: Term s a -> Term s PData
+  default pdataImpl :: PIsData (PInner a) => Term s a -> Term s PData
+  pdataImpl x = pdataImpl $ pto x
+
+pfromData :: PIsData a => Term s (PAsData a) -> Term s a
+pfromData = pfromDataImpl
+
+pdata :: PIsData a => Term s a -> Term s (PAsData a)
+pdata = punsafeCoerce . pdataImpl
+
+pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
+pforgetData = punsafeCoerce
+
+-- FIXME: remove, broken
+
+{- | Like 'pforgetData', except it works for complex types.
+ Equivalent to 'pupcastF'.
+-}
+pforgetData' ::
+  forall a (p :: (S -> Type) -> S -> Type) (s :: S).
+  PCovariant p =>
+  Proxy p ->
+  Term s (p (PAsData a)) ->
+  Term s (p PData)
+pforgetData' _ = let _ = witness (Proxy @(PCovariant p)) in punsafeCoerce
+
+-- | Inverse of 'pforgetData''.
+prememberData ::
+  forall (p :: (S -> Type) -> S -> Type) (s :: S).
+  PVariant p =>
+  Proxy p ->
+  Term s (p PData) ->
+  Term s (p (PAsData PData))
+prememberData Proxy = let _ = witness (Proxy @(PVariant p)) in punsafeCoerce
+
+-- | Like 'prememberData' but generalised.
+prememberData' ::
+  forall a (p :: (S -> Type) -> S -> Type) (s :: S).
+  (PSubtype PData a, PVariant p) =>
+  Proxy p ->
+  Term s (p a) ->
+  Term s (p (PAsData a))
+prememberData' Proxy = let _ = witness (Proxy @(PSubtype PData a, PVariant p)) in punsafeCoerce
+
+instance PIsData PData where
+  pfromDataImpl = pupcast
+  pdataImpl = id
+
+instance PIsData PBool where
+  pfromDataImpl x =
+    phoistAcyclic (plam toBool) # pforgetData x
+    where
+      toBool :: Term s PData -> Term s PBool
+      toBool d = pfstBuiltin # (pasConstr # d) #== 1
+
+  pdataImpl x =
+    phoistAcyclic (plam toData) # x
+    where
+      toData :: Term s PBool -> Term s PData
+      toData b =
+        punsafeBuiltin PLC.ConstrData
+          # (pif' # b # 1 # (0 :: Term s PInteger))
+          # nil
+
+      nil :: Term s (PBuiltinList PData)
+      nil = pnil
+
+instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
+  pfromDataImpl x = f # x
+    where
+      f = phoistAcyclic $
+        plam $ \pairDat -> plet (psndBuiltin #$ pasConstr # pforgetData pairDat) $
+          \pd -> ppairDataBuiltin # punsafeCoerce (phead # pd) #$ punsafeCoerce (phead #$ ptail # pd)
+  pdataImpl x = pupcast target
+    where
+      target :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
+      target = f # punsafeCoerce x
+      f = phoistAcyclic $
+        plam $
+          \pair -> pconstrBuiltin # 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
+
+instance PIsData (PBuiltinPair PData PData) where
+  pfromDataImpl = pfromDataImpl @(PBuiltinPair PData PData) . punsafeCoerce
+  pdataImpl = punsafeCoerce . pdataImpl @(PBuiltinPair PData PData)
+
+-- This instance is kind of useless. There's no safe way to use 'pdata'.
+instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
+  pfromDataImpl x = pasConstr # pupcast x
+  pdataImpl x' = pupcast $ plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
+
+instance PIsData PInteger where
+  pfromDataImpl x = punsafeBuiltin PLC.UnIData # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.IData # x
+
+instance PIsData PByteString where
+  pfromDataImpl x = punsafeBuiltin PLC.UnBData # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.BData # x
+
+instance PIsData PUnit where
+  pfromDataImpl _ = punit
+  pdataImpl _ = punsafeConstantInternal $ PLC.someValue (PTx.Constr 0 [])

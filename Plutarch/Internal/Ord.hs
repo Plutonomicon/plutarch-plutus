@@ -4,9 +4,13 @@ module Plutarch.Internal.Ord (
   (#>=),
 ) where
 
-import Data.Kind (Type)
-import Plutarch.Builtin.Bool (PBool, pand', pif', por')
+import Plutarch.Builtin.Bool
+import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Unit
+
+import Data.Kind (Type)
+
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (pto)
@@ -14,6 +18,7 @@ import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
   S,
   Term,
+  plet,
   punsafeBuiltin,
   (#),
  )
@@ -113,3 +118,30 @@ instance POrd PInteger where
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
   {-# INLINEABLE (#<) #-}
   x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
+
+-- | @since WIP
+instance POrd PByteString where
+  {-# INLINEABLE (#<=) #-}
+  x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
+  {-# INLINEABLE (#<) #-}
+  x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
+
+-- | @since WIP
+instance POrd PByte where
+  {-# INLINEABLE (#<=) #-}
+  x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
+  {-# INLINEABLE (#<) #-}
+  x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
+
+deriving anyclass instance POrd PLogicOpSemantics
+
+-- | @since WIP
+instance POrd PUnit where
+  {-# INLINEABLE (#<=) #-}
+  x #<= y = plet x $ \_ -> plet y $ const ptrue
+  {-# INLINEABLE (#<) #-}
+  x #< y = plet x $ \_ -> plet y $ const pfalse
+  {-# INLINEABLE pmax #-}
+  pmax x y = plet x $ \_ -> plet y $ const x
+  {-# INLINEABLE pmin #-}
+  pmin = pmax

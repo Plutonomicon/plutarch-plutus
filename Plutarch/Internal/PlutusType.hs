@@ -27,14 +27,25 @@ module Plutarch.Internal.PlutusType (
   PContravariant',
 ) where
 
+import Plutarch.Builtin.Bool
+import Plutarch.Builtin.ByteString
+import Plutarch.Builtin.Data
+import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Opaque
+import Plutarch.Builtin.Unit
+
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (All2)
-import Plutarch.Internal.Generic (PCode)
+import Generics.SOP qualified as SOP
+import Plutarch.Internal.Generic
+import {-# SOURCE #-} Plutarch.Internal.IsData
+import {-# SOURCE #-} Plutarch.Internal.Lift
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
-import Plutarch.Internal.Term (PType, Term, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
+import Plutarch.Internal.Term (PType, S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Witness (witness)
+import PlutusCore qualified as PLC
 
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint
@@ -124,3 +135,103 @@ instance PlutusType (PFix f) where
   type PInner (PFix f) = f (PFix f)
   pcon' (PFix x) = x
   pmatch' x f = f (PFix x)
+
+--------------------------------------------------------------------------------
+
+data PlutusTypeNewtype
+
+class (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
+instance (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
+
+instance PlutusTypeStrat PlutusTypeNewtype where
+  type PlutusTypeStratConstraint PlutusTypeNewtype = Helper
+  type DerivedPInner PlutusTypeNewtype a = GetPNewtype a
+  derivedPCon x = case gpfrom x of
+    SOP.SOP (SOP.Z (x SOP.:* SOP.Nil)) -> x
+    SOP.SOP (SOP.S x) -> case x of {}
+  derivedPMatch x f = f (gpto $ SOP.SOP $ SOP.Z $ x SOP.:* SOP.Nil)
+
+type family GetPNewtype' (a :: [[PType]]) :: PType where
+  GetPNewtype' '[ '[a]] = a
+
+type family GetPNewtype (a :: PType) :: PType where
+  GetPNewtype a = GetPNewtype' (PCode a)
+
+--------------------------------------------------------------------------------
+
+instance DerivePlutusType PInteger where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PInteger
+
+instance PlutusType POpaque where
+  type PInner POpaque = POpaque
+  type PCovariant' POpaque = ()
+  type PContravariant' POpaque = ()
+  type PVariant' POpaque = ()
+  pcon' (POpaque x) = x
+  pmatch' x f = f (POpaque x)
+
+-- | @since WIP
+instance PlutusType PBool where
+  type PInner PBool = PBool
+  {-# INLINEABLE pcon' #-}
+  pcon' PTrue = ptrue
+  pcon' PFalse = pfalse
+  {-# INLINEABLE pmatch' #-}
+  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+
+instance PlutusType PData where
+  type PInner PData = PData
+  type PCovariant' PData = ()
+  type PContravariant' PData = ()
+  type PVariant' PData = ()
+  pcon' (PData t) = t
+  pmatch' t f = f (PData t)
+
+instance PlutusType (PBuiltinPair a b) where
+  type PInner (PBuiltinPair a b) = PBuiltinPair a b
+  type PCovariant' (PBuiltinPair a b) = (PCovariant' a, PCovariant' b)
+  type PContravariant' (PBuiltinPair a b) = (PContravariant' a, PContravariant' b)
+  type PVariant' (PBuiltinPair a b) = (PVariant' a, PVariant' b)
+  pcon' (PBuiltinPair x) = x
+  pmatch' x f = f (PBuiltinPair x)
+
+instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
+  type PInner (PBuiltinList a) = PBuiltinList a
+  type PCovariant' (PBuiltinList a) = PCovariant' a
+  type PContravariant' (PBuiltinList a) = PContravariant' a
+  type PVariant' (PBuiltinList a) = PVariant' a
+  pcon' (PCons x xs) = pconsBuiltin # x # xs
+  pcon' PNil = getPLifted $ unsafeToUni @[PlutusRepr a] []
+  pmatch' xs' f = plet xs' $ \xs ->
+    pforce $
+      pchooseListBuiltin
+        # xs
+        # pdelay (f PNil)
+        # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
+
+type family IfSameThenData (a :: S -> Type) (b :: S -> Type) :: S -> Type where
+  IfSameThenData a a = PData
+  IfSameThenData _ POpaque = PData
+  IfSameThenData _ b = PAsData b
+
+instance PIsData a => PlutusType (PAsData a) where
+  type PInner (PAsData a) = IfSameThenData a (PInner a)
+  type PCovariant' (PAsData a) = PCovariant' a
+  type PContravariant' (PAsData a) = PContravariant' a
+  type PVariant' (PAsData a) = PVariant' a
+  pcon' (PAsData t) = punsafeCoerce $ pdata t
+  pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
+
+instance DerivePlutusType PByteString where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PByteString
+
+instance DerivePlutusType PByte where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PByte
+
+instance DerivePlutusType PLogicOpSemantics where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PLogicOpSemantics
+
+instance PlutusType PUnit where
+  type PInner PUnit = PUnit
+  pcon' PUnit = punit
+  pmatch' x f = plet x \_ -> f PUnit

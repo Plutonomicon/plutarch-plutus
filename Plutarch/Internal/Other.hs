@@ -11,6 +11,7 @@ module Plutarch.Internal.Other (
 
 import Data.Text qualified as T
 import GHC.Stack (HasCallStack)
+import Plutarch.Builtin.Opaque
 import Plutarch.Internal.PlutusType (
   PContravariant',
   PCovariant',
@@ -54,21 +55,6 @@ printTerm config term = printScript $ either (error . T.unpack) id $ compile con
 -}
 pto :: Term s a -> Term s (PInner a)
 pto = punsafeCoerce
-
--- | An Arbitrary Term with an unknown type
-newtype POpaque s = POpaque (Term s POpaque)
-
-instance PlutusType POpaque where
-  type PInner POpaque = POpaque
-  type PCovariant' POpaque = ()
-  type PContravariant' POpaque = ()
-  type PVariant' POpaque = ()
-  pcon' (POpaque x) = x
-  pmatch' x f = f (POpaque x)
-
--- | Erase the type of a Term
-popaque :: Term s a -> Term s POpaque
-popaque = punsafeCoerce
 
 {- |
   Fixpoint recursion. Used to encode recursive functions.
