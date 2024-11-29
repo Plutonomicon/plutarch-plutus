@@ -50,15 +50,15 @@
 </span><span id="line-50"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck.Instances.ByteString</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span>
 </span><span id="line-52"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-53"></span><span id="local-6989586621679138490"><span id="local-6989586621679138495"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.LedgerBytes</span></span></span></span><span>
+</span><span id="line-53"></span><span id="local-6989586621679138864"><span id="local-6989586621679138869"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.LedgerBytes</span></span></span></span><span>
 </span><span id="line-54"></span><span>
 </span><span id="line-55"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-56"></span><span id="local-6989586621679138501"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.LedgerBytes</span></span></span><span>
+</span><span id="line-56"></span><span id="local-6989586621679138875"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.LedgerBytes</span></span></span><span>
 </span><span id="line-57"></span><span>
 </span><span id="line-58"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-59"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.LedgerBytes</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-60"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-61"></span><span>  </span><span id="local-6989586621679138513"><span class="annot"><span class="annottext">function :: forall b. (LedgerBytes -&gt; b) -&gt; LedgerBytes :-&gt; b
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679138887"><span class="annot"><span class="annottext">function :: forall b. (LedgerBytes -&gt; b) -&gt; LedgerBytes :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(LedgerBytes -&gt; BuiltinByteString)
 -&gt; (BuiltinByteString -&gt; LedgerBytes)
 -&gt; (LedgerBytes -&gt; b)
@@ -74,7 +74,7 @@ forall a b. Coercible a b =&gt; a -&gt; b
 </span><span id="line-63"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-64"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-65"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-66"></span><span>  </span><span id="local-6989586621679138526"><span class="annot"><span class="annottext">arbitrary :: Gen ScriptContext
+</span><span id="line-66"></span><span>  </span><span id="local-6989586621679138900"><span class="annot"><span class="annottext">arbitrary :: Gen ScriptContext
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TxInfo -&gt; ScriptPurpose -&gt; ScriptContext
 </span><span class="hs-identifier hs-var">PLA.ScriptContext</span></span><span> </span><span class="annot"><span class="annottext">(TxInfo -&gt; ScriptPurpose -&gt; ScriptContext)
 -&gt; Gen TxInfo -&gt; Gen (ScriptPurpose -&gt; ScriptContext)
@@ -91,17 +91,17 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
 </span><span id="line-67"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-68"></span><span>  </span><span id="local-6989586621679138535"><span class="annot"><span class="annottext">shrink :: ScriptContext -&gt; [ScriptContext]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span id="local-6989586621679138536"><span class="annot"><span class="annottext">TxInfo
-</span><a href="#local-6989586621679138536"><span class="hs-identifier hs-var">txi</span></a></span></span><span> </span><span id="local-6989586621679138537"><span class="annot"><span class="annottext">ScriptPurpose
-</span><a href="#local-6989586621679138537"><span class="hs-identifier hs-var">purpose</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TxInfo -&gt; ScriptPurpose -&gt; ScriptContext
+</span><span id="line-68"></span><span>  </span><span id="local-6989586621679138909"><span class="annot"><span class="annottext">shrink :: ScriptContext -&gt; [ScriptContext]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span id="local-6989586621679138910"><span class="annot"><span class="annottext">TxInfo
+</span><a href="#local-6989586621679138910"><span class="hs-identifier hs-var">txi</span></a></span></span><span> </span><span id="local-6989586621679138911"><span class="annot"><span class="annottext">ScriptPurpose
+</span><a href="#local-6989586621679138911"><span class="hs-identifier hs-var">purpose</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TxInfo -&gt; ScriptPurpose -&gt; ScriptContext
 </span><span class="hs-identifier hs-var">PLA.ScriptContext</span></span><span> </span><span class="annot"><span class="annottext">(TxInfo -&gt; ScriptPurpose -&gt; ScriptContext)
 -&gt; [TxInfo] -&gt; [ScriptPurpose -&gt; ScriptContext]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TxInfo -&gt; [TxInfo]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">TxInfo
-</span><a href="#local-6989586621679138536"><span class="hs-identifier hs-var">txi</span></a></span><span> </span><span class="annot"><span class="annottext">[ScriptPurpose -&gt; ScriptContext]
+</span><a href="#local-6989586621679138910"><span class="hs-identifier hs-var">txi</span></a></span><span> </span><span class="annot"><span class="annottext">[ScriptPurpose -&gt; ScriptContext]
 -&gt; [ScriptPurpose] -&gt; [ScriptContext]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b.
@@ -110,31 +110,31 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptPurpose -&gt; [ScriptPurpose]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">ScriptPurpose
-</span><a href="#local-6989586621679138537"><span class="hs-identifier hs-var">purpose</span></a></span><span>
+</span><a href="#local-6989586621679138911"><span class="hs-identifier hs-var">purpose</span></a></span><span>
 </span><span id="line-69"></span><span>
 </span><span id="line-70"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-71"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-72"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-73"></span><span>  </span><span id="local-6989586621679138544"><span class="annot"><span class="annottext">coarbitrary :: forall b. ScriptContext -&gt; Gen b -&gt; Gen b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span id="local-6989586621679138545"><span class="annot"><span class="annottext">TxInfo
-</span><a href="#local-6989586621679138545"><span class="hs-identifier hs-var">txi</span></a></span></span><span> </span><span id="local-6989586621679138546"><span class="annot"><span class="annottext">ScriptPurpose
-</span><a href="#local-6989586621679138546"><span class="hs-identifier hs-var">purpose</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-73"></span><span>  </span><span id="local-6989586621679138918"><span class="annot"><span class="annottext">coarbitrary :: forall b. ScriptContext -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span id="local-6989586621679138919"><span class="annot"><span class="annottext">TxInfo
+</span><a href="#local-6989586621679138919"><span class="hs-identifier hs-var">txi</span></a></span></span><span> </span><span id="local-6989586621679138920"><span class="annot"><span class="annottext">ScriptPurpose
+</span><a href="#local-6989586621679138920"><span class="hs-identifier hs-var">purpose</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-74"></span><span>    </span><span class="annot"><span class="annottext">TxInfo -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. TxInfo -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">TxInfo
-</span><a href="#local-6989586621679138545"><span class="hs-identifier hs-var">txi</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679138919"><span class="hs-identifier hs-var">txi</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ScriptPurpose -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 forall b. ScriptPurpose -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">ScriptPurpose
-</span><a href="#local-6989586621679138546"><span class="hs-identifier hs-var">purpose</span></a></span><span>
+</span><a href="#local-6989586621679138920"><span class="hs-identifier hs-var">purpose</span></a></span><span>
 </span><span id="line-75"></span><span>
 </span><span id="line-76"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-77"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-78"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-79"></span><span>  </span><span id="local-6989586621679138556"><span class="annot"><span class="annottext">function :: forall b. (ScriptContext -&gt; b) -&gt; ScriptContext :-&gt; b
+</span><span id="line-79"></span><span>  </span><span id="local-6989586621679138930"><span class="annot"><span class="annottext">function :: forall b. (ScriptContext -&gt; b) -&gt; ScriptContext :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ScriptContext -&gt; (TxInfo, ScriptPurpose))
 -&gt; ((TxInfo, ScriptPurpose) -&gt; ScriptContext)
 -&gt; (ScriptContext -&gt; b)
@@ -142,11 +142,11 @@ forall b. ScriptPurpose -&gt; Gen b -&gt; Gen b
 forall b a c.
 Function b =&gt;
 (a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
-</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span id="local-6989586621679138557"><span class="annot"><span class="annottext">TxInfo
-</span><a href="#local-6989586621679138557"><span class="hs-identifier hs-var">txi</span></a></span></span><span> </span><span id="local-6989586621679138558"><span class="annot"><span class="annottext">ScriptPurpose
-</span><a href="#local-6989586621679138558"><span class="hs-identifier hs-var">purpose</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxInfo
-</span><a href="#local-6989586621679138557"><span class="hs-identifier hs-var">txi</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ScriptPurpose
-</span><a href="#local-6989586621679138558"><span class="hs-identifier hs-var">purpose</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(TxInfo -&gt; ScriptPurpose -&gt; ScriptContext)
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PLA.ScriptContext</span></span><span> </span><span id="local-6989586621679138931"><span class="annot"><span class="annottext">TxInfo
+</span><a href="#local-6989586621679138931"><span class="hs-identifier hs-var">txi</span></a></span></span><span> </span><span id="local-6989586621679138932"><span class="annot"><span class="annottext">ScriptPurpose
+</span><a href="#local-6989586621679138932"><span class="hs-identifier hs-var">purpose</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxInfo
+</span><a href="#local-6989586621679138931"><span class="hs-identifier hs-var">txi</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ScriptPurpose
+</span><a href="#local-6989586621679138932"><span class="hs-identifier hs-var">purpose</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(TxInfo -&gt; ScriptPurpose -&gt; ScriptContext)
 -&gt; (TxInfo, ScriptPurpose) -&gt; ScriptContext
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#uncurry"><span class="hs-identifier hs-var">uncurry</span></a></span><span> </span><span class="annot"><span class="annottext">TxInfo -&gt; ScriptPurpose -&gt; ScriptContext
@@ -159,90 +159,90 @@ any shape. You probably want something more focused than this.
 -}</span></span><span>
 </span><span id="line-86"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.Data</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-87"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621679138613"><span class="annot"><span class="annottext">arbitrary :: Gen Data
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621679138987"><span class="annot"><span class="annottext">arbitrary :: Gen Data
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Gen Data) -&gt; Gen Data
 forall a. (Int -&gt; Gen a) -&gt; Gen a
 </span><span class="hs-identifier hs-var">sized</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Gen Data) -&gt; Gen Data) -&gt; (Int -&gt; Gen Data) -&gt; Gen Data
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679138614"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138614"><span class="hs-identifier hs-var">originalSize</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138615"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138614"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138614"><span class="hs-identifier hs-var">originalSize</span></a></span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679138988"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138988"><span class="hs-identifier hs-var">originalSize</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
+</span><a href="#local-6989586621679138989"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138988"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138988"><span class="hs-identifier hs-var">originalSize</span></a></span><span>
 </span><span id="line-89"></span><span>    </span><span class="hs-keyword">where</span><span>
 </span><span id="line-90"></span><span>      </span><span class="hs-comment">-- We have to track our original size (for contents) as well as a</span><span>
 </span><span id="line-91"></span><span>      </span><span class="hs-comment">-- possibly-reduced size (for structure) separately. If we don't do this,</span><span>
 </span><span id="line-92"></span><span>      </span><span class="hs-comment">-- 'leaf' data may end up being far smaller than it should be, biasing the</span><span>
 </span><span id="line-93"></span><span>      </span><span class="hs-comment">-- generator.</span><span>
-</span><span id="line-94"></span><span>      </span><span class="annot"><a href="#local-6989586621679138615"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.Data</span></span><span>
-</span><span id="line-95"></span><span>      </span><span id="local-6989586621679138615"><span class="annot"><span class="annottext">go :: Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138615"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679138616"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span></span><span> </span><span id="local-6989586621679138617"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138617"><span class="hs-identifier hs-var">currentSize</span></a></span></span><span>
+</span><span id="line-94"></span><span>      </span><span class="annot"><a href="#local-6989586621679138989"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.Data</span></span><span>
+</span><span id="line-95"></span><span>      </span><span id="local-6989586621679138989"><span class="annot"><span class="annottext">go :: Int -&gt; Int -&gt; Gen Data
+</span><a href="#local-6989586621679138989"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679138990"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span></span><span> </span><span id="local-6989586621679138991"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138991"><span class="hs-identifier hs-var">currentSize</span></a></span></span><span>
 </span><span id="line-96"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138617"><span class="hs-identifier hs-var">currentSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679138991"><span class="hs-identifier hs-var">currentSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Gen Data] -&gt; Gen Data
 forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
 </span><span class="hs-identifier hs-var">oneof</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int -&gt; Gen Data
-</span><a href="#local-6989586621679138619"><span class="hs-identifier hs-var">genB</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Data
-</span><a href="#local-6989586621679138620"><span class="hs-identifier hs-var">genI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679138993"><span class="hs-identifier hs-var">genB</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Data
+</span><a href="#local-6989586621679138994"><span class="hs-identifier hs-var">genI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-97"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#otherwise"><span class="hs-identifier hs-var">otherwise</span></a></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-98"></span><span>            </span><span class="annot"><span class="annottext">[Gen Data] -&gt; Gen Data
 forall a. HasCallStack =&gt; [Gen a] -&gt; Gen a
 </span><span class="hs-identifier hs-var">oneof</span></span><span>
 </span><span id="line-99"></span><span>              </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Data
-</span><a href="#local-6989586621679138619"><span class="hs-identifier hs-var">genB</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span>
+</span><a href="#local-6989586621679138993"><span class="hs-identifier hs-var">genB</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span>
 </span><span id="line-100"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Data
-</span><a href="#local-6989586621679138620"><span class="hs-identifier hs-var">genI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span>
+</span><a href="#local-6989586621679138994"><span class="hs-identifier hs-var">genI</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span>
 </span><span id="line-101"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138621"><span class="hs-identifier hs-var">genConstr</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138617"><span class="hs-identifier hs-var">currentSize</span></a></span><span>
+</span><a href="#local-6989586621679138995"><span class="hs-identifier hs-var">genConstr</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138991"><span class="hs-identifier hs-var">currentSize</span></a></span><span>
 </span><span id="line-102"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138622"><span class="hs-identifier hs-var">genList</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138617"><span class="hs-identifier hs-var">currentSize</span></a></span><span>
+</span><a href="#local-6989586621679138996"><span class="hs-identifier hs-var">genList</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138991"><span class="hs-identifier hs-var">currentSize</span></a></span><span>
 </span><span id="line-103"></span><span>              </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138623"><span class="hs-identifier hs-var">genMap</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138616"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138617"><span class="hs-identifier hs-var">currentSize</span></a></span><span>
+</span><a href="#local-6989586621679138997"><span class="hs-identifier hs-var">genMap</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138990"><span class="hs-identifier hs-var">originalSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138991"><span class="hs-identifier hs-var">currentSize</span></a></span><span>
 </span><span id="line-104"></span><span>              </span><span class="hs-special">]</span><span>
-</span><span id="line-105"></span><span>      </span><span class="annot"><a href="#local-6989586621679138619"><span class="hs-identifier hs-type">genB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
-</span><span id="line-106"></span><span>      </span><span id="local-6989586621679138619"><span class="annot"><span class="annottext">genB :: Int -&gt; Gen Data
-</span><a href="#local-6989586621679138619"><span class="hs-identifier hs-var hs-var">genB</span></a></span></span><span> </span><span id="local-6989586621679138624"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138624"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Data
+</span><span id="line-105"></span><span>      </span><span class="annot"><a href="#local-6989586621679138993"><span class="hs-identifier hs-type">genB</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
+</span><span id="line-106"></span><span>      </span><span id="local-6989586621679138993"><span class="annot"><span class="annottext">genB :: Int -&gt; Gen Data
+</span><a href="#local-6989586621679138993"><span class="hs-identifier hs-var hs-var">genB</span></a></span></span><span> </span><span id="local-6989586621679138998"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679138998"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.B</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Data) -&gt; Gen ByteString -&gt; Gen Data
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen ByteString -&gt; Gen ByteString
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138624"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Gen ByteString
+</span><a href="#local-6989586621679138998"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Gen ByteString
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
-</span><span id="line-107"></span><span>      </span><span class="annot"><a href="#local-6989586621679138620"><span class="hs-identifier hs-type">genI</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
-</span><span id="line-108"></span><span>      </span><span id="local-6989586621679138620"><span class="annot"><span class="annottext">genI :: Int -&gt; Gen Data
-</span><a href="#local-6989586621679138620"><span class="hs-identifier hs-var hs-var">genI</span></a></span></span><span> </span><span id="local-6989586621679138626"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138626"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Data
+</span><span id="line-107"></span><span>      </span><span class="annot"><a href="#local-6989586621679138994"><span class="hs-identifier hs-type">genI</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
+</span><span id="line-108"></span><span>      </span><span id="local-6989586621679138994"><span class="annot"><span class="annottext">genI :: Int -&gt; Gen Data
+</span><a href="#local-6989586621679138994"><span class="hs-identifier hs-var hs-var">genI</span></a></span></span><span> </span><span id="local-6989586621679139000"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139000"><span class="hs-identifier hs-var">size</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.I</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Data) -&gt; Gen Integer -&gt; Gen Data
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Integer -&gt; Gen Integer
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138626"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Integer
+</span><a href="#local-6989586621679139000"><span class="hs-identifier hs-var">size</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Integer
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
-</span><span id="line-109"></span><span>      </span><span class="annot"><a href="#local-6989586621679138621"><span class="hs-identifier hs-type">genConstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
-</span><span id="line-110"></span><span>      </span><span id="local-6989586621679138621"><span class="annot"><span class="annottext">genConstr :: Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138621"><span class="hs-identifier hs-var hs-var">genConstr</span></a></span></span><span> </span><span id="local-6989586621679138628"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138628"><span class="hs-identifier hs-var">contentSize</span></a></span></span><span> </span><span id="local-6989586621679138629"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138629"><span class="hs-identifier hs-var">structureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-109"></span><span>      </span><span class="annot"><a href="#local-6989586621679138995"><span class="hs-identifier hs-type">genConstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
+</span><span id="line-110"></span><span>      </span><span id="local-6989586621679138995"><span class="annot"><span class="annottext">genConstr :: Int -&gt; Int -&gt; Gen Data
+</span><a href="#local-6989586621679138995"><span class="hs-identifier hs-var hs-var">genConstr</span></a></span></span><span> </span><span id="local-6989586621679139002"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139002"><span class="hs-identifier hs-var">contentSize</span></a></span></span><span> </span><span id="local-6989586621679139003"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139003"><span class="hs-identifier hs-var">structureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-111"></span><span>        </span><span class="annot"><span class="annottext">Integer -&gt; [Data] -&gt; Data
 </span><span class="hs-identifier hs-var">PLA.Constr</span></span><span>
 </span><span id="line-112"></span><span>          </span><span class="annot"><span class="annottext">(Integer -&gt; [Data] -&gt; Data) -&gt; Gen Integer -&gt; Gen ([Data] -&gt; Data)
@@ -250,7 +250,7 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Integer -&gt; Gen Integer
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138628"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NonNegative Integer -&gt; Integer
+</span><a href="#local-6989586621679139002"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NonNegative Integer -&gt; Integer
 forall a. NonNegative a -&gt; a
 </span><span class="hs-identifier hs-var">getNonNegative</span></span><span> </span><span class="annot"><span class="annottext">(NonNegative Integer -&gt; Integer)
 -&gt; Gen (NonNegative Integer) -&gt; Gen Integer
@@ -266,53 +266,53 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen [Data] -&gt; Gen [Data]
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138629"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen Data -&gt; Gen [Data]
+</span><a href="#local-6989586621679139003"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen Data -&gt; Gen [Data]
 forall a. Gen a -&gt; Gen [a]
 forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
 </span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">(Gen Data -&gt; Gen [Data]) -&gt; (Int -&gt; Gen Data) -&gt; Int -&gt; Gen [Data]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138615"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138628"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Gen [Data]) -&gt; Int -&gt; Gen [Data]
+</span><a href="#local-6989586621679138989"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139002"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Gen [Data]) -&gt; Int -&gt; Gen [Data]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138629"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679139003"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#quot"><span class="hs-operator hs-var">`quot`</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">)</span><span>
-</span><span id="line-114"></span><span>      </span><span class="annot"><a href="#local-6989586621679138622"><span class="hs-identifier hs-type">genList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
-</span><span id="line-115"></span><span>      </span><span id="local-6989586621679138622"><span class="annot"><span class="annottext">genList :: Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138622"><span class="hs-identifier hs-var hs-var">genList</span></a></span></span><span> </span><span id="local-6989586621679138632"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138632"><span class="hs-identifier hs-var">contentSize</span></a></span></span><span> </span><span id="local-6989586621679138633"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138633"><span class="hs-identifier hs-var">structureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-114"></span><span>      </span><span class="annot"><a href="#local-6989586621679138996"><span class="hs-identifier hs-type">genList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
+</span><span id="line-115"></span><span>      </span><span id="local-6989586621679138996"><span class="annot"><span class="annottext">genList :: Int -&gt; Int -&gt; Gen Data
+</span><a href="#local-6989586621679138996"><span class="hs-identifier hs-var hs-var">genList</span></a></span></span><span> </span><span id="local-6989586621679139006"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139006"><span class="hs-identifier hs-var">contentSize</span></a></span></span><span> </span><span id="local-6989586621679139007"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139007"><span class="hs-identifier hs-var">structureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-116"></span><span>        </span><span class="annot"><span class="annottext">[Data] -&gt; Data
 </span><span class="hs-identifier hs-var">PLA.List</span></span><span> </span><span class="annot"><span class="annottext">([Data] -&gt; Data) -&gt; Gen [Data] -&gt; Gen Data
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen [Data] -&gt; Gen [Data]
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138633"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen Data -&gt; Gen [Data]
+</span><a href="#local-6989586621679139007"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Gen Data -&gt; Gen [Data]
 forall a. Gen a -&gt; Gen [a]
 forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
 </span><span class="hs-identifier hs-var">liftArbitrary</span></span><span> </span><span class="annot"><span class="annottext">(Gen Data -&gt; Gen [Data]) -&gt; (Int -&gt; Gen Data) -&gt; Int -&gt; Gen [Data]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138615"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138632"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Gen [Data]) -&gt; Int -&gt; Gen [Data]
+</span><a href="#local-6989586621679138989"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139006"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Gen [Data]) -&gt; Int -&gt; Gen [Data]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138633"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679139007"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#quot"><span class="hs-operator hs-var">`quot`</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">)</span><span>
-</span><span id="line-117"></span><span>      </span><span class="annot"><a href="#local-6989586621679138623"><span class="hs-identifier hs-type">genMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
-</span><span id="line-118"></span><span>      </span><span id="local-6989586621679138623"><span class="annot"><span class="annottext">genMap :: Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138623"><span class="hs-identifier hs-var hs-var">genMap</span></a></span></span><span> </span><span id="local-6989586621679138635"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138635"><span class="hs-identifier hs-var">contentSize</span></a></span></span><span> </span><span id="local-6989586621679138636"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138636"><span class="hs-identifier hs-var">structureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-119"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679138637"><span class="annot"><span class="annottext">newStructureSize :: Int
-</span><a href="#local-6989586621679138637"><span class="hs-identifier hs-var hs-var">newStructureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138636"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span id="line-117"></span><span>      </span><span class="annot"><a href="#local-6989586621679138997"><span class="hs-identifier hs-type">genMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
+</span><span id="line-118"></span><span>      </span><span id="local-6989586621679138997"><span class="annot"><span class="annottext">genMap :: Int -&gt; Int -&gt; Gen Data
+</span><a href="#local-6989586621679138997"><span class="hs-identifier hs-var hs-var">genMap</span></a></span></span><span> </span><span id="local-6989586621679139009"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139009"><span class="hs-identifier hs-var">contentSize</span></a></span></span><span> </span><span id="local-6989586621679139010"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139010"><span class="hs-identifier hs-var">structureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-119"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679139011"><span class="annot"><span class="annottext">newStructureSize :: Int
+</span><a href="#local-6989586621679139011"><span class="hs-identifier hs-var hs-var">newStructureSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139010"><span class="hs-identifier hs-var">structureSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#quot"><span class="hs-operator hs-var">`quot`</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span>
@@ -324,7 +324,7 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 forall a. HasCallStack =&gt; Int -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">resize</span></span><span>
 </span><span id="line-122"></span><span>            </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138636"><span class="hs-identifier hs-var">structureSize</span></a></span><span>
+</span><a href="#local-6989586621679139010"><span class="hs-identifier hs-var">structureSize</span></a></span><span>
 </span><span id="line-123"></span><span>            </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Gen (Data, Data) -&gt; Gen [(Data, Data)]
 forall a. Gen a -&gt; Gen [a]
 forall (f :: Type -&gt; Type) a. Arbitrary1 f =&gt; Gen a -&gt; Gen (f a)
@@ -337,41 +337,41 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; Gen Data -&gt; Gen (Data -&gt; (Data, Data))
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138615"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138635"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138637"><span class="hs-identifier hs-var">newStructureSize</span></a></span><span>
+</span><a href="#local-6989586621679138989"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139009"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139011"><span class="hs-identifier hs-var">newStructureSize</span></a></span><span>
 </span><span id="line-126"></span><span>                  </span><span class="annot"><span class="annottext">Gen (Data -&gt; (Data, Data)) -&gt; Gen Data -&gt; Gen (Data, Data)
 forall a b. Gen (a -&gt; b) -&gt; Gen a -&gt; Gen b
 forall (f :: Type -&gt; Type) a b.
 Applicative f =&gt;
 f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Gen Data
-</span><a href="#local-6989586621679138615"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138635"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679138637"><span class="hs-identifier hs-var">newStructureSize</span></a></span><span>
+</span><a href="#local-6989586621679138989"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139009"><span class="hs-identifier hs-var">contentSize</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679139011"><span class="hs-identifier hs-var">newStructureSize</span></a></span><span>
 </span><span id="line-127"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-128"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-129"></span><span>  </span><span id="local-6989586621679138658"><span class="annot"><span class="annottext">shrink :: Data -&gt; [Data]
+</span><span id="line-129"></span><span>  </span><span id="local-6989586621679139032"><span class="annot"><span class="annottext">shrink :: Data -&gt; [Data]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-130"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.I</span></span><span> </span><span id="local-6989586621679138659"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138659"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Data
+</span><span id="line-130"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.I</span></span><span> </span><span id="local-6989586621679139033"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139033"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.I</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Data) -&gt; [Integer] -&gt; [Data]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Integer]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138659"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-131"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.B</span></span><span> </span><span id="local-6989586621679138660"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138660"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Data
+</span><a href="#local-6989586621679139033"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-131"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.B</span></span><span> </span><span id="local-6989586621679139034"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139034"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.B</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Data) -&gt; [ByteString] -&gt; [Data]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138660"><span class="hs-identifier hs-var">bs</span></a></span><span>
-</span><span id="line-132"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Constr</span></span><span> </span><span id="local-6989586621679138661"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138661"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679138662"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138662"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679139034"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-132"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Constr</span></span><span> </span><span id="local-6989586621679139035"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139035"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679139036"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139036"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-133"></span><span>      </span><span class="annot"><span class="annottext">Integer -&gt; [Data] -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.Constr</span></span><span>
 </span><span id="line-134"></span><span>        </span><span class="annot"><span class="annottext">(Integer -&gt; [Data] -&gt; Data) -&gt; [Integer] -&gt; [[Data] -&gt; Data]
@@ -397,7 +397,7 @@ forall a. a -&gt; NonNegative a
 </span><span class="hs-identifier hs-var">NonNegative</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; [Integer]) -&gt; Integer -&gt; [Integer]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138661"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679139035"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-135"></span><span>        </span><span class="annot"><span class="annottext">[[Data] -&gt; Data] -&gt; [[Data]] -&gt; [Data]
 forall a b. [a -&gt; b] -&gt; [a] -&gt; [b]
 forall (f :: Type -&gt; Type) a b.
@@ -406,31 +406,31 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; [[Data]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138662"><span class="hs-identifier hs-var">dats</span></a></span><span>
-</span><span id="line-136"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.List</span></span><span> </span><span id="local-6989586621679138663"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138663"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Data
+</span><a href="#local-6989586621679139036"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><span id="line-136"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.List</span></span><span> </span><span id="local-6989586621679139037"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139037"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.List</span></span><span> </span><span class="annot"><span class="annottext">([Data] -&gt; Data) -&gt; [[Data]] -&gt; [Data]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; [[Data]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138663"><span class="hs-identifier hs-var">ell</span></a></span><span>
-</span><span id="line-137"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Map</span></span><span> </span><span id="local-6989586621679138664"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138664"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Data
+</span><a href="#local-6989586621679139037"><span class="hs-identifier hs-var">ell</span></a></span><span>
+</span><span id="line-137"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Map</span></span><span> </span><span id="local-6989586621679139038"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621679139038"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.Map</span></span><span> </span><span class="annot"><span class="annottext">([(Data, Data)] -&gt; Data) -&gt; [[(Data, Data)]] -&gt; [Data]
 forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; [[(Data, Data)]]
 forall a. Arbitrary a =&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138664"><span class="hs-identifier hs-var">kvs</span></a></span><span>
+</span><a href="#local-6989586621679139038"><span class="hs-identifier hs-var">kvs</span></a></span><span>
 </span><span id="line-138"></span><span>
 </span><span id="line-139"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-140"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.Data</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-141"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-142"></span><span>  </span><span id="local-6989586621679138684"><span class="annot"><span class="annottext">coarbitrary :: forall b. Data -&gt; Gen b -&gt; Gen b
+</span><span id="line-142"></span><span>  </span><span id="local-6989586621679139058"><span class="annot"><span class="annottext">coarbitrary :: forall b. Data -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-143"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.I</span></span><span> </span><span id="local-6989586621679138685"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138685"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><span id="line-143"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.I</span></span><span> </span><span id="local-6989586621679139059"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139059"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -439,9 +439,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b. Integer -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138685"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-144"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.B</span></span><span> </span><span id="local-6989586621679138686"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138686"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679139059"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-144"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.B</span></span><span> </span><span id="local-6989586621679139060"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139060"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -450,10 +450,10 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b. ByteString -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138686"><span class="hs-identifier hs-var">bs</span></a></span><span>
-</span><span id="line-145"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Constr</span></span><span> </span><span id="local-6989586621679138687"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138687"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679138688"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138688"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679139060"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-145"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Constr</span></span><span> </span><span id="local-6989586621679139061"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139061"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679139062"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139062"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -462,15 +462,15 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b. Integer -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138687"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679139061"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Gen b -&gt; Gen b
 forall b. [Data] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138688"><span class="hs-identifier hs-var">dats</span></a></span><span>
-</span><span id="line-146"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.List</span></span><span> </span><span id="local-6989586621679138689"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138689"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679139062"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><span id="line-146"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.List</span></span><span> </span><span id="local-6989586621679139063"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139063"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -479,9 +479,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b. [Data] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138689"><span class="hs-identifier hs-var">ell</span></a></span><span>
-</span><span id="line-147"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Map</span></span><span> </span><span id="local-6989586621679138690"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138690"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
+</span><a href="#local-6989586621679139063"><span class="hs-identifier hs-var">ell</span></a></span><span>
+</span><span id="line-147"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLC.Map</span></span><span> </span><span id="local-6989586621679139064"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621679139064"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen b -&gt; Gen b
 forall n a. Integral n =&gt; n -&gt; Gen a -&gt; Gen a
 </span><span class="hs-identifier hs-var">variant</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">4</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Gen b -&gt; Gen b) -&gt; (Gen b -&gt; Gen b) -&gt; Gen b -&gt; Gen b
@@ -490,12 +490,12 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall b. [(Data, Data)] -&gt; Gen b -&gt; Gen b
 forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
 </span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138690"><span class="hs-identifier hs-var">kvs</span></a></span><span>
+</span><a href="#local-6989586621679139064"><span class="hs-identifier hs-var">kvs</span></a></span><span>
 </span><span id="line-148"></span><span>
 </span><span id="line-149"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-150"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.Data</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-151"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-152"></span><span>  </span><span id="local-6989586621679138708"><span class="annot"><span class="annottext">function :: forall b. (Data -&gt; b) -&gt; Data :-&gt; b
+</span><span id="line-152"></span><span>  </span><span id="local-6989586621679139082"><span class="annot"><span class="annottext">function :: forall b. (Data -&gt; b) -&gt; Data :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Data
  -&gt; Either
       Integer
@@ -519,15 +519,15 @@ Function b =&gt;
      (Either
         ByteString
         (Either (Integer, [Data]) (Either [Data] [(Data, Data)])))
-</span><a href="#local-6989586621679138709"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679139083"><span class="hs-identifier hs-var">into</span></a></span><span> </span><span class="annot"><span class="annottext">Either
   Integer
   (Either
      ByteString
      (Either (Integer, [Data]) (Either [Data] [(Data, Data)])))
 -&gt; Data
-</span><a href="#local-6989586621679138710"><span class="hs-identifier hs-var">outOf</span></a></span><span>
+</span><a href="#local-6989586621679139084"><span class="hs-identifier hs-var">outOf</span></a></span><span>
 </span><span id="line-153"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-154"></span><span>      </span><span class="annot"><a href="#local-6989586621679138709"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-154"></span><span>      </span><span class="annot"><a href="#local-6989586621679139083"><span class="hs-identifier hs-type">into</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-155"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.Data</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-156"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
 </span><span id="line-157"></span><span>          </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
@@ -539,15 +539,15 @@ Function b =&gt;
 </span><span id="line-163"></span><span>                  </span><span class="hs-special">)</span><span>
 </span><span id="line-164"></span><span>              </span><span class="hs-special">)</span><span>
 </span><span id="line-165"></span><span>          </span><span class="hs-special">)</span><span>
-</span><span id="line-166"></span><span>      </span><span id="local-6989586621679138709"><span class="annot"><span class="annottext">into :: Data
+</span><span id="line-166"></span><span>      </span><span id="local-6989586621679139083"><span class="annot"><span class="annottext">into :: Data
 -&gt; Either
      Integer
      (Either
         ByteString
         (Either (Integer, [Data]) (Either [Data] [(Data, Data)])))
-</span><a href="#local-6989586621679138709"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-167"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.I</span></span><span> </span><span id="local-6989586621679138711"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138711"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139083"><span class="hs-identifier hs-var hs-var">into</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-167"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.I</span></span><span> </span><span id="local-6989586621679139085"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139085"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer
 -&gt; Either
      Integer
      (Either
@@ -555,9 +555,9 @@ Function b =&gt;
         (Either (Integer, [Data]) (Either [Data] [(Data, Data)])))
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138711"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-168"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.B</span></span><span> </span><span id="local-6989586621679138712"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138712"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679139085"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-168"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.B</span></span><span> </span><span id="local-6989586621679139086"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139086"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
   ByteString
   (Either (Integer, [Data]) (Either [Data] [(Data, Data)]))
 -&gt; Either
@@ -572,10 +572,10 @@ forall a b. b -&gt; Either a b
      (Either (Integer, [Data]) (Either [Data] [(Data, Data)]))
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138712"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-169"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.Constr</span></span><span> </span><span id="local-6989586621679138713"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138713"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679138714"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138714"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679139086"><span class="hs-identifier hs-var">bs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-169"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.Constr</span></span><span> </span><span id="local-6989586621679139087"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139087"><span class="hs-identifier hs-var">ix</span></a></span></span><span> </span><span id="local-6989586621679139088"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139088"><span class="hs-identifier hs-var">dats</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
   ByteString
   (Either (Integer, [Data]) (Either [Data] [(Data, Data)]))
 -&gt; Either
@@ -593,10 +593,10 @@ forall a b. b -&gt; Either a b
 -&gt; Either (Integer, [Data]) (Either [Data] [(Data, Data)])
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138713"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138714"><span class="hs-identifier hs-var">dats</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-170"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.List</span></span><span> </span><span id="local-6989586621679138715"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138715"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679139087"><span class="hs-identifier hs-var">ix</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139088"><span class="hs-identifier hs-var">dats</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-170"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.List</span></span><span> </span><span id="local-6989586621679139089"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139089"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
   ByteString
   (Either (Integer, [Data]) (Either [Data] [(Data, Data)]))
 -&gt; Either
@@ -616,9 +616,9 @@ forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Data] -&gt; Either [Data] [(Data, Data)]
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138715"><span class="hs-identifier hs-var">ell</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-171"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.Map</span></span><span> </span><span id="local-6989586621679138716"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138716"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679139089"><span class="hs-identifier hs-var">ell</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-171"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLC.Map</span></span><span> </span><span id="local-6989586621679139090"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621679139090"><span class="hs-identifier hs-var">kvs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Either
   ByteString
   (Either (Integer, [Data]) (Either [Data] [(Data, Data)]))
 -&gt; Either
@@ -638,8 +638,8 @@ forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Either [Data] [(Data, Data)]
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138716"><span class="hs-identifier hs-var">kvs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-172"></span><span>      </span><span class="annot"><a href="#local-6989586621679138710"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><a href="#local-6989586621679139090"><span class="hs-identifier hs-var">kvs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-172"></span><span>      </span><span class="annot"><a href="#local-6989586621679139084"><span class="hs-identifier hs-type">outOf</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-173"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
 </span><span id="line-174"></span><span>          </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-175"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span>
@@ -651,33 +651,33 @@ forall a b. b -&gt; Either a b
 </span><span id="line-181"></span><span>              </span><span class="hs-special">)</span><span>
 </span><span id="line-182"></span><span>          </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-183"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">PLA.Data</span></span><span>
-</span><span id="line-184"></span><span>      </span><span id="local-6989586621679138710"><span class="annot"><span class="annottext">outOf :: Either
+</span><span id="line-184"></span><span>      </span><span id="local-6989586621679139084"><span class="annot"><span class="annottext">outOf :: Either
   Integer
   (Either
      ByteString
      (Either (Integer, [Data]) (Either [Data] [(Data, Data)])))
 -&gt; Data
-</span><a href="#local-6989586621679138710"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-185"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679138717"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138717"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Data
+</span><a href="#local-6989586621679139084"><span class="hs-identifier hs-var hs-var">outOf</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-185"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679139091"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139091"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.I</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138717"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-186"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679138718"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138718"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Data
+</span><a href="#local-6989586621679139091"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-186"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679139092"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679139092"><span class="hs-identifier hs-var">bs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.B</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679138718"><span class="hs-identifier hs-var">bs</span></a></span><span>
-</span><span id="line-187"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679138719"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138719"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679138720"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138720"><span class="hs-identifier hs-var">dats</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Data] -&gt; Data
+</span><a href="#local-6989586621679139092"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-187"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679139093"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679139093"><span class="hs-identifier hs-var">ix</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679139094"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139094"><span class="hs-identifier hs-var">dats</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Data] -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.Constr</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679138719"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138720"><span class="hs-identifier hs-var">dats</span></a></span><span>
-</span><span id="line-188"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679138721"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138721"><span class="hs-identifier hs-var">ell</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Data
+</span><a href="#local-6989586621679139093"><span class="hs-identifier hs-var">ix</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139094"><span class="hs-identifier hs-var">dats</span></a></span><span>
+</span><span id="line-188"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679139095"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679139095"><span class="hs-identifier hs-var">ell</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.List</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621679138721"><span class="hs-identifier hs-var">ell</span></a></span><span>
-</span><span id="line-189"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679138722"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138722"><span class="hs-identifier hs-var">kvs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Data
+</span><a href="#local-6989586621679139095"><span class="hs-identifier hs-var">ell</span></a></span><span>
+</span><span id="line-189"></span><span>        </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679139096"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621679139096"><span class="hs-identifier hs-var">kvs</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Data
 </span><span class="hs-identifier hs-var">PLC.Map</span></span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621679138722"><span class="hs-identifier hs-var">kvs</span></a></span><span>
+</span><a href="#local-6989586621679139096"><span class="hs-identifier hs-var">kvs</span></a></span><span>
 </span><span id="line-190"></span></pre></body></html>

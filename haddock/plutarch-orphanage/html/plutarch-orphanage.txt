@@ -53,6 +53,39 @@ data UnsortedAssocMap k v
 
 -- | @since WIP
 getUnsortedAssocMap :: UnsortedAssocMap k v -> Map k v
+
+-- | Similar to <a>NonAdaValue</a>, but also does not have nonzero amounts.
+--   
+--   <h1>Note</h1>
+--   
+--   This is designed to act as a modifier, and thus, we expose the
+--   constructor even though it preserves invariants. If you use the
+--   constructor directly, be <i>very</i> certain that the Value being
+--   wrapped satisfies the invariants described above: failing to do so
+--   means all guarantees of this type are off the table.
+data MintValue
+
+getMintValue :: MintValue -> Value
+
+-- | A <a>Value</a> suitable for <a>TxOut</a>. Specifically:
+--   
+--   <ul>
+--   <li>The <a>Value</a> is sorted by both keys (meaning
+--   <a>CurrencySymbol</a> and <a>TokenName</a>);</li>
+--   <li>There exists an Ada amount; and</li>
+--   <li>All amounts are positive.</li>
+--   </ul>
+--   
+--   <h1>Note</h1>
+--   
+--   This is designed to act as a modifier, and thus, we expose the
+--   constructor even though it preserves invariants. If you use the
+--   constructor directly, be <i>very</i> certain that the Value being
+--   wrapped satisfies the invariants described above: failing to do so
+--   means all guarantees of this type are off the table.
+data UTxOValue
+
+getUtxoValue :: UTxOValue -> Value
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V1.Contexts.ScriptContext
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V1.Contexts.ScriptContext
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V1.Contexts.ScriptContext
@@ -122,6 +155,23 @@ instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Data.Data
 instance Test.QuickCheck.Function.Function PlutusCore.Data.Data
 
 module PlutusLedgerApi.V3.Orphans
+
+-- | A <a>Value</a> that contains only non-zero amounts but does not have
+--   zero Ada entry
+--   
+--   <h1>Note</h1>
+--   
+--   This is designed to act as a modifier, and thus, we expose the
+--   constructor even though it preserves invariants. If you use the
+--   constructor directly, be <i>very</i> certain that the Value being
+--   wrapped satisfies the invariants described above: failing to do so
+--   means all guarantees of this type are off the table.
+--   
+--   @since WIP
+data MintValue
+
+-- | @since WIP
+getMintValue :: MintValue -> Value
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.HotCommitteeCredential

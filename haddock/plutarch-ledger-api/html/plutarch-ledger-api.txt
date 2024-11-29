@@ -540,6 +540,7 @@ pconstantPositiveSingleton :: forall (s :: S). (forall (s' :: S). Term s' PCurre
 --   same contents and a proof that all amounts in it are positive, or
 --   error.
 passertPositive :: forall (kg :: KeyGuarantees) (ag :: AmountGuarantees) (s :: S). Term s (PValue kg ag :--> PValue kg 'Positive)
+passertNonZero :: forall (kg :: KeyGuarantees) (ag :: AmountGuarantees). forall (s :: S). Term s (PValue kg ag :--> PValue kg 'NonZero)
 
 -- | Assert the value is properly sorted and normalized.
 passertSorted :: forall (anyKey :: KeyGuarantees) (anyAmount :: AmountGuarantees) (s :: S). Term s (PValue anyKey anyAmount :--> PValue 'Sorted 'NonZero)
