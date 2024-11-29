@@ -39,6 +39,7 @@ import Plutarch.Builtin.Bool (PBool, pif, pif', (#&&), (#||))
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.IsData
 import Plutarch.Internal.Lift (
@@ -63,6 +64,7 @@ import Plutarch.Internal.PlutusType (
   pcon,
   pmatch,
  )
+import Plutarch.Internal.Show (PShow (pshow'), pshow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -93,8 +95,6 @@ import Plutarch.List (
   pshowList,
   ptail,
  )
-import Plutarch.Show (PShow (pshow'), pshow)
-import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)

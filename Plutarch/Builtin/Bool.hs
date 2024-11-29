@@ -23,7 +23,7 @@ module Plutarch.Builtin.Bool (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.PLam (plam)
+import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
   PDelayed,
   S,

@@ -18,6 +18,7 @@ module Plutarch.TermCont (
 
 import Data.Kind (Type)
 import Plutarch.Builtin.Bool (PBool, pif)
+import Plutarch.Builtin.String (PString)
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,
@@ -30,7 +31,6 @@ import Plutarch.Internal.TermCont (TermCont, tcont)
 import Plutarch.Internal.TermCont qualified as TC
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Reducible (Reduce)
-import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfo, ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
 

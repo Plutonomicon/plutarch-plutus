@@ -28,6 +28,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Show (PShow, pshow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -40,7 +41,6 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Internal.TermCont (runTermCont, tcont)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (PShow, pshow)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Prettyprinter (Pretty)

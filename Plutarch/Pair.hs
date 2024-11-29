@@ -4,8 +4,8 @@ import GHC.Generics (Generic)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (PType, S, Term)
-import Plutarch.Show (PShow)
 
 {- |
   Plutus encoding of Pairs.

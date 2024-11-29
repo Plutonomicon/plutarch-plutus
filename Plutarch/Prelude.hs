@@ -254,11 +254,16 @@ import Plutarch.Builtin.ByteString (
   pxorBS,
   pzeroesBS,
  )
+import Plutarch.Builtin.Crypto (psha2_256, psha3_256, pverifySignature)
 import Plutarch.Builtin.Integer (
   PInteger,
  )
+import Plutarch.Builtin.String (
+  PString,
+  pdecodeUtf8,
+  pencodeUtf8,
+ )
 import Plutarch.Builtin.Unit (PUnit (PUnit))
-import Plutarch.Crypto (psha2_256, psha3_256, pverifySignature)
 import Plutarch.DataRepr (
   PDataRecord,
   PDataSum,
@@ -298,6 +303,10 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Quantification (PForall (PForall))
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (
+  PShow,
+  pshow,
+ )
 import Plutarch.Internal.Term (
   ClosedTerm,
   PDelayed,
@@ -358,15 +367,6 @@ import Plutarch.Rational (
   pdenominator,
   pnumerator,
   pround,
- )
-import Plutarch.Show (
-  PShow,
-  pshow,
- )
-import Plutarch.String (
-  PString,
-  pdecodeUtf8,
-  pencodeUtf8,
  )
 import Plutarch.TermCont (
   TermCont (TermCont),

@@ -71,6 +71,7 @@ import Plutarch.Builtin (
  )
 import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
@@ -97,6 +98,7 @@ import Plutarch.Internal.PlutusType (
   pcon,
   pmatch,
  )
+import Plutarch.Internal.Show (PShow (pshow'))
 import Plutarch.Internal.Term (
   Dig,
   Term,
@@ -119,8 +121,6 @@ import Plutarch.Internal.TermCont (
  )
 import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Reducible (NoReduce, Reduce)
-import Plutarch.Show (PShow (pshow'))
-import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (
   PSubtype',

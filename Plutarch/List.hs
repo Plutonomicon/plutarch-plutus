@@ -59,6 +59,7 @@ import GHC.Generics (Generic)
 import Numeric.Natural (Natural)
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.Integer
+import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike
@@ -74,6 +75,7 @@ import Plutarch.Internal.PlutusType (
 import Plutarch.Internal.ScottEncoding (
   PlutusTypeScott,
  )
+import Plutarch.Internal.Show (PShow (pshow'), pshow)
 import Plutarch.Internal.Term (
   PDelayed,
   S,
@@ -89,8 +91,6 @@ import Plutarch.Internal.Term (
 import Plutarch.Internal.Trace
 import Plutarch.Maybe
 import Plutarch.Pair
-import Plutarch.Show (PShow (pshow'), pshow)
-import Plutarch.String (PString)
 
 data PList (a :: S -> Type) (s :: S)
   = PSCons (Term s a) (Term s (PList a))

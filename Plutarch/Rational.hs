@@ -57,6 +57,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow, pshow, pshow')
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -74,7 +75,6 @@ import Plutarch.Internal.TermCont (
 import Plutarch.List (phead, pnil, ptail)
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
-import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)

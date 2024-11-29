@@ -27,11 +27,13 @@ module Plutarch.Internal.PlutusType (
   PContravariant',
 ) where
 
+import Plutarch.Builtin.BLS
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Opaque
+import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
 
 import Data.Kind (Constraint, Type)
@@ -231,7 +233,19 @@ deriving anyclass instance PlutusType PByte
 instance DerivePlutusType PLogicOpSemantics where type DPTStrat _ = PlutusTypeNewtype
 deriving anyclass instance PlutusType PLogicOpSemantics
 
+instance DerivePlutusType PString where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PString
+
 instance PlutusType PUnit where
   type PInner PUnit = PUnit
   pcon' PUnit = punit
   pmatch' x f = plet x \_ -> f PUnit
+
+instance DerivePlutusType PBuiltinBLS12_381_G1_Element where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PBuiltinBLS12_381_G1_Element
+
+instance DerivePlutusType PBuiltinBLS12_381_G2_Element where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PBuiltinBLS12_381_G2_Element
+
+instance DerivePlutusType PBuiltinBLS12_381_MlResult where type DPTStrat _ = PlutusTypeNewtype
+deriving anyclass instance PlutusType PBuiltinBLS12_381_MlResult

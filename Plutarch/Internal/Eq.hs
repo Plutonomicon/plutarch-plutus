@@ -5,10 +5,12 @@ module Plutarch.Internal.Eq (
   PEq (..),
 ) where
 
+import Plutarch.Builtin.BLS
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
 
 import Data.Kind (Type)
@@ -151,3 +153,12 @@ deriving anyclass instance PEq PLogicOpSemantics
 
 instance PEq PUnit where
   x #== y = plet x \_ -> plet y \_ -> pcon PTrue
+
+instance PEq PString where
+  x #== y = punsafeBuiltin PLC.EqualsString # x # y
+
+instance PEq PBuiltinBLS12_381_G1_Element where
+  x #== y = punsafeBuiltin PLC.Bls12_381_G1_equal # x # y
+
+instance PEq PBuiltinBLS12_381_G2_Element where
+  x #== y = punsafeBuiltin PLC.Bls12_381_G2_equal # x # y

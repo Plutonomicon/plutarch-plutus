@@ -74,17 +74,18 @@ library
   import:          c
   exposed-modules:
     Plutarch.BitString
-    Plutarch.BLS
     Plutarch.Builtin
+    Plutarch.Builtin.BLS
     Plutarch.Builtin.Bool
     Plutarch.Builtin.ByteString
+    Plutarch.Builtin.Crypto
     Plutarch.Builtin.Data
     Plutarch.Builtin.Integer
     Plutarch.Builtin.Opaque
+    Plutarch.Builtin.String
     Plutarch.Builtin.Unit
     Plutarch.ByteString
     Plutarch.Convert
-    Plutarch.Crypto
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
@@ -111,6 +112,7 @@ library
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Show
     Plutarch.Internal.Term
     Plutarch.Internal.TermCont
     Plutarch.Internal.Trace

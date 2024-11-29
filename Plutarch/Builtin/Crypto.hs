@@ -1,4 +1,4 @@
-module Plutarch.Crypto (
+module Plutarch.Builtin.Crypto (
   -- ** from V1
   psha2_256,
   psha3_256,

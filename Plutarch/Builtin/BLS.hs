@@ -1,43 +1,11 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
-
-module Plutarch.BLS (
-  PBuiltinBLS12_381_G1_Element (..),
-  pbls12_381_G1_add,
-  pbls12_381_G1_scalarMul,
-  pbls12_381_G1_neg,
-  pbls12_381_G1_compress,
-  pbls12_381_G1_uncompress,
-  pbls12_381_G1_hashToGroup,
-  pbls12_381_G1_compressed_zero,
-  pbls12_381_G1_compressed_generator,
-  PBuiltinBLS12_381_G2_Element (..),
-  pbls12_381_G2_add,
-  pbls12_381_G2_scalarMul,
-  pbls12_381_G2_neg,
-  pbls12_381_G2_compress,
-  pbls12_381_G2_uncompress,
-  pbls12_381_G2_hashToGroup,
-  pbls12_381_G2_compressed_zero,
-  pbls12_381_G2_compressed_generator,
-  PBuiltinBLS12_381_MlResult (..),
-  pbls12_381_millerLoop,
-  pbls12_381_mulMlResult,
-  pbls12_381_finalVerify,
-) where
+module Plutarch.Builtin.BLS where
 
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (DeriveBuiltinPLiftable, PLiftable, PLifted (PLifted), pconstant)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
-import Plutarch.Internal.Term (Term, (#), (:-->))
-import Plutarch.Unsafe (punsafeBuiltin)
+import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Internal.Term (Term, punsafeBuiltin, punsafeConstantInternal, (#), (:-->))
 import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
@@ -49,20 +17,6 @@ import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
 -}
 newtype PBuiltinBLS12_381_G1_Element s = PBuiltinBLS12_381_G1_Element (Term s POpaque)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
--- | @since 1.9.0
-instance DerivePlutusType PBuiltinBLS12_381_G1_Element where type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PBuiltinBLS12_381_G1_Element BLS12_381.G1.Element)
-  instance
-    PLiftable PBuiltinBLS12_381_G1_Element
-
--- | @since 1.9.0
-instance PEq PBuiltinBLS12_381_G1_Element where
-  x #== y = punsafeBuiltin PLC.Bls12_381_G1_equal # x # y
 
 {- | Add two points on the BLS12-381 G1 curve.
 
@@ -111,32 +65,18 @@ pbls12_381_G1_hashToGroup = punsafeBuiltin PLC.Bls12_381_G1_hashToGroup
 @since 1.9.0
 -}
 pbls12_381_G1_compressed_zero :: Term s PByteString
-pbls12_381_G1_compressed_zero = pconstant BLS12_381.G1.compressed_zero
+pbls12_381_G1_compressed_zero = punsafeConstantInternal $ PLC.someValue BLS12_381.G1.compressed_zero
 
 {- | The compressed representation of the generator point on the BLS12-381 G1 curve.
 
 @since 1.9.0
 -}
 pbls12_381_G1_compressed_generator :: Term s PByteString
-pbls12_381_G1_compressed_generator = pconstant BLS12_381.G1.compressed_generator
+pbls12_381_G1_compressed_generator = punsafeConstantInternal $ PLC.someValue BLS12_381.G1.compressed_generator
 
 -- | @since 1.9.0
 newtype PBuiltinBLS12_381_G2_Element s = PBuiltinBLS12_381_G2_Element (Term s POpaque)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
--- | @since 1.9.0
-instance DerivePlutusType PBuiltinBLS12_381_G2_Element where type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PBuiltinBLS12_381_G2_Element BLS12_381.G2.Element)
-  instance
-    PLiftable PBuiltinBLS12_381_G2_Element
-
--- | @since 1.9.0
-instance PEq PBuiltinBLS12_381_G2_Element where
-  x #== y = punsafeBuiltin PLC.Bls12_381_G2_equal # x # y
 
 {- | Add two points on the BLS12-381 G2 curve.
 
@@ -185,14 +125,14 @@ pbls12_381_G2_hashToGroup = punsafeBuiltin PLC.Bls12_381_G2_hashToGroup
 @since 1.9.0
 -}
 pbls12_381_G2_compressed_zero :: Term s PByteString
-pbls12_381_G2_compressed_zero = pconstant BLS12_381.G2.compressed_zero
+pbls12_381_G2_compressed_zero = punsafeConstantInternal $ PLC.someValue BLS12_381.G2.compressed_zero
 
 {- | The compressed representation of the generator point on the BLS12-381 G2 curve.
 
 @since 1.9.0
 -}
 pbls12_381_G2_compressed_generator :: Term s PByteString
-pbls12_381_G2_compressed_generator = pconstant BLS12_381.G2.compressed_generator
+pbls12_381_G2_compressed_generator = punsafeConstantInternal $ PLC.someValue BLS12_381.G2.compressed_generator
 
 {- | Represents the result of a Miller loop operation in BLS12-381 pairing.
 
@@ -200,16 +140,6 @@ pbls12_381_G2_compressed_generator = pconstant BLS12_381.G2.compressed_generator
 -}
 newtype PBuiltinBLS12_381_MlResult s = PBuiltinBLS12_381_MlResult (Term s POpaque)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
--- | @since 1.9.0
-instance DerivePlutusType PBuiltinBLS12_381_MlResult where type DPTStrat _ = PlutusTypeNewtype
-
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PBuiltinBLS12_381_MlResult BLS12_381.Pairing.MlResult)
-  instance
-    PLiftable PBuiltinBLS12_381_MlResult
 
 {- | Perform a Miller loop operation on a G1 and G2 element.
 

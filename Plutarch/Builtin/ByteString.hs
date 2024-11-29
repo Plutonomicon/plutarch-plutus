@@ -7,7 +7,7 @@ import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Opaque
 import Plutarch.Internal.Term
 
-import Plutarch.Internal.PLam
+import {-# SOURCE #-} Plutarch.Internal.PLam
 
 import Data.ByteString qualified as BS
 import GHC.Generics (Generic)

@@ -35,10 +35,12 @@ module Plutarch.Internal.Lift (
   LiftError (..),
 ) where
 
+import Plutarch.Builtin.BLS
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer
+import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
 
 import Data.ByteString (ByteString)
@@ -67,6 +69,9 @@ import Plutarch.TryFrom (PSubtype)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant)
+import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
+import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
+import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
 import PlutusTx qualified as PTx
 import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString), BuiltinData (BuiltinData))
 import Universe (Includes)
@@ -515,3 +520,26 @@ deriving via
   (DeriveBuiltinPLiftable PUnit ())
   instance
     PLiftable PUnit
+
+deriving via
+  (DeriveBuiltinPLiftable PString Text)
+  instance
+    PLiftable PString
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinBLS12_381_G1_Element BLS12_381.G1.Element)
+  instance
+    PLiftable PBuiltinBLS12_381_G1_Element
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinBLS12_381_G2_Element BLS12_381.G2.Element)
+  instance
+    PLiftable PBuiltinBLS12_381_G2_Element
+
+-- | @since WIP
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinBLS12_381_MlResult BLS12_381.Pairing.MlResult)
+  instance
+    PLiftable PBuiltinBLS12_381_MlResult
