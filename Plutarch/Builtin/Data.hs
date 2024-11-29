@@ -75,14 +75,6 @@ data PBuiltinList (a :: S -> Type) (s :: S)
   = PCons (Term s a) (Term s (PBuiltinList a))
   | PNil
 
--- -- instance
--- --   ( PShow a
--- --   , PLC.Contains PLC.DefaultUni (PlutusRepr a)
--- --   ) =>
--- --   PShow (PBuiltinList a)
--- --   where
--- --   pshow' _ x = pshowList @PBuiltinList @a # x
-
 pheadBuiltin :: Term s (PBuiltinList a :--> a)
 pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 
