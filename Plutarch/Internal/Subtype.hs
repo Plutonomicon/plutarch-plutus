@@ -1,25 +1,14 @@
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE UndecidableSuperClasses #-}
 
-module Plutarch.TryFrom (
-  PTryFrom (..),
-  ptryFrom,
-  PSubtypeRelation (..),
-  PSubtype,
-  PSubtype',
-  pupcast,
-  pupcastF,
-  pdowncastF,
-) where
+module Plutarch.Internal.Subtype where
 
-import Data.Kind (Constraint)
-import Data.Proxy (Proxy (Proxy))
-import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
-import Plutarch.Internal.PlutusType (PContravariant, PCovariant, PInner)
-import Plutarch.Internal.Term (PType, Term, punsafeCoerce)
-import Plutarch.Internal.Witness (witness)
-import Plutarch.Reducible (Reduce)
+import Data.Kind
+import Data.Proxy
+import GHC.TypeError
+
+import Plutarch.Internal.PlutusType
+import Plutarch.Internal.Term
+import Plutarch.Internal.Witness
 
 data PSubtypeRelation
   = PSubtypeRelation
@@ -60,22 +49,6 @@ type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: 
 
 type family PSubtype (a :: PType) (b :: PType) :: Constraint where
   PSubtype a b = (PSubtype' a b ~ 'PSubtypeRelation, PSubtypeHelper a b (PSubtype' a b))
-
-{- |
-@PTryFrom a b@ represents a subtyping relationship between @a@ and @b@,
-and a way to go from @a@ to @b@.
-Laws:
-- @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
--}
-class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
-  type PTryFromExcess a b :: PType
-  type PTryFromExcess a b = PTryFromExcess a (PInner b)
-  ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
-  default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
-  ptryFrom' opq f = ptryFrom @(PInner b) @a opq \(inn, exc) -> f (punsafeCoerce inn, exc)
-
-ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
-ptryFrom = ptryFrom'
 
 pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 pupcast = let _ = witness (Proxy @(PSubtype a b)) in punsafeCoerce

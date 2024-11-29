@@ -40,9 +40,9 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Internal.TermCont (runTermCont, tcont)
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary,

@@ -83,9 +83,9 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
+import Plutarch.Internal.TryFrom (PTryFrom)
 import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 

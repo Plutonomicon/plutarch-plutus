@@ -55,6 +55,7 @@ import {-# SOURCE #-} Plutarch.Internal.IsData
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Other (POpaque, popaque)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.Subtype (PSubtype)
 import Plutarch.Internal.Term (
   Config (Tracing),
   LogLevel (LogInfo),
@@ -65,7 +66,6 @@ import Plutarch.Internal.Term (
   punsafeConstantInternal,
  )
 import Plutarch.Script (Script (Script))
-import Plutarch.TryFrom (PSubtype)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (BuiltinError, readKnownConstant)

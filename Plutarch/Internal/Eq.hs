@@ -9,7 +9,7 @@ import Plutarch.Builtin.BLS
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Integer
 import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
 
@@ -102,7 +102,7 @@ pands ts' =
 -- | @since WIP
 instance PEq PInteger where
   {-# INLINEABLE (#==) #-}
-  x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
+  x #== y = peqInteger # x # y
 
 instance PEq PData where
   x #== y = punsafeBuiltin PLC.EqualsData # x # y

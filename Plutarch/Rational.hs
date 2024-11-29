@@ -72,11 +72,11 @@ import Plutarch.Internal.TermCont (
   tcont,
   unTermCont,
  )
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.List (phead, pnil, ptail)
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusTx.Ratio qualified as PlutusTx
 

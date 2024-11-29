@@ -6,7 +6,7 @@ module Plutarch.Internal.Ord (
 
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Unit
 
 import Data.Kind (Type)
@@ -115,9 +115,9 @@ instance POrd PBool where
 
 instance POrd PInteger where
   {-# INLINEABLE (#<=) #-}
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
+  x #<= y = pleInteger # x # y
   {-# INLINEABLE (#<) #-}
-  x #< y = punsafeBuiltin PLC.LessThanInteger # x # y
+  x #< y = pltInteger # x # y
 
 -- | @since WIP
 instance POrd PByteString where

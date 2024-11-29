@@ -16,3 +16,4 @@ instance PIsData PByteString
 
 pfromData :: PIsData a => Term s (PAsData a) -> Term s a
 pdata :: PIsData a => Term s a -> Term s (PAsData a)
+pforgetData :: forall s a. Term s (PAsData a) -> Term s PData

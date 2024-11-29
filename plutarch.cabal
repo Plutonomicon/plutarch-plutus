@@ -113,9 +113,11 @@ library
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
     Plutarch.Internal.Show
+    Plutarch.Internal.Subtype
     Plutarch.Internal.Term
     Plutarch.Internal.TermCont
     Plutarch.Internal.Trace
+    Plutarch.Internal.TryFrom
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.Witness
     Plutarch.List
@@ -137,7 +139,6 @@ library
     Plutarch.String
     Plutarch.TermCont
     Plutarch.Trace
-    Plutarch.TryFrom
     Plutarch.Unsafe
 
   build-depends:

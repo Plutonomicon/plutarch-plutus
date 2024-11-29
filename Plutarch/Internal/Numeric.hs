@@ -7,10 +7,8 @@ module Plutarch.Internal.Numeric (
 
 import Data.Kind (Type)
 import Plutarch.Builtin.Bool (pcond, pif)
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq ((#==))
+import Plutarch.Builtin.Integer
 import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner)
@@ -63,13 +61,13 @@ infix 6 #*
 
 instance PNum PInteger where
   {-# INLINEABLE (#+) #-}
-  x #+ y = punsafeBuiltin PLC.AddInteger # x # y
+  x #+ y = paddInteger # x # y
   {-# INLINEABLE (#-) #-}
-  x #- y = punsafeBuiltin PLC.SubtractInteger # x # y
+  x #- y = psubtractInteger # x # y
   {-# INLINEABLE (#*) #-}
-  x #* y = punsafeBuiltin PLC.MultiplyInteger # x # y
+  x #* y = pmultiplyInteger # x # y
   {-# INLINEABLE pabs #-}
-  pabs = phoistAcyclic $ plam \x -> pif (x #<= -1) (negate x) x
+  pabs = phoistAcyclic $ plam \x -> pif (pleInteger # x # -1) (negate x) x
   {-# INLINEABLE pnegate #-}
   pnegate = phoistAcyclic $ plam (0 #-)
 
@@ -79,8 +77,8 @@ instance PNum PInteger where
   {-# INLINEABLE psignum #-}
   psignum = plam $ \x ->
     pcond
-      [ (x #== 0, 0)
-      , (x #<= 0, -1)
+      [ (peqInteger # x # 0, 0)
+      , (pleInteger # x # 0, -1)
       ]
       1
   {-# INLINEABLE pfromInteger #-}

@@ -14,13 +14,13 @@ import Data.Proxy (Proxy (Proxy))
 
 import Plutarch.Internal.Eq
 import Plutarch.Internal.ListLike
-import Plutarch.Internal.Numeric
+
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam
 import Plutarch.Internal.PlutusType
+import Plutarch.Internal.Subtype
 import Plutarch.Internal.Term
 import Plutarch.Internal.Witness (witness)
-import Plutarch.TryFrom
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 
 import PlutusCore qualified as PLC
@@ -89,7 +89,7 @@ instance PIsData PBool where
     phoistAcyclic (plam toBool) # pforgetData x
     where
       toBool :: Term s PData -> Term s PBool
-      toBool d = pfstBuiltin # (pasConstr # d) #== 1
+      toBool d = pfstBuiltin # (pasConstr # d) #== pconstantInteger 1
 
   pdataImpl x =
     phoistAcyclic (plam toData) # x
@@ -97,7 +97,7 @@ instance PIsData PBool where
       toData :: Term s PBool -> Term s PData
       toData b =
         punsafeBuiltin PLC.ConstrData
-          # (pif' # b # 1 # (0 :: Term s PInteger))
+          # (pif' # b # pconstantInteger 1 # (pconstantInteger 0 :: Term s PInteger))
           # nil
 
       nil :: Term s (PBuiltinList PData)
@@ -115,7 +115,7 @@ instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
       target = f # punsafeCoerce x
       f = phoistAcyclic $
         plam $
-          \pair -> pconstrBuiltin # 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
+          \pair -> pconstrBuiltin # pconstantInteger 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
 
 instance PIsData (PBuiltinPair PData PData) where
   pfromDataImpl = pfromDataImpl @(PBuiltinPair PData PData) . punsafeCoerce
@@ -137,3 +137,7 @@ instance PIsData PByteString where
 instance PIsData PUnit where
   pfromDataImpl _ = punit
   pdataImpl _ = punsafeConstantInternal $ PLC.someValue (PTx.Constr 0 [])
+
+instance forall (a :: S -> Type). PSubtype PData a => PIsData (PBuiltinList a) where
+  pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
+  pdataImpl x = plistData # pupcastF @PData @a (Proxy @PBuiltinList) x

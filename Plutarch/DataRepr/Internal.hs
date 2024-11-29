@@ -119,10 +119,7 @@ import Plutarch.Internal.TermCont (
   tcont,
   unTermCont,
  )
-import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.Reducible (NoReduce, Reduce)
-import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (
+import Plutarch.Internal.TryFrom (
   PSubtype',
   PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
   PTryFrom,
@@ -131,6 +128,9 @@ import Plutarch.TryFrom (
   ptryFrom',
   pupcast,
  )
+import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
+import Plutarch.Reducible (NoReduce, Reduce)
+import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is

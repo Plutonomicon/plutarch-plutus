@@ -186,7 +186,6 @@ module Plutarch.Prelude (
 
   -- * Conversion between Plutarch terms and Haskell types
   pconstant,
-  pconstantData,
   plift,
   PLiftable (AsHaskell, PlutusRepr),
   PLifted (PLifted),
@@ -218,7 +217,6 @@ import Plutarch.Builtin (
   PBuiltinPair,
   PData,
   PIsData,
-  pconstantData,
   pdata,
   pfromData,
   pfstBuiltin,
@@ -323,6 +321,12 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
+import Plutarch.Internal.TryFrom (
+  PSubtype,
+  PTryFrom,
+  ptryFrom,
+  pupcast,
+ )
 import Plutarch.List (
   PElemConstraint,
   PIsListLike,
@@ -397,11 +401,5 @@ import Plutarch.Trace (
   ptraceInfoIfTrue,
   ptraceInfoShowId,
   ptraceShowId,
- )
-import Plutarch.TryFrom (
-  PSubtype,
-  PTryFrom,
-  ptryFrom,
-  pupcast,
  )
 import Prelude ()

@@ -29,10 +29,10 @@ import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.Term (S, Term, plet)
 import Plutarch.Internal.TermCont (TermCont, tcont)
 import Plutarch.Internal.TermCont qualified as TC
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Reducible (Reduce)
 import Plutarch.Trace (ptraceInfo, ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)
