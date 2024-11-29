@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module PlutusLedgerApi.V3.Orphans () where
+module PlutusLedgerApi.V3.Orphans (MintValue, getMintValue) where
 
 import Control.Monad (guard)
 import Data.Coerce (coerce)
@@ -14,6 +14,7 @@ import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value ()
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusLedgerApi.V3 qualified as PLA
+import PlutusLedgerApi.V3.Orphans.Value (MintValue, getMintValue)
 import PlutusLedgerApi.V3.Orphans.Value qualified as Value
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins

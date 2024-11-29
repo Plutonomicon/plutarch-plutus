@@ -38,6 +38,7 @@ module Plutarch.LedgerApi.Value (
 
   -- ** Transformation
   passertPositive,
+  passertNonZero,
   passertSorted,
   pforgetPositive,
   pforgetSorted,
@@ -275,8 +276,7 @@ pltNonZero ::
   Term s (PValue 'AssocMap.Sorted 'NonZero) ->
   Term s (PValue 'AssocMap.Sorted 'NonZero) ->
   Term s PBool
-pltNonZero t1 t2 =
-  phoistAcyclic (pcheckBinRel #$ phoistAcyclic $ plam (#<)) # t1 # t2
+pltNonZero t1 t2 = pleqNonZero t1 t2 #&& (pnot # (t1 #== t2))
 
 {- | Mimics the @leq@ operation on @plutus-ledger-api@'s @Value@.
 

@@ -1,6 +1,13 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module PlutusLedgerApi.V1.Orphans (UnsortedAssocMap, getUnsortedAssocMap) where
+module PlutusLedgerApi.V1.Orphans (
+  UnsortedAssocMap,
+  getUnsortedAssocMap,
+  MintValue,
+  getMintValue,
+  UTxOValue,
+  getUtxoValue,
+) where
 
 import PlutusLedgerApi.Orphans.Common (UnsortedAssocMap, getUnsortedAssocMap)
 import PlutusLedgerApi.V1 qualified as PLA
@@ -13,7 +20,7 @@ import PlutusLedgerApi.V1.Orphans.Interval ()
 import PlutusLedgerApi.V1.Orphans.Scripts ()
 import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Tx ()
-import PlutusLedgerApi.V1.Orphans.Value ()
+import PlutusLedgerApi.V1.Orphans.Value (MintValue, UTxOValue, getMintValue, getUtxoValue)
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   CoArbitrary (coarbitrary),
