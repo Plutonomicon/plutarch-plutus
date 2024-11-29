@@ -13,16 +13,11 @@ module Plutarch.Rational (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin (
-  PAsData,
-  PBuiltinList,
-  PData,
-  pdata,
-  ppairDataBuiltin,
- )
 import Plutarch.Builtin.Bool (pcond, pif)
+import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.IsData (PIsData, pdata)
 import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,

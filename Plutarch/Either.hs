@@ -25,7 +25,6 @@ module Plutarch.Either (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin ()
 
 -- TODO: Kill this, this is for PShow (PAsData a)
 
