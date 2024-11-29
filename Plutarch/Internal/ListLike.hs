@@ -6,8 +6,8 @@ import Plutarch.Builtin.Bool
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer
 
+import Plutarch.Internal.Fix (pfix)
 import {-# SOURCE #-} Plutarch.Internal.Lift
-import Plutarch.Internal.Other
 import Plutarch.Internal.PLam
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Term

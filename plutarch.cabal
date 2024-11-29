@@ -98,6 +98,7 @@ library
     Plutarch.FFI
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
+    Plutarch.Internal.Fix
     Plutarch.Internal.Generic
     Plutarch.Internal.IsData
     Plutarch.Internal.Lift

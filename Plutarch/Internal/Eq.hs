@@ -26,11 +26,11 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import {-# SOURCE #-} Plutarch.Internal.IsData
 import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike
-import Plutarch.Internal.Other
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PlutusType,

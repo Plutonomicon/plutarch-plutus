@@ -40,6 +40,7 @@ import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Opaque (POpaque, popaque)
 import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
 
@@ -53,7 +54,6 @@ import GHC.Generics (Generic)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import {-# SOURCE #-} Plutarch.Internal.IsData
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, popaque)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Internal.Subtype (PSubtype)
 import Plutarch.Internal.Term (

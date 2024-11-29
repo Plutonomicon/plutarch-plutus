@@ -12,6 +12,7 @@ import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer
 import Plutarch.Builtin.String
+import Plutarch.Builtin.Unit
 
 import Data.Char (intToDigit)
 import Data.Kind
@@ -39,13 +40,13 @@ import Generics.SOP (
 import Generics.SOP.GGP (gdatatypeInfo)
 
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.IsData
 import Plutarch.Internal.Lift (PlutusRepr, pconstant)
 import Plutarch.Internal.ListLike
 import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
-import Plutarch.Internal.Other
 import Plutarch.Internal.PLam
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Term
@@ -155,6 +156,9 @@ pshowAndErr :: Term s a -> Term s b
 pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif' # punsafeCoerce x # x # x) # 0
 
 --------------------------------------------------------------------------------
+
+instance PShow PUnit where
+  pshow' _ _ = "()"
 
 instance PShow PString where
   pshow' _ x = pshowStr # x

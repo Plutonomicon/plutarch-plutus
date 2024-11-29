@@ -422,7 +422,7 @@ pisDataLaws tyName =
       testProperty coerceName
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: AsHaskell a) ->
-          plift (precompileTerm (plam (pfromData . punsafeCoerce @_ @_ @(PAsData a))) # pconstant @PData (Plutus.toData x)) `prettyEquals` x
+          plift (precompileTerm (plam (pfromData . punsafeCoerce @(PAsData a))) # pconstant @PData (Plutus.toData x)) `prettyEquals` x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> tyName <> ") . pconstant . toData = id"
 

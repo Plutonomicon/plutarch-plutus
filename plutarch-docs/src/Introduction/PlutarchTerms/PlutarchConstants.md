@@ -46,7 +46,7 @@ You can also directly create a [`PAsData`](./../../Types/PAsData.md) term using 
 ```haskell
 -- | A Plutarch level boolean encoded as `Data`.
 xd :: Term s (PAsData PBool)
-xd = pconstantData True
+xd = pconstant @(PAsData PBool) True
 ```
 
 ## Dynamic building of constant `Term`s with `pcon`

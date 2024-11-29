@@ -85,8 +85,7 @@ module Plutarch.Prelude (
   pintegerToByte,
 
   -- *** Other
-
-  --  phexByteStr,
+  phexByteStr,
 
   -- * String and string utilities
   PString,
@@ -239,6 +238,7 @@ import Plutarch.Builtin.ByteString (
   pbyteToInteger,
   pcomplementBS,
   pconsBS,
+  phexByteStr,
   --  phexByteStr,
   pindexBS,
   pintegerToByte,
@@ -256,6 +256,7 @@ import Plutarch.Builtin.Crypto (psha2_256, psha3_256, pverifySignature)
 import Plutarch.Builtin.Integer (
   PInteger,
  )
+import Plutarch.Builtin.Opaque (POpaque (POpaque), popaque)
 import Plutarch.Builtin.String (
   PString,
   pdecodeUtf8,
@@ -276,6 +277,7 @@ import Plutarch.Either (
   PEither (PLeft, PRight),
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Lift (
   PLiftable (AsHaskell, PlutusRepr),
   PLifted (PLifted),
@@ -289,7 +291,7 @@ import Plutarch.Internal.Ord (
   (#>),
   (#>=),
  )
-import Plutarch.Internal.Other (POpaque (POpaque), pfix, popaque, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (pinl, plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),

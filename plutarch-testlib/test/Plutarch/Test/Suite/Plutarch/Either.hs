@@ -5,7 +5,6 @@ import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
-import Plutarch.TryFrom ()
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree

@@ -50,9 +50,9 @@ import Plutarch.Builtin (
 import Plutarch.DataRepr (PDataFields)
 import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 

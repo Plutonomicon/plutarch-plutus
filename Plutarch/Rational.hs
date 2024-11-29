@@ -17,6 +17,7 @@ import Plutarch.Builtin.Bool (pcond, pif)
 import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData, pdata)
 import Plutarch.Internal.Lift (
   PLiftable (
@@ -43,7 +44,7 @@ import Plutarch.Internal.Numeric (
 import Plutarch.Internal.Ord (
   POrd (pmax, pmin, (#<), (#<=)),
  )
-import Plutarch.Internal.Other (pfix, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),

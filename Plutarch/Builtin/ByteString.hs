@@ -5,12 +5,17 @@ module Plutarch.Builtin.ByteString where
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Opaque
+
+import Plutarch.Internal.Fix
 import Plutarch.Internal.Term
 
-import {-# SOURCE #-} Plutarch.Internal.PLam
-
 import Data.ByteString qualified as BS
+import Data.Char (toLower)
+import Data.Word (Word8)
 import GHC.Generics (Generic)
+import GHC.Stack (HasCallStack)
+
+import {-# SOURCE #-} Plutarch.Internal.PLam
 
 import PlutusCore qualified as PLC
 
@@ -176,3 +181,60 @@ index. Will crash if given an out-of-bounds index.
 -}
 pindexBS :: Term s (PByteString :--> PInteger :--> PByte)
 pindexBS = punsafeBuiltin PLC.IndexByteString
+
+{- | Verify that the given predicate holds for every byte in the argument.
+
+@since WIP
+-}
+pallBS ::
+  forall (s :: S).
+  Term s ((PByte :--> PBool) :--> PByteString :--> PBool)
+pallBS = phoistAcyclic $ plam $ \p bs ->
+  plet (plengthBS # bs) $ \len ->
+    go p len bs # pconstantInteger 0
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PByte :--> PBool) ->
+      Term s' PInteger ->
+      Term s' PByteString ->
+      Term s' (PInteger :--> PBool)
+    go p len bs = pfix #$ plam $ \self ix ->
+      pif
+        (pltInteger # ix # len)
+        ( pif
+            (p #$ pindexBS # bs # ix)
+            (self #$ paddInteger # ix # pconstantInteger 1)
+            pfalse
+        )
+        ptrue
+
+-- | Interpret a hex string as a PByteString.
+phexByteStr :: HasCallStack => String -> Term s PByteString
+phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
+  where
+    f "" = []
+    f [_] = error "UnevenLength"
+    f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
+
+hexDigitToWord8 :: HasCallStack => Char -> Word8
+hexDigitToWord8 = f . toLower
+  where
+    f :: Char -> Word8
+    f '0' = 0
+    f '1' = 1
+    f '2' = 2
+    f '3' = 3
+    f '4' = 4
+    f '5' = 5
+    f '6' = 6
+    f '7' = 7
+    f '8' = 8
+    f '9' = 9
+    f 'a' = 10
+    f 'b' = 11
+    f 'c' = 12
+    f 'd' = 13
+    f 'e' = 14
+    f 'f' = 15
+    f c = error ("InvalidHexDigit " <> [c])

@@ -61,10 +61,10 @@ import Plutarch.Builtin.Bool
 import Plutarch.Builtin.Integer
 import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike
 import Plutarch.Internal.Ord
-import Plutarch.Internal.Other (pfix)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),

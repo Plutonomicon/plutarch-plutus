@@ -32,10 +32,12 @@ module Plutarch.Builtin (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Data
+import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData
 import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
-import Plutarch.Internal.Other (POpaque, pfix, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PCovariant,

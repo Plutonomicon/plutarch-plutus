@@ -56,19 +56,19 @@ tests =
             ]
         , goldenGroup
             "member"
-            [ goldenEval "[b,c], a < b" (pmember # pconstantData 1 # i3)
-            , goldenEval "[b,c], a = b" (pmember # pconstantData 2 # i3)
-            , goldenEval "[b,c], a > b, a < c" (pmember # pconstantData 3 # i3)
-            , goldenEval "[b,c], a = c" (pmember # pconstantData 4 # i3)
-            , goldenEval "[b,c], a > c" (pmember # pconstantData 5 # i3)
+            [ goldenEval "[b,c], a < b" (pmember # pconstant @(PAsData PInteger) 1 # i3)
+            , goldenEval "[b,c], a = b" (pmember # pconstant @(PAsData PInteger) 2 # i3)
+            , goldenEval "[b,c], a > b, a < c" (pmember # pconstant @(PAsData PInteger) 3 # i3)
+            , goldenEval "[b,c], a = c" (pmember # pconstant @(PAsData PInteger) 4 # i3)
+            , goldenEval "[b,c], a > c" (pmember # pconstant @(PAsData PInteger) 5 # i3)
             ]
         , let theHull :: Term s (PInterval PInteger)
-              theHull = phull # (psingleton # pconstantData 3) # (psingleton # pconstantData 5)
+              theHull = phull # (psingleton # pconstant @(PAsData PInteger) 3) # (psingleton # pconstant @(PAsData PInteger) 5)
            in goldenGroup
                 "hull"
                 [ goldenEval "hull 3 5 contains 3 5" (pcontains # theHull # i2)
-                , goldenEval "2 not member of hull 3 5" (pmember # pconstantData 2 # theHull)
-                , goldenEval "6 not member of hull 3 5" (pmember # pconstantData 6 # theHull)
+                , goldenEval "2 not member of hull 3 5" (pmember # pconstant @(PAsData PInteger) 2 # theHull)
+                , goldenEval "6 not member of hull 3 5" (pmember # pconstant @(PAsData PInteger) 6 # theHull)
                 ]
         , goldenGroup
             "intersection"
@@ -168,7 +168,7 @@ checkMember a b c = actual == expected
     i :: Term s (PInterval PInteger)
     i = mkInterval b c
 
-    actual = plift $ precompileTerm pmember # pconstantData a # i
+    actual = plift $ precompileTerm pmember # pconstant @(PAsData PInteger) a # i
     expected = (min b c <= a) && (a <= max b c)
 
 pcontains' :: ClosedTerm (PInterval PInteger :--> PInterval PInteger :--> PBool)
@@ -223,7 +223,7 @@ checkUnboundedUpperContains :: Integer -> Integer -> Integer -> Bool
 checkUnboundedUpperContains a b c = actual == expected
   where
     i1 :: Term s (PInterval PInteger)
-    i1 = pfrom # pconstantData a
+    i1 = pfrom # pconstant @(PAsData PInteger) a
     i2 :: Term s (PInterval PInteger)
     i2 = mkInterval b c
 
@@ -238,7 +238,7 @@ checkUnboundedLowerContains :: Integer -> Integer -> Integer -> Bool
 checkUnboundedLowerContains a b c = actual == expected
   where
     i1 :: Term s (PInterval PInteger)
-    i1 = pto # pconstantData a
+    i1 = pto # pconstant @(PAsData PInteger) a
     i2 :: Term s (PInterval PInteger)
     i2 = mkInterval b c
 
@@ -276,7 +276,7 @@ checkAfter a b c = actual == expected
     actual = plift actual'
 
 mkInterval :: forall s. Integer -> Integer -> Term s (PInterval PInteger)
-mkInterval a' b' = pinterval # pconstantData a # pconstantData b
+mkInterval a' b' = pinterval # pconstant @(PAsData PInteger) a # pconstant @(PAsData PInteger) b
   where
     a = min a' b'
     b = max a' b'

@@ -522,7 +522,7 @@ pclosedInterval ::
     )
 pclosedInterval = phoistAcyclic $
   plam $ \start end ->
-    let closure = pconstantData True
+    let closure = pconstant @(PAsData PBool) True
         upper =
           pcon $
             PUpperBound $
