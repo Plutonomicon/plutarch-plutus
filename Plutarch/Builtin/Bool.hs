@@ -18,15 +18,22 @@ module Plutarch.Builtin.Bool (
   pand',
   por',
   pcond,
+  ptrue,
+  pfalse,
 ) where
 
 import Data.Kind (Type)
+import Plutarch.Builtin.Data
+import {-# SOURCE #-} Plutarch.Builtin.Integer
+import Plutarch.Internal.Eq
+import Plutarch.Internal.IsData
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable,
   PLifted (PLifted),
   pconstant,
  )
+import Plutarch.Internal.Ord
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PlutusType (PInner, pcon', pmatch'),
@@ -40,8 +47,10 @@ import Plutarch.Internal.Term (
   pdelay,
   pforce,
   phoistAcyclic,
+  plet,
   punsafeBuiltin,
   (#),
+  (#$),
   (:-->),
  )
 import PlutusCore qualified as PLC
@@ -55,6 +64,20 @@ data PBool (s :: S) = PTrue | PFalse
     ( -- | @since WIP
       Show
     )
+
+instance PEq PBool where
+  {-# INLINEABLE (#==) #-}
+  x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
+
+instance POrd PBool where
+  {-# INLINEABLE (#<) #-}
+  x #< y = pif' # x # pconstant False # y
+  {-# INLINEABLE (#<=) #-}
+  x #<= y = pif' # x # y # pconstant True
+  {-# INLINEABLE pmin #-}
+  pmin x y = pand' # x # y
+  {-# INLINEABLE pmax #-}
+  pmax x y = por' # x # y
 
 -- | @since WIP
 deriving via
@@ -72,6 +95,25 @@ instance PlutusType PBool where
       PFalse -> False
   {-# INLINEABLE pmatch' #-}
   pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+
+instance PIsData PBool where
+  pfromDataImpl x =
+    phoistAcyclic (plam toBool) # pforgetData x
+    where
+      toBool :: Term s PData -> Term s PBool
+      toBool d = pfstBuiltin # (punsafeBuiltin PLC.UnConstrData # d) #== 1
+
+  pdataImpl x =
+    phoistAcyclic (plam toData) # x
+    where
+      toData :: Term s PBool -> Term s PData
+      toData b =
+        punsafeBuiltin PLC.ConstrData
+          # (pif' # b # 1 # (0 :: Term s PInteger))
+          # nil
+
+      nil :: Term s (PBuiltinList PData)
+      nil = pnil
 
 -- | @since WIP
 pbuiltinIfThenElse ::
@@ -180,3 +222,9 @@ pcond ::
 pcond conds lastResort = case conds of
   [] -> lastResort
   (cond, action) : conds' -> pif cond action (pcond conds' lastResort)
+
+ptrue :: Term s PBool
+ptrue = pconstant True
+
+pfalse :: Term s PBool
+ptrue = pconstant False

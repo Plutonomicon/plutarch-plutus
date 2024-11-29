@@ -1,139 +1,44 @@
--- | Scott-encoded lists and ListLike typeclass
-module Plutarch.List (
-  PList (..),
-  PListLike (..),
-  PIsListLike,
-  pconvertLists,
-  pshowList,
-
-  -- * Comparison
-  plistEquals,
-
-  -- * Query
-  pelem,
-  plength,
-  ptryIndex,
-  pdrop,
-  pfind,
-  pelemAt,
-  (#!!),
-
-  -- * Construction
-  psingleton,
-
-  -- * Deconstruction
-  puncons,
-  ptryUncons,
-
-  -- * Combine
-  pconcat,
-  pzipWith,
-  pzipWith',
-  pzip,
-
-  -- * Traversals
-  pmap,
-  pfilter,
-
-  -- * Catamorphisms
-  precList,
-  pfoldr,
-  pfoldr',
-  pfoldrLazy,
-  pfoldl,
-  pfoldl',
-
-  -- * Special Folds
-  pall,
-  pany,
-
-  -- * Modification
-  preverse,
-
-  -- * Predicates
-  pcheckSorted,
-) where
+module Plutarch.Internal.List where
 
 import Data.Kind (Constraint, Type)
-import GHC.Generics (Generic)
-import Numeric.Natural (Natural)
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, (#&&), (#||))
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.List
-import Plutarch.Internal.Ord (POrd, (#<), (#<=))
-import Plutarch.Internal.Other (pfix)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.ScottEncoding (
-  PlutusTypeScott,
- )
-import Plutarch.Internal.Term (
-  PDelayed,
-  S,
-  Term,
-  pdelay,
-  perror,
-  phoistAcyclic,
-  plet,
-  (#),
-  (#$),
-  (:-->),
- )
-import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Pair (PPair (PPair))
-import Plutarch.Show (PShow (pshow'), pshow)
-import Plutarch.String (PString)
-import Plutarch.Trace (ptraceInfoError)
 
-data PList (a :: S -> Type) (s :: S)
-  = PSCons (Term s a) (Term s (PList a))
-  | PSNil
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
+import {-# SOURCE #-} Plutarch.Builtin.Bool
+import {-# SOURCE #-} Plutarch.Builtin.Integer
+import Plutarch.Internal.PLam
+import Plutarch.Internal.Term
 
-instance DerivePlutusType (PList a) where
-  type DPTStrat _ = PlutusTypeScott
+-- | 'PIsListLike list a' constraints 'list' be a 'PListLike' with valid element type, 'a'.
+type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
-instance PShow a => PShow (PList a) where
-  pshow' _ x = pshowList @PList @a # x
+-- | Plutarch types that behave like lists.
+class PListLike (list :: (S -> Type) -> S -> Type) where
+  type PElemConstraint list (a :: S -> Type) :: Constraint
 
-pshowList :: forall list a s. (PShow a, PIsListLike list a) => Term s (list a :--> PString)
-pshowList =
-  phoistAcyclic $
-    plam $ \list ->
-      "[" <> pshowList' @list @a # list <> "]"
+  -- | Canonical eliminator for list-likes.
+  pelimList ::
+    PElemConstraint list a =>
+    (Term s a -> Term s (list a) -> Term s r) ->
+    Term s r ->
+    Term s (list a) ->
+    Term s r
 
-pshowList' :: forall list a s. (PShow a, PIsListLike list a) => Term s (list a :--> PString)
-pshowList' =
-  phoistAcyclic $
-    precList
-      ( \self x xs ->
-          pelimList
-            (\_ _ -> pshow x <> ", " <> self # xs)
-            (pshow x)
-            xs
-      )
-      (const "")
+  -- | Cons an element onto an existing list.
+  pcons :: PElemConstraint list a => Term s (a :--> list a :--> list a)
 
-instance PEq a => PEq (PList a) where
-  (#==) xs ys = plistEquals # xs # ys
+  -- | The empty list
+  pnil :: PElemConstraint list a => Term s (list a)
 
---------------------------------------------------------------------------------
+  -- | Return the first element of a list. Partial, throws an error upon encountering an empty list.
+  phead :: PElemConstraint list a => Term s (list a :--> a)
+  phead = phoistAcyclic $ plam $ pelimList const perror
 
-instance PListLike PList where
-  type PElemConstraint PList _ = ()
-  pelimList match_cons match_nil ls = pmatch ls $ \case
-    PSCons x xs -> match_cons x xs
-    PSNil -> match_nil
-  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PSCons x xs)
-  pnil = pcon PSNil
+  -- | Take the tail of a list, meaning drop its head. Partial, throws an error upon encountering an empty list.
+  ptail :: PElemConstraint list a => Term s (list a :--> list a)
+  ptail = phoistAcyclic $ plam $ pelimList (\_ xs -> xs) perror
+
+  -- | / O(1) /. Check if a list is empty
+  pnull :: PElemConstraint list a => Term s (list a :--> PBool)
+  pnull = phoistAcyclic $ plam $ pelimList (\_ _ -> pfalse) ptrue
 
 -- | / O(n) /. Convert from any ListLike to any ListLike, provided both lists' element constraints are met.
 pconvertLists ::

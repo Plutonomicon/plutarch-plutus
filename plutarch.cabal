@@ -68,6 +68,7 @@ common c
     -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
     -Wno-operator-whitespace -fprint-equality-relations
     -fprint-explicit-kinds -fprint-explicit-foralls
+    -Wno-missing-export-lists
 
 library
   import:          c
@@ -76,6 +77,7 @@ library
     Plutarch.BLS
     Plutarch.Builtin
     Plutarch.Builtin.Bool
+    Plutarch.Builtin.Data
     Plutarch.Builtin.Integer
     Plutarch.ByteString
     Plutarch.Convert
@@ -93,7 +95,9 @@ library
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Generic
+    Plutarch.Internal.IsData
     Plutarch.Internal.Lift
+    Plutarch.Internal.List
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord

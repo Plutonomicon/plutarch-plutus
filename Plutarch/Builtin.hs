@@ -459,11 +459,11 @@ newtype Helper2 f a s = Helper2 (Term s (PAsData (f a)))
 instance DerivePlutusType (Helper2 f a) where type DPTStrat _ = PlutusTypeNewtype
 
 instance PIsData PInteger where
-  pfromDataImpl x = pasInt # pforgetData x
+  pfromDataImpl x = punsafeBuiltin PLC.UnIData # pforgetData x
   pdataImpl x = punsafeBuiltin PLC.IData # x
 
 instance PIsData PByteString where
-  pfromDataImpl x = pasByteStr # pforgetData x
+  pfromDataImpl x = punsafeBuiltin PLC.BData # pforgetData x
   pdataImpl x = punsafeBuiltin PLC.BData # x
 
 {- |
@@ -476,7 +476,7 @@ instance PIsData PBool where
     phoistAcyclic (plam toBool) # pforgetData x
     where
       toBool :: Term s PData -> Term s PBool
-      toBool d = pfstBuiltin # (pasConstr # d) #== 1
+      toBool d = pfstBuiltin # (punsafeBuiltin PLC.UnConstrData # d) #== (1 :: Term s PInteger)
 
   pdataImpl x =
     phoistAcyclic (plam toData) # x

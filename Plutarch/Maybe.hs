@@ -23,7 +23,7 @@ module Plutarch.Maybe (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool)
-import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,
@@ -52,6 +52,7 @@ import Plutarch.Internal.Term (
   S,
   Term,
   phoistAcyclic,
+  plet,
   (#),
   (:-->),
  )
@@ -64,7 +65,19 @@ data PMaybe (a :: S -> Type) (s :: S)
   = PJust (Term s a)
   | PNothing
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, PShow)
+  deriving anyclass (PlutusType, PShow)
+
+instance PEq a => PEq (PMaybe a) where
+  a #== b = plet a $ \a' -> plet b $ \b' ->
+    pmatch a' $ \case
+      PNothing ->
+        pmatch b' $ \case
+          PNothing -> pconstant True
+          PJust _ -> pconstant False
+      PJust a'' ->
+        pmatch b' $ \case
+          PNothing -> pconstant False
+          PJust b'' -> a'' #== b''
 
 instance DerivePlutusType (PMaybe a) where type DPTStrat _ = PlutusTypeScott
 

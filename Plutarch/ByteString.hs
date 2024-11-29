@@ -46,6 +46,7 @@ import GHC.Stack (HasCallStack)
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, (#||))
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.IsData
 import Plutarch.Internal.Lift (
   DeriveBuiltinPLiftable,
   PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
@@ -107,6 +108,10 @@ instance Semigroup (Term s PByteString) where
 
 instance Monoid (Term s PByteString) where
   mempty = pconstant BS.empty
+
+instance PIsData PByteString where
+  pfromDataImpl x = punsafeBuiltin PLC.UnBData # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.BData # x
 
 {- | A Plutarch-level representation of bytes.
 

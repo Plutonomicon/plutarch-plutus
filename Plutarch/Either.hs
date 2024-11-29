@@ -93,7 +93,19 @@ data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLeft (Term s a)
   | PRight (Term s b)
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, PShow)
+  deriving anyclass (PlutusType, PShow)
+
+instance (PEq a, PEq b) => PEq (PEither a b) where
+  a #== b = plet a $ \a' -> plet b $ \b' ->
+    pmatch a' $ \case
+      PLeft l1 ->
+        pmatch b' $ \case
+          PLeft l2 -> l1 #== l2
+          PRight _ -> pconstant False
+      PRight r1 ->
+        pmatch b' $ \case
+          PLeft _ -> pconstant False
+          PRight r2 -> r1 #== r2
 
 instance DerivePlutusType (PEither a b) where
   type DPTStrat _ = PlutusTypeScott

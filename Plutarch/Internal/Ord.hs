@@ -5,19 +5,15 @@ module Plutarch.Internal.Ord (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (PBool, pand', pif', por')
-import Plutarch.Builtin.Integer (PInteger)
+import {-# SOURCE #-} Plutarch.Builtin.Bool (PBool, pif')
 import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
   S,
   Term,
-  punsafeBuiltin,
   (#),
  )
-import PlutusCore qualified as PLC
 
 {- | Total ordering relation.
 
@@ -97,19 +93,3 @@ infix 4 #>
 x #>= y = y #<= x
 
 infix 4 #>=
-
-instance POrd PBool where
-  {-# INLINEABLE (#<) #-}
-  x #< y = pif' # x # pconstant False # y
-  {-# INLINEABLE (#<=) #-}
-  x #<= y = pif' # x # y # pconstant True
-  {-# INLINEABLE pmin #-}
-  pmin x y = pand' # x # y
-  {-# INLINEABLE pmax #-}
-  pmax x y = por' # x # y
-
-instance POrd PInteger where
-  {-# INLINEABLE (#<=) #-}
-  x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
-  {-# INLINEABLE (#<) #-}
-  x #< y = punsafeBuiltin PLC.LessThanInteger # x # y

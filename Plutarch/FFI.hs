@@ -95,7 +95,7 @@ data PTxMaybe (a :: PType) (s :: S)
   = PTxJust (Term s a)
   | PTxNothing
   deriving stock (Generic)
-  deriving anyclass (SOP.Generic, SOP.HasDatatypeInfo, PEq, PShow)
+  deriving anyclass (SOP.Generic, SOP.HasDatatypeInfo, PShow)
 
 instance PEq a => PEq (PTxList a) where
   (#==) xs ys = plistEquals # xs # ys
