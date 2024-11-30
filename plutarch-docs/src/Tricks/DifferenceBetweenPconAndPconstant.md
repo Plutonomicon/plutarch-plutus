@@ -5,7 +5,6 @@
 ```haskell
 module Plutarch.Docs.DifferencePconPconstant () where
 import Plutarch.Prelude
-import Plutarch.Internal.PlutusType (PlutusType(pcon', pmatch'))
 ```
 
 </p>

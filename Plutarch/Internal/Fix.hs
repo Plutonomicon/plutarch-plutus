@@ -1,6 +1,6 @@
 module Plutarch.Internal.Fix (pfix) where
 
-import Plutarch.Builtin.Opaque
+import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Term
 
 {- |

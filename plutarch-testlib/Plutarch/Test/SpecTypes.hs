@@ -4,8 +4,6 @@
 -- | Dummy types used in tests
 module Plutarch.Test.SpecTypes (Triplet (..), PTriplet (..)) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.Prelude
 import PlutusTx qualified
 import Prettyprinter (Pretty (pretty), (<+>))

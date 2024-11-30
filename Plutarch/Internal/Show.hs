@@ -7,38 +7,7 @@ module Plutarch.Internal.Show (
   pshowList,
 ) where
 
-import Plutarch.Builtin.Bool (PBool, pif, pif')
-import Plutarch.Builtin.ByteString (
-  PByte,
-  PByteString,
-  pbyteToInteger,
-  pconsBS,
-  pindexBS,
-  pintegerToByte,
-  plengthBS,
-  psliceBS,
- )
-import Plutarch.Builtin.Data (
-  PAsData,
-  PBuiltinList,
-  PBuiltinPair,
-  PData,
-  pasByteStr,
-  pasConstr,
-  pasInt,
-  pasList,
-  pasMap,
-  pchooseData,
-  pfstBuiltin,
-  psndBuiltin,
- )
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.String (
-  PString,
-  pdecodeUtf8,
-  pencodeUtf8,
- )
-import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Builtin
 
 import Data.Char (intToDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))

@@ -27,31 +27,7 @@ module Plutarch.Internal.PlutusType (
   PContravariant',
 ) where
 
-import Plutarch.Builtin.BLS (
-  PBuiltinBLS12_381_G1_Element,
-  PBuiltinBLS12_381_G2_Element,
-  PBuiltinBLS12_381_MlResult,
- )
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pfalse, pif', ptrue)
-import Plutarch.Builtin.ByteString (
-  PByte,
-  PByteString,
-  PLogicOpSemantics,
- )
-import Plutarch.Builtin.Data (
-  PAsData (PAsData),
-  PBuiltinList (PCons, PNil),
-  PBuiltinPair (PBuiltinPair),
-  PData (PData),
-  pchooseListBuiltin,
-  pconsBuiltin,
-  pheadBuiltin,
-  ptailBuiltin,
- )
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.Opaque (POpaque (POpaque))
-import Plutarch.Builtin.String (PString)
-import Plutarch.Builtin.Unit (PUnit (PUnit), punit)
+import Plutarch.Builtin
 
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))

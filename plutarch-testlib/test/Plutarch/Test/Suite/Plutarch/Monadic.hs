@@ -9,7 +9,6 @@ import Plutarch.LedgerApi.V1 (
   PCredential,
   PStakingCredential,
  )
-import Plutarch.List (pconvertLists)
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, plutarchGolden)

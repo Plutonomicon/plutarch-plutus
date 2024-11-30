@@ -1,7 +1,6 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (tests) where
 
 import Data.Bifunctor (bimap)
-import Plutarch.Internal.Numeric ((#+), (#-))
 import Plutarch.LedgerApi.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)

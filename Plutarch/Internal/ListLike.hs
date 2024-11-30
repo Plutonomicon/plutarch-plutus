@@ -30,25 +30,7 @@ module Plutarch.Internal.ListLike (
 
 import Data.Kind (Constraint, Type)
 
-import Plutarch.Builtin.Bool (
-  PBool,
-  pfalse,
-  pif,
-  ptrue,
-  (#&&),
-  (#||),
- )
-import Plutarch.Builtin.Data (
-  PBuiltinList (PCons, PNil),
-  pheadBuiltin,
-  pnullBuiltin,
-  ptailBuiltin,
- )
-import Plutarch.Builtin.Integer (
-  PInteger,
-  paddInteger,
-  pconstantInteger,
- )
+import Plutarch.Builtin
 
 import Plutarch.Internal.Fix (pfix)
 import {-# SOURCE #-} Plutarch.Internal.Lift (PlutusRepr)

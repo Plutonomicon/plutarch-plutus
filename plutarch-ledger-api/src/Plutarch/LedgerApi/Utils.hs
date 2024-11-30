@@ -41,7 +41,6 @@ module Plutarch.LedgerApi.Utils (
 ) where
 
 import Data.Bifunctor (first)
-import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)

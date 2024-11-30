@@ -85,6 +85,7 @@ library
     Plutarch.Builtin.String
     Plutarch.Builtin.Unit
     Plutarch.Convert
+    Plutarch.DataNewtype
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
@@ -95,6 +96,7 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.FFI
+    Plutarch.Internal
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Fix

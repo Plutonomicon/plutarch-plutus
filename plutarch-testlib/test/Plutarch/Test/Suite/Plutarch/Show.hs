@@ -2,7 +2,6 @@ module Plutarch.Test.Suite.Plutarch.Show (tests) where
 
 import Data.String (IsString (fromString))
 import Plutarch.Internal.Show (pshowAndErr)
-import Plutarch.List (pconvertLists)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)

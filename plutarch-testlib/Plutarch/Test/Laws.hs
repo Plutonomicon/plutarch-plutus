@@ -17,12 +17,6 @@ module Plutarch.Test.Laws (
 ) where
 
 import Control.Applicative ((<|>))
-import Plutarch.Builtin (pforgetData)
-import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
-import Plutarch.Internal.Lift (PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr))
-import Plutarch.Internal.Numeric (
-  PNum (pabs, pnegate, psignum, (#*), (#+), (#-)),
- )
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Positive (PPositive, Positive)
 import Plutarch.Prelude

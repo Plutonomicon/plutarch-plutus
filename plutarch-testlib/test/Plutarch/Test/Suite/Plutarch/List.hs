@@ -2,7 +2,6 @@ module Plutarch.Test.Suite.Plutarch.List (tests, integerList) where
 
 import Data.List (find)
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
-import Plutarch.List (pcheckSorted, pconvertLists, pfoldl', preverse)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent)
@@ -106,7 +105,7 @@ tests =
             , testEvalEqual
                 "reversing a non-singleton"
                 (preverse # pconstant @(PBuiltinList PInteger) ([1, 2] :: [Integer]))
-                (pconstant ([2, 1] :: [Integer]))
+                (pconstant @(PBuiltinList PInteger) ([2, 1] :: [Integer]))
             ]
         , testGroup
             "pcheckSorted"

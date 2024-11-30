@@ -16,46 +16,7 @@ module Plutarch.List (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, ptrue, (#&&))
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.ListLike (
-  PElemConstraint,
-  PIsListLike,
-  PListLike,
-  pcons,
-  pelimList,
-  pfoldl,
-  phead,
-  pnil,
-  precList,
-  ptail,
-  pzipWith',
- )
-import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.ScottEncoding (
-  PlutusTypeScott,
- )
-import Plutarch.Internal.Show (PShow (pshow'), pshowList)
-import Plutarch.Internal.Term (
-  S,
-  Term,
-  perror,
-  phoistAcyclic,
-  (#),
-  (#$),
-  (:-->),
- )
-import Plutarch.Internal.Trace (ptraceInfo)
+import Plutarch.Internal (DerivePlutusType (DPTStrat), PBool (PFalse, PTrue), PElemConstraint, PEq ((#==)), PInteger, PIsListLike, PListLike, POrd ((#<), (#<=)), PShow (pshow'), PlutusType, PlutusTypeScott, S, Term, pcon, pcons, pconstant, pelimList, perror, pfix, pfoldl, phead, phoistAcyclic, pif, plam, pmatch, pnil, precList, pshowList, ptail, ptraceInfo, ptrue, pzipWith', (#), (#$), (#&&), (:-->))
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
 

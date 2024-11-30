@@ -26,64 +26,52 @@ module Plutarch.Either (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 
--- TODO: Kill this, this is for PShow (PAsData a)
-
-import Plutarch.Builtin.Bool (
-  PBool (PFalse, PTrue),
-  pif,
-  pif',
- )
-import Plutarch.Builtin.Data (
-  PAsData,
-  PData,
-  pasConstr,
-  pconstrBuiltin,
-  pfstBuiltin,
-  psndBuiltin,
- )
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl), pdata, pforgetData, pfromData)
-import Plutarch.Internal.Lift (
+import Plutarch.Internal (
   DeriveDataPLiftable,
-  PLiftable (
-    AsHaskell,
-    PlutusRepr,
-    fromPlutarch,
-    fromPlutarchRepr,
-    toPlutarch,
-    toPlutarchRepr
-  ),
+  DerivePlutusType (DPTStrat),
+  PAsData,
+  PBool (PFalse, PTrue),
+  PData,
+  PEq ((#==)),
+  PIsData (pdataImpl, pfromDataImpl),
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
   PLifted (PLifted),
   PLiftedClosed,
+  POrd (pmax, pmin, (#<), (#<=)),
+  PShow,
+  PTryFrom,
+  PlutusType (PInner, pcon', pmatch'),
+  PlutusTypeScott,
+  S,
+  Term,
   fromPlutarchReprClosed,
   getPLifted,
   mkPLifted,
-  pconstant,
-  toPlutarchReprClosed,
- )
-import Plutarch.Internal.ListLike (pcons, phead, pnil)
-import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PlutusType (PInner, pcon', pmatch'),
+  pasConstr,
   pcon,
-  pmatch,
- )
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
-import Plutarch.Internal.Show (PShow)
-import Plutarch.Internal.Term (
-  S,
-  Term,
+  pcons,
+  pconstant,
+  pconstrBuiltin,
+  pdata,
   perror,
+  pforgetData,
+  pfromData,
+  pfstBuiltin,
+  phead,
   phoistAcyclic,
+  pif,
+  pif',
+  plam,
   plet,
+  pmatch,
+  pnil,
+  psndBuiltin,
+  pto,
+  toPlutarchReprClosed,
   (#),
   (#$),
   (:-->),
  )
-import Plutarch.Internal.TryFrom (PTryFrom)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus

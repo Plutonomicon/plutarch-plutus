@@ -31,46 +31,8 @@ import Generics.SOP.Type.Metadata (
   ConstructorName,
   DatatypeInfo (ADT, Newtype),
  )
-import Plutarch.Builtin.Bool (PBool)
-import Plutarch.Builtin.ByteString (PByteString)
-import Plutarch.Builtin.Data (PData)
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Builtin.String (PString)
-import Plutarch.Builtin.Unit (PUnit)
-import Plutarch.Internal.Eq (PEq, (#==))
-import Plutarch.Internal.Generic (PCode)
-import Plutarch.Internal.ListLike (PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DPTStrat,
-  DerivePlutusType,
-  PlutusType (PInner, pcon', pmatch'),
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.Quantification (PForall (PForall))
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
-import Plutarch.Internal.Show (PShow)
-import Plutarch.Internal.Term (
-  ClosedTerm,
-  Config,
-  PDelayed,
-  PType,
-  RawTerm (RCompiled),
-  S,
-  Term (Term),
-  TermResult (TermResult),
-  compile,
-  pdelay,
-  pforce,
-  phoistAcyclic,
-  (#),
-  (:-->),
- )
-import Plutarch.Internal.Witness (witness)
+
+import Plutarch.Internal (ClosedTerm, Config, DPTStrat, DerivePlutusType, PBool, PByteString, PCode, PData, PDelayed, PEq, PForall (PForall), PInteger, PListLike (PElemConstraint, pcons, pelimList, pnil), POpaque, PShow, PString, PType, PUnit, PlutusType (PInner, pcon', pmatch'), PlutusTypeNewtype, PlutusTypeScott, RawTerm (RCompiled), S, Term (Term), TermResult (TermResult), compile, pcon, pconvertLists, pdelay, pforce, phoistAcyclic, plam, pmatch, pto, witness, (#), (#==), (:-->))
 import Plutarch.List (PList, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Script (Script (Script))
@@ -150,8 +112,8 @@ plistFromTx = pconvertLists
 pmaybeToTx :: Term s (PMaybe a :--> PTxMaybe a)
 pmaybeToTx =
   plam $
-    flip Plutarch.Internal.PlutusType.pmatch $
-      Plutarch.Internal.PlutusType.pcon . \case
+    flip pmatch $
+      pcon . \case
         PNothing -> PTxNothing
         PJust x -> PTxJust x
 
@@ -159,38 +121,38 @@ pmaybeToTx =
 pmaybeFromTx :: Term s (PTxMaybe a :--> PMaybe a)
 pmaybeFromTx =
   plam $
-    flip Plutarch.Internal.PlutusType.pmatch $
-      Plutarch.Internal.PlutusType.pcon . \case
+    flip pmatch $
+      pcon . \case
         PTxNothing -> PNothing
         PTxJust x -> PJust x
 
 newtype PTxList' a r s = PTxList' (Term s (PDelayed (r :--> (a :--> PTxList a :--> r) :--> r)))
   deriving stock (Generic)
   deriving anyclass (PlutusType)
-instance Plutarch.Internal.PlutusType.DerivePlutusType (PTxList' a r) where type DPTStrat _ = PlutusTypeNewtype
+instance DerivePlutusType (PTxList' a r) where type DPTStrat _ = PlutusTypeNewtype
 
 instance PlutusType (PTxList a) where
   type PInner (PTxList a) = PForall (PTxList' a)
-  pcon' (PTxCons x xs) = Plutarch.Internal.PlutusType.pcon $ PForall $ Plutarch.Internal.PlutusType.pcon $ PTxList' $ pdelay $ plam $ \_nil cons -> cons # x # xs
-  pcon' PTxNil = Plutarch.Internal.PlutusType.pcon $ PForall $ Plutarch.Internal.PlutusType.pcon $ PTxList' $ phoistAcyclic $ pdelay $ plam const
-  pmatch' elim f = Plutarch.Internal.PlutusType.pmatch elim \(PForall elim) -> pforce (pto elim) # f PTxNil # plam (\x xs -> f $ PTxCons x xs)
+  pcon' (PTxCons x xs) = pcon $ PForall $ pcon $ PTxList' $ pdelay $ plam $ \_nil cons -> cons # x # xs
+  pcon' PTxNil = pcon $ PForall $ pcon $ PTxList' $ phoistAcyclic $ pdelay $ plam const
+  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # f PTxNil # plam (\x xs -> f $ PTxCons x xs)
 
 instance PListLike PTxList where
   type PElemConstraint PTxList _ = ()
-  pelimList cons nil list = Plutarch.Internal.PlutusType.pmatch (pto list) \(PForall list) -> pforce (pto list) # nil # plam cons
-  pcons = phoistAcyclic $ plam $ \x xs -> Plutarch.Internal.PlutusType.pcon (PTxCons x xs)
-  pnil = Plutarch.Internal.PlutusType.pcon PTxNil
+  pelimList cons nil list = pmatch (pto list) \(PForall list) -> pforce (pto list) # nil # plam cons
+  pcons = phoistAcyclic $ plam $ \x xs -> pcon (PTxCons x xs)
+  pnil = pcon PTxNil
 
 newtype PTxMaybe' a r s = PTxMaybe' (Term s (PDelayed ((a :--> r) :--> r :--> r)))
   deriving stock (Generic)
   deriving anyclass (PlutusType)
-instance Plutarch.Internal.PlutusType.DerivePlutusType (PTxMaybe' a r) where type DPTStrat _ = PlutusTypeNewtype
+instance DerivePlutusType (PTxMaybe' a r) where type DPTStrat _ = PlutusTypeNewtype
 
 instance PlutusType (PTxMaybe a) where
   type PInner (PTxMaybe a) = PForall (PTxMaybe' a)
-  pcon' (PTxJust x) = Plutarch.Internal.PlutusType.pcon $ PForall $ Plutarch.Internal.PlutusType.pcon $ PTxMaybe' $ pdelay $ plam $ \just _nothing -> just # x
-  pcon' PTxNothing = Plutarch.Internal.PlutusType.pcon $ PForall $ Plutarch.Internal.PlutusType.pcon $ PTxMaybe' $ phoistAcyclic $ pdelay $ plam $ \_just nothing -> nothing
-  pmatch' elim f = Plutarch.Internal.PlutusType.pmatch elim \(PForall elim) -> pforce (pto elim) # plam (f . PTxJust) # f PTxNothing
+  pcon' (PTxJust x) = pcon $ PForall $ pcon $ PTxMaybe' $ pdelay $ plam $ \just _nothing -> just # x
+  pcon' PTxNothing = pcon $ PForall $ pcon $ PTxMaybe' $ phoistAcyclic $ pdelay $ plam $ \_just nothing -> nothing
+  pmatch' elim f = pmatch elim \(PForall elim) -> pforce (pto elim) # plam (f . PTxJust) # f PTxNothing
 
 type family F (p :: [PType]) (t :: [Type]) :: Constraint where
   F '[] '[] = ()
@@ -211,7 +173,7 @@ type family (p :: PType) >~< (t :: Type) :: Constraint where
   (a :--> b) >~< (a' -> b') = (a >~< a', b >~< b')
   (PTxList a) >~< [a'] = a >~< a'
   (PTxMaybe a) >~< Maybe a' = a >~< a'
-  (PDelayed p) >~< t = (Plutarch.Internal.PlutusType.DPTStrat p ~ PlutusTypeScott, G (PCode p) (TypeEncoding t))
+  (PDelayed p) >~< t = (DPTStrat p ~ PlutusTypeScott, G (PCode p) (TypeEncoding t))
 
 type TypeEncoding a = (TypeEncoding' (GCode a) (GDatatypeInfoOf a))
 

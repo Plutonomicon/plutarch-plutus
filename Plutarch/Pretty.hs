@@ -12,7 +12,7 @@ import Data.Text (Text)
 import Data.Text qualified as Txt
 import Data.Traversable (for)
 import Plutarch.Evaluate (evalTerm)
-import Plutarch.Internal.Term (ClosedTerm, Config, compile)
+import Plutarch.Internal (ClosedTerm, Config, compile)
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
 import Plutarch.Pretty.Internal.Config (indentWidth)
 import Plutarch.Pretty.Internal.Name (freshVarName, smartName)

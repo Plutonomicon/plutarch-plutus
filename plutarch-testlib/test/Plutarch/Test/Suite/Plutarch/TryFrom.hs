@@ -3,14 +3,6 @@
 
 module Plutarch.Test.Suite.Plutarch.TryFrom (tests) where
 
-import Plutarch.Builtin (
-  pforgetData,
-  ppairDataBuiltin,
- )
-import Plutarch.Internal.TryFrom (
-  PTryFromExcess,
-  ptryFrom',
- )
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)

@@ -17,22 +17,17 @@ module Plutarch.TermCont (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (PBool, pif)
-import Plutarch.Builtin.String (PString)
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,
   Bindings,
   BoundTerms,
  )
-import Plutarch.Internal.PlutusType (PlutusType, pmatch)
-import Plutarch.Internal.Term (S, Term, plet)
-import Plutarch.Internal.TermCont (TermCont, tcont)
-import Plutarch.Internal.TermCont qualified as TC
-import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
+import Plutarch.Internal (PBool, PString, PTryFrom (PTryFromExcess), PlutusType, S, Term, TermCont, pif, plet, pmatch, ptraceInfo, ptryFrom, tcont)
+import Plutarch.Internal qualified as TC
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Reducible (Reduce)
-import Plutarch.Trace (ptraceInfo, ptraceInfoError)
+import Plutarch.Trace (ptraceInfoError)
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)

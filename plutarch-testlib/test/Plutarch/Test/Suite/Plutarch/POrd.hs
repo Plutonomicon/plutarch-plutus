@@ -2,7 +2,6 @@
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi.V1 (
   PAddress,
   PCredential (PPubKeyCredential, PScriptCredential),

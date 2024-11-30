@@ -22,41 +22,7 @@ module Plutarch.Maybe (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (PBool)
-import Plutarch.Builtin.String (PString)
-import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.Lift (
-  PLiftable (
-    AsHaskell,
-    PlutusRepr,
-    fromPlutarch,
-    fromPlutarchRepr,
-    toPlutarch,
-    toPlutarchRepr
-  ),
-  PLiftedClosed,
-  fromPlutarchReprClosed,
-  getPLifted,
-  mkPLifted,
-  pconstant,
-  toPlutarchReprClosed,
- )
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
-import Plutarch.Internal.Show (PShow)
-import Plutarch.Internal.Term (
-  S,
-  Term,
-  phoistAcyclic,
-  (#),
-  (:-->),
- )
+import Plutarch.Internal (DerivePlutusType (DPTStrat), PBool, PEq, PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr), PLiftedClosed, PShow, PString, PlutusType, PlutusTypeScott, S, Term, fromPlutarchReprClosed, getPLifted, mkPLifted, pcon, pconstant, phoistAcyclic, plam, pmatch, toPlutarchReprClosed, (#), (:-->))
 import Plutarch.Trace (ptraceInfoError)
 
 -- | Plutus Maybe type, with Scott-encoded repr

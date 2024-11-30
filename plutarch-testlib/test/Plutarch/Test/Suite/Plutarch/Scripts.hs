@@ -8,8 +8,6 @@ import Data.Coerce (coerce)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
-import Plutarch.Builtin (pasByteStr)
-import Plutarch.Builtin.Crypto (pverifyEd25519Signature)
 import Plutarch.Internal.Term (
   Config (Tracing),
   LogLevel (LogInfo),

@@ -15,29 +15,27 @@ module Plutarch.Internal.TryFrom (
   pdowncastF,
 ) where
 
-import Plutarch.Builtin.Bool (PBool, pif, (#||))
-import Plutarch.Builtin.ByteString (PByteString)
-import Plutarch.Builtin.Data (
+import Plutarch.Builtin (
   PAsData,
+  PBool,
   PBuiltinList,
   PBuiltinPair,
+  PByteString,
   PData,
+  PInteger,
   pasByteStr,
   pasConstr,
   pasInt,
   pasList,
-  pfstBuiltin,
-  ppairDataBuiltin,
-  psndBuiltin,
- )
-import Plutarch.Builtin.Integer (
-  PInteger,
   pconstantInteger,
   peqInteger,
+  pfstBuiltin,
+  pif,
+  ppairDataBuiltin,
+  psndBuiltin,
+  ptraceInfo,
+  (#||),
  )
-import Plutarch.Builtin.String (ptraceInfo)
-
--- import Plutarch.Builtin.Unit
 
 import Data.Functor.Const (Const)
 import GHC.Generics (Generic)

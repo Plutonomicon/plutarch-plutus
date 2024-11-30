@@ -15,21 +15,7 @@ module Plutarch.Convert (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue))
-import Plutarch.Builtin.ByteString (PByteString)
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DPTStrat,
-  DerivePlutusType,
-  PlutusType,
-  pcon,
- )
-import Plutarch.Internal.Term (S, Term, (#), (:-->))
+import Plutarch.Internal (DPTStrat, DerivePlutusType, PBool (PFalse, PTrue), PByteString, PEq, PInteger, POrd, PlutusType, PlutusTypeNewtype, S, Term, pcon, plam, pto, (#), (:-->))
 import Plutarch.Positive (PPositive)
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC

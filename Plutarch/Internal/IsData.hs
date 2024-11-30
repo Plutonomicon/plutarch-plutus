@@ -3,23 +3,7 @@
 
 module Plutarch.Internal.IsData (PIsData, pfromDataImpl, pdataImpl, pdata, pfromData, pforgetData, prememberData, pforgetData', prememberData') where
 
-import Plutarch.Builtin.Bool (PBool, pif')
-import Plutarch.Builtin.ByteString (PByteString)
-import Plutarch.Builtin.Data (
-  PAsData,
-  PBuiltinList,
-  PBuiltinPair,
-  PData,
-  pasConstr,
-  pasList,
-  pconstrBuiltin,
-  pfstBuiltin,
-  plistData,
-  ppairDataBuiltin,
-  psndBuiltin,
- )
-import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
-import Plutarch.Builtin.Unit (PUnit, punit)
+import Plutarch.Builtin
 
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
