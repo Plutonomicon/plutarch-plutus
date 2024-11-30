@@ -68,7 +68,7 @@ pserialiseData = punsafeBuiltin PLC.SerialiseData
 pconstrBuiltin :: Term s (PInteger :--> PBuiltinList PData :--> PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
 pconstrBuiltin = punsafeBuiltin PLC.ConstrData
 
---
+--------------------------------------------------------------------------------
 
 newtype PBuiltinPair (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PBuiltinPair (Term s (PBuiltinPair a b))
@@ -86,7 +86,7 @@ Uses 'PAsData' to preserve more information about the underlying 'PData'.
 ppairDataBuiltin :: Term s (PAsData a :--> PAsData b :--> PBuiltinPair (PAsData a) (PAsData b))
 ppairDataBuiltin = punsafeBuiltin PLC.MkPairData
 
--- --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 -- | Plutus 'BuiltinList'
 data PBuiltinList (a :: S -> Type) (s :: S)
