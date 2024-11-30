@@ -5,13 +5,27 @@ module Plutarch.Internal.Eq (
   PEq (..),
 ) where
 
-import Plutarch.Builtin.BLS
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
-import Plutarch.Builtin.String
-import Plutarch.Builtin.Unit
+import Plutarch.Builtin.BLS (
+  PBuiltinBLS12_381_G1_Element,
+  PBuiltinBLS12_381_G2_Element,
+ )
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, pif', pnot, (#&&))
+import Plutarch.Builtin.ByteString (
+  PByte,
+  PByteString,
+  PLogicOpSemantics,
+ )
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+  pfstBuiltin,
+  psndBuiltin,
+ )
+import Plutarch.Builtin.Integer (PInteger, peqInteger)
+import Plutarch.Builtin.String (PString)
+import Plutarch.Builtin.Unit (PUnit)
 
 import Data.Kind (Type)
 import Data.List.NonEmpty (nonEmpty)
@@ -28,9 +42,9 @@ import Generics.SOP (
  )
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import {-# SOURCE #-} Plutarch.Internal.IsData
-import Plutarch.Internal.Lift
-import Plutarch.Internal.ListLike
+import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData, pdata)
+import Plutarch.Internal.Lift (PLiftable (PlutusRepr), pconstant)
+import Plutarch.Internal.ListLike (PListLike (pelimList))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PlutusType,

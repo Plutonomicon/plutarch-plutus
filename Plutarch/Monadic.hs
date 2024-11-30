@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-missing-import-lists #-}
+
 module Plutarch.Monadic ((>>=), (>>), fail) where
 
 import Data.String (fromString)

@@ -3,23 +3,51 @@
 
 module Plutarch.Internal.IsData (PIsData, pfromDataImpl, pdataImpl, pdata, pfromData, pforgetData, prememberData, pforgetData', prememberData') where
 
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
-import Plutarch.Builtin.Unit
+import Plutarch.Builtin.Bool (PBool, pif')
+import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+  pasConstr,
+  pasList,
+  pconstrBuiltin,
+  pfstBuiltin,
+  plistData,
+  ppairDataBuiltin,
+  psndBuiltin,
+ )
+import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
+import Plutarch.Builtin.Unit (PUnit, punit)
 
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 
-import Plutarch.Internal.Eq
-import Plutarch.Internal.ListLike
+import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.ListLike (
+  PListLike (pcons, phead, pnil, ptail),
+ )
 
 import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam
-import Plutarch.Internal.PlutusType
-import Plutarch.Internal.Subtype
-import Plutarch.Internal.Term
+import Plutarch.Internal.PLam (PLamN (plam))
+import Plutarch.Internal.PlutusType (
+  PCovariant,
+  PVariant,
+  PlutusType (PInner),
+ )
+import Plutarch.Internal.Subtype (PSubtype, pupcast, pupcastF)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  plet,
+  punsafeBuiltin,
+  punsafeCoerce,
+  punsafeConstantInternal,
+  (#),
+  (#$),
+ )
 import Plutarch.Internal.Witness (witness)
 import Plutarch.Unsafe (punsafeDowncast)
 

@@ -3,9 +3,11 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Internal.TryFrom (
-  PTryFrom (..),
+  PTryFrom,
+  PTryFromExcess,
+  ptryFrom',
   ptryFrom,
-  PSubtypeRelation (..),
+  PSubtypeRelation (PSubtypeRelation, PNoSubtypeRelation),
   PSubtype,
   PSubtype',
   pupcast,
@@ -13,22 +15,58 @@ module Plutarch.Internal.TryFrom (
   pdowncastF,
 ) where
 
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
-import Plutarch.Builtin.String
+import Plutarch.Builtin.Bool (PBool, pif, (#||))
+import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+  pasByteStr,
+  pasConstr,
+  pasInt,
+  pasList,
+  pfstBuiltin,
+  ppairDataBuiltin,
+  psndBuiltin,
+ )
+import Plutarch.Builtin.Integer (
+  PInteger,
+  pconstantInteger,
+  peqInteger,
+ )
+import Plutarch.Builtin.String (ptraceInfo)
 
 -- import Plutarch.Builtin.Unit
 
 import Data.Functor.Const (Const)
 import GHC.Generics (Generic)
-import Plutarch.Internal.IsData
-import Plutarch.Internal.ListLike
-import Plutarch.Internal.PLam
+import Plutarch.Internal.IsData (
+  PIsData,
+  pdata,
+  pforgetData,
+  pfromData,
+ )
+import Plutarch.Internal.ListLike (PListLike (pnull), pmap)
+import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PInner)
-import Plutarch.Internal.Subtype
-import Plutarch.Internal.Term
+import Plutarch.Internal.Subtype (
+  PSubtype,
+  PSubtype',
+  PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
+  pdowncastF,
+  pupcast,
+  pupcastF,
+ )
+import Plutarch.Internal.Term (
+  PType,
+  Term,
+  perror,
+  plet,
+  punsafeCoerce,
+  (#),
+  type (:-->),
+ )
 import Plutarch.Internal.TermCont (runTermCont, tcont, unTermCont)
 import Plutarch.Reducible (Reduce)
 

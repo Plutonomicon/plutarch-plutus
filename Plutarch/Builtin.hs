@@ -31,9 +31,36 @@ module Plutarch.Builtin (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Data
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList (PCons, PNil),
+  PBuiltinPair,
+  PData,
+  pasByteStr,
+  pasConstr,
+  pasInt,
+  pasList,
+  pasMap,
+  pchooseData,
+  pchooseListBuiltin,
+  pconstrBuiltin,
+  pfstBuiltin,
+  plistData,
+  ppairDataBuiltin,
+  pserialiseData,
+  psndBuiltin,
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.IsData
+import Plutarch.Internal.IsData (
+  PIsData,
+  pdata,
+  pdataImpl,
+  pforgetData,
+  pfromData,
+  pfromDataImpl,
+  prememberData,
+  prememberData',
+ )
 import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PlutusType (

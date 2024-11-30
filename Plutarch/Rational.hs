@@ -35,6 +35,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
+import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
   PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
   pdiv,
@@ -69,7 +70,6 @@ import Plutarch.Internal.TermCont (
   unTermCont,
  )
 import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
-import Plutarch.List (phead, pnil, ptail)
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Trace (ptraceInfoError)

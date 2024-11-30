@@ -9,7 +9,7 @@ module Plutarch.Internal.PLam (plam) where
 
 import Data.Kind (Constraint, Type)
 import GHC.Stack (HasCallStack)
-import Plutarch.Internal.Term
+import Plutarch.Internal.Term (PType, S, Term, type (:-->))
 
 type PLamN :: Type -> (S -> Type) -> S -> Constraint
 class PLamN a b s | a -> b, s b -> a where

@@ -11,7 +11,11 @@ module Plutarch.String (
   pdecodeUtf8,
 ) where
 
-import Plutarch.Builtin.String
+import Plutarch.Builtin.String (
+  PString,
+  pdecodeUtf8,
+  pencodeUtf8,
+ )
 
 import Plutarch.Builtin.Bool (PBool, (#&&), (#||))
 import Plutarch.Builtin.Integer (PInteger)

@@ -61,6 +61,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
+import Plutarch.Internal.ListLike (pcons, phead, pnil)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -83,7 +84,6 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Internal.TryFrom (PTryFrom)
-import Plutarch.List (pcons, phead, pnil)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus

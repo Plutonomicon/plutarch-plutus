@@ -1,68 +1,40 @@
 -- | Scott-encoded lists and ListLike typeclass
 module Plutarch.List (
-  PList (..),
-  PListLike (..),
-  PIsListLike,
-  pconvertLists,
-  pshowList,
-
-  -- * Comparison
-  plistEquals,
-
-  -- * Query
-  pelem,
-  plength,
-  ptryIndex,
-  pdrop,
-  pfind,
-  pelemAt,
-  (#!!),
-
-  -- * Construction
-  psingleton,
-
-  -- * Deconstruction
-  puncons,
+  PList (PSCons, PSNil),
   ptryUncons,
-
-  -- * Combine
-  pconcat,
-  pzipWith,
-  pzipWith',
+  puncons,
   pzip,
-
-  -- * Traversals
-  pmap,
-  pfilter,
-
-  -- * Catamorphisms
-  precList,
-  pfoldr,
-  pfoldr',
-  pfoldrLazy,
-  pfoldl,
-  pfoldl',
-
-  -- * Special Folds
-  pall,
-  pany,
-
-  -- * Modification
+  pfind,
   preverse,
-
-  -- * Predicates
   pcheckSorted,
+  pelem,
+  (#!!),
+  pelemAt,
+  pelemAt',
+  plistEquals,
 ) where
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, ptrue, (#&&))
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.Lift
-import Plutarch.Internal.ListLike
-import Plutarch.Internal.Ord
+import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.ListLike (
+  PElemConstraint,
+  PIsListLike,
+  PListLike,
+  pcons,
+  pelimList,
+  pfoldl,
+  phead,
+  pnil,
+  precList,
+  ptail,
+  pzipWith',
+ )
+import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -83,9 +55,9 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Internal.Trace
-import Plutarch.Maybe
-import Plutarch.Pair
+import Plutarch.Internal.Trace (ptraceInfo)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Pair (PPair (PPair))
 
 data PList (a :: S -> Type) (s :: S)
   = PSCons (Term s a) (Term s (PList a))

@@ -30,15 +30,42 @@ module Plutarch.Internal.ListLike (
 
 import Data.Kind (Constraint, Type)
 
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Bool (
+  PBool,
+  pfalse,
+  pif,
+  ptrue,
+  (#&&),
+  (#||),
+ )
+import Plutarch.Builtin.Data (
+  PBuiltinList (PCons, PNil),
+  pheadBuiltin,
+  pnullBuiltin,
+  ptailBuiltin,
+ )
+import Plutarch.Builtin.Integer (
+  PInteger,
+  paddInteger,
+  pconstantInteger,
+ )
 
 import Plutarch.Internal.Fix (pfix)
-import {-# SOURCE #-} Plutarch.Internal.Lift
-import Plutarch.Internal.PLam
-import Plutarch.Internal.PlutusType
-import Plutarch.Internal.Term
+import {-# SOURCE #-} Plutarch.Internal.Lift (PlutusRepr)
+import Plutarch.Internal.PLam (PLamN (plam))
+import Plutarch.Internal.PlutusType (pcon, pmatch)
+import Plutarch.Internal.Term (
+  PDelayed,
+  S,
+  Term,
+  pdelay,
+  perror,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  type (:-->),
+ )
 
 import Numeric.Natural (Natural)
 import PlutusCore qualified as PLC

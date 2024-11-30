@@ -7,12 +7,38 @@ module Plutarch.Internal.Show (
   pshowList,
 ) where
 
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
-import Plutarch.Builtin.String
-import Plutarch.Builtin.Unit
+import Plutarch.Builtin.Bool (PBool, pif, pif')
+import Plutarch.Builtin.ByteString (
+  PByte,
+  PByteString,
+  pbyteToInteger,
+  pconsBS,
+  pindexBS,
+  pintegerToByte,
+  plengthBS,
+  psliceBS,
+ )
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+  pasByteStr,
+  pasConstr,
+  pasInt,
+  pasList,
+  pasMap,
+  pchooseData,
+  pfstBuiltin,
+  psndBuiltin,
+ )
+import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.String (
+  PString,
+  pdecodeUtf8,
+  pencodeUtf8,
+ )
+import Plutarch.Builtin.Unit (PUnit)
 
 import Data.Char (intToDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
@@ -41,14 +67,31 @@ import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
-import Plutarch.Internal.IsData
+import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Lift (PlutusRepr, pconstant)
-import Plutarch.Internal.ListLike
-import Plutarch.Internal.Numeric
-import Plutarch.Internal.Ord
-import Plutarch.Internal.PLam
-import Plutarch.Internal.PlutusType
-import Plutarch.Internal.Term
+import Plutarch.Internal.ListLike (
+  PIsListLike,
+  PListLike (pelimList),
+  pfoldr',
+  pmap,
+  precList,
+ )
+import Plutarch.Internal.Numeric (PIntegral (pquot, prem))
+import Plutarch.Internal.Ord (POrd ((#<)))
+import Plutarch.Internal.PLam (PLamN (plam))
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
+import Plutarch.Internal.Term (
+  Term,
+  pdelay,
+  perror,
+  pforce,
+  phoistAcyclic,
+  plet,
+  punsafeCoerce,
+  (#),
+  (#$),
+  type (:-->),
+ )
 
 import PlutusCore qualified as PLC
 

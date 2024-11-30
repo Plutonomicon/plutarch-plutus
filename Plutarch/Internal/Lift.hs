@@ -35,14 +35,23 @@ module Plutarch.Internal.Lift (
   LiftError (..),
 ) where
 
-import Plutarch.Builtin.BLS
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
+import Plutarch.Builtin.BLS (
+  PBuiltinBLS12_381_G1_Element,
+  PBuiltinBLS12_381_G2_Element,
+  PBuiltinBLS12_381_MlResult,
+ )
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.ByteString (PByte, PByteString)
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+ )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque, popaque)
-import Plutarch.Builtin.String
-import Plutarch.Builtin.Unit
+import Plutarch.Builtin.String (PString)
+import Plutarch.Builtin.Unit (PUnit)
 
 import Data.ByteString (ByteString)
 import Data.Coerce (Coercible, coerce)
@@ -52,7 +61,7 @@ import Data.Text qualified as Text
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
-import {-# SOURCE #-} Plutarch.Internal.IsData
+import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
 import Plutarch.Internal.Subtype (PSubtype)

@@ -9,13 +9,20 @@ module Plutarch.Internal.Subtype (
   pdowncastF,
 ) where
 
-import Data.Kind
-import Data.Proxy
-import GHC.TypeError
+import Data.Kind (Constraint)
+import Data.Proxy (Proxy (Proxy))
+import GHC.TypeError (
+  ErrorMessage (ShowType, Text, (:<>:)),
+  TypeError,
+ )
 
-import Plutarch.Internal.PlutusType
-import Plutarch.Internal.Term
-import Plutarch.Internal.Witness
+import Plutarch.Internal.PlutusType (
+  PContravariant,
+  PCovariant,
+  PlutusType (PInner),
+ )
+import Plutarch.Internal.Term (PType, Term, punsafeCoerce)
+import Plutarch.Internal.Witness (witness)
 
 data PSubtypeRelation
   = PSubtypeRelation

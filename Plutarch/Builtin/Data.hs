@@ -30,11 +30,11 @@ module Plutarch.Builtin.Data (
 
 import Data.Kind (Type)
 
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Integer (PInteger)
 
-import Plutarch.Internal.Term
+import Plutarch.Internal.Term (S, Term, pforce, phoistAcyclic, punsafeBuiltin, (:-->))
 import PlutusCore qualified as PLC
 
 newtype PData (s :: S) = PData (Term s PData)

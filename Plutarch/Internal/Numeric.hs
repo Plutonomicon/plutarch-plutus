@@ -7,7 +7,14 @@ module Plutarch.Internal.Numeric (
 
 import Data.Kind (Type)
 import Plutarch.Builtin.Bool (pcond, pif)
-import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Integer (
+  PInteger,
+  paddInteger,
+  peqInteger,
+  pleInteger,
+  pmultiplyInteger,
+  psubtractInteger,
+ )
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)

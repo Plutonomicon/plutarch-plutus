@@ -3,8 +3,8 @@
 
 module Plutarch.Internal.Lift (PlutusRepr, getPLifted, unsafeToUni) where
 
-import Data.Kind
-import Plutarch.Internal.Term
+import Data.Kind (Type)
+import Plutarch.Internal.Term (S, Term)
 import PlutusCore qualified as PLC
 import Universe (Includes)
 

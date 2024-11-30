@@ -1,9 +1,15 @@
 {- This can probably be done without hs-boot after dealing with Trace and Show stuff -}
-module Plutarch.Internal.ListLike where
+module Plutarch.Internal.ListLike (PIsListLike, PListLike, PElemConstraint, pelimList, pcons, pnil, phead, ptail, pnull) where
 
-import Data.Kind
-import Plutarch.Builtin.Bool
-import Plutarch.Internal.Term
+import Data.Kind (Constraint, Type)
+import Plutarch.Builtin.Bool (PBool, pfalse, ptrue)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  perror,
+  phoistAcyclic,
+  type (:-->),
+ )
 
 -- | 'PIsListLike list a' constraints 'list' be a 'PListLike' with valid element type, 'a'.
 type PIsListLike list a = (PListLike list, PElemConstraint list a)
