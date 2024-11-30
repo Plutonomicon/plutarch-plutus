@@ -53,23 +53,17 @@ import Generics.SOP (
   hmap,
   para_SList,
  )
-import Plutarch.Builtin (
+import Plutarch.Builtin.Bool (PBool, pif)
+import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
   PData,
-  PIsData,
   pasConstr,
   pchooseListBuiltin,
   pconstrBuiltin,
-  pdata,
-  pdataImpl,
-  pforgetData,
-  pfromData,
-  pfromDataImpl,
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque, popaque)
 import Plutarch.Builtin.String (PString)
@@ -83,6 +77,7 @@ import Plutarch.DataRepr.Internal.HList (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.IsData (PIsData, pdata, pdataImpl, pforgetData, pfromData, pfromDataImpl)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
