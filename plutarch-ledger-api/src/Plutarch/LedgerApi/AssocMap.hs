@@ -77,24 +77,14 @@ module Plutarch.LedgerApi.AssocMap (
   pkeys,
 ) where
 
+import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
+import Plutarch.Prelude qualified as PPrelude
+
 import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (forM)
-import Plutarch.Builtin (
-  pasMap,
-  pdataImpl,
-  pforgetData,
-  pfromDataImpl,
-  ppairDataBuiltin,
- )
-import Plutarch.Internal.Lift (
-  PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
-  fromPlutarchUni,
-  toPlutarchUni,
- )
 import Plutarch.Internal.Term (punsafeBuiltin)
-import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (
   Mret,
@@ -102,9 +92,6 @@ import Plutarch.LedgerApi.Utils (
   psfalse,
   pstrue,
  )
-import Plutarch.List qualified as List
-import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
-import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V3 qualified as Plutus
@@ -185,7 +172,7 @@ instance
   type PTryFromExcess PData (PAsData (PMap 'Unsorted k v)) = Mret (PMap 'Unsorted k v)
   ptryFrom' opq = runTermCont $ do
     opq' <- tcont . plet $ pasMap # opq
-    unwrapped <- tcont . plet $ List.pmap # ptryFromPair # opq'
+    unwrapped <- tcont . plet $ PPrelude.pmap # ptryFromPair # opq'
     pure (punsafeCoerce opq, pcon . PMap $ unwrapped)
     where
       ptryFromPair ::
@@ -340,7 +327,7 @@ pall ::
   Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pall = phoistAcyclic $
   plam $ \pred m ->
-    List.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
+    PPrelude.pall # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
 
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
@@ -383,7 +370,7 @@ punionResolvingCollisionsWithData commutativity =
     plam $
       pzipWithData . unionMergeHandler commutativity
 
-{- | Maps and filters the map, much like 'Data.List.mapMaybe'.
+{- | Maps and filters the map, much like 'Data.PPrelude.mapMaybe'.
 
 @since 2.0.0
 -}
@@ -425,9 +412,9 @@ pmapMaybeData = phoistAcyclic $
 pnull ::
   forall (any :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S).
   Term s (PMap any k v :--> PBool)
-pnull = plam (\m -> List.pnull # pto m)
+pnull = plam (\m -> PPrelude.pnull # pto m)
 
-{- | Applies a function to every value in the map, much like 'Data.List.map'.
+{- | Applies a function to every value in the map, much like 'Data.PPrelude.map'.
 
 @since 2.0.0
 -}
@@ -456,7 +443,7 @@ pmapWithKey = phoistAcyclic $
   plam $ \f kvs ->
     pmatch kvs $ \(PMap kvs') ->
       pcon . PMap $
-        List.pmap
+        PPrelude.pmap
           # plam
             ( \x ->
                 plet (pkvPairKey # x) $ \key ->
@@ -652,7 +639,7 @@ pany ::
   Term s ((v :--> PBool) :--> PMap any k v :--> PBool)
 pany = phoistAcyclic $
   plam $ \pred m ->
-    List.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
+    PPrelude.pany # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair) # pto m
 
 {- | Look up the given key in a 'PMap', returning the default value if the key is absent.
 
@@ -797,11 +784,11 @@ pkeysEqual = phoistAcyclic $
         )
     go = phoistAcyclic $
       pfix #$ plam $ \self ell ell' ->
-        pmatch (List.puncons # ell) $ \case
-          PNothing -> pmatch (List.puncons # ell') $ \case
+        pmatch (PPrelude.puncons # ell) $ \case
+          PNothing -> pmatch (PPrelude.puncons # ell') $ \case
             PNothing -> pcon PTrue -- no mismatches found
             PJust _ -> pcon PFalse -- one argument too long
-          PJust kv -> pmatch (List.puncons # ell') $ \case
+          PJust kv -> pmatch (PPrelude.puncons # ell') $ \case
             PNothing -> pcon PFalse -- one argument too long
             PJust kv' -> pmatch kv $ \(PPair h t) ->
               pmatch kv' $ \(PPair h' t') ->
@@ -842,8 +829,8 @@ pkeysEqualUnsorted = phoistAcyclic $
         )
     go = phoistAcyclic $
       pfix #$ plam $ \self kvs kvs' ell ell' ->
-        pmatch (List.puncons # ell) $ \case
-          PNothing -> pmatch (List.puncons # ell') $ \case
+        pmatch (PPrelude.puncons # ell) $ \case
+          PNothing -> pmatch (PPrelude.puncons # ell') $ \case
             -- We reached the end, so we match
             PNothing -> pcon PTrue
             PJust ht' -> pmatch ht' $ \(PPair h' t') ->
@@ -853,7 +840,7 @@ pkeysEqualUnsorted = phoistAcyclic $
                 -- We match, so continue
                 PJust _ -> self # kvs # kvs' # ell # t'
           PJust ht -> pmatch ht $ \(PPair h t) ->
-            pmatch (List.puncons # ell') $ \case
+            pmatch (PPrelude.puncons # ell') $ \case
               PNothing -> pmatch (plookup # (pkvPairKey # h) # kvs') $ \case
                 -- We mismatch, so fail
                 PNothing -> pcon PFalse
@@ -1105,7 +1092,7 @@ rebuildAtKey = phoistAcyclic $
 type SomeMergeHandler (k :: S -> Type) (v :: S -> Type) (s :: S) =
   SomeMergeHandler_ (->) (Term s k) (Term s v)
 
--- Signals how to handle value merging for matching keys in 'pzipWith'.
+-- Signals how to handle value merging for matching keys in 'PPrelude.pzipWith'.
 data SomeMergeHandler_ (f :: Type -> Type -> Type) (k :: Type) (v :: Type)
   = SomeMergeHandlerCommutative (MergeHandlerCommutative_ f k v)
   | SomeMergeHandler (MergeHandler_ f k v)
@@ -1117,7 +1104,7 @@ deriving stock instance
 type MergeHandler (k :: S -> Type) (v :: S -> Type) (s :: S) =
   MergeHandler_ (->) (Term s k) (Term s v)
 
-{- Signals how to handle value merging for matching keys in 'pzipWith'.
+{- Signals how to handle value merging for matching keys in 'PPrelude.pzipWith'.
 
  No restrictions on commutativity: Safe to use for both commutative and
  non-commutative merging operations.
@@ -1135,7 +1122,7 @@ deriving stock instance
 type MergeHandlerCommutative (k :: S -> Type) (v :: S -> Type) (s :: S) =
   MergeHandlerCommutative_ (->) (Term s k) (Term s v)
 
-{- Signals how to handle value merging for matching keys in 'pzipWith'.
+{- Signals how to handle value merging for matching keys in 'PPrelude.pzipWith'.
 
  Safe to use for commutative merging operations only.
 -}
@@ -1281,7 +1268,7 @@ zipMerge rightPresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \case
       DropOne -> pcon PNil
       PassOne -> rs
       HandleOne handler ->
-        List.pmap
+        PPrelude.pmap
           # plam
             ( \pair ->
                 plet (pfstBuiltin # pair) \k ->
@@ -1322,7 +1309,7 @@ zipMergeInsert (MergeHandler bothPresent leftPresent rightPresent) = unTermCont 
           DropOne -> pcon PNil
           PassOne -> pcons # x # xs'
           HandleOne handler ->
-            List.pmap
+            PPrelude.pmap
               # plam
                 ( \pair ->
                     plet (pfstBuiltin # pair) \k ->
@@ -1396,7 +1383,7 @@ zipMergeCommutative onePresent mergeInsertRec = plam $ \ls rs -> pmatch ls $ \ca
       DropOne -> pcon PNil
       PassOne -> rs
       HandleOne handler ->
-        List.pmap
+        PPrelude.pmap
           # plam
             ( \pair ->
                 plet (pfstBuiltin # pair) \k ->
@@ -1434,7 +1421,7 @@ zipMergeInsertCommutative (MergeHandlerCommutative bothPresent onePresent) = unT
           DropOne -> pcon PNil
           PassOne -> pcons # x # xs'
           HandleOne handler ->
-            List.pmap
+            PPrelude.pmap
               # plam
                 ( \pair ->
                     plet (pfstBuiltin # pair) \k ->

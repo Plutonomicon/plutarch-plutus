@@ -65,17 +65,11 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.Builtin.Bool (pand')
-import Plutarch.Internal.Lift (
-  DeriveDataPLiftable,
-  DeriveNewtypePLiftable,
- )
-import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
+import Plutarch.Prelude hiding (psingleton)
+import Plutarch.Prelude qualified as PPrelude
+
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.List qualified as List
-import Plutarch.Prelude hiding (psingleton)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V1.Value qualified as PlutusValue
 import PlutusLedgerApi.V3 qualified as Plutus
@@ -817,7 +811,7 @@ padaOnlyValue = phoistAcyclic $
       PCons x _ ->
         pif'
           # (pfstBuiltin # x #== padaSymbolData)
-          # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
+          # pcon (PValue $ pcon $ AssocMap.PMap $ PPrelude.psingleton # x)
           # pcon (PValue AssocMap.pempty)
 
 {- | Strip all Ada from a 'PValue'.

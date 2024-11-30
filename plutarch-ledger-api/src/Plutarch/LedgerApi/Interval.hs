@@ -33,13 +33,8 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Enum (
-  PCountable (psuccessor),
-  PEnumerable (ppredecessor),
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
 import Plutarch.Prelude hiding (psingleton, pto)
+
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0

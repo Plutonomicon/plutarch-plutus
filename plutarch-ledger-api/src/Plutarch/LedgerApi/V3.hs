@@ -116,6 +116,8 @@ module Plutarch.LedgerApi.V3 (
   Utils.prationalFromData,
 ) where
 
+import Plutarch.Prelude
+
 import Codec.Serialise (serialise)
 import Crypto.Hash (
   Blake2b_224 (Blake2b_224),
@@ -138,7 +140,6 @@ import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
 import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V3 qualified as Plutus

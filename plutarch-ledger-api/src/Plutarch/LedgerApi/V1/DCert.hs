@@ -5,10 +5,10 @@ module Plutarch.LedgerApi.V1.DCert (
   PDCert (..),
 ) where
 
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Plutarch.Prelude
+
 import Plutarch.LedgerApi.V1.Credential (PStakingCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
-import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1

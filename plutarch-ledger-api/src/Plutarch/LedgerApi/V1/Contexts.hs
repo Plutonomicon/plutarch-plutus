@@ -4,12 +4,12 @@ module Plutarch.LedgerApi.V1.Contexts (
   PScriptPurpose (..),
 ) where
 
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Plutarch.Prelude
+
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1

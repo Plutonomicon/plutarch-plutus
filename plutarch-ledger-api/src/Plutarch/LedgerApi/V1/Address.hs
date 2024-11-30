@@ -5,11 +5,10 @@ module Plutarch.LedgerApi.V1.Address (
   PAddress (..),
 ) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Plutarch.Prelude
+
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
-import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0

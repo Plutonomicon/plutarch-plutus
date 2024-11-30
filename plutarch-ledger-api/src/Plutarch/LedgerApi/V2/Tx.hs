@@ -6,14 +6,13 @@ module Plutarch.LedgerApi.V2.Tx (
   PTxOut (..),
 ) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Plutarch.Prelude
+
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)
 import Plutarch.LedgerApi.V1.Scripts (PDatum, PDatumHash, PScriptHash)
 import Plutarch.LedgerApi.Value qualified as Value
-import Plutarch.Prelude
 import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 2.0.0
