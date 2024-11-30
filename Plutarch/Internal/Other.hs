@@ -8,26 +8,15 @@ module Plutarch.Internal.Other (
 
 import Data.Text qualified as T
 import GHC.Stack (HasCallStack)
-import Plutarch.Builtin.Opaque
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PCovariant',
   PInner,
-  PVariant',
-  PlutusType,
-  pcon',
-  pmatch',
  )
 import Plutarch.Internal.Term (
   ClosedTerm,
   Config,
   Term,
   compile,
-  phoistAcyclic,
-  plam',
   punsafeCoerce,
-  (#),
-  (:-->),
  )
 import Plutarch.Script (Script (Script))
 import PlutusCore.Pretty (prettyPlcReadable)

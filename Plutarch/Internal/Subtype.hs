@@ -1,6 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Internal.Subtype where
+module Plutarch.Internal.Subtype (
+  PSubtypeRelation (PSubtypeRelation, PNoSubtypeRelation),
+  PSubtype,
+  PSubtype',
+  pupcast,
+  pupcastF,
+  pdowncastF,
+) where
 
 import Data.Kind
 import Data.Proxy

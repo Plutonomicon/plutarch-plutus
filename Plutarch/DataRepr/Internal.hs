@@ -82,7 +82,6 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexList,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)

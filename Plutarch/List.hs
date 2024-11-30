@@ -54,12 +54,10 @@ module Plutarch.List (
   pcheckSorted,
 ) where
 
-import Data.Kind (Constraint, Type)
+import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Numeric.Natural (Natural)
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.Integer
-import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Lift
@@ -75,15 +73,12 @@ import Plutarch.Internal.PlutusType (
 import Plutarch.Internal.ScottEncoding (
   PlutusTypeScott,
  )
-import Plutarch.Internal.Show (PShow (pshow'), pshow, pshowList)
+import Plutarch.Internal.Show (PShow (pshow'), pshowList)
 import Plutarch.Internal.Term (
-  PDelayed,
   S,
   Term,
-  pdelay,
   perror,
   phoistAcyclic,
-  plet,
   (#),
   (#$),
   (:-->),

@@ -23,7 +23,7 @@ import GHC.Generics (Generic)
 
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Internal.Term (S, Term, punsafeBuiltin, punsafeConstantInternal, (#), (:-->))
+import Plutarch.Internal.Term (S, Term, punsafeBuiltin, punsafeConstantInternal, (:-->))
 import PlutusCore qualified as PLC
 
 {- | A builtin Plutus integer.

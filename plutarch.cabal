@@ -68,7 +68,6 @@ common c
     -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
     -Wno-operator-whitespace -fprint-equality-relations
     -fprint-explicit-kinds -fprint-explicit-foralls
-    -Wno-missing-export-lists -Wno-unused-imports
 
 library
   import:          c
@@ -108,7 +107,6 @@ library
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
-    Plutarch.Internal.PlutusTypeDerive
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding

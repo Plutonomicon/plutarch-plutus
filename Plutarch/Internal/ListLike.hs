@@ -1,4 +1,32 @@
-module Plutarch.Internal.ListLike where
+module Plutarch.Internal.ListLike (
+  PIsListLike,
+  PListLike,
+  PElemConstraint,
+  pelimList,
+  pcons,
+  pnil,
+  phead,
+  ptail,
+  pnull,
+  pconvertLists,
+  precList,
+  psingleton,
+  plength,
+  ptryIndex,
+  pdrop,
+  pfoldl',
+  pfoldl,
+  pfoldr',
+  pfoldr,
+  pfoldrLazy,
+  pall,
+  pany,
+  pmap,
+  pfilter,
+  pconcat,
+  pzipWith,
+  pzipWith',
+) where
 
 import Data.Kind (Constraint, Type)
 

@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Plutarch.Builtin.Unit where
+module Plutarch.Builtin.Unit (PUnit (PUnit), punit) where
 
 import Plutarch.Internal.Term (S, Term, plet, punsafeConstantInternal)
 import PlutusCore qualified as PLC

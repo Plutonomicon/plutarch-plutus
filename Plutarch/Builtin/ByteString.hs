@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
 module Plutarch.Builtin.ByteString where
 

@@ -32,34 +32,22 @@ module Plutarch.Builtin (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Data
-import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData
 import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PCovariant,
-  PVariant,
-  PlutusType (PContravariant', PCovariant', PInner, PVariant', pcon', pmatch'),
-  pcon,
+  PInner,
+  PlutusType (pcon', pmatch'),
   pmatch,
  )
-import Plutarch.Internal.Show (PShow (pshow'), pshow)
+import Plutarch.Internal.Show (PShow (pshow'))
 import Plutarch.Internal.Term (
   S,
   Term,
-  pdelay,
-  pforce,
-  phoistAcyclic,
-  plet,
-  (#),
-  (#$),
-  (:-->),
  )
-import Plutarch.Internal.TryFrom (PSubtype, PTryFrom, PTryFromExcess, ptryFrom, ptryFrom', pupcast, pupcastF)
-import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce, punsafeDowncast)
+import Plutarch.Internal.TryFrom (PTryFrom)
+import Plutarch.Unsafe (punsafeCoerce)
 
 ----------------------- other utility functions -----------------------------------------
 

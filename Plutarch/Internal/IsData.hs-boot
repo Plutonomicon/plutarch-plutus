@@ -1,7 +1,7 @@
 {- Justification: default implementation of PIsData requires PlutusType
 -}
 
-module Plutarch.Internal.IsData where
+module Plutarch.Internal.IsData (PIsData, pfromData, pdata, pforgetData) where
 
 import Data.Kind
 import Plutarch.Builtin.ByteString

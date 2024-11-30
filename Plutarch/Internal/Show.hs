@@ -15,7 +15,6 @@ import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
 
 import Data.Char (intToDigit)
-import Data.Kind
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.List.NonEmpty qualified as NE
 import Data.Semigroup (sconcat)

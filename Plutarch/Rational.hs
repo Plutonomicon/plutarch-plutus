@@ -18,7 +18,7 @@ import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.IsData (PIsData, pdata)
+import Plutarch.Internal.IsData (pdata)
 import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,

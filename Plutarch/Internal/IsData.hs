@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Internal.IsData where
+module Plutarch.Internal.IsData (PIsData, pfromDataImpl, pdataImpl, pdata, pfromData, pforgetData, prememberData, pforgetData', prememberData') where
 
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
@@ -21,7 +21,7 @@ import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Subtype
 import Plutarch.Internal.Term
 import Plutarch.Internal.Witness (witness)
-import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import Plutarch.Unsafe (punsafeDowncast)
 
 import PlutusCore qualified as PLC
 import PlutusTx qualified as PTx

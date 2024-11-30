@@ -18,21 +18,18 @@ import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Data
 import Plutarch.Builtin.Integer
 import Plutarch.Builtin.String
-import Plutarch.Builtin.Unit
+
+-- import Plutarch.Builtin.Unit
 
 import Data.Functor.Const (Const)
-import Data.Kind (Constraint)
-import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
-import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Plutarch.Internal.IsData
 import Plutarch.Internal.ListLike
 import Plutarch.Internal.PLam
-import Plutarch.Internal.PlutusType (PContravariant, PCovariant, PInner)
+import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Subtype
 import Plutarch.Internal.Term
 import Plutarch.Internal.TermCont (runTermCont, tcont, unTermCont)
-import Plutarch.Internal.Witness (witness)
 import Plutarch.Reducible (Reduce)
 
 {- |

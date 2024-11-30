@@ -4,20 +4,38 @@ BuiltinPair and BuiltinList should go into their own module !!
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Builtin.Data where
+module Plutarch.Builtin.Data (
+  PData (PData),
+  PAsData (PAsData),
+  pchooseData,
+  pasConstr,
+  pasMap,
+  plistData,
+  pasList,
+  pasInt,
+  pasByteStr,
+  pserialiseData,
+  pconstrBuiltin,
+  PBuiltinPair (PBuiltinPair),
+  pfstBuiltin,
+  psndBuiltin,
+  ppairDataBuiltin,
+  PBuiltinList (PCons, PNil),
+  pheadBuiltin,
+  ptailBuiltin,
+  pchooseListBuiltin,
+  pnullBuiltin,
+  pconsBuiltin,
+) where
 
 import Data.Kind (Type)
 
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Integer
-import Plutarch.Builtin.Opaque (POpaque)
 
-import Plutarch.Internal.PLam
 import Plutarch.Internal.Term
 import PlutusCore qualified as PLC
-import PlutusTx (Data)
-import PlutusTx qualified
 
 newtype PData (s :: S) = PData (Term s PData)
 newtype PAsData (a :: S -> Type) (s :: S) = PAsData (Term s a)

@@ -15,15 +15,13 @@ import Plutarch.Builtin.String
 
 import Plutarch.Builtin.Bool (PBool, (#&&), (#||))
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Numeric
+import Plutarch.Internal.Numeric ()
 import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
   S,
   Term,
   phoistAcyclic,
-  (#),
   (:-->),
  )
 

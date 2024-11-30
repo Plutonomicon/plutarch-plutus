@@ -1,15 +1,37 @@
-module Plutarch.Builtin.BLS where
+module Plutarch.Builtin.BLS (
+  PBuiltinBLS12_381_G1_Element (PBuiltinBLS12_381_G1_Element),
+  PBuiltinBLS12_381_G2_Element (PBuiltinBLS12_381_G2_Element),
+  PBuiltinBLS12_381_MlResult (PBuiltinBLS12_381_MlResult),
+  pbls12_381_G1_add,
+  pbls12_381_G1_scalarMul,
+  pbls12_381_G1_neg,
+  pbls12_381_G1_compress,
+  pbls12_381_G1_uncompress,
+  pbls12_381_G1_hashToGroup,
+  pbls12_381_G1_compressed_zero,
+  pbls12_381_G1_compressed_generator,
+  pbls12_381_G2_add,
+  pbls12_381_G2_scalarMul,
+  pbls12_381_G2_neg,
+  pbls12_381_G2_compress,
+  pbls12_381_G2_uncompress,
+  pbls12_381_G2_hashToGroup,
+  pbls12_381_G2_compressed_zero,
+  pbls12_381_G2_compressed_generator,
+  pbls12_381_millerLoop,
+  pbls12_381_mulMlResult,
+  pbls12_381_finalVerify,
+) where
 
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Internal.Term (Term, punsafeBuiltin, punsafeConstantInternal, (#), (:-->))
+import Plutarch.Internal.Term (Term, punsafeBuiltin, punsafeConstantInternal, (:-->))
 import PlutusCore qualified as PLC
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
-import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
 
 {- | A point on the BLS12-381 G1 curve.
 
