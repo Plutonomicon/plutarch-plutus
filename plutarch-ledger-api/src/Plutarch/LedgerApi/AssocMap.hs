@@ -77,13 +77,12 @@ module Plutarch.LedgerApi.AssocMap (
   pkeys,
 ) where
 
-import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
-import Plutarch.Prelude qualified as PPrelude
-
 import Data.Bifunctor (bimap)
 import Data.Foldable (foldl')
+import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import Data.Traversable (forM)
+import GHC.Generics (Generic)
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (
@@ -92,6 +91,8 @@ import Plutarch.LedgerApi.Utils (
   psfalse,
   pstrue,
  )
+import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
+import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V3 qualified as Plutus

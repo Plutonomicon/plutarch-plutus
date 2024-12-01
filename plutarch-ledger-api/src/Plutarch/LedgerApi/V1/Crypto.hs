@@ -5,9 +5,9 @@ module Plutarch.LedgerApi.V1.Crypto (
   PPubKeyHash (..),
 ) where
 
-import Plutarch.Prelude
-
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.Utils (Mret)
+import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus
 

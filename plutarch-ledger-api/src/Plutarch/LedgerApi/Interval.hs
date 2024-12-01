@@ -33,8 +33,10 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import GHC.Records (getField)
 import Plutarch.Prelude hiding (psingleton, pto)
-
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0

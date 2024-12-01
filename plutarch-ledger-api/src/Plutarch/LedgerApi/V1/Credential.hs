@@ -6,10 +6,10 @@ module Plutarch.LedgerApi.V1.Credential (
   PStakingCredential (..),
 ) where
 
-import Plutarch.Prelude
-
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
+import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0

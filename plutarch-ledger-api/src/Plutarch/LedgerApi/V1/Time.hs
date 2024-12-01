@@ -10,9 +10,10 @@ module Plutarch.LedgerApi.V1.Time (
   unPPosixTime,
 ) where
 
-import Plutarch.Prelude
-
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.Utils (Mret)
+import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus

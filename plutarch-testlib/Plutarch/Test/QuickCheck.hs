@@ -9,6 +9,7 @@ module Plutarch.Test.QuickCheck (
   checkHaskellEquivalent2,
 ) where
 
+import Data.Kind (Type)
 import Data.Text qualified as Text
 import Plutarch.Internal.Term (Config (NoTracing))
 import Plutarch.Prelude

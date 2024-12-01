@@ -6,6 +6,7 @@ module Plutarch.LedgerApi.V1.Tx (
   PTxOutRef (..),
 ) where
 
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)

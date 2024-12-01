@@ -1,8 +1,9 @@
 module Plutarch.Test.Suite.Plutarch.List (tests, integerList) where
 
 import Data.List (find)
+import Plutarch.Internal.ListLike (pconvertLists, pfoldl')
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
-import Plutarch.List (pcheckSorted, pconvertLists, pfoldl', preverse)
+import Plutarch.List (pcheckSorted, preverse)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent)

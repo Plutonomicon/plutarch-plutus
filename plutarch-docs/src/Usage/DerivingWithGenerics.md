@@ -5,6 +5,8 @@
 ```haskell
 module Plutarch.Docs.DerivingGenerics (PMyType (..)) where
 import Plutarch.Prelude
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 ```
 
 </p>

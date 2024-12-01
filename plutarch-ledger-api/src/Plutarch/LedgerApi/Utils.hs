@@ -41,6 +41,9 @@ module Plutarch.LedgerApi.Utils (
 ) where
 
 import Data.Bifunctor (first)
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import GHC.Records (getField)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude

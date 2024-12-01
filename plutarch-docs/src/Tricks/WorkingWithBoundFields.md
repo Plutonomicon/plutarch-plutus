@@ -5,8 +5,10 @@
 ```haskell
 module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where
 
+import GHC.Records (getField)
+import GHC.Generics (Generic)
 import Plutarch.Prelude
-import Plutarch.DataRepr (HRec, HRecOf, PDataFields, PMemberFields)
+import Plutarch.DataRepr (HRec, HRecOf, PMemberFields)
 import Plutarch.LedgerApi.V3 (PTxInfo, PScriptContext)
 ```
 

@@ -6,6 +6,8 @@
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
 import Plutarch.Prelude
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 ```
 
 </p>

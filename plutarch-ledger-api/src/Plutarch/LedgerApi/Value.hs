@@ -65,11 +65,12 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Prelude hiding (psingleton)
-import Plutarch.Prelude qualified as PPrelude
-
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
+import Plutarch.Prelude hiding (psingleton)
+import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V1.Value qualified as PlutusValue
 import PlutusLedgerApi.V3 qualified as Plutus
