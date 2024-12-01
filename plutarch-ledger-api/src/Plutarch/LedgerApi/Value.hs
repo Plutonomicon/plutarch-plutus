@@ -107,15 +107,13 @@ deriving via
     PLiftable PLovelace
 
 -- | @since 2.0.0
-newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
+newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PEq
@@ -125,13 +123,16 @@ newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
       PShow
     )
 
--- | @since 2.0.0
-instance DerivePlutusType PTokenName where
-  type DPTStrat _ = PlutusTypeNewtype
+instance SOP.Generic (PTokenName s)
+
+deriving via
+  DeriveAsNewtype PTokenName
+  instance
+    PlutusType PTokenName
 
 -- | @since WIP
 deriving via
-  DeriveDataPLiftable PTokenName Plutus.TokenName
+  DeriveNewtypePLiftable PTokenName PByteString Plutus.TokenName
   instance
     PLiftable PTokenName
 

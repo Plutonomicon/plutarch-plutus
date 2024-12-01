@@ -63,7 +63,7 @@ import GHC.Generics (Generic)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
+import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PInner, PlutusType)
 import Plutarch.Internal.Subtype (PSubtype)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -160,10 +160,11 @@ class PlutusType a => PLiftable (a :: S -> Type) where
   -- be processed further
   type PlutusRepr a :: Type
 
-  toPlutarchRepr :: AsHaskell a -> PlutusRepr a
-  toPlutarch :: AsHaskell a -> PLifted s a
-  fromPlutarchRepr :: PlutusRepr a -> Maybe (AsHaskell a)
-  fromPlutarch :: (forall s. PLifted s a) -> Either LiftError (AsHaskell a)
+  haskToRepr :: AsHaskell a -> PlutusRepr a
+  reprToHask :: PlutusRepr a -> Maybe (AsHaskell a)
+
+  reprToPlut :: PlutusRepr a -> PLifted s a
+  plutToRepr :: (forall s. PLifted s a) -> Either LiftError (PlutusRepr a)
 
 {- | Valid definition for 'toPlutarchRepr' if 'PlutusRepr' is Scott encoded
 
@@ -174,7 +175,7 @@ toPlutarchReprClosed ::
   (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
   AsHaskell a ->
   PlutusRepr a
-toPlutarchReprClosed p = PLiftedClosed $ toPlutarch @a p
+toPlutarchReprClosed _p = undefined -- PLiftedClosed $ toPlutarch @a p
 
 {- | Valid definition for 'fromPlutarchRepr' if 'PlutusRepr' is Scott encoded
 
@@ -185,7 +186,7 @@ fromPlutarchReprClosed ::
   (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
   PlutusRepr a ->
   Maybe (AsHaskell a)
-fromPlutarchReprClosed (PLiftedClosed t) = either (const Nothing) Just $ fromPlutarch @a t
+fromPlutarchReprClosed (PLiftedClosed _t) = undefined -- either (const Nothing) Just $ fromPlutarch @a t
 
 {- | Valid definition for 'toPlutarch' if 'PlutusRepr' is in Plutus universe
 
@@ -194,10 +195,10 @@ fromPlutarchReprClosed (PLiftedClosed t) = either (const Nothing) Just $ fromPlu
 toPlutarchUni ::
   forall (a :: S -> Type) (s :: S).
   (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) =>
-  AsHaskell a ->
+  PlutusRepr a ->
   PLifted s a
 toPlutarchUni p =
-  PLifted $ popaque $ punsafeCoerce $ punsafeConstantInternal $ PLC.someValue $ toPlutarchRepr @a p
+  PLifted $ popaque $ punsafeCoerce $ punsafeConstantInternal $ PLC.someValue p
 
 unsafeToUni ::
   forall (h :: Type) (a :: S -> Type) (s :: S).
@@ -214,16 +215,17 @@ fromPlutarchUni ::
   forall (a :: S -> Type).
   (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) =>
   (forall s. PLifted s a) ->
-  Either LiftError (AsHaskell a)
+  Either LiftError (PlutusRepr a)
 fromPlutarchUni t =
   case compile (Tracing LogInfo DoTracing) $ unPLifted t of
     Left err -> Left . CouldNotCompile $ err
     Right compiled -> case evalScriptHuge compiled of
       (evaluated, _, _) -> case evaluated of
         Left err -> Left . CouldNotEvaluate $ err
-        Right (Script (UPLC.Program _ _ term)) -> case readKnownConstant term of
-          Left err -> Left . TypeError $ err
-          Right res -> maybe (Left CouldNotDecodeData) Right $ fromPlutarchRepr @a res
+        Right (Script (UPLC.Program _ _ term)) ->
+          case readKnownConstant term of
+            Left err -> Left . TypeError $ err
+            Right res -> Right res
 
 {- | Given a Haskell-level representation of a Plutarch term, transform it into
 its equivalent term.
@@ -235,7 +237,7 @@ pconstant ::
   PLiftable a =>
   AsHaskell a ->
   Term s a
-pconstant = getPLifted . toPlutarch @a
+pconstant = getPLifted . reprToPlut . haskToRepr @a
 
 {- | Given a closed Plutarch term, compile and evaluate it, then produce the
 corresponding Haskell value. If compilation or evaluation fails somehow, this
@@ -249,7 +251,8 @@ plift ::
   PLiftable a =>
   (forall (s :: S). Term s a) ->
   AsHaskell a
-plift t = case fromPlutarch @a $ mkPLifted t of
+plift t = case reprToHask @a <$> (plutToRepr @a $ mkPLifted t) of
+  Right Nothing -> error "failed to convert from representation to haskell type"
   Left err ->
     error $
       "plift failed: "
@@ -259,7 +262,7 @@ plift t = case fromPlutarch @a $ mkPLifted t of
               CouldNotCompile compErr -> "could not compile: " <> Text.unpack compErr
               CouldNotDecodeData -> "Data value is not a valid encoding for this type"
            )
-  Right res -> res
+  Right (Just res) -> res
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ that is directly part of the Plutus default universe (instead of by way
@@ -286,17 +289,17 @@ instance
   type AsHaskell (DeriveBuiltinPLiftable a h) = h
   type PlutusRepr (DeriveBuiltinPLiftable a h) = h
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = id
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = id
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Just
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = Just
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ by way of its @Data@ encoding, rather than by @h@ being directly part of
@@ -325,17 +328,17 @@ instance
   type AsHaskell (DeriveDataPLiftable a h) = h
   type PlutusRepr (DeriveDataPLiftable a h) = PTx.Data
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = PTx.toData
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = PTx.toData
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = PTx.fromData
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = PTx.fromData
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
 {- | @via@-deriving helper, indicating that @wrapper@ has a Haskell-level equivalent
 @h@ by way of encoding of @inner@. It requires that @AsHaskell inner@ has the same
@@ -343,31 +346,31 @@ Haskell representation as @h@
 
 @since WIP
 -}
-newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (inner :: S -> Type) (h :: Type) (s :: S)
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
   = DeriveNewtypePLiftable (wrapper s)
   deriving stock (Generic)
   deriving anyclass (PlutusType)
 
 -- | @since WIP
-instance DerivePlutusType (DeriveNewtypePLiftable w i h) where
+instance DerivePlutusType (DeriveNewtypePLiftable w h) where
   type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
-instance (PLiftable inner, Coercible (AsHaskell inner) h) => PLiftable (DeriveNewtypePLiftable wrapper inner h) where
-  type AsHaskell (DeriveNewtypePLiftable wrapper inner h) = h
-  type PlutusRepr (DeriveNewtypePLiftable wrapper inner h) = PlutusRepr inner
+instance (PLiftable (PInner w), Coercible (AsHaskell (PInner w)) h, PLC.DefaultUni `Includes` PlutusRepr (PInner w)) => PLiftable (DeriveNewtypePLiftable w h) where
+  type AsHaskell (DeriveNewtypePLiftable w h) = h
+  type PlutusRepr (DeriveNewtypePLiftable w h) = PlutusRepr (PInner w)
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = toPlutarchRepr @inner . coerce @h @(AsHaskell inner)
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = haskToRepr @(PInner w) . coerce
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = punsafeCoercePLifted . toPlutarch @inner . coerce @h @(AsHaskell inner)
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = coerce . reprToHask @(PInner w)
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = coerce . fromPlutarchRepr @inner
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = punsafeCoercePLifted . toPlutarchUni @(PInner w)
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch p = coerce . fromPlutarch @inner $ punsafeCoercePLifted p
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr x = fromPlutarchUni @(PInner w) $ punsafeCoercePLifted x
 
 {- | Similar to 'Identity', but at the level of Plutarch. Only needed when
 writing manual instances of 'PLiftable', or if you want to use 'toPlutarch'
@@ -398,7 +401,7 @@ mkPLifted t = PLifted (popaque t)
 
 @since WIP
 -}
-newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed {unPLiftedClosed :: forall (s :: S). PLifted s a}
+newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed {unPLiftedClosed :: forall (s :: S). Term s POpaque}
 
 deriving via
   (DeriveBuiltinPLiftable PInteger Integer)
@@ -411,51 +414,45 @@ deriving via
   instance
     PLiftable PBool
 
--- | @since WIP
-deriving via
-  DeriveBuiltinPLiftable PData PTx.Data
-  instance
-    PLiftable PData
+-- instance {-# OVERLAPPING #-} PLiftable (PAsData PByteString) where
+--   type AsHaskell (PAsData PByteString) = AsHaskell PByteString
+--   type PlutusRepr (PAsData PByteString) = PTx.Data
+--   {-# INLINEABLE haskToRepr #-}
+--   haskToRepr = PTx.toData . BuiltinByteString
+--   {-# INLINEABLE reprToHask #-}
+--   reprToHask = toPlutarchUni
+--   {-# INLINEABLE reprToPlut #-}
+--   reprToPlut x = (\(BuiltinByteString str) -> str) <$> PTx.fromData x
+--   {-# INLINEABLE plutToRepr #-}
+--   plutToRepr = fromPlutarchUni
 
-instance {-# OVERLAPPING #-} PLiftable (PAsData PByteString) where
-  type AsHaskell (PAsData PByteString) = AsHaskell PByteString
-  type PlutusRepr (PAsData PByteString) = PTx.Data
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = PTx.toData . BuiltinByteString
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr x = (\(BuiltinByteString str) -> str) <$> PTx.fromData x
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
-
-instance {-# OVERLAPPING #-} PLiftable (PAsData PData) where
-  type AsHaskell (PAsData PData) = AsHaskell PData
-  type PlutusRepr (PAsData PData) = PTx.Data
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = PTx.toData . BuiltinData
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr x = (\(BuiltinData str) -> str) <$> PTx.fromData x
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+-- instance {-# OVERLAPPING #-} PLiftable (PAsData PData) where
+--   type AsHaskell (PAsData PData) = AsHaskell PData
+--   type PlutusRepr (PAsData PData) = PTx.Data
+--   {-# INLINEABLE haskToRepr #-}
+--   haskToRepr = PTx.toData . BuiltinData
+--   {-# INLINEABLE reprToHask #-}
+--   reprToHask = toPlutarchUni
+--   {-# INLINEABLE reprToPlut #-}
+--   reprToPlut x = (\(BuiltinData str) -> str) <$> PTx.fromData x
+--   {-# INLINEABLE plutToRepr #-}
+--   plutToRepr= fromPlutarchUni
 
 instance (PTx.ToData (AsHaskell a), PTx.FromData (AsHaskell a), PIsData a) => PLiftable (PAsData a) where
   type AsHaskell (PAsData a) = AsHaskell a
   type PlutusRepr (PAsData a) = PTx.Data
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = PTx.toData
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = PTx.toData
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = PTx.fromData
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = PTx.fromData
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
 -- | @since WIP
 instance
@@ -469,60 +466,89 @@ instance
   type AsHaskell (PBuiltinPair a b) = (AsHaskell a, AsHaskell b)
   type PlutusRepr (PBuiltinPair a b) = (PlutusRepr a, PlutusRepr b)
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr (a, b) = (toPlutarchRepr @a a, toPlutarchRepr @b b)
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (a, b) = (haskToRepr @a a, haskToRepr @b b)
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
+  {-# INLINEABLE reprToHask #-}
+  reprToHask (a, b) = (,) <$> reprToHask @a a <*> reprToHask @b b
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr (ar, br) = do
-    a <- fromPlutarchRepr @a ar
-    b <- fromPlutarchRepr @b br
-    pure (a, b)
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
 -- | @since WIP
 instance (PLiftable a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => PLiftable (PBuiltinList a) where
   type AsHaskell (PBuiltinList a) = [AsHaskell a]
   type PlutusRepr (PBuiltinList a) = [PlutusRepr a]
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = map (toPlutarchRepr @a)
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = map (haskToRepr @a)
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = traverse (reprToHask @a)
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = traverse (fromPlutarchRepr @a)
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
--- | @since WIP
+{- | @since WIP
 deriving via
   (DeriveBuiltinPLiftable PByteString ByteString)
   instance
     PLiftable PByteString
+-}
+instance PLiftable PByteString where
+  type AsHaskell PByteString = BuiltinByteString
+  type PlutusRepr PByteString = ByteString
+
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (BuiltinByteString str) = str
+
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Just . BuiltinByteString
+
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
+
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
+
+instance PLiftable PData where
+  type AsHaskell PData = BuiltinData
+  type PlutusRepr PData = PTx.Data
+
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (BuiltinData str) = str
+
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Just . BuiltinData
+
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
+
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
 -- | @since WIP
 instance PLiftable PByte where
   type AsHaskell PByte = Word8
   type PlutusRepr PByte = Integer
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = toPlutarchRepr @PInteger . fromIntegral @_ @Integer
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = fromIntegral @_ @Integer
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = toPlutarchUni
+  {-# INLINEABLE reprToHask #-}
+  reprToHask x = fromIntegral <$> reprToHask @PInteger x
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = fmap (fromIntegral @Integer @Word8) . fromPlutarchRepr @PInteger
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = toPlutarchUni
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch = fromPlutarchUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = fromPlutarchUni
 
 -- | @since WIP
 deriving via

@@ -73,22 +73,18 @@ instance PLiftable a => PLiftable (PMaybe a) where
   type AsHaskell (PMaybe a) = Maybe (AsHaskell a)
   type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
 
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = toPlutarchReprClosed
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (Just a) = PLiftedClosed $ popaque $ pcon $ PJust (pconstant @a a)
+  haskToRepr Nothing = PLiftedClosed $ popaque $ pcon PNothing
 
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch (Just a) = mkPLifted $ pcon $ PJust $ pconstant @a a
-  toPlutarch Nothing = mkPLifted $ pcon PNothing
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = undefined
 
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = fromPlutarchReprClosed
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = undefined -- toPlutarchReprClosed
 
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch t = do
-    isJust' <- fromPlutarch $ mkPLifted $ pisJust # getPLifted t
-    if isJust'
-      then fmap Just $ fromPlutarch $ mkPLifted $ pfromJust # getPLifted t
-      else Right Nothing
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = undefined -- mkPLifted$ pcon $ PJust $ pconstant @a a
 
 -- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
 pfromJust ::
