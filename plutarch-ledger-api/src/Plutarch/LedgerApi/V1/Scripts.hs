@@ -44,30 +44,6 @@ deriving via
   instance
     PLiftable PScriptHash
 
--- | @since 3.1.0
-instance PTryFrom PData PScriptHash where
-  type PTryFromExcess PData PScriptHash = Mret PScriptHash
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(PScriptHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PScriptHash . pcon . PDataNewtype . pdata $ unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PScriptHash) where
-  type PTryFromExcess PData (PAsData PScriptHash) = Mret PScriptHash
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(PScriptHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PScriptHash . pcon . PDataNewtype . pdata $ unwrapped)
-
 -- | @since 2.0.0
 newtype PDatum (s :: S) = PDatum (Term s PData)
   deriving stock
@@ -83,8 +59,6 @@ newtype PDatum (s :: S) = PDatum (Term s PData)
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -96,9 +70,6 @@ deriving via
   DeriveDataPLiftable PDatum Plutus.Datum
   instance
     PLiftable PDatum
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PDatum)
 
 -- | @since 2.0.0
 newtype PDatumHash (s :: S) = PDatumHash (Term s (PDataNewtype PByteString))
@@ -117,8 +88,6 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s (PDataNewtype PByteString))
       POrd
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -130,9 +99,6 @@ deriving via
   DeriveDataPLiftable PDatumHash Plutus.DatumHash
   instance
     PLiftable PDatumHash
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PDatumHash)
 
 -- | @since 2.0.0
 newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
@@ -149,8 +115,6 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -162,9 +126,6 @@ deriving via
   DeriveDataPLiftable PRedeemer Plutus.Redeemer
   instance
     PLiftable PRedeemer
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PRedeemer)
 
 -- | @since 2.0.0
 newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s (PDataNewtype PByteString))
@@ -183,8 +144,6 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s (PDataNewtype PByteString
       POrd
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
 -- | @since 3.1.0
@@ -196,6 +155,3 @@ deriving via
   DeriveDataPLiftable PRedeemerHash Plutus.RedeemerHash
   instance
     PLiftable PRedeemerHash
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PRedeemerHash)

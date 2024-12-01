@@ -44,30 +44,6 @@ deriving via
     PLiftable PTxId
 
 -- | @since 3.1.0
-instance PTryFrom PData PTxId where
-  type PTryFromExcess PData PTxId = Mret PTxId
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 32)
-        (f ())
-        (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId . pcon . PDataNewtype . pdata $ unwrapped)
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PTxId) where
-  type PTryFromExcess PData (PAsData PTxId) = Mret PTxId
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 32)
-        (f ())
-        (ptraceInfoError "ptryFrom(PTxId): must be 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTxId . pcon . PDataNewtype . pdata $ unwrapped)
-
--- | @since 3.1.0
 newtype PTxOutRef (s :: S)
   = PTxOutRef
       ( Term
@@ -94,8 +70,6 @@ newtype PTxOutRef (s :: S)
     , -- | @since 3.1.0
       POrd
     , -- | @since 3.1.0
-      PTryFrom PData
-    , -- | @since 3.1.0
       PShow
     )
 
@@ -108,6 +82,3 @@ deriving via
   DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
   instance
     PLiftable PTxOutRef
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PTxOutRef)

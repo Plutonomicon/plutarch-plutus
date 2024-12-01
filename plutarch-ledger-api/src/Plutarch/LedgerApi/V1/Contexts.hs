@@ -31,8 +31,6 @@ data PScriptPurpose (s :: S)
       PEq
     , -- | @since 3.1.1
       PShow
-    , -- | @since 3.1.1
-      PTryFrom PData
     )
 
 -- | @since 3.1.1
@@ -44,6 +42,3 @@ deriving via
   DeriveDataPLiftable PScriptPurpose Plutus.ScriptPurpose
   instance
     PLiftable PScriptPurpose
-
--- | @since 3.1.1
-instance PTryFrom PData (PAsData PScriptPurpose)

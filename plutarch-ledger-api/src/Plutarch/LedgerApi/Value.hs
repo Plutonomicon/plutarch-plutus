@@ -77,15 +77,13 @@ import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
 -- | @since 2.2.0
-newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
+newtype PLovelace (s :: S) = PLovelace (Term s PInteger)
   deriving stock
     ( -- | @since 2.2.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.2.0
-      PlutusType
-    , -- | @since 2.2.0
       PIsData
     , -- | @since 2.2.0
       PEq
@@ -93,22 +91,20 @@ newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
       POrd
     , -- | @since 2.2.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
--- | @since 2.2.0
-instance DerivePlutusType PLovelace where
-  type DPTStrat _ = PlutusTypeNewtype
+instance SOP.Generic (PLovelace s)
+
+deriving via
+  DeriveAsNewtype PLovelace
+  instance
+    PlutusType PLovelace
 
 -- | @since WIP
 deriving via
-  DeriveDataPLiftable PLovelace Plutus.Lovelace
+  DeriveNewtypePLiftable PLovelace PInteger Plutus.Lovelace
   instance
     PLiftable PLovelace
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PLovelace)
 
 -- | @since 2.0.0
 newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
@@ -139,24 +135,6 @@ deriving via
   instance
     PLiftable PTokenName
 
--- | @since 3.1.0
-instance PTryFrom PData PTokenName where
-  type PTryFromExcess PData PTokenName = Mret PTokenName
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTokenName . pcon . PDataNewtype . pdata $ unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PTokenName) where
-  type PTryFromExcess PData (PAsData PTokenName) = Mret PTokenName
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif (plengthBS # unwrapped #<= 32) (f ()) (ptraceInfoError "ptryFrom(TokenName): must be at most 32 bytes long")
-    pure (punsafeCoerce opq, pcon . PTokenName . pcon . PDataNewtype . pdata $ unwrapped)
-
 -- | @since 2.0.0
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteString))
   deriving stock
@@ -185,29 +163,6 @@ deriving via
   DeriveDataPLiftable PCurrencySymbol Plutus.CurrencySymbol
   instance
     PLiftable PCurrencySymbol
-
--- | @since 3.1.0
-instance PTryFrom PData PCurrencySymbol where
-  type PTryFromExcess PData PCurrencySymbol = Mret PCurrencySymbol
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    len <- tcont . plet $ plengthBS # unwrapped
-    tcont $ \f ->
-      pif
-        (len #== 0 #|| len #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
-    pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PCurrencySymbol) where
-  type PTryFromExcess PData (PAsData PCurrencySymbol) = Mret PCurrencySymbol
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    len <- tcont . plet $ plengthBS # unwrapped
-    tcont $ \f ->
-      pif (len #== 0 #|| len #== 28) (f ()) (ptraceInfoError "ptryFrom(CurrencySymbol): must be 28 bytes long or empty")
-    pure (punsafeCoerce opq, pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ unwrapped)
 
 -- | @since 2.0.0
 data AmountGuarantees = NoGuarantees | NonZero | Positive
@@ -364,44 +319,6 @@ instance
   inv a =
     punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'AssocMap.Sorted 'NoGuarantees))
 
--- | @since 2.0.0
-instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees))
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NoGuarantees))
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) = Mret (PValue 'AssocMap.Sorted 'Positive)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) = Mret (PValue 'AssocMap.Unsorted 'Positive)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) = Mret (PValue 'AssocMap.Sorted 'NonZero)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
-
--- | @since 2.1.1
-instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) = Mret (PValue 'AssocMap.Unsorted 'NonZero)
-  ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
-    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
-
 -- | @since WIP
 newtype PAssetClass (s :: S) = PAssetClass (Term s (PDataNewtype (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))))
   deriving stock
@@ -417,8 +334,6 @@ newtype PAssetClass (s :: S) = PAssetClass (Term s (PDataNewtype (PBuiltinPair (
       PEq
     , -- | @since WIP
       PShow
-    , -- | @since WIP
-      PTryFrom PData
     )
 
 -- | @since WIP
@@ -459,9 +374,6 @@ deriving via
   DeriveDataPLiftable PAssetClass PlutusValue.AssetClass
   instance
     PLiftable PAssetClass
-
--- | @since WIP
-instance PTryFrom PData (PAsData PAssetClass)
 
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 

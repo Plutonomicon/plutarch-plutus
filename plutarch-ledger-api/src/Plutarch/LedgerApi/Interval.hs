@@ -77,12 +77,6 @@ deriving via
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PInterval a)
 
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PInterval a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PInterval a))
-
 -- | @since 2.0.0
 newtype PLowerBound (a :: S -> Type) (s :: S)
   = PLowerBound
@@ -129,12 +123,6 @@ instance (PIsData a, PCountable a) => POrd (PLowerBound a) where
 -- | @since 2.0.0
 instance DerivePlutusType (PLowerBound a) where
   type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PLowerBound a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PLowerBound a))
 
 -- | @since 2.0.0
 newtype PUpperBound (a :: S -> Type) (s :: S)
@@ -183,12 +171,6 @@ instance (PIsData a, PEnumerable a) => POrd (PUpperBound a) where
 instance DerivePlutusType (PUpperBound a) where
   type DPTStrat _ = PlutusTypeData
 
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PUpperBound a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PUpperBound a))
-
 -- | @since 2.0.0
 data PExtended (a :: S -> Type) (s :: S)
   = PNegInf (Term s (PDataRecord '[]))
@@ -219,12 +201,6 @@ deriving via
 -- | @since 2.0.0
 instance DerivePlutusType (PExtended a) where
   type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PExtended a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PExtended a))
 
 {- | Check if a value is inside the given interval.
 

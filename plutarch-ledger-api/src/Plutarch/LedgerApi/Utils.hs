@@ -120,12 +120,6 @@ instance PIsData (PMaybeData a) where
   pfromDataImpl = punsafeCoerce
 
 -- | @since 2.0.0
-instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
-
--- | @since 2.0.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
-
--- | @since 2.0.0
 instance (PIsData a, POrd a) => POrd (PMaybeData a) where
   {-# INLINEABLE (#<=) #-}
   t1 #<= t2 = pmatch t1 $ \case
@@ -209,27 +203,6 @@ deriving via
   DeriveDataPLiftable PRationalData Plutus.Rational
   instance
     PLiftable PRationalData
-
--- | @since 3.1.0
-instance PTryFrom PData PRationalData where
-  type PTryFromExcess PData PRationalData = Mret PPositive
-  ptryFrom' opq cont = ptryFrom @(PAsData PRationalData) opq (cont . first punsafeCoerce)
-
-{- | This instance produces a verified positive denominator as the excess output.
-
-@since 3.1.0
--}
-instance PTryFrom PData (PAsData PRationalData) where
-  type PTryFromExcess PData (PAsData PRationalData) = Mret PPositive
-  ptryFrom' opq = runTermCont $ do
-    opq' <- pletC $ pasConstr # opq
-    pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
-    flds <- pletC $ psndBuiltin # opq'
-    _numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
-    ratTail <- pletC $ ptail # flds
-    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) snd
-    pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
-    pure (punsafeCoerce opq, denm)
 
 -- | @since 3.1.0
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)

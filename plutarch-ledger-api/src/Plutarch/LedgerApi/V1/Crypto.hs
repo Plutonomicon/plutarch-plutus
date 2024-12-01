@@ -39,27 +39,3 @@ deriving via
   DeriveDataPLiftable PPubKeyHash Plutus.PubKeyHash
   instance
     PLiftable PPubKeyHash
-
--- | @since 3.1.0
-instance PTryFrom PData PPubKeyHash where
-  type PTryFromExcess PData PPubKeyHash = Mret PPubKeyHash
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PPubKeyHash . pcon . PDataNewtype . pdata $ unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PPubKeyHash) where
-  type PTryFromExcess PData (PAsData PPubKeyHash) = Mret PPubKeyHash
-  ptryFrom' opq = runTermCont $ do
-    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
-    tcont $ \f ->
-      pif
-        (plengthBS # unwrapped #== 28)
-        (f ())
-        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
-    pure (punsafeCoerce opq, pcon . PPubKeyHash . pcon . PDataNewtype . pdata $ unwrapped)
