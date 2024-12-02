@@ -24,14 +24,12 @@ module Plutarch.Prelude (
   pindexBS,
   pintegerToByte,
   plengthBS,
-  ponesBS,
   porBS,
   ppadding,
   preplicateBS,
   psliceBS,
   ptruncation,
   pxorBS,
-  pzeroesBS,
 
   -- * Cryptographic primitives
   psha2_256,

@@ -14,8 +14,6 @@ module Plutarch.Builtin.ByteString (
   porBS,
   pxorBS,
   pcomplementBS,
-  pzeroesBS,
-  ponesBS,
   preplicateBS,
   pconsBS,
   pbyteToInteger,
@@ -182,24 +180,6 @@ pcomplementBS ::
   forall (s :: S).
   Term s (PByteString :--> PByteString)
 pcomplementBS = punsafeBuiltin PLC.ComplementByteString
-
-{- | Construct a 'PByteString' of the specified length (0 if negative)
-consisting entirely of zero bytes.
-
-@since WIP
--}
-pzeroesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-pzeroesBS = phoistAcyclic $ plam $ \len ->
-  preplicateBS # len #$ pintegerToByte # pconstantInteger 0
-
-{- | Construct a 'PByteString' of the specified length (0 if negative)
-consisting entirely of ones; that is, where every byte is @0xFF@.
-
-@since WIP
--}
-ponesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-ponesBS = phoistAcyclic $ plam $ \len ->
-  preplicateBS # len #$ pintegerToByte # pconstantInteger 255
 
 {- | Given a desired length and a 'PByte', construct a 'PByteString' of the
 specified length (0 if negative) consisting entirely of that 'PByte'.
