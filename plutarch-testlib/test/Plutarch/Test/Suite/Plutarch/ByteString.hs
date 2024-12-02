@@ -3,7 +3,6 @@ module Plutarch.Test.Suite.Plutarch.ByteString (tests) where
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import GHC.Exts (fromList)
-import Plutarch.Builtin.ByteString (pallBS)
 import Plutarch.Prelude
 import Plutarch.String (pisHexDigit)
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
@@ -48,17 +47,6 @@ tests =
     , testGroup
         "Unit tests"
         [ testGroup
-            "pallBS"
-            [ testEvalEqual
-                "predicate matching all entries works"
-                (pallBS # plam (#== pconstant 97) # pconstant "aaaaaaaaaa")
-                (pcon PTrue)
-            , testEvalEqual
-                "predicate missing one case fails"
-                (pallBS # plam (#== pconstant 97) # pconstant "aaaaaaaaab")
-                (pcon PFalse)
-            ]
-        , testGroup
             "pisHexDigit"
             [ testEvalEqual
                 "numbers are hex digits"
@@ -96,3 +84,26 @@ nonHexAscii =
     <>
     -- After lower-case
     fromList [103 .. 127]
+
+pallBS ::
+  forall (s :: S).
+  Term s ((PByte :--> PBool) :--> PByteString :--> PBool)
+pallBS = phoistAcyclic $ plam $ \p bs ->
+  plet (plengthBS # bs) $ \len ->
+    go p len bs # pconstant 0
+  where
+    go ::
+      forall (s' :: S).
+      Term s' (PByte :--> PBool) ->
+      Term s' PInteger ->
+      Term s' PByteString ->
+      Term s' (PInteger :--> PBool)
+    go p len bs = pfix #$ plam $ \self ix ->
+      pif
+        (ix #< len)
+        ( pif
+            (p #$ pindexBS # bs # ix)
+            (self # (ix + 1))
+            (pcon PFalse)
+        )
+        (pcon PTrue)

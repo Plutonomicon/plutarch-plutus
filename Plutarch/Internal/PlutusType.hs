@@ -36,6 +36,7 @@ import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pfalse, pif', ptrue)
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
+  PEndianness,
   PLogicOpSemantics,
  )
 import Plutarch.Builtin.Data (
@@ -266,11 +267,30 @@ instance PlutusType PUnit where
   pcon' PUnit = punit
   pmatch' x f = plet x \_ -> f PUnit
 
-instance DerivePlutusType PBuiltinBLS12_381_G1_Element where type DPTStrat _ = PlutusTypeNewtype
+-- | @since WIP
+instance DerivePlutusType PBuiltinBLS12_381_G1_Element where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
 deriving anyclass instance PlutusType PBuiltinBLS12_381_G1_Element
 
-instance DerivePlutusType PBuiltinBLS12_381_G2_Element where type DPTStrat _ = PlutusTypeNewtype
+-- | @since WIP
+instance DerivePlutusType PBuiltinBLS12_381_G2_Element where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
 deriving anyclass instance PlutusType PBuiltinBLS12_381_G2_Element
 
-instance DerivePlutusType PBuiltinBLS12_381_MlResult where type DPTStrat _ = PlutusTypeNewtype
+-- | @since WIP
+instance DerivePlutusType PBuiltinBLS12_381_MlResult where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
 deriving anyclass instance PlutusType PBuiltinBLS12_381_MlResult
+
+-- | @since WIP
+instance DerivePlutusType PEndianness where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving anyclass instance PlutusType PEndianness
