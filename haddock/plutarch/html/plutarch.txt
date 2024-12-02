@@ -518,6 +518,20 @@ PByteString :: Term s POpaque -> PByteString s
 newtype PByte (s :: S)
 PByte :: Term s POpaque -> PByte (s :: S)
 
+-- | Type designating whether logical operations should use padding or
+--   truncation semantics. See <a>CIP-122</a> for more details on this.
+--   
+--   @since WIP
+newtype PLogicOpSemantics (s :: S)
+PLogicOpSemantics :: Term s PBool -> PLogicOpSemantics (s :: S)
+
+-- | Type designating whether a conversion should be most-significant-first
+--   or most-significant-last. See <a>CIP-121</a> for more details on this.
+--   
+--   @since WIP
+newtype PEndianness (s :: S)
+PEndianness :: Term s PBool -> PEndianness (s :: S)
+
 -- | Indicates that padding semantics should be used.
 --   
 --   @since WIP
@@ -528,12 +542,15 @@ ppadding :: forall (s :: S). Term s PLogicOpSemantics
 --   @since WIP
 ptruncation :: forall (s :: S). Term s PLogicOpSemantics
 
--- | Type designating whether logical operations should use padding or
---   truncation semantics. See <a>CIP-122</a> for more details on this.
+-- | Indicates the conversion should be most-significant-first.
 --   
 --   @since WIP
-newtype PLogicOpSemantics (s :: S)
-PLogicOpSemantics :: Term s PBool -> PLogicOpSemantics (s :: S)
+pmostSignificantFirst :: forall (s :: S). Term s PEndianness
+
+-- | Indicates the conversion should be most-significant-last.
+--   
+--   @since WIP
+pmostSignificantLast :: forall (s :: S). Term s PEndianness
 
 -- | Perform the logical AND of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
@@ -565,19 +582,6 @@ pxorBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PBy
 --   @since WIP
 pcomplementBS :: forall (s :: S). Term s (PByteString :--> PByteString)
 
--- | Construct a <a>PByteString</a> of the specified length (0 if negative)
---   consisting entirely of zero bytes.
---   
---   @since WIP
-pzeroesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-
--- | Construct a <a>PByteString</a> of the specified length (0 if negative)
---   consisting entirely of ones; that is, where every byte is
---   <tt>0xFF</tt>.
---   
---   @since WIP
-ponesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-
 -- | Given a desired length and a <a>PByte</a>, construct a
 --   <a>PByteString</a> of the specified length (0 if negative) consisting
 --   entirely of that <a>PByte</a>.
@@ -596,8 +600,7 @@ pconsBS :: Term s (PByte :--> (PByteString :--> PByteString))
 pbyteToInteger :: Term s (PByte :--> PInteger)
 
 -- | Try to convert a <a>PInteger</a> into its corresponding <a>PByte</a>.
---   This operation is checked, and will error if given a negative
---   <a>PInteger</a>, or one too large to fit into a byte.
+--   This operation unchecked: use with care.
 --   
 --   @since WIP
 pintegerToByte :: Term s (PInteger :--> PByte)
@@ -619,16 +622,31 @@ plengthBS :: Term s (PByteString :--> PInteger)
 --   @since WIP
 pindexBS :: Term s (PByteString :--> (PInteger :--> PByte))
 
--- | Verify that the given predicate holds for every byte in the argument.
---   
---   @since WIP
-pallBS :: forall (s :: S). Term s ((PByte :--> PBool) :--> (PByteString :--> PBool))
-
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString
-hexDigitToWord8 :: HasCallStack => Char -> Word8
+
+-- | Convert a <a>PByteString</a> into a <a>PInteger</a>, as per
+--   <a>CIP-121</a>.
+--   
+--   @since WIP
+pbyteStringToInteger :: forall (s :: S). Term s (PEndianness :--> (PByteString :--> PInteger))
+
+-- | Converts a <a>PInteger</a> into a <a>PByteString</a>, given a desired
+--   endianness and target length. For more details, see <a>CIP-121</a>.
+--   
+--   <h1>Note</h1>
+--   
+--   This conversion is unsafe. It will fail if any of the following occur:
+--   
+--   <ol>
+--   <li>The size is negative.</li>
+--   <li>The size is too large (currently if over 8196 bytes).</li>
+--   <li>The size won't fit the integer to convert.</li>
+--   </ol>
+pintegerToByteString :: forall (s :: S). Term s (PEndianness :--> (PInteger :--> (PInteger :--> PByteString)))
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.ByteString.PByteString s)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.ByteString.PByte s)
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.ByteString.PEndianness s)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.ByteString.PLogicOpSemantics s)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Base.Semigroup (Plutarch.Internal.Term.Term s Plutarch.Builtin.ByteString.PByteString)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Base.Monoid (Plutarch.Internal.Term.Term s Plutarch.Builtin.ByteString.PByteString)
@@ -842,6 +860,7 @@ instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.String.PString
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.ByteString.PEndianness
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.IsData.PIsData a => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.Data.PAsData a)
 instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Generic.PGeneric a, (Plutarch.Internal.Generic.PCode a :: [[Plutarch.Internal.Term.PType]]) GHC.Types.~ ((':) @[Plutarch.Internal.Term.PType] ((':) @Plutarch.Internal.Term.PType (Plutarch.Internal.PlutusType.GetPNewtype a) ('[] @Plutarch.Internal.Term.PType)) ('[] @[Plutarch.Internal.Term.PType]) :: [[Plutarch.Internal.Term.PType]])) => Plutarch.Internal.PlutusType.Helper a
 instance Plutarch.Internal.PlutusType.PlutusTypeStrat Plutarch.Internal.PlutusType.PlutusTypeNewtype
@@ -853,6 +872,7 @@ instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Builtin.String.P
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Builtin.ByteString.PEndianness
 instance forall (a :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). (forall (t :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PVariant'' t => Plutarch.Internal.PlutusType.PVariant'' (a t)) => Plutarch.Internal.PlutusType.PVariant a
 instance forall (a :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). (forall (t :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PCovariant'' t => Plutarch.Internal.PlutusType.PContravariant'' (a t)) => Plutarch.Internal.PlutusType.PContravariant a
 instance forall (a :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). (forall (t :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PCovariant'' t => Plutarch.Internal.PlutusType.PCovariant'' (a t)) => Plutarch.Internal.PlutusType.PCovariant a
@@ -1548,6 +1568,7 @@ class PEq t
 (#==) :: (PEq t, PGeneric t, PlutusType t, All2 PEq (PCode t)) => Term s t -> Term s t -> Term s PBool
 infix 4 #==
 instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.ByteString.PLogicOpSemantics
+instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.ByteString.PEndianness
 instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Eq.PEq a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Internal.Eq.Fc 'GHC.Types.False a
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinList a) => Plutarch.Internal.Eq.Fc 'GHC.Types.True a
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.Fc (Plutarch.Internal.Eq.F a) a => Plutarch.Internal.Eq.PEq (Plutarch.Builtin.Data.PBuiltinList a)
@@ -1642,6 +1663,7 @@ infix 4 #>
 (#>=) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
 infix 4 #>=
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PLogicOpSemantics
+instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PEndianness
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Bool.PBool
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PByteString
@@ -2760,65 +2782,6 @@ ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b
 --   @since WIP
 pexpectJustC :: forall (a :: S -> Type) (r :: S -> Type) (s :: S). Term s r -> Term s (PMaybe a) -> TermCont @r s (Term s a)
 
-
--- | Conversions between various types.
---   
---   @since WIP
-module Plutarch.Convert
-
--- | Type designating whether a conversion should be most-significant-first
---   or most-significant-last. See <a>CIP-121</a> for more details on this.
---   
---   @since WIP
-data PEndianness (s :: S)
-
--- | Indicates the conversion should be most-significant-first.
---   
---   @since WIP
-pmostSignificantFirst :: forall (s :: S). Term s PEndianness
-
--- | Indicates the conversion should be most-significant-last.
---   
---   @since WIP
-pmostSignificantLast :: forall (s :: S). Term s PEndianness
-
--- | Convert a <a>PByteString</a> into a <a>PInteger</a>, as per
---   <a>CIP-121</a>.
---   
---   @since WIP
-pbyteStringToInteger :: forall (s :: S). Term s PEndianness -> Term s (PByteString :--> PInteger)
-
--- | Convert a (non-negative) <a>PInteger</a> into a <a>PByteString</a>.
---   This will produce a result of the minimal size required: if you want
---   to specify a size, use <a>pintegerToByteStringSized</a>. For details,
---   see <a>CIP-121</a>.
---   
---   <h1>Note</h1>
---   
---   This conversion is unsafe, as it will error when given a non-negative
---   integer.
-pintegerToByteString :: forall (s :: S). Term s PEndianness -> Term s (PInteger :--> PByteString)
-
--- | As <a>pintegerToByteString</a>, but allows specifying a required size.
---   If a size larger than the minimum is specified, the result will be
---   padded with zero bytes, positioned according to the endianness
---   argument.
---   
---   For more details, see <a>CIP-121</a>.
---   
---   <h1>Note</h1>
---   
---   This conversion is unsafe. In addition to the reasons for
---   <tt>punsafeIntegerToByteString</tt> being unsafe, this will also error
---   if the requested size is too large (currently 8192 is the limit) or
---   too small to fit the specified <a>PInteger</a>.
-pintegerToByteStringSized :: forall (s :: S). Term s PEndianness -> Term s (PPositive :--> (PInteger :--> PByteString))
-instance Plutarch.Internal.Ord.POrd Plutarch.Convert.PEndianness
-instance Plutarch.Internal.Eq.PEq Plutarch.Convert.PEndianness
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Convert.PEndianness
-instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Convert.PEndianness s)
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Convert.PEndianness
-
 module Plutarch.Builtin.Crypto
 
 -- | Hash a <a>PByteString</a> using SHA-256.
@@ -2995,21 +2958,13 @@ phexByteStr :: HasCallStack => String -> Term s PByteString
 pindexBS :: Term s (PByteString :--> (PInteger :--> PByte))
 
 -- | Try to convert a <a>PInteger</a> into its corresponding <a>PByte</a>.
---   This operation is checked, and will error if given a negative
---   <a>PInteger</a>, or one too large to fit into a byte.
+--   This operation unchecked: use with care.
 --   
 --   @since WIP
 pintegerToByte :: Term s (PInteger :--> PByte)
 
 -- | Find the length of a <a>PByteString</a>.
 plengthBS :: Term s (PByteString :--> PInteger)
-
--- | Construct a <a>PByteString</a> of the specified length (0 if negative)
---   consisting entirely of ones; that is, where every byte is
---   <tt>0xFF</tt>.
---   
---   @since WIP
-ponesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
 
 -- | Perform the logical OR of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
@@ -3050,12 +3005,6 @@ ptruncation :: forall (s :: S). Term s PLogicOpSemantics
 --   
 --   @since WIP
 pxorBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
-
--- | Construct a <a>PByteString</a> of the specified length (0 if negative)
---   consisting entirely of zero bytes.
---   
---   @since WIP
-pzeroesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
 
 -- | Hash a <a>PByteString</a> using SHA-256.
 psha2_256 :: Term s (PByteString :--> PByteString)
