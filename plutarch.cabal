@@ -94,7 +94,6 @@ library
     Plutarch.Either
     Plutarch.Enum
     Plutarch.Evaluate
-    Plutarch.FFI
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Fix
