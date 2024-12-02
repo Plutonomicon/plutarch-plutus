@@ -4,6 +4,7 @@ module Plutarch.Internal.Ord (
   (#>=),
 ) where
 
+import Data.Kind (Type)
 import Plutarch.Builtin.Bool (
   PBool,
   pand',
@@ -15,6 +16,7 @@ import Plutarch.Builtin.Bool (
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
+  PEndianness,
   PLogicOpSemantics,
  )
 import Plutarch.Builtin.Integer (
@@ -23,9 +25,6 @@ import Plutarch.Builtin.Integer (
   pltInteger,
  )
 import Plutarch.Builtin.Unit (PUnit)
-
-import Data.Kind (Type)
-
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Other (pto)
@@ -160,3 +159,6 @@ instance POrd PUnit where
   pmax x y = plet x $ \_ -> plet y $ const x
   {-# INLINEABLE pmin #-}
   pmin = pmax
+
+-- | @since WIP
+deriving anyclass instance POrd PEndianness

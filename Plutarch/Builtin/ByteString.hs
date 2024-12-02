@@ -5,8 +5,11 @@ module Plutarch.Builtin.ByteString (
   PByteString (..),
   PByte (..),
   PLogicOpSemantics (..),
+  PEndianness (..),
   ppadding,
   ptruncation,
+  pmostSignificantFirst,
+  pmostSignificantLast,
   pandBS,
   porBS,
   pxorBS,
@@ -22,6 +25,9 @@ module Plutarch.Builtin.ByteString (
   pindexBS,
   pallBS,
   phexByteStr,
+  pbyteStringToInteger,
+  pintegerToByteString,
+  pintegerToByteStringSized,
 ) where
 
 import Data.ByteString qualified as BS
@@ -79,6 +85,33 @@ instance Semigroup (Term s PByteString) where
 
 instance Monoid (Term s PByteString) where
   mempty = punsafeConstantInternal $ PLC.someValue BS.empty
+
+{- | Type designating whether a conversion should be most-significant-first or
+most-significant-last. See
+[CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#representation)
+for more details on this.
+
+@since WIP
+-}
+newtype PEndianness (s :: S) = PEndianness (Term s PBool)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+
+{- | Indicates the conversion should be most-significant-first.
+
+@since WIP
+-}
+pmostSignificantFirst :: forall (s :: S). Term s PEndianness
+pmostSignificantFirst = punsafeCoerce ptrue
+
+{- | Indicates the conversion should be most-significant-last.
+
+@since WIP
+-}
+pmostSignificantLast :: forall (s :: S). Term s PEndianness
+pmostSignificantLast = punsafeCoerce pfalse
 
 {- | Indicates that padding semantics should be used.
 
@@ -251,6 +284,55 @@ phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
     f "" = []
     f [_] = error "UnevenLength"
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
+
+{- | Convert a 'PByteString' into a 'PInteger', as per
+[CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinbytestringtointeger).
+
+@since WIP
+-}
+pbyteStringToInteger ::
+  forall (s :: S).
+  Term s PEndianness ->
+  Term s (PByteString :--> PInteger)
+pbyteStringToInteger e = plam $ \bs ->
+  punsafeBuiltin PLC.ByteStringToInteger # punsafeCoerce @PBool e # bs
+
+{- | Convert a (non-negative) 'PInteger' into a 'PByteString'. This will produce
+a result of the minimal size required: if you want to specify a size, use
+'pintegerToByteStringSized'. For details, see
+[CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
+
+= Note
+
+This conversion is unsafe, as it will error when given a non-negative
+integer.
+-}
+pintegerToByteString ::
+  forall (s :: S).
+  Term s PEndianness ->
+  Term s (PInteger :--> PByteString)
+pintegerToByteString e = plam $ \i ->
+  punsafeBuiltin PLC.IntegerToByteString # punsafeCoerce @PBool e # pconstantInteger 0 # i
+
+{- | As 'pintegerToByteString', but allows specifying a required size. If
+a size larger than the minimum is specified, the result will be padded with zero
+bytes, positioned according to the endianness argument.
+
+For more details, see [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
+
+= Note
+
+This conversion is unsafe. In addition to the reasons for
+'punsafeIntegerToByteString' being unsafe, this will also error if the
+requested size is too large (currently 8192 is the limit), too small to fit
+the specified 'PInteger', or negative.
+-}
+pintegerToByteStringSized ::
+  forall (s :: S).
+  Term s PEndianness ->
+  Term s (PInteger :--> PInteger :--> PByteString)
+pintegerToByteStringSized e = plam \len i ->
+  punsafeBuiltin PLC.IntegerToByteString # punsafeCoerce @PBool e # len # i
 
 -- Helpers
 
