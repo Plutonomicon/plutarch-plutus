@@ -1,23 +1,56 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
-module Plutarch.Builtin.ByteString where
-
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.Integer
-import Plutarch.Builtin.Opaque
-
-import Plutarch.Internal.Fix
-import Plutarch.Internal.Term
+module Plutarch.Builtin.ByteString (
+  PByteString (..),
+  PByte (..),
+  PLogicOpSemantics (..),
+  ppadding,
+  ptruncation,
+  pandBS,
+  porBS,
+  pxorBS,
+  pcomplementBS,
+  pzeroesBS,
+  ponesBS,
+  preplicateBS,
+  pconsBS,
+  pbyteToInteger,
+  pintegerToByte,
+  psliceBS,
+  plengthBS,
+  pindexBS,
+  pallBS,
+  phexByteStr,
+) where
 
 import Data.ByteString qualified as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-
-import {-# SOURCE #-} Plutarch.Internal.PLam
-
+import Plutarch.Builtin.Bool (PBool, pfalse, pif, ptrue)
+import Plutarch.Builtin.Integer (
+  PInteger,
+  paddInteger,
+  pconstantInteger,
+  pltInteger,
+ )
+import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Internal.Fix (pfix)
+import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  plet,
+  punsafeBuiltin,
+  punsafeCoerce,
+  punsafeConstantInternal,
+  (#),
+  (#$),
+  (:-->),
+ )
 import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinByteString'
@@ -123,7 +156,8 @@ consisting entirely of zero bytes.
 @since WIP
 -}
 pzeroesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-pzeroesBS = punsafeBuiltin PLC.ReplicateByte
+pzeroesBS = phoistAcyclic $ plam $ \len ->
+  preplicateBS # len #$ pintegerToByte # pconstantInteger 0
 
 {- | Construct a 'PByteString' of the specified length (0 if negative)
 consisting entirely of ones; that is, where every byte is @0xFF@.
@@ -131,7 +165,8 @@ consisting entirely of ones; that is, where every byte is @0xFF@.
 @since WIP
 -}
 ponesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-ponesBS = punsafeBuiltin PLC.ReplicateByte
+ponesBS = phoistAcyclic $ plam $ \len ->
+  preplicateBS # len #$ pintegerToByte # pconstantInteger 255
 
 {- | Given a desired length and a 'PByte', construct a 'PByteString' of the
 specified length (0 if negative) consisting entirely of that 'PByte'.
@@ -156,8 +191,7 @@ pbyteToInteger :: Term s (PByte :--> PInteger)
 pbyteToInteger = phoistAcyclic $ plam punsafeCoerce
 
 {- | Try to convert a 'PInteger' into its corresponding 'PByte'. This operation
-is checked, and will error if given a negative 'PInteger', or one too large
-to fit into a byte.
+unchecked: use with care.
 
 @since WIP
 -}
@@ -217,6 +251,8 @@ phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
     f "" = []
     f [_] = error "UnevenLength"
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
+
+-- Helpers
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
