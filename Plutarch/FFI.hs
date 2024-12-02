@@ -31,14 +31,18 @@ import Generics.SOP.Type.Metadata (
   ConstructorName,
   DatatypeInfo (ADT, Newtype),
  )
-import Plutarch.Builtin (PData)
 import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (PData)
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.ByteString (PByteString)
+import Plutarch.Builtin.Opaque (POpaque)
+import Plutarch.Builtin.String (PString)
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Generic (PCode)
+import Plutarch.Internal.ListLike (PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Other (POpaque, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DPTStrat,
@@ -49,6 +53,7 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Quantification (PForall (PForall))
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   ClosedTerm,
   Config,
@@ -66,12 +71,9 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Internal.Witness (witness)
-import Plutarch.List (PList, PListLike (PElemConstraint, pcons, pelimList, pnil), pconvertLists, plistEquals)
+import Plutarch.List (PList, plistEquals)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Script (Script (Script))
-import Plutarch.Show (PShow)
-import Plutarch.String (PString)
-import Plutarch.Unit (PUnit)
 import PlutusTx.Builtins.Internal (BuiltinBool, BuiltinByteString, BuiltinData, BuiltinUnit)
 import PlutusTx.Code (CompiledCode, CompiledCodeIn (DeserializedCode), getPlc)
 import PlutusTx.Prelude (BuiltinString)

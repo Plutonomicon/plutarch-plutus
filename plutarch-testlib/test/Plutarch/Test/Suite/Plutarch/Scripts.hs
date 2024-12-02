@@ -8,8 +8,7 @@ import Data.Coerce (coerce)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
-import Plutarch.Builtin (pasByteStr)
-import Plutarch.Crypto (pverifyEd25519Signature)
+import Plutarch.Builtin.Crypto (pverifyEd25519Signature)
 import Plutarch.Internal.Term (
   Config (Tracing),
   LogLevel (LogInfo),
@@ -127,7 +126,7 @@ authPolicyTerm :: ClosedTerm (PData :--> PScriptContext :--> POpaque)
 authPolicyTerm =
   plam $ \redeemer ctx ->
     authorizedPolicy
-      (pconstantData adminPubKeyHash)
+      (pconstant @(PAsData PPubKeyHash) adminPubKeyHash)
       redeemer
       ctx
 
@@ -142,7 +141,7 @@ authStakeValidatorTerm :: ClosedTerm (PData :--> PScriptContext :--> POpaque)
 authStakeValidatorTerm =
   plam $ \redeemer ctx ->
     authorizedStakeValidator
-      (pconstantData adminPubKeyHash)
+      (pconstant @(PAsData PPubKeyHash) adminPubKeyHash)
       redeemer
       ctx
 

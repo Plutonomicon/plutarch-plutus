@@ -65,17 +65,12 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.Builtin.Bool (pand')
-import Plutarch.Internal.Lift (
-  DeriveDataPLiftable,
-  DeriveNewtypePLiftable,
- )
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (Mret)
-import Plutarch.List qualified as List
 import Plutarch.Prelude hiding (psingleton)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
+import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V1.Value qualified as PlutusValue
 import PlutusLedgerApi.V3 qualified as Plutus
@@ -501,7 +496,7 @@ pcheckBinRel ::
     )
 pcheckBinRel = phoistAcyclic $
   plam $ \f ->
-    punsafeCoerce @_ @_ @(PValue AssocMap.Sorted any0 :--> PValue AssocMap.Sorted any1 :--> PBool) $
+    punsafeCoerce @(PValue AssocMap.Sorted any0 :--> PValue AssocMap.Sorted any1 :--> PBool) $
       AssocMap.pcheckBinRel @PCurrencySymbol # (AssocMap.pcheckBinRel @PTokenName # f # 0) # AssocMap.pempty
 
 {- | Combine two 'PValue's applying the given function to any pair of
@@ -817,7 +812,7 @@ padaOnlyValue = phoistAcyclic $
       PCons x _ ->
         pif'
           # (pfstBuiltin # x #== padaSymbolData)
-          # pcon (PValue $ pcon $ AssocMap.PMap $ List.psingleton # x)
+          # pcon (PValue $ pcon $ AssocMap.PMap $ PPrelude.psingleton # x)
           # pcon (PValue AssocMap.pempty)
 
 {- | Strip all Ada from a 'PValue'.
@@ -863,5 +858,5 @@ passertNonZero = plam $ \val ->
     inner :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PTokenName) (PAsData PInteger)) :--> PBool)
     inner = pfix #$ plam $ \self m ->
       pmatch m $ \case
-        PCons x xs -> pnot # (psndBuiltin # x #== pconstantData 0) #&& self # xs
+        PCons x xs -> pnot # (psndBuiltin # x #== pconstant @(PAsData PInteger) 0) #&& self # xs
         PNil -> pcon PTrue

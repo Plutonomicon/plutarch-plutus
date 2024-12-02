@@ -1,5 +1,6 @@
 module Plutarch.Test.Suite.Plutarch.Maybe (tests) where
 
+import Data.Kind (Type)
 import Plutarch.LedgerApi.Utils (PMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
 import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude

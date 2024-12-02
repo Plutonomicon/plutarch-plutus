@@ -17,12 +17,7 @@ module Plutarch.Test.Laws (
 ) where
 
 import Control.Applicative ((<|>))
-import Plutarch.Builtin (pforgetData)
-import Plutarch.Enum (PCountable (psuccessor, psuccessorN), PEnumerable (ppredecessor, ppredecessorN))
-import Plutarch.Internal.Lift (PLiftable (fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr))
-import Plutarch.Internal.Numeric (
-  PNum (pabs, pnegate, psignum, (#*), (#+), (#-)),
- )
+import Data.Kind (Type)
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Positive (PPositive, Positive)
 import Plutarch.Prelude
@@ -422,7 +417,7 @@ pisDataLaws tyName =
       testProperty coerceName
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: AsHaskell a) ->
-          plift (precompileTerm (plam (pfromData . punsafeCoerce @_ @_ @(PAsData a))) # pconstant @PData (Plutus.toData x)) `prettyEquals` x
+          plift (precompileTerm (plam (pfromData . punsafeCoerce @(PAsData a))) # pconstant @PData (Plutus.toData x)) `prettyEquals` x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> tyName <> ") . pconstant . toData = id"
 

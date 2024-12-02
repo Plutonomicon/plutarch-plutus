@@ -18,21 +18,12 @@ module Plutarch.Builtin.Bool (
   pand',
   por',
   pcond,
+  ptrue,
+  pfalse,
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Internal.Lift (
-  DeriveBuiltinPLiftable,
-  PLiftable,
-  PLifted (PLifted),
-  pconstant,
- )
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  PlutusType (PInner, pcon', pmatch'),
-  pcon,
-  pmatch,
- )
+import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
   PDelayed,
   S,
@@ -41,6 +32,7 @@ import Plutarch.Internal.Term (
   pforce,
   phoistAcyclic,
   punsafeBuiltin,
+  punsafeConstantInternal,
   (#),
   (:-->),
  )
@@ -56,22 +48,11 @@ data PBool (s :: S) = PTrue | PFalse
       Show
     )
 
--- | @since WIP
-deriving via
-  (DeriveBuiltinPLiftable PBool Bool)
-  instance
-    PLiftable PBool
+ptrue :: Term (s :: S) PBool
+ptrue = punsafeConstantInternal $ PLC.someValue True
 
--- | @since WIP
-instance PlutusType PBool where
-  type PInner PBool = PBool
-  {-# INLINEABLE pcon' #-}
-  pcon' =
-    pconstant . \case
-      PTrue -> True
-      PFalse -> False
-  {-# INLINEABLE pmatch' #-}
-  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+pfalse :: Term (s :: S) PBool
+pfalse = punsafeConstantInternal $ PLC.someValue False
 
 -- | @since WIP
 pbuiltinIfThenElse ::
@@ -98,9 +79,8 @@ pif ::
   Term s a ->
   Term s a ->
   Term s a
-pif cond ifT ifF = pmatch cond $ \case
-  PTrue -> ifT
-  PFalse -> ifF
+pif cond ifT ifF =
+  pforce $ pif' # cond # pdelay ifT # pdelay ifF
 
 {- | Boolean negation.
 
@@ -110,7 +90,7 @@ pnot ::
   forall (s :: S).
   Term s (PBool :--> PBool)
 pnot = phoistAcyclic $ plam $ \x ->
-  pif' # x # pcon PFalse # pcon PTrue
+  pif' # x # pfalse # ptrue
 
 {- | Lazy AND for terms.
 
@@ -135,28 +115,28 @@ infixr 2 #||
 @since WIP
 -}
 pand :: forall (s :: S). Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # phoistAcyclic (pdelay $ pcon PFalse)
+pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # phoistAcyclic (pdelay pfalse)
 
 {- | As 'pand', but strict.
 
 @since WIP
 -}
 pand' :: forall (s :: S). Term s (PBool :--> PBool :--> PBool)
-pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # pcon PFalse
+pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # pfalse
 
 {- | Hoisted lazy OR at the Plutarch level.
 
 @since WIP
 -}
 por :: forall (s :: S). Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay $ pcon PTrue)
+por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay ptrue)
 
 {- | As 'por', but strict.
 
 @since WIP
 -}
 por' :: Term s (PBool :--> PBool :--> PBool)
-por' = phoistAcyclic $ plam $ \x -> pif' # x # pcon PTrue
+por' = phoistAcyclic $ plam $ \x -> pif' # x # ptrue
 
 {- | Essentially multi-way 'pif'. More precisely, given a list of
 condition-action pairs, and an \'action of last resort\', construct a

@@ -126,6 +126,7 @@ import Data.ByteArray (convert)
 import Data.ByteString (ByteString, toStrict)
 import Data.ByteString.Short (fromShort)
 import Data.Coerce (coerce)
+import Data.Kind (Type)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils

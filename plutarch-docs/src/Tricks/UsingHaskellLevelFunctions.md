@@ -4,6 +4,7 @@
 
 ```haskell
 module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where
+import Data.Kind (Type)
 import Plutarch.Prelude hiding (pelimList)
 ```
 

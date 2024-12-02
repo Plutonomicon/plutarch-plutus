@@ -9,11 +9,9 @@ module Plutarch.LedgerApi.V1.Scripts (
   PRedeemerHash (..),
 ) where
 
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 

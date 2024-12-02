@@ -68,8 +68,7 @@ module Plutarch.LedgerApi.V1 (
   Utils.prationalFromData,
 ) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils

@@ -29,11 +29,7 @@ import GHC.TypeLits (
   KnownNat,
   Symbol,
  )
-import Plutarch.Builtin (
-  PAsData,
-  PIsData,
-  pfromData,
- )
+import Plutarch.Builtin.Data (PAsData)
 import Plutarch.DataRepr.Internal (
   PDataRecord,
   PDataSum,
@@ -55,6 +51,7 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexLabel,
   type IndexList,
  )
+import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner)

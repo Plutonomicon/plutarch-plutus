@@ -3,17 +3,12 @@
 
 module Plutarch.Test.Suite.Plutarch.TryFrom (tests) where
 
-import Plutarch.Builtin (
-  pforgetData,
-  ppairDataBuiltin,
- )
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import GHC.Records (getField)
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
-import Plutarch.TryFrom (
-  PTryFromExcess,
-  ptryFrom',
- )
 import Plutarch.Unsafe (
   punsafeCoerce,
   punsafeDowncast,
@@ -86,14 +81,14 @@ tests =
                 ( checkDeep
                     @PRational
                     @(PBuiltinList (PAsData PInteger))
-                    (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 7 #$ pcons # pconstantData 0 # pnil)
+                    (pdata $ pcons # pconstant @(PAsData PInteger) 42 #$ pcons # pconstant @(PAsData PInteger) 7 #$ pcons # pconstant @(PAsData PInteger) 0 # pnil)
                 )
             , goldenEvalFail
                 "[Integer] (with length == 2, with 0 denominator) /= PRational"
                 ( checkDeep
                     @PRational
                     @(PBuiltinList (PAsData PInteger))
-                    (pdata $ pcons # pconstantData 42 #$ pcons # pconstantData 0 # pnil)
+                    (pdata $ pcons # pconstant @(PAsData PInteger) 42 #$ pcons # pconstant @(PAsData PInteger) 0 # pnil)
                 )
             ]
         , goldenGroup

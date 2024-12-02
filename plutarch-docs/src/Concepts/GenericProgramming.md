@@ -7,7 +7,8 @@
 module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
-import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 import Plutarch.Unsafe (punsafeCoerce)
 ```
 

@@ -63,23 +63,28 @@ common c
     -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
     -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
     -Wno-missing-local-signatures -Wno-prepositive-qualified-module
-    -Wno-missing-import-lists -Wno-monomorphism-restriction
-    -Wno-missed-specialisations -Wno-all-missed-specializations
-    -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
-    -Wno-operator-whitespace -fprint-equality-relations
-    -fprint-explicit-kinds -fprint-explicit-foralls
+    -Wno-monomorphism-restriction -Wno-missed-specialisations
+    -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
+    -Wno-unrecognised-pragmas -Wno-operator-whitespace
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-foralls -Wno-missing-import-lists
+    -Wno-missing-export-lists
 
 library
   import:          c
   exposed-modules:
     Plutarch.BitString
-    Plutarch.BLS
     Plutarch.Builtin
+    Plutarch.Builtin.BLS
     Plutarch.Builtin.Bool
+    Plutarch.Builtin.ByteString
+    Plutarch.Builtin.Crypto
+    Plutarch.Builtin.Data
     Plutarch.Builtin.Integer
-    Plutarch.ByteString
+    Plutarch.Builtin.Opaque
+    Plutarch.Builtin.String
+    Plutarch.Builtin.Unit
     Plutarch.Convert
-    Plutarch.Crypto
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field
@@ -92,8 +97,11 @@ library
     Plutarch.FFI
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
+    Plutarch.Internal.Fix
     Plutarch.Internal.Generic
+    Plutarch.Internal.IsData
     Plutarch.Internal.Lift
+    Plutarch.Internal.ListLike
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
@@ -103,9 +111,12 @@ library
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Show
+    Plutarch.Internal.Subtype
     Plutarch.Internal.Term
     Plutarch.Internal.TermCont
     Plutarch.Internal.Trace
+    Plutarch.Internal.TryFrom
     Plutarch.Internal.TypeFamily
     Plutarch.Internal.Witness
     Plutarch.List
@@ -123,12 +134,9 @@ library
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Script
-    Plutarch.Show
     Plutarch.String
     Plutarch.TermCont
     Plutarch.Trace
-    Plutarch.TryFrom
-    Plutarch.Unit
     Plutarch.Unsafe
 
   build-depends:

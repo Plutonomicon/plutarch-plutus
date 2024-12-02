@@ -23,6 +23,7 @@ module Plutarch.Maybe (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (
   PLiftable (
@@ -48,6 +49,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -55,8 +57,6 @@ import Plutarch.Internal.Term (
   (#),
   (:-->),
  )
-import Plutarch.Show (PShow)
-import Plutarch.String (PString)
 import Plutarch.Trace (ptraceInfoError)
 
 -- | Plutus Maybe type, with Scott-encoded repr

@@ -1,4 +1,4 @@
-module Plutarch.Crypto (
+module Plutarch.Builtin.Crypto (
   -- ** from V1
   psha2_256,
   psha3_256,
@@ -15,7 +15,7 @@ module Plutarch.Crypto (
 ) where
 
 import Plutarch.Builtin.Bool (PBool)
-import Plutarch.ByteString (PByteString)
+import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Internal.Term (Term, (:-->))
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC

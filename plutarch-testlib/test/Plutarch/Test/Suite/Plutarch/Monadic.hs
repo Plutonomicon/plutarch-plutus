@@ -3,13 +3,13 @@
 module Plutarch.Test.Suite.Plutarch.Monadic (tests) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
+import Plutarch.Internal.ListLike (pconvertLists)
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1 (
   PAddress (PAddress),
   PCredential,
   PStakingCredential,
  )
-import Plutarch.List (pconvertLists)
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, plutarchGolden)

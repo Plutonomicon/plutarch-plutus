@@ -2,6 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.PLam (
+  PLamN,
   plam,
   pinl,
 ) where
@@ -9,6 +10,7 @@ module Plutarch.Internal.PLam (
 import Data.Kind (Type)
 import Data.Text qualified as Text
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
+import Plutarch.Builtin.String (ptraceInfo)
 import Plutarch.Internal.PrettyStack (prettyStack)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -21,7 +23,6 @@ import Plutarch.Internal.Term (
   (:-->),
   pattern DoTracingAndBinds,
  )
-import Plutarch.Internal.Trace (ptraceInfo)
 import PlutusCore qualified as PLC
 
 {- $plam

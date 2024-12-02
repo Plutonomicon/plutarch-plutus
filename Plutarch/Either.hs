@@ -25,24 +25,24 @@ module Plutarch.Either (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Builtin (
-  PAsData,
-  PData,
-  PIsData (pdataImpl, pfromDataImpl),
-  pasConstr,
-  pconstrBuiltin,
-  pdata,
-  pforgetData,
-  pfromData,
-  pfstBuiltin,
-  psndBuiltin,
- )
+
+-- TODO: Kill this, this is for PShow (PAsData a)
+
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
   pif,
   pif',
  )
+import Plutarch.Builtin.Data (
+  PAsData,
+  PData,
+  pasConstr,
+  pconstrBuiltin,
+  pfstBuiltin,
+  psndBuiltin,
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl), pdata, pforgetData, pfromData)
 import Plutarch.Internal.Lift (
   DeriveDataPLiftable,
   PLiftable (
@@ -61,6 +61,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
+import Plutarch.Internal.ListLike (pcons, phead, pnil)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -71,6 +72,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -81,10 +83,8 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.List (pcons, phead, pnil)
-import Plutarch.Show (PShow)
+import Plutarch.Internal.TryFrom (PTryFrom)
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 

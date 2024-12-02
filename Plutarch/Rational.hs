@@ -13,16 +13,12 @@ module Plutarch.Rational (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin (
-  PAsData,
-  PBuiltinList,
-  PData,
-  pdata,
-  ppairDataBuiltin,
- )
 import Plutarch.Builtin.Bool (pcond, pif)
+import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.IsData (pdata)
 import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,
@@ -39,6 +35,7 @@ import Plutarch.Internal.Lift (
   pconstant,
   toPlutarchReprClosed,
  )
+import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
   PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
   pdiv,
@@ -48,7 +45,7 @@ import Plutarch.Internal.Numeric (
 import Plutarch.Internal.Ord (
   POrd (pmax, pmin, (#<), (#<=)),
  )
-import Plutarch.Internal.Other (pfix, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -57,6 +54,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
  )
 import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow, pshow, pshow')
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -71,12 +69,10 @@ import Plutarch.Internal.TermCont (
   tcont,
   unTermCont,
  )
-import Plutarch.List (phead, pnil, ptail)
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
-import Plutarch.Show (PShow, pshow, pshow')
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusTx.Ratio qualified as PlutusTx
 

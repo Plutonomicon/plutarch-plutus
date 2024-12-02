@@ -4,7 +4,7 @@ module Plutarch.LedgerApi.V1.Contexts (
   PScriptPurpose (..),
 ) where
 
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
 import Plutarch.LedgerApi.V1.Tx qualified as Tx

@@ -37,6 +37,7 @@
 * `pif'` to `Plutarch.Prelude`
 * `pcond` as a Plutarch equivalent to multi-way if
 * `PLiftable PRational` instance
+* `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
 
 ## Changed
 

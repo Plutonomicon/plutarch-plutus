@@ -6,6 +6,7 @@
 {-# LANGUAGE QualifiedDo #-}
 module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
 
+import GHC.Generics (Generic)
 import Plutarch.Prelude
 import Plutarch.LedgerApi.V3 (
   PScriptContext,
@@ -20,7 +21,6 @@ import Plutarch.LedgerApi.V3 (
     ),
     PCurrencySymbol
   )
-import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
 import PlutusLedgerApi.V3 (
   TxInfo (TxInfo),

@@ -5,9 +5,8 @@
 ```haskell
 {-# LANGUAGE FlexibleInstances #-}
 module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
-
 import Plutarch.Prelude
-import Plutarch.Builtin (pforgetData)
+import GHC.Generics (Generic)
 ```
 
 </p>

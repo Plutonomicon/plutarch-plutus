@@ -1,5 +1,6 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.V1 (tests) where
 
+import Data.Kind (Type)
 import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude

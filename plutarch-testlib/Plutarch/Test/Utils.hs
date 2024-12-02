@@ -11,6 +11,7 @@ module Plutarch.Test.Utils (
   precompileTerm,
 ) where
 
+import Data.Kind (Type)
 import Plutarch.Internal.Term (
   Config (NoTracing),
   RawTerm (RCompiled),

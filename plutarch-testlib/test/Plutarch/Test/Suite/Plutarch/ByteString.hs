@@ -3,7 +3,7 @@ module Plutarch.Test.Suite.Plutarch.ByteString (tests) where
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import GHC.Exts (fromList)
-import Plutarch.ByteString (pallBS)
+import Plutarch.Builtin.ByteString (pallBS)
 import Plutarch.Prelude
 import Plutarch.String (pisHexDigit)
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)

@@ -6,8 +6,7 @@ module Plutarch.LedgerApi.V2.Tx (
   PTxOut (..),
 ) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import GHC.Generics (Generic)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)

@@ -626,7 +626,7 @@ pgetConfig f = Term \lvl -> TermMonad $ do
   This should mostly be avoided, though it can be safely
   used to assert known types of Datums, Redeemers or ScriptContext.
 -}
-punsafeCoerce :: Term s a -> Term s b
+punsafeCoerce :: forall b a s. Term s a -> Term s b
 punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a

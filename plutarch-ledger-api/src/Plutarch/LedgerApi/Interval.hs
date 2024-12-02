@@ -33,12 +33,9 @@ module Plutarch.LedgerApi.Interval (
   pintersection,
 ) where
 
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Enum (
-  PCountable (psuccessor),
-  PEnumerable (ppredecessor),
- )
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import GHC.Records (getField)
 import Plutarch.Prelude hiding (psingleton, pto)
 import PlutusLedgerApi.V3 qualified as Plutus
 
@@ -522,7 +519,7 @@ pclosedInterval ::
     )
 pclosedInterval = phoistAcyclic $
   plam $ \start end ->
-    let closure = pconstantData True
+    let closure = pconstant @(PAsData PBool) True
         upper =
           pcon $
             PUpperBound $

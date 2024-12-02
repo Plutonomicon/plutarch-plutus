@@ -13,10 +13,11 @@ import Data.Coerce (coerce)
 import Data.Functor.Const (Const)
 import Data.Text (pack)
 import GHC.Generics (Generic)
-import Plutarch.Builtin (PAsData, PData, PIsData, pdata)
 import Plutarch.Builtin.Bool (pif)
+import Plutarch.Builtin.Data (PAsData, PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.IsData (PIsData, pdata)
 import Plutarch.Internal.Lift (DeriveNewtypePLiftable, PLiftable, PLifted (PLifted))
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (PIntegral, PNum (pfromInteger, (#-)))
@@ -28,6 +29,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Show (PShow, pshow)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -39,10 +41,9 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Internal.TermCont (runTermCont, tcont)
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Show (PShow, pshow)
 import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Prettyprinter (Pretty)
 import Test.QuickCheck (
   Arbitrary,

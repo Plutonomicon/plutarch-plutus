@@ -53,24 +53,21 @@ import Generics.SOP (
   hmap,
   para_SList,
  )
-import Plutarch.Builtin (
+import Plutarch.Builtin.Bool (PBool, pif)
+import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
   PData,
-  PIsData,
   pasConstr,
   pchooseListBuiltin,
   pconstrBuiltin,
-  pdata,
-  pdataImpl,
-  pforgetData,
-  pfromData,
-  pfromDataImpl,
   pfstBuiltin,
   psndBuiltin,
  )
-import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Opaque (POpaque, popaque)
+import Plutarch.Builtin.String (PString)
+import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   HRecGeneric (HRecGeneric),
@@ -80,10 +77,12 @@ import Plutarch.DataRepr.Internal.HList (
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.IsData (PIsData, pdata, pdataImpl, pforgetData, pfromData, pfromDataImpl)
 import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.ListLike (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
-import Plutarch.Internal.Other (POpaque, popaque, pto)
+import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -96,6 +95,7 @@ import Plutarch.Internal.PlutusType (
   pcon,
   pmatch,
  )
+import Plutarch.Internal.Show (PShow (pshow'))
 import Plutarch.Internal.Term (
   Dig,
   Term,
@@ -116,12 +116,7 @@ import Plutarch.Internal.TermCont (
   tcont,
   unTermCont,
  )
-import Plutarch.List (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.Reducible (NoReduce, Reduce)
-import Plutarch.Show (PShow (pshow'))
-import Plutarch.String (PString)
-import Plutarch.Trace (ptraceInfoError)
-import Plutarch.TryFrom (
+import Plutarch.Internal.TryFrom (
   PSubtype',
   PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
   PTryFrom,
@@ -130,7 +125,8 @@ import Plutarch.TryFrom (
   ptryFrom',
   pupcast,
  )
-import Plutarch.Unit (PUnit (PUnit))
+import Plutarch.Reducible (NoReduce, Reduce)
+import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
 
 {- | A "record" of `exists a. PAsData a`. The underlying representation is

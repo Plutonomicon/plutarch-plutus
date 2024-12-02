@@ -41,18 +41,12 @@ module Plutarch.LedgerApi.Utils (
 ) where
 
 import Data.Bifunctor (first)
-import Plutarch.Builtin (
-  PIsData (pdataImpl, pfromDataImpl),
-  pasConstr,
-  pconstrBuiltin,
-  pforgetData,
- )
-import Plutarch.DataRepr (PDataFields)
-import Plutarch.Internal.Lift (DeriveDataPLiftable)
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import GHC.Records (getField)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
