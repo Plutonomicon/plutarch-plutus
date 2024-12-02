@@ -54,8 +54,6 @@
   - [Deriving with Generics](Usage/DerivingWithGenerics.md)
   - [DoSyntax with QualifiedDo](Usage/DoSyntaxWithQualifiedDo.md)
   - [DoSyntax with TermCont](Usage/DoSyntaxWithTermCont.md)
-  - [FFI](Usage/FFI.md)
-  - [Prelude Mixin](Usage/PreludeMixin.md)
   - [Raising Errors](Usage/RaisingErrors.md)
   - [Recursion](Usage/Recursion.md)
   - [Tracing](Usage/Tracing.md)
