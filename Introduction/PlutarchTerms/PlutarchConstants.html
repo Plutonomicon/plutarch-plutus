@@ -205,7 +205,7 @@ x = pconstant True
 <p>You can also directly create a <a href="./../../Types/PAsData.html"><code>PAsData</code></a> term using <code>pconstantData</code>:</p>
 <pre><code class="language-haskell">-- | A Plutarch level boolean encoded as `Data`.
 xd :: Term s (PAsData PBool)
-xd = pconstantData True
+xd = pconstant @(PAsData PBool) True
 </code></pre>
 <h2 id="dynamic-building-of-constant-terms-with-pcon"><a class="header" href="#dynamic-building-of-constant-terms-with-pcon">Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></h2>
 <p>Sometimes the value that we want to treat as a constant <code>Term</code> is not known at compile time. To explain how to construct constants when we can only determine the value at runtime, we will examine the <code>PMaybe</code> Plutarch type. It can serve the same purpose as the <code>Maybe</code> type in Haskell: to represent the situation where computation may not produce a sensible result.</p>

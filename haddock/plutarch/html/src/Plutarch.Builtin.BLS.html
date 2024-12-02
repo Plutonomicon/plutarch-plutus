@@ -1,0 +1,487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Builtin.BLS</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier">PBuiltinBLS12_381_G1_Element</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier">PBuiltinBLS12_381_G2_Element</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier">PBuiltinBLS12_381_MlResult</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier">PBuiltinBLS12_381_MlResult</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_add"><span class="hs-identifier">pbls12_381_G1_add</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_scalarMul"><span class="hs-identifier">pbls12_381_G1_scalarMul</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_neg"><span class="hs-identifier">pbls12_381_G1_neg</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compress"><span class="hs-identifier">pbls12_381_G1_compress</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_uncompress"><span class="hs-identifier">pbls12_381_G1_uncompress</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_hashToGroup"><span class="hs-identifier">pbls12_381_G1_hashToGroup</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compressed_zero"><span class="hs-identifier">pbls12_381_G1_compressed_zero</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compressed_generator"><span class="hs-identifier">pbls12_381_G1_compressed_generator</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_add"><span class="hs-identifier">pbls12_381_G2_add</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_scalarMul"><span class="hs-identifier">pbls12_381_G2_scalarMul</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_neg"><span class="hs-identifier">pbls12_381_G2_neg</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compress"><span class="hs-identifier">pbls12_381_G2_compress</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_uncompress"><span class="hs-identifier">pbls12_381_G2_uncompress</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_hashToGroup"><span class="hs-identifier">pbls12_381_G2_hashToGroup</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compressed_zero"><span class="hs-identifier">pbls12_381_G2_compressed_zero</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compressed_generator"><span class="hs-identifier">pbls12_381_G2_compressed_generator</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_millerLoop"><span class="hs-identifier">pbls12_381_millerLoop</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_mulMlResult"><span class="hs-identifier">pbls12_381_mulMlResult</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_finalVerify"><span class="hs-identifier">pbls12_381_finalVerify</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html"><span class="hs-identifier">Plutarch.Builtin.Bool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier">PBool</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html"><span class="hs-identifier">Plutarch.Builtin.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html"><span class="hs-identifier">Plutarch.Builtin.Integer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html"><span class="hs-identifier">Plutarch.Builtin.Opaque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html"><span class="hs-identifier">Plutarch.Internal.Term</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier">punsafeBuiltin</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#punsafeConstantInternal"><span class="hs-identifier">punsafeConstantInternal</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Crypto.BLS12_381.G1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BLS12_381.G1</span></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Crypto.BLS12_381.G2</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BLS12_381.G2</span></span><span>
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="annot"><span class="hs-comment">{- | A point on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">newtype</span><span> </span><span id="PBuiltinBLS12_381_G1_Element"><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-var">PBuiltinBLS12_381_G1_Element</span></a></span></span><span> </span><span id="local-6989586621679542887"><span class="annot"><a href="#local-6989586621679542887"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PBuiltinBLS12_381_G1_Element"><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-var">PBuiltinBLS12_381_G1_Element</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542887"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679542889"><span id="local-6989586621679542891"><span class="annot"><span class="annottext">(forall x.
+ PBuiltinBLS12_381_G1_Element s
+ -&gt; Rep (PBuiltinBLS12_381_G1_Element s) x)
+-&gt; (forall x.
+    Rep (PBuiltinBLS12_381_G1_Element s) x
+    -&gt; PBuiltinBLS12_381_G1_Element s)
+-&gt; Generic (PBuiltinBLS12_381_G1_Element s)
+forall x.
+Rep (PBuiltinBLS12_381_G1_Element s) x
+-&gt; PBuiltinBLS12_381_G1_Element s
+forall x.
+PBuiltinBLS12_381_G1_Element s
+-&gt; Rep (PBuiltinBLS12_381_G1_Element s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x.
+Rep (PBuiltinBLS12_381_G1_Element s) x
+-&gt; PBuiltinBLS12_381_G1_Element s
+forall (s :: S) x.
+PBuiltinBLS12_381_G1_Element s
+-&gt; Rep (PBuiltinBLS12_381_G1_Element s) x
+$cfrom :: forall (s :: S) x.
+PBuiltinBLS12_381_G1_Element s
+-&gt; Rep (PBuiltinBLS12_381_G1_Element s) x
+from :: forall x.
+PBuiltinBLS12_381_G1_Element s
+-&gt; Rep (PBuiltinBLS12_381_G1_Element s) x
+$cto :: forall (s :: S) x.
+Rep (PBuiltinBLS12_381_G1_Element s) x
+-&gt; PBuiltinBLS12_381_G1_Element s
+to :: forall x.
+Rep (PBuiltinBLS12_381_G1_Element s) x
+-&gt; PBuiltinBLS12_381_G1_Element s
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><span class="hs-comment">{- | Add two points on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-47"></span><span id="local-6989586621679542800"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_add"><span class="hs-identifier hs-type">pbls12_381_G1_add</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542800"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-48"></span><span id="pbls12_381_G1_add"><span class="annot"><span class="annottext">pbls12_381_G1_add :: forall (s :: S).
+Term
+  s
+  (PBuiltinBLS12_381_G1_Element
+   :--&gt; (PBuiltinBLS12_381_G1_Element
+         :--&gt; PBuiltinBLS12_381_G1_Element))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_add"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_add</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PBuiltinBLS12_381_G1_Element
+      :--&gt; (PBuiltinBLS12_381_G1_Element
+            :--&gt; PBuiltinBLS12_381_G1_Element))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G1_add</span></span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><span class="hs-comment">{- | Multiply a point on the BLS12-381 G1 curve by a scalar.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-54"></span><span id="local-6989586621679542808"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_scalarMul"><span class="hs-identifier hs-type">pbls12_381_G1_scalarMul</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542808"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-55"></span><span id="pbls12_381_G1_scalarMul"><span class="annot"><span class="annottext">pbls12_381_G1_scalarMul :: forall (s :: S).
+Term
+  s
+  (PInteger
+   :--&gt; (PBuiltinBLS12_381_G1_Element
+         :--&gt; PBuiltinBLS12_381_G1_Element))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_scalarMul"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_scalarMul</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PInteger
+      :--&gt; (PBuiltinBLS12_381_G1_Element
+            :--&gt; PBuiltinBLS12_381_G1_Element))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G1_scalarMul</span></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><span class="hs-comment">{- | Negate a point on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-61"></span><span id="local-6989586621679542811"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_neg"><span class="hs-identifier hs-type">pbls12_381_G1_neg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542811"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-62"></span><span id="pbls12_381_G1_neg"><span class="annot"><span class="annottext">pbls12_381_G1_neg :: forall (s :: S).
+Term
+  s (PBuiltinBLS12_381_G1_Element :--&gt; PBuiltinBLS12_381_G1_Element)
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_neg"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_neg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s (PBuiltinBLS12_381_G1_Element :--&gt; PBuiltinBLS12_381_G1_Element)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G1_neg</span></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="annot"><span class="hs-comment">{- | Compress a point on the BLS12-381 G1 curve to a byte string.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-68"></span><span id="local-6989586621679542813"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compress"><span class="hs-identifier hs-type">pbls12_381_G1_compress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542813"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-69"></span><span id="pbls12_381_G1_compress"><span class="annot"><span class="annottext">pbls12_381_G1_compress :: forall (s :: S).
+Term s (PBuiltinBLS12_381_G1_Element :--&gt; PByteString)
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compress"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_compress</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PBuiltinBLS12_381_G1_Element :--&gt; PByteString)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G1_compress</span></span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="annot"><span class="hs-comment">{- | Uncompress a byte string to a point on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-75"></span><span id="local-6989586621679542816"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_uncompress"><span class="hs-identifier hs-type">pbls12_381_G1_uncompress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542816"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-76"></span><span id="pbls12_381_G1_uncompress"><span class="annot"><span class="annottext">pbls12_381_G1_uncompress :: forall (s :: S).
+Term s (PByteString :--&gt; PBuiltinBLS12_381_G1_Element)
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_uncompress"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_uncompress</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PByteString :--&gt; PBuiltinBLS12_381_G1_Element)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G1_uncompress</span></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="annot"><span class="hs-comment">{- | Hash a message to a point on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-82"></span><span id="local-6989586621679542818"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_hashToGroup"><span class="hs-identifier hs-type">pbls12_381_G1_hashToGroup</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542818"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-83"></span><span id="pbls12_381_G1_hashToGroup"><span class="annot"><span class="annottext">pbls12_381_G1_hashToGroup :: forall (s :: S).
+Term
+  s
+  (PByteString :--&gt; (PByteString :--&gt; PBuiltinBLS12_381_G1_Element))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_hashToGroup"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_hashToGroup</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PByteString :--&gt; (PByteString :--&gt; PBuiltinBLS12_381_G1_Element))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G1_hashToGroup</span></span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="annot"><span class="hs-comment">{- | The compressed representation of the zero point on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-89"></span><span id="local-6989586621679542820"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compressed_zero"><span class="hs-identifier hs-type">pbls12_381_G1_compressed_zero</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542820"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span></span><span>
+</span><span id="line-90"></span><span id="pbls12_381_G1_compressed_zero"><span class="annot"><span class="annottext">pbls12_381_G1_compressed_zero :: forall (s :: S). Term s PByteString
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compressed_zero"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_compressed_zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall (s :: S) (a :: PType).
+Some @Type (ValueOf DefaultUni) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeConstantInternal"><span class="hs-identifier hs-var">punsafeConstantInternal</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString)
+-&gt; Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Some @Type (ValueOf DefaultUni)
+forall a (uni :: Type -&gt; Type).
+Contains @Type uni a =&gt;
+a -&gt; Some @Type (ValueOf uni)
+</span><span class="hs-identifier hs-var">PLC.someValue</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier hs-var">BLS12_381.G1.compressed_zero</span></span><span>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="annot"><span class="hs-comment">{- | The compressed representation of the generator point on the BLS12-381 G1 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-96"></span><span id="local-6989586621679542904"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compressed_generator"><span class="hs-identifier hs-type">pbls12_381_G1_compressed_generator</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542904"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span></span><span>
+</span><span id="line-97"></span><span id="pbls12_381_G1_compressed_generator"><span class="annot"><span class="annottext">pbls12_381_G1_compressed_generator :: forall (s :: S). Term s PByteString
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G1_compressed_generator"><span class="hs-identifier hs-var hs-var">pbls12_381_G1_compressed_generator</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall (s :: S) (a :: PType).
+Some @Type (ValueOf DefaultUni) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeConstantInternal"><span class="hs-identifier hs-var">punsafeConstantInternal</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString)
+-&gt; Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Some @Type (ValueOf DefaultUni)
+forall a (uni :: Type -&gt; Type).
+Contains @Type uni a =&gt;
+a -&gt; Some @Type (ValueOf uni)
+</span><span class="hs-identifier hs-var">PLC.someValue</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier hs-var">BLS12_381.G1.compressed_generator</span></span><span>
+</span><span id="line-98"></span><span>
+</span><span id="line-99"></span><span class="annot"><span class="hs-comment">-- | @since 1.9.0</span></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">newtype</span><span> </span><span id="PBuiltinBLS12_381_G2_Element"><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-var">PBuiltinBLS12_381_G2_Element</span></a></span></span><span> </span><span id="local-6989586621679542907"><span class="annot"><a href="#local-6989586621679542907"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PBuiltinBLS12_381_G2_Element"><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-var">PBuiltinBLS12_381_G2_Element</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542907"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679542909"><span id="local-6989586621679542911"><span class="annot"><span class="annottext">(forall x.
+ PBuiltinBLS12_381_G2_Element s
+ -&gt; Rep (PBuiltinBLS12_381_G2_Element s) x)
+-&gt; (forall x.
+    Rep (PBuiltinBLS12_381_G2_Element s) x
+    -&gt; PBuiltinBLS12_381_G2_Element s)
+-&gt; Generic (PBuiltinBLS12_381_G2_Element s)
+forall x.
+Rep (PBuiltinBLS12_381_G2_Element s) x
+-&gt; PBuiltinBLS12_381_G2_Element s
+forall x.
+PBuiltinBLS12_381_G2_Element s
+-&gt; Rep (PBuiltinBLS12_381_G2_Element s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x.
+Rep (PBuiltinBLS12_381_G2_Element s) x
+-&gt; PBuiltinBLS12_381_G2_Element s
+forall (s :: S) x.
+PBuiltinBLS12_381_G2_Element s
+-&gt; Rep (PBuiltinBLS12_381_G2_Element s) x
+$cfrom :: forall (s :: S) x.
+PBuiltinBLS12_381_G2_Element s
+-&gt; Rep (PBuiltinBLS12_381_G2_Element s) x
+from :: forall x.
+PBuiltinBLS12_381_G2_Element s
+-&gt; Rep (PBuiltinBLS12_381_G2_Element s) x
+$cto :: forall (s :: S) x.
+Rep (PBuiltinBLS12_381_G2_Element s) x
+-&gt; PBuiltinBLS12_381_G2_Element s
+to :: forall x.
+Rep (PBuiltinBLS12_381_G2_Element s) x
+-&gt; PBuiltinBLS12_381_G2_Element s
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>
+</span><span id="line-103"></span><span class="annot"><span class="hs-comment">{- | Add two points on the BLS12-381 G2 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-107"></span><span id="local-6989586621679542838"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_add"><span class="hs-identifier hs-type">pbls12_381_G2_add</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542838"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-108"></span><span id="pbls12_381_G2_add"><span class="annot"><span class="annottext">pbls12_381_G2_add :: forall (s :: S).
+Term
+  s
+  (PBuiltinBLS12_381_G2_Element
+   :--&gt; (PBuiltinBLS12_381_G2_Element
+         :--&gt; PBuiltinBLS12_381_G2_Element))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_add"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_add</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PBuiltinBLS12_381_G2_Element
+      :--&gt; (PBuiltinBLS12_381_G2_Element
+            :--&gt; PBuiltinBLS12_381_G2_Element))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G2_add</span></span><span>
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span class="annot"><span class="hs-comment">{- | Multiply a point on the BLS12-381 G2 curve by a scalar.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-114"></span><span id="local-6989586621679542840"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_scalarMul"><span class="hs-identifier hs-type">pbls12_381_G2_scalarMul</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542840"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-115"></span><span id="pbls12_381_G2_scalarMul"><span class="annot"><span class="annottext">pbls12_381_G2_scalarMul :: forall (s :: S).
+Term
+  s
+  (PInteger
+   :--&gt; (PBuiltinBLS12_381_G2_Element
+         :--&gt; PBuiltinBLS12_381_G2_Element))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_scalarMul"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_scalarMul</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PInteger
+      :--&gt; (PBuiltinBLS12_381_G2_Element
+            :--&gt; PBuiltinBLS12_381_G2_Element))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G2_scalarMul</span></span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span class="annot"><span class="hs-comment">{- | Negate a point on the BLS12-381 G2 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-121"></span><span id="local-6989586621679542842"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_neg"><span class="hs-identifier hs-type">pbls12_381_G2_neg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542842"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-122"></span><span id="pbls12_381_G2_neg"><span class="annot"><span class="annottext">pbls12_381_G2_neg :: forall (s :: S).
+Term
+  s (PBuiltinBLS12_381_G2_Element :--&gt; PBuiltinBLS12_381_G2_Element)
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_neg"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_neg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s (PBuiltinBLS12_381_G2_Element :--&gt; PBuiltinBLS12_381_G2_Element)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G2_neg</span></span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="annot"><span class="hs-comment">{- | Compress a point on the BLS12-381 G2 curve to a byte string.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-128"></span><span id="local-6989586621679542844"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compress"><span class="hs-identifier hs-type">pbls12_381_G2_compress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542844"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-129"></span><span id="pbls12_381_G2_compress"><span class="annot"><span class="annottext">pbls12_381_G2_compress :: forall (s :: S).
+Term s (PBuiltinBLS12_381_G2_Element :--&gt; PByteString)
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compress"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_compress</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PBuiltinBLS12_381_G2_Element :--&gt; PByteString)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G2_compress</span></span><span>
+</span><span id="line-130"></span><span>
+</span><span id="line-131"></span><span class="annot"><span class="hs-comment">{- | Uncompress a byte string to a point on the BLS12-381 G2 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-135"></span><span id="local-6989586621679542846"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_uncompress"><span class="hs-identifier hs-type">pbls12_381_G2_uncompress</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542846"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-136"></span><span id="pbls12_381_G2_uncompress"><span class="annot"><span class="annottext">pbls12_381_G2_uncompress :: forall (s :: S).
+Term s (PByteString :--&gt; PBuiltinBLS12_381_G2_Element)
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_uncompress"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_uncompress</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PByteString :--&gt; PBuiltinBLS12_381_G2_Element)
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G2_uncompress</span></span><span>
+</span><span id="line-137"></span><span>
+</span><span id="line-138"></span><span class="annot"><span class="hs-comment">{- | Hash a message to a point on the BLS12-381 G2 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-142"></span><span id="local-6989586621679542848"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_hashToGroup"><span class="hs-identifier hs-type">pbls12_381_G2_hashToGroup</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542848"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-143"></span><span id="pbls12_381_G2_hashToGroup"><span class="annot"><span class="annottext">pbls12_381_G2_hashToGroup :: forall (s :: S).
+Term
+  s
+  (PByteString :--&gt; (PByteString :--&gt; PBuiltinBLS12_381_G2_Element))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_hashToGroup"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_hashToGroup</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PByteString :--&gt; (PByteString :--&gt; PBuiltinBLS12_381_G2_Element))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_G2_hashToGroup</span></span><span>
+</span><span id="line-144"></span><span>
+</span><span id="line-145"></span><span class="annot"><span class="hs-comment">{- | The compressed representation of the zero point on the BLS12-381 G2 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-149"></span><span id="local-6989586621679542919"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compressed_zero"><span class="hs-identifier hs-type">pbls12_381_G2_compressed_zero</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542919"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span></span><span>
+</span><span id="line-150"></span><span id="pbls12_381_G2_compressed_zero"><span class="annot"><span class="annottext">pbls12_381_G2_compressed_zero :: forall (s :: S). Term s PByteString
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compressed_zero"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_compressed_zero</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall (s :: S) (a :: PType).
+Some @Type (ValueOf DefaultUni) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeConstantInternal"><span class="hs-identifier hs-var">punsafeConstantInternal</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString)
+-&gt; Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Some @Type (ValueOf DefaultUni)
+forall a (uni :: Type -&gt; Type).
+Contains @Type uni a =&gt;
+a -&gt; Some @Type (ValueOf uni)
+</span><span class="hs-identifier hs-var">PLC.someValue</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier hs-var">BLS12_381.G2.compressed_zero</span></span><span>
+</span><span id="line-151"></span><span>
+</span><span id="line-152"></span><span class="annot"><span class="hs-comment">{- | The compressed representation of the generator point on the BLS12-381 G2 curve.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-156"></span><span id="local-6989586621679542922"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compressed_generator"><span class="hs-identifier hs-type">pbls12_381_G2_compressed_generator</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542922"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span></span><span>
+</span><span id="line-157"></span><span id="pbls12_381_G2_compressed_generator"><span class="annot"><span class="annottext">pbls12_381_G2_compressed_generator :: forall (s :: S). Term s PByteString
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_G2_compressed_generator"><span class="hs-identifier hs-var hs-var">pbls12_381_G2_compressed_generator</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall (s :: S) (a :: PType).
+Some @Type (ValueOf DefaultUni) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeConstantInternal"><span class="hs-identifier hs-var">punsafeConstantInternal</span></a></span><span> </span><span class="annot"><span class="annottext">(Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString)
+-&gt; Some @Type (ValueOf DefaultUni) -&gt; Term s PByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Some @Type (ValueOf DefaultUni)
+forall a (uni :: Type -&gt; Type).
+Contains @Type uni a =&gt;
+a -&gt; Some @Type (ValueOf uni)
+</span><span class="hs-identifier hs-var">PLC.someValue</span></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span class="hs-identifier hs-var">BLS12_381.G2.compressed_generator</span></span><span>
+</span><span id="line-158"></span><span>
+</span><span id="line-159"></span><span class="annot"><span class="hs-comment">{- | Represents the result of a Miller loop operation in BLS12-381 pairing.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-163"></span><span class="hs-keyword">newtype</span><span> </span><span id="PBuiltinBLS12_381_MlResult"><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-var">PBuiltinBLS12_381_MlResult</span></a></span></span><span> </span><span id="local-6989586621679542925"><span class="annot"><a href="#local-6989586621679542925"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PBuiltinBLS12_381_MlResult"><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-var">PBuiltinBLS12_381_MlResult</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542925"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-164"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679542927"><span id="local-6989586621679542929"><span class="annot"><span class="annottext">(forall x.
+ PBuiltinBLS12_381_MlResult s
+ -&gt; Rep (PBuiltinBLS12_381_MlResult s) x)
+-&gt; (forall x.
+    Rep (PBuiltinBLS12_381_MlResult s) x
+    -&gt; PBuiltinBLS12_381_MlResult s)
+-&gt; Generic (PBuiltinBLS12_381_MlResult s)
+forall x.
+Rep (PBuiltinBLS12_381_MlResult s) x
+-&gt; PBuiltinBLS12_381_MlResult s
+forall x.
+PBuiltinBLS12_381_MlResult s
+-&gt; Rep (PBuiltinBLS12_381_MlResult s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x.
+Rep (PBuiltinBLS12_381_MlResult s) x
+-&gt; PBuiltinBLS12_381_MlResult s
+forall (s :: S) x.
+PBuiltinBLS12_381_MlResult s
+-&gt; Rep (PBuiltinBLS12_381_MlResult s) x
+$cfrom :: forall (s :: S) x.
+PBuiltinBLS12_381_MlResult s
+-&gt; Rep (PBuiltinBLS12_381_MlResult s) x
+from :: forall x.
+PBuiltinBLS12_381_MlResult s
+-&gt; Rep (PBuiltinBLS12_381_MlResult s) x
+$cto :: forall (s :: S) x.
+Rep (PBuiltinBLS12_381_MlResult s) x
+-&gt; PBuiltinBLS12_381_MlResult s
+to :: forall x.
+Rep (PBuiltinBLS12_381_MlResult s) x
+-&gt; PBuiltinBLS12_381_MlResult s
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-165"></span><span>
+</span><span id="line-166"></span><span class="annot"><span class="hs-comment">{- | Perform a Miller loop operation on a G1 and G2 element.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-170"></span><span id="local-6989586621679542855"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_millerLoop"><span class="hs-identifier hs-type">pbls12_381_millerLoop</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542855"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G1_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G1_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_G2_Element"><span class="hs-identifier hs-type">PBuiltinBLS12_381_G2_Element</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-type">PBuiltinBLS12_381_MlResult</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-171"></span><span id="pbls12_381_millerLoop"><span class="annot"><span class="annottext">pbls12_381_millerLoop :: forall (s :: S).
+Term
+  s
+  (PBuiltinBLS12_381_G1_Element
+   :--&gt; (PBuiltinBLS12_381_G2_Element
+         :--&gt; PBuiltinBLS12_381_MlResult))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_millerLoop"><span class="hs-identifier hs-var hs-var">pbls12_381_millerLoop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PBuiltinBLS12_381_G1_Element
+      :--&gt; (PBuiltinBLS12_381_G2_Element
+            :--&gt; PBuiltinBLS12_381_MlResult))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_millerLoop</span></span><span>
+</span><span id="line-172"></span><span>
+</span><span id="line-173"></span><span class="annot"><span class="hs-comment">{- | Multiply two Miller loop results.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-177"></span><span id="local-6989586621679542857"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_mulMlResult"><span class="hs-identifier hs-type">pbls12_381_mulMlResult</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542857"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-type">PBuiltinBLS12_381_MlResult</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-type">PBuiltinBLS12_381_MlResult</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-type">PBuiltinBLS12_381_MlResult</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-178"></span><span id="pbls12_381_mulMlResult"><span class="annot"><span class="annottext">pbls12_381_mulMlResult :: forall (s :: S).
+Term
+  s
+  (PBuiltinBLS12_381_MlResult
+   :--&gt; (PBuiltinBLS12_381_MlResult :--&gt; PBuiltinBLS12_381_MlResult))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_mulMlResult"><span class="hs-identifier hs-var hs-var">pbls12_381_mulMlResult</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PBuiltinBLS12_381_MlResult
+      :--&gt; (PBuiltinBLS12_381_MlResult :--&gt; PBuiltinBLS12_381_MlResult))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_mulMlResult</span></span><span>
+</span><span id="line-179"></span><span>
+</span><span id="line-180"></span><span class="annot"><span class="hs-comment">{- | Perform the final verification step in BLS12-381 pairing.
+
+@since 1.9.0
+-}</span></span><span>
+</span><span id="line-184"></span><span id="local-6989586621679542859"><span class="annot"><a href="Plutarch.Builtin.BLS.html#pbls12_381_finalVerify"><span class="hs-identifier hs-type">pbls12_381_finalVerify</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679542859"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-type">PBuiltinBLS12_381_MlResult</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.BLS.html#PBuiltinBLS12_381_MlResult"><span class="hs-identifier hs-type">PBuiltinBLS12_381_MlResult</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-185"></span><span id="pbls12_381_finalVerify"><span class="annot"><span class="annottext">pbls12_381_finalVerify :: forall (s :: S).
+Term
+  s
+  (PBuiltinBLS12_381_MlResult
+   :--&gt; (PBuiltinBLS12_381_MlResult :--&gt; PBool))
+</span><a href="Plutarch.Builtin.BLS.html#pbls12_381_finalVerify"><span class="hs-identifier hs-var hs-var">pbls12_381_finalVerify</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PBuiltinBLS12_381_MlResult
+      :--&gt; (PBuiltinBLS12_381_MlResult :--&gt; PBool))
+forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.Bls12_381_finalVerify</span></span><span>
+</span><span id="line-186"></span></pre></body></html>

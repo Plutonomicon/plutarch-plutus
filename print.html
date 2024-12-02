@@ -574,7 +574,7 @@ x = pconstant True
 <p>You can also directly create a <a href="Introduction/PlutarchTerms/./../../Types/PAsData.html"><code>PAsData</code></a> term using <code>pconstantData</code>:</p>
 <pre><code class="language-haskell">-- | A Plutarch level boolean encoded as `Data`.
 xd :: Term s (PAsData PBool)
-xd = pconstantData True
+xd = pconstant @(PAsData PBool) True
 </code></pre>
 <h2 id="dynamic-building-of-constant-terms-with-pcon"><a class="header" href="#dynamic-building-of-constant-terms-with-pcon">Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></h2>
 <p>Sometimes the value that we want to treat as a constant <code>Term</code> is not known at compile time. To explain how to construct constants when we can only determine the value at runtime, we will examine the <code>PMaybe</code> Plutarch type. It can serve the same purpose as the <code>Maybe</code> type in Haskell: to represent the situation where computation may not produce a sensible result.</p>
@@ -1338,7 +1338,8 @@ foo (\_ n -&gt; n)
 module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
-import Plutarch.Builtin (pforgetData, pasConstr, pconstrBuiltin)
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 import Plutarch.Unsafe (punsafeCoerce)
 </code></pre>
 </p>
@@ -2137,7 +2138,7 @@ never be efficient.</p>
 <summary> imports </summary>
 <p>
 <pre><code class="language-haskell">module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where
-
+import GHC.Generics (Generic)
 import Plutarch.Prelude
 </code></pre>
 </p>
@@ -2227,6 +2228,7 @@ case, you should <a href="Typeclasses/./PIsDataReprAndPDataFields.html#implement
 <pre><code class="language-haskell">{-# LANGUAGE QualifiedDo #-}
 module Plutarch.Docs.PDataFields (foo, foo', res, mockCtx, purpose, Vehicle (..), PVehicle (..), PVehicle' (..), PFoo (..), test) where
 
+import GHC.Generics (Generic)
 import Plutarch.Prelude
 import Plutarch.LedgerApi.V3 (
   PScriptContext,
@@ -2241,7 +2243,6 @@ import Plutarch.LedgerApi.V3 (
     ),
     PCurrencySymbol
   )
-import Plutarch.DataRepr (PDataFields)
 import qualified Plutarch.Monadic as P
 import PlutusLedgerApi.V3 (
   TxInfo (TxInfo),
@@ -2555,6 +2556,8 @@ x' = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 <pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
 import Plutarch.Prelude
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 </code></pre>
 </p>
 </details>
@@ -2623,9 +2626,8 @@ instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeDa
 <p>
 <pre><code class="language-haskell">{-# LANGUAGE FlexibleInstances #-}
 module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
-
 import Plutarch.Prelude
-import Plutarch.Builtin (pforgetData)
+import GHC.Generics (Generic)
 </code></pre>
 </p>
 </details>
@@ -2795,7 +2797,7 @@ one = pif (pconstant True) 1 2
 
 module Plutarch.Docs.DerivingForNewtype (PPubKeyHash'(..), PPubKeyHash(..)) where
 import Plutarch.Prelude
-import Plutarch.Builtin (PDataNewtype)
+import GHC.Generics (Generic)
 </code></pre>
 </p>
 </details>
@@ -2841,6 +2843,8 @@ be done for the PlutusType (e.g. you cannot newtype derive <code>Semigroup</code
 <p>
 <pre><code class="language-haskell">module Plutarch.Docs.DerivingGenerics (PMyType (..)) where
 import Plutarch.Prelude
+import Data.Kind (Type)
+import GHC.Generics (Generic)
 </code></pre>
 </p>
 </details>
@@ -3442,7 +3446,6 @@ this' = plam $ \x -&gt; plet  (1 + 2) $ \i -&gt;
 <pre><code class="language-haskell">module Plutarch.Docs.PreferStaticallyBuilding (viacon, viaconstant) where
 
 import Plutarch.Prelude
-import Plutarch.Builtin (PDataNewtype (PDataNewtype))
 import Plutarch.LedgerApi.V3 (PScriptPurpose (PMinting), PCurrencySymbol (PCurrencySymbol))
 import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
 
@@ -3506,6 +3509,7 @@ argument multiple times without <code>plet</code>ing it - there's duplicate work
 <summary> imports </summary>
 <p>
 <pre><code class="language-haskell">module Plutarch.Docs.UsingHaskellLevelFunctions (pelimList, pelimList') where
+import Data.Kind (Type)
 import Plutarch.Prelude hiding (pelimList)
 </code></pre>
 </p>
@@ -3560,8 +3564,10 @@ pelimList' match_cons match_nil ls = pmatch ls $ \case
 <p>
 <pre><code class="language-haskell">module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where
 
+import GHC.Records (getField)
+import GHC.Generics (Generic)
 import Plutarch.Prelude
-import Plutarch.DataRepr (HRec, HRecOf, PDataFields, PMemberFields)
+import Plutarch.DataRepr (HRec, HRecOf, PMemberFields)
 import Plutarch.LedgerApi.V3 (PTxInfo, PScriptContext)
 </code></pre>
 </p>
