@@ -21,7 +21,6 @@ module Plutarch.Builtin.ByteString (
   psliceBS,
   plengthBS,
   pindexBS,
-  pallBS,
   phexByteStr,
   pbyteStringToInteger,
   pintegerToByteString,
@@ -32,26 +31,18 @@ import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-import Plutarch.Builtin.Bool (PBool, pfalse, pif, ptrue)
-import Plutarch.Builtin.Integer (
-  PInteger,
-  paddInteger,
-  pconstantInteger,
-  pltInteger,
- )
+import Plutarch.Builtin.Bool (PBool, pfalse, ptrue)
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque)
-import Plutarch.Internal.Fix (pfix)
 import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
   S,
   Term,
   phoistAcyclic,
-  plet,
   punsafeBuiltin,
   punsafeCoerce,
   punsafeConstantInternal,
   (#),
-  (#$),
   (:-->),
  )
 import PlutusCore qualified as PLC
@@ -228,33 +219,6 @@ index. Will crash if given an out-of-bounds index.
 -}
 pindexBS :: Term s (PByteString :--> PInteger :--> PByte)
 pindexBS = punsafeBuiltin PLC.IndexByteString
-
-{- | Verify that the given predicate holds for every byte in the argument.
-
-@since WIP
--}
-pallBS ::
-  forall (s :: S).
-  Term s ((PByte :--> PBool) :--> PByteString :--> PBool)
-pallBS = phoistAcyclic $ plam $ \p bs ->
-  plet (plengthBS # bs) $ \len ->
-    go p len bs # pconstantInteger 0
-  where
-    go ::
-      forall (s' :: S).
-      Term s' (PByte :--> PBool) ->
-      Term s' PInteger ->
-      Term s' PByteString ->
-      Term s' (PInteger :--> PBool)
-    go p len bs = pfix #$ plam $ \self ix ->
-      pif
-        (pltInteger # ix # len)
-        ( pif
-            (p #$ pindexBS # bs # ix)
-            (self #$ paddInteger # ix # pconstantInteger 1)
-            pfalse
-        )
-        ptrue
 
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString
