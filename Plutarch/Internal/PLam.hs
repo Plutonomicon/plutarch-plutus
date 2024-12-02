@@ -7,10 +7,11 @@ module Plutarch.Internal.PLam (
   pinl,
 ) where
 
+import Plutarch.Builtin (ptraceInfo)
+
 import Data.Kind (Type)
 import Data.Text qualified as Text
 import GHC.Stack (HasCallStack, callStack, withFrozenCallStack)
-import Plutarch.Builtin.String (ptraceInfo)
 import Plutarch.Internal.PrettyStack (prettyStack)
 import Plutarch.Internal.Term (
   Config (Tracing),

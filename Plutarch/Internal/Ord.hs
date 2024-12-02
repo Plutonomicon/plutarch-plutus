@@ -4,25 +4,7 @@ module Plutarch.Internal.Ord (
   (#>=),
 ) where
 
-import Plutarch.Builtin.Bool (
-  PBool,
-  pand',
-  pfalse,
-  pif',
-  por',
-  ptrue,
- )
-import Plutarch.Builtin.ByteString (
-  PByte,
-  PByteString,
-  PLogicOpSemantics,
- )
-import Plutarch.Builtin.Integer (
-  PInteger,
-  pleInteger,
-  pltInteger,
- )
-import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Builtin
 
 import Data.Kind (Type)
 

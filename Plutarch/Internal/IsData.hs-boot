@@ -4,8 +4,7 @@
 module Plutarch.Internal.IsData (PIsData, pfromData, pdata, pforgetData) where
 
 import Data.Kind
-import Plutarch.Builtin.ByteString
-import Plutarch.Builtin.Data
+import Plutarch.Builtin
 import Plutarch.Internal.Term
 
 class PIsData (a :: S -> Type)

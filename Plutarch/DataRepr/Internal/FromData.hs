@@ -3,9 +3,7 @@
 
 module Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData) where
 
-import Plutarch.Builtin.Data (PAsData)
-import Plutarch.Internal.IsData (PIsData, pfromData)
-import Plutarch.Internal.Term (PType, Term)
+import Plutarch.Internal (PAsData, PIsData, PType, Term, pfromData)
 
 {- |
     removes the PAsData if the hole requires it but leaves it

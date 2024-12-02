@@ -35,23 +35,7 @@ module Plutarch.Internal.Lift (
   LiftError (..),
 ) where
 
-import Plutarch.Builtin.BLS (
-  PBuiltinBLS12_381_G1_Element,
-  PBuiltinBLS12_381_G2_Element,
-  PBuiltinBLS12_381_MlResult,
- )
-import Plutarch.Builtin.Bool (PBool)
-import Plutarch.Builtin.ByteString (PByte, PByteString)
-import Plutarch.Builtin.Data (
-  PAsData,
-  PBuiltinList,
-  PBuiltinPair,
-  PData,
- )
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.Opaque (POpaque, popaque)
-import Plutarch.Builtin.String (PString)
-import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Builtin
 
 import Data.ByteString (ByteString)
 import Data.Coerce (Coercible, coerce)

@@ -3,7 +3,7 @@
 module Plutarch.Monadic ((>>=), (>>), fail) where
 
 import Data.String (fromString)
-import Plutarch.Internal.Term (
+import Plutarch.Internal (
   Config (Tracing),
   Term,
   TracingMode (DetTracing),

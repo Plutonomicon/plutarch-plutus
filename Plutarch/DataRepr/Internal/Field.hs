@@ -29,7 +29,6 @@ import GHC.TypeLits (
   KnownNat,
   Symbol,
  )
-import Plutarch.Builtin.Data (PAsData)
 import Plutarch.DataRepr.Internal (
   PDataRecord,
   PDataSum,
@@ -51,13 +50,7 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexLabel,
   type IndexList,
  )
-import Plutarch.Internal.IsData (PIsData, pfromData)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (PInner)
-import Plutarch.Internal.Term (S, Term, plet, (#), (:-->))
-import Plutarch.Internal.TermCont (TermCont (TermCont), runTermCont)
-import Plutarch.Internal.Witness (witness)
+import Plutarch.Internal (PAsData, PInner, PIsData, S, Term, TermCont (TermCont), pfromData, plam, plet, pto, runTermCont, witness, (#), (:-->))
 
 --------------------------------------------------------------------------------
 ---------- PDataField class & deriving utils

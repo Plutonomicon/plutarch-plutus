@@ -53,21 +53,6 @@ import Generics.SOP (
   hmap,
   para_SList,
  )
-import Plutarch.Builtin.Bool (PBool, pif)
-import Plutarch.Builtin.Data (
-  PAsData,
-  PBuiltinList,
-  PData,
-  pasConstr,
-  pchooseListBuiltin,
-  pconstrBuiltin,
-  pfstBuiltin,
-  psndBuiltin,
- )
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.Opaque (POpaque, popaque)
-import Plutarch.Builtin.String (PString)
-import Plutarch.Builtin.Unit (PUnit (PUnit))
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   HRecGeneric (HRecGeneric),
@@ -75,56 +60,79 @@ import Plutarch.DataRepr.Internal.HList (
   type Drop,
   type IndexList,
  )
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
-import Plutarch.Internal.IsData (PIsData, pdata, pdataImpl, pforgetData, pfromData, pfromDataImpl)
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.ListLike (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
+import Plutarch.Internal (
   DerivePlutusType (DPTStrat),
   DerivedPInner,
-  PlutusType (PInner, pcon', pmatch'),
-  PlutusTypeStrat,
-  PlutusTypeStratConstraint,
-  derivedPCon,
-  derivedPMatch,
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.Show (PShow (pshow'))
-import Plutarch.Internal.Term (
   Dig,
-  Term,
-  pdelay,
-  perror,
-  pforce,
-  phoistAcyclic,
-  plet,
-  (#),
-  (#$),
-  (:-->),
- )
-import Plutarch.Internal.Term qualified as P
-import Plutarch.Internal.TermCont (
-  TermCont,
-  hashOpenTerm,
-  runTermCont,
-  tcont,
-  unTermCont,
- )
-import Plutarch.Internal.TryFrom (
+  PAsData,
+  PBool,
+  PBuiltinList,
+  PCode,
+  PData,
+  PEq ((#==)),
+  PGeneric,
+  PInteger,
+  PIsData,
+  PListLike (pnil),
+  POpaque,
+  POrd (pmax, pmin, (#<), (#<=)),
+  PShow (pshow'),
+  PString,
   PSubtype',
   PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
   PTryFrom,
   PTryFromExcess,
+  PUnit (PUnit),
+  PlutusType (PInner, pcon', pmatch'),
+  PlutusTypeNewtype,
+  PlutusTypeStrat,
+  PlutusTypeStratConstraint,
+  S,
+  Term,
+  TermCont,
+  derivedPCon,
+  derivedPMatch,
+  gpfrom,
+  gpto,
+  hashOpenTerm,
+  pasConstr,
+  pchooseListBuiltin,
+  pcon,
+  pcons,
+  pconstant,
+  pconstrBuiltin,
+  pdata,
+  pdataImpl,
+  pdelay,
+  pdrop,
+  perror,
+  pforce,
+  pforgetData,
+  pfromData,
+  pfromDataImpl,
+  pfstBuiltin,
+  phead,
+  phoistAcyclic,
+  pif,
+  plam,
+  plet,
+  pmatch,
+  popaque,
+  psndBuiltin,
+  ptail,
+  pto,
   ptryFrom,
   ptryFrom',
+  ptryIndex,
   pupcast,
+  runTermCont,
+  tcont,
+  unTermCont,
+  (#),
+  (#$),
+  (:-->),
  )
+
 import Plutarch.Reducible (NoReduce, Reduce)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
@@ -132,7 +140,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 {- | A "record" of `exists a. PAsData a`. The underlying representation is
  `PBuiltinList PData`.
 -}
-data PDataRecord (as :: [PLabeledType]) (s :: P.S) where
+data PDataRecord (as :: [PLabeledType]) (s :: S) where
   PDCons ::
     forall name_x x xs s.
     PUnLabel name_x ~ x =>
@@ -273,18 +281,18 @@ pdcons = punsafeCoerce $ pcons @PBuiltinList @PData
 pdnil :: Term s (PDataRecord '[])
 pdnil = punsafeCoerce $ pnil @PBuiltinList @PData
 
-data PLabeledType = Symbol := (P.S -> Type)
+data PLabeledType = Symbol := (S -> Type)
 
 type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat where
   PLabelIndex name ((name ':= _) ': _) = 0
   PLabelIndex name (_ ': as) = PLabelIndex name as + 1
 
-type PLookupLabel :: Symbol -> [PLabeledType] -> P.S -> Type
+type PLookupLabel :: Symbol -> [PLabeledType] -> S -> Type
 type family PLookupLabel name as where
   PLookupLabel name ((name ':= a) ': _) = a
   PLookupLabel name (_ ': as) = PLookupLabel name as
 
-type family PUnLabel (a :: PLabeledType) :: P.S -> Type where
+type family PUnLabel (a :: PLabeledType) :: S -> Type where
   PUnLabel (_ ':= a) = a
 
 instance PIsData (PDataRecord xs) where
@@ -294,7 +302,7 @@ instance PIsData (PDataRecord xs) where
 {- | A sum of 'PDataRecord's. The underlying representation is the `Constr` constructor,
 where the integer is the index of the variant and the list is the record.
 -}
-type PDataSum :: [[PLabeledType]] -> P.S -> Type
+type PDataSum :: [[PLabeledType]] -> S -> Type
 newtype PDataSum defs s = PDataSum (NS (F.Compose (Term s) PDataRecord) defs)
 
 instance (All Top defs, All (Compose PShow PDataRecord) defs) => PShow (PDataSum defs) where
@@ -304,7 +312,7 @@ instance (All Top defs, All (Compose PShow PDataRecord) defs) => PShow (PDataSum
       showSum (PDataSum (Z x)) = pshow' b (F.getCompose x)
       showSum (PDataSum (S x)) = showSum (PDataSum x)
 
-class IsPDataSum (a :: [[P.S -> Type]]) where
+class IsPDataSum (a :: [[S -> Type]]) where
   type IsPDataSumDefs a :: [[PLabeledType]]
   toSum :: SOP (Term s) a -> PDataSum (IsPDataSumDefs a) s
   fromSum :: PDataSum (IsPDataSumDefs a) s -> SOP (Term s) a
@@ -323,7 +331,7 @@ instance IsPDataSum xs => IsPDataSum ('[PDataRecord l] ': xs) where
   fromSum (PDataSum (S x)) = case fromSum (PDataSum x) of
     SOP y -> SOP $ S y
 
-data DataReprHandlers (out :: P.S -> Type) (defs :: [[PLabeledType]]) (s :: P.S) where
+data DataReprHandlers (out :: S -> Type) (defs :: [[PLabeledType]]) (s :: S) where
   DRHNil :: DataReprHandlers out '[] s
   DRHCons :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def ': defs) s
 
@@ -528,12 +536,12 @@ mkLTEHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
 
 ----------------------- HRecP and friends -----------------------------------------------
 
-type HRecPApply :: [(Symbol, P.S -> Type)] -> P.S -> [(Symbol, Type)]
+type HRecPApply :: [(Symbol, S -> Type)] -> S -> [(Symbol, Type)]
 type family HRecPApply as s where
   HRecPApply ('(name, ty) ': rest) s = '(name, Reduce (ty s)) ': HRecPApply rest s
   HRecPApply '[] _ = '[]
 
-newtype HRecP (as :: [(Symbol, P.S -> Type)]) (s :: P.S)
+newtype HRecP (as :: [(Symbol, S -> Type)]) (s :: S)
   = HRecP (NoReduce (HRecGeneric (HRecPApply as s)))
   deriving stock (Generic)
 
@@ -541,7 +549,7 @@ newtype Flip f a b = Flip (f b a)
   deriving stock (Generic)
 
 class Helper2 (b :: PSubtypeRelation) a where
-  type Helper2Excess b a :: P.S -> Type
+  type Helper2Excess b a :: S -> Type
   ptryFromData' :: forall s r. Proxy b -> Term s PData -> ((Term s (PAsData a), Reduce (Helper2Excess b a s)) -> Term s r) -> Term s r
 
 instance PTryFrom PData (PAsData a) => Helper2 'PNoSubtypeRelation a where
@@ -555,7 +563,7 @@ instance PTryFrom PData a => Helper2 'PSubtypeRelation a where
     pure (punsafeCoerce y, exc)
 
 -- We could have a more advanced instance but it's not needed really.
-newtype ExcessForField (b :: PSubtypeRelation) (a :: P.S -> Type) (s :: P.S)
+newtype ExcessForField (b :: PSubtypeRelation) (a :: S -> Type) (s :: S)
   = ExcessForField (Term s (PAsData a), Reduce (Helper2Excess b a s))
   deriving stock (Generic)
 
@@ -567,7 +575,7 @@ instance PTryFrom (PBuiltinList PData) (PDataRecord '[]) where
         pchooseListBuiltin # opq # pdelay (pcon PUnit) # pdelay (ptraceInfoError "ptryFrom(PDataRecord[]): list is longer than zero")
     pure (pdnil, HRecGeneric HNil)
 
-type family UnHRecP (x :: P.S -> Type) :: [(Symbol, P.S -> Type)] where
+type family UnHRecP (x :: S -> Type) :: [(Symbol, S -> Type)] where
   UnHRecP (HRecP as) = as
 
 instance

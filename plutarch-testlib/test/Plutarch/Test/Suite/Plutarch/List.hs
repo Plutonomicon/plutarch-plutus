@@ -107,7 +107,7 @@ tests =
             , testEvalEqual
                 "reversing a non-singleton"
                 (preverse # pconstant @(PBuiltinList PInteger) ([1, 2] :: [Integer]))
-                (pconstant ([2, 1] :: [Integer]))
+                (pconstant @(PBuiltinList PInteger) ([2, 1] :: [Integer]))
             ]
         , testGroup
             "pcheckSorted"

@@ -22,20 +22,7 @@ module Plutarch.Trace (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (PBool, pif)
-import Plutarch.Builtin.String (PString)
-import Plutarch.Internal.Show (PShow, pshow)
-import Plutarch.Internal.Term (
-  Config (NoTracing, Tracing),
-  LogLevel (LogDebug, LogInfo),
-  S,
-  Term,
-  perror,
-  pgetConfig,
-  plet,
-  (#),
- )
-import Plutarch.Internal.Trace (ptrace, ptrace', ptraceDebug, ptraceInfo)
+import Plutarch.Internal (Config (NoTracing, Tracing), LogLevel (LogDebug, LogInfo), PBool, PShow, PString, S, Term, perror, pgetConfig, pif, plet, pshow, ptrace, ptrace', ptraceDebug, ptraceInfo, (#))
 
 {- | Like Haskell's @traceShowId@ but for Plutarch, at the info level.
 

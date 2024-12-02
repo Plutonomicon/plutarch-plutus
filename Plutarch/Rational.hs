@@ -13,63 +13,55 @@ module Plutarch.Rational (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (pcond, pif)
-import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.IsData (pdata)
-import Plutarch.Internal.Lift (
-  PLiftable (
-    AsHaskell,
-    PlutusRepr,
-    fromPlutarch,
-    fromPlutarchRepr,
-    toPlutarch,
-    toPlutarchRepr
-  ),
+import Plutarch.Internal (
+  DerivePlutusType (DPTStrat),
+  PAsData,
+  PBuiltinList,
+  PData,
+  PEq ((#==)),
+  PInteger,
+  PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr),
   PLiftedClosed,
+  PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
+  POrd (pmax, pmin, (#<), (#<=)),
+  PShow,
+  PTryFrom (PTryFromExcess, ptryFrom'),
+  PlutusType,
+  PlutusTypeScott,
+  S,
+  Term,
   fromPlutarchReprClosed,
   getPLifted,
   mkPLifted,
-  pconstant,
-  toPlutarchReprClosed,
- )
-import Plutarch.Internal.ListLike (phead, pnil, ptail)
-import Plutarch.Internal.Numeric (
-  PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
-  pdiv,
-  pmod,
-  pquot,
- )
-import Plutarch.Internal.Ord (
-  POrd (pmax, pmin, (#<), (#<=)),
- )
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
   pcon,
-  pmatch,
- )
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
-import Plutarch.Internal.Show (PShow, pshow, pshow')
-import Plutarch.Internal.Term (
-  S,
-  Term,
+  pcond,
+  pconstant,
+  pdata,
+  pdiv,
+  pfix,
+  phead,
   phoistAcyclic,
+  pif,
+  plam,
   plet,
+  pmatch,
+  pmod,
+  pnil,
+  ppairDataBuiltin,
+  pquot,
+  pshow,
+  pshow',
+  ptail,
+  pto,
+  ptryFrom,
+  runTermCont,
+  tcont,
+  toPlutarchReprClosed,
+  unTermCont,
   (#),
   (#$),
   (:-->),
  )
-import Plutarch.Internal.TermCont (
-  runTermCont,
-  tcont,
-  unTermCont,
- )
-import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Trace (ptraceInfoError)

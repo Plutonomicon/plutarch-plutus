@@ -5,21 +5,7 @@ module Plutarch.Enum (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (pif)
-import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.Ord (POrd)
-import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.Term (
-  S,
-  Term,
-  phoistAcyclic,
-  (#),
-  (#$),
-  (:-->),
- )
+import Plutarch.Internal (PInteger, POrd, S, Term, pfix, phoistAcyclic, pif, plam, pto, (#), (#$), (#==), (:-->))
 import Plutarch.Positive (PPositive)
 
 {- | A notion of \'next\' value. More formally, instances of this type class are

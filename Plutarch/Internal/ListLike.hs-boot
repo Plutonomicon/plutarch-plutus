@@ -2,7 +2,7 @@
 module Plutarch.Internal.ListLike (PIsListLike, PListLike, PElemConstraint, pelimList, pcons, pnil, phead, ptail, pnull) where
 
 import Data.Kind (Constraint, Type)
-import Plutarch.Builtin.Bool (PBool, pfalse, ptrue)
+import Plutarch.Builtin (PBool, pfalse, ptrue)
 import Plutarch.Internal.Term (
   S,
   Term,

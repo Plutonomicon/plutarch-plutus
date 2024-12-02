@@ -112,7 +112,7 @@ Also - as parsing data costs computation resources, it is common to pass tagged 
 `PlutusType` typeclass serves 2 purposes:
 
 1. Adds derivation via anyclass for Haskell ADTs
-2. Manipulates given `S -> Type` on its internal representation (provided as type `PInner`), 
+2. Manipulates given `S -> Type` on its internal representation (provided as type `PInner`),
   rather than parsing/constructing the datatype back and forth.
 
 Examples on how to derive `PlutusType` to either Data or Scott encoding:

@@ -5,27 +5,7 @@ module Plutarch.Internal.Eq (
   PEq (..),
 ) where
 
-import Plutarch.Builtin.BLS (
-  PBuiltinBLS12_381_G1_Element,
-  PBuiltinBLS12_381_G2_Element,
- )
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, pif', pnot, (#&&))
-import Plutarch.Builtin.ByteString (
-  PByte,
-  PByteString,
-  PLogicOpSemantics,
- )
-import Plutarch.Builtin.Data (
-  PAsData,
-  PBuiltinList,
-  PBuiltinPair,
-  PData,
-  pfstBuiltin,
-  psndBuiltin,
- )
-import Plutarch.Builtin.Integer (PInteger, peqInteger)
-import Plutarch.Builtin.String (PString)
-import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Builtin
 
 import Data.Kind (Type)
 import Data.List.NonEmpty (nonEmpty)
