@@ -73,6 +73,7 @@
 * `PFractional` type class (only one instance, unlikely to ever have more)
 * `PIsData PRational` instance (made no sense)
 * `PPartialOrd` (all its functionality is now in `POrd`)
+* `Plutarch.FFI` module
 
 ### Fixed
 
