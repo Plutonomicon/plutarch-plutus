@@ -25,7 +25,6 @@ module Plutarch.Builtin.ByteString (
   phexByteStr,
   pbyteStringToInteger,
   pintegerToByteString,
-  pintegerToByteStringSized,
 ) where
 
 import Data.ByteString qualified as BS
@@ -272,47 +271,24 @@ phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
 -}
 pbyteStringToInteger ::
   forall (s :: S).
-  Term s PEndianness ->
-  Term s (PByteString :--> PInteger)
-pbyteStringToInteger e = plam $ \bs ->
-  punsafeBuiltin PLC.ByteStringToInteger # punsafeCoerce @PBool e # bs
+  Term s (PEndianness :--> PByteString :--> PInteger)
+pbyteStringToInteger = punsafeBuiltin PLC.ByteStringToInteger
 
-{- | Convert a (non-negative) 'PInteger' into a 'PByteString'. This will produce
-a result of the minimal size required: if you want to specify a size, use
-'pintegerToByteStringSized'. For details, see
-[CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
+{- | Converts a 'PInteger' into a 'PByteString', given a desired endianness and
+target length. For more details, see [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
 
 = Note
 
-This conversion is unsafe, as it will error when given a non-negative
-integer.
+This conversion is unsafe. It will fail if any of the following occur:
+
+1. The size is negative.
+2. The size is too large (currently if over 8196 bytes).
+3. The size won't fit the integer to convert.
 -}
 pintegerToByteString ::
   forall (s :: S).
-  Term s PEndianness ->
-  Term s (PInteger :--> PByteString)
-pintegerToByteString e = plam $ \i ->
-  punsafeBuiltin PLC.IntegerToByteString # punsafeCoerce @PBool e # pconstantInteger 0 # i
-
-{- | As 'pintegerToByteString', but allows specifying a required size. If
-a size larger than the minimum is specified, the result will be padded with zero
-bytes, positioned according to the endianness argument.
-
-For more details, see [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
-
-= Note
-
-This conversion is unsafe. In addition to the reasons for
-'punsafeIntegerToByteString' being unsafe, this will also error if the
-requested size is too large (currently 8192 is the limit), too small to fit
-the specified 'PInteger', or negative.
--}
-pintegerToByteStringSized ::
-  forall (s :: S).
-  Term s PEndianness ->
-  Term s (PInteger :--> PInteger :--> PByteString)
-pintegerToByteStringSized e = plam \len i ->
-  punsafeBuiltin PLC.IntegerToByteString # punsafeCoerce @PBool e # len # i
+  Term s (PEndianness :--> PInteger :--> PInteger :--> PByteString)
+pintegerToByteString = punsafeBuiltin PLC.IntegerToByteString
 
 -- Helpers
 
