@@ -22,7 +22,44 @@ module Plutarch.Maybe (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Internal (DerivePlutusType (DPTStrat), PBool, PEq, PLiftable (AsHaskell, PlutusRepr, fromPlutarch, fromPlutarchRepr, toPlutarch, toPlutarchRepr), PLiftedClosed, PShow, PString, PlutusType, PlutusTypeScott, S, Term, fromPlutarchReprClosed, getPLifted, mkPLifted, pcon, pconstant, phoistAcyclic, plam, pmatch, toPlutarchReprClosed, (#), (:-->))
+import Plutarch.Builtin.Bool (PBool)
+import Plutarch.Builtin.String (PString)
+import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Lift (
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    haskToRepr,
+    plutToRepr,
+    reprToHask,
+    reprToPlut
+  ),
+  PLiftedClosed (PLiftedClosed),
+  getPLifted,
+  getPLiftedClosed,
+  mkPLifted,
+  mkPLiftedClosed,
+  pconstant,
+  plift,
+  pliftedFromClosed,
+  pliftedToClosed,
+ )
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (
+  DerivePlutusType (DPTStrat),
+  PlutusType,
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.Show (PShow)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  (#),
+  (:-->),
+ )
 import Plutarch.Trace (ptraceInfoError)
 
 -- | Plutus Maybe type, with Scott-encoded repr
@@ -40,17 +77,21 @@ instance PLiftable a => PLiftable (PMaybe a) where
   type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
 
   {-# INLINEABLE haskToRepr #-}
-  haskToRepr (Just a) = PLiftedClosed $ popaque $ pcon $ PJust (pconstant @a a)
-  haskToRepr Nothing = PLiftedClosed $ popaque $ pcon PNothing
+  haskToRepr (Just a) = mkPLiftedClosed $ pcon $ PJust (pconstant @a a)
+  haskToRepr Nothing = mkPLiftedClosed $ pcon PNothing
 
   {-# INLINEABLE reprToHask #-}
-  reprToHask = undefined
+  reprToHask :: ()
+  reprToHask x =
+    if plift $ pisJust # getPLiftedClosed x
+      then _
+      else Just Nothing
 
   {-# INLINEABLE plutToRepr #-}
-  plutToRepr = undefined -- toPlutarchReprClosed
+  plutToRepr x = Right $ pliftedToClosed x
 
   {-# INLINEABLE reprToPlut #-}
-  reprToPlut = undefined -- mkPLifted$ pcon $ PJust $ pconstant @a a
+  reprToPlut = pliftedFromClosed
 
 -- | Extracts the element out of a 'PJust' and throws an error if its argument is 'PNothing'.
 pfromJust ::

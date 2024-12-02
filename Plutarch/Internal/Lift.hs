@@ -26,11 +26,13 @@ module Plutarch.Internal.Lift (
   unsafeToUni,
   fromPlutarchUni,
   toPlutarchUni,
-  fromPlutarchReprClosed,
-  toPlutarchReprClosed,
   PLifted (PLifted),
   mkPLifted,
   getPLifted,
+  mkPLiftedClosed,
+  getPLiftedClosed,
+  pliftedToClosed,
+  pliftedFromClosed,
   PLiftedClosed (..),
   LiftError (..),
 ) where
@@ -149,28 +151,6 @@ class PlutusType a => PLiftable (a :: S -> Type) where
 
   reprToPlut :: PlutusRepr a -> PLifted s a
   plutToRepr :: (forall s. PLifted s a) -> Either LiftError (PlutusRepr a)
-
-{- | Valid definition for 'toPlutarchRepr' if 'PlutusRepr' is Scott encoded
-
-@since WIP
--}
-toPlutarchReprClosed ::
-  forall (a :: S -> Type).
-  (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
-  AsHaskell a ->
-  PlutusRepr a
-toPlutarchReprClosed _p = undefined -- PLiftedClosed $ toPlutarch @a p
-
-{- | Valid definition for 'fromPlutarchRepr' if 'PlutusRepr' is Scott encoded
-
-@since WIP
--}
-fromPlutarchReprClosed ::
-  forall (a :: S -> Type).
-  (PLiftable a, PlutusRepr a ~ PLiftedClosed a) =>
-  PlutusRepr a ->
-  Maybe (AsHaskell a)
-fromPlutarchReprClosed (PLiftedClosed _t) = undefined -- either (const Nothing) Just $ fromPlutarch @a t
 
 {- | Valid definition for 'toPlutarch' if 'PlutusRepr' is in Plutus universe
 
@@ -386,6 +366,21 @@ mkPLifted t = PLifted (popaque t)
 @since WIP
 -}
 newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed {unPLiftedClosed :: forall (s :: S). Term s POpaque}
+
+-- punsafePLiftedClosed :: forall b a. PLiftedClosed a -> PLiftedClosed b
+-- punsafePLiftedClosed (PLiftedClosed x) = PLiftedClosed x
+
+getPLiftedClosed :: PLiftedClosed a -> (forall (s :: S). Term s a)
+getPLiftedClosed (PLiftedClosed x) = punsafeCoerce x
+
+mkPLiftedClosed :: (forall (s :: S). Term s a) -> PLiftedClosed a
+mkPLiftedClosed x = PLiftedClosed $ popaque x
+
+pliftedToClosed :: (forall (s :: S). PLifted s a) -> PLiftedClosed a
+pliftedToClosed x = PLiftedClosed $ popaque $ getPLifted x
+
+pliftedFromClosed :: PLiftedClosed a -> PLifted s a
+pliftedFromClosed (PLiftedClosed x) = PLifted x
 
 deriving via
   (DeriveBuiltinPLiftable PInteger Integer)
