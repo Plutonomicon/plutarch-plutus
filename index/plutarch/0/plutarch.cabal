@@ -131,6 +131,12 @@ library
     Plutarch.Pretty.Internal.Types
     Plutarch.Rational
     Plutarch.Reducible
+    Plutarch.Repr.Data
+    Plutarch.Repr.Internal
+    Plutarch.Repr.Newtype
+    Plutarch.Repr.Scott
+    Plutarch.Repr.SOP
+    Plutarch.Repr.Tag
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
@@ -155,3 +161,4 @@ library
     , QuickCheck
     , random
     , sop-core
+    , vector
