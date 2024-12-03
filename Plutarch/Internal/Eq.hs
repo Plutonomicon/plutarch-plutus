@@ -13,6 +13,7 @@ import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, pif', pnot, (#&&))
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
+  PEndianness,
   PLogicOpSemantics,
  )
 import Plutarch.Builtin.Data (
@@ -176,3 +177,6 @@ instance PEq PBuiltinBLS12_381_G1_Element where
 
 instance PEq PBuiltinBLS12_381_G2_Element where
   x #== y = punsafeBuiltin PLC.Bls12_381_G2_equal # x # y
+
+-- | @since WIP
+deriving anyclass instance PEq PEndianness

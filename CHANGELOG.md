@@ -20,7 +20,6 @@
 * `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
 * `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
   `ReplicateByte`
-* Conversion primitive wrappers in `Plutarch.Conversion`
 * `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
 * `PBitString` and associated functionality for CIP-122 and CIP-123 operations
   on bits, in `Plutarch.BitString`
@@ -66,8 +65,7 @@
   itself
 * `pbyteStr` (as it's deprecated)
 * `Plutarch.Bitwise` module, as its functionality has been superseded by more
-  type-safe operations in `Plutarch.ByteString`, `Plutarch.BitString` and
-  `Plutarch.Convert`
+  type-safe operations in `Plutarch.ByteString` and  `Plutarch.BitString`
 * `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
 * `Plutarch` module, as it served no useful purpose and was just confusing
 * `PType` synonym (use `S -> Type` honestly instead)

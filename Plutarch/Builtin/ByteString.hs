@@ -1,23 +1,50 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 
-module Plutarch.Builtin.ByteString where
-
-import Plutarch.Builtin.Bool
-import Plutarch.Builtin.Integer
-import Plutarch.Builtin.Opaque
-
-import Plutarch.Internal.Fix
-import Plutarch.Internal.Term
+module Plutarch.Builtin.ByteString (
+  PByteString (..),
+  PByte (..),
+  PLogicOpSemantics (..),
+  PEndianness (..),
+  ppadding,
+  ptruncation,
+  pmostSignificantFirst,
+  pmostSignificantLast,
+  pandBS,
+  porBS,
+  pxorBS,
+  pcomplementBS,
+  preplicateBS,
+  pconsBS,
+  pbyteToInteger,
+  pintegerToByte,
+  psliceBS,
+  plengthBS,
+  pindexBS,
+  phexByteStr,
+  pbyteStringToInteger,
+  pintegerToByteString,
+) where
 
 import Data.ByteString qualified as BS
 import Data.Char (toLower)
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
-
-import {-# SOURCE #-} Plutarch.Internal.PLam
-
+import Plutarch.Builtin.Bool (PBool, pfalse, ptrue)
+import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Opaque (POpaque)
+import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  phoistAcyclic,
+  punsafeBuiltin,
+  punsafeCoerce,
+  punsafeConstantInternal,
+  (#),
+  (:-->),
+ )
 import PlutusCore qualified as PLC
 
 -- | Plutus 'BuiltinByteString'
@@ -46,6 +73,33 @@ instance Semigroup (Term s PByteString) where
 
 instance Monoid (Term s PByteString) where
   mempty = punsafeConstantInternal $ PLC.someValue BS.empty
+
+{- | Type designating whether a conversion should be most-significant-first or
+most-significant-last. See
+[CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#representation)
+for more details on this.
+
+@since WIP
+-}
+newtype PEndianness (s :: S) = PEndianness (Term s PBool)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+
+{- | Indicates the conversion should be most-significant-first.
+
+@since WIP
+-}
+pmostSignificantFirst :: forall (s :: S). Term s PEndianness
+pmostSignificantFirst = punsafeCoerce ptrue
+
+{- | Indicates the conversion should be most-significant-last.
+
+@since WIP
+-}
+pmostSignificantLast :: forall (s :: S). Term s PEndianness
+pmostSignificantLast = punsafeCoerce pfalse
 
 {- | Indicates that padding semantics should be used.
 
@@ -117,22 +171,6 @@ pcomplementBS ::
   Term s (PByteString :--> PByteString)
 pcomplementBS = punsafeBuiltin PLC.ComplementByteString
 
-{- | Construct a 'PByteString' of the specified length (0 if negative)
-consisting entirely of zero bytes.
-
-@since WIP
--}
-pzeroesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-pzeroesBS = punsafeBuiltin PLC.ReplicateByte
-
-{- | Construct a 'PByteString' of the specified length (0 if negative)
-consisting entirely of ones; that is, where every byte is @0xFF@.
-
-@since WIP
--}
-ponesBS :: forall (s :: S). Term s (PInteger :--> PByteString)
-ponesBS = punsafeBuiltin PLC.ReplicateByte
-
 {- | Given a desired length and a 'PByte', construct a 'PByteString' of the
 specified length (0 if negative) consisting entirely of that 'PByte'.
 
@@ -156,8 +194,7 @@ pbyteToInteger :: Term s (PByte :--> PInteger)
 pbyteToInteger = phoistAcyclic $ plam punsafeCoerce
 
 {- | Try to convert a 'PInteger' into its corresponding 'PByte'. This operation
-is checked, and will error if given a negative 'PInteger', or one too large
-to fit into a byte.
+unchecked: use with care.
 
 @since WIP
 -}
@@ -183,33 +220,6 @@ index. Will crash if given an out-of-bounds index.
 pindexBS :: Term s (PByteString :--> PInteger :--> PByte)
 pindexBS = punsafeBuiltin PLC.IndexByteString
 
-{- | Verify that the given predicate holds for every byte in the argument.
-
-@since WIP
--}
-pallBS ::
-  forall (s :: S).
-  Term s ((PByte :--> PBool) :--> PByteString :--> PBool)
-pallBS = phoistAcyclic $ plam $ \p bs ->
-  plet (plengthBS # bs) $ \len ->
-    go p len bs # pconstantInteger 0
-  where
-    go ::
-      forall (s' :: S).
-      Term s' (PByte :--> PBool) ->
-      Term s' PInteger ->
-      Term s' PByteString ->
-      Term s' (PInteger :--> PBool)
-    go p len bs = pfix #$ plam $ \self ix ->
-      pif
-        (pltInteger # ix # len)
-        ( pif
-            (p #$ pindexBS # bs # ix)
-            (self #$ paddInteger # ix # pconstantInteger 1)
-            pfalse
-        )
-        ptrue
-
 -- | Interpret a hex string as a PByteString.
 phexByteStr :: HasCallStack => String -> Term s PByteString
 phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
@@ -217,6 +227,34 @@ phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
     f "" = []
     f [_] = error "UnevenLength"
     f (x : y : rest) = (hexDigitToWord8 x * 16 + hexDigitToWord8 y) : f rest
+
+{- | Convert a 'PByteString' into a 'PInteger', as per
+[CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinbytestringtointeger).
+
+@since WIP
+-}
+pbyteStringToInteger ::
+  forall (s :: S).
+  Term s (PEndianness :--> PByteString :--> PInteger)
+pbyteStringToInteger = punsafeBuiltin PLC.ByteStringToInteger
+
+{- | Converts a 'PInteger' into a 'PByteString', given a desired endianness and
+target length. For more details, see [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinintegertobytestring).
+
+= Note
+
+This conversion is unsafe. It will fail if any of the following occur:
+
+1. The size is negative.
+2. The size is too large (currently if over 8196 bytes).
+3. The size won't fit the integer to convert.
+-}
+pintegerToByteString ::
+  forall (s :: S).
+  Term s (PEndianness :--> PInteger :--> PInteger :--> PByteString)
+pintegerToByteString = punsafeBuiltin PLC.IntegerToByteString
+
+-- Helpers
 
 hexDigitToWord8 :: HasCallStack => Char -> Word8
 hexDigitToWord8 = f . toLower
