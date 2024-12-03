@@ -199,6 +199,28 @@ compile :: Config -> ClosedTerm a -> Either Text Script
 compileOptimized :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Either Text Script
 compile' :: TermResult -> UTerm
 
+-- | Given a closed <a>Term</a>, run the UPLC optimizer on it.
+--   
+--   <h1>Important note</h1>
+--   
+--   If the input term has any hoisted dependencies, these are completely
+--   erased by this process. Thus, if the resulting <a>Term</a> is used as
+--   part of a larger computation with the same dependencies, the Plutarch
+--   compiler will not be aware of them, and will not be able to optimize
+--   them properly. More concretely, in a case like this:
+--   
+--   @<tt> padd # optimizeTerm (f # pexpensive) # optimizeTerm (g #
+--   pexpensive) </tt>@
+--   
+--   <tt>pexpensive</tt> will end up being duplicated entirely into each
+--   'arm' of the <tt>padd</tt>, even though under normal circumstances it
+--   could be shared.
+--   
+--   Thus, if you plan to use this, ensure that it is done 'as late as
+--   possible'; embedding <a>Term</a>s produced by <a>optimizeTerm</a> into
+--   larger computations can lead to size blowout if not done carefully.
+optimizeTerm :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> forall (s :: S). Term s a
+
 -- | <ul>
 --   <li>Closed* terms with no free variables.</li>
 --   </ul>
