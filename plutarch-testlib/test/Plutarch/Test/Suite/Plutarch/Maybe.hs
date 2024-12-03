@@ -1,8 +1,8 @@
 module Plutarch.Test.Suite.Plutarch.Maybe (tests) where
 
 import Data.Kind (Type)
-import Plutarch.Maybe (PMaybeSoP, pmapMaybe, pmaybeSoPToMaybe, pmaybeToMaybeSoP)
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
+import Plutarch.Maybe (PMaybeSoP, pmapMaybe, pmapMaybeSoP, pmaybeSoPToMaybe, pmaybeToMaybeSoP)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkPLiftableLaws)
@@ -56,6 +56,10 @@ tests =
         checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
           (fmap even)
           (plam $ \m -> pmapMaybeData # plam (\v -> pdata (peven # pfromData v)) # m)
+    , testProperty "fmap = pmapMaybeSoP" $
+        checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
+          (fmap even)
+          (plam $ \m -> pmaybeToMaybeData #$ pmaybeSoPToMaybe #$ pmapMaybeSoP # peven #$ pmaybeToMaybeSoP #$ pmaybeDataToMaybe # m)
     , testGroup (instanceOfType @(S -> Type) @(PMaybe PInteger) "PLiftable") $
         checkPLiftableLaws @(PMaybe PInteger)
     , testGroup (instanceOfType @(S -> Type) @(PMaybeData PInteger) "PLiftable") $

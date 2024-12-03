@@ -21,6 +21,7 @@ module Plutarch.Maybe (
   pmaybe,
   passertPJust,
   pmapMaybe,
+  pmapMaybeSoP,
 
   -- ** Conversions
   pmaybeToMaybeSoP,
@@ -245,3 +246,9 @@ pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
 pmaybeSoPToMaybe = phoistAcyclic $ plam $ flip pmatch $ \case
   PJustSoP a -> pcon $ PJust a
   PNothingSoP -> pcon PNothing
+
+-- @since WIP
+pmapMaybeSoP :: Term s ((a :--> b) :--> PMaybeSoP a :--> PMaybeSoP b)
+pmapMaybeSoP = phoistAcyclic $ plam $ \f -> flip pmatch $ \case
+  PJustSoP v -> pcon $ PJustSoP (f # v)
+  PNothingSoP -> pcon PNothingSoP
