@@ -1,6 +1,9 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Maybe (
   -- * Type
   PMaybe (..),
+  PMaybeSoP (..),
 
   -- * Functions
 
@@ -18,10 +21,15 @@ module Plutarch.Maybe (
   pmaybe,
   passertPJust,
   pmapMaybe,
+
+  -- ** Conversions
+  pmaybeToMaybeSoP,
+  pmaybeSoPToMaybe,
 ) where
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Internal.Eq (PEq)
@@ -57,6 +65,7 @@ import Plutarch.Internal.Term (
   (#),
   (:-->),
  )
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 import Plutarch.Trace (ptraceInfoError)
 
 -- | Plutus Maybe type, with Scott-encoded repr
@@ -192,3 +201,47 @@ pmapMaybe = phoistAcyclic $
   plam $ \f mv -> pmatch mv $ \case
     PJust v -> pjust # (f # v)
     PNothing -> pnothing
+
+-- | @since WIP
+data PMaybeSoP (a :: S -> Type) (s :: S)
+  = PJustSoP (Term s a)
+  | PNothingSoP
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PEq, PShow)
+
+-- | @since WIP
+deriving via DeriveAsSOPStruct (PMaybeSoP a) instance PlutusType (PMaybeSoP a)
+
+-- | @since WIP
+instance PLiftable a => PLiftable (PMaybeSoP a) where
+  type AsHaskell (PMaybeSoP a) = Maybe (AsHaskell a)
+  type PlutusRepr (PMaybeSoP a) = PLiftedClosed (PMaybeSoP a)
+
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = toPlutarchReprClosed
+
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch (Just a) = mkPLifted $ pcon $ PJustSoP $ pconstant @a a
+  toPlutarch Nothing = mkPLifted $ pcon PNothingSoP
+
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr = fromPlutarchReprClosed
+
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = do
+    isJust' <- fromPlutarch $ mkPLifted $ pisJust # (pmaybeSoPToMaybe # getPLifted t)
+    if isJust'
+      then fmap Just $ fromPlutarch $ mkPLifted $ pfromJust # (pmaybeSoPToMaybe # getPLifted t)
+      else Right Nothing
+
+-- | @since WIP
+pmaybeToMaybeSoP :: Term s (PMaybe a :--> PMaybeSoP a)
+pmaybeToMaybeSoP = phoistAcyclic $ plam $ flip pmatch $ \case
+  PJust a -> pcon $ PJustSoP a
+  PNothing -> pcon PNothingSoP
+
+-- | @since WIP
+pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
+pmaybeSoPToMaybe = phoistAcyclic $ plam $ flip pmatch $ \case
+  PJustSoP a -> pcon $ PJust a
+  PNothingSoP -> pcon PNothing
