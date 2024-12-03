@@ -24,6 +24,7 @@ module Plutarch.Internal.Term (
   compile,
   compileOptimized,
   compile',
+  optimizeTerm,
   ClosedTerm,
   Dig,
   hashTerm,
@@ -784,6 +785,49 @@ compileOptimized t = case asClosedRawTerm t of
     case go compiled of
       Left err -> Left . Text.pack . show $ err
       Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
+  where
+    go ::
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
+    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
+      unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
+      simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
+      debruijnd <- UPLC.deBruijnTerm simplified
+      pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
+
+{- | Given a closed 'Term', run the UPLC optimizer on it.
+
+= Important note
+
+If the input term has any hoisted dependencies, these are completely erased
+by this process. Thus, if the resulting 'Term' is used as part of a larger
+computation with the same dependencies, the Plutarch compiler will not be
+aware of them, and will not be able to optimize them properly. More
+concretely, in a case like this:
+
+@@
+padd # optimizeTerm (f # pexpensive) # optimizeTerm (g # pexpensive)
+@@
+
+@pexpensive@ will end up being duplicated entirely into each \'arm\' of the
+@padd@, even though under normal circumstances it could be shared.
+
+Thus, if you plan to use this, ensure that it is done \'as late as
+possible\'; embedding 'Term's produced by 'optimizeTerm' into larger
+computations can lead to size blowout if not done carefully.
+-}
+optimizeTerm ::
+  forall (a :: S -> Type).
+  (forall (s :: S). Term s a) ->
+  (forall (s :: S). Term s a)
+optimizeTerm (Term raw) = Term $ \w64 ->
+  let TermMonad (ReaderT comp) = raw w64
+   in TermMonad $ ReaderT $ \conf -> do
+        res <- comp conf
+        let compiled = compile' res
+        case go compiled of
+          Left err -> Left . Text.pack . show $ err
+          Right simplified -> pure . TermResult (RCompiled simplified) $ []
   where
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->

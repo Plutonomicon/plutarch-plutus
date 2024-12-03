@@ -38,6 +38,7 @@
 * `PLiftable PRational` instance
 * `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
 * New methods for `Data` and Scott encoding derivation
+* `optimizeTerm` for separate optimization via UPLC from compilation
 
 ## Changed
 
