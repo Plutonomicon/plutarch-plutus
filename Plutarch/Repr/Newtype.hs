@@ -9,10 +9,15 @@ module Plutarch.Repr.Newtype (
 
 import Data.Kind (Type)
 import GHC.Exts (Any)
-import Generics.SOP
+import Generics.SOP (
+  Code,
+  I (I),
+  NP (Nil, (:*)),
+  NS (Z),
+  SOP (SOP),
+ )
 import Generics.SOP qualified as SOP
-import Generics.SOP.Constraint
-
+import Generics.SOP.Constraint (Head)
 import Plutarch.Internal.PlutusType (
   PContravariant',
   PCovariant',
@@ -24,7 +29,13 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Term (S, Term)
 
-newtype DeriveAsNewtype (a :: S -> Type) s = DeriveAsNewtype {unDeriveAsNewtype :: a s}
+-- | @since WIP
+newtype DeriveAsNewtype (a :: S -> Type) s = DeriveAsNewtype
+  { unDeriveAsNewtype :: a s
+  -- ^ @since WIP
+  }
+
+-- Helpers
 
 type family UnTermSingle (x :: Type) :: S -> Type where
   UnTermSingle (Term _ a) = a
@@ -47,9 +58,9 @@ instance
   -- This breaks without type signature because of (s :: S) needs to be bind.
   pcon' :: forall s. DeriveAsNewtype a s -> Term s (PInner (DeriveAsNewtype a))
   pcon' (DeriveAsNewtype x) =
-    case unZ $ unSOP (from x :: SOP I '[ '[Term s pt]]) of
+    case SOP.unZ $ SOP.unSOP (SOP.from x :: SOP I '[ '[Term s pt]]) of
       (I x) :* Nil -> x :: Term s pt
 
   pmatch' :: forall s b. Term s (PInner (DeriveAsNewtype a)) -> (DeriveAsNewtype a s -> Term s b) -> Term s b
   pmatch' x f =
-    f (DeriveAsNewtype $ to ((SOP $ Z $ I x :* Nil) :: SOP I '[ '[Term s pt]]))
+    f (DeriveAsNewtype $ SOP.to ((SOP $ Z $ I x :* Nil) :: SOP I '[ '[Term s pt]]))
