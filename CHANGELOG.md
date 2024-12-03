@@ -37,6 +37,7 @@
 * `pcond` as a Plutarch equivalent to multi-way if
 * `PLiftable PRational` instance
 * `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
+* New methods for `Data` and Scott encoding derivation
 
 ## Changed
 
