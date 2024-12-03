@@ -25,6 +25,9 @@ module Plutarch.Internal.PlutusType (
   PVariant',
   PCovariant',
   PContravariant',
+  PVariant'',
+  PCovariant'',
+  PContravariant'',
 ) where
 
 import Plutarch.Builtin.BLS (

@@ -29,6 +29,7 @@ module Plutarch.Internal.Term (
   hashTerm,
   hashRawTerm,
   RawTerm (..),
+  HoistedTerm (..),
   TermResult (TermResult, getDeps, getTerm),
   S (SI),
   PType,
@@ -69,6 +70,7 @@ import Data.Set qualified as S
 import Data.String (fromString)
 import Data.Text (Text)
 import Data.Text qualified as Text
+import Data.Vector qualified as V
 import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
@@ -114,6 +116,9 @@ data RawTerm
   | RCompiled UTerm
   | RError
   | RHoisted HoistedTerm
+  | RPlaceHolder Dig
+  | RConstr Word64 [RawTerm]
+  | RCase RawTerm [RawTerm]
   deriving stock (Show)
 
 addHashIndex :: forall alg. HashAlgorithm alg => Integer -> Context alg -> Context alg
@@ -145,6 +150,11 @@ hashRawTerm' (RBuiltin x) = addHashIndex 6 . flip hashUpdate (F.flat x)
 hashRawTerm' RError = addHashIndex 7
 hashRawTerm' (RHoisted (HoistedTerm hash _)) = addHashIndex 8 . flip hashUpdate hash
 hashRawTerm' (RCompiled code) = addHashIndex 9 . flip hashUpdate (hashUTerm @alg code hashInit)
+hashRawTerm' (RPlaceHolder hash) = addHashIndex 10 . flip hashUpdate hash
+hashRawTerm' (RConstr x y) =
+  addHashIndex 11 . flip hashUpdate (F.flat (fromIntegral x :: Integer)) . flip (foldl' $ flip hashRawTerm') y
+hashRawTerm' (RCase x y) =
+  addHashIndex 12 . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
 
 hashRawTerm :: RawTerm -> Dig
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
@@ -690,7 +700,10 @@ rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
 rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
 rawTermToUPLC _ _ (RCompiled code) = code
+rawTermToUPLC _ _ (RPlaceHolder _) = UPLC.Error ()
 rawTermToUPLC _ _ RError = UPLC.Error ()
+rawTermToUPLC m l (RConstr i xs) = UPLC.Constr () i (rawTermToUPLC m l <$> xs)
+rawTermToUPLC m l (RCase x xs) = UPLC.Case () (rawTermToUPLC m l x) $ V.fromList (rawTermToUPLC m l <$> xs)
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
