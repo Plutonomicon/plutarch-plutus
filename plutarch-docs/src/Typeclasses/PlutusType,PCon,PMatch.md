@@ -4,11 +4,11 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Prelude
 import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
-module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
 ```
 
 </p>
