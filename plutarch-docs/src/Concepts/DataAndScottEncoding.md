@@ -14,7 +14,7 @@ import Prelude (Integer, (+))
 
 # Data encoding and Scott encoding
 
-In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: [`Constr`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data) data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.
+In Plutus Core, there are multiple (conflicting) ways to represent non-trivial ADTs: [`Constr`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data) data encoding, Scott encoding, or native SoP added in UPLC 1.1.0. You should use only one of these representations for your non-trivial types.
 
 > Aside: What's a "trivial" type? The non-data builtin types! `PInteger`, `PByteString`, `PBuiltinList`, `PBuiltinPair`, and `PMap` (actually just a builtin list of builtin pairs). It's important to note that [`Data`](https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data) (`Constr` or otherwise) is also a builtin type.
 
@@ -85,3 +85,9 @@ foo (\_ n -> n)
 Neat!
 
 This is the same recipe followed in the implementation of `PMaybe`. See its [PlutusType impl](./../Typeclasses/PlutusType,PCon,PMatch.md)!
+
+## SoP Encoding
+
+SoP stands for Sum of Product and it is another way of encoding data types. UPLC introduced these as a native construct with two new UPLC constructors, `Constr` that encodes a numerical tag (that is used to encode which constructor is used) and a list of terms (that represent fields of the constructor) and `Case` - an eliminator that given a `Vector` of terms that handle each of the constructors and all evaluate to the same value.
+
+To use SoP datatype representation you can use `DeriveAsSOPStruct` `deriving via` helper, see how `Maybe` is doing it in [PlutusType section](./../Typeclasses/PlutusType,PCon,PMatch.md)
