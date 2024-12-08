@@ -144,7 +144,7 @@ instance Fractional (Term s PRational) where
               ( plet (xn * pto yd) $ \numm ->
                   preduce
                     #$ pif
-                      (denm #< 0)
+                      (denm #<= 0)
                       (pcon $ PRational (pnegate #$ numm) (punsafeCoerce $ pnegate # denm))
                       (pcon $ PRational numm (punsafeCoerce denm))
               )
@@ -155,7 +155,7 @@ instance Fractional (Term s PRational) where
       inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
         pcond
           [ (xn #== 0, ptraceInfoError "attempted to construct the reciprocal of zero")
-          , (xn #< 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+          , (xn #<= 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
           ]
           (pcon $ PRational (pto xd) (punsafeCoerce xn))
   {-# INLINEABLE fromRational #-}
