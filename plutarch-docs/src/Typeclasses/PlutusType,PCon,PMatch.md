@@ -4,10 +4,13 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
-import Plutarch.Prelude
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
+import Plutarch.Prelude
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 ```
 
 </p>
@@ -82,6 +85,22 @@ data PMyTypeData (a :: S -> Type) (b :: S -> Type) (s :: S)
   deriving anyclass (PlutusType)
 
 instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData
+```
+
+## Implementing `PlutusType` for your own types (SoP Encoding)
+
+Mechanism is the same as in Scott encoding case but using `DeriveAsSOPStruct` instead.
+
+> NOTE: You must import `DeriveAsSOPStruct` with constructor (like imports at the top of this page do) for GHC to see that the helper is coercible to your own type.
+
+```haskell
+data PMaybeSoP (a :: S -> Type) (s :: S)
+  = PJustSoP (Term s a)
+  | PNothingSoP
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PEq, PShow)
+
+deriving via DeriveAsSOPStruct (PMaybeSoP a) instance PlutusType (PMaybeSoP a)
 ```
 
 ## Implementing `PlutusType` for your own types (`newtype`)

@@ -6,7 +6,7 @@ import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.ST (runST)
 import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, modify')
 import Data.ByteString.Short qualified as SBS
-import Data.Foldable (fold)
+import Data.Foldable (fold, toList)
 import Data.Functor (($>), (<&>))
 import Data.Text (Text)
 import Data.Text qualified as Txt
@@ -315,8 +315,13 @@ prettyUPLC uplc = runST $ do
         PP.hang indentWidth $
           PP.sep $
             functionDoc : argsDoc
-    go (Constr {}) = pure $ PP.pretty ("UPLC.Constr not implemented" :: String)
-    go (Case {}) = pure $ PP.pretty ("UPLC.Case not implemented" :: String)
+    go (Constr _ i args) = do
+      vals <- traverse go args
+      pure $ PP.parens $ "Constr" <+> PP.pretty i <+> PP.parens (PP.hsep vals)
+    go (Case _ x handlers) = do
+      val <- go x
+      handlers <- map PP.parens . toList <$> traverse go handlers
+      pure $ PP.parens $ "Case" <+> PP.hang -3 (PP.parens (PP.vsep (val : handlers)))
 
 prettyIfThenElse ::
   (t -> PrettyMonad s (PP.Doc ann)) ->
