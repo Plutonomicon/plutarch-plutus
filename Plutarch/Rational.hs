@@ -43,7 +43,7 @@ import Plutarch.Internal.Numeric (
   pquot,
  )
 import Plutarch.Internal.Ord (
-  POrd (pmax, pmin, (#<), (#<=)),
+  POrd ((#<), (#<=)),
  )
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -294,7 +294,11 @@ pgcd = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
     x <- tcont . plet $ pabs # x'
     y <- tcont . plet $ pabs # y'
-    pure $ pgcd' # pmax x y #$ pmin x y
+    pure $
+      pif
+        (x #<= y)
+        (pgcd' # y # x)
+        (pgcd' # x # y)
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
