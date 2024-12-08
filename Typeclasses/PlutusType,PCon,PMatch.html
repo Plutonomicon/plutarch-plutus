@@ -177,10 +177,13 @@
 <summary> imports </summary>
 <p>
 <pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
-import Plutarch.Prelude
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
+import Plutarch.Prelude
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 </code></pre>
 </p>
 </details>
@@ -241,6 +244,19 @@ you can derive <code>PlutusType</code> via <code>PlutusTypeData</code>:</p>
   deriving anyclass (PlutusType)
 
 instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData
+</code></pre>
+<h2 id="implementing-plutustype-for-your-own-types-sop-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-sop-encoding">Implementing <code>PlutusType</code> for your own types (SoP Encoding)</a></h2>
+<p>Mechanism is the same as in Scott encoding case but using <code>DeriveAsSOPStruct</code> instead.</p>
+<blockquote>
+<p>NOTE: You must import <code>DeriveAsSOPStruct</code> with constructor (like imports at the top of this page do) for GHC to see that the helper is coercible to your own type.</p>
+</blockquote>
+<pre><code class="language-haskell">data PMaybeSoP (a :: S -&gt; Type) (s :: S)
+  = PJustSoP (Term s a)
+  | PNothingSoP
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PEq, PShow)
+
+deriving via DeriveAsSOPStruct (PMaybeSoP a) instance PlutusType (PMaybeSoP a)
 </code></pre>
 <h2 id="implementing-plutustype-for-your-own-types-newtype"><a class="header" href="#implementing-plutustype-for-your-own-types-newtype">Implementing <code>PlutusType</code> for your own types (<code>newtype</code>)</a></h2>
 <p>See: <a href="./../Usage/DerivingForNewtypes.html"><code>DPTStrat PlutusTypeNewtype</code></a>.</p>

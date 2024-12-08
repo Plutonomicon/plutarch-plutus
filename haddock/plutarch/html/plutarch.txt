@@ -1732,14 +1732,23 @@ PSOPRec :: PRec struct s -> PSOPRec (struct :: [S -> Type]) (s :: S)
 -- | @since WIP
 [$sel:unPSOPRec:PSOPRec] :: PSOPRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
 
--- | @since WIP
+-- | <tt>via</tt>-derivation helper to derive <a>PlutusType</a> instance
+--   using SoP encoding. If your type has only one constructor prefer using
+--   <a>DeriveAsSOPRec</a> instead.
+--   
+--   @since WIP
 newtype DeriveAsSOPStruct (a :: S -> Type) s
 DeriveAsSOPStruct :: a s -> DeriveAsSOPStruct (a :: S -> Type) s
 
 -- | @since WIP
 [$sel:unDeriveAsSOPStruct:DeriveAsSOPStruct] :: DeriveAsSOPStruct (a :: S -> Type) s -> a s
 
--- | @since WIP
+-- | <tt>via</tt>-derivation helper for SoP encoding, currently behaves
+--   exactly like <a>DeriveAsSOPStruct</a> but can be used only on types
+--   with a single constructor. It is separate to leave a room for future
+--   optimizations
+--   
+--   @since WIP
 newtype DeriveAsSOPRec (a :: S -> Type) s
 DeriveAsSOPRec :: a s -> DeriveAsSOPRec (a :: S -> Type) s
 
@@ -2080,6 +2089,11 @@ data PMaybe (a :: S -> Type) (s :: S)
 PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
 PNothing :: PMaybe (a :: S -> Type) (s :: S)
 
+-- | @since WIP
+data PMaybeSoP (a :: S -> Type) (s :: S)
+PJustSoP :: Term s a -> PMaybeSoP (a :: S -> Type) (s :: S)
+PNothingSoP :: PMaybeSoP (a :: S -> Type) (s :: S)
+
 -- | Construct a <a>PJust</a> value.
 --   
 --   @since WIP
@@ -2131,10 +2145,23 @@ passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> (PMaybe a
 --   
 --   @since WIP
 pmapMaybe :: Term s ((a :--> b) :--> (PMaybe a :--> PMaybe b))
+pmapMaybeSoP :: Term s ((a :--> b) :--> (PMaybeSoP a :--> PMaybeSoP b))
+
+-- | @since WIP
+pmaybeToMaybeSoP :: Term s (PMaybe a :--> PMaybeSoP a)
+
+-- | @since WIP
+pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybe a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybeSoP a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybeSoP a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Maybe.PMaybeSoP a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybeSoP a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybeSoP a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybeSoP a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybe a)
 

@@ -1282,7 +1282,7 @@ import Prelude (Integer, (+))
 </p>
 </details>
 <h1 id="data-encoding-and-scott-encoding"><a class="header" href="#data-encoding-and-scott-encoding">Data encoding and Scott encoding</a></h1>
-<p>In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data"><code>Constr</code></a> data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.</p>
+<p>In Plutus Core, there are multiple (conflicting) ways to represent non-trivial ADTs: <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data"><code>Constr</code></a> data encoding, Scott encoding, or native SoP added in UPLC 1.1.0. You should use only one of these representations for your non-trivial types.</p>
 <blockquote>
 <p>Aside: What's a "trivial" type? The non-data builtin types! <code>PInteger</code>, <code>PByteString</code>, <code>PBuiltinList</code>, <code>PBuiltinPair</code>, and <code>PMap</code> (actually just a builtin list of builtin pairs). It's important to note that <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data"><code>Data</code></a> (<code>Constr</code> or otherwise) is also a builtin type.</p>
 </blockquote>
@@ -1330,6 +1330,9 @@ foo (\_ n -&gt; n)
 </code></pre>
 <p>Neat!</p>
 <p>This is the same recipe followed in the implementation of <code>PMaybe</code>. See its <a href="Concepts/./../Typeclasses/PlutusType,PCon,PMatch.html">PlutusType impl</a>!</p>
+<h2 id="sop-encoding"><a class="header" href="#sop-encoding">SoP Encoding</a></h2>
+<p>SoP stands for Sum of Product and it is another way of encoding data types. UPLC introduced these as a native construct with two new UPLC constructors, <code>Constr</code> that encodes a numerical tag (that is used to encode which constructor is used) and a list of terms (that represent fields of the constructor) and <code>Case</code> - an eliminator that given a <code>Vector</code> of terms that handle each of the constructors and all evaluate to the same value.</p>
+<p>To use SoP datatype representation you can use <code>DeriveAsSOPStruct</code> <code>deriving via</code> helper, see how <code>Maybe</code> is doing it in <a href="Concepts/./../Typeclasses/PlutusType,PCon,PMatch.html">PlutusType section</a></p>
 <div style="break-before: page; page-break-before: always;"></div><details>
 <summary> imports </summary>
 <p>
@@ -2553,10 +2556,13 @@ x' = pcons # 1 #$ pcons # 2 #$ pcons # 3 # pnil
 <summary> imports </summary>
 <p>
 <pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
-import Plutarch.Prelude
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
+import Plutarch.Prelude
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 </code></pre>
 </p>
 </details>
@@ -2617,6 +2623,19 @@ you can derive <code>PlutusType</code> via <code>PlutusTypeData</code>:</p>
   deriving anyclass (PlutusType)
 
 instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData
+</code></pre>
+<h2 id="implementing-plutustype-for-your-own-types-sop-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-sop-encoding">Implementing <code>PlutusType</code> for your own types (SoP Encoding)</a></h2>
+<p>Mechanism is the same as in Scott encoding case but using <code>DeriveAsSOPStruct</code> instead.</p>
+<blockquote>
+<p>NOTE: You must import <code>DeriveAsSOPStruct</code> with constructor (like imports at the top of this page do) for GHC to see that the helper is coercible to your own type.</p>
+</blockquote>
+<pre><code class="language-haskell">data PMaybeSoP (a :: S -&gt; Type) (s :: S)
+  = PJustSoP (Term s a)
+  | PNothingSoP
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PEq, PShow)
+
+deriving via DeriveAsSOPStruct (PMaybeSoP a) instance PlutusType (PMaybeSoP a)
 </code></pre>
 <h2 id="implementing-plutustype-for-your-own-types-newtype"><a class="header" href="#implementing-plutustype-for-your-own-types-newtype">Implementing <code>PlutusType</code> for your own types (<code>newtype</code>)</a></h2>
 <p>See: <a href="Typeclasses/./../Usage/DerivingForNewtypes.html"><code>DPTStrat PlutusTypeNewtype</code></a>.</p>

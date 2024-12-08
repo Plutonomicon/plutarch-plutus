@@ -7,7 +7,7 @@
 </span><span id="line-7"></span><span>
 </span><span id="line-8"></span><span class="hs-keyword">newtype</span><span> </span><span id="Script"><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-var">Script</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Script"><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-var">Script</span></a></span></span><span> </span><span class="hs-special">{</span><span id="%24sel%3AunScript%3AScript"><span class="annot"><span class="annottext">Script -&gt; Program DeBruijn DefaultUni DefaultFun ()
 </span><a href="Plutarch.Script.html#%24sel%3AunScript%3AScript"><span class="hs-identifier hs-var hs-var">unScript</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.Program</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">}</span><span>
-</span><span id="line-9"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679553641"><span id="local-6989586621679553652"><span class="annot"><span class="annottext">Script -&gt; Script -&gt; Bool
+</span><span id="line-9"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679571134"><span id="local-6989586621679571145"><span class="annot"><span class="annottext">Script -&gt; Script -&gt; Bool
 (Script -&gt; Script -&gt; Bool)
 -&gt; (Script -&gt; Script -&gt; Bool) -&gt; Eq Script
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -16,7 +16,7 @@ $c== :: Script -&gt; Script -&gt; Bool
 $c/= :: Script -&gt; Script -&gt; Bool
 /= :: Script -&gt; Script -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-10"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679553728"><span id="local-6989586621679553740"><span id="local-6989586621679553744"><span class="annot"><span class="annottext">Int -&gt; Script -&gt; ShowS
+</span><span id="line-10"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679571221"><span id="local-6989586621679571233"><span id="local-6989586621679571237"><span class="annot"><span class="annottext">Int -&gt; Script -&gt; ShowS
 [Script] -&gt; ShowS
 Script -&gt; String
 (Int -&gt; Script -&gt; ShowS)
@@ -29,7 +29,7 @@ $cshow :: Script -&gt; String
 show :: Script -&gt; String
 $cshowList :: [Script] -&gt; ShowS
 showList :: [Script] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679553783"><span id="local-6989586621679553785"><span class="annot"><span class="annottext">(forall x. Script -&gt; Rep Script x)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679571276"><span id="local-6989586621679571278"><span class="annot"><span class="annottext">(forall x. Script -&gt; Rep Script x)
 -&gt; (forall x. Rep Script x -&gt; Script) -&gt; Generic Script
 forall x. Rep Script x -&gt; Script
 forall x. Script -&gt; Rep Script x

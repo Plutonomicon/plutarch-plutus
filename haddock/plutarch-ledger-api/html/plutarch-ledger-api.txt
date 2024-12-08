@@ -199,6 +199,9 @@ pmaybeDataToMaybe :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMay
 --   no value, throw an error with the given message.
 passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
+-- | @since WIP
+pmapMaybeData :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PAsData b) :--> (PMaybeData a :--> PMaybeData b))
+
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 
 -- | Strict version of <a>pmatch</a> for <a>PSBool</a>.

@@ -184,7 +184,7 @@ import Prelude (Integer, (+))
 </p>
 </details>
 <h1 id="data-encoding-and-scott-encoding"><a class="header" href="#data-encoding-and-scott-encoding">Data encoding and Scott encoding</a></h1>
-<p>In Plutus Core, there are really two (conflicting) ways to represent non-trivial ADTs: <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data"><code>Constr</code></a> data encoding, or Scott encoding. You should use only one of these representations for your non-trivial types.</p>
+<p>In Plutus Core, there are multiple (conflicting) ways to represent non-trivial ADTs: <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data"><code>Constr</code></a> data encoding, Scott encoding, or native SoP added in UPLC 1.1.0. You should use only one of these representations for your non-trivial types.</p>
 <blockquote>
 <p>Aside: What's a "trivial" type? The non-data builtin types! <code>PInteger</code>, <code>PByteString</code>, <code>PBuiltinList</code>, <code>PBuiltinPair</code>, and <code>PMap</code> (actually just a builtin list of builtin pairs). It's important to note that <a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-ledger-api/html/PlutusLedgerApi-V3.html#t:Data"><code>Data</code></a> (<code>Constr</code> or otherwise) is also a builtin type.</p>
 </blockquote>
@@ -232,6 +232,9 @@ foo (\_ n -&gt; n)
 </code></pre>
 <p>Neat!</p>
 <p>This is the same recipe followed in the implementation of <code>PMaybe</code>. See its <a href="./../Typeclasses/PlutusType,PCon,PMatch.html">PlutusType impl</a>!</p>
+<h2 id="sop-encoding"><a class="header" href="#sop-encoding">SoP Encoding</a></h2>
+<p>SoP stands for Sum of Product and it is another way of encoding data types. UPLC introduced these as a native construct with two new UPLC constructors, <code>Constr</code> that encodes a numerical tag (that is used to encode which constructor is used) and a list of terms (that represent fields of the constructor) and <code>Case</code> - an eliminator that given a <code>Vector</code> of terms that handle each of the constructors and all evaluate to the same value.</p>
+<p>To use SoP datatype representation you can use <code>DeriveAsSOPStruct</code> <code>deriving via</code> helper, see how <code>Maybe</code> is doing it in <a href="./../Typeclasses/PlutusType,PCon,PMatch.html">PlutusType section</a></p>
 
                     </main>
 

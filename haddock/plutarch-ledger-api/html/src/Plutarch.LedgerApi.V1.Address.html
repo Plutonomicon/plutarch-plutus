@@ -12,10 +12,10 @@
 </span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
 </span><span id="line-13"></span><span>
 </span><span id="line-14"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-15"></span><span class="hs-keyword">newtype</span><span> </span><span id="PAddress"><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-var">PAddress</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679288030"><span class="annot"><a href="#local-6989586621679288030"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">newtype</span><span> </span><span id="PAddress"><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-var">PAddress</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679288653"><span class="annot"><a href="#local-6989586621679288653"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span>
 </span><span id="line-16"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PAddress"><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-var">PAddress</span></a></span></span><span>
 </span><span id="line-17"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span>
-</span><span id="line-18"></span><span>          </span><span class="annot"><a href="#local-6989586621679288030"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-18"></span><span>          </span><span class="annot"><a href="#local-6989586621679288653"><span class="hs-identifier hs-type">s</span></a></span><span>
 </span><span id="line-19"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span>
 </span><span id="line-20"></span><span>              </span><span class="hs-special">'</span><span class="hs-special">[</span><span> </span><span class="annot"><span class="hs-string">&quot;credential&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PCredential"><span class="hs-identifier hs-type">PCredential</span></a></span><span>
 </span><span id="line-21"></span><span>               </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;stakingCredential&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#PMaybeData"><span class="hs-identifier hs-type">PMaybeData</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier hs-type">PStakingCredential</span></a></span><span>
@@ -24,7 +24,7 @@
 </span><span id="line-24"></span><span>      </span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-26"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-27"></span><span>      </span><span id="local-6989586621679288033"><span id="local-6989586621679288035"><span class="annot"><span class="annottext">(forall x. PAddress s -&gt; Rep (PAddress s) x)
+</span><span id="line-27"></span><span>      </span><span id="local-6989586621679288656"><span id="local-6989586621679288658"><span class="annot"><span class="annottext">(forall x. PAddress s -&gt; Rep (PAddress s) x)
 -&gt; (forall x. Rep (PAddress s) x -&gt; PAddress s)
 -&gt; Generic (PAddress s)
 forall x. Rep (PAddress s) x -&gt; PAddress s
@@ -41,7 +41,7 @@ to :: forall x. Rep (PAddress s) x -&gt; PAddress s
 </span><span id="line-28"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
 </span><span id="line-30"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-31"></span><span>      </span><span id="local-6989586621679288039"><span id="local-6989586621679288045"><span class="annot"><span class="annottext">(forall (s :: S). PAddress s -&gt; Term s (PInner PAddress))
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679288662"><span id="local-6989586621679288668"><span class="annot"><span class="annottext">(forall (s :: S). PAddress s -&gt; Term s (PInner PAddress))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b)
 -&gt; PlutusType PAddress
@@ -61,7 +61,7 @@ pmatch' :: forall (s :: S) (b :: PType).
 Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
 </span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-33"></span><span>      </span><span id="local-6989586621679288050"><span id="local-6989586621679288056"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress)
+</span><span id="line-33"></span><span>      </span><span id="local-6989586621679288673"><span id="local-6989586621679288679"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress)
 -&gt; (forall (s :: S). Term s PAddress -&gt; Term s PData)
 -&gt; PIsData PAddress
 forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress
@@ -75,7 +75,7 @@ $cpdataImpl :: forall (s :: S). Term s PAddress -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PAddress -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
 </span><span id="line-34"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-35"></span><span>      </span><span id="local-6989586621679288063"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679288686"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PAddress -&gt; Term s (PDataRecord (PFields PAddress)))
 -&gt; PDataFields PAddress
 forall (s :: S).
@@ -89,7 +89,7 @@ ptoFields :: forall (s :: S).
 Term s PAddress -&gt; Term s (PDataRecord (PFields PAddress))
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PDataFields</span></span></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-37"></span><span>      </span><span id="local-6989586621679288073"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-37"></span><span>      </span><span id="local-6989586621679288696"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool)
 -&gt; PEq PAddress
 forall (s :: S). Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool
@@ -99,7 +99,7 @@ $c#== :: forall (s :: S). Term s PAddress -&gt; Term s PAddress -&gt; Term s PBo
 #== :: forall (s :: S). Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
 </span><span id="line-38"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-39"></span><span>      </span><span id="local-6989586621679288093"><span id="local-6989586621679288099"><span id="local-6989586621679288104"><span id="local-6989586621679288107"><span class="annot"><span class="annottext">PEq PAddress
+</span><span id="line-39"></span><span>      </span><span id="local-6989586621679288716"><span id="local-6989586621679288722"><span id="local-6989586621679288727"><span id="local-6989586621679288730"><span class="annot"><span class="annottext">PEq PAddress
 PEq PAddress =&gt;
 (forall (s :: S).
  Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool)
@@ -134,7 +134,7 @@ pmin :: forall (s :: S).
 Term s PAddress -&gt; Term s PAddress -&gt; Term s PAddress
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
 </span><span id="line-40"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-41"></span><span>      </span><span id="local-6989586621679288145"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString)
+</span><span id="line-41"></span><span>      </span><span id="local-6989586621679288768"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString)
 -&gt; PShow PAddress
 forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
 forall (t :: PType).
@@ -143,7 +143,7 @@ $cpshow' :: forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
 </span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-43"></span><span>      </span><span id="local-6989586621679288182"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
+</span><span id="line-43"></span><span>      </span><span id="local-6989586621679288805"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
 </span><span id="line-44"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-45"></span><span>
 </span><span id="line-46"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
@@ -151,11 +151,11 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
 </span><span id="line-48"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeData</span></span><span>
 </span><span id="line-49"></span><span>
 </span><span id="line-50"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-51"></span><span id="local-6989586621679288247"><span id="local-6989586621679288257"><span id="local-6989586621679288266"><span id="local-6989586621679288275"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-51"></span><span id="local-6989586621679288870"><span id="local-6989586621679288880"><span id="local-6989586621679288889"><span id="local-6989586621679288898"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
 </span><span id="line-52"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Address</span></span><span>
 </span><span id="line-53"></span><span>  </span><span class="hs-keyword">instance</span><span>
 </span><span id="line-54"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span></span></span></span></span><span>
 </span><span id="line-55"></span><span>
 </span><span id="line-56"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679288303"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679288926"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span class="hs-special">)</span></span><span>
 </span><span id="line-58"></span></pre></body></html>
