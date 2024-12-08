@@ -271,7 +271,7 @@ instance PNum PRational where
     pmatch x $ \(PRational n _) ->
       pcond
         [ (n #== 0, 0)
-        , (n #< 0, -1)
+        , (n #<= 0, -1)
         ]
         1
   {-# INLINEABLE pfromInteger #-}

@@ -5236,7 +5236,7 @@ rational.1/2 program
                                                                                                         !2))))
                                                                                           (force
                                                                                              (!25
-                                                                                                (lessThanInteger
+                                                                                                (lessThanEqualsInteger
                                                                                                    !2
                                                                                                    0)
                                                                                                 (delay
