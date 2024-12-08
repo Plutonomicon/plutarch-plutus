@@ -23,6 +23,7 @@ module Plutarch.LedgerApi.Utils (
   pmaybeToMaybeData,
   pmaybeDataToMaybe,
   passertPDJust,
+  pmapMaybeData,
 
   -- ** PRationalData
   prationalFromData,
@@ -339,6 +340,15 @@ passertPDJust = phoistAcyclic $
   plam $ \emsg t -> pmatch t $ \case
     PDJust t' -> pfromData t'
     PDNothing -> ptraceInfoError emsg
+
+-- | @since WIP
+pmapMaybeData ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s ((PAsData a :--> PAsData b) :--> PMaybeData a :--> PMaybeData b)
+pmapMaybeData = phoistAcyclic $
+  plam $ \f mv -> pmatch mv $ \case
+    PDJust v -> pcon $ PDJust (f # v)
+    PDNothing -> pcon PDNothing
 
 {- | Scott-encoded boolean.
 
