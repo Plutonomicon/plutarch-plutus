@@ -141,11 +141,10 @@ instance Fractional (Term s PRational) where
               (denm #== 0)
               (ptraceInfoError "Cannot divide by zero")
               ( plet (xn * pto yd) $ \numm ->
-                  preduce
-                    #$ pif
-                      (denm #<= 0)
-                      (pcon $ PRational (pnegate #$ numm) (punsafeCoerce $ pnegate # denm))
-                      (pcon $ PRational numm (punsafeCoerce denm))
+                  pif
+                    (denm #<= 0)
+                    (preduce' # (pnegate # numm) # (pnegate # denm))
+                    (preduce' # numm # denm)
               )
   {-# INLINEABLE recip #-}
   recip x = inner # x
@@ -204,12 +203,7 @@ instance PNum PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * pto yd + yn * pto xd)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * pto yd + yn * pto xd) # pto (xd * yd)
       )
       # x'
       # y'
@@ -221,12 +215,7 @@ instance PNum PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * pto yd - yn * pto xd)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * pto yd - yn * pto xd) # pto (xd * yd)
       )
       # x'
       # y'
@@ -236,12 +225,7 @@ instance PNum PRational where
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * yn)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * yn) # pto (xd * yd)
       )
       # x'
       # y'
@@ -269,16 +253,8 @@ instance PNum PRational where
   pfromInteger n = pcon $ PRational (fromInteger n) 1
 
 preduce :: Term s (PRational :--> PRational)
-preduce = phoistAcyclic $
-  plam $ \x -> unTermCont $ do
-    PRational xn xd' <- tcont $ pmatch x
-    xd <- tcont . plet $ pto xd'
-    r <- tcont . plet $ pgcd # xn # xd
-    pure $
-      pif
-        (xd #<= 0)
-        (pcon $ PRational (pnegate # (pdiv # xn # r)) $ punsafeDowncast (pnegate # (pdiv # xd # r)))
-        (pcon $ PRational (pdiv # xn # r) $ punsafeDowncast (pdiv # xd # r))
+preduce = phoistAcyclic $ plam $ \x ->
+  pmatch x $ \(PRational n d) -> preduce' # n # pto d
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
@@ -348,3 +324,13 @@ cmpHelper = phoistAcyclic $ plam $ \f l r ->
   pmatch l $ \(PRational ln ld) ->
     pmatch r $ \(PRational rn rd) ->
       f # (pto rd * ln) # (rn * pto ld)
+
+-- Assumes d is positive
+preduce' :: forall (s :: S). Term s (PInteger :--> PInteger :--> PRational)
+preduce' = phoistAcyclic $ plam $ \n d' ->
+  plet d' $ \d ->
+    plet (pgcd # n # d) $ \r ->
+      pif
+        (d #<= 0)
+        (pcon $ PRational (pnegate # (pdiv # n # r)) $ punsafeDowncast (pnegate # (pdiv # d # r)))
+        (pcon $ PRational (pdiv # n # r) $ punsafeDowncast (pdiv # d # r))
