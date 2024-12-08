@@ -5165,40 +5165,39 @@ rational.1/2 program
                                                                                              (\!0
                                                                                                !0 ->
                                                                                                 (\!0 ->
-                                                                                                   (\!0 ->
-                                                                                                      (\!0 ->
-                                                                                                         (\!0
-                                                                                                           !0 ->
-                                                                                                            !1
-                                                                                                              !3
-                                                                                                              !2)
-                                                                                                           (multiplyInteger
-                                                                                                              !2
+                                                                                                   force
+                                                                                                     (!29
+                                                                                                        (lessThanEqualsInteger
+                                                                                                           !2
+                                                                                                           0)
+                                                                                                        (delay
+                                                                                                           ((\!0 ->
+                                                                                                               (\!0
+                                                                                                                 !0 ->
+                                                                                                                  !1
+                                                                                                                    !3
+                                                                                                                    !2)
+                                                                                                                 (!31
+                                                                                                                    (divideInteger
+                                                                                                                       !3
+                                                                                                                       !2)))
+                                                                                                              (!30
+                                                                                                                 (divideInteger
+                                                                                                                    !3
+                                                                                                                    !1))))
+                                                                                                        (delay
+                                                                                                           ((\!0 ->
+                                                                                                               (\!0
+                                                                                                                 !0 ->
+                                                                                                                  !1
+                                                                                                                    !3
+                                                                                                                    !2)
+                                                                                                                 (divideInteger
+                                                                                                                    !3
+                                                                                                                    !2))
                                                                                                               (divideInteger
-                                                                                                                 !4
-                                                                                                                 !3)))
-                                                                                                        (multiplyInteger
-                                                                                                           !1
-                                                                                                           (divideInteger
-                                                                                                              !4
-                                                                                                              !2)))
-                                                                                                     (force
-                                                                                                        (!29
-                                                                                                           (equalsInteger
-                                                                                                              !2
-                                                                                                              0)
-                                                                                                           (delay
-                                                                                                              0)
-                                                                                                           (delay
-                                                                                                              (force
-                                                                                                                 (!29
-                                                                                                                    (lessThanEqualsInteger
-                                                                                                                       !2
-                                                                                                                       0)
-                                                                                                                    (delay
-                                                                                                                       -1)
-                                                                                                                    (delay
-                                                                                                                       1)))))))
+                                                                                                                 !3
+                                                                                                                 !1)))))
                                                                                                   ((\!0 ->
                                                                                                       (\!0 ->
                                                                                                          !28

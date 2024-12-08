@@ -75,25 +75,19 @@ ops.+ program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -193,25 +187,19 @@ ops.- program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -330,25 +318,19 @@ ops.* program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -456,25 +438,19 @@ ops.harmonic-sum program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -590,25 +566,19 @@ ops.multi-product program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -658,35 +628,33 @@ ops.abs program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -785,35 +753,33 @@ ops.signum program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -944,25 +910,19 @@ compare program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -1046,35 +1006,33 @@ round.5/3 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1195,35 +1153,33 @@ round.4/3 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1344,35 +1300,33 @@ round.-5/2 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1493,35 +1447,33 @@ round.-1/4 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1608,35 +1560,33 @@ truncate.5/4 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1723,35 +1673,33 @@ truncate.7/4 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1838,35 +1786,33 @@ truncate.1/4 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -1953,35 +1899,33 @@ truncate.-7/4 program
                                               !1
                                                 (\!0 !0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 !0 -> !1 !3 !2)
-                                                              (multiplyInteger
-                                                                 !2
+                                                      force
+                                                        (!14
+                                                           (lessThanEqualsInteger
+                                                              !2
+                                                              0)
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (!16
+                                                                       (divideInteger
+                                                                          !3
+                                                                          !2)))
+                                                                 (!15
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !1))))
+                                                           (delay
+                                                              ((\!0 ->
+                                                                  (\!0 !0 ->
+                                                                     !1 !3 !2)
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2))
                                                                  (divideInteger
-                                                                    !4
-                                                                    !3)))
-                                                           (multiplyInteger
-                                                              !1
-                                                              (divideInteger
-                                                                 !4
-                                                                 !2)))
-                                                        (force
-                                                           (!14
-                                                              (equalsInteger
-                                                                 !2
-                                                                 0)
-                                                              (delay 0)
-                                                              (delay
-                                                                 (force
-                                                                    (!14
-                                                                       (lessThanEqualsInteger
-                                                                          !2
-                                                                          0)
-                                                                       (delay
-                                                                          -1)
-                                                                       (delay
-                                                                          1)))))))
+                                                                    !3
+                                                                    !1)))))
                                                      ((\!0 ->
                                                          (\!0 ->
                                                             (\!0 ->
@@ -2147,25 +2091,19 @@ properFraction.-1/2 program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -2294,25 +2232,19 @@ properFraction.-3/2 program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -2441,25 +2373,19 @@ properFraction.-4/3 program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->
@@ -2510,32 +2436,33 @@ data.id.11/3 program
                                            !1
                                              (\!0 !0 ->
                                                 (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 !0 -> !1 !3 !2)
-                                                           (multiplyInteger
-                                                              !2
+                                                   force
+                                                     (!14
+                                                        (lessThanEqualsInteger
+                                                           !2
+                                                           0)
+                                                        (delay
+                                                           ((\!0 ->
+                                                               (\!0 !0 ->
+                                                                  !1 !3 !2)
+                                                                 (!16
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2)))
+                                                              (!15
+                                                                 (divideInteger
+                                                                    !3
+                                                                    !1))))
+                                                        (delay
+                                                           ((\!0 ->
+                                                               (\!0 !0 ->
+                                                                  !1 !3 !2)
+                                                                 (divideInteger
+                                                                    !3
+                                                                    !2))
                                                               (divideInteger
-                                                                 !4
-                                                                 !3)))
-                                                        (multiplyInteger
-                                                           !1
-                                                           (divideInteger
-                                                              !4
-                                                              !2)))
-                                                     (force
-                                                        (!14
-                                                           (equalsInteger !2 0)
-                                                           (delay 0)
-                                                           (delay
-                                                              (force
-                                                                 (!14
-                                                                    (lessThanEqualsInteger
-                                                                       !2
-                                                                       0)
-                                                                    (delay -1)
-                                                                    (delay
-                                                                       1)))))))
+                                                                 !3
+                                                                 !1)))))
                                                   ((\!0 ->
                                                       (\!0 ->
                                                          (\!0 ->
@@ -2619,32 +2546,33 @@ div by 0.1/0 program
                                            !1
                                              (\!0 !0 ->
                                                 (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 !0 -> !1 !3 !2)
-                                                           (multiplyInteger
-                                                              !2
+                                                   force
+                                                     (!14
+                                                        (lessThanEqualsInteger
+                                                           !2
+                                                           0)
+                                                        (delay
+                                                           ((\!0 ->
+                                                               (\!0 !0 ->
+                                                                  !1 !3 !2)
+                                                                 (!16
+                                                                    (divideInteger
+                                                                       !3
+                                                                       !2)))
+                                                              (!15
+                                                                 (divideInteger
+                                                                    !3
+                                                                    !1))))
+                                                        (delay
+                                                           ((\!0 ->
+                                                               (\!0 !0 ->
+                                                                  !1 !3 !2)
+                                                                 (divideInteger
+                                                                    !3
+                                                                    !2))
                                                               (divideInteger
-                                                                 !4
-                                                                 !3)))
-                                                        (multiplyInteger
-                                                           !1
-                                                           (divideInteger
-                                                              !4
-                                                              !2)))
-                                                     (force
-                                                        (!14
-                                                           (equalsInteger !2 0)
-                                                           (delay 0)
-                                                           (delay
-                                                              (force
-                                                                 (!14
-                                                                    (lessThanEqualsInteger
-                                                                       !2
-                                                                       0)
-                                                                    (delay -1)
-                                                                    (delay
-                                                                       1)))))))
+                                                                 !3
+                                                                 !1)))))
                                                   ((\!0 ->
                                                       (\!0 ->
                                                          (\!0 ->
@@ -2790,25 +2718,19 @@ div by 0.1/(1-1) program
                           !1
                             (\!0 !0 ->
                                (\!0 ->
-                                  (\!0 ->
-                                     (\!0 ->
-                                        (\!0 !0 -> !1 !3 !2)
-                                          (multiplyInteger
-                                             !2
-                                             (divideInteger !4 !3)))
-                                       (multiplyInteger
-                                          !1
-                                          (divideInteger !4 !2)))
-                                    (force
-                                       (!9
-                                          (equalsInteger !2 0)
-                                          (delay 0)
-                                          (delay
-                                             (force
-                                                (!9
-                                                   (lessThanEqualsInteger !2 0)
-                                                   (delay -1)
-                                                   (delay 1)))))))
+                                  force
+                                    (!9
+                                       (lessThanEqualsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (!11 (divideInteger !3 !2)))
+                                             (!10 (divideInteger !3 !1))))
+                                       (delay
+                                          ((\!0 ->
+                                              (\!0 !0 -> !1 !3 !2)
+                                                (divideInteger !3 !2))
+                                             (divideInteger !3 !1)))))
                                  (!4 !2 !1))))
                     (\!0 !0 ->
                        (\!0 ->

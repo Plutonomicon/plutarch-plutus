@@ -283,8 +283,11 @@ preduce = phoistAcyclic $
     PRational xn xd' <- tcont $ pmatch x
     xd <- tcont . plet $ pto xd'
     r <- tcont . plet $ pgcd # xn # xd
-    s <- tcont . plet $ psignum # xd
-    pure . pcon $ PRational (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
+    pure $
+      pif
+        (xd #<= 0)
+        (pcon $ PRational (pnegate # (pdiv # xn # r)) $ punsafeDowncast (pnegate # (pdiv # xd # r)))
+        (pcon $ PRational (pdiv # xn # r) $ punsafeDowncast (pdiv # xd # r))
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
