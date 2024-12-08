@@ -124,7 +124,11 @@ instance All PEq struct => PEq (PSOPRec struct) where
       # x
       # y
 
--- | @since WIP
+{- | @via@-derivation helper to derive 'PlutusType' instance using SoP encoding. If your type has
+only one constructor prefer using 'DeriveAsSOPRec' instead.
+
+@since WIP
+-}
 newtype DeriveAsSOPStruct (a :: S -> Type) s = DeriveAsSOPStruct
   { unDeriveAsSOPStruct :: a s
   -- ^ @since WIP
@@ -150,7 +154,12 @@ instance
   pmatch' x f =
     pmatch @(PSOPStruct (UnTermStruct (a Any))) x (f . DeriveAsSOPStruct . SOP.to . SOP.hcoerce . unPStruct . unPSOPStruct)
 
--- | @since WIP
+{- | @via@-derivation helper for SoP encoding, currently behaves exactly like `DeriveAsSOPStruct`
+but can be used only on types with a single constructor. It is separate to leave a room for
+future optimizations
+
+@since WIP
+-}
 newtype DeriveAsSOPRec (a :: S -> Type) s = DeriveAsSOPRec
   { unDeriveAsSOPRec :: a s
   -- ^ @since WIP
