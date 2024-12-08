@@ -13,7 +13,7 @@ module Plutarch.Rational (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (pcond, pif)
+import Plutarch.Builtin.Bool (PBool, pcond, pif)
 import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
@@ -60,6 +60,7 @@ import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
   plet,
+  punsafeBuiltin,
   (#),
   (#$),
   (:-->),
@@ -74,6 +75,7 @@ import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusCore qualified as PLC
 import PlutusTx.Ratio qualified as PlutusTx
 
 {- | A Scott-encoded rational number, with a guaranteed positive denominator
@@ -119,15 +121,12 @@ instance PLiftable PRational where
     pure . PlutusTx.unsafeRatio n $ d
 
 instance PEq PRational where
-  l' #== r' =
-    phoistAcyclic
-      ( plam $ \l r ->
-          pmatch l $ \(PRational ln ld) ->
-            pmatch r $ \(PRational rn rd) ->
-              pto rd * ln #== rn * pto ld
-      )
-      # l'
-      # r'
+  {-# INLINEABLE (#==) #-}
+  l' #== r' = inner # l' # r'
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PBool)
+      inner = phoistAcyclic $ plam $ \l r ->
+        cmpHelper # punsafeBuiltin PLC.EqualsInteger # l # r
 
 -- | @since WIP
 instance Fractional (Term s PRational) where
@@ -184,25 +183,17 @@ instance PTryFrom PData (PAsData PRational) where
 
 instance POrd PRational where
   {-# INLINEABLE (#<=) #-}
-  l' #<= r' =
-    phoistAcyclic
-      ( plam $ \l r -> unTermCont $ do
-          PRational ln ld <- tcont $ pmatch l
-          PRational rn rd <- tcont $ pmatch r
-          pure $ pto rd * ln #<= rn * pto ld
-      )
-      # l'
-      # r'
+  l' #<= r' = inner # l' # r'
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PBool)
+      inner = phoistAcyclic $ plam $ \l r ->
+        cmpHelper # punsafeBuiltin PLC.LessThanEqualsInteger # l # r
   {-# INLINEABLE (#<) #-}
-  l' #< r' =
-    phoistAcyclic
-      ( plam $ \l r -> unTermCont $ do
-          PRational ln ld <- tcont $ pmatch l
-          PRational rn rd <- tcont $ pmatch r
-          pure $ pto rd * ln #< rn * pto ld
-      )
-      # l'
-      # r'
+  l' #< r' = inner # l' # r'
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PBool)
+      inner = phoistAcyclic $ plam $ \l r ->
+        cmpHelper # punsafeBuiltin PLC.LessThanInteger # l # r
 
 instance PNum PRational where
   {-# INLINEABLE (#+) #-}
@@ -347,3 +338,13 @@ pproperFraction = phoistAcyclic $
   plam $ \x ->
     plet (ptruncate # x) $ \q ->
       pcon $ PPair q (x - Plutarch.Rational.pfromInteger # q)
+
+-- Helpers
+
+cmpHelper ::
+  forall (s :: S).
+  Term s ((PInteger :--> PInteger :--> PBool) :--> PRational :--> PRational :--> PBool)
+cmpHelper = phoistAcyclic $ plam $ \f l r ->
+  pmatch l $ \(PRational ln ld) ->
+    pmatch r $ \(PRational rn rd) ->
+      f # (pto rd * ln) # (rn * pto ld)
