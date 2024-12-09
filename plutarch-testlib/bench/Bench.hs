@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
-import Plutarch.Maybe (PMaybeSoP, pmapMaybe, pmapMaybeSoP)
+import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
 import Plutarch.Test.Bench (BenchConfig (Optimizing), bcompare, bench, benchWithConfig, defaultMain)
 import Test.Tasty (testGroup)
@@ -32,8 +32,6 @@ main =
                   (pmapMaybeData # plam (\v -> pdata (peven # pfromData v)) # pconstant @(PMaybeData PInteger) (Just 42))
               , bcompare "$(NF-1) == \"fmap even\" && $NF == \"PMaybeData\"" $
                   bench "PMaybe vs PMaybeData" (pmapMaybe # peven # pconstant @(PMaybe PInteger) (Just 42))
-              , bcompare "$(NF-1) == \"fmap even\" && $NF == \"PMaybeData\"" $
-                  bench "PMaybeSop vs PMaybeData" (pmapMaybeSoP # peven # pconstant @(PMaybeSoP PInteger) (Just 42))
               ]
           , -- We run both cheap and expensive calculation in 'pmap*' to mitigate impact of PAsData encoding/decoding
             let
@@ -46,8 +44,6 @@ main =
                     (pmapMaybeData # plam (\v -> pdata (pfib # pfromData v)) # pconstant @(PMaybeData PInteger) (Just n))
                 , bcompare "$(NF-1) == \"fmap fib\" && $NF == \"PMaybeData\"" $
                     bench "PMaybe vs PMaybeData" (pmapMaybe # pfib # pconstant @(PMaybe PInteger) (Just n))
-                , bcompare "$(NF-1) == \"fmap fib\" && $NF == \"PMaybeData\"" $
-                    bench "PMaybeSop vs PMaybeData" (pmapMaybeSoP # pfib # pconstant @(PMaybeSoP PInteger) (Just n))
                 ]
           ]
       ]

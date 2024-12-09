@@ -3,7 +3,6 @@
 module Plutarch.Maybe (
   -- * Type
   PMaybe (..),
-  PMaybeSoP (..),
 
   -- * Functions
 
@@ -21,11 +20,6 @@ module Plutarch.Maybe (
   pmaybe,
   passertPJust,
   pmapMaybe,
-  pmapMaybeSoP,
-
-  -- ** Conversions
-  pmaybeToMaybeSoP,
-  pmaybeSoPToMaybe,
 ) where
 
 import Data.Kind (Type)
@@ -52,12 +46,10 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
   PlutusType,
   pcon,
   pmatch,
  )
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
 import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
@@ -69,14 +61,15 @@ import Plutarch.Internal.Term (
 import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 import Plutarch.Trace (ptraceInfoError)
 
--- | Plutus Maybe type, with Scott-encoded repr
+-- | @since WIP
 data PMaybe (a :: S -> Type) (s :: S)
   = PJust (Term s a)
   | PNothing
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, PShow)
+  deriving anyclass (SOP.Generic, PEq, PShow)
 
-instance DerivePlutusType (PMaybe a) where type DPTStrat _ = PlutusTypeScott
+-- | @since WIP
+deriving via DeriveAsSOPStruct (PMaybe a) instance PlutusType (PMaybe a)
 
 -- | @since WIP
 instance PLiftable a => PLiftable (PMaybe a) where
@@ -202,53 +195,3 @@ pmapMaybe = phoistAcyclic $
   plam $ \f mv -> pmatch mv $ \case
     PJust v -> pjust # (f # v)
     PNothing -> pnothing
-
--- | @since WIP
-data PMaybeSoP (a :: S -> Type) (s :: S)
-  = PJustSoP (Term s a)
-  | PNothingSoP
-  deriving stock (Generic)
-  deriving anyclass (SOP.Generic, PEq, PShow)
-
--- | @since WIP
-deriving via DeriveAsSOPStruct (PMaybeSoP a) instance PlutusType (PMaybeSoP a)
-
--- | @since WIP
-instance PLiftable a => PLiftable (PMaybeSoP a) where
-  type AsHaskell (PMaybeSoP a) = Maybe (AsHaskell a)
-  type PlutusRepr (PMaybeSoP a) = PLiftedClosed (PMaybeSoP a)
-
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = toPlutarchReprClosed
-
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch (Just a) = mkPLifted $ pcon $ PJustSoP $ pconstant @a a
-  toPlutarch Nothing = mkPLifted $ pcon PNothingSoP
-
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = fromPlutarchReprClosed
-
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch t = do
-    isJust' <- fromPlutarch $ mkPLifted $ pisJust # (pmaybeSoPToMaybe # getPLifted t)
-    if isJust'
-      then fmap Just $ fromPlutarch $ mkPLifted $ pfromJust # (pmaybeSoPToMaybe # getPLifted t)
-      else Right Nothing
-
--- | @since WIP
-pmaybeToMaybeSoP :: Term s (PMaybe a :--> PMaybeSoP a)
-pmaybeToMaybeSoP = phoistAcyclic $ plam $ flip pmatch $ \case
-  PJust a -> pcon $ PJustSoP a
-  PNothing -> pcon PNothingSoP
-
--- | @since WIP
-pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
-pmaybeSoPToMaybe = phoistAcyclic $ plam $ flip pmatch $ \case
-  PJustSoP a -> pcon $ PJust a
-  PNothingSoP -> pcon PNothing
-
--- @since WIP
-pmapMaybeSoP :: Term s ((a :--> b) :--> PMaybeSoP a :--> PMaybeSoP b)
-pmapMaybeSoP = phoistAcyclic $ plam $ \f -> flip pmatch $ \case
-  PJustSoP v -> pcon $ PJustSoP (f # v)
-  PNothingSoP -> pcon PNothingSoP
