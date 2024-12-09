@@ -13,7 +13,7 @@ module Plutarch.Rational (
 ) where
 
 import GHC.Generics (Generic)
-import Plutarch.Builtin.Bool (pcond, pif)
+import Plutarch.Builtin.Bool (PBool, pcond, pif)
 import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
@@ -43,7 +43,7 @@ import Plutarch.Internal.Numeric (
   pquot,
  )
 import Plutarch.Internal.Ord (
-  POrd (pmax, pmin, (#<), (#<=)),
+  POrd ((#<), (#<=)),
  )
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -60,6 +60,7 @@ import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
   plet,
+  punsafeBuiltin,
   (#),
   (#$),
   (:-->),
@@ -74,6 +75,7 @@ import Plutarch.Pair (PPair (PPair))
 import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusCore qualified as PLC
 import PlutusTx.Ratio qualified as PlutusTx
 
 {- | A Scott-encoded rational number, with a guaranteed positive denominator
@@ -119,15 +121,12 @@ instance PLiftable PRational where
     pure . PlutusTx.unsafeRatio n $ d
 
 instance PEq PRational where
-  l' #== r' =
-    phoistAcyclic
-      ( plam $ \l r ->
-          pmatch l $ \(PRational ln ld) ->
-            pmatch r $ \(PRational rn rd) ->
-              pto rd * ln #== rn * pto ld
-      )
-      # l'
-      # r'
+  {-# INLINEABLE (#==) #-}
+  l' #== r' = inner # l' # r'
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PBool)
+      inner = phoistAcyclic $ plam $ \l r ->
+        cmpHelper # punsafeBuiltin PLC.EqualsInteger # l # r
 
 -- | @since WIP
 instance Fractional (Term s PRational) where
@@ -141,13 +140,7 @@ instance Fractional (Term s PRational) where
             pif
               (denm #== 0)
               (ptraceInfoError "Cannot divide by zero")
-              ( plet (xn * pto yd) $ \numm ->
-                  preduce
-                    #$ pif
-                      (denm #< 0)
-                      (pcon $ PRational (pnegate #$ numm) (punsafeCoerce $ pnegate # denm))
-                      (pcon $ PRational numm (punsafeCoerce denm))
-              )
+              (preduce' # (xn * pto yd) # denm)
   {-# INLINEABLE recip #-}
   recip x = inner # x
     where
@@ -155,7 +148,7 @@ instance Fractional (Term s PRational) where
       inner = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational xn xd) ->
         pcond
           [ (xn #== 0, ptraceInfoError "attempted to construct the reciprocal of zero")
-          , (xn #< 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
+          , (xn #<= 0, pcon $ PRational (pnegate #$ pto xd) (punsafeCoerce $ pnegate # xn))
           ]
           (pcon $ PRational (pto xd) (punsafeCoerce xn))
   {-# INLINEABLE fromRational #-}
@@ -184,25 +177,17 @@ instance PTryFrom PData (PAsData PRational) where
 
 instance POrd PRational where
   {-# INLINEABLE (#<=) #-}
-  l' #<= r' =
-    phoistAcyclic
-      ( plam $ \l r -> unTermCont $ do
-          PRational ln ld <- tcont $ pmatch l
-          PRational rn rd <- tcont $ pmatch r
-          pure $ pto rd * ln #<= rn * pto ld
-      )
-      # l'
-      # r'
+  l' #<= r' = inner # l' # r'
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PBool)
+      inner = phoistAcyclic $ plam $ \l r ->
+        cmpHelper # punsafeBuiltin PLC.LessThanEqualsInteger # l # r
   {-# INLINEABLE (#<) #-}
-  l' #< r' =
-    phoistAcyclic
-      ( plam $ \l r -> unTermCont $ do
-          PRational ln ld <- tcont $ pmatch l
-          PRational rn rd <- tcont $ pmatch r
-          pure $ pto rd * ln #< rn * pto ld
-      )
-      # l'
-      # r'
+  l' #< r' = inner # l' # r'
+    where
+      inner :: forall (s :: S). Term s (PRational :--> PRational :--> PBool)
+      inner = phoistAcyclic $ plam $ \l r ->
+        cmpHelper # punsafeBuiltin PLC.LessThanInteger # l # r
 
 instance PNum PRational where
   {-# INLINEABLE (#+) #-}
@@ -213,12 +198,7 @@ instance PNum PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * pto yd + yn * pto xd)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * pto yd + yn * pto xd) # pto (xd * yd)
       )
       # x'
       # y'
@@ -230,12 +210,7 @@ instance PNum PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * pto yd - yn * pto xd)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * pto yd - yn * pto xd) # pto (xd * yd)
       )
       # x'
       # y'
@@ -245,12 +220,7 @@ instance PNum PRational where
       ( plam $ \x y -> unTermCont $ do
           PRational xn xd <- tcont $ pmatch x
           PRational yn yd <- tcont $ pmatch y
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * yn)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * yn) # pto (xd * yd)
       )
       # x'
       # y'
@@ -271,27 +241,26 @@ instance PNum PRational where
     pmatch x $ \(PRational n _) ->
       pcond
         [ (n #== 0, 0)
-        , (n #< 0, -1)
+        , (n #<= 0, -1)
         ]
         1
   {-# INLINEABLE pfromInteger #-}
   pfromInteger n = pcon $ PRational (fromInteger n) 1
 
 preduce :: Term s (PRational :--> PRational)
-preduce = phoistAcyclic $
-  plam $ \x -> unTermCont $ do
-    PRational xn xd' <- tcont $ pmatch x
-    xd <- tcont . plet $ pto xd'
-    r <- tcont . plet $ pgcd # xn # xd
-    s <- tcont . plet $ psignum # xd
-    pure . pcon $ PRational (s * pdiv # xn # r) $ punsafeDowncast $ s * pdiv # xd # r
+preduce = phoistAcyclic $ plam $ \x ->
+  pmatch x $ \(PRational n d) -> preduce' # n # pto d
 
 pgcd :: Term s (PInteger :--> PInteger :--> PInteger)
 pgcd = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
     x <- tcont . plet $ pabs # x'
     y <- tcont . plet $ pabs # y'
-    pure $ pgcd' # pmax x y #$ pmin x y
+    pure $
+      pif
+        (x #<= y)
+        (pgcd' # y # x)
+        (pgcd' # x # y)
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
@@ -340,3 +309,23 @@ pproperFraction = phoistAcyclic $
   plam $ \x ->
     plet (ptruncate # x) $ \q ->
       pcon $ PPair q (x - Plutarch.Rational.pfromInteger # q)
+
+-- Helpers
+
+cmpHelper ::
+  forall (s :: S).
+  Term s ((PInteger :--> PInteger :--> PBool) :--> PRational :--> PRational :--> PBool)
+cmpHelper = phoistAcyclic $ plam $ \f l r ->
+  pmatch l $ \(PRational ln ld) ->
+    pmatch r $ \(PRational rn rd) ->
+      f # (pto rd * ln) # (rn * pto ld)
+
+-- Assumes d is not zero
+preduce' :: forall (s :: S). Term s (PInteger :--> PInteger :--> PRational)
+preduce' = phoistAcyclic $ plam $ \n d' ->
+  plet d' $ \d ->
+    plet (pgcd # n # d) $ \r ->
+      pif
+        (d #<= 0)
+        (pcon $ PRational (pnegate # (pdiv # n # r)) $ punsafeDowncast (pnegate # (pdiv # d # r)))
+        (pcon $ PRational (pdiv # n # r) $ punsafeDowncast (pdiv # d # r))
