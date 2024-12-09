@@ -140,12 +140,7 @@ instance Fractional (Term s PRational) where
             pif
               (denm #== 0)
               (ptraceInfoError "Cannot divide by zero")
-              ( plet (xn * pto yd) $ \numm ->
-                  pif
-                    (denm #<= 0)
-                    (preduce' # (pnegate # numm) # (pnegate # denm))
-                    (preduce' # numm # denm)
-              )
+              (preduce' # (xn * pto yd) # denm)
   {-# INLINEABLE recip #-}
   recip x = inner # x
     where
@@ -325,7 +320,7 @@ cmpHelper = phoistAcyclic $ plam $ \f l r ->
     pmatch r $ \(PRational rn rd) ->
       f # (pto rd * ln) # (rn * pto ld)
 
--- Assumes d is positive
+-- Assumes d is not zero
 preduce' :: forall (s :: S). Term s (PInteger :--> PInteger :--> PRational)
 preduce' = phoistAcyclic $ plam $ \n d' ->
   plet d' $ \d ->
