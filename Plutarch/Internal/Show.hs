@@ -39,6 +39,7 @@ import Plutarch.Builtin.String (
   pencodeUtf8,
  )
 import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Internal.Numeric.Additive (PPositive)
 
 import Data.Char (intToDigit)
 import Data.List.NonEmpty (NonEmpty ((:|)))
@@ -347,3 +348,6 @@ instance
 
 instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
   pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
+
+-- | @since WIP
+instance PShow PPositive

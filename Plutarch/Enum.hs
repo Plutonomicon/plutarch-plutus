@@ -9,6 +9,8 @@ import Plutarch.Builtin.Bool (pif)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Numeric ()
+import Plutarch.Internal.Numeric.Additive (PPositive)
 import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -20,7 +22,6 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
-import Plutarch.Positive (PPositive)
 
 {- | A notion of \'next\' value. More formally, instances of this type class are
 discrete linear orders with no maximal element.

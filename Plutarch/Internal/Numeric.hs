@@ -6,16 +6,15 @@ module Plutarch.Internal.Numeric (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (pcond, pif)
+import Plutarch.Builtin.Bool (pcond)
 import Plutarch.Builtin.Integer (
   PInteger,
-  paddInteger,
   peqInteger,
   pleInteger,
   pmultiplyInteger,
-  psubtractInteger,
  )
 import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Numeric.Additive (PAbs, pabs, pnegate, (#+), (#-))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner)
@@ -32,25 +31,9 @@ import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 
 class PNum (a :: S -> Type) where
-  (#+) :: Term s a -> Term s a -> Term s a
-  default (#+) :: PNum (PInner a) => Term s a -> Term s a -> Term s a
-  x #+ y = punsafeDowncast $ pto x #+ pto y
-
-  (#-) :: Term s a -> Term s a -> Term s a
-  default (#-) :: PNum (PInner a) => Term s a -> Term s a -> Term s a
-  x #- y = punsafeDowncast $ pto x #- pto y
-
   (#*) :: Term s a -> Term s a -> Term s a
   default (#*) :: PNum (PInner a) => Term s a -> Term s a -> Term s a
   x #* y = punsafeDowncast $ pto x #* pto y
-
-  pnegate :: Term s (a :--> a)
-  default pnegate :: PNum (PInner a) => Term s (a :--> a)
-  pnegate = punsafeCoerce (pnegate :: Term s (PInner a :--> PInner a))
-
-  pabs :: Term s (a :--> a)
-  default pabs :: PNum (PInner a) => Term s (a :--> a)
-  pabs = punsafeCoerce (pabs :: Term s (PInner a :--> PInner a))
 
   psignum :: Term s (a :--> a)
   default psignum :: PNum (PInner a) => Term s (a :--> a)
@@ -62,21 +45,11 @@ class PNum (a :: S -> Type) where
 
 -- prohibit mixing arithmetic operators such as
 -- (2 #+ 3 #* 4) without explicit precedence.
-infix 6 #+
-infix 6 #-
 infix 6 #*
 
 instance PNum PInteger where
-  {-# INLINEABLE (#+) #-}
-  x #+ y = paddInteger # x # y
-  {-# INLINEABLE (#-) #-}
-  x #- y = psubtractInteger # x # y
   {-# INLINEABLE (#*) #-}
   x #* y = pmultiplyInteger # x # y
-  {-# INLINEABLE pabs #-}
-  pabs = phoistAcyclic $ plam \x -> pif (pleInteger # x # -1) (negate x) x
-  {-# INLINEABLE pnegate #-}
-  pnegate = phoistAcyclic $ plam (0 #-)
 
   --  Note from Koz (27/11/2024): we don't hoist this, and we use #<= instead of
   --  (the arguably more correct) #< here, because both of these lead to perf
@@ -92,7 +65,7 @@ instance PNum PInteger where
   pfromInteger = pconstant
 
 -- orphan instance, but only visibly orphan when importing internal modules
-instance PNum a => Num (Term s a) where
+instance (PAbs a, PNum a) => Num (Term s a) where
   {-# INLINEABLE (+) #-}
   (+) = (#+)
   {-# INLINEABLE (-) #-}

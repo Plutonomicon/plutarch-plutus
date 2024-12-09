@@ -102,6 +102,8 @@ library
     Plutarch.Internal.ListLike
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
+    Plutarch.Internal.Numeric.Additive
+    Plutarch.Internal.Numeric.Multiplicative
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
     Plutarch.Internal.PLam
@@ -121,7 +123,6 @@ library
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.Pair
-    Plutarch.Positive
     Plutarch.Prelude
     Plutarch.Pretty
     Plutarch.Pretty.Internal.BuiltinConstant

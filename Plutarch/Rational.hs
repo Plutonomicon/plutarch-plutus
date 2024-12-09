@@ -37,11 +37,20 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
-  PNum (pabs, pfromInteger, pnegate, psignum, (#*), (#+), (#-)),
+  PNum (pfromInteger, psignum, (#*)),
   pdiv,
   pmod,
   pquot,
  )
+import Plutarch.Internal.Numeric.Additive (
+  PAdditiveSemigroup (pscalePositive, (#+)),
+  PPositive,
+  pabs,
+  pnegate,
+  ptryPositive,
+  pzero,
+ )
+import Plutarch.Internal.Numeric.Multiplicative (pone)
 import Plutarch.Internal.Ord (
   POrd (pmax, pmin, (#<), (#<=)),
  )
@@ -71,7 +80,6 @@ import Plutarch.Internal.TermCont (
  )
 import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Pair (PPair (PPair))
-import Plutarch.Positive (PPositive, ptryPositive)
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusTx.Ratio qualified as PlutusTx
@@ -107,7 +115,7 @@ instance PLiftable PRational where
         d = PlutusTx.denominator r
      in mkPLifted . pcon $
           if
-            | n == 0 -> PRational 0 1
+            | n == 0 -> PRational pzero pone
             | d < 0 -> PRational (pconstant . negate $ n) . punsafeCoerce . pconstant @PInteger . negate $ d
             | otherwise -> PRational (pconstant n) . punsafeCoerce . pconstant @PInteger $ d
   {-# INLINEABLE fromPlutarchRepr #-}
@@ -128,6 +136,50 @@ instance PEq PRational where
       )
       # l'
       # r'
+
+instance POrd PRational where
+  {-# INLINEABLE (#<=) #-}
+  l' #<= r' =
+    phoistAcyclic
+      ( plam $ \l r -> unTermCont $ do
+          PRational ln ld <- tcont $ pmatch l
+          PRational rn rd <- tcont $ pmatch r
+          pure $ pto rd * ln #<= rn * pto ld
+      )
+      # l'
+      # r'
+  {-# INLINEABLE (#<) #-}
+  l' #< r' =
+    phoistAcyclic
+      ( plam $ \l r -> unTermCont $ do
+          PRational ln ld <- tcont $ pmatch l
+          PRational rn rd <- tcont $ pmatch r
+          pure $ pto rd * ln #< rn * pto ld
+      )
+      # l'
+      # r'
+
+-- | @since WIP
+instance PAdditiveSemigroup PRational where
+  {-# INLINEABLE (#+) #-}
+  x' #+ y' =
+    phoistAcyclic
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd' <- tcont $ pmatch x
+          PRational yn yd' <- tcont $ pmatch y
+          xd <- tcont $ plet xd'
+          yd <- tcont $ plet yd'
+          pure
+            $ preduce
+              #$ pcon
+            $ PRational (xn * pto yd + yn * pto xd)
+            $ punsafeDowncast
+            $ pto xd * pto yd
+      )
+      # x'
+      # y'
+  {-# INLINEABLE pscalePositive #-}
+  pscalePositive = _
 
 -- | @since WIP
 instance Fractional (Term s PRational) where
@@ -182,29 +234,8 @@ instance PTryFrom PData (PAsData PRational) where
     res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
 
-instance POrd PRational where
-  {-# INLINEABLE (#<=) #-}
-  l' #<= r' =
-    phoistAcyclic
-      ( plam $ \l r -> unTermCont $ do
-          PRational ln ld <- tcont $ pmatch l
-          PRational rn rd <- tcont $ pmatch r
-          pure $ pto rd * ln #<= rn * pto ld
-      )
-      # l'
-      # r'
-  {-# INLINEABLE (#<) #-}
-  l' #< r' =
-    phoistAcyclic
-      ( plam $ \l r -> unTermCont $ do
-          PRational ln ld <- tcont $ pmatch l
-          PRational rn rd <- tcont $ pmatch r
-          pure $ pto rd * ln #< rn * pto ld
-      )
-      # l'
-      # r'
-
 instance PNum PRational where
+  {-
   {-# INLINEABLE (#+) #-}
   x' #+ y' =
     phoistAcyclic
@@ -239,6 +270,7 @@ instance PNum PRational where
       )
       # x'
       # y'
+    -}
   {-# INLINEABLE (#*) #-}
   x' #* y' =
     phoistAcyclic
@@ -254,6 +286,8 @@ instance PNum PRational where
       )
       # x'
       # y'
+
+  {-
   {-# INLINEABLE pnegate #-}
   pnegate =
     phoistAcyclic $
@@ -266,6 +300,7 @@ instance PNum PRational where
       plam $ \x ->
         pmatch x $ \(PRational xn xd) ->
           pcon $ PRational (abs xn) xd
+  -}
   {-# INLINEABLE psignum #-}
   psignum = phoistAcyclic $ plam $ \x ->
     pmatch x $ \(PRational n _) ->
