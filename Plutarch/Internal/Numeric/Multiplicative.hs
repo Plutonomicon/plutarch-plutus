@@ -91,7 +91,7 @@ class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
 -- | @since WIP
 instance PMultiplicativeMonoid PPositive where
   {-# INLINEABLE pone #-}
-  pone = punsafeDowncast pone
+  pone = punsafeCoerce $ pconstantInteger 1
 
 -- | @since WIP
 instance PMultiplicativeMonoid PInteger where

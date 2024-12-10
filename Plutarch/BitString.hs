@@ -19,6 +19,7 @@ import Plutarch.Builtin.Data (PBuiltinList)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Numeric.Additive (pzero)
 import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -139,6 +140,6 @@ pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 pfindFirstSetBit = phoistAcyclic $ plam $ \bs ->
   plet (punsafeBuiltin PLC.FindFirstSetBit # pto bs) $ \result ->
     pif
-      (result #< (0 :: Term _ PInteger))
+      (result #< pzero)
       (pcon PNothing)
       (pcon . PJust $ result)

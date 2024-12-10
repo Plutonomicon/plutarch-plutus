@@ -7,6 +7,29 @@ module Plutarch.Internal.Show (
   pshowList,
 ) where
 
+import Data.Char (intToDigit)
+import Data.List.NonEmpty (NonEmpty ((:|)))
+import Data.List.NonEmpty qualified as NE
+import Data.Semigroup (sconcat)
+import Data.String (IsString (fromString))
+import Data.Text qualified as T
+import Generics.SOP (
+  All,
+  All2,
+  ConstructorName,
+  K (K),
+  NP,
+  NS,
+  Proxy (Proxy),
+  SOP (SOP),
+  constructorInfo,
+  constructorName,
+  hcmap,
+  hcollapse,
+  hindex,
+  hmap,
+ )
+import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Builtin.Bool (PBool, pif, pif')
 import Plutarch.Builtin.ByteString (
   PByte,
@@ -40,30 +63,7 @@ import Plutarch.Builtin.String (
  )
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Numeric.Additive (PPositive)
-
-import Data.Char (intToDigit)
-import Data.List.NonEmpty (NonEmpty ((:|)))
-import Data.List.NonEmpty qualified as NE
-import Data.Semigroup (sconcat)
-import Data.String (IsString (fromString))
-import Data.Text qualified as T
-import Generics.SOP (
-  All,
-  All2,
-  ConstructorName,
-  K (K),
-  NP,
-  NS,
-  Proxy (Proxy),
-  SOP (SOP),
-  constructorInfo,
-  constructorName,
-  hcmap,
-  hcollapse,
-  hindex,
-  hmap,
- )
-import Generics.SOP.GGP (gdatatypeInfo)
+import Plutarch.Maybe (PMaybe, PMaybeSoP)
 
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
@@ -351,3 +351,9 @@ instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
 
 -- | @since WIP
 instance PShow PPositive
+
+-- | @since WIP
+instance PShow a => PShow (PMaybe a)
+
+-- | @since WIP
+instance PShow a => PShow (PMaybeSoP a)

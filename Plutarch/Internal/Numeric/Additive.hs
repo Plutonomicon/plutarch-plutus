@@ -13,6 +13,7 @@ module Plutarch.Internal.Numeric.Additive (
 
   -- * Functions
   ptryPositive,
+  ppositive,
 ) where
 
 import Data.Coerce (coerce)
@@ -56,6 +57,7 @@ import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
   PInner,
   PlutusType,
+  pcon,
  )
 import Plutarch.Internal.Term (
   S,
@@ -68,6 +70,7 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 import Prettyprinter (Pretty)
@@ -196,8 +199,6 @@ instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
   pscalePositive = phoistAcyclic $ plam $ \x p ->
     pbls12_381_G2_scalarMul # pto p # x
 
--- TODO: PRational
-
 {- | = Laws
 
 @since WIP
@@ -219,8 +220,6 @@ instance PAdditiveMonoid PBuiltinBLS12_381_G1_Element where
 instance PAdditiveMonoid PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G2_uncompress # pbls12_381_G2_compressed_zero
-
--- TODO: PRational
 
 {- | = Laws
 
@@ -257,8 +256,6 @@ instance PAdditiveGroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G2_neg
 
--- TODO: PRational
-
 {- | = Laws
 
 = Note
@@ -293,3 +290,13 @@ ptryPositive = phoistAcyclic $
       (i #<= pzero)
       (ptraceInfo "ptryPositive: building with non positive" perror)
       (punsafeCoerce i)
+
+-- | Build a 'PPositive' from a 'PInteger'. Yields 'PNothing' if argument is zero.
+ppositive :: Term s (PInteger :--> PMaybe PPositive)
+ppositive = phoistAcyclic $
+  plam $ \i ->
+    pif
+      (i #<= pzero)
+      (pcon PNothing)
+      $ pcon . PJust . pcon
+      $ PPositive i

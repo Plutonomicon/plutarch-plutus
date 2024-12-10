@@ -10,7 +10,8 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Numeric ()
-import Plutarch.Internal.Numeric.Additive (PPositive)
+import Plutarch.Internal.Numeric.Additive (PPositive, (#+))
+import Plutarch.Internal.Numeric.Multiplicative (pone)
 import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -55,7 +56,7 @@ class POrd a => PCountable (a :: S -> Type) where
   -- @since WIP
   {-# INLINEABLE psuccessorN #-}
   psuccessorN :: forall (s :: S). Term s (PPositive :--> a :--> a)
-  psuccessorN = phoistAcyclic $ plam $ \n x -> go n # (psuccessor # x) # 1
+  psuccessorN = phoistAcyclic $ plam $ \n x -> go n # (psuccessor # x) # pone
     where
       go ::
         forall (s' :: S).
@@ -65,7 +66,7 @@ class POrd a => PCountable (a :: S -> Type) where
         pif
           (count #== limit)
           acc
-          (self # (psuccessor # acc) # (count + 1))
+          (self # (psuccessor # acc) # (count #+ pone))
 
 -- | @since WIP
 instance PCountable PInteger where
@@ -77,9 +78,9 @@ instance PCountable PInteger where
 -- | @since WIP
 instance PCountable PPositive where
   {-# INLINEABLE psuccessor #-}
-  psuccessor = phoistAcyclic $ plam (+ 1)
+  psuccessor = phoistAcyclic $ plam (#+ pone)
   {-# INLINEABLE psuccessorN #-}
-  psuccessorN = phoistAcyclic $ plam (+)
+  psuccessorN = phoistAcyclic $ plam (#+)
 
 {- | Similar to 'PCountable', but has the ability to get a \'previous\' value as
 well. More formally, instances of this type class are discrete linear orders
@@ -112,7 +113,7 @@ class PCountable a => PEnumerable (a :: S -> Type) where
   -- @since WIP
   {-# INLINEABLE ppredecessorN #-}
   ppredecessorN :: forall (s :: S). Term s (PPositive :--> a :--> a)
-  ppredecessorN = phoistAcyclic $ plam $ \n x -> go n # (ppredecessor # x) # 1
+  ppredecessorN = phoistAcyclic $ plam $ \n x -> go n # (ppredecessor # x) # pone
     where
       go ::
         forall (s' :: S).
@@ -122,7 +123,7 @@ class PCountable a => PEnumerable (a :: S -> Type) where
         pif
           (count #== limit)
           acc
-          (self # (ppredecessor # acc) # (count + 1))
+          (self # (ppredecessor # acc) # (count #+ pone))
 
 -- | @since WIP
 instance PEnumerable PInteger where

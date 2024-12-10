@@ -12,6 +12,17 @@ module Plutarch.LedgerApi.V1.Time (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Plutarch.Internal.Numeric.Additive (
+  PAbs (pabs),
+  PAdditiveGroup (pnegate, (#-)),
+  PAdditiveMonoid (pzero),
+  PAdditiveSemigroup (pscalePositive, (#+)),
+ )
+import Plutarch.Internal.Numeric.Multiplicative (
+  PMultiplicativeMonoid (pone),
+  PMultiplicativeSemigroup ((#*)),
+  PSignum (psignum),
+ )
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
@@ -40,20 +51,20 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s (PDataNewtype PInteger))
 -- | @since WIP
 instance PCountable PPosixTime where
   {-# INLINEABLE psuccessor #-}
-  psuccessor = phoistAcyclic $ plam (+ 1)
+  psuccessor = phoistAcyclic $ plam (#+ pone)
   {-# INLINEABLE psuccessorN #-}
   psuccessorN = phoistAcyclic $ plam $ \p t ->
     let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
-     in p' + t
+     in p' #+ t
 
 -- | @since WIP
 instance PEnumerable PPosixTime where
   {-# INLINEABLE ppredecessor #-}
-  ppredecessor = phoistAcyclic $ plam (\t -> t - 1)
+  ppredecessor = phoistAcyclic $ plam (#- pone)
   {-# INLINEABLE ppredecessorN #-}
   ppredecessorN = phoistAcyclic $ plam $ \p t ->
     let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
-     in t - p'
+     in t #- p'
 
 -- | @since 2.0.0
 instance PIntegral PPosixTime where
@@ -70,22 +81,50 @@ instance PIntegral PPosixTime where
   prem = phoistAcyclic $ plam $ \t1 t2 ->
     pposixTime (prem # unPPosixTime t1 # unPPosixTime t2)
 
--- | @since 2.0.0
-instance PNum PPosixTime where
-  {-# INLINEABLE (#*) #-}
-  t1 #* t2 = pposixTime (unPPosixTime t1 #* unPPosixTime t2)
+-- | @since WIP
+instance PAdditiveSemigroup PPosixTime where
   {-# INLINEABLE (#+) #-}
   t1 #+ t2 = pposixTime (unPPosixTime t1 #+ unPPosixTime t2)
-  {-# INLINEABLE (#-) #-}
-  t1 #- t2 = pposixTime (unPPosixTime t1 #- unPPosixTime t2)
-  {-# INLINEABLE pabs #-}
-  pabs = phoistAcyclic $ plam $ \t -> pposixTime (pabs # unPPosixTime t)
-  {-# INLINEABLE pfromInteger #-}
-  pfromInteger = pposixTime . pconstant
+  {-# INLINEABLE pscalePositive #-}
+  pscalePositive = phoistAcyclic $ plam $ \t p ->
+    pposixTime (unPPosixTime t #* pto p)
+
+-- | @since WIP
+instance PAdditiveMonoid PPosixTime where
+  {-# INLINEABLE pzero #-}
+  pzero = pposixTime pzero
+
+-- | @since WIP
+instance PAdditiveGroup PPosixTime where
   {-# INLINEABLE pnegate #-}
   pnegate = phoistAcyclic $ plam $ \t -> pposixTime (pnegate # unPPosixTime t)
+  {-# INLINEABLE (#-) #-}
+  t1 #- t2 = pposixTime (unPPosixTime t1 #- unPPosixTime t2)
+
+-- | @since WIP
+instance PMultiplicativeSemigroup PPosixTime where
+  {-# INLINEABLE (#*) #-}
+  t1 #* t2 = pposixTime (unPPosixTime t1 #* unPPosixTime t2)
+
+-- | @since WIP
+instance PMultiplicativeMonoid PPosixTime where
+  {-# INLINEABLE pone #-}
+  pone = pposixTime pone
+
+-- | @since WIP
+instance PAbs PPosixTime where
+  {-# INLINEABLE pabs #-}
+  pabs = phoistAcyclic $ plam $ \t -> pposixTime (pabs # unPPosixTime t)
+
+-- | @since WIP
+instance PSignum PPosixTime where
   {-# INLINEABLE psignum #-}
   psignum = phoistAcyclic $ plam $ \t -> pposixTime (psignum # unPPosixTime t)
+
+-- | @since 2.0.0
+instance PNum PPosixTime where
+  {-# INLINEABLE pfromInteger #-}
+  pfromInteger = pposixTime . pconstant
 
 -- | @since 2.0.0
 instance DerivePlutusType PPosixTime where

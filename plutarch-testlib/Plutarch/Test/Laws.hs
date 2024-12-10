@@ -18,8 +18,16 @@ module Plutarch.Test.Laws (
 
 import Control.Applicative ((<|>))
 import Data.Kind (Type)
+import Plutarch.Internal.Numeric.Additive (
+  PAbs (pabs),
+  PPositive,
+  Positive,
+  pnegate,
+  (#+),
+  (#-),
+ )
+import Plutarch.Internal.Numeric.Multiplicative (PSignum (psignum), pone, (#*))
 import Plutarch.LedgerApi.V1 qualified as V1
-import Plutarch.Positive (PPositive, Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName')
@@ -285,7 +293,7 @@ checkHaskellNumEquivalent ::
   , Typeable (AsHaskell plutarchInput)
   , Num (AsHaskell plutarchInput)
   , Typeable plutarchInput
-  , PNum plutarchInput
+  , PSignum plutarchInput
   ) =>
   TestTree
 checkHaskellNumEquivalent =
@@ -348,11 +356,11 @@ pcountableLaws =
         plift (pconstant @a x #< (psuccessor # pconstant @a y)) === plift (pconstant @a x #<= pconstant @a y)
   , testProperty "psuccessorN 1 = psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: AsHaskell a) ->
-        plift (psuccessorN # 1 # pconstant @a x) === plift (psuccessor # pconstant @a x)
+        plift (psuccessorN # pone # pconstant @a x) === plift (psuccessor # pconstant @a x)
   , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
       \(x :: AsHaskell a, n :: Positive, m :: Positive) ->
         plift (psuccessorN # pconstant @PPositive n # (psuccessorN # pconstant @PPositive m # pconstant @a x))
-          === plift (psuccessorN # (pconstant @PPositive n + pconstant @PPositive m) # pconstant @a x)
+          === plift (psuccessorN # (pconstant @PPositive n #+ pconstant @PPositive m) # pconstant @a x)
   ]
 
 penumerableLaws ::
@@ -373,11 +381,11 @@ penumerableLaws =
         plift (psuccessor #$ ppredecessor # pconstant @a x) `prettyEquals` plift (pconstant @a x)
   , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: AsHaskell a) ->
-        plift (ppredecessorN # 1 # pconstant @a x) `prettyEquals` plift (ppredecessor # pconstant @a x)
+        plift (ppredecessorN # pone # pconstant @a x) `prettyEquals` plift (ppredecessor # pconstant @a x)
   , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: AsHaskell a, n :: Positive, m :: Positive) ->
         plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant @a x))
-          `prettyEquals` plift (ppredecessorN # (pconstant n + pconstant m) # pconstant @a x)
+          `prettyEquals` plift (ppredecessorN # (pconstant n #+ pconstant m) # pconstant @a x)
   ]
 
 -- pfromData . pdata = id

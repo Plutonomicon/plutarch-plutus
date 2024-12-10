@@ -6,15 +6,10 @@ module Plutarch.Internal.Numeric (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (pcond)
-import Plutarch.Builtin.Integer (
-  PInteger,
-  peqInteger,
-  pleInteger,
-  pmultiplyInteger,
- )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Numeric.Additive (PAbs, pabs, pnegate, (#+), (#-))
+import Plutarch.Internal.Numeric.Multiplicative (PSignum (psignum), (#*))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner)
@@ -23,7 +18,6 @@ import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
   punsafeBuiltin,
-  punsafeCoerce,
   (#),
   (:-->),
  )
@@ -31,41 +25,16 @@ import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 
 class PNum (a :: S -> Type) where
-  (#*) :: Term s a -> Term s a -> Term s a
-  default (#*) :: PNum (PInner a) => Term s a -> Term s a -> Term s a
-  x #* y = punsafeDowncast $ pto x #* pto y
-
-  psignum :: Term s (a :--> a)
-  default psignum :: PNum (PInner a) => Term s (a :--> a)
-  psignum = punsafeCoerce (psignum :: Term s (PInner a :--> PInner a))
-
   pfromInteger :: Integer -> Term s a
   default pfromInteger :: PNum (PInner a) => Integer -> Term s a
   pfromInteger x = punsafeDowncast $ pfromInteger x
 
--- prohibit mixing arithmetic operators such as
--- (2 #+ 3 #* 4) without explicit precedence.
-infix 6 #*
-
 instance PNum PInteger where
-  {-# INLINEABLE (#*) #-}
-  x #* y = pmultiplyInteger # x # y
-
-  --  Note from Koz (27/11/2024): we don't hoist this, and we use #<= instead of
-  --  (the arguably more correct) #< here, because both of these lead to perf
-  --  losses and size increases. Don't ask why, I don't make the rules.
-  {-# INLINEABLE psignum #-}
-  psignum = plam $ \x ->
-    pcond
-      [ (peqInteger # x # 0, 0)
-      , (pleInteger # x # 0, -1)
-      ]
-      1
   {-# INLINEABLE pfromInteger #-}
   pfromInteger = pconstant
 
 -- orphan instance, but only visibly orphan when importing internal modules
-instance (PAbs a, PNum a) => Num (Term s a) where
+instance (PAbs a, PSignum a, PNum a) => Num (Term s a) where
   {-# INLINEABLE (+) #-}
   (+) = (#+)
   {-# INLINEABLE (-) #-}

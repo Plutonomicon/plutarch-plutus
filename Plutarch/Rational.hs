@@ -37,20 +37,24 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
-  PNum (pfromInteger, psignum, (#*)),
+  PNum (pfromInteger),
   pdiv,
   pmod,
   pquot,
  )
 import Plutarch.Internal.Numeric.Additive (
+  PAbs (pabs),
+  PAdditiveGroup (pnegate, (#-)),
+  PAdditiveMonoid (pzero),
   PAdditiveSemigroup (pscalePositive, (#+)),
   PPositive,
-  pabs,
-  pnegate,
   ptryPositive,
-  pzero,
  )
-import Plutarch.Internal.Numeric.Multiplicative (pone)
+import Plutarch.Internal.Numeric.Multiplicative (
+  PMultiplicativeMonoid (pone),
+  PMultiplicativeSemigroup ((#*)),
+  PSignum (psignum),
+ )
 import Plutarch.Internal.Ord (
   POrd ((#<), (#<=)),
  )
@@ -160,17 +164,78 @@ instance PAdditiveSemigroup PRational where
           PRational yn yd' <- tcont $ pmatch y
           xd <- tcont $ plet xd'
           yd <- tcont $ plet yd'
-          pure
-            $ preduce
-              #$ pcon
-            $ PRational (xn * pto yd + yn * pto xd)
-            $ punsafeDowncast
-            $ pto xd * pto yd
+          pure $ preduce' # (xn * pto yd + yn * pto xd) # pto (xd #* yd)
       )
       # x'
       # y'
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = _
+  pscalePositive = phoistAcyclic $ plam $ \x p ->
+    pmatch x $ \(PRational xn xd) ->
+      preduce' # (xn #* pto p) # pto xd
+
+-- | @since WIP
+instance PAdditiveMonoid PRational where
+  {-# INLINEABLE pzero #-}
+  pzero = pcon . PRational pzero $ pone
+
+-- | @since WIP
+instance PAdditiveGroup PRational where
+  {-# INLINEABLE pnegate #-}
+  pnegate =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (pnegate # xn) xd
+  {-# INLINEABLE (#-) #-}
+  x' #- y' =
+    phoistAcyclic
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd' <- tcont $ pmatch x
+          PRational yn yd' <- tcont $ pmatch y
+          xd <- tcont $ plet xd'
+          yd <- tcont $ plet yd'
+          pure $ preduce' # (xn * pto yd - yn * pto xd) # pto (xd #* yd)
+      )
+      # x'
+      # y'
+
+-- | @since WIP
+instance PAbs PRational where
+  {-# INLINEABLE pabs #-}
+  pabs =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (pabs # xn) xd
+
+-- | @since WIP
+instance PMultiplicativeSemigroup PRational where
+  {-# INLINEABLE (#*) #-}
+  x' #* y' =
+    phoistAcyclic
+      ( plam $ \x y -> unTermCont $ do
+          PRational xn xd <- tcont $ pmatch x
+          PRational yn yd <- tcont $ pmatch y
+          pure $ preduce' # (xn * yn) # pto (xd #* yd)
+      )
+      # x'
+      # y'
+
+-- | @since WIP
+instance PMultiplicativeMonoid PRational where
+  {-# INLINEABLE pone #-}
+  pone = pcon . PRational pone $ pone
+
+-- | @since WIP
+instance PSignum PRational where
+  {-# INLINEABLE psignum #-}
+  psignum = phoistAcyclic $ plam $ \x ->
+    pmatch x $ \(PRational n _) ->
+      pcond
+        [ (n #== 0, pzero)
+        , (n #<= 0, pcon . PRational (pconstant (-1)) $ pone)
+        ]
+        pone
 
 -- | @since WIP
 instance Fractional (Term s PRational) where
@@ -220,67 +285,8 @@ instance PTryFrom PData (PAsData PRational) where
     pure (punsafeCoerce opq, res)
 
 instance PNum PRational where
-  {-
-  {-# INLINEABLE (#+) #-}
-  x' #+ y' =
-    phoistAcyclic
-      ( plam $ \x y -> unTermCont $ do
-          PRational xn xd' <- tcont $ pmatch x
-          PRational yn yd' <- tcont $ pmatch y
-          xd <- tcont $ plet xd'
-          yd <- tcont $ plet yd'
-          pure $ preduce' # (xn * pto yd + yn * pto xd) # pto (xd * yd)
-      )
-      # x'
-      # y'
-  {-# INLINEABLE (#-) #-}
-  x' #- y' =
-    phoistAcyclic
-      ( plam $ \x y -> unTermCont $ do
-          PRational xn xd' <- tcont $ pmatch x
-          PRational yn yd' <- tcont $ pmatch y
-          xd <- tcont $ plet xd'
-          yd <- tcont $ plet yd'
-          pure $ preduce' # (xn * pto yd - yn * pto xd) # pto (xd * yd)
-      )
-      # x'
-      # y'
-    -}
-  {-# INLINEABLE (#*) #-}
-  x' #* y' =
-    phoistAcyclic
-      ( plam $ \x y -> unTermCont $ do
-          PRational xn xd <- tcont $ pmatch x
-          PRational yn yd <- tcont $ pmatch y
-          pure $ preduce' # (xn * yn) # pto (xd * yd)
-      )
-      # x'
-      # y'
-
-  {-
-  {-# INLINEABLE pnegate #-}
-  pnegate =
-    phoistAcyclic $
-      plam $ \x ->
-        pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (negate xn) xd
-  {-# INLINEABLE pabs #-}
-  pabs =
-    phoistAcyclic $
-      plam $ \x ->
-        pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (abs xn) xd
-  -}
-  {-# INLINEABLE psignum #-}
-  psignum = phoistAcyclic $ plam $ \x ->
-    pmatch x $ \(PRational n _) ->
-      pcond
-        [ (n #== 0, 0)
-        , (n #<= 0, -1)
-        ]
-        1
   {-# INLINEABLE pfromInteger #-}
-  pfromInteger n = pcon $ PRational (fromInteger n) 1
+  pfromInteger n = pcon $ PRational (fromInteger n) pone
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $ plam $ \x ->
@@ -314,7 +320,7 @@ pdenominator :: Term s (PRational :--> PPositive)
 pdenominator = phoistAcyclic $ plam $ \x -> pmatch x $ \(PRational _ d) -> d
 
 pfromInteger :: Term s (PInteger :--> PRational)
-pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n 1
+pfromInteger = phoistAcyclic $ plam $ \n -> pcon $ PRational n pone
 
 pround :: Term s (PRational :--> PInteger)
 pround = phoistAcyclic $

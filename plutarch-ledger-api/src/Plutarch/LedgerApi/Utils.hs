@@ -45,8 +45,8 @@ import Data.Bifunctor (first)
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
+import Plutarch.Internal.Numeric.Additive (PPositive)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
-import Plutarch.Positive (PPositive)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
