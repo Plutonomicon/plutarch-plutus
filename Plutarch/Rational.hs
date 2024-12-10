@@ -44,7 +44,7 @@ import Plutarch.Internal.Numeric (
  )
 import Plutarch.Internal.Numeric.Additive (
   PAbs (pabs),
-  PAdditiveGroup (pnegate, (#-)),
+  PAdditiveGroup (pnegate, pscaleInteger, (#-)),
   PAdditiveMonoid (pzero),
   PAdditiveSemigroup (pscalePositive, (#+)),
   PPositive,
@@ -52,7 +52,7 @@ import Plutarch.Internal.Numeric.Additive (
  )
 import Plutarch.Internal.Numeric.Multiplicative (
   PMultiplicativeMonoid (pone),
-  PMultiplicativeSemigroup ((#*)),
+  PMultiplicativeSemigroup (ppowPositive, (#*)),
   PSignum (psignum),
  )
 import Plutarch.Internal.Ord (
@@ -198,6 +198,10 @@ instance PAdditiveGroup PRational where
       )
       # x'
       # y'
+  {-# INLINEABLE pscaleInteger #-}
+  pscaleInteger = phoistAcyclic $ plam $ \x e ->
+    pmatch x $ \(PRational xn xd) ->
+      preduce' # (xn #* e) # pto xd
 
 -- | @since WIP
 instance PAbs PRational where
@@ -220,6 +224,10 @@ instance PMultiplicativeSemigroup PRational where
       )
       # x'
       # y'
+  {-# INLINEABLE ppowPositive #-}
+  ppowPositive = phoistAcyclic $ plam $ \x p ->
+    pmatch x $ \(PRational xn xd) ->
+      pcon . PRational (ppowPositive # xn # p) $ ppowPositive # xd # p
 
 -- | @since WIP
 instance PMultiplicativeMonoid PRational where

@@ -8,20 +8,19 @@ module Plutarch.Internal.Numeric.Multiplicative (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (pcond, pif)
+import Plutarch.Builtin.Bool (pcond)
 import Plutarch.Builtin.Integer (
   PInteger,
   pconstantInteger,
   pmultiplyInteger,
  )
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Numeric.Additive (
   PAbs,
   PPositive,
+  pbySquaringDefault,
   pnegate,
   pzero,
-  (#-),
  )
 import Plutarch.Internal.Ord (POrd ((#<=)))
 import Plutarch.Internal.Other (pto)
@@ -33,7 +32,6 @@ import Plutarch.Internal.Term (
   phoistAcyclic,
   punsafeCoerce,
   (#),
-  (#$),
   (:-->),
  )
 import Plutarch.Unsafe (punsafeDowncast)
@@ -57,16 +55,7 @@ class PMultiplicativeSemigroup (a :: S -> Type) where
     forall (s :: S).
     Term s (a :--> PPositive :--> a)
   ppowPositive = phoistAcyclic $ plam $ \x p ->
-    go # x # x # pto p
-    where
-      go ::
-        forall (s' :: S).
-        Term s' (a :--> a :--> PInteger :--> a)
-      go = phoistAcyclic $ pfix #$ plam $ \self original acc step ->
-        pif
-          (step #== pone)
-          acc
-          (self # original # (acc #* original) # (step #- pone))
+    pbySquaringDefault (#*) # x # p
 
 -- | @since WIP
 infix 6 #*

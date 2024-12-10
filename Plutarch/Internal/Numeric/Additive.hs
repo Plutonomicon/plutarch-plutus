@@ -14,6 +14,7 @@ module Plutarch.Internal.Numeric.Additive (
   -- * Functions
   ptryPositive,
   ppositive,
+  pbySquaringDefault,
 ) where
 
 import Data.Coerce (coerce)
@@ -38,6 +39,9 @@ import Plutarch.Builtin.Integer (
   PInteger,
   paddInteger,
   pconstantInteger,
+  pmultiplyInteger,
+  pquotientInteger,
+  premainderInteger,
   psubtractInteger,
  )
 import Plutarch.Builtin.String (ptraceInfo)
@@ -64,6 +68,7 @@ import Plutarch.Internal.Term (
   Term,
   perror,
   phoistAcyclic,
+  plet,
   punsafeBuiltin,
   punsafeCoerce,
   (#),
@@ -151,20 +156,14 @@ class PAdditiveSemigroup (a :: S -> Type) where
     Term s a
   x #+ y = punsafeDowncast $ pto x #+ pto y
   {-# INLINEABLE pscalePositive #-}
+
+  -- | This defaults to exponentiation-by-squaring, which in general is the best
+  -- we can do.
   pscalePositive ::
     forall (s :: S).
     Term s (a :--> PPositive :--> a)
-  pscalePositive = phoistAcyclic $ plam $ \x p ->
-    go # x # x # pto p
-    where
-      go ::
-        forall (s' :: S).
-        Term s' (a :--> a :--> PInteger :--> a)
-      go = phoistAcyclic $ pfix #$ plam $ \self original acc step ->
-        pif
-          (step #== pconstantInteger 1)
-          acc
-          (self # original # (acc #+ original) #$ psubtractInteger # step # pconstantInteger 1)
+  pscalePositive = phoistAcyclic $ plam $ \b e ->
+    pbySquaringDefault (#+) # b # e
 
 -- | @since WIP
 infix 6 #+
@@ -237,6 +236,17 @@ class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type) where
       inner :: forall (s' :: S). Term s' (a :--> a :--> a)
       inner = phoistAcyclic $ plam $ \x y ->
         x #+ (pnegate # y)
+  {-# INLINEABLE pscaleInteger #-}
+  pscaleInteger :: forall (s :: S). Term s (a :--> PInteger :--> a)
+  pscaleInteger = phoistAcyclic $ plam $ \b e ->
+    pif
+      (e #== pzero)
+      pzero
+      ( pif
+          (e #<= pzero)
+          (pnegate #$ pscalePositive # b # punsafeDowncast (pnegate # e))
+          (pscalePositive # b # punsafeDowncast e)
+      )
 
 -- | @since WIP
 infix 6 #-
@@ -245,16 +255,24 @@ infix 6 #-
 instance PAdditiveGroup PInteger where
   {-# INLINEABLE (#-) #-}
   x #- y = psubtractInteger # x # y
+  {-# INLINEABLE pscaleInteger #-}
+  pscaleInteger = pmultiplyInteger
 
 -- | @since WIP
 instance PAdditiveGroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G1_neg
+  {-# INLINEABLE pscaleInteger #-}
+  pscaleInteger = phoistAcyclic $ plam $ \b e ->
+    pbls12_381_G1_scalarMul # e # b
 
 -- | @since WIP
 instance PAdditiveGroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G2_neg
+  {-# INLINEABLE pscaleInteger #-}
+  pscaleInteger = phoistAcyclic $ plam $ \b e ->
+    pbls12_381_G2_scalarMul # e # b
 
 {- | = Laws
 
@@ -277,8 +295,6 @@ class PAdditiveGroup a => PAbs (a :: S -> Type) where
 -- | @since WIP
 instance PAbs PInteger
 
--- TODO: PRational
-
 {- | Partial version of 'PPositive'. Errors if argument is zero.
 
 @since WIP
@@ -300,3 +316,36 @@ ppositive = phoistAcyclic $
       (pcon PNothing)
       $ pcon . PJust . pcon
       $ PPositive i
+
+{- | A default implementation of exponentiation-by-squaring with a
+strictly-positive exponent.
+
+= Important note
+
+This implementation assumes that the operation argument is associative.
+
+@since WIP
+-}
+pbySquaringDefault ::
+  forall (a :: S -> Type) (s :: S).
+  (forall (s' :: S). Term s' a -> Term s' a -> Term s' a) ->
+  Term s (a :--> PPositive :--> a)
+pbySquaringDefault f = phoistAcyclic $ pfix #$ plam $ \self b e ->
+  -- We know that we can never have a value less than 1 for e, due to the type
+  -- constraint. Thus, we make two assumptions:
+  --
+  -- 1. The stopping condition is equality to 1
+  -- 2. The exponent is never negative
+  --
+  -- This allows us to use `pquot` and `prem` instead of `pdiv` and `pmod`,
+  -- which is a bit faster.
+  pif
+    (pto e #== pconstantInteger 1)
+    b
+    ( plet (self # b #$ punsafeDowncast (pquotientInteger # pto e # pconstantInteger 2)) $ \below ->
+        plet (f below below) $ \res ->
+          pif
+            ((premainderInteger # pto e # pconstantInteger 2) #== pconstantInteger 1)
+            (f b res)
+            res
+    )
