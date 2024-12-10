@@ -3,6 +3,7 @@ module Plutarch.EasyBench (easyBench) where
 import Plutarch.Prelude
 
 import Control.Exception (IOException, catch)
+import Control.Monad (when)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Aeson qualified as Aeson
 import Data.ByteString.Base16 qualified as Base16
@@ -102,5 +103,5 @@ easyBench identifier' cfg x = do
       Aeson.encodeFile @[PEasyBenchIteration] identifier [newItr]
       print $ reportIteration newItr Nothing
     (x : _) -> do
-      Aeson.encodeFile @[PEasyBenchIteration] identifier (newItr : itrs)
+      when (x /= newItr) $ Aeson.encodeFile @[PEasyBenchIteration] identifier (newItr : itrs)
       print $ reportIteration newItr (Just x)
