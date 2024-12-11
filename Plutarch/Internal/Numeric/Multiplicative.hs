@@ -4,25 +4,18 @@ module Plutarch.Internal.Numeric.Multiplicative (
   -- * Type classes
   PMultiplicativeSemigroup (..),
   PMultiplicativeMonoid (..),
-  PSignum (..),
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Builtin.Bool (pcond)
 import Plutarch.Builtin.Integer (
   PInteger,
   pconstantInteger,
   pmultiplyInteger,
  )
-import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Numeric.Additive (
-  PAbs,
   PPositive,
   pbySquaringDefault,
-  pnegate,
-  pzero,
  )
-import Plutarch.Internal.Ord (POrd ((#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner)
@@ -86,24 +79,3 @@ instance PMultiplicativeMonoid PPositive where
 instance PMultiplicativeMonoid PInteger where
   {-# INLINEABLE pone #-}
   pone = pconstantInteger 1
-
-{- | = Laws
-
-@since WIP
--}
-class (PAbs a, PMultiplicativeSemigroup a) => PSignum (a :: S -> Type) where
-  {-# INLINEABLE psignum #-}
-  psignum :: forall (s :: S). Term s (a :--> a)
-  default psignum ::
-    forall (s :: S).
-    (POrd a, PMultiplicativeMonoid a) =>
-    Term s (a :--> a)
-  psignum = phoistAcyclic $ plam $ \x ->
-    pcond
-      [ (x #== pzero, pzero)
-      , (x #<= pzero, pnegate # pone)
-      ]
-      pone
-
--- | @since WIP
-instance PSignum PInteger

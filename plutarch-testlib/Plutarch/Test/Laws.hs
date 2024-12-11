@@ -18,15 +18,7 @@ module Plutarch.Test.Laws (
 
 import Control.Applicative ((<|>))
 import Data.Kind (Type)
-import Plutarch.Internal.Numeric.Additive (
-  PAbs (pabs),
-  PPositive,
-  Positive,
-  pnegate,
-  (#+),
-  (#-),
- )
-import Plutarch.Internal.Numeric.Multiplicative (PSignum (psignum), pone, (#*))
+import Plutarch.Internal.Numeric.Additive (PPositive, Positive)
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
@@ -293,7 +285,7 @@ checkHaskellNumEquivalent ::
   , Typeable (AsHaskell plutarchInput)
   , Num (AsHaskell plutarchInput)
   , Typeable plutarchInput
-  , PSignum plutarchInput
+  , PIntegralDomain plutarchInput
   ) =>
   TestTree
 checkHaskellNumEquivalent =

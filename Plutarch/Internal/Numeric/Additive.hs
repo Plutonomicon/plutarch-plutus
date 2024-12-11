@@ -9,7 +9,6 @@ module Plutarch.Internal.Numeric.Additive (
   PAdditiveSemigroup (..),
   PAdditiveMonoid (..),
   PAdditiveGroup (..),
-  PAbs (..),
 
   -- * Functions
   ptryPositive,
@@ -142,7 +141,22 @@ instance Function Positive where
   {-# INLINEABLE function #-}
   function = functionMap @Integer coerce coerce
 
-{- | = Laws
+{- | Definition of the addition operation.
+
+= Laws
+
+1. @x #+ y@ @=@ @y #+ x@ (commutativity of @#+@)
+2. @x #+ (y #+ z)@ @=@ @(x #+ y) #+ z@ (associativity of @#+@)
+
+If you define a custom @pscalePositive@, ensure the following also hold:
+
+3. @pcalePositive # x # pone@ @=@ @x@
+4. @(pscalePositive # x # n) #+ (pscalePositive # x # m)@ @=@
+   @pscalePositive # x # (n #+ m)@
+5. @pscalePositive # (pscalePositive # x # n) # m@ @=@
+   @pscalePositive # x # (n #* m)@
+
+The default implementation ensures these laws are satisfied.
 
 @since WIP
 -}
@@ -198,7 +212,11 @@ instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
   pscalePositive = phoistAcyclic $ plam $ \x p ->
     pbls12_381_G2_scalarMul # pto p # x
 
-{- | = Laws
+{- | The notion of zero.
+
+= Laws
+
+1. @pzero #+ x@ @=@ @x@ (@pzero@ is the identity of @#+@)
 
 @since WIP
 -}
@@ -220,7 +238,31 @@ instance PAdditiveMonoid PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G2_uncompress # pbls12_381_G2_compressed_zero
 
-{- | = Laws
+{- | The notion of additive inverses, and the subtraction operation.
+
+= Laws
+
+If you define @pnegate@, the following laws must hold:
+
+1. @(pnegate # x) #+ x@ @=@ @pzero@ (@pnegate@ is an additive inverse)
+2. @pnegate #$ pnegate # x@ @=@ @x@ (@pnegate@ is self-inverting)
+
+If you define @#-@, the following law must hold:
+
+3. @x #- x@ @=@ @pzero@
+
+Additionally, the following \'consistency laws\' must hold. Default
+implementations of both @pnegate@ and @#-@ uphold these.
+
+4. @pnegate # x@ @=@ @pzero #- x@
+5. @x #- y@ @=@ @x #+ (pnegate # y)@
+
+Lastly, if you define a custom @pscaleInteger@, the following laws
+must hold:
+
+6. @pscaleInteger # x # pzero@ @=@ @pzero@
+7. @pscaleInteger # x #$ pnegate y@ @=@
+   @pnegate #$ pscaleInteger # x # y@
 
 @since WIP
 -}
@@ -273,27 +315,6 @@ instance PAdditiveGroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pscaleInteger #-}
   pscaleInteger = phoistAcyclic $ plam $ \b e ->
     pbls12_381_G2_scalarMul # e # b
-
-{- | = Laws
-
-= Note
-
-This functionality really should be in 'PAdditiveGroup'. However, BLS12-381
-elements are drawn from a finite field, which by definition doesn't admit a
-(linear) ordering, and no primitive we have can distinguish a positive
-element from a negative one. Thus, we have to separate this functionality
-into its own type class.
-
-@since WIP
--}
-class PAdditiveGroup a => PAbs (a :: S -> Type) where
-  pabs :: forall (s :: S). Term s (a :--> a)
-  default pabs :: forall (s :: S). POrd a => Term s (a :--> a)
-  pabs = phoistAcyclic $ plam $ \x ->
-    pif (x #<= pzero) (pnegate # x) x
-
--- | @since WIP
-instance PAbs PInteger
 
 {- | Partial version of 'PPositive'. Errors if argument is zero.
 

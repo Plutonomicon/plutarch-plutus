@@ -12,17 +12,6 @@ module Plutarch.LedgerApi.V1.Time (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.Internal.Numeric.Additive (
-  PAbs (pabs),
-  PAdditiveGroup (pnegate, (#-)),
-  PAdditiveMonoid (pzero),
-  PAdditiveSemigroup (pscalePositive, (#+)),
- )
-import Plutarch.Internal.Numeric.Multiplicative (
-  PMultiplicativeMonoid (pone),
-  PMultiplicativeSemigroup ((#*)),
-  PSignum (psignum),
- )
 import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
@@ -112,17 +101,14 @@ instance PMultiplicativeMonoid PPosixTime where
   pone = pposixTime pone
 
 -- | @since WIP
-instance PAbs PPosixTime where
+instance PIntegralDomain PPosixTime where
+  {-# INLINEABLE psignum #-}
+  psignum = phoistAcyclic $ plam $ \t -> pposixTime (psignum # unPPosixTime t)
   {-# INLINEABLE pabs #-}
   pabs = phoistAcyclic $ plam $ \t -> pposixTime (pabs # unPPosixTime t)
 
 -- | @since WIP
-instance PSignum PPosixTime where
-  {-# INLINEABLE psignum #-}
-  psignum = phoistAcyclic $ plam $ \t -> pposixTime (psignum # unPPosixTime t)
-
--- | @since 2.0.0
-instance PNum PPosixTime where
+instance PRing PPosixTime where
   {-# INLINEABLE pfromInteger #-}
   pfromInteger = pposixTime . pconstant
 

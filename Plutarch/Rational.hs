@@ -37,13 +37,11 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
-  PNum (pfromInteger),
   pdiv,
   pmod,
   pquot,
  )
 import Plutarch.Internal.Numeric.Additive (
-  PAbs (pabs),
   PAdditiveGroup (pnegate, pscaleInteger, (#-)),
   PAdditiveMonoid (pzero),
   PAdditiveSemigroup (pscalePositive, (#+)),
@@ -53,7 +51,10 @@ import Plutarch.Internal.Numeric.Additive (
 import Plutarch.Internal.Numeric.Multiplicative (
   PMultiplicativeMonoid (pone),
   PMultiplicativeSemigroup (ppowPositive, (#*)),
-  PSignum (psignum),
+ )
+import Plutarch.Internal.Numeric.Ring (
+  PIntegralDomain (pabs, psignum),
+  PRing (pfromInteger),
  )
 import Plutarch.Internal.Ord (
   POrd ((#<), (#<=)),
@@ -203,14 +204,11 @@ instance PAdditiveGroup PRational where
     pmatch x $ \(PRational xn xd) ->
       preduce' # (xn #* e) # pto xd
 
+{-
 -- | @since WIP
 instance PAbs PRational where
   {-# INLINEABLE pabs #-}
-  pabs =
-    phoistAcyclic $
-      plam $ \x ->
-        pmatch x $ \(PRational xn xd) ->
-          pcon $ PRational (pabs # xn) xd
+-}
 
 -- | @since WIP
 instance PMultiplicativeSemigroup PRational where
@@ -235,7 +233,18 @@ instance PMultiplicativeMonoid PRational where
   pone = pcon . PRational pone $ pone
 
 -- | @since WIP
-instance PSignum PRational where
+instance PRing PRational where
+  {-# INLINEABLE pfromInteger #-}
+  pfromInteger n = pcon $ PRational (fromInteger n) pone
+
+-- | @since WIP
+instance PIntegralDomain PRational where
+  {-# INLINEABLE pabs #-}
+  pabs =
+    phoistAcyclic $
+      plam $ \x ->
+        pmatch x $ \(PRational xn xd) ->
+          pcon $ PRational (pabs # xn) xd
   {-# INLINEABLE psignum #-}
   psignum = phoistAcyclic $ plam $ \x ->
     pmatch x $ \(PRational n _) ->
@@ -291,10 +300,6 @@ instance PTryFrom PData (PAsData PRational) where
     (_, denm) <- tcont $ ptryFrom @(PAsData PInteger) $ phead # ratTail
     res <- tcont . plet $ ptryPositive # denm
     pure (punsafeCoerce opq, res)
-
-instance PNum PRational where
-  {-# INLINEABLE pfromInteger #-}
-  pfromInteger n = pcon $ PRational (fromInteger n) pone
 
 preduce :: Term s (PRational :--> PRational)
 preduce = phoistAcyclic $ plam $ \x ->

@@ -1,7 +1,5 @@
 module Main (main) where
 
-import Plutarch.Internal.Numeric.Additive ((#-))
-import Plutarch.Internal.Numeric.Multiplicative (pone, (#*))
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
 import Plutarch.Maybe (PMaybeSoP, pmapMaybe, pmapMaybeSoP)
 import Plutarch.Prelude

@@ -1,20 +1,17 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Internal.Numeric (
-  PNum (..),
   PIntegral (..),
 ) where
 
-import Data.Kind (Type)
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Numeric.Additive (PAbs, pabs, pnegate, (#+), (#-))
-import Plutarch.Internal.Numeric.Multiplicative (PSignum (psignum), (#*))
+import Plutarch.Internal.Numeric.Additive (pnegate, (#+), (#-))
+import Plutarch.Internal.Numeric.Multiplicative ((#*))
+import Plutarch.Internal.Numeric.Ring (PIntegralDomain (pabs, psignum), pfromInteger)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Term (
-  S,
   Term,
   phoistAcyclic,
   punsafeBuiltin,
@@ -24,17 +21,8 @@ import Plutarch.Internal.Term (
 import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 
-class PNum (a :: S -> Type) where
-  pfromInteger :: Integer -> Term s a
-  default pfromInteger :: PNum (PInner a) => Integer -> Term s a
-  pfromInteger x = punsafeDowncast $ pfromInteger x
-
-instance PNum PInteger where
-  {-# INLINEABLE pfromInteger #-}
-  pfromInteger = pconstant
-
 -- orphan instance, but only visibly orphan when importing internal modules
-instance (PAbs a, PSignum a, PNum a) => Num (Term s a) where
+instance PIntegralDomain a => Num (Term s a) where
   {-# INLINEABLE (+) #-}
   (+) = (#+)
   {-# INLINEABLE (-) #-}
