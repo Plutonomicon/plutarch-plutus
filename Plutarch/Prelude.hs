@@ -162,6 +162,8 @@ module Plutarch.Prelude (
   PlutusTypeScott,
 
   -- * Numeric
+  Positive,
+  PPositive,
   PAdditiveSemigroup (..),
   PAdditiveMonoid (..),
   PAdditiveGroup (..),
@@ -173,6 +175,8 @@ module Plutarch.Prelude (
   prem,
   pdiv,
   pmod,
+  ppositive,
+  ptryPositive,
 
   -- * Other
   pto,

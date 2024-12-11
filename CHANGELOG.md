@@ -61,6 +61,8 @@
 * `PIntegral` type class is now in `Plutarch.Internal.Numeric`
 * `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
 * `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
+* `PPositive` (and `Positive`) are now exported from the prelude, along with
+  some functionality
 
 ## Removed
 
