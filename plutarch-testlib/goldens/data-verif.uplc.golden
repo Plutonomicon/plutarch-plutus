@@ -239,223 +239,35 @@ erroneous.[ByteString] (with length == 2) /= PRational program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 (\!0 ->
-                                    (\!0 ->
-                                       (\!0 ->
+                              force
+                                (!3
+                                   (equalsData (listData (!5 !1)) (listData !9))
+                                   (delay
+                                      ((\!0 ->
                                           (\!0 ->
-                                             (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     force
-                                                                       (!15
-                                                                          (equalsData
-                                                                             (listData
-                                                                                (!18
-                                                                                   !1))
-                                                                             (listData
-                                                                                !22))
-                                                                          (delay
-                                                                             ((\!0 ->
-                                                                                 (\!0 ->
-                                                                                    listData
-                                                                                      (!22
-                                                                                         (bData
-                                                                                            !21)
-                                                                                         (!22
-                                                                                            (bData
-                                                                                               !23)
-                                                                                            !24)))
-                                                                                   (force
-                                                                                      (!16
-                                                                                         (lessThanEqualsInteger
-                                                                                            !1
-                                                                                            0)
-                                                                                         (delay
-                                                                                            (force
-                                                                                               (!18
-                                                                                                  (appendString
-                                                                                                     "ptryPositive: building with non positive: "
-                                                                                                     ((\!0 ->
-                                                                                                         (\!0 ->
-                                                                                                            !2
-                                                                                                              (\!0 ->
-                                                                                                                 !2
-                                                                                                                   !2
-                                                                                                                   !1))
-                                                                                                           (\!0 ->
-                                                                                                              !2
-                                                                                                                (\!0 ->
-                                                                                                                   !2
-                                                                                                                     !2
-                                                                                                                     !1)))
-                                                                                                        (\!0
-                                                                                                          !0 ->
-                                                                                                           appendString
-                                                                                                             (force
-                                                                                                                (!18
-                                                                                                                   (lessThanInteger
-                                                                                                                      !1
-                                                                                                                      0)
-                                                                                                                   (delay
-                                                                                                                      "-")
-                                                                                                                   (delay
-                                                                                                                      "")))
-                                                                                                             ((\!0 ->
-                                                                                                                 (\!0 ->
-                                                                                                                    force
-                                                                                                                      (!20
-                                                                                                                         (equalsInteger
-                                                                                                                            !2
-                                                                                                                            0)
-                                                                                                                         (delay
-                                                                                                                            (!8
-                                                                                                                               !1))
-                                                                                                                         (delay
-                                                                                                                            ((\!0 ->
-                                                                                                                                appendString
-                                                                                                                                  !1
-                                                                                                                                  (!9
-                                                                                                                                     !2))
-                                                                                                                               (!4
-                                                                                                                                  !2)))))
-                                                                                                                   (remainderInteger
-                                                                                                                      (!18
-                                                                                                                         !2)
-                                                                                                                      10))
-                                                                                                                (quotientInteger
-                                                                                                                   (!17
-                                                                                                                      !1)
-                                                                                                                   10)))
-                                                                                                        !1))
-                                                                                                  (delay
-                                                                                                     error))))
-                                                                                         (delay
-                                                                                            !1))))
-                                                                                (unIData
-                                                                                   (force
-                                                                                      headList
-                                                                                      !1))))
-                                                                          (delay
-                                                                             (force
-                                                                                (!17
-                                                                                   "ptryFrom(PRational): data list length should be 2"
-                                                                                   (delay
-                                                                                      error))))))
-                                                                    (!17 !1))
-                                                                 (unListData
-                                                                    (listData
-                                                                       (!18
-                                                                          (bData
-                                                                             !17)
-                                                                          (!18
-                                                                             (bData
-                                                                                !19)
-                                                                             !20)))))
-                                                              (\!0 ->
-                                                                 force
-                                                                   (!13
-                                                                      (equalsInteger
-                                                                         !1
-                                                                         0)
-                                                                      (delay !2)
-                                                                      (delay
-                                                                         (force
-                                                                            (!13
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  1)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  (force
-                                                                                     (!13
-                                                                                        (equalsInteger
-                                                                                           !1
-                                                                                           2)
-                                                                                        (delay
-                                                                                           !4)
-                                                                                        (delay
-                                                                                           (force
-                                                                                              (!13
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    3)
-                                                                                                 (delay
-                                                                                                    !5)
-                                                                                                 (delay
-                                                                                                    (force
-                                                                                                       (!13
-                                                                                                          (equalsInteger
-                                                                                                             !1
-                                                                                                             4)
-                                                                                                          (delay
-                                                                                                             !6)
-                                                                                                          (delay
-                                                                                                             (force
-                                                                                                                (!13
-                                                                                                                   (equalsInteger
-                                                                                                                      !1
-                                                                                                                      5)
-                                                                                                                   (delay
-                                                                                                                      !7)
-                                                                                                                   (delay
-                                                                                                                      (force
-                                                                                                                         (!13
-                                                                                                                            (equalsInteger
-                                                                                                                               !1
-                                                                                                                               6)
-                                                                                                                            (delay
-                                                                                                                               !8)
-                                                                                                                            (delay
-                                                                                                                               (force
-                                                                                                                                  (!13
-                                                                                                                                     (equalsInteger
-                                                                                                                                        !1
-                                                                                                                                        7)
-                                                                                                                                     (delay
-                                                                                                                                        !9)
-                                                                                                                                     (delay
-                                                                                                                                        (force
-                                                                                                                                           (!13
-                                                                                                                                              (equalsInteger
-                                                                                                                                                 !1
-                                                                                                                                                 8)
-                                                                                                                                              (delay
-                                                                                                                                                 !10)
-                                                                                                                                              (delay
-                                                                                                                                                 (force
-                                                                                                                                                    (!13
-                                                                                                                                                       (equalsInteger
-                                                                                                                                                          !1
-                                                                                                                                                          9)
-                                                                                                                                                       (delay
-                                                                                                                                                          !11)
-                                                                                                                                                       (delay
-                                                                                                                                                          error)))))))))))))))))))))))))))))))
-                                                           "0")
-                                                        "1")
-                                                     "2")
-                                                  "3")
-                                               "4")
-                                            "5")
-                                         "6")
-                                      "7")
-                                   "8")
-                                "9")
-                             (\!0 ->
-                                force
-                                  (!2
-                                     (lessThanEqualsInteger !1 -1)
-                                     (delay (!3 !1))
-                                     (delay !1))))
-                          (force ifThenElse))
-                       (\!0 -> subtractInteger 0 !1))
+                                             listData
+                                               (!9
+                                                  (bData !8)
+                                                  (!9 (bData !10) !11)))
+                                            (force
+                                               (!4
+                                                  (lessThanEqualsInteger !1 0)
+                                                  (delay
+                                                     (force
+                                                        (!5
+                                                           "ptryPositive: building with non positive"
+                                                           (delay error))))
+                                                  (delay !1))))
+                                         (unIData (force headList !1))))
+                                   (delay
+                                      (force
+                                         (!4
+                                            "ptryFrom(PRational): data list length should be 2"
+                                            (delay error))))))
+                             (!4 !1))
+                          (unListData
+                             (listData (!5 (bData !4) (!5 (bData !6) !7)))))
+                       (force ifThenElse))
                     (force trace))
                  (force tailList))
               #41)
@@ -470,208 +282,30 @@ erroneous.[Integer] (with length == 0) /= PRational program
             (\!0 ->
                (\!0 ->
                   (\!0 ->
-                     (\!0 ->
-                        (\!0 ->
-                           (\!0 ->
-                              (\!0 ->
-                                 (\!0 ->
-                                    (\!0 ->
-                                       (\!0 ->
-                                          (\!0 ->
-                                             (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            force
-                                                              (!15
-                                                                 (equalsData
-                                                                    (listData
-                                                                       (!18 !1))
-                                                                    (listData
-                                                                       !19))
-                                                                 (delay
-                                                                    ((\!0 ->
-                                                                        (\!0 ->
-                                                                           listData
-                                                                             !21)
-                                                                          (force
-                                                                             (!16
-                                                                                (lessThanEqualsInteger
-                                                                                   !1
-                                                                                   0)
-                                                                                (delay
-                                                                                   (force
-                                                                                      (!18
-                                                                                         (appendString
-                                                                                            "ptryPositive: building with non positive: "
-                                                                                            ((\!0 ->
-                                                                                                (\!0 ->
-                                                                                                   !2
-                                                                                                     (\!0 ->
-                                                                                                        !2
-                                                                                                          !2
-                                                                                                          !1))
-                                                                                                  (\!0 ->
-                                                                                                     !2
-                                                                                                       (\!0 ->
-                                                                                                          !2
-                                                                                                            !2
-                                                                                                            !1)))
-                                                                                               (\!0
-                                                                                                 !0 ->
-                                                                                                  appendString
-                                                                                                    (force
-                                                                                                       (!18
-                                                                                                          (lessThanInteger
-                                                                                                             !1
-                                                                                                             0)
-                                                                                                          (delay
-                                                                                                             "-")
-                                                                                                          (delay
-                                                                                                             "")))
-                                                                                                    ((\!0 ->
-                                                                                                        (\!0 ->
-                                                                                                           force
-                                                                                                             (!20
-                                                                                                                (equalsInteger
-                                                                                                                   !2
-                                                                                                                   0)
-                                                                                                                (delay
-                                                                                                                   (!8
-                                                                                                                      !1))
-                                                                                                                (delay
-                                                                                                                   ((\!0 ->
-                                                                                                                       appendString
-                                                                                                                         !1
-                                                                                                                         (!9
-                                                                                                                            !2))
-                                                                                                                      (!4
-                                                                                                                         !2)))))
-                                                                                                          (remainderInteger
-                                                                                                             (!18
-                                                                                                                !2)
-                                                                                                             10))
-                                                                                                       (quotientInteger
-                                                                                                          (!17
-                                                                                                             !1)
-                                                                                                          10)))
-                                                                                               !1))
-                                                                                         (delay
-                                                                                            error))))
-                                                                                (delay
-                                                                                   !1))))
-                                                                       (unIData
-                                                                          (force
-                                                                             headList
-                                                                             !1))))
-                                                                 (delay
-                                                                    (force
-                                                                       (!17
-                                                                          "ptryFrom(PRational): data list length should be 2"
-                                                                          (delay
-                                                                             error))))))
-                                                           (!17 !1))
-                                                        (unListData
-                                                           (listData !17)))
-                                                     (\!0 ->
-                                                        force
-                                                          (!13
-                                                             (equalsInteger
-                                                                !1
-                                                                0)
-                                                             (delay !2)
-                                                             (delay
-                                                                (force
-                                                                   (!13
-                                                                      (equalsInteger
-                                                                         !1
-                                                                         1)
-                                                                      (delay !3)
-                                                                      (delay
-                                                                         (force
-                                                                            (!13
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  2)
-                                                                               (delay
-                                                                                  !4)
-                                                                               (delay
-                                                                                  (force
-                                                                                     (!13
-                                                                                        (equalsInteger
-                                                                                           !1
-                                                                                           3)
-                                                                                        (delay
-                                                                                           !5)
-                                                                                        (delay
-                                                                                           (force
-                                                                                              (!13
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    4)
-                                                                                                 (delay
-                                                                                                    !6)
-                                                                                                 (delay
-                                                                                                    (force
-                                                                                                       (!13
-                                                                                                          (equalsInteger
-                                                                                                             !1
-                                                                                                             5)
-                                                                                                          (delay
-                                                                                                             !7)
-                                                                                                          (delay
-                                                                                                             (force
-                                                                                                                (!13
-                                                                                                                   (equalsInteger
-                                                                                                                      !1
-                                                                                                                      6)
-                                                                                                                   (delay
-                                                                                                                      !8)
-                                                                                                                   (delay
-                                                                                                                      (force
-                                                                                                                         (!13
-                                                                                                                            (equalsInteger
-                                                                                                                               !1
-                                                                                                                               7)
-                                                                                                                            (delay
-                                                                                                                               !9)
-                                                                                                                            (delay
-                                                                                                                               (force
-                                                                                                                                  (!13
-                                                                                                                                     (equalsInteger
-                                                                                                                                        !1
-                                                                                                                                        8)
-                                                                                                                                     (delay
-                                                                                                                                        !10)
-                                                                                                                                     (delay
-                                                                                                                                        (force
-                                                                                                                                           (!13
-                                                                                                                                              (equalsInteger
-                                                                                                                                                 !1
-                                                                                                                                                 9)
-                                                                                                                                              (delay
-                                                                                                                                                 !11)
-                                                                                                                                              (delay
-                                                                                                                                                 error)))))))))))))))))))))))))))))))
-                                                  "0")
-                                               "1")
-                                            "2")
-                                         "3")
-                                      "4")
-                                   "5")
-                                "6")
-                             "7")
-                          "8")
-                       "9")
-                    (\!0 ->
-                       force
-                         (!2
-                            (lessThanEqualsInteger !1 -1)
-                            (delay (!3 !1))
-                            (delay !1))))
-                 (force ifThenElse))
-              (\!0 -> subtractInteger 0 !1))
+                     force
+                       (!3
+                          (equalsData (listData (!5 !1)) (listData !6))
+                          (delay
+                             ((\!0 ->
+                                 (\!0 -> listData !8)
+                                   (force
+                                      (!4
+                                         (lessThanEqualsInteger !1 0)
+                                         (delay
+                                            (force
+                                               (!5
+                                                  "ptryPositive: building with non positive"
+                                                  (delay error))))
+                                         (delay !1))))
+                                (unIData (force headList !1))))
+                          (delay
+                             (force
+                                (!4
+                                   "ptryFrom(PRational): data list length should be 2"
+                                   (delay error))))))
+                    (!4 !1))
+                 (unListData (listData !4)))
+              (force ifThenElse))
            (force trace))
         (force tailList))
      [])
@@ -687,224 +321,38 @@ erroneous.[Integer] (with length == 3) /= PRational program
                         (\!0 ->
                            (\!0 ->
                               (\!0 ->
-                                 (\!0 ->
-                                    (\!0 ->
-                                       (\!0 ->
-                                          (\!0 ->
+                                 force
+                                   (!3
+                                      (equalsData
+                                         (listData (!5 !1))
+                                         (listData !10))
+                                      (delay
+                                         ((\!0 ->
                                              (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     (\!0 ->
-                                                                        force
-                                                                          (!15
-                                                                             (equalsData
-                                                                                (listData
-                                                                                   (!18
-                                                                                      !1))
-                                                                                (listData
-                                                                                   !23))
-                                                                             (delay
-                                                                                ((\!0 ->
-                                                                                    (\!0 ->
-                                                                                       listData
-                                                                                         (!23
-                                                                                            !21
-                                                                                            (!23
-                                                                                               !22
-                                                                                               (!23
-                                                                                                  !24
-                                                                                                  !25))))
-                                                                                      (force
-                                                                                         (!16
-                                                                                            (lessThanEqualsInteger
-                                                                                               !1
-                                                                                               0)
-                                                                                            (delay
-                                                                                               (force
-                                                                                                  (!18
-                                                                                                     (appendString
-                                                                                                        "ptryPositive: building with non positive: "
-                                                                                                        ((\!0 ->
-                                                                                                            (\!0 ->
-                                                                                                               !2
-                                                                                                                 (\!0 ->
-                                                                                                                    !2
-                                                                                                                      !2
-                                                                                                                      !1))
-                                                                                                              (\!0 ->
-                                                                                                                 !2
-                                                                                                                   (\!0 ->
-                                                                                                                      !2
-                                                                                                                        !2
-                                                                                                                        !1)))
-                                                                                                           (\!0
-                                                                                                             !0 ->
-                                                                                                              appendString
-                                                                                                                (force
-                                                                                                                   (!18
-                                                                                                                      (lessThanInteger
-                                                                                                                         !1
-                                                                                                                         0)
-                                                                                                                      (delay
-                                                                                                                         "-")
-                                                                                                                      (delay
-                                                                                                                         "")))
-                                                                                                                ((\!0 ->
-                                                                                                                    (\!0 ->
-                                                                                                                       force
-                                                                                                                         (!20
-                                                                                                                            (equalsInteger
-                                                                                                                               !2
-                                                                                                                               0)
-                                                                                                                            (delay
-                                                                                                                               (!8
-                                                                                                                                  !1))
-                                                                                                                            (delay
-                                                                                                                               ((\!0 ->
-                                                                                                                                   appendString
-                                                                                                                                     !1
-                                                                                                                                     (!9
-                                                                                                                                        !2))
-                                                                                                                                  (!4
-                                                                                                                                     !2)))))
-                                                                                                                      (remainderInteger
-                                                                                                                         (!18
-                                                                                                                            !2)
-                                                                                                                         10))
-                                                                                                                   (quotientInteger
-                                                                                                                      (!17
-                                                                                                                         !1)
-                                                                                                                      10)))
-                                                                                                           !1))
-                                                                                                     (delay
-                                                                                                        error))))
-                                                                                            (delay
-                                                                                               !1))))
-                                                                                   (unIData
-                                                                                      (force
-                                                                                         headList
-                                                                                         !1))))
-                                                                             (delay
-                                                                                (force
-                                                                                   (!17
-                                                                                      "ptryFrom(PRational): data list length should be 2"
-                                                                                      (delay
-                                                                                         error))))))
-                                                                       (!17 !1))
-                                                                    (unListData
-                                                                       (listData
-                                                                          (!19
-                                                                             !17
-                                                                             (!19
-                                                                                !18
-                                                                                (!19
-                                                                                   !20
-                                                                                   !21))))))
-                                                                 (\!0 ->
-                                                                    force
-                                                                      (!13
-                                                                         (equalsInteger
-                                                                            !1
-                                                                            0)
-                                                                         (delay
-                                                                            !2)
-                                                                         (delay
-                                                                            (force
-                                                                               (!13
-                                                                                  (equalsInteger
-                                                                                     !1
-                                                                                     1)
-                                                                                  (delay
-                                                                                     !3)
-                                                                                  (delay
-                                                                                     (force
-                                                                                        (!13
-                                                                                           (equalsInteger
-                                                                                              !1
-                                                                                              2)
-                                                                                           (delay
-                                                                                              !4)
-                                                                                           (delay
-                                                                                              (force
-                                                                                                 (!13
-                                                                                                    (equalsInteger
-                                                                                                       !1
-                                                                                                       3)
-                                                                                                    (delay
-                                                                                                       !5)
-                                                                                                    (delay
-                                                                                                       (force
-                                                                                                          (!13
-                                                                                                             (equalsInteger
-                                                                                                                !1
-                                                                                                                4)
-                                                                                                             (delay
-                                                                                                                !6)
-                                                                                                             (delay
-                                                                                                                (force
-                                                                                                                   (!13
-                                                                                                                      (equalsInteger
-                                                                                                                         !1
-                                                                                                                         5)
-                                                                                                                      (delay
-                                                                                                                         !7)
-                                                                                                                      (delay
-                                                                                                                         (force
-                                                                                                                            (!13
-                                                                                                                               (equalsInteger
-                                                                                                                                  !1
-                                                                                                                                  6)
-                                                                                                                               (delay
-                                                                                                                                  !8)
-                                                                                                                               (delay
-                                                                                                                                  (force
-                                                                                                                                     (!13
-                                                                                                                                        (equalsInteger
-                                                                                                                                           !1
-                                                                                                                                           7)
-                                                                                                                                        (delay
-                                                                                                                                           !9)
-                                                                                                                                        (delay
-                                                                                                                                           (force
-                                                                                                                                              (!13
-                                                                                                                                                 (equalsInteger
-                                                                                                                                                    !1
-                                                                                                                                                    8)
-                                                                                                                                                 (delay
-                                                                                                                                                    !10)
-                                                                                                                                                 (delay
-                                                                                                                                                    (force
-                                                                                                                                                       (!13
-                                                                                                                                                          (equalsInteger
-                                                                                                                                                             !1
-                                                                                                                                                             9)
-                                                                                                                                                          (delay
-                                                                                                                                                             !11)
-                                                                                                                                                          (delay
-                                                                                                                                                             error)))))))))))))))))))))))))))))))
-                                                              "0")
-                                                           "1")
-                                                        "2")
-                                                     "3")
-                                                  "4")
-                                               "5")
-                                            "6")
-                                         "7")
-                                      "8")
-                                   "9")
-                                (\!0 ->
-                                   force
-                                     (!2
-                                        (lessThanEqualsInteger !1 -1)
-                                        (delay (!3 !1))
-                                        (delay !1))))
-                             (force ifThenElse))
-                          (\!0 -> subtractInteger 0 !1))
+                                                listData
+                                                  (!10
+                                                     !8
+                                                     (!10 !9 (!10 !11 !12))))
+                                               (force
+                                                  (!4
+                                                     (lessThanEqualsInteger
+                                                        !1
+                                                        0)
+                                                     (delay
+                                                        (force
+                                                           (!5
+                                                              "ptryPositive: building with non positive"
+                                                              (delay error))))
+                                                     (delay !1))))
+                                            (unIData (force headList !1))))
+                                      (delay
+                                         (force
+                                            (!4
+                                               "ptryFrom(PRational): data list length should be 2"
+                                               (delay error))))))
+                                (!4 !1))
+                             (unListData (listData (!6 !4 (!6 !5 (!6 !7 !8))))))
+                          (force ifThenElse))
                        (force trace))
                     (force tailList))
                  (I 42))
@@ -923,219 +371,30 @@ erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 (\!0 ->
-                                    (\!0 ->
-                                       (\!0 ->
-                                          (\!0 ->
-                                             (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     force
-                                                                       (!15
-                                                                          (equalsData
-                                                                             (listData
-                                                                                (!18
-                                                                                   !1))
-                                                                             (listData
-                                                                                !22))
-                                                                          (delay
-                                                                             ((\!0 ->
-                                                                                 (\!0 ->
-                                                                                    listData
-                                                                                      (!22
-                                                                                         !21
-                                                                                         (!22
-                                                                                            !23
-                                                                                            !24)))
-                                                                                   (force
-                                                                                      (!16
-                                                                                         (lessThanEqualsInteger
-                                                                                            !1
-                                                                                            0)
-                                                                                         (delay
-                                                                                            (force
-                                                                                               (!18
-                                                                                                  (appendString
-                                                                                                     "ptryPositive: building with non positive: "
-                                                                                                     ((\!0 ->
-                                                                                                         (\!0 ->
-                                                                                                            !2
-                                                                                                              (\!0 ->
-                                                                                                                 !2
-                                                                                                                   !2
-                                                                                                                   !1))
-                                                                                                           (\!0 ->
-                                                                                                              !2
-                                                                                                                (\!0 ->
-                                                                                                                   !2
-                                                                                                                     !2
-                                                                                                                     !1)))
-                                                                                                        (\!0
-                                                                                                          !0 ->
-                                                                                                           appendString
-                                                                                                             (force
-                                                                                                                (!18
-                                                                                                                   (lessThanInteger
-                                                                                                                      !1
-                                                                                                                      0)
-                                                                                                                   (delay
-                                                                                                                      "-")
-                                                                                                                   (delay
-                                                                                                                      "")))
-                                                                                                             ((\!0 ->
-                                                                                                                 (\!0 ->
-                                                                                                                    force
-                                                                                                                      (!20
-                                                                                                                         (equalsInteger
-                                                                                                                            !2
-                                                                                                                            0)
-                                                                                                                         (delay
-                                                                                                                            (!8
-                                                                                                                               !1))
-                                                                                                                         (delay
-                                                                                                                            ((\!0 ->
-                                                                                                                                appendString
-                                                                                                                                  !1
-                                                                                                                                  (!9
-                                                                                                                                     !2))
-                                                                                                                               (!4
-                                                                                                                                  !2)))))
-                                                                                                                   (remainderInteger
-                                                                                                                      (!18
-                                                                                                                         !2)
-                                                                                                                      10))
-                                                                                                                (quotientInteger
-                                                                                                                   (!17
-                                                                                                                      !1)
-                                                                                                                   10)))
-                                                                                                        !1))
-                                                                                                  (delay
-                                                                                                     error))))
-                                                                                         (delay
-                                                                                            !1))))
-                                                                                (unIData
-                                                                                   (force
-                                                                                      headList
-                                                                                      !1))))
-                                                                          (delay
-                                                                             (force
-                                                                                (!17
-                                                                                   "ptryFrom(PRational): data list length should be 2"
-                                                                                   (delay
-                                                                                      error))))))
-                                                                    (!17 !1))
-                                                                 (unListData
-                                                                    (listData
-                                                                       (!18
-                                                                          !17
-                                                                          (!18
-                                                                             !19
-                                                                             !20)))))
-                                                              (\!0 ->
-                                                                 force
-                                                                   (!13
-                                                                      (equalsInteger
-                                                                         !1
-                                                                         0)
-                                                                      (delay !2)
-                                                                      (delay
-                                                                         (force
-                                                                            (!13
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  1)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  (force
-                                                                                     (!13
-                                                                                        (equalsInteger
-                                                                                           !1
-                                                                                           2)
-                                                                                        (delay
-                                                                                           !4)
-                                                                                        (delay
-                                                                                           (force
-                                                                                              (!13
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    3)
-                                                                                                 (delay
-                                                                                                    !5)
-                                                                                                 (delay
-                                                                                                    (force
-                                                                                                       (!13
-                                                                                                          (equalsInteger
-                                                                                                             !1
-                                                                                                             4)
-                                                                                                          (delay
-                                                                                                             !6)
-                                                                                                          (delay
-                                                                                                             (force
-                                                                                                                (!13
-                                                                                                                   (equalsInteger
-                                                                                                                      !1
-                                                                                                                      5)
-                                                                                                                   (delay
-                                                                                                                      !7)
-                                                                                                                   (delay
-                                                                                                                      (force
-                                                                                                                         (!13
-                                                                                                                            (equalsInteger
-                                                                                                                               !1
-                                                                                                                               6)
-                                                                                                                            (delay
-                                                                                                                               !8)
-                                                                                                                            (delay
-                                                                                                                               (force
-                                                                                                                                  (!13
-                                                                                                                                     (equalsInteger
-                                                                                                                                        !1
-                                                                                                                                        7)
-                                                                                                                                     (delay
-                                                                                                                                        !9)
-                                                                                                                                     (delay
-                                                                                                                                        (force
-                                                                                                                                           (!13
-                                                                                                                                              (equalsInteger
-                                                                                                                                                 !1
-                                                                                                                                                 8)
-                                                                                                                                              (delay
-                                                                                                                                                 !10)
-                                                                                                                                              (delay
-                                                                                                                                                 (force
-                                                                                                                                                    (!13
-                                                                                                                                                       (equalsInteger
-                                                                                                                                                          !1
-                                                                                                                                                          9)
-                                                                                                                                                       (delay
-                                                                                                                                                          !11)
-                                                                                                                                                       (delay
-                                                                                                                                                          error)))))))))))))))))))))))))))))))
-                                                           "0")
-                                                        "1")
-                                                     "2")
-                                                  "3")
-                                               "4")
-                                            "5")
-                                         "6")
-                                      "7")
-                                   "8")
-                                "9")
-                             (\!0 ->
-                                force
-                                  (!2
-                                     (lessThanEqualsInteger !1 -1)
-                                     (delay (!3 !1))
-                                     (delay !1))))
-                          (force ifThenElse))
-                       (\!0 -> subtractInteger 0 !1))
+                              force
+                                (!3
+                                   (equalsData (listData (!5 !1)) (listData !9))
+                                   (delay
+                                      ((\!0 ->
+                                          (\!0 -> listData (!9 !8 (!9 !10 !11)))
+                                            (force
+                                               (!4
+                                                  (lessThanEqualsInteger !1 0)
+                                                  (delay
+                                                     (force
+                                                        (!5
+                                                           "ptryPositive: building with non positive"
+                                                           (delay error))))
+                                                  (delay !1))))
+                                         (unIData (force headList !1))))
+                                   (delay
+                                      (force
+                                         (!4
+                                            "ptryFrom(PRational): data list length should be 2"
+                                            (delay error))))))
+                             (!4 !1))
+                          (unListData (listData (!5 !4 (!5 !6 !7)))))
+                       (force ifThenElse))
                     (force trace))
                  (force tailList))
               (I 42))

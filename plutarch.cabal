@@ -102,9 +102,6 @@ library
     Plutarch.Internal.ListLike
     Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
-    Plutarch.Internal.Numeric.Additive
-    Plutarch.Internal.Numeric.Multiplicative
-    Plutarch.Internal.Numeric.Ring
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
     Plutarch.Internal.PLam

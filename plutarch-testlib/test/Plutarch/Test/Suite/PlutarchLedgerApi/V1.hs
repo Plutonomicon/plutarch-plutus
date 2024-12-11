@@ -5,8 +5,6 @@ import Plutarch.LedgerApi.V1 qualified as PLA
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import Plutarch.Test.Laws (
-  checkHaskellIntegralEquivalent,
-  checkHaskellNumEquivalent,
   checkHaskellOrdEquivalent,
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
@@ -34,8 +32,6 @@ tests =
         (typeName @(S -> Type) @PLA.PPosixTime)
         [ checkLedgerPropertiesPCountable @PLA.PPosixTime
         , checkLedgerPropertiesPEnumerable @PLA.PPosixTime
-        , checkHaskellNumEquivalent @PLA.PPosixTime
-        , checkHaskellIntegralEquivalent @PLA.PPosixTime
         , checkLedgerProperties @PLA.PPosixTime
         ]
     , -- We only care about intervals of PPosixTime, so we don't check anything else

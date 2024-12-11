@@ -62,9 +62,6 @@ import Plutarch.Builtin.String (
   pencodeUtf8,
  )
 import Plutarch.Builtin.Unit (PUnit)
-import Plutarch.Internal.Numeric.Additive (PPositive)
-import Plutarch.Maybe (PMaybe, PMaybeSoP)
-
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
@@ -77,7 +74,7 @@ import Plutarch.Internal.ListLike (
   pmap,
   precList,
  )
-import Plutarch.Internal.Numeric (PIntegral (pquot, prem))
+import Plutarch.Internal.Numeric (PIntegral (pquot, prem), PPositive)
 import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
@@ -93,6 +90,7 @@ import Plutarch.Internal.Term (
   (#$),
   type (:-->),
  )
+import Plutarch.Maybe (PMaybe, PMaybeSoP)
 
 import PlutusCore qualified as PLC
 

@@ -3,10 +3,10 @@ erroneous.[String] /= [Integer] {"exBudgetCPU":471493,"exBudgetMemory":388,"scri
 erroneous.A { test := Integer, test2 := Integer } /= { test := String, test2 := Integer } {"exBudgetCPU":334985,"exBudgetMemory":356,"scriptSizeBytes":153}
 erroneous.PDataSum constr 2 {"exBudgetCPU":496455,"exBudgetMemory":230,"scriptSizeBytes":222}
 erroneous.PDataSum wrong record type {"exBudgetCPU":624837,"exBudgetMemory":232,"scriptSizeBytes":282}
-erroneous.[ByteString] (with length == 2) /= PRational {"exBudgetCPU":1645212,"exBudgetMemory":486,"scriptSizeBytes":510}
-erroneous.[Integer] (with length == 0) /= PRational {"exBudgetCPU":141548,"exBudgetMemory":196,"scriptSizeBytes":472}
-erroneous.[Integer] (with length == 3) /= PRational {"exBudgetCPU":1650812,"exBudgetMemory":422,"scriptSizeBytes":517}
-erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational {"exBudgetCPU":8524073,"exBudgetMemory":20520,"scriptSizeBytes":503}
+erroneous.[ByteString] (with length == 2) /= PRational {"exBudgetCPU":1645212,"exBudgetMemory":486,"scriptSizeBytes":210}
+erroneous.[Integer] (with length == 0) /= PRational {"exBudgetCPU":141548,"exBudgetMemory":196,"scriptSizeBytes":172}
+erroneous.[Integer] (with length == 3) /= PRational {"exBudgetCPU":1650812,"exBudgetMemory":422,"scriptSizeBytes":217}
+erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational {"exBudgetCPU":1802230,"exBudgetMemory":456,"scriptSizeBytes":203}
 working.(String, String) == (String, String) {"exBudgetCPU":4159141,"exBudgetMemory":14428,"scriptSizeBytes":123}
 working.[String] == [String] {"exBudgetCPU":3917533,"exBudgetMemory":16904,"scriptSizeBytes":114}
 working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := Integer } {"exBudgetCPU":2420489,"exBudgetMemory":9876,"scriptSizeBytes":147}

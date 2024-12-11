@@ -263,9 +263,6 @@ import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike
 import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric
-import Plutarch.Internal.Numeric.Additive
-import Plutarch.Internal.Numeric.Multiplicative
-import Plutarch.Internal.Numeric.Ring
 import Plutarch.Internal.Ord
 import Plutarch.Internal.Other
 import Plutarch.Internal.PLam

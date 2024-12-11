@@ -37,24 +37,18 @@ import Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
-  pdiv,
-  pmod,
-  pquot,
- )
-import Plutarch.Internal.Numeric.Additive (
   PAdditiveGroup (pnegate, pscaleInteger, (#-)),
   PAdditiveMonoid (pzero),
   PAdditiveSemigroup (pscalePositive, (#+)),
-  PPositive,
-  ptryPositive,
- )
-import Plutarch.Internal.Numeric.Multiplicative (
+  PIntegralDomain (pabs, psignum),
   PMultiplicativeMonoid (pone),
   PMultiplicativeSemigroup (ppowPositive, (#*)),
- )
-import Plutarch.Internal.Numeric.Ring (
-  PIntegralDomain (pabs, psignum),
+  PPositive,
   PRing (pfromInteger),
+  pdiv,
+  pmod,
+  pquot,
+  ptryPositive,
  )
 import Plutarch.Internal.Ord (
   POrd ((#<), (#<=)),

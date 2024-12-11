@@ -143,7 +143,7 @@ int.0 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.5 program
@@ -284,7 +284,7 @@ int.5 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.-5 program
@@ -425,7 +425,7 @@ int.-5 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.10 program
@@ -566,7 +566,7 @@ int.10 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.-10 program
@@ -707,7 +707,7 @@ int.-10 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.14 program
@@ -848,7 +848,7 @@ int.14 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.-14 program
@@ -989,7 +989,7 @@ int.-14 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.102 program
@@ -1130,7 +1130,7 @@ int.102 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 int.-102 program
@@ -1271,7 +1271,7 @@ int.-102 program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 bytestring.empty program
@@ -3062,7 +3062,7 @@ maybe.nothing program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 maybe.just program
@@ -3227,7 +3227,7 @@ maybe.just program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 either.right program
@@ -3402,7 +3402,7 @@ either.right program
               "9")
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))
 maybe.either program
@@ -3599,7 +3599,7 @@ maybe.either program
                     (\!0 ->
                        force
                          (!2
-                            (lessThanEqualsInteger !1 -1)
+                            (lessThanEqualsInteger !1 0)
                             (delay (!3 !1))
                             (delay !1))))
                  (force ifThenElse))
@@ -3809,7 +3809,7 @@ list.nil program
                  (\!0 ->
                     force
                       (!2
-                         (lessThanEqualsInteger !1 -1)
+                         (lessThanEqualsInteger !1 0)
                          (delay (!3 !1))
                          (delay !1))))
               (force ifThenElse))
@@ -4018,7 +4018,7 @@ list.1 program
                  (\!0 ->
                     force
                       (!2
-                         (lessThanEqualsInteger !1 -1)
+                         (lessThanEqualsInteger !1 0)
                          (delay (!3 !1))
                          (delay !1))))
               (force ifThenElse))
@@ -4227,7 +4227,7 @@ list.1,2,3 program
                  (\!0 ->
                     force
                       (!2
-                         (lessThanEqualsInteger !1 -1)
+                         (lessThanEqualsInteger !1 0)
                          (delay (!3 !1))
                          (delay !1))))
               (force ifThenElse))
@@ -4438,7 +4438,7 @@ builtinlist.nil program
                  (\!0 ->
                     force
                       (!2
-                         (lessThanEqualsInteger !1 -1)
+                         (lessThanEqualsInteger !1 0)
                          (delay (!3 !1))
                          (delay !1))))
               (force ifThenElse))
@@ -4649,7 +4649,7 @@ builtinlist.1,2,3 program
                  (\!0 ->
                     force
                       (!2
-                         (lessThanEqualsInteger !1 -1)
+                         (lessThanEqualsInteger !1 0)
                          (delay (!3 !1))
                          (delay !1))))
               (force ifThenElse))
@@ -4876,7 +4876,7 @@ pair.int-str program
                     (\!0 ->
                        force
                          (!5
-                            (lessThanEqualsInteger !1 -1)
+                            (lessThanEqualsInteger !1 0)
                             (delay (!2 !1))
                             (delay !1))))
                  (\!0 -> subtractInteger 0 !1))
@@ -5105,7 +5105,7 @@ pair.int-list program
                  (\!0 ->
                     force
                       (!2
-                         (lessThanEqualsInteger !1 -1)
+                         (lessThanEqualsInteger !1 0)
                          (delay (!3 !1))
                          (delay !1))))
               (force ifThenElse))
@@ -5366,6 +5366,6 @@ rational.1/2 program
                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
            (\!0 ->
               force
-                (!2 (lessThanEqualsInteger !1 -1) (delay (!3 !1)) (delay !1))))
+                (!2 (lessThanEqualsInteger !1 0) (delay (!3 !1)) (delay !1))))
         (force ifThenElse))
      (\!0 -> subtractInteger 0 !1))

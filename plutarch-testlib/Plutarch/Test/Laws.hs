@@ -18,7 +18,7 @@ module Plutarch.Test.Laws (
 
 import Control.Applicative ((<|>))
 import Data.Kind (Type)
-import Plutarch.Internal.Numeric.Additive (PPositive, Positive)
+import Plutarch.Internal.Numeric (PPositive, Positive)
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
