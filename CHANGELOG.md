@@ -39,6 +39,7 @@
 * `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
 * New methods for `Data` and Scott encoding derivation
 * `optimizeTerm` for separate optimization via UPLC from compilation
+* New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
 
 ## Changed
 
@@ -76,7 +77,7 @@
 * `PIsData PRational` instance (made no sense)
 * `PPartialOrd` (all its functionality is now in `POrd`)
 * `Plutarch.FFI` module
-* `PNum` (replaced by new numerical hierarchy)
+* `PNum` and `PIntegral` (replaced by new numerical hierarchy)
 
 ### Fixed
 
