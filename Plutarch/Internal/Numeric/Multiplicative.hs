@@ -29,7 +29,27 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Unsafe (punsafeDowncast)
 
-{- | = Laws
+{- | The multiplication operation.
+
+= Laws
+
+1. @x #* (y #* z)@ @=@ @(x #* y) #* z@ (associativity of @#*@)
+
+If you define a custom @ppowPositive@, ensure the following also hold:
+
+3. @ppowPositive # x # pone@ @=@ @x@
+4. @(ppowPositive # x # n) #* (ppowPositive # x # m)@ @=@
+   @pscalePositive # x # (n #+ m)@
+5. @ppowPositive # (ppowPositive # x # n) # m@ @=@
+   @pscalePositive # x # (n #* m)@
+
+The default implementation ensures these laws are satisfied.
+
+= Note
+
+Unlike 'PAdditiveSemigroup', the multiplication operation doesn't need to be
+commutative. Currently, all Plutarch-provided instances are, but this need
+not be true for other instances.
 
 @since WIP
 -}
@@ -63,7 +83,12 @@ instance PMultiplicativeSemigroup PInteger where
   {-# INLINEABLE (#*) #-}
   x #* y = pmultiplyInteger # x # y
 
-{- | = Laws
+{- | The notion of one (multiplicative identity).
+
+= Laws
+
+1. @pone #* x@ @=@ @x@ (@pone@ is the left identity of @#*@)
+2. @x #* pone@ @=@ @x@ (@pone@ is the right identity of @#*@)
 
 @since WIP
 -}

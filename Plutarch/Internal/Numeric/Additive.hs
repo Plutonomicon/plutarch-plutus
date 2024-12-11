@@ -141,7 +141,7 @@ instance Function Positive where
   {-# INLINEABLE function #-}
   function = functionMap @Integer coerce coerce
 
-{- | Definition of the addition operation.
+{- | The addition operation.
 
 = Laws
 
@@ -150,7 +150,7 @@ instance Function Positive where
 
 If you define a custom @pscalePositive@, ensure the following also hold:
 
-3. @pcalePositive # x # pone@ @=@ @x@
+3. @pscalePositive # x # pone@ @=@ @x@
 4. @(pscalePositive # x # n) #+ (pscalePositive # x # m)@ @=@
    @pscalePositive # x # (n #+ m)@
 5. @pscalePositive # (pscalePositive # x # n) # m@ @=@
