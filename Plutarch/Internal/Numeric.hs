@@ -14,12 +14,15 @@ module Plutarch.Internal.Numeric (
   PMultiplicativeMonoid (..),
   PRing (..),
   PIntegralDomain (..),
-  PIntegral (..),
 
   -- * Functions
   ptryPositive,
   ppositive,
   pbySquaringDefault,
+  pdiv,
+  pmod,
+  pquot,
+  prem,
 ) where
 
 import Data.Coerce (coerce)
@@ -217,11 +220,14 @@ instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
   pscalePositive = phoistAcyclic $ plam $ \x p ->
     pbls12_381_G2_scalarMul # pto p # x
 
-{- | The notion of zero.
+{- | The notion of zero, as well as a (kind of) reversal of 'pscalePositive',
+similar to floor division by positive integers.
 
 = Laws
 
 1. @pzero #+ x@ @=@ @x@ (@pzero@ is the identity of @#+@)
+2. @pscalePositive # pzero # n@ @=@
+   @pzero@ (@pzero@ does not scale up)
 
 @since WIP
 -}
@@ -543,26 +549,18 @@ instance PIntegralDomain a => Num (Term s a) where
   {-# INLINEABLE fromInteger #-}
   fromInteger = pfromInteger
 
-class PIntegral a where
-  pdiv :: Term s (a :--> a :--> a)
-  default pdiv :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  pdiv = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pdiv # pto x # pto y
-  pmod :: Term s (a :--> a :--> a)
-  default pmod :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  pmod = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pmod # pto x # pto y
-  pquot :: Term s (a :--> a :--> a)
-  default pquot :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  pquot = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ pquot # pto x # pto y
-  prem :: Term s (a :--> a :--> a)
-  default prem :: PIntegral (PInner a) => Term s (a :--> a :--> a)
-  prem = phoistAcyclic $ plam $ \x y -> punsafeDowncast $ prem # pto x # pto y
+-- | @since WIP
+pdiv :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+pdiv = punsafeBuiltin PLC.DivideInteger
 
-instance PIntegral PInteger where
-  {-# INLINEABLE pdiv #-}
-  pdiv = punsafeBuiltin PLC.DivideInteger
-  {-# INLINEABLE pmod #-}
-  pmod = punsafeBuiltin PLC.ModInteger
-  {-# INLINEABLE pquot #-}
-  pquot = punsafeBuiltin PLC.QuotientInteger
-  {-# INLINEABLE prem #-}
-  prem = punsafeBuiltin PLC.RemainderInteger
+-- | @since WIP
+pmod :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+pmod = punsafeBuiltin PLC.ModInteger
+
+-- | @since WIP
+pquot :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+pquot = punsafeBuiltin PLC.QuotientInteger
+
+-- | @since WIP
+prem :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+prem = punsafeBuiltin PLC.RemainderInteger

@@ -169,7 +169,10 @@ module Plutarch.Prelude (
   PMultiplicativeMonoid (..),
   PRing (..),
   PIntegralDomain (..),
-  PIntegral (..),
+  pquot,
+  prem,
+  pdiv,
+  pmod,
 
   -- * Other
   pto,

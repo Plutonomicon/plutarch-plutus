@@ -11,7 +11,6 @@ module Plutarch.Test.Laws (
   checkLedgerPropertiesPEnumerable,
   checkHaskellOrdEquivalent,
   checkHaskellNumEquivalent,
-  checkHaskellIntegralEquivalent,
   checkPLiftableLaws,
   checkPOrdLaws,
 ) where
@@ -32,14 +31,13 @@ import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   Arbitrary1 (liftArbitrary, liftShrink),
-  NonZero (getNonZero),
   Property,
   forAllShrinkShow,
   oneof,
   (=/=),
   (===),
  )
-import Test.Tasty (TestName, TestTree, testGroup)
+import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
 
@@ -250,32 +248,6 @@ checkHaskellOrdEquivalent =
         checkHaskellEquivalent2 ((<=) @(AsHaskell plutarchInput)) (precompileTerm $ plam ((#<=) @plutarchInput))
     ]
 
--- | @since WIP
-checkHaskellIntegralEquivalent ::
-  forall (plutarchInput :: S -> Type).
-  ( PLiftable plutarchInput
-  , Pretty (AsHaskell plutarchInput)
-  , Arbitrary (AsHaskell plutarchInput)
-  , Typeable (AsHaskell plutarchInput)
-  , Integral (AsHaskell plutarchInput)
-  , Typeable plutarchInput
-  , PIntegral plutarchInput
-  ) =>
-  TestTree
-checkHaskellIntegralEquivalent =
-  testGroup
-    ( mconcat
-        [ instanceOfType @Type @(AsHaskell plutarchInput) "Integral"
-        , " <-> "
-        , instanceOfType @(S -> Type) @plutarchInput "PIntegral"
-        ]
-    )
-    [ testIntegralEquivalent @plutarchInput "div = pdiv" div pdiv
-    , testIntegralEquivalent @plutarchInput "mod = pmod" mod pmod
-    , testIntegralEquivalent @plutarchInput "quot = pquot" quot pquot
-    , testIntegralEquivalent @plutarchInput "rem = prem" rem prem
-    ]
-
 checkHaskellNumEquivalent ::
   forall (plutarchInput :: S -> Type).
   ( PLiftable plutarchInput
@@ -305,26 +277,6 @@ checkHaskellNumEquivalent =
     ]
 
 -- Internal
-
--- | @since WIP
-testIntegralEquivalent ::
-  forall (plutarchInput :: S -> Type).
-  ( Arbitrary (AsHaskell plutarchInput)
-  , Pretty (AsHaskell plutarchInput)
-  , Eq (AsHaskell plutarchInput)
-  , PLiftable plutarchInput
-  , Num (AsHaskell plutarchInput)
-  ) =>
-  TestName ->
-  (AsHaskell plutarchInput -> AsHaskell plutarchInput -> AsHaskell plutarchInput) ->
-  ClosedTerm (plutarchInput :--> plutarchInput :--> plutarchInput) ->
-  TestTree
-testIntegralEquivalent name goHaskell goPlutarch =
-  testProperty name $
-    forAllShrinkShow arbitrary shrink prettyShow $
-      \(input1 :: AsHaskell plutarchInput, input2 :: NonZero (AsHaskell plutarchInput)) ->
-        goHaskell input1 (getNonZero input2)
-          `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant (getNonZero input2))
 
 pcountableLaws ::
   forall (a :: S -> Type).

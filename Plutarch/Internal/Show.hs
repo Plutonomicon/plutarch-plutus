@@ -74,7 +74,7 @@ import Plutarch.Internal.ListLike (
   pmap,
   precList,
  )
-import Plutarch.Internal.Numeric (PIntegral (pquot, prem), PPositive)
+import Plutarch.Internal.Numeric (PPositive, pquot, prem)
 import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
