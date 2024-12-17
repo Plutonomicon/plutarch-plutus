@@ -336,10 +336,7 @@ checkLedgerPropertiesPEnumerable :: forall (a :: S -> Type). (Typeable a, PEnume
 
 -- | @since WIP
 checkHaskellOrdEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Ord (AsHaskell plutarchInput), Typeable plutarchInput, POrd plutarchInput) => TestTree
-checkHaskellNumEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Eq (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Num (AsHaskell plutarchInput), Typeable plutarchInput, PNum plutarchInput) => TestTree
-
--- | @since WIP
-checkHaskellIntegralEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Integral (AsHaskell plutarchInput), Typeable plutarchInput, PIntegral plutarchInput) => TestTree
+checkHaskellNumEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Eq (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Num (AsHaskell plutarchInput), Typeable plutarchInput, PIntegralDomain plutarchInput) => TestTree
 
 -- | Verifies that the specified Plutarch and Haskell types satisfy the
 --   laws of <a>PLiftable</a>.

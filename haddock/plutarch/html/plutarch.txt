@@ -523,6 +523,8 @@ paddInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 psubtractInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 pmultiplyInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 pconstantInteger :: forall (s :: S). Integer -> Term s PInteger
+pquotientInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+premainderInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.Integer.PInteger s)
 
 module Plutarch.Builtin.ByteString
@@ -1571,38 +1573,6 @@ instance forall (w :: Plutarch.Internal.Term.S -> GHC.Types.Type) (i :: Plutarch
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveDataPLiftable a h)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
 
-module Plutarch.Internal.Numeric
-class PNum (a :: S -> Type)
-(#+) :: PNum a => Term s a -> Term s a -> Term s a
-(#+) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-(#-) :: PNum a => Term s a -> Term s a -> Term s a
-(#-) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-(#*) :: PNum a => Term s a -> Term s a -> Term s a
-(#*) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-pnegate :: PNum a => Term s (a :--> a)
-pnegate :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-pabs :: PNum a => Term s (a :--> a)
-pabs :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-psignum :: PNum a => Term s (a :--> a)
-psignum :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-pfromInteger :: PNum a => Integer -> Term s a
-pfromInteger :: (PNum a, PNum (PInner a)) => Integer -> Term s a
-infix 6 #+
-infix 6 #-
-infix 6 #*
-class PIntegral a
-pdiv :: PIntegral a => Term s (a :--> (a :--> a))
-pdiv :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-pmod :: PIntegral a => Term s (a :--> (a :--> a))
-pmod :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-pquot :: PIntegral a => Term s (a :--> (a :--> a))
-pquot :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-prem :: PIntegral a => Term s (a :--> (a :--> a))
-prem :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-instance Plutarch.Internal.Numeric.PIntegral Plutarch.Builtin.Integer.PInteger
-instance Plutarch.Internal.Numeric.PNum Plutarch.Builtin.Integer.PInteger
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Plutarch.Internal.Numeric.PNum a => GHC.Num.Num (Plutarch.Internal.Term.Term s a)
-
 module Plutarch.Internal.Eq
 class PEq t
 (#==) :: PEq t => Term s t -> Term s t -> Term s PBool
@@ -1763,6 +1733,87 @@ instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Data.S
 instance forall (struct :: [Plutarch.Internal.Term.PType]). Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Internal.Eq.PEq struct => Plutarch.Internal.Eq.PEq (Plutarch.Repr.SOP.PSOPRec struct)
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.PSOPStruct struct), Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Internal.Eq.PEq struct) => Plutarch.Internal.Eq.PEq (Plutarch.Repr.SOP.PSOPStruct struct)
 
+module Plutarch.Maybe
+
+-- | Plutus Maybe type, with Scott-encoded repr
+data PMaybe (a :: S -> Type) (s :: S)
+PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
+PNothing :: PMaybe (a :: S -> Type) (s :: S)
+
+-- | @since WIP
+data PMaybeSoP (a :: S -> Type) (s :: S)
+PJustSoP :: Term s a -> PMaybeSoP (a :: S -> Type) (s :: S)
+PNothingSoP :: PMaybeSoP (a :: S -> Type) (s :: S)
+
+-- | Construct a <a>PJust</a> value.
+--   
+--   @since WIP
+pjust :: forall (a :: S -> Type) (s :: S). Term s (a :--> PMaybe a)
+
+-- | Construct a <a>PNothing</a> value.
+--   
+--   @since WIP
+pnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a)
+
+-- | Yields true if the given <a>PMaybe</a> value is of form
+--   <tt><a>PJust</a> _</tt>.
+--   
+--   @since WIP
+pisJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a :--> PBool)
+
+-- | Extracts the element out of a <a>PJust</a> and throws an error if its
+--   argument is <a>PNothing</a>.
+pfromJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a :--> a)
+
+-- | Extracts the element out of a <a>PJust</a> and throws a custom error
+--   if it's given a <a>PNothing</a>.
+--   
+--   @since WIP
+ptraceIfNothing :: forall (a :: S -> Type) (s :: S). Term s PString -> Term s (PMaybe a) -> Term s a
+
+-- | Extract a <a>PMaybe</a> by providing a default value in case of
+--   <a>PJust</a>.
+--   
+--   @since WIP
+pfromMaybe :: forall (a :: S -> Type) (s :: S). Term s (a :--> (PMaybe a :--> a))
+
+-- | Given a default value, a function and a <a>PMaybe</a> value, yields
+--   the default value if the <a>PMaybe</a> value is <a>PNothing</a> and
+--   applies the function to the value stored in the <a>PJust</a>
+--   otherwise.
+--   
+--   @since WIP
+pmaybe :: forall (b :: S -> Type) (a :: S -> Type) (s :: S). Term s (b :--> ((a :--> b) :--> (PMaybe a :--> b)))
+
+-- | Extract the value stored in a <a>PMaybe</a> container. If there's no
+--   value, throw an error with the given message.
+--   
+--   @since WIP
+passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> (PMaybe a :--> a))
+
+-- | Map underlying value if <a>PMaybe</a> is <a>PJust</a>, do nothing if
+--   it is <a>PNothing</a>
+--   
+--   @since WIP
+pmapMaybe :: Term s ((a :--> b) :--> (PMaybe a :--> PMaybe b))
+pmapMaybeSoP :: Term s ((a :--> b) :--> (PMaybeSoP a :--> PMaybeSoP b))
+
+-- | @since WIP
+pmaybeToMaybeSoP :: Term s (PMaybe a :--> PMaybeSoP a)
+
+-- | @since WIP
+pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybe a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybeSoP a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Maybe.PMaybeSoP a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybeSoP a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybeSoP a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybeSoP a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybe a)
+
 module Plutarch.Internal.Ord
 
 -- | Total ordering relation.
@@ -1849,29 +1900,6 @@ instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PByteString
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PByte
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Unit.PUnit
 
-module Plutarch.String
-
--- | Plutus <tt>BuiltinString</tt> values
-data PString s
-
--- | Verify if the given argument is the ASCII encoding of a hex digit.
---   This includes specifically the following ASCII ranges (inclusively):
---   
---   <ul>
---   <li>48-54 (digits 0 through 9)</li>
---   <li>65-70 (upper-case A through upper-case F)</li>
---   <li>97-102 (lower-case a through lower-case f)</li>
---   </ul>
---   
---   @since WIP
-pisHexDigit :: forall (s :: S). Term s (PInteger :--> PBool)
-
--- | Encode a <a>PString</a> using UTF-8.
-pencodeUtf8 :: Term s (PString :--> PByteString)
-
--- | Decode a <a>PByteString</a> using UTF-8.
-pdecodeUtf8 :: Term s (PByteString :--> PString)
-
 module Plutarch.Internal.IsData
 
 -- | Laws: - If <tt>PSubtype PData a</tt>, then <tt>pdataImpl a</tt> must
@@ -1903,6 +1931,291 @@ instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.ByteString.PByteStrin
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Unit.PUnit
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Subtype.PSubtype Plutarch.Builtin.Data.PData a => Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinList a)
 
+module Plutarch.Internal.Numeric
+
+-- | @since WIP
+data PPositive (s :: S)
+
+-- | @since WIP
+data Positive
+
+-- | The addition operation.
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>x #+ y</tt> <tt>=</tt> <tt>y #+ x</tt> (commutativity of
+--   <tt>#+</tt>)</li>
+--   <li><tt>x #+ (y #+ z)</tt> <tt>=</tt> <tt>(x #+ y) #+ z</tt>
+--   (associativity of <tt>#+</tt>)</li>
+--   </ol>
+--   
+--   If you define a custom <tt>pscalePositive</tt>, ensure the following
+--   also hold:
+--   
+--   <ol>
+--   <li><tt>pscalePositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(pscalePositive # x # n) #+ (pscalePositive # x # m)</tt>
+--   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
+--   <li><tt>pscalePositive # (pscalePositive # x # n) # m</tt> <tt>=</tt>
+--   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   </ol>
+--   
+--   The default implementation ensures these laws are satisfied.
+--   
+--   @since WIP
+class PAdditiveSemigroup (a :: S -> Type)
+(#+) :: forall (s :: S). PAdditiveSemigroup a => Term s a -> Term s a -> Term s a
+(#+) :: forall (s :: S). (PAdditiveSemigroup a, PAdditiveSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
+
+-- | This defaults to exponentiation-by-squaring, which in general is the
+--   best we can do.
+pscalePositive :: forall (s :: S). PAdditiveSemigroup a => Term s (a :--> (PPositive :--> a))
+infix 6 #+
+
+-- | The notion of zero, as well as a (kind of) reversal of
+--   <a>pscalePositive</a>, similar to floor division by positive integers.
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pzero #+ x</tt> <tt>=</tt> <tt>x</tt> (<tt>pzero</tt> is the
+--   identity of <tt>#+</tt>)</li>
+--   <li><tt>pscalePositive # pzero # n</tt> <tt>=</tt> <tt>pzero</tt>
+--   (<tt>pzero</tt> does not scale up)</li>
+--   </ol>
+--   
+--   @since WIP
+class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
+pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
+
+-- | The notion of additive inverses, and the subtraction operation.
+--   
+--   <h1>Laws</h1>
+--   
+--   If you define <tt>pnegate</tt>, the following laws must hold:
+--   
+--   <ol>
+--   <li><tt>(pnegate # x) #+ x</tt> <tt>=</tt> <tt>pzero</tt>
+--   (<tt>pnegate</tt> is an additive inverse)</li>
+--   <li><tt>pnegate #$ pnegate # x</tt> <tt>=</tt> <tt>x</tt>
+--   (<tt>pnegate</tt> is self-inverting)</li>
+--   </ol>
+--   
+--   If you define <tt>#-</tt>, the following law must hold:
+--   
+--   <ol>
+--   <li><tt>x #- x</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   </ol>
+--   
+--   Additionally, the following 'consistency laws' must hold. Default
+--   implementations of both <tt>pnegate</tt> and <tt>#-</tt> uphold these.
+--   
+--   <ol>
+--   <li><tt>pnegate # x</tt> <tt>=</tt> <tt>pzero #- x</tt></li>
+--   <li><tt>x #- y</tt> <tt>=</tt> <tt>x #+ (pnegate # y)</tt></li>
+--   </ol>
+--   
+--   Lastly, if you define a custom <tt>pscaleInteger</tt>, the following
+--   laws must hold:
+--   
+--   <ol>
+--   <li><tt>pscaleInteger # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pscaleInteger # x #$ pnegate y</tt> <tt>=</tt> <tt>pnegate #$
+--   pscaleInteger # x # y</tt></li>
+--   </ol>
+--   
+--   @since WIP
+class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type)
+pnegate :: forall (s :: S). PAdditiveGroup a => Term s (a :--> a)
+(#-) :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s a -> Term s a
+pscaleInteger :: forall (s :: S). PAdditiveGroup a => Term s (a :--> (PInteger :--> a))
+infix 6 #-
+
+-- | The multiplication operation.
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>x #* (y #* z)</tt> <tt>=</tt> <tt>(x #* y) #* z</tt>
+--   (associativity of <tt>#*</tt>)</li>
+--   </ol>
+--   
+--   If you define a custom <tt>ppowPositive</tt>, ensure the following
+--   also hold:
+--   
+--   <ol>
+--   <li><tt>ppowPositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(ppowPositive # x # n) #* (ppowPositive # x # m)</tt>
+--   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
+--   <li><tt>ppowPositive # (ppowPositive # x # n) # m</tt> <tt>=</tt>
+--   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   </ol>
+--   
+--   The default implementation ensures these laws are satisfied.
+--   
+--   <h1>Note</h1>
+--   
+--   Unlike <a>PAdditiveSemigroup</a>, the multiplication operation doesn't
+--   need to be commutative. Currently, all Plutarch-provided instances
+--   are, but this need not be true for other instances.
+--   
+--   @since WIP
+class PMultiplicativeSemigroup (a :: S -> Type)
+(#*) :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s a -> Term s a
+(#*) :: forall (s :: S). (PMultiplicativeSemigroup a, PMultiplicativeSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
+ppowPositive :: forall (s :: S). PMultiplicativeSemigroup a => Term s (a :--> (PPositive :--> a))
+infix 6 #*
+
+-- | The notion of one (multiplicative identity).
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pone #* x</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
+--   left identity of <tt>#*</tt>)</li>
+--   <li><tt>x #* pone</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
+--   right identity of <tt>#*</tt>)</li>
+--   </ol>
+--   
+--   @since WIP
+class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type)
+pone :: forall (s :: S). PMultiplicativeMonoid a => Term s a
+
+-- | <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pfromInteger 0</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pfromInteger 1</tt> <tt>=</tt> <tt>pone</tt></li>
+--   <li><tt>pfromInteger (x + y)</tt> <tt>=</tt> <tt>pfromInteger x #+
+--   pfromInteger y</tt></li>
+--   <li><tt>pfromInteger (x * y)</tt> <tt>=</tt> <tt>pfromInteger x #*
+--   pfromInteger y</tt></li>
+--   </ol>
+--   
+--   Additionally, the following 'interaction laws' must hold between the
+--   instances of <a>PAdditiveGroup</a> and <a>PMultiplicativeMonoid</a>
+--   for <tt>a</tt>:
+--   
+--   <ol>
+--   <li><tt>x #* (y #+ z)</tt> <tt>=</tt> <tt>(x #* y) #+ (x #* z)</tt>
+--   (<tt>#*</tt> left-distributes over <tt>#+</tt>)</li>
+--   <li><tt>(y #+ z) #* x</tt> <tt>=</tt> <tt>(y #* x) #+ (z #* x)</tt>
+--   (<tt>#*</tt> right-distributes over <tt>#+</tt>)</li>
+--   </ol>
+--   
+--   @since WIP
+class (PAdditiveGroup a, PMultiplicativeMonoid a) => PRing (a :: S -> Type)
+pfromInteger :: forall (s :: S). PRing a => Integer -> Term s a
+pfromInteger :: forall (s :: S). (PRing a, PRing (PInner a)) => Integer -> Term s a
+
+-- | <h1>Laws</h1>
+--   
+--   <h1>Pedantry note</h1>
+--   
+--   Technically, the requirements here are too strong: we demand an
+--   <i>ordered</i> ring, which integral domains don't necessarily have to
+--   be. However, in our case, our hand is forced by expected semantics: in
+--   abstract algebra, both the absolute value and the signum are real
+--   numbers (which are always totally ordered) but in our case, both must
+--   be elements of the integral domain itself. Thus, in order for the laws
+--   to make any sense, we have to ensure a total order on the integral
+--   domain. Since all of our integral domains are 'at least as big' as the
+--   integers, this doesn't pose a huge problem.
+--   
+--   @since WIP
+class (PRing a, POrd a) => PIntegralDomain (a :: S -> Type)
+psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+
+-- | Partial version of <a>PPositive</a>. Errors if argument is zero.
+--   
+--   @since WIP
+ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
+
+-- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
+--   <a>PNothing</a> if argument is zero.
+ppositive :: Term s (PInteger :--> PMaybe PPositive)
+
+-- | A default implementation of exponentiation-by-squaring with a
+--   strictly-positive exponent.
+--   
+--   <h1>Important note</h1>
+--   
+--   This implementation assumes that the operation argument is
+--   associative.
+--   
+--   @since WIP
+pbySquaringDefault :: forall (a :: S -> Type) (s :: S). (forall (s' :: S). Term s' a -> Term s' a -> Term s' a) -> Term s (a :--> (PPositive :--> a))
+
+-- | @since WIP
+pdiv :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | @since WIP
+pmod :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | @since WIP
+pquot :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | @since WIP
+prem :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+instance Plutarch.Internal.Ord.POrd Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Eq.PEq Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.IsData.PIsData Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Internal.Numeric.PPositive
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Internal.Numeric.PPositive s)
+instance Prettyprinter.Internal.Pretty Plutarch.Internal.Numeric.Positive
+instance Test.QuickCheck.Arbitrary.CoArbitrary Plutarch.Internal.Numeric.Positive
+instance Test.QuickCheck.Arbitrary.Arbitrary Plutarch.Internal.Numeric.Positive
+instance GHC.Classes.Ord Plutarch.Internal.Numeric.Positive
+instance GHC.Classes.Eq Plutarch.Internal.Numeric.Positive
+instance GHC.Show.Show Plutarch.Internal.Numeric.Positive
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PIntegralDomain Plutarch.Builtin.Integer.PInteger
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Plutarch.Internal.Numeric.PIntegralDomain a => GHC.Num.Num (Plutarch.Internal.Term.Term s a)
+instance Plutarch.Internal.Numeric.PRing Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PMultiplicativeMonoid Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PMultiplicativeMonoid Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
+instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
+instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
+instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
+instance Test.QuickCheck.Function.Function Plutarch.Internal.Numeric.Positive
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Internal.Numeric.PPositive
+
+module Plutarch.String
+
+-- | Plutus <tt>BuiltinString</tt> values
+data PString s
+
+-- | Verify if the given argument is the ASCII encoding of a hex digit.
+--   This includes specifically the following ASCII ranges (inclusively):
+--   
+--   <ul>
+--   <li>48-54 (digits 0 through 9)</li>
+--   <li>65-70 (upper-case A through upper-case F)</li>
+--   <li>97-102 (lower-case a through lower-case f)</li>
+--   </ul>
+--   
+--   @since WIP
+pisHexDigit :: forall (s :: S). Term s (PInteger :--> PBool)
+
+-- | Encode a <a>PString</a> using UTF-8.
+pencodeUtf8 :: Term s (PString :--> PByteString)
+
+-- | Decode a <a>PByteString</a> using UTF-8.
+pdecodeUtf8 :: Term s (PByteString :--> PString)
+
 module Plutarch.Internal.TryFrom
 
 -- | <tt>PTryFrom a b</tt> represents a subtyping relationship between
@@ -1927,9 +2240,11 @@ instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarc
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData))
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData a), Plutarch.Internal.IsData.PIsData a) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.Builtin.Data.PBuiltinList (Plutarch.Builtin.Data.PAsData a)))
 instance forall (a :: Plutarch.Internal.Term.PType) (a' :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.PType) (b' :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a, (a :: Plutarch.Internal.Term.PType) GHC.Types.~ (Plutarch.Builtin.Data.PAsData a' :: Plutarch.Internal.Term.PType), Plutarch.Internal.IsData.PIsData a', Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData b, (b :: Plutarch.Internal.Term.PType) GHC.Types.~ (Plutarch.Builtin.Data.PAsData b' :: Plutarch.Internal.Term.PType), Plutarch.Internal.IsData.PIsData b') => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.Builtin.Data.PBuiltinPair a b))
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.Internal.Numeric.PPositive)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.Builtin.Bool.PBool)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.Builtin.Data.PData)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData Plutarch.Builtin.Data.PData
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Integer.PInteger Plutarch.Internal.Numeric.PPositive
 
 module Plutarch.Internal.Show
 class PShow t
@@ -1962,6 +2277,9 @@ instance Plutarch.Internal.Show.PShow Plutarch.Builtin.Data.PData
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.Builtin.Data.PAsData a)
 instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Show.PShow a, Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Internal.Show.PShow (Plutarch.Builtin.Data.PBuiltinList a)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Builtin.Data.PBuiltinPair a b)
+instance Plutarch.Internal.Show.PShow Plutarch.Internal.Numeric.PPositive
+instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybeSoP a)
 
 module Plutarch.Trace
 
@@ -2082,125 +2400,6 @@ instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Pair.PPair a b s)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Pair.PPair a b)
 
-module Plutarch.Maybe
-
--- | Plutus Maybe type, with Scott-encoded repr
-data PMaybe (a :: S -> Type) (s :: S)
-PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
-PNothing :: PMaybe (a :: S -> Type) (s :: S)
-
--- | @since WIP
-data PMaybeSoP (a :: S -> Type) (s :: S)
-PJustSoP :: Term s a -> PMaybeSoP (a :: S -> Type) (s :: S)
-PNothingSoP :: PMaybeSoP (a :: S -> Type) (s :: S)
-
--- | Construct a <a>PJust</a> value.
---   
---   @since WIP
-pjust :: forall (a :: S -> Type) (s :: S). Term s (a :--> PMaybe a)
-
--- | Construct a <a>PNothing</a> value.
---   
---   @since WIP
-pnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a)
-
--- | Yields true if the given <a>PMaybe</a> value is of form
---   <tt><a>PJust</a> _</tt>.
---   
---   @since WIP
-pisJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a :--> PBool)
-
--- | Extracts the element out of a <a>PJust</a> and throws an error if its
---   argument is <a>PNothing</a>.
-pfromJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a :--> a)
-
--- | Extracts the element out of a <a>PJust</a> and throws a custom error
---   if it's given a <a>PNothing</a>.
---   
---   @since WIP
-ptraceIfNothing :: forall (a :: S -> Type) (s :: S). Term s PString -> Term s (PMaybe a) -> Term s a
-
--- | Extract a <a>PMaybe</a> by providing a default value in case of
---   <a>PJust</a>.
---   
---   @since WIP
-pfromMaybe :: forall (a :: S -> Type) (s :: S). Term s (a :--> (PMaybe a :--> a))
-
--- | Given a default value, a function and a <a>PMaybe</a> value, yields
---   the default value if the <a>PMaybe</a> value is <a>PNothing</a> and
---   applies the function to the value stored in the <a>PJust</a>
---   otherwise.
---   
---   @since WIP
-pmaybe :: forall (b :: S -> Type) (a :: S -> Type) (s :: S). Term s (b :--> ((a :--> b) :--> (PMaybe a :--> b)))
-
--- | Extract the value stored in a <a>PMaybe</a> container. If there's no
---   value, throw an error with the given message.
---   
---   @since WIP
-passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> (PMaybe a :--> a))
-
--- | Map underlying value if <a>PMaybe</a> is <a>PJust</a>, do nothing if
---   it is <a>PNothing</a>
---   
---   @since WIP
-pmapMaybe :: Term s ((a :--> b) :--> (PMaybe a :--> PMaybe b))
-pmapMaybeSoP :: Term s ((a :--> b) :--> (PMaybeSoP a :--> PMaybeSoP b))
-
--- | @since WIP
-pmaybeToMaybeSoP :: Term s (PMaybe a :--> PMaybeSoP a)
-
--- | @since WIP
-pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybe a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Maybe.PMaybeSoP a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybeSoP a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Maybe.PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybe a)
-
-module Plutarch.Positive
-data PPositive (s :: S)
-
--- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
---   <a>PNothing</a> if argument is zero.
-ppositive :: Term s (PInteger :--> PMaybe PPositive)
-
--- | Partial version of <a>PPositive</a>. Errors if argument is zero.
-ptryPositive :: Term s (PInteger :--> PPositive)
-
--- | @since WIP
-data Positive
-
--- | @since WIP
-mkPositive :: Integer -> Maybe Positive
-instance Plutarch.Internal.Show.PShow Plutarch.Positive.PPositive
-instance Plutarch.Internal.Numeric.PIntegral Plutarch.Positive.PPositive
-instance Plutarch.Internal.Ord.POrd Plutarch.Positive.PPositive
-instance Plutarch.Internal.Eq.PEq Plutarch.Positive.PPositive
-instance Plutarch.Internal.IsData.PIsData Plutarch.Positive.PPositive
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Positive.PPositive
-instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Positive.PPositive s)
-instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Positive.Flip @{k2} @{k1} f a b)
-instance GHC.Classes.Ord Plutarch.Positive.Positive
-instance GHC.Classes.Eq Plutarch.Positive.Positive
-instance GHC.Show.Show Plutarch.Positive.Positive
-instance Plutarch.Internal.Lift.PLiftable Plutarch.Positive.PPositive
-instance Test.QuickCheck.Arbitrary.Arbitrary Plutarch.Positive.Positive
-instance Test.QuickCheck.Arbitrary.CoArbitrary Plutarch.Positive.Positive
-instance Prettyprinter.Internal.Pretty Plutarch.Positive.Positive
-instance Test.QuickCheck.Function.Function Plutarch.Positive.Positive
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.Positive.PPositive)
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Positive.PPositive
-instance Plutarch.Internal.Numeric.PNum Plutarch.Positive.PPositive
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Integer.PInteger Plutarch.Positive.PPositive
-
 module Plutarch.Rational
 
 -- | A Scott-encoded rational number, with a guaranteed positive
@@ -2230,10 +2429,73 @@ instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarc
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Rational.PRational
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Rational.PRational
 instance Plutarch.Internal.Eq.PEq Plutarch.Rational.PRational
+instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PMultiplicativeMonoid Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PRing Plutarch.Rational.PRational
+instance Plutarch.Internal.Numeric.PIntegralDomain Plutarch.Rational.PRational
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Real.Fractional (Plutarch.Internal.Term.Term s Plutarch.Rational.PRational)
 instance Plutarch.Internal.Show.PShow Plutarch.Rational.PRational
-instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational
-instance Plutarch.Internal.Numeric.PNum Plutarch.Rational.PRational
+
+
+-- | Scott-encoded lists and ListLike typeclass
+module Plutarch.List
+data PList (a :: S -> Type) (s :: S)
+PSCons :: Term s a -> Term s (PList a) -> PList (a :: S -> Type) (s :: S)
+PSNil :: PList (a :: S -> Type) (s :: S)
+
+-- | Extract head and tail of the list, throws error if list is empty.
+ptryUncons :: PIsListLike list a => Term s (list a :--> PPair a (list a))
+
+-- | Extract head and tail of the list, if list is not empty.
+puncons :: PIsListLike list a => Term s (list a :--> PMaybe (PPair a (list a)))
+
+-- | <i> O(min(n, m)) </i>. Zip two lists together, creating pairs of the
+--   elements.
+--   
+--   If the lists are of differing lengths, cut to the shortest.
+pzip :: (PListLike list, PElemConstraint list a, PElemConstraint list b, PElemConstraint list (PPair a b)) => Term s (list a :--> (list b :--> list (PPair a b)))
+
+-- | <i> O(n) </i>. like haskell level <tt>find</tt> but on plutarch level
+pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> (l a :--> PMaybe a))
+
+-- | <i> O(n) </i>. Reverse a list-like structure.
+--   
+--   @since WIP
+preverse :: forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S). PIsListLike l a => Term s (l a :--> l a)
+
+-- | <i> O(n) </i>. Checks if a list-list structure is sorted.
+--   
+--   @since WIP
+pcheckSorted :: forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S). (PIsListLike l a, POrd a) => Term s (l a :--> PBool)
+
+-- | <i> O(n) </i>. Check if element is in the list
+pelem :: (PIsListLike list a, PEq a) => Term s (a :--> (list a :--> PBool))
+
+-- | <i> O(n) </i>. Like Haskell level <a>(!!)</a> but on the plutarch
+--   level
+(#!!) :: PIsListLike l a => Term s (l a) -> Term s PInteger -> Term s a
+
+-- | <i> O(n) </i>. Like Haskell level <a>(!!)</a> but on the Plutarch
+--   level, not infix and with arguments reversed, errors if the specified
+--   index is greater than or equal to the lists length
+pelemAt :: PIsListLike l a => Term s (PInteger :--> (l a :--> a))
+
+-- | <i> O(n) </i>. like <a>pelemAt</a> but doesn't fail on negative
+--   indexes
+pelemAt' :: PIsListLike l a => Term s (PInteger :--> (l a :--> a))
+
+-- | <i> O(min(n, m)) </i>. Check if two lists are equal.
+plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> (list a :--> PBool))
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.List.PList a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.List.PList a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.List.PList a)
+instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.List.PList a)
+instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.List.PList a)
+instance Plutarch.Internal.ListLike.PListLike Plutarch.List.PList
 
 module Plutarch.Enum
 
@@ -2314,7 +2576,7 @@ ppredecessor :: forall (s :: S). PEnumerable a => Term s (a :--> a)
 ppredecessorN :: forall (s :: S). PEnumerable a => Term s (PPositive :--> (a :--> a))
 instance Plutarch.Enum.PEnumerable Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Enum.PCountable Plutarch.Builtin.Integer.PInteger
-instance Plutarch.Enum.PCountable Plutarch.Positive.PPositive
+instance Plutarch.Enum.PCountable Plutarch.Internal.Numeric.PPositive
 
 module Plutarch.BitString
 
@@ -2387,63 +2649,6 @@ instance Plutarch.Internal.Eq.PEq Plutarch.BitString.PBitString
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BitString.PBitString
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.BitString.PBitString s)
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.BitString.PBitString
-
-
--- | Scott-encoded lists and ListLike typeclass
-module Plutarch.List
-data PList (a :: S -> Type) (s :: S)
-PSCons :: Term s a -> Term s (PList a) -> PList (a :: S -> Type) (s :: S)
-PSNil :: PList (a :: S -> Type) (s :: S)
-
--- | Extract head and tail of the list, throws error if list is empty.
-ptryUncons :: PIsListLike list a => Term s (list a :--> PPair a (list a))
-
--- | Extract head and tail of the list, if list is not empty.
-puncons :: PIsListLike list a => Term s (list a :--> PMaybe (PPair a (list a)))
-
--- | <i> O(min(n, m)) </i>. Zip two lists together, creating pairs of the
---   elements.
---   
---   If the lists are of differing lengths, cut to the shortest.
-pzip :: (PListLike list, PElemConstraint list a, PElemConstraint list b, PElemConstraint list (PPair a b)) => Term s (list a :--> (list b :--> list (PPair a b)))
-
--- | <i> O(n) </i>. like haskell level <tt>find</tt> but on plutarch level
-pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> (l a :--> PMaybe a))
-
--- | <i> O(n) </i>. Reverse a list-like structure.
---   
---   @since WIP
-preverse :: forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S). PIsListLike l a => Term s (l a :--> l a)
-
--- | <i> O(n) </i>. Checks if a list-list structure is sorted.
---   
---   @since WIP
-pcheckSorted :: forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S). (PIsListLike l a, POrd a) => Term s (l a :--> PBool)
-
--- | <i> O(n) </i>. Check if element is in the list
-pelem :: (PIsListLike list a, PEq a) => Term s (a :--> (list a :--> PBool))
-
--- | <i> O(n) </i>. Like Haskell level <a>(!!)</a> but on the plutarch
---   level
-(#!!) :: PIsListLike l a => Term s (l a) -> Term s PInteger -> Term s a
-
--- | <i> O(n) </i>. Like Haskell level <a>(!!)</a> but on the Plutarch
---   level, not infix and with arguments reversed, errors if the specified
---   index is greater than or equal to the lists length
-pelemAt :: PIsListLike l a => Term s (PInteger :--> (l a :--> a))
-
--- | <i> O(n) </i>. like <a>pelemAt</a> but doesn't fail on negative
---   indexes
-pelemAt' :: PIsListLike l a => Term s (PInteger :--> (l a :--> a))
-
--- | <i> O(min(n, m)) </i>. Check if two lists are equal.
-plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> (list a :--> PBool))
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.List.PList a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.List.PList a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.List.PList a)
-instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.List.PList a)
-instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.List.PList a)
-instance Plutarch.Internal.ListLike.PListLike Plutarch.List.PList
 
 module Plutarch.DataRepr.Internal.FromData
 
@@ -3832,33 +4037,224 @@ pcon :: PlutusType a => a s -> Term s a
 pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
 data PlutusTypeNewtype
 data PlutusTypeScott
-class PIntegral a
-pdiv :: PIntegral a => Term s (a :--> (a :--> a))
-pdiv :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-pmod :: PIntegral a => Term s (a :--> (a :--> a))
-pmod :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-pquot :: PIntegral a => Term s (a :--> (a :--> a))
-pquot :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-prem :: PIntegral a => Term s (a :--> (a :--> a))
-prem :: (PIntegral a, PIntegral (PInner a)) => Term s (a :--> (a :--> a))
-class PNum (a :: S -> Type)
-(#+) :: PNum a => Term s a -> Term s a -> Term s a
-(#+) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-(#-) :: PNum a => Term s a -> Term s a -> Term s a
-(#-) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-(#*) :: PNum a => Term s a -> Term s a -> Term s a
-(#*) :: (PNum a, PNum (PInner a)) => Term s a -> Term s a -> Term s a
-pnegate :: PNum a => Term s (a :--> a)
-pnegate :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-pabs :: PNum a => Term s (a :--> a)
-pabs :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-psignum :: PNum a => Term s (a :--> a)
-psignum :: (PNum a, PNum (PInner a)) => Term s (a :--> a)
-pfromInteger :: PNum a => Integer -> Term s a
-pfromInteger :: (PNum a, PNum (PInner a)) => Integer -> Term s a
+
+-- | @since WIP
+data Positive
+
+-- | @since WIP
+data PPositive (s :: S)
+
+-- | The addition operation.
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>x #+ y</tt> <tt>=</tt> <tt>y #+ x</tt> (commutativity of
+--   <tt>#+</tt>)</li>
+--   <li><tt>x #+ (y #+ z)</tt> <tt>=</tt> <tt>(x #+ y) #+ z</tt>
+--   (associativity of <tt>#+</tt>)</li>
+--   </ol>
+--   
+--   If you define a custom <tt>pscalePositive</tt>, ensure the following
+--   also hold:
+--   
+--   <ol>
+--   <li><tt>pscalePositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(pscalePositive # x # n) #+ (pscalePositive # x # m)</tt>
+--   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
+--   <li><tt>pscalePositive # (pscalePositive # x # n) # m</tt> <tt>=</tt>
+--   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   </ol>
+--   
+--   The default implementation ensures these laws are satisfied.
+--   
+--   @since WIP
+class PAdditiveSemigroup (a :: S -> Type)
+(#+) :: forall (s :: S). PAdditiveSemigroup a => Term s a -> Term s a -> Term s a
+(#+) :: forall (s :: S). (PAdditiveSemigroup a, PAdditiveSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
+
+-- | This defaults to exponentiation-by-squaring, which in general is the
+--   best we can do.
+pscalePositive :: forall (s :: S). PAdditiveSemigroup a => Term s (a :--> (PPositive :--> a))
 infix 6 #+
+
+-- | The notion of zero, as well as a (kind of) reversal of
+--   <a>pscalePositive</a>, similar to floor division by positive integers.
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pzero #+ x</tt> <tt>=</tt> <tt>x</tt> (<tt>pzero</tt> is the
+--   identity of <tt>#+</tt>)</li>
+--   <li><tt>pscalePositive # pzero # n</tt> <tt>=</tt> <tt>pzero</tt>
+--   (<tt>pzero</tt> does not scale up)</li>
+--   </ol>
+--   
+--   @since WIP
+class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
+pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
+
+-- | The notion of additive inverses, and the subtraction operation.
+--   
+--   <h1>Laws</h1>
+--   
+--   If you define <tt>pnegate</tt>, the following laws must hold:
+--   
+--   <ol>
+--   <li><tt>(pnegate # x) #+ x</tt> <tt>=</tt> <tt>pzero</tt>
+--   (<tt>pnegate</tt> is an additive inverse)</li>
+--   <li><tt>pnegate #$ pnegate # x</tt> <tt>=</tt> <tt>x</tt>
+--   (<tt>pnegate</tt> is self-inverting)</li>
+--   </ol>
+--   
+--   If you define <tt>#-</tt>, the following law must hold:
+--   
+--   <ol>
+--   <li><tt>x #- x</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   </ol>
+--   
+--   Additionally, the following 'consistency laws' must hold. Default
+--   implementations of both <tt>pnegate</tt> and <tt>#-</tt> uphold these.
+--   
+--   <ol>
+--   <li><tt>pnegate # x</tt> <tt>=</tt> <tt>pzero #- x</tt></li>
+--   <li><tt>x #- y</tt> <tt>=</tt> <tt>x #+ (pnegate # y)</tt></li>
+--   </ol>
+--   
+--   Lastly, if you define a custom <tt>pscaleInteger</tt>, the following
+--   laws must hold:
+--   
+--   <ol>
+--   <li><tt>pscaleInteger # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pscaleInteger # x #$ pnegate y</tt> <tt>=</tt> <tt>pnegate #$
+--   pscaleInteger # x # y</tt></li>
+--   </ol>
+--   
+--   @since WIP
+class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type)
+pnegate :: forall (s :: S). PAdditiveGroup a => Term s (a :--> a)
+(#-) :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s a -> Term s a
+pscaleInteger :: forall (s :: S). PAdditiveGroup a => Term s (a :--> (PInteger :--> a))
 infix 6 #-
+
+-- | The multiplication operation.
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>x #* (y #* z)</tt> <tt>=</tt> <tt>(x #* y) #* z</tt>
+--   (associativity of <tt>#*</tt>)</li>
+--   </ol>
+--   
+--   If you define a custom <tt>ppowPositive</tt>, ensure the following
+--   also hold:
+--   
+--   <ol>
+--   <li><tt>ppowPositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(ppowPositive # x # n) #* (ppowPositive # x # m)</tt>
+--   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
+--   <li><tt>ppowPositive # (ppowPositive # x # n) # m</tt> <tt>=</tt>
+--   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   </ol>
+--   
+--   The default implementation ensures these laws are satisfied.
+--   
+--   <h1>Note</h1>
+--   
+--   Unlike <a>PAdditiveSemigroup</a>, the multiplication operation doesn't
+--   need to be commutative. Currently, all Plutarch-provided instances
+--   are, but this need not be true for other instances.
+--   
+--   @since WIP
+class PMultiplicativeSemigroup (a :: S -> Type)
+(#*) :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s a -> Term s a
+(#*) :: forall (s :: S). (PMultiplicativeSemigroup a, PMultiplicativeSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
+ppowPositive :: forall (s :: S). PMultiplicativeSemigroup a => Term s (a :--> (PPositive :--> a))
 infix 6 #*
+
+-- | The notion of one (multiplicative identity).
+--   
+--   <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pone #* x</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
+--   left identity of <tt>#*</tt>)</li>
+--   <li><tt>x #* pone</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
+--   right identity of <tt>#*</tt>)</li>
+--   </ol>
+--   
+--   @since WIP
+class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type)
+pone :: forall (s :: S). PMultiplicativeMonoid a => Term s a
+
+-- | <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pfromInteger 0</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pfromInteger 1</tt> <tt>=</tt> <tt>pone</tt></li>
+--   <li><tt>pfromInteger (x + y)</tt> <tt>=</tt> <tt>pfromInteger x #+
+--   pfromInteger y</tt></li>
+--   <li><tt>pfromInteger (x * y)</tt> <tt>=</tt> <tt>pfromInteger x #*
+--   pfromInteger y</tt></li>
+--   </ol>
+--   
+--   Additionally, the following 'interaction laws' must hold between the
+--   instances of <a>PAdditiveGroup</a> and <a>PMultiplicativeMonoid</a>
+--   for <tt>a</tt>:
+--   
+--   <ol>
+--   <li><tt>x #* (y #+ z)</tt> <tt>=</tt> <tt>(x #* y) #+ (x #* z)</tt>
+--   (<tt>#*</tt> left-distributes over <tt>#+</tt>)</li>
+--   <li><tt>(y #+ z) #* x</tt> <tt>=</tt> <tt>(y #* x) #+ (z #* x)</tt>
+--   (<tt>#*</tt> right-distributes over <tt>#+</tt>)</li>
+--   </ol>
+--   
+--   @since WIP
+class (PAdditiveGroup a, PMultiplicativeMonoid a) => PRing (a :: S -> Type)
+pfromInteger :: forall (s :: S). PRing a => Integer -> Term s a
+pfromInteger :: forall (s :: S). (PRing a, PRing (PInner a)) => Integer -> Term s a
+
+-- | <h1>Laws</h1>
+--   
+--   <h1>Pedantry note</h1>
+--   
+--   Technically, the requirements here are too strong: we demand an
+--   <i>ordered</i> ring, which integral domains don't necessarily have to
+--   be. However, in our case, our hand is forced by expected semantics: in
+--   abstract algebra, both the absolute value and the signum are real
+--   numbers (which are always totally ordered) but in our case, both must
+--   be elements of the integral domain itself. Thus, in order for the laws
+--   to make any sense, we have to ensure a total order on the integral
+--   domain. Since all of our integral domains are 'at least as big' as the
+--   integers, this doesn't pose a huge problem.
+--   
+--   @since WIP
+class (PRing a, POrd a) => PIntegralDomain (a :: S -> Type)
+psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
+
+-- | @since WIP
+pquot :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | @since WIP
+prem :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | @since WIP
+pdiv :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | @since WIP
+pmod :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
+
+-- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
+--   <a>PNothing</a> if argument is zero.
+ppositive :: Term s (PInteger :--> PMaybe PPositive)
+
+-- | Partial version of <a>PPositive</a>. Errors if argument is zero.
+--   
+--   @since WIP
+ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 
 -- | Safely coerce from a Term to it's <a>PInner</a> representation.
 pto :: Term s a -> Term s (PInner a)
