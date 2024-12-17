@@ -11,7 +11,6 @@ module Plutarch.Test.Laws (
   checkLedgerPropertiesPEnumerable,
   checkHaskellOrdEquivalent,
   checkHaskellNumEquivalent,
-  checkHaskellIntegralEquivalent,
   checkPLiftableLaws,
   checkPOrdLaws,
 ) where
@@ -19,7 +18,6 @@ module Plutarch.Test.Laws (
 import Control.Applicative ((<|>))
 import Data.Kind (Type)
 import Plutarch.LedgerApi.V1 qualified as V1
-import Plutarch.Positive (PPositive, Positive)
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
 import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName')
@@ -32,14 +30,13 @@ import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   Arbitrary1 (liftArbitrary, liftShrink),
-  NonZero (getNonZero),
   Property,
   forAllShrinkShow,
   oneof,
   (=/=),
   (===),
  )
-import Test.Tasty (TestName, TestTree, testGroup)
+import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
 
@@ -250,32 +247,6 @@ checkHaskellOrdEquivalent =
         checkHaskellEquivalent2 ((<=) @(AsHaskell plutarchInput)) (precompileTerm $ plam ((#<=) @plutarchInput))
     ]
 
--- | @since WIP
-checkHaskellIntegralEquivalent ::
-  forall (plutarchInput :: S -> Type).
-  ( PLiftable plutarchInput
-  , Pretty (AsHaskell plutarchInput)
-  , Arbitrary (AsHaskell plutarchInput)
-  , Typeable (AsHaskell plutarchInput)
-  , Integral (AsHaskell plutarchInput)
-  , Typeable plutarchInput
-  , PIntegral plutarchInput
-  ) =>
-  TestTree
-checkHaskellIntegralEquivalent =
-  testGroup
-    ( mconcat
-        [ instanceOfType @Type @(AsHaskell plutarchInput) "Integral"
-        , " <-> "
-        , instanceOfType @(S -> Type) @plutarchInput "PIntegral"
-        ]
-    )
-    [ testIntegralEquivalent @plutarchInput "div = pdiv" div pdiv
-    , testIntegralEquivalent @plutarchInput "mod = pmod" mod pmod
-    , testIntegralEquivalent @plutarchInput "quot = pquot" quot pquot
-    , testIntegralEquivalent @plutarchInput "rem = prem" rem prem
-    ]
-
 checkHaskellNumEquivalent ::
   forall (plutarchInput :: S -> Type).
   ( PLiftable plutarchInput
@@ -285,7 +256,7 @@ checkHaskellNumEquivalent ::
   , Typeable (AsHaskell plutarchInput)
   , Num (AsHaskell plutarchInput)
   , Typeable plutarchInput
-  , PNum plutarchInput
+  , PIntegralDomain plutarchInput
   ) =>
   TestTree
 checkHaskellNumEquivalent =
@@ -305,26 +276,6 @@ checkHaskellNumEquivalent =
     ]
 
 -- Internal
-
--- | @since WIP
-testIntegralEquivalent ::
-  forall (plutarchInput :: S -> Type).
-  ( Arbitrary (AsHaskell plutarchInput)
-  , Pretty (AsHaskell plutarchInput)
-  , Eq (AsHaskell plutarchInput)
-  , PLiftable plutarchInput
-  , Num (AsHaskell plutarchInput)
-  ) =>
-  TestName ->
-  (AsHaskell plutarchInput -> AsHaskell plutarchInput -> AsHaskell plutarchInput) ->
-  ClosedTerm (plutarchInput :--> plutarchInput :--> plutarchInput) ->
-  TestTree
-testIntegralEquivalent name goHaskell goPlutarch =
-  testProperty name $
-    forAllShrinkShow arbitrary shrink prettyShow $
-      \(input1 :: AsHaskell plutarchInput, input2 :: NonZero (AsHaskell plutarchInput)) ->
-        goHaskell input1 (getNonZero input2)
-          `prettyEquals` plift (goPlutarch # pconstant input1 # pconstant (getNonZero input2))
 
 pcountableLaws ::
   forall (a :: S -> Type).
@@ -348,11 +299,11 @@ pcountableLaws =
         plift (pconstant @a x #< (psuccessor # pconstant @a y)) === plift (pconstant @a x #<= pconstant @a y)
   , testProperty "psuccessorN 1 = psuccessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: AsHaskell a) ->
-        plift (psuccessorN # 1 # pconstant @a x) === plift (psuccessor # pconstant @a x)
+        plift (psuccessorN # pone # pconstant @a x) === plift (psuccessor # pconstant @a x)
   , testProperty "psuccessorN n . psuccessorN m = psuccessorN (n + m)" . forAllShrinkShow arbitrary shrink show $
       \(x :: AsHaskell a, n :: Positive, m :: Positive) ->
         plift (psuccessorN # pconstant @PPositive n # (psuccessorN # pconstant @PPositive m # pconstant @a x))
-          === plift (psuccessorN # (pconstant @PPositive n + pconstant @PPositive m) # pconstant @a x)
+          === plift (psuccessorN # (pconstant @PPositive n #+ pconstant @PPositive m) # pconstant @a x)
   ]
 
 penumerableLaws ::
@@ -373,11 +324,11 @@ penumerableLaws =
         plift (psuccessor #$ ppredecessor # pconstant @a x) `prettyEquals` plift (pconstant @a x)
   , testProperty "ppredecessorN 1 = ppredecessor" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: AsHaskell a) ->
-        plift (ppredecessorN # 1 # pconstant @a x) `prettyEquals` plift (ppredecessor # pconstant @a x)
+        plift (ppredecessorN # pone # pconstant @a x) `prettyEquals` plift (ppredecessor # pconstant @a x)
   , testProperty "ppredecessorN n . ppredecessorN m = ppredecessorN (n + m)" . forAllShrinkShow arbitrary shrink prettyShow $
       \(x :: AsHaskell a, n :: Positive, m :: Positive) ->
         plift (ppredecessorN # pconstant n # (ppredecessorN # pconstant m # pconstant @a x))
-          `prettyEquals` plift (ppredecessorN # (pconstant n + pconstant m) # pconstant @a x)
+          `prettyEquals` plift (ppredecessorN # (pconstant n #+ pconstant m) # pconstant @a x)
   ]
 
 -- pfromData . pdata = id

@@ -7,6 +7,29 @@ module Plutarch.Internal.Show (
   pshowList,
 ) where
 
+import Data.Char (intToDigit)
+import Data.List.NonEmpty (NonEmpty ((:|)))
+import Data.List.NonEmpty qualified as NE
+import Data.Semigroup (sconcat)
+import Data.String (IsString (fromString))
+import Data.Text qualified as T
+import Generics.SOP (
+  All,
+  All2,
+  ConstructorName,
+  K (K),
+  NP,
+  NS,
+  Proxy (Proxy),
+  SOP (SOP),
+  constructorInfo,
+  constructorName,
+  hcmap,
+  hcollapse,
+  hindex,
+  hmap,
+ )
+import Generics.SOP.GGP (gdatatypeInfo)
 import Plutarch.Builtin.Bool (PBool, pif, pif')
 import Plutarch.Builtin.ByteString (
   PByte,
@@ -39,31 +62,6 @@ import Plutarch.Builtin.String (
   pencodeUtf8,
  )
 import Plutarch.Builtin.Unit (PUnit)
-
-import Data.Char (intToDigit)
-import Data.List.NonEmpty (NonEmpty ((:|)))
-import Data.List.NonEmpty qualified as NE
-import Data.Semigroup (sconcat)
-import Data.String (IsString (fromString))
-import Data.Text qualified as T
-import Generics.SOP (
-  All,
-  All2,
-  ConstructorName,
-  K (K),
-  NP,
-  NS,
-  Proxy (Proxy),
-  SOP (SOP),
-  constructorInfo,
-  constructorName,
-  hcmap,
-  hcollapse,
-  hindex,
-  hmap,
- )
-import Generics.SOP.GGP (gdatatypeInfo)
-
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
@@ -76,7 +74,7 @@ import Plutarch.Internal.ListLike (
   pmap,
   precList,
  )
-import Plutarch.Internal.Numeric (PIntegral (pquot, prem))
+import Plutarch.Internal.Numeric (PPositive, pquot, prem)
 import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
@@ -92,6 +90,7 @@ import Plutarch.Internal.Term (
   (#$),
   type (:-->),
  )
+import Plutarch.Maybe (PMaybe, PMaybeSoP)
 
 import PlutusCore qualified as PLC
 
@@ -347,3 +346,12 @@ instance
 
 instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
   pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
+
+-- | @since WIP
+instance PShow PPositive
+
+-- | @since WIP
+instance PShow a => PShow (PMaybe a)
+
+-- | @since WIP
+instance PShow a => PShow (PMaybeSoP a)

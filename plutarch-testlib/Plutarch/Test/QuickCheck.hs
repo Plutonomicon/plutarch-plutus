@@ -16,6 +16,7 @@ import Plutarch.Prelude
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
 import Plutarch.Test.Utils (precompileTerm, prettyEquals, prettyShow)
 import Prettyprinter (Pretty)
+import Test.QuickCheck qualified as QuickCheck
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.QuickCheck (
   Arbitrary,
@@ -23,7 +24,6 @@ import Test.Tasty.QuickCheck (
   NonNegative (NonNegative),
   NonPositive (NonPositive),
   NonZero (NonZero),
-  Positive (Positive),
   Property,
   arbitrary,
   counterexample,
@@ -147,7 +147,7 @@ checkHaskellEquivalent2 goHaskell goPlutarch =
 -- * Orphans
 
 -- | @since WIP
-deriving newtype instance Pretty a => Pretty (Positive a)
+deriving newtype instance Pretty a => Pretty (QuickCheck.Positive a)
 
 -- | @since WIP
 deriving newtype instance Pretty a => Pretty (Negative a)
