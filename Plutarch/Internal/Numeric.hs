@@ -5,6 +5,7 @@ module Plutarch.Internal.Numeric (
   -- * Types
   PPositive,
   Positive,
+  PNatural,
 
   -- * Type classes
   PAdditiveSemigroup (..),
@@ -18,6 +19,8 @@ module Plutarch.Internal.Numeric (
   -- * Functions
   ptryPositive,
   ppositive,
+  ptryNatural,
+  pnatural,
   pbySquaringDefault,
   pdiv,
   pmod,
@@ -28,6 +31,7 @@ module Plutarch.Internal.Numeric (
 import Data.Coerce (coerce)
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Numeric.Natural (Natural)
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
@@ -57,8 +61,16 @@ import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (
   DeriveNewtypePLiftable,
-  PLiftable,
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    fromPlutarch,
+    fromPlutarchRepr,
+    toPlutarch,
+    toPlutarchRepr
+  ),
   PLifted (PLifted),
+  punsafeCoercePLifted,
  )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd ((#<=)))
@@ -148,6 +160,43 @@ newtype Positive = UnsafeMkPositive {getPositive :: Integer}
 instance Function Positive where
   {-# INLINEABLE function #-}
   function = functionMap @Integer coerce coerce
+
+-- | @since WIP
+newtype PNatural (s :: S) = PNatural (Term s PInteger)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      PlutusType
+    , -- | @since WIP
+      PIsData
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      POrd
+    )
+
+-- | @since WIP
+instance DerivePlutusType PNatural where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PLiftable PNatural where
+  type AsHaskell PNatural = Natural
+  type PlutusRepr PNatural = Integer
+  {-# INLINEABLE toPlutarchRepr #-}
+  toPlutarchRepr = fromIntegral
+  {-# INLINEABLE toPlutarch #-}
+  toPlutarch = punsafeCoercePLifted . toPlutarch @PInteger . fromIntegral
+  {-# INLINEABLE fromPlutarchRepr #-}
+  fromPlutarchRepr x =
+    if x < 0
+      then Nothing
+      else Just . fromIntegral $ x
+  {-# INLINEABLE fromPlutarch #-}
+  fromPlutarch t = fromIntegral <$> fromPlutarch @PInteger (punsafeCoercePLifted t)
 
 {- | The addition operation.
 
@@ -403,7 +452,7 @@ instance PMultiplicativeMonoid PInteger where
   {-# INLINEABLE pone #-}
   pone = pconstantInteger 1
 
-{- | Partial version of 'PPositive'. Errors if argument is zero.
+{- | Partial version of 'ppositive'. Errors if argument is not positive.
 
 @since WIP
 -}
@@ -411,16 +460,16 @@ ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 ptryPositive = phoistAcyclic $
   plam $ \i ->
     pif
-      (i #<= pzero)
+      (i #<= pconstantInteger 0)
       (ptraceInfo "ptryPositive: building with non positive" perror)
       (punsafeCoerce i)
 
--- | Build a 'PPositive' from a 'PInteger'. Yields 'PNothing' if argument is zero.
+-- | Build a 'PPositive' from a 'PInteger'. Yields 'PNothing' if argument is not positive.
 ppositive :: Term s (PInteger :--> PMaybe PPositive)
 ppositive = phoistAcyclic $
   plam $ \i ->
     pif
-      (i #<= pzero)
+      (i #<= pconstantInteger 0)
       (pcon PNothing)
       $ pcon . PJust . pcon
       $ PPositive i
@@ -564,3 +613,26 @@ pquot = punsafeBuiltin PLC.QuotientInteger
 -- | @since WIP
 prem :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 prem = punsafeBuiltin PLC.RemainderInteger
+
+{- | Partial version of 'pnatural'. Errors if argument is negative.
+
+@since WIP
+-}
+ptryNatural :: forall (s :: S). Term s (PInteger :--> PNatural)
+ptryNatural = phoistAcyclic $ plam $ \i ->
+  pif
+    (i #<= pconstantInteger (-1))
+    (ptraceInfo "ptryNatural: building with negative" perror)
+    (punsafeCoerce i)
+
+{- | Build a 'PNatural' from a 'PInteger'. Yields 'PNothing' if given a negative
+value.
+
+@since WIP
+-}
+pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
+pnatural = phoistAcyclic $ plam $ \i ->
+  pif
+    (i #<= pconstantInteger (-1))
+    (pcon PNothing)
+    (pcon . PJust . pcon . PNatural $ i)
