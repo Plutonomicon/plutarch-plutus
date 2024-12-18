@@ -247,6 +247,13 @@ instance PAdditiveSemigroup PPositive where
   pscalePositive = punsafeBuiltin PLC.MultiplyInteger
 
 -- | @since WIP
+instance PAdditiveSemigroup PNatural where
+  {-# INLINEABLE (#+) #-}
+  x #+ y = punsafeCoerce $ paddInteger # pto x # pto y
+  {-# INLINEABLE pscalePositive #-}
+  pscalePositive = punsafeBuiltin PLC.MultiplyInteger
+
+-- | @since WIP
 instance PAdditiveSemigroup PInteger where
   {-# INLINEABLE (#+) #-}
   x #+ y = paddInteger # x # y
@@ -287,6 +294,11 @@ class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
 instance PAdditiveMonoid PInteger where
   {-# INLINEABLE pzero #-}
   pzero = pconstantInteger 0
+
+-- | @since WIP
+instance PAdditiveMonoid PNatural where
+  {-# INLINEABLE pzero #-}
+  pzero = punsafeCoerce . pconstantInteger $ 0
 
 -- | @since WIP
 instance PAdditiveMonoid PBuiltinBLS12_381_G1_Element where
@@ -426,6 +438,11 @@ instance PMultiplicativeSemigroup PPositive where
   x #* y = punsafeCoerce $ pmultiplyInteger # pto x # pto y
 
 -- | @since WIP
+instance PMultiplicativeSemigroup PNatural where
+  {-# INLINEABLE (#*) #-}
+  x #* y = punsafeCoerce $ pmultiplyInteger # pto x # pto y
+
+-- | @since WIP
 instance PMultiplicativeSemigroup PInteger where
   {-# INLINEABLE (#*) #-}
   x #* y = pmultiplyInteger # x # y
@@ -444,6 +461,11 @@ class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
 
 -- | @since WIP
 instance PMultiplicativeMonoid PPositive where
+  {-# INLINEABLE pone #-}
+  pone = punsafeCoerce $ pconstantInteger 1
+
+-- | @since WIP
+instance PMultiplicativeMonoid PNatural where
   {-# INLINEABLE pone #-}
   pone = punsafeCoerce $ pconstantInteger 1
 
