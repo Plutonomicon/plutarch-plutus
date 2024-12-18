@@ -67,6 +67,9 @@ instance PAdditiveSemigroup PPosixTime where
 instance PAdditiveMonoid PPosixTime where
   {-# INLINEABLE pzero #-}
   pzero = pposixTime pzero
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural = phoistAcyclic $ plam $ \t n ->
+    pposixTime (unPPosixTime t #* pto n)
 
 -- | @since WIP
 instance PAdditiveGroup PPosixTime where

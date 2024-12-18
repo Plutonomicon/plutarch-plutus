@@ -180,6 +180,7 @@ module Plutarch.Prelude (
   ptryPositive,
   pnatural,
   ptryNatural,
+  ppositiveToNatural,
 
   -- * Other
   pto,

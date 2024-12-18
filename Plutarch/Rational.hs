@@ -38,10 +38,10 @@ import Plutarch.Internal.Lift (
 import Plutarch.Internal.ListLike (phead, pnil, ptail)
 import Plutarch.Internal.Numeric (
   PAdditiveGroup (pnegate, pscaleInteger, (#-)),
-  PAdditiveMonoid (pzero),
+  PAdditiveMonoid (pscaleNatural, pzero),
   PAdditiveSemigroup (pscalePositive, (#+)),
   PIntegralDomain (pabs, psignum),
-  PMultiplicativeMonoid (pone),
+  PMultiplicativeMonoid (pone, ppowNatural),
   PMultiplicativeSemigroup (ppowPositive, (#*)),
   PPositive,
   PRing (pfromInteger),
@@ -172,6 +172,10 @@ instance PAdditiveSemigroup PRational where
 instance PAdditiveMonoid PRational where
   {-# INLINEABLE pzero #-}
   pzero = pcon . PRational pzero $ pone
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural = phoistAcyclic $ plam $ \x n ->
+    pmatch x $ \(PRational xn xd) ->
+      preduce' # (xn #* pto n) # pto xd
 
 -- | @since WIP
 instance PAdditiveGroup PRational where
@@ -225,6 +229,10 @@ instance PMultiplicativeSemigroup PRational where
 instance PMultiplicativeMonoid PRational where
   {-# INLINEABLE pone #-}
   pone = pcon . PRational pone $ pone
+  {-# INLINEABLE ppowNatural #-}
+  ppowNatural = phoistAcyclic $ plam $ \x n ->
+    pmatch x $ \(PRational xn xd) ->
+      pcon . PRational (ppowNatural # xn # n) $ ppowNatural # xd # n
 
 -- | @since WIP
 instance PRing PRational where

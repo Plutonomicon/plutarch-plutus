@@ -21,6 +21,7 @@ module Plutarch.Internal.Numeric (
   ppositive,
   ptryNatural,
   pnatural,
+  ppositiveToNatural,
   pbySquaringDefault,
   pdiv,
   pmod,
@@ -198,7 +199,7 @@ instance PLiftable PNatural where
   {-# INLINEABLE fromPlutarch #-}
   fromPlutarch t = fromIntegral <$> fromPlutarch @PInteger (punsafeCoercePLifted t)
 
-{- | The addition operation.
+{- | The addition operation, and the notion of scaling by a positive.
 
 = Laws
 
@@ -276,8 +277,7 @@ instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
   pscalePositive = phoistAcyclic $ plam $ \x p ->
     pbls12_381_G2_scalarMul # pto p # x
 
-{- | The notion of zero, as well as a (kind of) reversal of 'pscalePositive',
-similar to floor division by positive integers.
+{- | The notion of zero, as well as a way to scale by naturals.
 
 = Laws
 
@@ -285,30 +285,56 @@ similar to floor division by positive integers.
 2. @pscalePositive # pzero # n@ @=@
    @pzero@ (@pzero@ does not scale up)
 
+If you define 'pscaleNatural', ensure the following as well:
+
+3. @pscaleNatural # x #$ ppositiveToNatural # p@ @=@
+   @pscalePositive # x # p@
+4. @pscaleNatural # x # pzero@ @=@ @pzero@
+
+The default implementation of 'pscaleNatural' ensures these laws are
+followed.
+
 @since WIP
 -}
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
   pzero :: forall (s :: S). Term s a
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural :: forall (s :: S). Term s (a :--> PNatural :--> a)
+  pscaleNatural = phoistAcyclic $ plam $ \x n ->
+    pif
+      (n #== pzero)
+      pzero
+      (pscalePositive # x # punsafeCoerce n)
 
 -- | @since WIP
 instance PAdditiveMonoid PInteger where
   {-# INLINEABLE pzero #-}
   pzero = pconstantInteger 0
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural = punsafeBuiltin PLC.MultiplyInteger
 
 -- | @since WIP
 instance PAdditiveMonoid PNatural where
   {-# INLINEABLE pzero #-}
   pzero = punsafeCoerce . pconstantInteger $ 0
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural = punsafeBuiltin PLC.MultiplyInteger
 
 -- | @since WIP
 instance PAdditiveMonoid PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G1_uncompress # pbls12_381_G1_compressed_zero
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural = phoistAcyclic $ plam $ \x n ->
+    pbls12_381_G1_scalarMul # pto n # x
 
 -- | @since WIP
 instance PAdditiveMonoid PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G2_uncompress # pbls12_381_G2_compressed_zero
+  {-# INLINEABLE pscaleNatural #-}
+  pscaleNatural = phoistAcyclic $ plam $ \x n ->
+    pbls12_381_G2_scalarMul # pto n # x
 
 {- | The notion of additive inverses, and the subtraction operation.
 
@@ -447,17 +473,32 @@ instance PMultiplicativeSemigroup PInteger where
   {-# INLINEABLE (#*) #-}
   x #* y = pmultiplyInteger # x # y
 
-{- | The notion of one (multiplicative identity).
+{- | The notion of one (multiplicative identity), and exponentiation by
+ - naturals.
 
 = Laws
 
 1. @pone #* x@ @=@ @x@ (@pone@ is the left identity of @#*@)
 2. @x #* pone@ @=@ @x@ (@pone@ is the right identity of @#*@)
+3. @ppowPositive # pone # p@ @=@ @pone@ (@pone@ does not scale up)
+
+If you define 'ppowNatural', ensure the following as well:
+
+4. @ppowNatural # x #$ ppositiveToNatural # p@ @=@
+   @ppowPositive # x # p@
+5. @ppowNatural # x # pzero@ @=@ @pone@
 
 @since WIP
 -}
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
   pone :: forall (s :: S). Term s a
+  {-# INLINEABLE ppowNatural #-}
+  ppowNatural :: forall (s :: S). Term s (a :--> PNatural :--> a)
+  ppowNatural = phoistAcyclic $ plam $ \x n ->
+    pif
+      (n #== pzero)
+      pone
+      (ppowPositive # x # punsafeCoerce n)
 
 -- | @since WIP
 instance PMultiplicativeMonoid PPositive where
@@ -658,3 +699,11 @@ pnatural = phoistAcyclic $ plam $ \i ->
     (i #<= pconstantInteger (-1))
     (pcon PNothing)
     (pcon . PJust . pcon . PNatural $ i)
+
+{- | \'Relax\' a 'PPositive' to 'PNatural'. This uses 'punsafeCoerce'
+underneath, but because any positive is also a natural, is safe.
+
+@since WIP
+-}
+ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
+ppositiveToNatural = phoistAcyclic $ plam $ \x -> punsafeCoerce x
