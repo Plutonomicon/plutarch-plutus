@@ -164,6 +164,7 @@ module Plutarch.Prelude (
   -- * Numeric
   Positive,
   PPositive,
+  PNatural,
   PAdditiveSemigroup (..),
   PAdditiveMonoid (..),
   PAdditiveGroup (..),
@@ -177,6 +178,9 @@ module Plutarch.Prelude (
   pmod,
   ppositive,
   ptryPositive,
+  pnatural,
+  ptryNatural,
+  ppositiveToNatural,
 
   -- * Other
   pto,

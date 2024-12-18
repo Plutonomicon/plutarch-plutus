@@ -40,6 +40,7 @@
 * New methods for `Data` and Scott encoding derivation
 * `optimizeTerm` for separate optimization via UPLC from compilation
 * New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
+* `PNatural` type, corresponding to the Haskell `Natural`
 
 ## Changed
 
