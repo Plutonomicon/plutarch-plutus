@@ -26,7 +26,7 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool)
-import Plutarch.Builtin.String (PString)
+import Plutarch.Builtin.String (PString, ptraceInfo)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Lift (
   PLiftable (
@@ -50,23 +50,30 @@ import Plutarch.Internal.PlutusType (
   pcon,
   pmatch,
  )
-import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
   Term,
+  perror,
   phoistAcyclic,
   (#),
   (:-->),
  )
 import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
-import Plutarch.Trace (ptraceInfoError)
 
 -- | @since WIP
 data PMaybe (a :: S -> Type) (s :: S)
   = PJust (Term s a)
   | PNothing
-  deriving stock (Generic)
-  deriving anyclass (SOP.Generic, PEq, PShow)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      SOP.Generic
+    , -- | @since WIP
+      PEq
+    )
 
 -- | @since WIP
 deriving via DeriveAsSOPStruct (PMaybe a) instance PlutusType (PMaybe a)
@@ -99,7 +106,7 @@ pfromJust ::
   Term s (PMaybe a :--> a)
 pfromJust = phoistAcyclic $
   plam $ \t -> pmatch t $ \case
-    PNothing -> ptraceInfoError "pfromJust: found PNothing"
+    PNothing -> ptraceInfo "pfromJust: found PNothing" perror
     PJust x -> x
 
 {- | Extracts the element out of a 'PJust' and throws a custom error if it's given a 'PNothing'.
@@ -113,7 +120,7 @@ ptraceIfNothing ::
   Term s (PMaybe a) ->
   Term s a
 ptraceIfNothing err t = pmatch t $ \case
-  PNothing -> ptraceInfoError err
+  PNothing -> ptraceInfo err perror
   PJust x -> x
 
 {- | Yields true if the given 'PMaybe' value is of form @'PJust' _@.
@@ -184,7 +191,7 @@ passertPJust ::
 passertPJust = phoistAcyclic $
   plam $ \emsg mv' -> pmatch mv' $ \case
     PJust v -> v
-    _ -> ptraceInfoError emsg
+    _ -> ptraceInfo emsg perror
 
 {- | Map underlying value if `PMaybe` is `PJust`, do nothing if it is `PNothing`
 

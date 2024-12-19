@@ -28,6 +28,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   semantics of `plutus-ledger-api`'s equivalents for these types
 * `V3.PTxInfo.mint` now has `NonZero` guarantee
 * `V1.PTxInfo.mint` now has `NoGuarantees` guarantee
+* `PPosixTime` now has a different set of arithmetical operations: currently,
+  addition, subtraction, negation and scaling by both `PPositive` and
+  `PInteger`.
 
 ### Fixed
 

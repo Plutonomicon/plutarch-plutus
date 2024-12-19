@@ -1,7 +1,7 @@
 unit {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":11}
 bool.true {"exBudgetCPU":284149,"exBudgetMemory":1401,"scriptSizeBytes":33}
 bool.false {"exBudgetCPU":284149,"exBudgetMemory":1401,"scriptSizeBytes":33}
-int.0 {"exBudgetCPU":3230792,"exBudgetMemory":14417,"scriptSizeBytes":304}
+int.0 {"exBudgetCPU":3657208,"exBudgetMemory":15821,"scriptSizeBytes":304}
 int.5 {"exBudgetCPU":4832702,"exBudgetMemory":20427,"scriptSizeBytes":304}
 int.-5 {"exBudgetCPU":5319075,"exBudgetMemory":21832,"scriptSizeBytes":304}
 int.10 {"exBudgetCPU":6370737,"exBudgetMemory":26243,"scriptSizeBytes":304}
@@ -35,4 +35,4 @@ pshowAndErr.nil {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":21}
 pshowAndErr.1,2,3 {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":24}
 pair.int-str {"exBudgetCPU":21559683,"exBudgetMemory":77597,"scriptSizeBytes":450}
 pair.int-list {"exBudgetCPU":26928874,"exBudgetMemory":85994,"scriptSizeBytes":429}
-rational.1/2 {"exBudgetCPU":13222314,"exBudgetMemory":54284,"scriptSizeBytes":556}
+rational.1/2 {"exBudgetCPU":11646801,"exBudgetMemory":47874,"scriptSizeBytes":504}

@@ -162,8 +162,21 @@ module Plutarch.Prelude (
   PlutusTypeScott,
 
   -- * Numeric
-  PIntegral (..),
-  PNum (..),
+  Positive,
+  PPositive,
+  PAdditiveSemigroup (..),
+  PAdditiveMonoid (..),
+  PAdditiveGroup (..),
+  PMultiplicativeSemigroup (..),
+  PMultiplicativeMonoid (..),
+  PRing (..),
+  PIntegralDomain (..),
+  pquot,
+  prem,
+  pdiv,
+  pmod,
+  ppositive,
+  ptryPositive,
 
   -- * Other
   pto,
