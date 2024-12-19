@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Rational (
   PRational (PRational),
@@ -13,6 +13,7 @@ module Plutarch.Rational (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pcond, pif)
 import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData, ppairDataBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
@@ -55,13 +56,7 @@ import Plutarch.Internal.Ord (
  )
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  PlutusType,
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.PlutusType (PlutusType, pcon, pmatch)
 import Plutarch.Internal.Show (PShow, pshow, pshow')
 import Plutarch.Internal.Term (
   S,
@@ -80,6 +75,7 @@ import Plutarch.Internal.TermCont (
  )
 import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess, ptryFrom'), ptryFrom)
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.Repr.SOP (DeriveAsSOPRec (DeriveAsSOPRec))
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusCore qualified as PLC
@@ -99,10 +95,9 @@ numbers that isn't just passing them around, you want to use (or convert to)
 data PRational s
   = PRational (Term s PInteger) (Term s PPositive)
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
+  deriving anyclass (SOP.Generic)
 
-instance DerivePlutusType PRational where
-  type DPTStrat _ = PlutusTypeScott
+deriving via (DeriveAsSOPRec PRational) instance PlutusType PRational
 
 -- | @since WIP
 instance PLiftable PRational where
