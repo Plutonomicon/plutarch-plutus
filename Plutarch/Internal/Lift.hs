@@ -33,6 +33,7 @@ module Plutarch.Internal.Lift (
   getPLifted,
   PLiftedClosed (..),
   LiftError (..),
+  punsafeCoercePLifted,
 ) where
 
 import Plutarch.Builtin.BLS (
