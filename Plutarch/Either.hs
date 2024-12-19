@@ -111,11 +111,6 @@ deriving via
   instance
     PlutusType (PEither a b)
 
-{-
-instance DerivePlutusType (PEither a b) where
-  type DPTStrat _ = PlutusTypeScott
--}
-
 -- | @since WIP
 instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)

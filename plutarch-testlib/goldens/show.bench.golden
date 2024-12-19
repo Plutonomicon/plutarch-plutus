@@ -33,6 +33,6 @@ builtinlist.nil {"exBudgetCPU":2058965,"exBudgetMemory":11043,"scriptSizeBytes":
 builtinlist.1,2,3 {"exBudgetCPU":16174606,"exBudgetMemory":56272,"scriptSizeBytes":390}
 pshowAndErr.nil {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":21}
 pshowAndErr.1,2,3 {"exBudgetCPU":100,"exBudgetMemory":100,"scriptSizeBytes":24}
-pair.int-str {"exBudgetCPU":21559683,"exBudgetMemory":77597,"scriptSizeBytes":450}
-pair.int-list {"exBudgetCPU":26928874,"exBudgetMemory":85994,"scriptSizeBytes":429}
+pair.int-str {"exBudgetCPU":21511683,"exBudgetMemory":77297,"scriptSizeBytes":449}
+pair.int-list {"exBudgetCPU":26880874,"exBudgetMemory":85694,"scriptSizeBytes":428}
 rational.1/2 {"exBudgetCPU":11646801,"exBudgetMemory":47874,"scriptSizeBytes":504}
