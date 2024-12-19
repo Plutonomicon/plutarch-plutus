@@ -22,10 +22,10 @@ str.quoted {"exBudgetCPU":18057049,"exBudgetMemory":72910,"scriptSizeBytes":138}
 str.slash {"exBudgetCPU":14134535,"exBudgetMemory":57643,"scriptSizeBytes":136}
 str.unicode {"exBudgetCPU":19470845,"exBudgetMemory":79932,"scriptSizeBytes":139}
 str.unicode-quoted {"exBudgetCPU":23649227,"exBudgetMemory":95604,"scriptSizeBytes":141}
-maybe.nothing {"exBudgetCPU":880100,"exBudgetMemory":5600,"scriptSizeBytes":340}
-maybe.just {"exBudgetCPU":8954174,"exBudgetMemory":34272,"scriptSizeBytes":342}
+maybe.nothing {"exBudgetCPU":784100,"exBudgetMemory":5000,"scriptSizeBytes":339}
+maybe.just {"exBudgetCPU":8874174,"exBudgetMemory":33772,"scriptSizeBytes":341}
 either.right {"exBudgetCPU":9062131,"exBudgetMemory":34573,"scriptSizeBytes":356}
-maybe.either {"exBudgetCPU":12308196,"exBudgetMemory":38034,"scriptSizeBytes":419}
+maybe.either {"exBudgetCPU":12228196,"exBudgetMemory":37534,"scriptSizeBytes":417}
 list.nil {"exBudgetCPU":2202965,"exBudgetMemory":11943,"scriptSizeBytes":395}
 list.1 {"exBudgetCPU":6059760,"exBudgetMemory":26860,"scriptSizeBytes":396}
 list.1,2,3 {"exBudgetCPU":17441292,"exBudgetMemory":66744,"scriptSizeBytes":399}
