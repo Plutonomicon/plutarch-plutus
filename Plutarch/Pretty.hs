@@ -254,7 +254,7 @@ prettyUPLC uplc = runST $ do
       PrettyState {ps'nameMap} <- get
       pure $ case nameOfRef x ps'nameMap of
         Just nm -> PP.pretty nm
-        Nothing -> error "impossible: free variable"
+        Nothing -> "(impossible: FREE VARIABLE: " <> PP.pretty x <> ")"
     go (IfThenElseLikeAST (Force () (Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) = prettyIfThenElse (forkState . go) cond trueBranch falseBranch
     go ast@(IfThenElseLikeAST scrutinee cond trueBranch falseBranch) = do
       PrettyState {ps'nameMap} <- get

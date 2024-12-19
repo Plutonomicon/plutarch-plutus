@@ -673,10 +673,16 @@ subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x 
 subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
 subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
 subst idx x (UPLC.Force () y) = UPLC.Force () (subst idx x y)
-subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
-subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
-subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
-subst _ _ y = y
+subst idx x y@(UPLC.Var () (DeBruijn (Index idx'))) =
+  case compare idx idx' of
+    EQ -> x idx
+    GT -> y
+    LT -> UPLC.Var () (DeBruijn . Index $ idx' - 1)
+subst idx x (UPLC.Case () t handlers) = UPLC.Case () (subst idx x t) (fmap (subst idx x) handlers)
+subst idx x (UPLC.Constr () w fields) = UPLC.Constr () w (fmap (subst idx x) fields)
+subst _ _ y@(UPLC.Constant () _) = y
+subst _ _ y@(UPLC.Builtin () _) = y
+subst _ _ y@(UPLC.Error ()) = y
 
 rawTermToUPLC ::
   (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
