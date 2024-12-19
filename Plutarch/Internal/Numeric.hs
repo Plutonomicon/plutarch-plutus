@@ -250,7 +250,7 @@ instance PAdditiveSemigroup PPositive where
 -- | @since WIP
 instance PAdditiveSemigroup PNatural where
   {-# INLINEABLE (#+) #-}
-  x #+ y = punsafeCoerce $ paddInteger # pto x # pto y
+  x #+ y = pcon . PNatural $ paddInteger # pto x # pto y
   {-# INLINEABLE pscalePositive #-}
   pscalePositive = punsafeBuiltin PLC.MultiplyInteger
 
@@ -316,7 +316,7 @@ instance PAdditiveMonoid PInteger where
 -- | @since WIP
 instance PAdditiveMonoid PNatural where
   {-# INLINEABLE pzero #-}
-  pzero = punsafeCoerce . pconstantInteger $ 0
+  pzero = pcon . PNatural . pconstantInteger $ 0
   {-# INLINEABLE pscaleNatural #-}
   pscaleNatural = punsafeBuiltin PLC.MultiplyInteger
 
@@ -466,7 +466,7 @@ instance PMultiplicativeSemigroup PPositive where
 -- | @since WIP
 instance PMultiplicativeSemigroup PNatural where
   {-# INLINEABLE (#*) #-}
-  x #* y = punsafeCoerce $ pmultiplyInteger # pto x # pto y
+  x #* y = pcon . PNatural $ pmultiplyInteger # pto x # pto y
 
 -- | @since WIP
 instance PMultiplicativeSemigroup PInteger where
@@ -498,7 +498,7 @@ class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
     pif
       (n #== pzero)
       pone
-      (ppowPositive # x # punsafeCoerce n)
+      (ppowPositive # x # pcon (PPositive $ pto n))
 
 -- | @since WIP
 instance PMultiplicativeMonoid PPositive where
@@ -508,7 +508,7 @@ instance PMultiplicativeMonoid PPositive where
 -- | @since WIP
 instance PMultiplicativeMonoid PNatural where
   {-# INLINEABLE pone #-}
-  pone = punsafeCoerce $ pconstantInteger 1
+  pone = pcon . PNatural $ pconstantInteger 1
 
 -- | @since WIP
 instance PMultiplicativeMonoid PInteger where
@@ -686,7 +686,7 @@ ptryNatural = phoistAcyclic $ plam $ \i ->
   pif
     (i #<= pconstantInteger (-1))
     (ptraceInfo "ptryNatural: building with negative" perror)
-    (punsafeCoerce i)
+    (pcon . PNatural $ i)
 
 {- | Build a 'PNatural' from a 'PInteger'. Yields 'PNothing' if given a negative
 value.
