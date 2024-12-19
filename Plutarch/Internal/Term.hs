@@ -679,10 +679,10 @@ subst idx x y@(UPLC.Var () (DeBruijn (Index idx'))) =
     GT -> y
     LT -> UPLC.Var () (DeBruijn . Index $ idx' - 1)
 subst idx x (UPLC.Case () t handlers) = UPLC.Case () (subst idx x t) (fmap (subst idx x) handlers)
+subst idx x (UPLC.Constr () w fields) = UPLC.Constr () w (fmap (subst idx x) fields)
 subst _ _ y@(UPLC.Constant () _) = y
 subst _ _ y@(UPLC.Builtin () _) = y
 subst _ _ y@(UPLC.Error ()) = y
-subst _ _ y@(UPLC.Constr () _ _) = y
 
 rawTermToUPLC ::
   (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
