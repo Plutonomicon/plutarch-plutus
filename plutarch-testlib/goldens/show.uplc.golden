@@ -3635,24 +3635,24 @@ list.nil program
                                                               (appendString
                                                                  (!19
                                                                     (\!0 !0 ->
-                                                                       !1
-                                                                         (\!0
-                                                                           !0 ->
-                                                                            !1
-                                                                              (\!0
-                                                                                !0 ->
-                                                                                 appendString
-                                                                                   (!8
-                                                                                      !4)
-                                                                                   (appendString
-                                                                                      ", "
-                                                                                      (!6
-                                                                                         !3)))
-                                                                              (delay
-                                                                                 (!6
-                                                                                    !2)))
-                                                                         (delay
-                                                                            !20))
+                                                                       case
+                                                                         !1
+                                                                         [ (\!0
+                                                                             !0 ->
+                                                                              case
+                                                                                !1
+                                                                                [ (\!0
+                                                                                    !0 ->
+                                                                                     appendString
+                                                                                       (!8
+                                                                                          !4)
+                                                                                       (appendString
+                                                                                          ", "
+                                                                                          (!6
+                                                                                             !3)))
+                                                                                , (!6
+                                                                                     !2) ])
+                                                                         , !20 ])
                                                                     !1)
                                                                  "]"))
                                                            (!18
@@ -3663,18 +3663,14 @@ list.nil program
                                                                          chooseList)
                                                                       !1
                                                                       (delay
-                                                                         (\!0
-                                                                           !0 ->
-                                                                            force
-                                                                              !1))
+                                                                         (constr 1
+                                                                            []))
                                                                       (delay
                                                                          ((\!0
-                                                                            !0
-                                                                            !0
                                                                             !0 ->
-                                                                             !2
-                                                                               !4
-                                                                               !3)
+                                                                             constr 0
+                                                                               [ !2
+                                                                               , !1 ])
                                                                             (force
                                                                                headList
                                                                                !1)
@@ -3844,24 +3840,24 @@ list.1 program
                                                               (appendString
                                                                  (!19
                                                                     (\!0 !0 ->
-                                                                       !1
-                                                                         (\!0
-                                                                           !0 ->
-                                                                            !1
-                                                                              (\!0
-                                                                                !0 ->
-                                                                                 appendString
-                                                                                   (!8
-                                                                                      !4)
-                                                                                   (appendString
-                                                                                      ", "
-                                                                                      (!6
-                                                                                         !3)))
-                                                                              (delay
-                                                                                 (!6
-                                                                                    !2)))
-                                                                         (delay
-                                                                            !20))
+                                                                       case
+                                                                         !1
+                                                                         [ (\!0
+                                                                             !0 ->
+                                                                              case
+                                                                                !1
+                                                                                [ (\!0
+                                                                                    !0 ->
+                                                                                     appendString
+                                                                                       (!8
+                                                                                          !4)
+                                                                                       (appendString
+                                                                                          ", "
+                                                                                          (!6
+                                                                                             !3)))
+                                                                                , (!6
+                                                                                     !2) ])
+                                                                         , !20 ])
                                                                     !1)
                                                                  "]"))
                                                            (!18
@@ -3872,18 +3868,14 @@ list.1 program
                                                                          chooseList)
                                                                       !1
                                                                       (delay
-                                                                         (\!0
-                                                                           !0 ->
-                                                                            force
-                                                                              !1))
+                                                                         (constr 1
+                                                                            []))
                                                                       (delay
                                                                          ((\!0
-                                                                            !0
-                                                                            !0
                                                                             !0 ->
-                                                                             !2
-                                                                               !4
-                                                                               !3)
+                                                                             constr 0
+                                                                               [ !2
+                                                                               , !1 ])
                                                                             (force
                                                                                headList
                                                                                !1)
@@ -4053,24 +4045,24 @@ list.1,2,3 program
                                                               (appendString
                                                                  (!19
                                                                     (\!0 !0 ->
-                                                                       !1
-                                                                         (\!0
-                                                                           !0 ->
-                                                                            !1
-                                                                              (\!0
-                                                                                !0 ->
-                                                                                 appendString
-                                                                                   (!8
-                                                                                      !4)
-                                                                                   (appendString
-                                                                                      ", "
-                                                                                      (!6
-                                                                                         !3)))
-                                                                              (delay
-                                                                                 (!6
-                                                                                    !2)))
-                                                                         (delay
-                                                                            !20))
+                                                                       case
+                                                                         !1
+                                                                         [ (\!0
+                                                                             !0 ->
+                                                                              case
+                                                                                !1
+                                                                                [ (\!0
+                                                                                    !0 ->
+                                                                                     appendString
+                                                                                       (!8
+                                                                                          !4)
+                                                                                       (appendString
+                                                                                          ", "
+                                                                                          (!6
+                                                                                             !3)))
+                                                                                , (!6
+                                                                                     !2) ])
+                                                                         , !20 ])
                                                                     !1)
                                                                  "]"))
                                                            (!18
@@ -4081,18 +4073,14 @@ list.1,2,3 program
                                                                          chooseList)
                                                                       !1
                                                                       (delay
-                                                                         (\!0
-                                                                           !0 ->
-                                                                            force
-                                                                              !1))
+                                                                         (constr 1
+                                                                            []))
                                                                       (delay
                                                                          ((\!0
-                                                                            !0
-                                                                            !0
                                                                             !0 ->
-                                                                             !2
-                                                                               !4
-                                                                               !3)
+                                                                             constr 0
+                                                                               [ !2
+                                                                               , !1 ])
                                                                             (force
                                                                                headList
                                                                                !1)
