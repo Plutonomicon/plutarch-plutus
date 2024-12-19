@@ -63,6 +63,7 @@
 * `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
 * `PPositive` (and `Positive`) are now exported from the prelude, along with
   some functionality
+* `PEither`, `PPair` and `PList` use SOP encoding instead of Scott
 
 ## Removed
 
