@@ -2422,11 +2422,11 @@ pfromInteger :: Term s (PInteger :--> PRational)
 pround :: Term s (PRational :--> PInteger)
 ptruncate :: Term s (PRational :--> PInteger)
 pproperFraction :: Term s (PRational :--> PPair PInteger PRational)
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Rational.PRational
+instance forall (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Rational.PRational s)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Rational.PRational s)
 instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.Rational.Flip @{k2} @{k1} f a b)
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Rational.PRational
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.Rational.PRational)
-instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Rational.PRational
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Rational.PRational
 instance Plutarch.Internal.Eq.PEq Plutarch.Rational.PRational
 instance Plutarch.Internal.Ord.POrd Plutarch.Rational.PRational

@@ -38,7 +38,7 @@ includes specifically the following ASCII ranges (inclusively):
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-41"></span><span class="annot"><a href="Plutarch.String.html#pisHexDigit"><span class="hs-identifier hs-type">pisHexDigit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679593763"><span class="annot"><a href="#local-6989586621679593763"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679593763"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span class="annot"><a href="Plutarch.String.html#pisHexDigit"><span class="hs-identifier hs-type">pisHexDigit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679595584"><span class="annot"><a href="#local-6989586621679595584"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679595584"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span id="pisHexDigit"><span class="annot"><span class="annottext">pisHexDigit :: forall (s :: S). Term s (PInteger :--&gt; PBool)
 </span><a href="Plutarch.String.html#pisHexDigit"><span class="hs-identifier hs-var hs-var">pisHexDigit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). Term s (PInteger :--&gt; PBool))
 -&gt; Term s (PInteger :--&gt; PBool)
@@ -61,10 +61,10 @@ HasCallStack =&gt;
 -&gt; (Term s PInteger -&gt; Term s PBool)
 -&gt; Term s (PInteger :--&gt; PBool)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679593828"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679593828"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679595649"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679595649"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-43"></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679593828"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679595649"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: PType) (s :: S).
 POrd t =&gt;
@@ -79,7 +79,7 @@ forall (t :: PType) (s :: S).
 POrd t =&gt;
 Term s t -&gt; Term s t -&gt; Term s PBool
 </span><a href="Plutarch.Internal.Ord.html#%23%3C%3D"><span class="hs-operator hs-var">#&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679593828"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+</span><a href="#local-6989586621679595649"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
     #|| (c #&lt;= 70 #&amp;&amp; 65 #&lt;= c)
 </span><span class="hs-cpp">    #|| (c #&lt;= 102 #&amp;&amp; 97 #&lt;= c)
 </span></pre></body></html>
