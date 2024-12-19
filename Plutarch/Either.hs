@@ -25,9 +25,7 @@ module Plutarch.Either (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-
--- TODO: Kill this, this is for PShow (PAsData a)
-
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
   pif,
@@ -66,12 +64,10 @@ import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
   PlutusType (PInner, pcon', pmatch'),
   pcon,
   pmatch,
  )
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
 import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
@@ -84,19 +80,41 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Internal.TryFrom (PTryFrom)
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
--- | Scott-encoded 'Either'.
+{- | SOP-encoded 'Either'.
+
+@since WIP
+-}
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLeft (Term s a)
   | PRight (Term s b)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, PShow)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      SOP.Generic
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      PShow
+    )
 
+-- | @since WIP
+deriving via
+  DeriveAsSOPStruct (PEither a b)
+  instance
+    PlutusType (PEither a b)
+
+{-
 instance DerivePlutusType (PEither a b) where
   type DPTStrat _ = PlutusTypeScott
+-}
 
 -- | @since WIP
 instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
