@@ -7,7 +7,10 @@ eq.true program
               !3
                 (\!0 !0 ->
                    force
-                     ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
+                     ((\!0 !0 ->
+                         case
+                           (constr 0 [!2, !1, (delay False)])
+                           [(force ifThenElse)])
                         (equalsInteger !4 !2)
                         (delay (equalsString !3 !1))))))
         (\!0 -> !1 42 !2)
@@ -22,7 +25,10 @@ eq.false.fst program
               !3
                 (\!0 !0 ->
                    force
-                     ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
+                     ((\!0 !0 ->
+                         case
+                           (constr 0 [!2, !1, (delay False)])
+                           [(force ifThenElse)])
                         (equalsInteger !4 !2)
                         (delay (equalsString !3 !1))))))
         (\!0 -> !1 42 !2)
@@ -36,7 +42,10 @@ eq.false.snd program
            !3
              (\!0 !0 ->
                 force
-                  ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
+                  ((\!0 !0 ->
+                      case
+                        (constr 0 [!2, !1, (delay False)])
+                        [(force ifThenElse)])
                      (equalsInteger !4 !2)
                      (delay (equalsString !3 !1))))))
      (\!0 -> !1 42 "Hello")
@@ -49,7 +58,10 @@ eq.false.both program
            !3
              (\!0 !0 ->
                 force
-                  ((\!0 !0 -> force ifThenElse !2 !1 (delay False))
+                  ((\!0 !0 ->
+                      case
+                        (constr 0 [!2, !1, (delay False)])
+                        [(force ifThenElse)])
                      (equalsInteger !4 !2)
                      (delay (equalsString !3 !1))))))
      (\!0 -> !1 42 "Hello")

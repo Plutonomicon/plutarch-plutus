@@ -38,13 +38,15 @@ erroneous.[String] /= [Integer] program
                        (\!0 -> !2 (\!0 -> !2 !2 !1)))
                     (\!0 !0 ->
                        force
-                         (force (force chooseList)
-                            !1
-                            (delay !6)
-                            (delay
-                               (!5
-                                  (!3 (force headList !1))
-                                  (!2 (force tailList !1)))))))
+                         (case
+                            (constr 0
+                               [ !1
+                               , (delay !6)
+                               , (delay
+                                    (!5
+                                       (!3 (force headList !1))
+                                       (!2 (force tailList !1)))) ])
+                            [(force (force chooseList))])))
                  (\!0 -> (\!0 -> !2) (unBData !1))
                  (unListData (listData (!2 (iData 3) (!1 (iData 4)))))))
            (\!0 -> !2 !1 !3))
@@ -70,14 +72,16 @@ erroneous.A { test := Integer, test2 := Integer } /= { test := String, test2 := 
                                                (bData !11)
                                                (!12 (iData 42) !13)))
                                          (force
-                                            (force (force chooseList)
-                                               !1
-                                               (delay ())
-                                               (delay
-                                                  (force
-                                                     (force trace
-                                                        "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                        (delay error)))))))
+                                            (case
+                                               (constr 0
+                                                  [ !1
+                                                  , (delay ())
+                                                  , (delay
+                                                       (force
+                                                          (force trace
+                                                             "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                             (delay error)))) ])
+                                               [(force (force chooseList))])))
                                       (!7 !3))
                                    (unIData !1))
                                 (!6 !1))
@@ -101,38 +105,44 @@ erroneous.PDataSum constr 2 program
                      (\!0 ->
                         (\!0 -> !8)
                           (force
-                             (force ifThenElse
-                                (equalsInteger 0 !2)
-                                (delay
-                                   ((\!0 ->
-                                       (\!0 ->
-                                          (\!0 ->
-                                             (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 -> ())
-                                                        (force
-                                                           (force
-                                                              (force chooseList)
-                                                              !1
-                                                              (delay ())
-                                                              (delay
-                                                                 (force
-                                                                    (!12
-                                                                       "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                                       (delay
-                                                                          error)))))))
-                                                     (!9 !3))
-                                                  (unBData !1))
-                                               (!8 !1))
-                                            (!6 !3))
-                                         (unIData !1))
-                                      (!5 !1)))
-                                (delay
-                                   (force
-                                      (!6
-                                         "reached end of sum while still not having found the constructor"
-                                         (delay error)))))))
+                             (case
+                                (constr 0
+                                   [ (equalsInteger 0 !2)
+                                   , (delay
+                                        ((\!0 ->
+                                            (\!0 ->
+                                               (\!0 ->
+                                                  (\!0 ->
+                                                     (\!0 ->
+                                                        (\!0 ->
+                                                           (\!0 -> ())
+                                                             (force
+                                                                (case
+                                                                   (constr 0
+                                                                      [ !1
+                                                                      , (delay
+                                                                           ())
+                                                                      , (delay
+                                                                           (force
+                                                                              (!12
+                                                                                 "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                                                 (delay
+                                                                                    error)))) ])
+                                                                   [ (force
+                                                                        (force
+                                                                           chooseList)) ])))
+                                                          (!9 !3))
+                                                       (unBData !1))
+                                                    (!8 !1))
+                                                 (!6 !3))
+                                              (unIData !1))
+                                           (!5 !1)))
+                                   , (delay
+                                        (force
+                                           (!6
+                                              "reached end of sum while still not having found the constructor"
+                                              (delay error)))) ])
+                                [(force ifThenElse)])))
                        (force (force sndPair) !2))
                     (force (force fstPair) !1))
                  (unConstrData !4))
@@ -154,70 +164,81 @@ erroneous.PDataSum wrong record type program
                               (\!0 ->
                                  (\!0 -> !11)
                                    (force
-                                      (!4
-                                         (equalsInteger 0 !2)
-                                         (delay
-                                            ((\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 -> ())
-                                                                 (force
-                                                                    (!11
-                                                                       !1
-                                                                       (delay
-                                                                          ())
-                                                                       (delay
-                                                                          (force
-                                                                             (!15
-                                                                                !12
-                                                                                (delay
-                                                                                   error)))))))
-                                                              (!12 !3))
-                                                           (unBData !1))
-                                                        (!11 !1))
-                                                     (!9 !3))
-                                                  (unIData !1))
-                                               (!8 !1)))
-                                         (delay
-                                            (force
-                                               (!4
-                                                  (equalsInteger 1 !2)
-                                                  (delay
-                                                     ((\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     (\!0 ->
-                                                                        (\!0 ->
-                                                                           ())
-                                                                          (force
-                                                                             (!11
-                                                                                !1
-                                                                                (delay
-                                                                                   ())
-                                                                                (delay
-                                                                                   (force
-                                                                                      (!15
-                                                                                         !12
-                                                                                         (delay
-                                                                                            error)))))))
-                                                                       (!12 !3))
-                                                                    (unBData
-                                                                       !1))
-                                                                 (!11 !1))
-                                                              (!9 !3))
-                                                           (unBData !1))
-                                                        (!8 !1)))
-                                                  (delay
-                                                     (force
-                                                        (!9
-                                                           "reached end of sum while still not having found the constructor"
-                                                           (delay
-                                                              error))))))))))
+                                      (case
+                                         (constr 0
+                                            [ (equalsInteger 0 !2)
+                                            , (delay
+                                                 ((\!0 ->
+                                                     (\!0 ->
+                                                        (\!0 ->
+                                                           (\!0 ->
+                                                              (\!0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 -> ())
+                                                                      (force
+                                                                         (case
+                                                                            (constr 0
+                                                                               [ !1
+                                                                               , (delay
+                                                                                    ())
+                                                                               , (delay
+                                                                                    (force
+                                                                                       (!15
+                                                                                          !12
+                                                                                          (delay
+                                                                                             error)))) ])
+                                                                            [ !11 ])))
+                                                                   (!12 !3))
+                                                                (unBData !1))
+                                                             (!11 !1))
+                                                          (!9 !3))
+                                                       (unIData !1))
+                                                    (!8 !1)))
+                                            , (delay
+                                                 (force
+                                                    (case
+                                                       (constr 0
+                                                          [ (equalsInteger 1 !2)
+                                                          , (delay
+                                                               ((\!0 ->
+                                                                   (\!0 ->
+                                                                      (\!0 ->
+                                                                         (\!0 ->
+                                                                            (\!0 ->
+                                                                               (\!0 ->
+                                                                                  (\!0 ->
+                                                                                     ())
+                                                                                    (force
+                                                                                       (case
+                                                                                          (constr 0
+                                                                                             [ !1
+                                                                                             , (delay
+                                                                                                  ())
+                                                                                             , (delay
+                                                                                                  (force
+                                                                                                     (!15
+                                                                                                        !12
+                                                                                                        (delay
+                                                                                                           error)))) ])
+                                                                                          [ !11 ])))
+                                                                                 (!12
+                                                                                    !3))
+                                                                              (unBData
+                                                                                 !1))
+                                                                           (!11
+                                                                              !1))
+                                                                        (!9 !3))
+                                                                     (unBData
+                                                                        !1))
+                                                                  (!8 !1)))
+                                                          , (delay
+                                                               (force
+                                                                  (!9
+                                                                     "reached end of sum while still not having found the constructor"
+                                                                     (delay
+                                                                        error)))) ])
+                                                       [!4]))) ])
+                                         [!4])))
                                 (force (force sndPair) !2))
                              (force (force fstPair) !1))
                           (unConstrData !7))
@@ -240,30 +261,39 @@ erroneous.[ByteString] (with length == 2) /= PRational program
                         (\!0 ->
                            (\!0 ->
                               force
-                                (!3
-                                   (equalsData (listData (!5 !1)) (listData !9))
-                                   (delay
-                                      ((\!0 ->
-                                          (\!0 ->
-                                             listData
-                                               (!9
-                                                  (bData !8)
-                                                  (!9 (bData !10) !11)))
-                                            (force
-                                               (!4
-                                                  (lessThanEqualsInteger !1 0)
-                                                  (delay
-                                                     (force
-                                                        (!5
-                                                           "ptryPositive: building with non positive"
-                                                           (delay error))))
-                                                  (delay !1))))
-                                         (unIData (force headList !1))))
-                                   (delay
-                                      (force
-                                         (!4
-                                            "ptryFrom(PRational): data list length should be 2"
-                                            (delay error))))))
+                                (case
+                                   (constr 0
+                                      [ (equalsData
+                                           (listData (!5 !1))
+                                           (listData !9))
+                                      , (delay
+                                           ((\!0 ->
+                                               (\!0 ->
+                                                  listData
+                                                    (!9
+                                                       (bData !8)
+                                                       (!9 (bData !10) !11)))
+                                                 (force
+                                                    (case
+                                                       (constr 0
+                                                          [ (lessThanEqualsInteger
+                                                               !1
+                                                               0)
+                                                          , (delay
+                                                               (force
+                                                                  (!5
+                                                                     "ptryPositive: building with non positive"
+                                                                     (delay
+                                                                        error))))
+                                                          , (delay !1) ])
+                                                       [!4])))
+                                              (unIData (force headList !1))))
+                                      , (delay
+                                           (force
+                                              (!4
+                                                 "ptryFrom(PRational): data list length should be 2"
+                                                 (delay error)))) ])
+                                   [!3]))
                              (!4 !1))
                           (unListData
                              (listData (!5 (bData !4) (!5 (bData !6) !7)))))
@@ -283,26 +313,30 @@ erroneous.[Integer] (with length == 0) /= PRational program
                (\!0 ->
                   (\!0 ->
                      force
-                       (!3
-                          (equalsData (listData (!5 !1)) (listData !6))
-                          (delay
-                             ((\!0 ->
-                                 (\!0 -> listData !8)
-                                   (force
-                                      (!4
-                                         (lessThanEqualsInteger !1 0)
-                                         (delay
-                                            (force
-                                               (!5
-                                                  "ptryPositive: building with non positive"
-                                                  (delay error))))
-                                         (delay !1))))
-                                (unIData (force headList !1))))
-                          (delay
-                             (force
-                                (!4
-                                   "ptryFrom(PRational): data list length should be 2"
-                                   (delay error))))))
+                       (case
+                          (constr 0
+                             [ (equalsData (listData (!5 !1)) (listData !6))
+                             , (delay
+                                  ((\!0 ->
+                                      (\!0 -> listData !8)
+                                        (force
+                                           (case
+                                              (constr 0
+                                                 [ (lessThanEqualsInteger !1 0)
+                                                 , (delay
+                                                      (force
+                                                         (!5
+                                                            "ptryPositive: building with non positive"
+                                                            (delay error))))
+                                                 , (delay !1) ])
+                                              [!4])))
+                                     (unIData (force headList !1))))
+                             , (delay
+                                  (force
+                                     (!4
+                                        "ptryFrom(PRational): data list length should be 2"
+                                        (delay error)))) ])
+                          [!3]))
                     (!4 !1))
                  (unListData (listData !4)))
               (force ifThenElse))
@@ -322,34 +356,41 @@ erroneous.[Integer] (with length == 3) /= PRational program
                            (\!0 ->
                               (\!0 ->
                                  force
-                                   (!3
-                                      (equalsData
-                                         (listData (!5 !1))
-                                         (listData !10))
-                                      (delay
-                                         ((\!0 ->
-                                             (\!0 ->
-                                                listData
-                                                  (!10
-                                                     !8
-                                                     (!10 !9 (!10 !11 !12))))
-                                               (force
-                                                  (!4
-                                                     (lessThanEqualsInteger
-                                                        !1
-                                                        0)
-                                                     (delay
-                                                        (force
-                                                           (!5
-                                                              "ptryPositive: building with non positive"
-                                                              (delay error))))
-                                                     (delay !1))))
-                                            (unIData (force headList !1))))
-                                      (delay
-                                         (force
-                                            (!4
-                                               "ptryFrom(PRational): data list length should be 2"
-                                               (delay error))))))
+                                   (case
+                                      (constr 0
+                                         [ (equalsData
+                                              (listData (!5 !1))
+                                              (listData !10))
+                                         , (delay
+                                              ((\!0 ->
+                                                  (\!0 ->
+                                                     listData
+                                                       (!10
+                                                          !8
+                                                          (!10
+                                                             !9
+                                                             (!10 !11 !12))))
+                                                    (force
+                                                       (case
+                                                          (constr 0
+                                                             [ (lessThanEqualsInteger
+                                                                  !1
+                                                                  0)
+                                                             , (delay
+                                                                  (force
+                                                                     (!5
+                                                                        "ptryPositive: building with non positive"
+                                                                        (delay
+                                                                           error))))
+                                                             , (delay !1) ])
+                                                          [!4])))
+                                                 (unIData (force headList !1))))
+                                         , (delay
+                                              (force
+                                                 (!4
+                                                    "ptryFrom(PRational): data list length should be 2"
+                                                    (delay error)))) ])
+                                      [!3]))
                                 (!4 !1))
                              (unListData (listData (!6 !4 (!6 !5 (!6 !7 !8))))))
                           (force ifThenElse))
@@ -372,26 +413,36 @@ erroneous.[Integer] (with length == 2, with 0 denominator) /= PRational program
                         (\!0 ->
                            (\!0 ->
                               force
-                                (!3
-                                   (equalsData (listData (!5 !1)) (listData !9))
-                                   (delay
-                                      ((\!0 ->
-                                          (\!0 -> listData (!9 !8 (!9 !10 !11)))
-                                            (force
-                                               (!4
-                                                  (lessThanEqualsInteger !1 0)
-                                                  (delay
-                                                     (force
-                                                        (!5
-                                                           "ptryPositive: building with non positive"
-                                                           (delay error))))
-                                                  (delay !1))))
-                                         (unIData (force headList !1))))
-                                   (delay
-                                      (force
-                                         (!4
-                                            "ptryFrom(PRational): data list length should be 2"
-                                            (delay error))))))
+                                (case
+                                   (constr 0
+                                      [ (equalsData
+                                           (listData (!5 !1))
+                                           (listData !9))
+                                      , (delay
+                                           ((\!0 ->
+                                               (\!0 ->
+                                                  listData (!9 !8 (!9 !10 !11)))
+                                                 (force
+                                                    (case
+                                                       (constr 0
+                                                          [ (lessThanEqualsInteger
+                                                               !1
+                                                               0)
+                                                          , (delay
+                                                               (force
+                                                                  (!5
+                                                                     "ptryPositive: building with non positive"
+                                                                     (delay
+                                                                        error))))
+                                                          , (delay !1) ])
+                                                       [!4])))
+                                              (unIData (force headList !1))))
+                                      , (delay
+                                           (force
+                                              (!4
+                                                 "ptryFrom(PRational): data list length should be 2"
+                                                 (delay error)))) ])
+                                   [!3]))
                              (!4 !1))
                           (unListData (listData (!5 !4 (!5 !6 !7)))))
                        (force ifThenElse))
@@ -443,13 +494,15 @@ working.[String] == [String] program
                              (\!0 -> !2 (\!0 -> !2 !2 !1)))
                           (\!0 !0 ->
                              force
-                               (force (force chooseList)
-                                  !1
-                                  (delay !7)
-                                  (delay
-                                     (!6
-                                        (!3 (force headList !1))
-                                        (!2 (force tailList !1)))))))
+                               (case
+                                  (constr 0
+                                     [ !1
+                                     , (delay !7)
+                                     , (delay
+                                          (!6
+                                             (!3 (force headList !1))
+                                             (!2 (force tailList !1)))) ])
+                                  [(force (force chooseList))])))
                        (\!0 -> (\!0 -> !2) (unBData !1))
                        (unListData (listData (!3 (bData !1) (!2 (bData !5)))))))
                  #666f6f)
@@ -474,14 +527,16 @@ working.A { test := Integer, test2 := Integer } == { test := Integer, test2 := I
                                        listData
                                          (!11 (iData 7) (!11 (iData 42) !12)))
                                       (force
-                                         (force (force chooseList)
-                                            !1
-                                            (delay ())
-                                            (delay
-                                               (force
-                                                  (force trace
-                                                     "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                     (delay error)))))))
+                                         (case
+                                            (constr 0
+                                               [ !1
+                                               , (delay ())
+                                               , (delay
+                                                    (force
+                                                       (force trace
+                                                          "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                          (delay error)))) ])
+                                            [(force (force chooseList))])))
                                    (!7 !3))
                                 (unIData !1))
                              (!6 !1))
@@ -510,14 +565,16 @@ working.A { test := Integer, test2 := Integer } == [Integer] program
                                        listData
                                          (!11 (iData 7) (!11 (iData 42) !12)))
                                       (force
-                                         (force (force chooseList)
-                                            !1
-                                            (delay ())
-                                            (delay
-                                               (force
-                                                  (force trace
-                                                     "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                     (delay error)))))))
+                                         (case
+                                            (constr 0
+                                               [ !1
+                                               , (delay ())
+                                               , (delay
+                                                    (force
+                                                       (force trace
+                                                          "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                          (delay error)))) ])
+                                            [(force (force chooseList))])))
                                    (!7 !3))
                                 (unIData !1))
                              (!6 !1))
@@ -549,14 +606,16 @@ working.A { test := String, test2 := Integer } == { test := String, test2 := Int
                                                (bData !11)
                                                (!12 (iData 42) !13)))
                                          (force
-                                            (force (force chooseList)
-                                               !1
-                                               (delay ())
-                                               (delay
-                                                  (force
-                                                     (force trace
-                                                        "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                        (delay error)))))))
+                                            (case
+                                               (constr 0
+                                                  [ !1
+                                                  , (delay ())
+                                                  , (delay
+                                                       (force
+                                                          (force trace
+                                                             "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                             (delay error)))) ])
+                                               [(force (force chooseList))])))
                                       (!7 !3))
                                    (unIData !1))
                                 (!6 !1))
@@ -583,70 +642,81 @@ working.PDataSum constr 0 program
                               (\!0 ->
                                  (\!0 -> !11)
                                    (force
-                                      (!4
-                                         (equalsInteger 0 !2)
-                                         (delay
-                                            ((\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 -> ())
-                                                                 (force
-                                                                    (!11
-                                                                       !1
-                                                                       (delay
-                                                                          ())
-                                                                       (delay
-                                                                          (force
-                                                                             (!15
-                                                                                !12
-                                                                                (delay
-                                                                                   error)))))))
-                                                              (!12 !3))
-                                                           (unBData !1))
-                                                        (!11 !1))
-                                                     (!9 !3))
-                                                  (unIData !1))
-                                               (!8 !1)))
-                                         (delay
-                                            (force
-                                               (!4
-                                                  (equalsInteger 1 !2)
-                                                  (delay
-                                                     ((\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     (\!0 ->
-                                                                        (\!0 ->
-                                                                           ())
-                                                                          (force
-                                                                             (!11
-                                                                                !1
-                                                                                (delay
-                                                                                   ())
-                                                                                (delay
-                                                                                   (force
-                                                                                      (!15
-                                                                                         !12
-                                                                                         (delay
-                                                                                            error)))))))
-                                                                       (!12 !3))
-                                                                    (unBData
-                                                                       !1))
-                                                                 (!11 !1))
-                                                              (!9 !3))
-                                                           (unIData !1))
-                                                        (!8 !1)))
-                                                  (delay
-                                                     (force
-                                                        (!9
-                                                           "reached end of sum while still not having found the constructor"
-                                                           (delay
-                                                              error))))))))))
+                                      (case
+                                         (constr 0
+                                            [ (equalsInteger 0 !2)
+                                            , (delay
+                                                 ((\!0 ->
+                                                     (\!0 ->
+                                                        (\!0 ->
+                                                           (\!0 ->
+                                                              (\!0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 -> ())
+                                                                      (force
+                                                                         (case
+                                                                            (constr 0
+                                                                               [ !1
+                                                                               , (delay
+                                                                                    ())
+                                                                               , (delay
+                                                                                    (force
+                                                                                       (!15
+                                                                                          !12
+                                                                                          (delay
+                                                                                             error)))) ])
+                                                                            [ !11 ])))
+                                                                   (!12 !3))
+                                                                (unBData !1))
+                                                             (!11 !1))
+                                                          (!9 !3))
+                                                       (unIData !1))
+                                                    (!8 !1)))
+                                            , (delay
+                                                 (force
+                                                    (case
+                                                       (constr 0
+                                                          [ (equalsInteger 1 !2)
+                                                          , (delay
+                                                               ((\!0 ->
+                                                                   (\!0 ->
+                                                                      (\!0 ->
+                                                                         (\!0 ->
+                                                                            (\!0 ->
+                                                                               (\!0 ->
+                                                                                  (\!0 ->
+                                                                                     ())
+                                                                                    (force
+                                                                                       (case
+                                                                                          (constr 0
+                                                                                             [ !1
+                                                                                             , (delay
+                                                                                                  ())
+                                                                                             , (delay
+                                                                                                  (force
+                                                                                                     (!15
+                                                                                                        !12
+                                                                                                        (delay
+                                                                                                           error)))) ])
+                                                                                          [ !11 ])))
+                                                                                 (!12
+                                                                                    !3))
+                                                                              (unBData
+                                                                                 !1))
+                                                                           (!11
+                                                                              !1))
+                                                                        (!9 !3))
+                                                                     (unIData
+                                                                        !1))
+                                                                  (!8 !1)))
+                                                          , (delay
+                                                               (force
+                                                                  (!9
+                                                                     "reached end of sum while still not having found the constructor"
+                                                                     (delay
+                                                                        error)))) ])
+                                                       [!4]))) ])
+                                         [!4])))
                                 (force (force sndPair) !2))
                              (force (force fstPair) !1))
                           (unConstrData !7))
@@ -671,70 +741,81 @@ working.PDataSum constr 1 program
                               (\!0 ->
                                  (\!0 -> !11)
                                    (force
-                                      (!4
-                                         (equalsInteger 0 !2)
-                                         (delay
-                                            ((\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 -> ())
-                                                                 (force
-                                                                    (!11
-                                                                       !1
-                                                                       (delay
-                                                                          ())
-                                                                       (delay
-                                                                          (force
-                                                                             (!15
-                                                                                !12
-                                                                                (delay
-                                                                                   error)))))))
-                                                              (!12 !3))
-                                                           (unBData !1))
-                                                        (!11 !1))
-                                                     (!9 !3))
-                                                  (unIData !1))
-                                               (!8 !1)))
-                                         (delay
-                                            (force
-                                               (!4
-                                                  (equalsInteger 1 !2)
-                                                  (delay
-                                                     ((\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     (\!0 ->
-                                                                        (\!0 ->
-                                                                           ())
-                                                                          (force
-                                                                             (!11
-                                                                                !1
-                                                                                (delay
-                                                                                   ())
-                                                                                (delay
-                                                                                   (force
-                                                                                      (!15
-                                                                                         !12
-                                                                                         (delay
-                                                                                            error)))))))
-                                                                       (!12 !3))
-                                                                    (unBData
-                                                                       !1))
-                                                                 (!11 !1))
-                                                              (!9 !3))
-                                                           (unIData !1))
-                                                        (!8 !1)))
-                                                  (delay
-                                                     (force
-                                                        (!9
-                                                           "reached end of sum while still not having found the constructor"
-                                                           (delay
-                                                              error))))))))))
+                                      (case
+                                         (constr 0
+                                            [ (equalsInteger 0 !2)
+                                            , (delay
+                                                 ((\!0 ->
+                                                     (\!0 ->
+                                                        (\!0 ->
+                                                           (\!0 ->
+                                                              (\!0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 -> ())
+                                                                      (force
+                                                                         (case
+                                                                            (constr 0
+                                                                               [ !1
+                                                                               , (delay
+                                                                                    ())
+                                                                               , (delay
+                                                                                    (force
+                                                                                       (!15
+                                                                                          !12
+                                                                                          (delay
+                                                                                             error)))) ])
+                                                                            [ !11 ])))
+                                                                   (!12 !3))
+                                                                (unBData !1))
+                                                             (!11 !1))
+                                                          (!9 !3))
+                                                       (unIData !1))
+                                                    (!8 !1)))
+                                            , (delay
+                                                 (force
+                                                    (case
+                                                       (constr 0
+                                                          [ (equalsInteger 1 !2)
+                                                          , (delay
+                                                               ((\!0 ->
+                                                                   (\!0 ->
+                                                                      (\!0 ->
+                                                                         (\!0 ->
+                                                                            (\!0 ->
+                                                                               (\!0 ->
+                                                                                  (\!0 ->
+                                                                                     ())
+                                                                                    (force
+                                                                                       (case
+                                                                                          (constr 0
+                                                                                             [ !1
+                                                                                             , (delay
+                                                                                                  ())
+                                                                                             , (delay
+                                                                                                  (force
+                                                                                                     (!15
+                                                                                                        !12
+                                                                                                        (delay
+                                                                                                           error)))) ])
+                                                                                          [ !11 ])))
+                                                                                 (!12
+                                                                                    !3))
+                                                                              (unBData
+                                                                                 !1))
+                                                                           (!11
+                                                                              !1))
+                                                                        (!9 !3))
+                                                                     (unIData
+                                                                        !1))
+                                                                  (!8 !1)))
+                                                          , (delay
+                                                               (force
+                                                                  (!9
+                                                                     "reached end of sum while still not having found the constructor"
+                                                                     (delay
+                                                                        error)))) ])
+                                                       [!4]))) ])
+                                         [!4])))
                                 (force (force sndPair) !2))
                              (force (force fstPair) !1))
                           (unConstrData !7))
@@ -763,14 +844,16 @@ recovering a record partially vs completely.partially program
                                        listData
                                          (!10 (iData 3) (!10 (bData !11) !12)))
                                       (force
-                                         (force (force chooseList)
-                                            !1
-                                            (delay ())
-                                            (delay
-                                               (force
-                                                  (force trace
-                                                     "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                     (delay error)))))))
+                                         (case
+                                            (constr 0
+                                               [ !1
+                                               , (delay ())
+                                               , (delay
+                                                    (force
+                                                       (force trace
+                                                          "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                          (delay error)))) ])
+                                            [(force (force chooseList))])))
                                    (!6 !2))
                                 (!6 !1))
                              (!4 !3))
@@ -802,14 +885,16 @@ recovering a record partially vs completely.completely program
                                                (iData 3)
                                                (!11 (bData !12) !13)))
                                          (force
-                                            (force (force chooseList)
-                                               !1
-                                               (delay ())
-                                               (delay
-                                                  (force
-                                                     (force trace
-                                                        "ptryFrom(PDataRecord[]): list is longer than zero"
-                                                        (delay error)))))))
+                                            (case
+                                               (constr 0
+                                                  [ !1
+                                                  , (delay ())
+                                                  , (delay
+                                                       (force
+                                                          (force trace
+                                                             "ptryFrom(PDataRecord[]): list is longer than zero"
+                                                             (delay error)))) ])
+                                               [(force (force chooseList))])))
                                       (!7 !3))
                                    (unBData !1))
                                 (!6 !1))
@@ -862,13 +947,15 @@ removing the data wrapper.erroneous.[String] /= [Integer] program
                              (\!0 -> !2 (\!0 -> !2 !2 !1)))
                           (\!0 !0 ->
                              force
-                               (force (force chooseList)
-                                  !1
-                                  (delay !7)
-                                  (delay
-                                     (!6
-                                        (!3 (force headList !1))
-                                        (!2 (force tailList !1)))))))
+                               (case
+                                  (constr 0
+                                     [ !1
+                                     , (delay !7)
+                                     , (delay
+                                          (!6
+                                             (!3 (force headList !1))
+                                             (!2 (force tailList !1)))) ])
+                                  [(force (force chooseList))])))
                        (\!0 -> (\!0 -> !2) (unIData !1))
                        (unListData (listData (!3 (bData !1) (!2 (bData !5)))))))
                  #666f6f)
@@ -918,13 +1005,15 @@ removing the data wrapper.working.[String] == [String] program
                              (\!0 -> !2 (\!0 -> !2 !2 !1)))
                           (\!0 !0 ->
                              force
-                               (force (force chooseList)
-                                  !1
-                                  (delay !7)
-                                  (delay
-                                     (!6
-                                        (!3 (force headList !1))
-                                        (!2 (force tailList !1)))))))
+                               (case
+                                  (constr 0
+                                     [ !1
+                                     , (delay !7)
+                                     , (delay
+                                          (!6
+                                             (!3 (force headList !1))
+                                             (!2 (force tailList !1)))) ])
+                                  [(force (force chooseList))])))
                        (\!0 -> (\!0 -> !2) (unBData !1))
                        (unListData (listData (!3 (bData !1) (!2 (bData !5)))))))
                  #666f6f)
@@ -1555,11 +1644,15 @@ removing the data wrapper.partial checks.check whole structure program
                              !2
                                (\!0 !0 ->
                                   force
-                                    (!5
-                                       !1
-                                       (delay !10)
-                                       (delay
-                                          (!9 (!3 (!6 !1)) (!2 (!7 !1))))))))
+                                    (case
+                                       (constr 0
+                                          [ !1
+                                          , (delay !10)
+                                          , (delay
+                                               (!9
+                                                  (!3 (!6 !1))
+                                                  (!2 (!7 !1)))) ])
+                                       [!5]))))
                        (\!0 ->
                           (\!0 -> !2 (\!0 -> !2 !2 !1))
                             (\!0 -> !2 (\!0 -> !2 !2 !1))))
@@ -1874,13 +1967,15 @@ removing the data wrapper.partial checks.check structure partly program
                        (\!0 -> !2 (\!0 -> !2 !2 !1)))
                     (\!0 !0 ->
                        force
-                         (force (force chooseList)
-                            !1
-                            (delay !6)
-                            (delay
-                               (!5
-                                  (!3 (force headList !1))
-                                  (!2 (force tailList !1)))))))
+                         (case
+                            (constr 0
+                               [ !1
+                               , (delay !6)
+                               , (delay
+                                    (!5
+                                       (!3 (force headList !1))
+                                       (!2 (force tailList !1)))) ])
+                            [(force (force chooseList))])))
                  (\!0 -> (\!0 -> !2) (unListData !1))
                  (unListData
                     (listData
@@ -2205,25 +2300,30 @@ removing the data wrapper.recovering a nested record.succeeds program
                                                            (!15 (iData 42) !16))
                                                         !16))
                                                   (force
-                                                     (!9
-                                                        !1
-                                                        (delay ())
-                                                        (delay
-                                                           (force
-                                                              (!10
-                                                                 !11
-                                                                 (delay
-                                                                    error)))))))
+                                                     (case
+                                                        (constr 0
+                                                           [ !1
+                                                           , (delay ())
+                                                           , (delay
+                                                                (force
+                                                                   (!10
+                                                                      !11
+                                                                      (delay
+                                                                         error)))) ])
+                                                        [!9])))
                                                (!11 !7))
                                             (force
-                                               (!7
-                                                  !1
-                                                  (delay ())
-                                                  (delay
-                                                     (force
-                                                        (!8
-                                                           !9
-                                                           (delay error)))))))
+                                               (case
+                                                  (constr 0
+                                                     [ !1
+                                                     , (delay ())
+                                                     , (delay
+                                                          (force
+                                                             (!8
+                                                                !9
+                                                                (delay
+                                                                   error)))) ])
+                                                  [!7])))
                                          (!9 !3))
                                       (unIData !1))
                                    (!8 !1))
@@ -2262,25 +2362,30 @@ removing the data wrapper.recovering a nested record.fails program
                                                            (!15 (iData 42) !16))
                                                         !16))
                                                   (force
-                                                     (!9
-                                                        !1
-                                                        (delay ())
-                                                        (delay
-                                                           (force
-                                                              (!10
-                                                                 !11
-                                                                 (delay
-                                                                    error)))))))
+                                                     (case
+                                                        (constr 0
+                                                           [ !1
+                                                           , (delay ())
+                                                           , (delay
+                                                                (force
+                                                                   (!10
+                                                                      !11
+                                                                      (delay
+                                                                         error)))) ])
+                                                        [!9])))
                                                (!11 !7))
                                             (force
-                                               (!7
-                                                  !1
-                                                  (delay ())
-                                                  (delay
-                                                     (force
-                                                        (!8
-                                                           !9
-                                                           (delay error)))))))
+                                               (case
+                                                  (constr 0
+                                                     [ !1
+                                                     , (delay ())
+                                                     , (delay
+                                                          (force
+                                                             (!8
+                                                                !9
+                                                                (delay
+                                                                   error)))) ])
+                                                  [!7])))
                                          (!9 !3))
                                       (unBData !1))
                                    (!8 !1))
@@ -2316,26 +2421,30 @@ removing the data wrapper.recovering a nested record.sample usage contains the r
                                                 (\!0 ->
                                                    (\!0 -> !5)
                                                      (force
-                                                        (!9
-                                                           !1
-                                                           (delay ())
-                                                           (delay
-                                                              (force
-                                                                 (!10
-                                                                    !11
-                                                                    (delay
-                                                                       error)))))))
+                                                        (case
+                                                           (constr 0
+                                                              [ !1
+                                                              , (delay ())
+                                                              , (delay
+                                                                   (force
+                                                                      (!10
+                                                                         !11
+                                                                         (delay
+                                                                            error)))) ])
+                                                           [!9])))
                                                   (!11 !7))
                                                (force
-                                                  (!7
-                                                     !1
-                                                     (delay ())
-                                                     (delay
-                                                        (force
-                                                           (!8
-                                                              !9
-                                                              (delay
-                                                                 error)))))))
+                                                  (case
+                                                     (constr 0
+                                                        [ !1
+                                                        , (delay ())
+                                                        , (delay
+                                                             (force
+                                                                (!8
+                                                                   !9
+                                                                   (delay
+                                                                      error)))) ])
+                                                     [!7])))
                                             (!9 !3))
                                          (unIData !1))
                                       (!8 !1))
@@ -2372,106 +2481,124 @@ example2.recovering a record succeeds program
                                                (iData 4)
                                                (!11 (bData !12) !13)))
                                          (force
-                                            (!4
-                                               (equalsInteger 0 !2)
-                                               (delay
-                                                  ((\!0 ->
-                                                      (\!0 ->
-                                                         (\!0 ->
-                                                            (\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     (\!0 -> ())
-                                                                       (force
-                                                                          (!12
-                                                                             !1
-                                                                             (delay
-                                                                                ())
-                                                                             (delay
-                                                                                (force
-                                                                                   (!15
-                                                                                      !11
-                                                                                      (delay
-                                                                                         error)))))))
-                                                                    (!12 !3))
-                                                                 (unBData !1))
-                                                              (!11 !1))
-                                                           (!9 !3))
-                                                        (unIData !1))
-                                                     (!8 !1)))
-                                               (delay
-                                                  (force
-                                                     (!4
-                                                        (equalsInteger 1 !2)
-                                                        (delay
-                                                           ((\!0 ->
-                                                               (\!0 ->
-                                                                  (\!0 ->
-                                                                     (\!0 ->
-                                                                        (\!0 ->
-                                                                           (\!0 ->
-                                                                              (\!0 ->
-                                                                                 ())
-                                                                                (force
-                                                                                   (!12
-                                                                                      !1
-                                                                                      (delay
-                                                                                         ())
-                                                                                      (delay
-                                                                                         (force
-                                                                                            (!15
-                                                                                               !11
-                                                                                               (delay
-                                                                                                  error)))))))
-                                                                             (!12
-                                                                                !3))
-                                                                          (unBData
-                                                                             !1))
-                                                                       (!11 !1))
-                                                                    (!9 !3))
-                                                                 ((\!0 ->
-                                                                     (\!0 ->
-                                                                        (\!0 ->
-                                                                           !2
-                                                                             (\!0 ->
-                                                                                !2
-                                                                                  !2
-                                                                                  !1))
-                                                                          (\!0 ->
-                                                                             !2
-                                                                               (\!0 ->
-                                                                                  !2
-                                                                                    !2
-                                                                                    !1)))
-                                                                       (\!0
-                                                                         !0 ->
-                                                                          force
-                                                                            (!10
-                                                                               !1
-                                                                               (delay
-                                                                                  !16)
-                                                                               (delay
-                                                                                  (!14
-                                                                                     (!3
-                                                                                        (!12
-                                                                                           !1))
-                                                                                     (!2
-                                                                                        (!11
-                                                                                           !1)))))))
+                                            (case
+                                               (constr 0
+                                                  [ (equalsInteger 0 !2)
+                                                  , (delay
+                                                       ((\!0 ->
+                                                           (\!0 ->
+                                                              (\!0 ->
+                                                                 (\!0 ->
                                                                     (\!0 ->
                                                                        (\!0 ->
-                                                                          !2)
-                                                                         (unIData
-                                                                            !1))
-                                                                    (unListData
-                                                                       !1)))
-                                                              (!8 !1)))
-                                                        (delay
-                                                           (force
-                                                              (!9
-                                                                 "reached end of sum while still not having found the constructor"
-                                                                 (delay
-                                                                    error))))))))))
+                                                                          (\!0 ->
+                                                                             ())
+                                                                            (force
+                                                                               (case
+                                                                                  (constr 0
+                                                                                     [ !1
+                                                                                     , (delay
+                                                                                          ())
+                                                                                     , (delay
+                                                                                          (force
+                                                                                             (!15
+                                                                                                !11
+                                                                                                (delay
+                                                                                                   error)))) ])
+                                                                                  [ !12 ])))
+                                                                         (!12
+                                                                            !3))
+                                                                      (unBData
+                                                                         !1))
+                                                                   (!11 !1))
+                                                                (!9 !3))
+                                                             (unIData !1))
+                                                          (!8 !1)))
+                                                  , (delay
+                                                       (force
+                                                          (case
+                                                             (constr 0
+                                                                [ (equalsInteger
+                                                                     1
+                                                                     !2)
+                                                                , (delay
+                                                                     ((\!0 ->
+                                                                         (\!0 ->
+                                                                            (\!0 ->
+                                                                               (\!0 ->
+                                                                                  (\!0 ->
+                                                                                     (\!0 ->
+                                                                                        (\!0 ->
+                                                                                           ())
+                                                                                          (force
+                                                                                             (case
+                                                                                                (constr 0
+                                                                                                   [ !1
+                                                                                                   , (delay
+                                                                                                        ())
+                                                                                                   , (delay
+                                                                                                        (force
+                                                                                                           (!15
+                                                                                                              !11
+                                                                                                              (delay
+                                                                                                                 error)))) ])
+                                                                                                [ !12 ])))
+                                                                                       (!12
+                                                                                          !3))
+                                                                                    (unBData
+                                                                                       !1))
+                                                                                 (!11
+                                                                                    !1))
+                                                                              (!9
+                                                                                 !3))
+                                                                           ((\!0 ->
+                                                                               (\!0 ->
+                                                                                  (\!0 ->
+                                                                                     !2
+                                                                                       (\!0 ->
+                                                                                          !2
+                                                                                            !2
+                                                                                            !1))
+                                                                                    (\!0 ->
+                                                                                       !2
+                                                                                         (\!0 ->
+                                                                                            !2
+                                                                                              !2
+                                                                                              !1)))
+                                                                                 (\!0
+                                                                                   !0 ->
+                                                                                    force
+                                                                                      (case
+                                                                                         (constr 0
+                                                                                            [ !1
+                                                                                            , (delay
+                                                                                                 !16)
+                                                                                            , (delay
+                                                                                                 (!14
+                                                                                                    (!3
+                                                                                                       (!12
+                                                                                                          !1))
+                                                                                                    (!2
+                                                                                                       (!11
+                                                                                                          !1)))) ])
+                                                                                         [ !10 ])))
+                                                                              (\!0 ->
+                                                                                 (\!0 ->
+                                                                                    !2)
+                                                                                   (unIData
+                                                                                      !1))
+                                                                              (unListData
+                                                                                 !1)))
+                                                                        (!8
+                                                                           !1)))
+                                                                , (delay
+                                                                     (force
+                                                                        (!9
+                                                                           "reached end of sum while still not having found the constructor"
+                                                                           (delay
+                                                                              error)))) ])
+                                                             [!4]))) ])
+                                               [!4])))
                                       (force (force sndPair) !2))
                                    (force (force fstPair) !1))
                                 (unConstrData
