@@ -15,21 +15,20 @@ auth_policy.0 program
   (\!0 !0 ->
      force
        (force ifThenElse
-          ((\!0 ->
-              (\!0 ->
-                 (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                (\!0 !0 ->
-                   force
-                     (force (force chooseList)
-                        !1
-                        (delay False)
-                        (delay
-                           (force
-                              (force ifThenElse
-                                 (equalsData (force headList !1) !3)
-                                 (delay True)
-                                 (delay (!2 (force tailList !1)))))))))
-             (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f)
+          ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+             (\!0 !0 ->
+                force
+                  (force (force chooseList)
+                     !1
+                     (delay False)
+                     (delay
+                        (force
+                           (force ifThenElse
+                              (equalsData
+                                 (force headList !1)
+                                 (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                              (delay True)
+                              (delay (!2 (force tailList !1))))))))
              (unListData
                 ((\!0 ->
                     force headList
@@ -47,27 +46,26 @@ auth_policy.0 program
                       ((\!0 -> force (force sndPair) (unConstrData !1)) !1)))))
           (delay ())
           (delay error)))
-auth_policy.hash program 1.0.0 "581c3f8d3bab4f2b59895b29d4ba5a00b0410719f1f36abe7dfba8444fc8"
+auth_policy.hash program 1.0.0 "581c59ab4f6f363e2fc70a94981c12f36b256b8c57580364cafcadae9f78"
 auth_stake_validator.0 program
   1.0.0
   (\!0 !0 ->
      force
        (force ifThenElse
-          ((\!0 ->
-              (\!0 ->
-                 (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                (\!0 !0 ->
-                   force
-                     (force (force chooseList)
-                        !1
-                        (delay False)
-                        (delay
-                           (force
-                              (force ifThenElse
-                                 (equalsData (force headList !1) !3)
-                                 (delay True)
-                                 (delay (!2 (force tailList !1)))))))))
-             (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f)
+          ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+             (\!0 !0 ->
+                force
+                  (force (force chooseList)
+                     !1
+                     (delay False)
+                     (delay
+                        (force
+                           (force ifThenElse
+                              (equalsData
+                                 (force headList !1)
+                                 (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                              (delay True)
+                              (delay (!2 (force tailList !1))))))))
              (unListData
                 ((\!0 ->
                     force headList
@@ -85,4 +83,4 @@ auth_stake_validator.0 program
                       ((\!0 -> force (force sndPair) (unConstrData !1)) !1)))))
           (delay ())
           (delay error)))
-auth_stake_validator.hash program 1.0.0 "581c3f8d3bab4f2b59895b29d4ba5a00b0410719f1f36abe7dfba8444fc8"
+auth_stake_validator.hash program 1.0.0 "581c59ab4f6f363e2fc70a94981c12f36b256b8c57580364cafcadae9f78"

@@ -1,10 +1,6 @@
 unit program 1.0.0 "()"
-bool.true program
-  1.0.0
-  ((\!0 -> force (force ifThenElse !1 (delay "PTrue") (delay "PFalse"))) True)
-bool.false program
-  1.0.0
-  ((\!0 -> force (force ifThenElse !1 (delay "PTrue") (delay "PFalse"))) False)
+bool.true program 1.0.0 (force (force ifThenElse True (delay "PTrue") (delay "PFalse")))
+bool.false program 1.0.0 (force (force ifThenElse False (delay "PTrue") (delay "PFalse")))
 int.0 program
   1.0.0
   ((\!0 ->
@@ -1294,69 +1290,66 @@ bytestring.empty program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            appendString
-                                                              "0x"
-                                                              ((\!0 ->
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1))
+                                                         appendString
+                                                           "0x"
+                                                           ((\!0 ->
+                                                               (\!0 ->
+                                                                  !2
                                                                     (\!0 ->
                                                                        !2
-                                                                         (\!0 ->
-                                                                            !2
-                                                                              !2
-                                                                              !1)))
-                                                                 (\!0 !0 ->
-                                                                    (\!0 !0 ->
-                                                                       (\!0 ->
-                                                                          force
-                                                                            (!23
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  0)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  ((\!0 ->
-                                                                                      (\!0 ->
-                                                                                         !4
+                                                                         !2
+                                                                         !1))
+                                                                 (\!0 ->
+                                                                    !2
+                                                                      (\!0 ->
+                                                                         !2
+                                                                           !2
+                                                                           !1)))
+                                                              (\!0 !0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 ->
+                                                                       force
+                                                                         (!21
+                                                                            (equalsInteger
+                                                                               !1
+                                                                               0)
+                                                                            (delay
+                                                                               "")
+                                                                            (delay
+                                                                               ((\!0 ->
+                                                                                   (\!0 ->
+                                                                                      !4
+                                                                                        !2
+                                                                                        !1)
+                                                                                     (sliceByteString
+                                                                                        1
+                                                                                        (subtractInteger
                                                                                            !2
-                                                                                           !1)
-                                                                                        (sliceByteString
-                                                                                           1
-                                                                                           (subtractInteger
-                                                                                              !2
-                                                                                              1)
-                                                                                           !5))
-                                                                                     (indexByteString
-                                                                                        !4
-                                                                                        0)))))
-                                                                         (lengthOfByteString
-                                                                            !3))
-                                                                      ""
-                                                                      (\!0 !0 ->
-                                                                         appendString
-                                                                           ((\!0 ->
-                                                                               (\!0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !2)
-                                                                                    (!8
-                                                                                       !1))
-                                                                                 (remainderInteger
-                                                                                    !3
-                                                                                    16))
-                                                                              (quotientInteger
-                                                                                 !2
+                                                                                           1)
+                                                                                        !4))
+                                                                                  (indexByteString
+                                                                                     !3
+                                                                                     0)))))
+                                                                      (lengthOfByteString
+                                                                         !2))
+                                                                   (\!0 !0 ->
+                                                                      appendString
+                                                                        ((\!0 ->
+                                                                            (\!0 ->
+                                                                               appendString
+                                                                                 (!7
+                                                                                    !2)
+                                                                                 (!7
+                                                                                    !1))
+                                                                              (remainderInteger
+                                                                                 !3
                                                                                  16))
-                                                                           (!4
-                                                                              !1)))
-                                                                 !1))
-                                                           #)
+                                                                           (quotientInteger
+                                                                              !2
+                                                                              16))
+                                                                        (!4
+                                                                           !1)))
+                                                              #))
                                                         (\!0 ->
                                                            force
                                                              (!17
@@ -1523,69 +1516,66 @@ bytestring.1 program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            appendString
-                                                              "0x"
-                                                              ((\!0 ->
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1))
+                                                         appendString
+                                                           "0x"
+                                                           ((\!0 ->
+                                                               (\!0 ->
+                                                                  !2
                                                                     (\!0 ->
                                                                        !2
-                                                                         (\!0 ->
-                                                                            !2
-                                                                              !2
-                                                                              !1)))
-                                                                 (\!0 !0 ->
-                                                                    (\!0 !0 ->
-                                                                       (\!0 ->
-                                                                          force
-                                                                            (!23
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  0)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  ((\!0 ->
-                                                                                      (\!0 ->
-                                                                                         !4
+                                                                         !2
+                                                                         !1))
+                                                                 (\!0 ->
+                                                                    !2
+                                                                      (\!0 ->
+                                                                         !2
+                                                                           !2
+                                                                           !1)))
+                                                              (\!0 !0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 ->
+                                                                       force
+                                                                         (!21
+                                                                            (equalsInteger
+                                                                               !1
+                                                                               0)
+                                                                            (delay
+                                                                               "")
+                                                                            (delay
+                                                                               ((\!0 ->
+                                                                                   (\!0 ->
+                                                                                      !4
+                                                                                        !2
+                                                                                        !1)
+                                                                                     (sliceByteString
+                                                                                        1
+                                                                                        (subtractInteger
                                                                                            !2
-                                                                                           !1)
-                                                                                        (sliceByteString
-                                                                                           1
-                                                                                           (subtractInteger
-                                                                                              !2
-                                                                                              1)
-                                                                                           !5))
-                                                                                     (indexByteString
-                                                                                        !4
-                                                                                        0)))))
-                                                                         (lengthOfByteString
-                                                                            !3))
-                                                                      ""
-                                                                      (\!0 !0 ->
-                                                                         appendString
-                                                                           ((\!0 ->
-                                                                               (\!0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !2)
-                                                                                    (!8
-                                                                                       !1))
-                                                                                 (remainderInteger
-                                                                                    !3
-                                                                                    16))
-                                                                              (quotientInteger
-                                                                                 !2
+                                                                                           1)
+                                                                                        !4))
+                                                                                  (indexByteString
+                                                                                     !3
+                                                                                     0)))))
+                                                                      (lengthOfByteString
+                                                                         !2))
+                                                                   (\!0 !0 ->
+                                                                      appendString
+                                                                        ((\!0 ->
+                                                                            (\!0 ->
+                                                                               appendString
+                                                                                 (!7
+                                                                                    !2)
+                                                                                 (!7
+                                                                                    !1))
+                                                                              (remainderInteger
+                                                                                 !3
                                                                                  16))
-                                                                           (!4
-                                                                              !1)))
-                                                                 !1))
-                                                           #14)
+                                                                           (quotientInteger
+                                                                              !2
+                                                                              16))
+                                                                        (!4
+                                                                           !1)))
+                                                              #14))
                                                         (\!0 ->
                                                            force
                                                              (!17
@@ -1752,69 +1742,66 @@ bytestring.2 program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            appendString
-                                                              "0x"
-                                                              ((\!0 ->
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1))
+                                                         appendString
+                                                           "0x"
+                                                           ((\!0 ->
+                                                               (\!0 ->
+                                                                  !2
                                                                     (\!0 ->
                                                                        !2
-                                                                         (\!0 ->
-                                                                            !2
-                                                                              !2
-                                                                              !1)))
-                                                                 (\!0 !0 ->
-                                                                    (\!0 !0 ->
-                                                                       (\!0 ->
-                                                                          force
-                                                                            (!23
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  0)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  ((\!0 ->
-                                                                                      (\!0 ->
-                                                                                         !4
+                                                                         !2
+                                                                         !1))
+                                                                 (\!0 ->
+                                                                    !2
+                                                                      (\!0 ->
+                                                                         !2
+                                                                           !2
+                                                                           !1)))
+                                                              (\!0 !0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 ->
+                                                                       force
+                                                                         (!21
+                                                                            (equalsInteger
+                                                                               !1
+                                                                               0)
+                                                                            (delay
+                                                                               "")
+                                                                            (delay
+                                                                               ((\!0 ->
+                                                                                   (\!0 ->
+                                                                                      !4
+                                                                                        !2
+                                                                                        !1)
+                                                                                     (sliceByteString
+                                                                                        1
+                                                                                        (subtractInteger
                                                                                            !2
-                                                                                           !1)
-                                                                                        (sliceByteString
-                                                                                           1
-                                                                                           (subtractInteger
-                                                                                              !2
-                                                                                              1)
-                                                                                           !5))
-                                                                                     (indexByteString
-                                                                                        !4
-                                                                                        0)))))
-                                                                         (lengthOfByteString
-                                                                            !3))
-                                                                      ""
-                                                                      (\!0 !0 ->
-                                                                         appendString
-                                                                           ((\!0 ->
-                                                                               (\!0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !2)
-                                                                                    (!8
-                                                                                       !1))
-                                                                                 (remainderInteger
-                                                                                    !3
-                                                                                    16))
-                                                                              (quotientInteger
-                                                                                 !2
+                                                                                           1)
+                                                                                        !4))
+                                                                                  (indexByteString
+                                                                                     !3
+                                                                                     0)))))
+                                                                      (lengthOfByteString
+                                                                         !2))
+                                                                   (\!0 !0 ->
+                                                                      appendString
+                                                                        ((\!0 ->
+                                                                            (\!0 ->
+                                                                               appendString
+                                                                                 (!7
+                                                                                    !2)
+                                                                                 (!7
+                                                                                    !1))
+                                                                              (remainderInteger
+                                                                                 !3
                                                                                  16))
-                                                                           (!4
-                                                                              !1)))
-                                                                 !1))
-                                                           #14af)
+                                                                           (quotientInteger
+                                                                              !2
+                                                                              16))
+                                                                        (!4
+                                                                           !1)))
+                                                              #14af))
                                                         (\!0 ->
                                                            force
                                                              (!17
@@ -1981,69 +1968,66 @@ bytestring.3 program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            appendString
-                                                              "0x"
-                                                              ((\!0 ->
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1))
+                                                         appendString
+                                                           "0x"
+                                                           ((\!0 ->
+                                                               (\!0 ->
+                                                                  !2
                                                                     (\!0 ->
                                                                        !2
-                                                                         (\!0 ->
-                                                                            !2
-                                                                              !2
-                                                                              !1)))
-                                                                 (\!0 !0 ->
-                                                                    (\!0 !0 ->
-                                                                       (\!0 ->
-                                                                          force
-                                                                            (!23
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  0)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  ((\!0 ->
-                                                                                      (\!0 ->
-                                                                                         !4
+                                                                         !2
+                                                                         !1))
+                                                                 (\!0 ->
+                                                                    !2
+                                                                      (\!0 ->
+                                                                         !2
+                                                                           !2
+                                                                           !1)))
+                                                              (\!0 !0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 ->
+                                                                       force
+                                                                         (!21
+                                                                            (equalsInteger
+                                                                               !1
+                                                                               0)
+                                                                            (delay
+                                                                               "")
+                                                                            (delay
+                                                                               ((\!0 ->
+                                                                                   (\!0 ->
+                                                                                      !4
+                                                                                        !2
+                                                                                        !1)
+                                                                                     (sliceByteString
+                                                                                        1
+                                                                                        (subtractInteger
                                                                                            !2
-                                                                                           !1)
-                                                                                        (sliceByteString
-                                                                                           1
-                                                                                           (subtractInteger
-                                                                                              !2
-                                                                                              1)
-                                                                                           !5))
-                                                                                     (indexByteString
-                                                                                        !4
-                                                                                        0)))))
-                                                                         (lengthOfByteString
-                                                                            !3))
-                                                                      ""
-                                                                      (\!0 !0 ->
-                                                                         appendString
-                                                                           ((\!0 ->
-                                                                               (\!0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !2)
-                                                                                    (!8
-                                                                                       !1))
-                                                                                 (remainderInteger
-                                                                                    !3
-                                                                                    16))
-                                                                              (quotientInteger
-                                                                                 !2
+                                                                                           1)
+                                                                                        !4))
+                                                                                  (indexByteString
+                                                                                     !3
+                                                                                     0)))))
+                                                                      (lengthOfByteString
+                                                                         !2))
+                                                                   (\!0 !0 ->
+                                                                      appendString
+                                                                        ((\!0 ->
+                                                                            (\!0 ->
+                                                                               appendString
+                                                                                 (!7
+                                                                                    !2)
+                                                                                 (!7
+                                                                                    !1))
+                                                                              (remainderInteger
+                                                                                 !3
                                                                                  16))
-                                                                           (!4
-                                                                              !1)))
-                                                                 !1))
-                                                           #14af03)
+                                                                           (quotientInteger
+                                                                              !2
+                                                                              16))
+                                                                        (!4
+                                                                           !1)))
+                                                              #14af03))
                                                         (\!0 ->
                                                            force
                                                              (!17
@@ -2210,69 +2194,66 @@ bytestring.n program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            appendString
-                                                              "0x"
-                                                              ((\!0 ->
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1))
+                                                         appendString
+                                                           "0x"
+                                                           ((\!0 ->
+                                                               (\!0 ->
+                                                                  !2
                                                                     (\!0 ->
                                                                        !2
-                                                                         (\!0 ->
-                                                                            !2
-                                                                              !2
-                                                                              !1)))
-                                                                 (\!0 !0 ->
-                                                                    (\!0 !0 ->
-                                                                       (\!0 ->
-                                                                          force
-                                                                            (!23
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  0)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  ((\!0 ->
-                                                                                      (\!0 ->
-                                                                                         !4
+                                                                         !2
+                                                                         !1))
+                                                                 (\!0 ->
+                                                                    !2
+                                                                      (\!0 ->
+                                                                         !2
+                                                                           !2
+                                                                           !1)))
+                                                              (\!0 !0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 ->
+                                                                       force
+                                                                         (!21
+                                                                            (equalsInteger
+                                                                               !1
+                                                                               0)
+                                                                            (delay
+                                                                               "")
+                                                                            (delay
+                                                                               ((\!0 ->
+                                                                                   (\!0 ->
+                                                                                      !4
+                                                                                        !2
+                                                                                        !1)
+                                                                                     (sliceByteString
+                                                                                        1
+                                                                                        (subtractInteger
                                                                                            !2
-                                                                                           !1)
-                                                                                        (sliceByteString
-                                                                                           1
-                                                                                           (subtractInteger
-                                                                                              !2
-                                                                                              1)
-                                                                                           !5))
-                                                                                     (indexByteString
-                                                                                        !4
-                                                                                        0)))))
-                                                                         (lengthOfByteString
-                                                                            !3))
-                                                                      ""
-                                                                      (\!0 !0 ->
-                                                                         appendString
-                                                                           ((\!0 ->
-                                                                               (\!0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !2)
-                                                                                    (!8
-                                                                                       !1))
-                                                                                 (remainderInteger
-                                                                                    !3
-                                                                                    16))
-                                                                              (quotientInteger
-                                                                                 !2
+                                                                                           1)
+                                                                                        !4))
+                                                                                  (indexByteString
+                                                                                     !3
+                                                                                     0)))))
+                                                                      (lengthOfByteString
+                                                                         !2))
+                                                                   (\!0 !0 ->
+                                                                      appendString
+                                                                        ((\!0 ->
+                                                                            (\!0 ->
+                                                                               appendString
+                                                                                 (!7
+                                                                                    !2)
+                                                                                 (!7
+                                                                                    !1))
+                                                                              (remainderInteger
+                                                                                 !3
                                                                                  16))
-                                                                           (!4
-                                                                              !1)))
-                                                                 !1))
-                                                           #ffffff)
+                                                                           (quotientInteger
+                                                                              !2
+                                                                              16))
+                                                                        (!4
+                                                                           !1)))
+                                                              #ffffff))
                                                         (\!0 ->
                                                            force
                                                              (!17
@@ -2439,69 +2420,66 @@ bytestring.0 program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            appendString
-                                                              "0x"
-                                                              ((\!0 ->
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1))
+                                                         appendString
+                                                           "0x"
+                                                           ((\!0 ->
+                                                               (\!0 ->
+                                                                  !2
                                                                     (\!0 ->
                                                                        !2
-                                                                         (\!0 ->
-                                                                            !2
-                                                                              !2
-                                                                              !1)))
-                                                                 (\!0 !0 ->
-                                                                    (\!0 !0 ->
-                                                                       (\!0 ->
-                                                                          force
-                                                                            (!23
-                                                                               (equalsInteger
-                                                                                  !1
-                                                                                  0)
-                                                                               (delay
-                                                                                  !3)
-                                                                               (delay
-                                                                                  ((\!0 ->
-                                                                                      (\!0 ->
-                                                                                         !4
+                                                                         !2
+                                                                         !1))
+                                                                 (\!0 ->
+                                                                    !2
+                                                                      (\!0 ->
+                                                                         !2
+                                                                           !2
+                                                                           !1)))
+                                                              (\!0 !0 ->
+                                                                 (\!0 ->
+                                                                    (\!0 ->
+                                                                       force
+                                                                         (!21
+                                                                            (equalsInteger
+                                                                               !1
+                                                                               0)
+                                                                            (delay
+                                                                               "")
+                                                                            (delay
+                                                                               ((\!0 ->
+                                                                                   (\!0 ->
+                                                                                      !4
+                                                                                        !2
+                                                                                        !1)
+                                                                                     (sliceByteString
+                                                                                        1
+                                                                                        (subtractInteger
                                                                                            !2
-                                                                                           !1)
-                                                                                        (sliceByteString
-                                                                                           1
-                                                                                           (subtractInteger
-                                                                                              !2
-                                                                                              1)
-                                                                                           !5))
-                                                                                     (indexByteString
-                                                                                        !4
-                                                                                        0)))))
-                                                                         (lengthOfByteString
-                                                                            !3))
-                                                                      ""
-                                                                      (\!0 !0 ->
-                                                                         appendString
-                                                                           ((\!0 ->
-                                                                               (\!0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !2)
-                                                                                    (!8
-                                                                                       !1))
-                                                                                 (remainderInteger
-                                                                                    !3
-                                                                                    16))
-                                                                              (quotientInteger
-                                                                                 !2
+                                                                                           1)
+                                                                                        !4))
+                                                                                  (indexByteString
+                                                                                     !3
+                                                                                     0)))))
+                                                                      (lengthOfByteString
+                                                                         !2))
+                                                                   (\!0 !0 ->
+                                                                      appendString
+                                                                        ((\!0 ->
+                                                                            (\!0 ->
+                                                                               appendString
+                                                                                 (!7
+                                                                                    !2)
+                                                                                 (!7
+                                                                                    !1))
+                                                                              (remainderInteger
+                                                                                 !3
                                                                                  16))
-                                                                           (!4
-                                                                              !1)))
-                                                                 !1))
-                                                           #000000)
+                                                                           (quotientInteger
+                                                                              !2
+                                                                              16))
+                                                                        (!4
+                                                                           !1)))
+                                                              #000000))
                                                         (\!0 ->
                                                            force
                                                              (!17
@@ -2652,252 +2630,240 @@ str.empty program
   1.0.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            appendString
-              !3
-              (appendString
-                 (decodeUtf8
-                    ((\!0 ->
-                        (\!0 -> !2 (\!0 -> !2 !2 !1))
-                          (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                       (\!0 !0 ->
+         appendString
+           !2
+           (appendString
+              (decodeUtf8
+                 ((\!0 ->
+                     (\!0 -> !2 (\!0 -> !2 !2 !1))
+                       (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
                           (\!0 ->
-                             (\!0 ->
-                                force
-                                  (!6
-                                     (equalsInteger !1 0)
-                                     (delay !3)
-                                     (delay
-                                        ((\!0 ->
-                                            (\!0 -> !4 !2 !1)
-                                              (sliceByteString
-                                                 1
-                                                 (subtractInteger !2 1)
-                                                 !4))
-                                           (indexByteString !3 0)))))
-                               (lengthOfByteString !2))
-                            (\!0 !0 ->
-                               force
-                                 (!6
-                                    (equalsInteger !2 34)
-                                    (delay
-                                       (consByteString
-                                          92
-                                          (consByteString !2 (!4 !1))))
-                                    (delay (consByteString !2 (!4 !1))))))
-                       (encodeUtf8 !1)))
-                 !3))
-           "")
+                             force
+                               (!5
+                                  (equalsInteger !1 0)
+                                  (delay !3)
+                                  (delay
+                                     ((\!0 ->
+                                         (\!0 -> !4 !2 !1)
+                                           (sliceByteString
+                                              1
+                                              (subtractInteger !2 1)
+                                              !4))
+                                        (indexByteString !3 0)))))
+                            (lengthOfByteString !2))
+                         (\!0 !0 ->
+                            force
+                              (!5
+                                 (equalsInteger !2 34)
+                                 (delay
+                                    (consByteString
+                                       92
+                                       (consByteString !2 (!4 !1))))
+                                 (delay (consByteString !2 (!4 !1))))))
+                    (encodeUtf8 "")))
+              !2))
         (force ifThenElse))
      "\"")
 str.hello123 program
   1.0.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            appendString
-              !3
-              (appendString
-                 (decodeUtf8
-                    ((\!0 ->
-                        (\!0 -> !2 (\!0 -> !2 !2 !1))
-                          (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                       (\!0 !0 ->
+         appendString
+           !2
+           (appendString
+              (decodeUtf8
+                 ((\!0 ->
+                     (\!0 -> !2 (\!0 -> !2 !2 !1))
+                       (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
                           (\!0 ->
-                             (\!0 ->
-                                force
-                                  (!6
-                                     (equalsInteger !1 0)
-                                     (delay !3)
-                                     (delay
-                                        ((\!0 ->
-                                            (\!0 -> !4 !2 !1)
-                                              (sliceByteString
-                                                 1
-                                                 (subtractInteger !2 1)
-                                                 !4))
-                                           (indexByteString !3 0)))))
-                               (lengthOfByteString !2))
-                            (\!0 !0 ->
-                               force
-                                 (!6
-                                    (equalsInteger !2 34)
-                                    (delay
-                                       (consByteString
-                                          92
-                                          (consByteString !2 (!4 !1))))
-                                    (delay (consByteString !2 (!4 !1))))))
-                       (encodeUtf8 !1)))
-                 !3))
-           "hello123")
+                             force
+                               (!5
+                                  (equalsInteger !1 0)
+                                  (delay !3)
+                                  (delay
+                                     ((\!0 ->
+                                         (\!0 -> !4 !2 !1)
+                                           (sliceByteString
+                                              1
+                                              (subtractInteger !2 1)
+                                              !4))
+                                        (indexByteString !3 0)))))
+                            (lengthOfByteString !2))
+                         (\!0 !0 ->
+                            force
+                              (!5
+                                 (equalsInteger !2 34)
+                                 (delay
+                                    (consByteString
+                                       92
+                                       (consByteString !2 (!4 !1))))
+                                 (delay (consByteString !2 (!4 !1))))))
+                    (encodeUtf8 "hello123")))
+              !2))
         (force ifThenElse))
      "\"")
 str.quoted program
   1.0.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            appendString
-              !3
-              (appendString
-                 (decodeUtf8
-                    ((\!0 ->
-                        (\!0 -> !2 (\!0 -> !2 !2 !1))
-                          (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                       (\!0 !0 ->
+         appendString
+           !2
+           (appendString
+              (decodeUtf8
+                 ((\!0 ->
+                     (\!0 -> !2 (\!0 -> !2 !2 !1))
+                       (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
                           (\!0 ->
-                             (\!0 ->
-                                force
-                                  (!6
-                                     (equalsInteger !1 0)
-                                     (delay !3)
-                                     (delay
-                                        ((\!0 ->
-                                            (\!0 -> !4 !2 !1)
-                                              (sliceByteString
-                                                 1
-                                                 (subtractInteger !2 1)
-                                                 !4))
-                                           (indexByteString !3 0)))))
-                               (lengthOfByteString !2))
-                            (\!0 !0 ->
-                               force
-                                 (!6
-                                    (equalsInteger !2 34)
-                                    (delay
-                                       (consByteString
-                                          92
-                                          (consByteString !2 (!4 !1))))
-                                    (delay (consByteString !2 (!4 !1))))))
-                       (encodeUtf8 !1)))
-                 !3))
-           "hello\"123")
+                             force
+                               (!5
+                                  (equalsInteger !1 0)
+                                  (delay !3)
+                                  (delay
+                                     ((\!0 ->
+                                         (\!0 -> !4 !2 !1)
+                                           (sliceByteString
+                                              1
+                                              (subtractInteger !2 1)
+                                              !4))
+                                        (indexByteString !3 0)))))
+                            (lengthOfByteString !2))
+                         (\!0 !0 ->
+                            force
+                              (!5
+                                 (equalsInteger !2 34)
+                                 (delay
+                                    (consByteString
+                                       92
+                                       (consByteString !2 (!4 !1))))
+                                 (delay (consByteString !2 (!4 !1))))))
+                    (encodeUtf8 "hello\"123")))
+              !2))
         (force ifThenElse))
      "\"")
 str.slash program
   1.0.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            appendString
-              !3
-              (appendString
-                 (decodeUtf8
-                    ((\!0 ->
-                        (\!0 -> !2 (\!0 -> !2 !2 !1))
-                          (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                       (\!0 !0 ->
+         appendString
+           !2
+           (appendString
+              (decodeUtf8
+                 ((\!0 ->
+                     (\!0 -> !2 (\!0 -> !2 !2 !1))
+                       (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
                           (\!0 ->
-                             (\!0 ->
-                                force
-                                  (!6
-                                     (equalsInteger !1 0)
-                                     (delay !3)
-                                     (delay
-                                        ((\!0 ->
-                                            (\!0 -> !4 !2 !1)
-                                              (sliceByteString
-                                                 1
-                                                 (subtractInteger !2 1)
-                                                 !4))
-                                           (indexByteString !3 0)))))
-                               (lengthOfByteString !2))
-                            (\!0 !0 ->
-                               force
-                                 (!6
-                                    (equalsInteger !2 34)
-                                    (delay
-                                       (consByteString
-                                          92
-                                          (consByteString !2 (!4 !1))))
-                                    (delay (consByteString !2 (!4 !1))))))
-                       (encodeUtf8 !1)))
-                 !3))
-           "foo\\bar")
+                             force
+                               (!5
+                                  (equalsInteger !1 0)
+                                  (delay !3)
+                                  (delay
+                                     ((\!0 ->
+                                         (\!0 -> !4 !2 !1)
+                                           (sliceByteString
+                                              1
+                                              (subtractInteger !2 1)
+                                              !4))
+                                        (indexByteString !3 0)))))
+                            (lengthOfByteString !2))
+                         (\!0 !0 ->
+                            force
+                              (!5
+                                 (equalsInteger !2 34)
+                                 (delay
+                                    (consByteString
+                                       92
+                                       (consByteString !2 (!4 !1))))
+                                 (delay (consByteString !2 (!4 !1))))))
+                    (encodeUtf8 "foo\\bar")))
+              !2))
         (force ifThenElse))
      "\"")
 str.unicode program
   1.0.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            appendString
-              !3
-              (appendString
-                 (decodeUtf8
-                    ((\!0 ->
-                        (\!0 -> !2 (\!0 -> !2 !2 !1))
-                          (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                       (\!0 !0 ->
+         appendString
+           !2
+           (appendString
+              (decodeUtf8
+                 ((\!0 ->
+                     (\!0 -> !2 (\!0 -> !2 !2 !1))
+                       (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
                           (\!0 ->
-                             (\!0 ->
-                                force
-                                  (!6
-                                     (equalsInteger !1 0)
-                                     (delay !3)
-                                     (delay
-                                        ((\!0 ->
-                                            (\!0 -> !4 !2 !1)
-                                              (sliceByteString
-                                                 1
-                                                 (subtractInteger !2 1)
-                                                 !4))
-                                           (indexByteString !3 0)))))
-                               (lengthOfByteString !2))
-                            (\!0 !0 ->
-                               force
-                                 (!6
-                                    (equalsInteger !2 34)
-                                    (delay
-                                       (consByteString
-                                          92
-                                          (consByteString !2 (!4 !1))))
-                                    (delay (consByteString !2 (!4 !1))))))
-                       (encodeUtf8 !1)))
-                 !3))
-           "vis-\224-vis")
+                             force
+                               (!5
+                                  (equalsInteger !1 0)
+                                  (delay !3)
+                                  (delay
+                                     ((\!0 ->
+                                         (\!0 -> !4 !2 !1)
+                                           (sliceByteString
+                                              1
+                                              (subtractInteger !2 1)
+                                              !4))
+                                        (indexByteString !3 0)))))
+                            (lengthOfByteString !2))
+                         (\!0 !0 ->
+                            force
+                              (!5
+                                 (equalsInteger !2 34)
+                                 (delay
+                                    (consByteString
+                                       92
+                                       (consByteString !2 (!4 !1))))
+                                 (delay (consByteString !2 (!4 !1))))))
+                    (encodeUtf8 "vis-\224-vis")))
+              !2))
         (force ifThenElse))
      "\"")
 str.unicode-quoted program
   1.0.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            appendString
-              !3
-              (appendString
-                 (decodeUtf8
-                    ((\!0 ->
-                        (\!0 -> !2 (\!0 -> !2 !2 !1))
-                          (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                       (\!0 !0 ->
+         appendString
+           !2
+           (appendString
+              (decodeUtf8
+                 ((\!0 ->
+                     (\!0 -> !2 (\!0 -> !2 !2 !1))
+                       (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
                           (\!0 ->
-                             (\!0 ->
-                                force
-                                  (!6
-                                     (equalsInteger !1 0)
-                                     (delay !3)
-                                     (delay
-                                        ((\!0 ->
-                                            (\!0 -> !4 !2 !1)
-                                              (sliceByteString
-                                                 1
-                                                 (subtractInteger !2 1)
-                                                 !4))
-                                           (indexByteString !3 0)))))
-                               (lengthOfByteString !2))
-                            (\!0 !0 ->
-                               force
-                                 (!6
-                                    (equalsInteger !2 34)
-                                    (delay
-                                       (consByteString
-                                          92
-                                          (consByteString !2 (!4 !1))))
-                                    (delay (consByteString !2 (!4 !1))))))
-                       (encodeUtf8 !1)))
-                 !3))
-           "vis-\"\224\"-vis")
+                             force
+                               (!5
+                                  (equalsInteger !1 0)
+                                  (delay !3)
+                                  (delay
+                                     ((\!0 ->
+                                         (\!0 -> !4 !2 !1)
+                                           (sliceByteString
+                                              1
+                                              (subtractInteger !2 1)
+                                              !4))
+                                        (indexByteString !3 0)))))
+                            (lengthOfByteString !2))
+                         (\!0 !0 ->
+                            force
+                              (!5
+                                 (equalsInteger !2 34)
+                                 (delay
+                                    (consByteString
+                                       92
+                                       (consByteString !2 (!4 !1))))
+                                 (delay (consByteString !2 (!4 !1))))))
+                    (encodeUtf8 "vis-\"\224\"-vis")))
+              !2))
         (force ifThenElse))
      "\"")
 maybe.nothing program
@@ -4266,42 +4232,40 @@ builtinlist.nil program
                                                          (\!0 ->
                                                             (\!0 ->
                                                                (\!0 ->
-                                                                  (\!0 ->
-                                                                     appendString
-                                                                       "["
-                                                                       (appendString
-                                                                          (!4
-                                                                             (\!0
-                                                                               !0 ->
-                                                                                force
-                                                                                  (!4
-                                                                                     !1
-                                                                                     (delay
-                                                                                        !8)
-                                                                                     (delay
-                                                                                        ((\!0 ->
-                                                                                            force
-                                                                                              (!5
-                                                                                                 !1
-                                                                                                 (delay
-                                                                                                    (!6
-                                                                                                       (!24
-                                                                                                          !2)))
-                                                                                                 (delay
+                                                                  appendString
+                                                                    "["
+                                                                    (appendString
+                                                                       (!3
+                                                                          (\!0
+                                                                            !0 ->
+                                                                             force
+                                                                               (!3
+                                                                                  !1
+                                                                                  (delay
+                                                                                     !7)
+                                                                                  (delay
+                                                                                     ((\!0 ->
+                                                                                         force
+                                                                                           (!4
+                                                                                              !1
+                                                                                              (delay
+                                                                                                 (!5
+                                                                                                    (!23
+                                                                                                       !2)))
+                                                                                              (delay
+                                                                                                 (appendString
+                                                                                                    (!5
+                                                                                                       (!23
+                                                                                                          !2))
                                                                                                     (appendString
-                                                                                                       (!6
+                                                                                                       ", "
+                                                                                                       (!3
                                                                                                           (!24
-                                                                                                             !2))
-                                                                                                       (appendString
-                                                                                                          ", "
-                                                                                                          (!3
-                                                                                                             (!25
-                                                                                                                !2)))))))
-                                                                                           (!24
-                                                                                              !1)))))
-                                                                             !1)
-                                                                          "]"))
-                                                                    [])
+                                                                                                             !2)))))))
+                                                                                        (!23
+                                                                                           !1)))))
+                                                                          [])
+                                                                       "]"))
                                                                  (force
                                                                     (force
                                                                        chooseList)))
@@ -4477,42 +4441,40 @@ builtinlist.1,2,3 program
                                                          (\!0 ->
                                                             (\!0 ->
                                                                (\!0 ->
-                                                                  (\!0 ->
-                                                                     appendString
-                                                                       "["
-                                                                       (appendString
-                                                                          (!4
-                                                                             (\!0
-                                                                               !0 ->
-                                                                                force
-                                                                                  (!4
-                                                                                     !1
-                                                                                     (delay
-                                                                                        !8)
-                                                                                     (delay
-                                                                                        ((\!0 ->
-                                                                                            force
-                                                                                              (!5
-                                                                                                 !1
-                                                                                                 (delay
-                                                                                                    (!6
-                                                                                                       (!24
-                                                                                                          !2)))
-                                                                                                 (delay
+                                                                  appendString
+                                                                    "["
+                                                                    (appendString
+                                                                       (!3
+                                                                          (\!0
+                                                                            !0 ->
+                                                                             force
+                                                                               (!3
+                                                                                  !1
+                                                                                  (delay
+                                                                                     !7)
+                                                                                  (delay
+                                                                                     ((\!0 ->
+                                                                                         force
+                                                                                           (!4
+                                                                                              !1
+                                                                                              (delay
+                                                                                                 (!5
+                                                                                                    (!23
+                                                                                                       !2)))
+                                                                                              (delay
+                                                                                                 (appendString
+                                                                                                    (!5
+                                                                                                       (!23
+                                                                                                          !2))
                                                                                                     (appendString
-                                                                                                       (!6
+                                                                                                       ", "
+                                                                                                       (!3
                                                                                                           (!24
-                                                                                                             !2))
-                                                                                                       (appendString
-                                                                                                          ", "
-                                                                                                          (!3
-                                                                                                             (!25
-                                                                                                                !2)))))))
-                                                                                           (!24
-                                                                                              !1)))))
-                                                                             !1)
-                                                                          "]"))
-                                                                    [1,2,3])
+                                                                                                             !2)))))))
+                                                                                        (!23
+                                                                                           !1)))))
+                                                                          [1,2,3])
+                                                                       "]"))
                                                                  (force
                                                                     (force
                                                                        chooseList)))
@@ -5174,55 +5136,53 @@ rational.1/2 program
                                                                                                  (delay
                                                                                                     error))))
                                                                                         (delay
-                                                                                           ((\!0
-                                                                                              !0 ->
+                                                                                           ((\!0 ->
                                                                                                (\!0 ->
                                                                                                   force
-                                                                                                    (!28
+                                                                                                    (!27
                                                                                                        (lessThanEqualsInteger
-                                                                                                          !2
+                                                                                                          !3
                                                                                                           0)
                                                                                                        (delay
                                                                                                           (constr 0
-                                                                                                             [ (!29
-                                                                                                                  (divideInteger
-                                                                                                                     !3
-                                                                                                                     !1))
-                                                                                                             , (!29
+                                                                                                             [ (!28
                                                                                                                   (divideInteger
                                                                                                                      !2
+                                                                                                                     !1))
+                                                                                                             , (!28
+                                                                                                                  (divideInteger
+                                                                                                                     !3
                                                                                                                      !1)) ]))
                                                                                                        (delay
                                                                                                           (constr 0
                                                                                                              [ (divideInteger
-                                                                                                                  !3
+                                                                                                                  !2
                                                                                                                   !1)
                                                                                                              , (divideInteger
-                                                                                                                  !2
+                                                                                                                  !3
                                                                                                                   !1) ]))))
                                                                                                  ((\!0 ->
                                                                                                      (\!0 ->
                                                                                                         force
-                                                                                                          (!29
+                                                                                                          (!28
                                                                                                              (lessThanEqualsInteger
                                                                                                                 !2
                                                                                                                 !1)
                                                                                                              (delay
-                                                                                                                (!26
+                                                                                                                (!25
                                                                                                                    !1
                                                                                                                    !2))
                                                                                                              (delay
-                                                                                                                (!26
+                                                                                                                (!25
                                                                                                                    !2
                                                                                                                    !1))))
-                                                                                                       (!27
-                                                                                                          !2))
-                                                                                                    (!26
-                                                                                                       !2)))
+                                                                                                       (!26
+                                                                                                          !3))
+                                                                                                    (!25
+                                                                                                       !1)))
                                                                                               (multiplyInteger
                                                                                                  !5
-                                                                                                 !2)
-                                                                                              !1))))
+                                                                                                 !2)))))
                                                                                   (multiplyInteger
                                                                                      !3
                                                                                      !2)) ]) ])
