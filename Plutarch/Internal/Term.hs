@@ -713,7 +713,7 @@ rawTermToUPLC m l (RApply x y) =
     (body, args) = inline' 0 (rawTermToUPLC m l x) (reverse $ rawTermToUPLC m l <$> y)
 
     applied
-      | length args <= 199 = foldl (UPLC.Apply ()) body args
+      | length args <= 2 = foldl (UPLC.Apply ()) body args
       | otherwise = UPLC.Case () (UPLC.Constr () 0 args) (V.singleton body)
    in
     applied

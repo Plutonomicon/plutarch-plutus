@@ -9,7 +9,7 @@ pconsBS program
         (addInteger 1 (lengthOfByteString !1)))
      #48fcd1)
 pindexByteStr program 1.0.0 (indexByteString #4102af 1)
-psliceByteStr program 1.0.0 (sliceByteString 2 3 #4102afde5b2a)
+psliceByteStr program 1.0.0 (case (constr 0 [2, 3, #4102afde5b2a]) [sliceByteString])
 eq program 1.0.0 ((\!0 -> equalsByteString !1 !1) #12)
 semigroup.concats program 1.0.0 (appendByteString #12 #34)
 semigroup.laws.id.1 program 1.0.0 ((\!0 -> equalsByteString (appendByteString # !1) !1) #12)

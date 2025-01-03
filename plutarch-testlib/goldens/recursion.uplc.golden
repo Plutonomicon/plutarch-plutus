@@ -3,31 +3,50 @@ iterateN.lam program
   ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
      (\!0 !0 !0 !0 ->
         force
-          (force ifThenElse
-             (equalsInteger !3 0)
-             (delay !1)
-             (delay (!4 (subtractInteger !3 1) !2 (!2 !1))))))
+          (case
+             (constr 0
+                [ (equalsInteger !3 0)
+                , (delay !1)
+                , (delay
+                     (case
+                        (constr 0 [(subtractInteger !3 1), !2, (!2 !1)])
+                        [!4])) ])
+             [(force ifThenElse)])))
 iterateN.app.succ program
   1.0.0
-  ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
-     (\!0 !0 !0 !0 ->
-        force
-          (force ifThenElse
-             (equalsInteger !3 0)
-             (delay !1)
-             (delay (!4 (subtractInteger !3 1) !2 (!2 !1)))))
-     10
-     (\!0 -> addInteger !1 1)
-     0)
+  (case
+     (constr 0
+        [ (\!0 !0 !0 !0 ->
+             force
+               (case
+                  (constr 0
+                     [ (equalsInteger !3 0)
+                     , (delay !1)
+                     , (delay
+                          (case
+                             (constr 0 [(subtractInteger !3 1), !2, (!2 !1)])
+                             [!4])) ])
+                  [(force ifThenElse)]))
+        , 10
+        , (\!0 -> addInteger !1 1)
+        , 0 ])
+     [(\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))])
 iterateN.app.double program
   1.0.0
-  ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
-     (\!0 !0 !0 !0 ->
-        force
-          (force ifThenElse
-             (equalsInteger !3 0)
-             (delay !1)
-             (delay (!4 (subtractInteger !3 1) !2 (!2 !1)))))
-     10
-     (\!0 -> multiplyInteger !1 2)
-     1)
+  (case
+     (constr 0
+        [ (\!0 !0 !0 !0 ->
+             force
+               (case
+                  (constr 0
+                     [ (equalsInteger !3 0)
+                     , (delay !1)
+                     , (delay
+                          (case
+                             (constr 0 [(subtractInteger !3 1), !2, (!2 !1)])
+                             [!4])) ])
+                  [(force ifThenElse)]))
+        , 10
+        , (\!0 -> multiplyInteger !1 2)
+        , 1 ])
+     [(\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))])
