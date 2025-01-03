@@ -4,34 +4,31 @@ PCredential.derived.true program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 !0 ->
+               (\!0 ->
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              force
-                                (!7
-                                   (lessThanInteger !2 !1)
-                                   (delay True)
-                                   (delay
-                                      (force
-                                         (!7
-                                            (equalsInteger !2 !1)
-                                            (delay
-                                               ((\!0 ->
-                                                   (\!0 ->
-                                                      lessThanByteString
-                                                        (unBData (!10 !2))
-                                                        (unBData (!10 !1)))
-                                                     (!10 !4))
-                                                  (!9 !4)))
-                                            (delay False))))))
-                             (!9 !2))
-                          (!8 !2))
-                       (unConstrData !2))
-                    (unConstrData !2))
-                 (Constr 0 [B #])
-                 (Constr 1 [B #41]))
+                           force
+                             (!5
+                                (lessThanInteger !2 !1)
+                                (delay True)
+                                (delay
+                                   (force
+                                      (!5
+                                         (equalsInteger !2 !1)
+                                         (delay
+                                            ((\!0 ->
+                                                (\!0 ->
+                                                   lessThanByteString
+                                                     (unBData (!8 !2))
+                                                     (unBData (!8 !1)))
+                                                  (!8 !4))
+                                               (!7 !4)))
+                                         (delay False))))))
+                          (!7 !2))
+                       (!6 !2))
+                    (unConstrData (Constr 1 [B #41])))
+                 (unConstrData (Constr 0 [B #])))
               (force ifThenElse))
            (force headList))
         (force (force sndPair)))
@@ -42,34 +39,31 @@ PCredential.derived.false program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 !0 ->
+               (\!0 ->
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              force
-                                (!7
-                                   (lessThanInteger !2 !1)
-                                   (delay True)
-                                   (delay
-                                      (force
-                                         (!7
-                                            (equalsInteger !2 !1)
-                                            (delay
-                                               ((\!0 ->
-                                                   (\!0 ->
-                                                      lessThanByteString
-                                                        (unBData (!10 !2))
-                                                        (unBData (!10 !1)))
-                                                     (!10 !4))
-                                                  (!9 !4)))
-                                            (delay False))))))
-                             (!9 !2))
-                          (!8 !2))
-                       (unConstrData !2))
-                    (unConstrData !2))
-                 (Constr 1 [B #41])
-                 (Constr 0 [B #]))
+                           force
+                             (!5
+                                (lessThanInteger !2 !1)
+                                (delay True)
+                                (delay
+                                   (force
+                                      (!5
+                                         (equalsInteger !2 !1)
+                                         (delay
+                                            ((\!0 ->
+                                                (\!0 ->
+                                                   lessThanByteString
+                                                     (unBData (!8 !2))
+                                                     (unBData (!8 !1)))
+                                                  (!8 !4))
+                                               (!7 !4)))
+                                         (delay False))))))
+                          (!7 !2))
+                       (!6 !2))
+                    (unConstrData (Constr 0 [B #])))
+                 (unConstrData (Constr 1 [B #41])))
               (force ifThenElse))
            (force headList))
         (force (force sndPair)))
@@ -285,64 +279,60 @@ PTriplet.derived.true program
          (\!0 ->
             (\!0 ->
                (\!0 ->
-                  (\!0 !0 ->
+                  (\!0 ->
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 force
-                                   (!7
-                                      (lessThanInteger !2 !1)
-                                      (delay True)
-                                      (delay
-                                         (force
-                                            (!7
-                                               (equalsInteger !2 !1)
-                                               (delay
-                                                  ((\!0 ->
+                              force
+                                (!5
+                                   (lessThanInteger !2 !1)
+                                   (delay True)
+                                   (delay
+                                      (force
+                                         (!5
+                                            (equalsInteger !2 !1)
+                                            (delay
+                                               ((\!0 ->
+                                                   (\!0 ->
                                                       (\!0 ->
                                                          (\!0 ->
-                                                            (\!0 ->
-                                                               force
-                                                                 (!11
-                                                                    (lessThanInteger
-                                                                       !2
-                                                                       !1)
-                                                                    (delay True)
-                                                                    (delay
-                                                                       (force
-                                                                          (!11
-                                                                             (equalsInteger
-                                                                                !2
-                                                                                !1)
-                                                                             (delay
-                                                                                ((\!0 ->
-                                                                                    (\!0 ->
-                                                                                       lessThanInteger
-                                                                                         (unIData
-                                                                                            (!15
-                                                                                               !2))
-                                                                                         (unIData
-                                                                                            (!15
-                                                                                               !1)))
-                                                                                      (!13
-                                                                                         !4))
-                                                                                   (!12
-                                                                                      !4)))
-                                                                             (delay
-                                                                                False))))))
-                                                              (unIData
-                                                                 (!12 !2)))
-                                                           (unIData (!11 !2)))
-                                                        (!9 !4))
-                                                     (!8 !4)))
-                                               (delay False))))))
-                                (unIData (!8 !2)))
-                             (unIData (!7 !2)))
-                          (!7 !2))
-                       (!6 !2))
-                    (Constr 0 [I 1, I 2, I 3])
-                    (Constr 0 [I 1, I 3, I 5]))
+                                                            force
+                                                              (!9
+                                                                 (lessThanInteger
+                                                                    !2
+                                                                    !1)
+                                                                 (delay True)
+                                                                 (delay
+                                                                    (force
+                                                                       (!9
+                                                                          (equalsInteger
+                                                                             !2
+                                                                             !1)
+                                                                          (delay
+                                                                             ((\!0 ->
+                                                                                 (\!0 ->
+                                                                                    lessThanInteger
+                                                                                      (unIData
+                                                                                         (!13
+                                                                                            !2))
+                                                                                      (unIData
+                                                                                         (!13
+                                                                                            !1)))
+                                                                                   (!11
+                                                                                      !4))
+                                                                                (!10
+                                                                                   !4)))
+                                                                          (delay
+                                                                             False))))))
+                                                           (unIData (!10 !2)))
+                                                        (unIData (!9 !2)))
+                                                     (!7 !4))
+                                                  (!6 !4)))
+                                            (delay False))))))
+                             (unIData (!6 !2)))
+                          (unIData (!5 !2)))
+                       (!5 (Constr 0 [I 1, I 3, I 5])))
+                    (!4 (Constr 0 [I 1, I 2, I 3])))
                  (force ifThenElse))
               (force tailList))
            (force headList))
@@ -355,64 +345,60 @@ PTriplet.derived.false program
          (\!0 ->
             (\!0 ->
                (\!0 ->
-                  (\!0 !0 ->
+                  (\!0 ->
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 force
-                                   (!7
-                                      (lessThanInteger !2 !1)
-                                      (delay True)
-                                      (delay
-                                         (force
-                                            (!7
-                                               (equalsInteger !2 !1)
-                                               (delay
-                                                  ((\!0 ->
+                              force
+                                (!5
+                                   (lessThanInteger !2 !1)
+                                   (delay True)
+                                   (delay
+                                      (force
+                                         (!5
+                                            (equalsInteger !2 !1)
+                                            (delay
+                                               ((\!0 ->
+                                                   (\!0 ->
                                                       (\!0 ->
                                                          (\!0 ->
-                                                            (\!0 ->
-                                                               force
-                                                                 (!11
-                                                                    (lessThanInteger
-                                                                       !2
-                                                                       !1)
-                                                                    (delay True)
-                                                                    (delay
-                                                                       (force
-                                                                          (!11
-                                                                             (equalsInteger
-                                                                                !2
-                                                                                !1)
-                                                                             (delay
-                                                                                ((\!0 ->
-                                                                                    (\!0 ->
-                                                                                       lessThanInteger
-                                                                                         (unIData
-                                                                                            (!15
-                                                                                               !2))
-                                                                                         (unIData
-                                                                                            (!15
-                                                                                               !1)))
-                                                                                      (!13
-                                                                                         !4))
-                                                                                   (!12
-                                                                                      !4)))
-                                                                             (delay
-                                                                                False))))))
-                                                              (unIData
-                                                                 (!12 !2)))
-                                                           (unIData (!11 !2)))
-                                                        (!9 !4))
-                                                     (!8 !4)))
-                                               (delay False))))))
-                                (unIData (!8 !2)))
-                             (unIData (!7 !2)))
-                          (!7 !2))
-                       (!6 !2))
-                    (Constr 0 [I 1, I 3, I 5])
-                    (Constr 0 [I 1, I 2, I 3]))
+                                                            force
+                                                              (!9
+                                                                 (lessThanInteger
+                                                                    !2
+                                                                    !1)
+                                                                 (delay True)
+                                                                 (delay
+                                                                    (force
+                                                                       (!9
+                                                                          (equalsInteger
+                                                                             !2
+                                                                             !1)
+                                                                          (delay
+                                                                             ((\!0 ->
+                                                                                 (\!0 ->
+                                                                                    lessThanInteger
+                                                                                      (unIData
+                                                                                         (!13
+                                                                                            !2))
+                                                                                      (unIData
+                                                                                         (!13
+                                                                                            !1)))
+                                                                                   (!11
+                                                                                      !4))
+                                                                                (!10
+                                                                                   !4)))
+                                                                          (delay
+                                                                             False))))))
+                                                           (unIData (!10 !2)))
+                                                        (unIData (!9 !2)))
+                                                     (!7 !4))
+                                                  (!6 !4)))
+                                            (delay False))))))
+                             (unIData (!6 !2)))
+                          (unIData (!5 !2)))
+                       (!5 (Constr 0 [I 1, I 2, I 3])))
+                    (!4 (Constr 0 [I 1, I 3, I 5])))
                  (force ifThenElse))
               (force tailList))
            (force headList))

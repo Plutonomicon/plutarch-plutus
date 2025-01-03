@@ -1,14 +1,14 @@
 constants.always {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":34}
 contains.in interval {"exBudgetCPU":28461443,"exBudgetMemory":97463,"scriptSizeBytes":553}
 contains.out interval {"exBudgetCPU":22778323,"exBudgetMemory":79756,"scriptSizeBytes":552}
-contains.always {"exBudgetCPU":22193602,"exBudgetMemory":75658,"scriptSizeBytes":561}
-member.[b,c], a < b {"exBudgetCPU":22459810,"exBudgetMemory":78292,"scriptSizeBytes":562}
-member.[b,c], a = b {"exBudgetCPU":28094930,"exBudgetMemory":95699,"scriptSizeBytes":556}
-member.[b,c], a > b, a < c {"exBudgetCPU":28142930,"exBudgetMemory":95999,"scriptSizeBytes":562}
-member.[b,c], a = c {"exBudgetCPU":28142930,"exBudgetMemory":95999,"scriptSizeBytes":559}
-member.[b,c], a > c {"exBudgetCPU":28142930,"exBudgetMemory":95999,"scriptSizeBytes":562}
+contains.always {"exBudgetCPU":22049602,"exBudgetMemory":74758,"scriptSizeBytes":554}
+member.[b,c], a < b {"exBudgetCPU":22315810,"exBudgetMemory":77392,"scriptSizeBytes":554}
+member.[b,c], a = b {"exBudgetCPU":28046930,"exBudgetMemory":95399,"scriptSizeBytes":554}
+member.[b,c], a > b, a < c {"exBudgetCPU":27998930,"exBudgetMemory":95099,"scriptSizeBytes":554}
+member.[b,c], a = c {"exBudgetCPU":28046930,"exBudgetMemory":95399,"scriptSizeBytes":554}
+member.[b,c], a > c {"exBudgetCPU":27998930,"exBudgetMemory":95099,"scriptSizeBytes":554}
 hull.hull 3 5 contains 3 5 {"exBudgetCPU":39269309,"exBudgetMemory":134607,"scriptSizeBytes":710}
-hull.2 not member of hull 3 5 {"exBudgetCPU":33411676,"exBudgetMemory":116336,"scriptSizeBytes":691}
-hull.6 not member of hull 3 5 {"exBudgetCPU":39094796,"exBudgetMemory":134043,"scriptSizeBytes":691}
+hull.2 not member of hull 3 5 {"exBudgetCPU":33363676,"exBudgetMemory":116036,"scriptSizeBytes":688}
+hull.6 not member of hull 3 5 {"exBudgetCPU":39046796,"exBudgetMemory":133743,"scriptSizeBytes":688}
 intersection.intersection [2,4] [3,5] contains [3,4] {"exBudgetCPU":39810335,"exBudgetMemory":136935,"scriptSizeBytes":709}
 intersection.intersection [3,5] [2,4] contains [3,4] {"exBudgetCPU":45863295,"exBudgetMemory":156919,"scriptSizeBytes":709}

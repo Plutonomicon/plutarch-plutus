@@ -547,50 +547,49 @@ ops.abs program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [-1, 1])
                        (constr 0 [2, 1])))
@@ -646,50 +645,49 @@ ops.signum program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [-1, 1])
                        (constr 0 [2, 1])))
@@ -861,50 +859,49 @@ round.5/3 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [5, 1])
                        (constr 0 [3, 1])))
@@ -984,50 +981,49 @@ round.4/3 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [4, 1])
                        (constr 0 [3, 1])))
@@ -1107,50 +1103,49 @@ round.-5/2 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [-5, 1])
                        (constr 0 [2, 1])))
@@ -1230,50 +1225,49 @@ round.-1/4 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [-1, 1])
                        (constr 0 [4, 1])))
@@ -1316,50 +1310,49 @@ truncate.5/4 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [5, 1])
                        (constr 0 [4, 1])))
@@ -1402,50 +1395,49 @@ truncate.7/4 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [7, 1])
                        (constr 0 [4, 1])))
@@ -1488,50 +1480,49 @@ truncate.1/4 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [1, 1])
                        (constr 0 [4, 1])))
@@ -1574,50 +1565,49 @@ truncate.-7/4 program
                                                        "Cannot divide by zero"
                                                        (delay error))))
                                               (delay
-                                                 ((\!0 !0 ->
+                                                 ((\!0 ->
                                                      (\!0 ->
                                                         force
-                                                          (!14
+                                                          (!13
                                                              (lessThanEqualsInteger
-                                                                !2
+                                                                !3
                                                                 0)
                                                              (delay
                                                                 (constr 0
-                                                                   [ (!15
-                                                                        (divideInteger
-                                                                           !3
-                                                                           !1))
-                                                                   , (!15
+                                                                   [ (!14
                                                                         (divideInteger
                                                                            !2
+                                                                           !1))
+                                                                   , (!14
+                                                                        (divideInteger
+                                                                           !3
                                                                            !1)) ]))
                                                              (delay
                                                                 (constr 0
                                                                    [ (divideInteger
-                                                                        !3
+                                                                        !2
                                                                         !1)
                                                                    , (divideInteger
-                                                                        !2
+                                                                        !3
                                                                         !1) ]))))
                                                        ((\!0 ->
                                                            (\!0 ->
                                                               force
-                                                                (!15
+                                                                (!14
                                                                    (lessThanEqualsInteger
                                                                       !2
                                                                       !1)
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !1
                                                                          !2))
                                                                    (delay
-                                                                      (!12
+                                                                      (!11
                                                                          !2
                                                                          !1))))
-                                                             (!13 !2))
-                                                          (!12 !2)))
-                                                    (multiplyInteger !5 !2)
-                                                    !1))))
+                                                             (!12 !3))
+                                                          (!11 !1)))
+                                                    (multiplyInteger !5 !2)))))
                                         (multiplyInteger !3 !2)) ]) ])
                        (constr 0 [-7, 1])
                        (constr 0 [4, 1])))
@@ -2033,48 +2023,47 @@ data.id.11/3 program
                                                     "Cannot divide by zero"
                                                     (delay error))))
                                            (delay
-                                              ((\!0 !0 ->
+                                              ((\!0 ->
                                                   (\!0 ->
                                                      force
-                                                       (!14
+                                                       (!13
                                                           (lessThanEqualsInteger
-                                                             !2
+                                                             !3
                                                              0)
                                                           (delay
                                                              (constr 0
-                                                                [ (!15
-                                                                     (divideInteger
-                                                                        !3
-                                                                        !1))
-                                                                , (!15
+                                                                [ (!14
                                                                      (divideInteger
                                                                         !2
+                                                                        !1))
+                                                                , (!14
+                                                                     (divideInteger
+                                                                        !3
                                                                         !1)) ]))
                                                           (delay
                                                              (constr 0
                                                                 [ (divideInteger
-                                                                     !3
+                                                                     !2
                                                                      !1)
                                                                 , (divideInteger
-                                                                     !2
+                                                                     !3
                                                                      !1) ]))))
                                                     ((\!0 ->
                                                         (\!0 ->
                                                            force
-                                                             (!15
+                                                             (!14
                                                                 (lessThanEqualsInteger
                                                                    !2
                                                                    !1)
                                                                 (delay
-                                                                   (!12 !1 !2))
+                                                                   (!11 !1 !2))
                                                                 (delay
-                                                                   (!12
+                                                                   (!11
                                                                       !2
                                                                       !1))))
-                                                          (!13 !2))
-                                                       (!12 !2)))
-                                                 (multiplyInteger !5 !2)
-                                                 !1))))
+                                                          (!12 !3))
+                                                       (!11 !1)))
+                                                 (multiplyInteger !5 !2)))))
                                      (multiplyInteger !3 !2)) ]) ])
                     (constr 0 [11, 1])
                     (constr 0 [3, 1]))
@@ -2116,48 +2105,47 @@ div by 0.1/0 program
                                                     "Cannot divide by zero"
                                                     (delay error))))
                                            (delay
-                                              ((\!0 !0 ->
+                                              ((\!0 ->
                                                   (\!0 ->
                                                      force
-                                                       (!14
+                                                       (!13
                                                           (lessThanEqualsInteger
-                                                             !2
+                                                             !3
                                                              0)
                                                           (delay
                                                              (constr 0
-                                                                [ (!15
-                                                                     (divideInteger
-                                                                        !3
-                                                                        !1))
-                                                                , (!15
+                                                                [ (!14
                                                                      (divideInteger
                                                                         !2
+                                                                        !1))
+                                                                , (!14
+                                                                     (divideInteger
+                                                                        !3
                                                                         !1)) ]))
                                                           (delay
                                                              (constr 0
                                                                 [ (divideInteger
-                                                                     !3
+                                                                     !2
                                                                      !1)
                                                                 , (divideInteger
-                                                                     !2
+                                                                     !3
                                                                      !1) ]))))
                                                     ((\!0 ->
                                                         (\!0 ->
                                                            force
-                                                             (!15
+                                                             (!14
                                                                 (lessThanEqualsInteger
                                                                    !2
                                                                    !1)
                                                                 (delay
-                                                                   (!12 !1 !2))
+                                                                   (!11 !1 !2))
                                                                 (delay
-                                                                   (!12
+                                                                   (!11
                                                                       !2
                                                                       !1))))
-                                                          (!13 !2))
-                                                       (!12 !2)))
-                                                 (multiplyInteger !5 !2)
-                                                 !1))))
+                                                          (!12 !3))
+                                                       (!11 !1)))
+                                                 (multiplyInteger !5 !2)))))
                                      (multiplyInteger !3 !2)) ]) ])
                     (constr 0 [1, 1])
                     (constr 0 [0, 1]))
