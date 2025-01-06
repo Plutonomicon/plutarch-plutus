@@ -2374,13 +2374,13 @@ module Plutarch.Pair
 --   
 --   Note: This is represented differently than <tt>BuiltinPair</tt>. It is
 --   scott-encoded.
-data PPair (a :: PType) (b :: PType) (s :: S)
-PPair :: Term s a -> Term s b -> PPair (a :: PType) (b :: PType) (s :: S)
-instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Pair.PPair a b)
-instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Eq.PEq a, Plutarch.Internal.Eq.PEq b) => Plutarch.Internal.Eq.PEq (Plutarch.Pair.PPair a b)
-instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Pair.PPair a b)
-instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Pair.PPair a b s)
-instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Pair.PPair a b)
+data PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
+PPair :: Term s a -> Term s b -> PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Pair.PPair a b)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Eq.PEq a, Plutarch.Internal.Eq.PEq b) => Plutarch.Internal.Eq.PEq (Plutarch.Pair.PPair a b)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Pair.PPair a b s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Pair.PPair a b s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Pair.PPair a b)
 
 module Plutarch.Rational
 
@@ -2425,6 +2425,10 @@ instance Plutarch.Internal.Show.PShow Plutarch.Rational.PRational
 
 -- | Scott-encoded lists and ListLike typeclass
 module Plutarch.List
+
+-- | SOP-encoded list.
+--   
+--   @since WIP
 data PList (a :: S -> Type) (s :: S)
 PSCons :: Term s a -> Term s (PList a) -> PList (a :: S -> Type) (s :: S)
 PSNil :: PList (a :: S -> Type) (s :: S)
@@ -2472,9 +2476,9 @@ pelemAt' :: PIsListLike l a => Term s (PInteger :--> (l a :--> a))
 
 -- | <i> O(min(n, m)) </i>. Check if two lists are equal.
 plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> (list a :--> PBool))
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.List.PList a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.List.PList a s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.List.PList a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.List.PList a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.List.PList a)
 instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.List.PList a)
 instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.List.PList a)
 instance Plutarch.Internal.ListLike.PListLike Plutarch.List.PList
@@ -2733,7 +2737,9 @@ instance forall (name :: GHC.Types.Symbol) (c :: Plutarch.Internal.Term.PType) (
 
 module Plutarch.Either
 
--- | Scott-encoded <a>Either</a>.
+-- | SOP-encoded <a>Either</a>.
+--   
+--   @since WIP
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PLeft :: Term s a -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PRight :: Term s b -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
@@ -2784,18 +2790,18 @@ pdfromLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Te
 pdfromRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (PEitherData a b :--> b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Either.PEither a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Eq.PEq a, Plutarch.Internal.Eq.PEq b) => Plutarch.Internal.Eq.PEq (Plutarch.Either.PEither a b)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEither a b)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Either.PEither a b s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Either.PEither a b s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.IsData.PIsData b, Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Either.PEitherData a b s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEither a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell b), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell b)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Ord.POrd a, Plutarch.Internal.Ord.POrd b, Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.IsData.PIsData b) => Plutarch.Internal.Ord.POrd (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.IsData.PIsData (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a, Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData b) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a, Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData b) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.Either.PEitherData a b))
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Either.PEither a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Plutarch.Internal.Lift.PLiftable b) => Plutarch.Internal.Lift.PLiftable (Plutarch.Either.PEither a b)
 
 module Plutarch.DataRepr.Internal
@@ -3563,7 +3569,9 @@ pfield :: forall name b p s a as n. (PDataFields p, as ~ PFields p, n ~ PLabelIn
 -- | Bind a HRec of named fields containing all the specified fields.
 pletFields :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> (HRecOf a fs s -> Term s b) -> Term s b
 
--- | Scott-encoded <a>Either</a>.
+-- | SOP-encoded <a>Either</a>.
+--   
+--   @since WIP
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PLeft :: Term s a -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PRight :: Term s b -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
@@ -3882,6 +3890,10 @@ type PIsListLike list a = (PListLike list, PElemConstraint list a)
 
 -- | Plutarch types that behave like lists.
 class PListLike (list :: (S -> Type) -> S -> Type)
+
+-- | SOP-encoded list.
+--   
+--   @since WIP
 data PList (a :: S -> Type) (s :: S)
 PSCons :: Term s a -> Term s (PList a) -> PList (a :: S -> Type) (s :: S)
 PSNil :: PList (a :: S -> Type) (s :: S)
@@ -4328,8 +4340,8 @@ PNothing :: PMaybe (a :: S -> Type) (s :: S)
 --   
 --   Note: This is represented differently than <tt>BuiltinPair</tt>. It is
 --   scott-encoded.
-data PPair (a :: PType) (b :: PType) (s :: S)
-PPair :: Term s a -> Term s b -> PPair (a :: PType) (b :: PType) (s :: S)
+data PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
+PPair :: Term s a -> Term s b -> PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
 
 -- | A Scott-encoded rational number, with a guaranteed positive
 --   denominator (and thus, a canonical form).
