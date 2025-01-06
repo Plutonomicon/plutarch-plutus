@@ -1735,15 +1735,10 @@ instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Plu
 
 module Plutarch.Maybe
 
--- | Plutus Maybe type, with Scott-encoded repr
+-- | @since WIP
 data PMaybe (a :: S -> Type) (s :: S)
 PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
 PNothing :: PMaybe (a :: S -> Type) (s :: S)
-
--- | @since WIP
-data PMaybeSoP (a :: S -> Type) (s :: S)
-PJustSoP :: Term s a -> PMaybeSoP (a :: S -> Type) (s :: S)
-PNothingSoP :: PMaybeSoP (a :: S -> Type) (s :: S)
 
 -- | Construct a <a>PJust</a> value.
 --   
@@ -1796,22 +1791,10 @@ passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> (PMaybe a
 --   
 --   @since WIP
 pmapMaybe :: Term s ((a :--> b) :--> (PMaybe a :--> PMaybe b))
-pmapMaybeSoP :: Term s ((a :--> b) :--> (PMaybeSoP a :--> PMaybeSoP b))
-
--- | @since WIP
-pmaybeToMaybeSoP :: Term s (PMaybe a :--> PMaybeSoP a)
-
--- | @since WIP
-pmaybeSoPToMaybe :: Term s (PMaybeSoP a :--> PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Maybe.PMaybe a s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybe a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Maybe.PMaybeSoP a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Maybe.PMaybeSoP a s)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybeSoP a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Maybe.PMaybe a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Maybe.PMaybe a)
 
 module Plutarch.Internal.Ord
@@ -2279,7 +2262,6 @@ instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Show.PSh
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Builtin.Data.PBuiltinPair a b)
 instance Plutarch.Internal.Show.PShow Plutarch.Internal.Numeric.PPositive
 instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybe a)
-instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.Maybe.PMaybeSoP a)
 
 module Plutarch.Trace
 
@@ -4337,7 +4319,7 @@ ptryFrom' :: forall s r. (PTryFrom a b, PTryFrom a (PInner b), PTryFromExcess a 
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 
--- | Plutus Maybe type, with Scott-encoded repr
+-- | @since WIP
 data PMaybe (a :: S -> Type) (s :: S)
 PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
 PNothing :: PMaybe (a :: S -> Type) (s :: S)
