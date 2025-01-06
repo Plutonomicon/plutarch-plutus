@@ -1,4 +1,4 @@
-pnot.lam program 1.0.0 (\!0 -> force ifThenElse !1 False True)
+pnot.lam program 1.0.0 (\!0 -> case (constr 0 [!1, False, True]) [(force ifThenElse)])
 pnot.app program 1.0.0 False
 pand.tf program 1.0.0 False
 pand.ft program 1.0.0 False
