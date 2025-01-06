@@ -81,11 +81,6 @@ deriving via
   instance
     PlutusType (PList a)
 
-{-
-instance DerivePlutusType (PList a) where
-  type DPTStrat _ = PlutusTypeScott
--}
-
 instance PShow a => PShow (PList a) where
   pshow' _ x = pshowList @PList @a # x
 
