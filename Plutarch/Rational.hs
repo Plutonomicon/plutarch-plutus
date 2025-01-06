@@ -159,9 +159,8 @@ instance PAdditiveSemigroup PRational where
       # x'
       # y'
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = phoistAcyclic $ plam $ \x p ->
-    pmatch x $ \(PRational xn xd) ->
-      preduce' # (xn #* pto p) # pto xd
+  pscalePositive x p = pmatch x $ \(PRational xn xd) ->
+    preduce' # (xn #* pto p) # pto xd
 
 -- | @since WIP
 instance PAdditiveMonoid PRational where

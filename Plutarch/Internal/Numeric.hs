@@ -233,9 +233,10 @@ class PAdditiveSemigroup (a :: S -> Type) where
   -- we can do.
   pscalePositive ::
     forall (s :: S).
-    Term s (a :--> PPositive :--> a)
-  pscalePositive = phoistAcyclic $ plam $ \b e ->
-    pbySquaringDefault (#+) # b # e
+    Term s a ->
+    Term s PPositive ->
+    Term s a
+  pscalePositive b e = pbySquaringDefault (#+) # b # e
 
 -- | @since WIP
 infix 6 #+
@@ -245,37 +246,35 @@ instance PAdditiveSemigroup PPositive where
   {-# INLINEABLE (#+) #-}
   x #+ y = punsafeCoerce $ paddInteger # pto x # pto y
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = punsafeBuiltin PLC.MultiplyInteger
+  pscalePositive b e = b #* e
 
 -- | @since WIP
 instance PAdditiveSemigroup PNatural where
   {-# INLINEABLE (#+) #-}
   x #+ y = pcon . PNatural $ paddInteger # pto x # pto y
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = punsafeBuiltin PLC.MultiplyInteger
+  pscalePositive b e = b #* punsafeCoerce e
 
 -- | @since WIP
 instance PAdditiveSemigroup PInteger where
   {-# INLINEABLE (#+) #-}
   x #+ y = paddInteger # x # y
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = punsafeBuiltin PLC.MultiplyInteger
+  pscalePositive b e = b #* pto e
 
 -- | @since WIP
 instance PAdditiveSemigroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE (#+) #-}
   x #+ y = pbls12_381_G1_add # x # y
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = phoistAcyclic $ plam $ \x p ->
-    pbls12_381_G1_scalarMul # pto p # x
+  pscalePositive x p = pbls12_381_G1_scalarMul # pto p # x
 
 -- | @since WIP
 instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE (#+) #-}
   x #+ y = pbls12_381_G2_add # x # y
   {-# INLINEABLE pscalePositive #-}
-  pscalePositive = phoistAcyclic $ plam $ \x p ->
-    pbls12_381_G2_scalarMul # pto p # x
+  pscalePositive x p = pbls12_381_G2_scalarMul # pto p # x
 
 {- | The notion of zero, as well as a way to scale by naturals.
 
@@ -301,10 +300,11 @@ class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
   {-# INLINEABLE pscaleNatural #-}
   pscaleNatural :: forall (s :: S). Term s (a :--> PNatural :--> a)
   pscaleNatural = phoistAcyclic $ plam $ \x n ->
-    pif
-      (n #== pzero)
-      pzero
-      (pscalePositive # x # punsafeCoerce n)
+    plet n $ \n' ->
+      pif
+        (n' #== pzero)
+        pzero
+        (pscalePositive x (punsafeCoerce n'))
 
 -- | @since WIP
 instance PAdditiveMonoid PInteger where
@@ -379,14 +379,15 @@ class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type) where
   {-# INLINEABLE pscaleInteger #-}
   pscaleInteger :: forall (s :: S). Term s (a :--> PInteger :--> a)
   pscaleInteger = phoistAcyclic $ plam $ \b e ->
-    pif
-      (e #== pzero)
-      pzero
-      ( pif
-          (e #<= pzero)
-          (pnegate #$ pscalePositive # b # punsafeDowncast (pnegate # e))
-          (pscalePositive # b # punsafeDowncast e)
-      )
+    plet e $ \e' ->
+      pif
+        (e' #== pzero)
+        pzero
+        ( pif
+            (e' #<= pzero)
+            (pnegate # pscalePositive b (punsafeDowncast (pnegate # e')))
+            (pscalePositive b (punsafeDowncast e'))
+        )
 
 -- | @since WIP
 infix 6 #-
