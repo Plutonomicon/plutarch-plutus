@@ -40,6 +40,7 @@
 * New methods for `Data` and Scott encoding derivation
 * `optimizeTerm` for separate optimization via UPLC from compilation
 * New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
+* Support for SoP encoding of data
 
 ## Changed
 
@@ -63,7 +64,7 @@
 * `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
 * `PPositive` (and `Positive`) are now exported from the prelude, along with
   some functionality
-* `PEither`, `PPair` and `PList` use SOP encoding instead of Scott
+* `PEither`, `PPair`, `PMaybe` and `PList` use SOP encoding instead of Scott
 
 ## Removed
 

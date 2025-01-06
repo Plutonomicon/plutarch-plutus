@@ -4,13 +4,15 @@ normal program
      ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
         (\!0 !0 ->
            force
-             (force (force chooseList)
-                !1
-                (delay (constr 1 []))
-                (delay
-                   ((\!0 !0 -> constr 0 [!2, !1])
-                      (force headList !1)
-                      (!2 (force tailList !1))))))
+             (case
+                (constr 0
+                   [ !1
+                   , (delay (constr 1 []))
+                   , (delay
+                        ((\!0 !0 -> constr 0 [!2, !1])
+                           (force headList !1)
+                           (!2 (force tailList !1)))) ])
+                [(force (force chooseList))]))
         [1,2,3,4,5,6,7,8,9,10])
      [(\!0 !0 -> case !1 [(\!0 !0 -> !1), error]), error])
 do program
@@ -21,13 +23,15 @@ do program
            ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
               (\!0 !0 ->
                  force
-                   (force (force chooseList)
-                      !1
-                      (delay (constr 1 []))
-                      (delay
-                         ((\!0 !0 -> constr 0 [!2, !1])
-                            (force headList !1)
-                            (!2 (force tailList !1))))))
+                   (case
+                      (constr 0
+                         [ !1
+                         , (delay (constr 1 []))
+                         , (delay
+                              ((\!0 !0 -> constr 0 [!2, !1])
+                                 (force headList !1)
+                                 (!2 (force tailList !1)))) ])
+                      [(force (force chooseList))]))
               [1,2,3,4,5,6,7,8,9,10])
            [ (\!0 !0 -> case !1 [(\!0 !0 -> !1), (force (!3 !4 (delay error)))])
            , (force (!1 !2 (delay error))) ])
@@ -39,13 +43,15 @@ cont program
      ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
         (\!0 !0 ->
            force
-             (force (force chooseList)
-                !1
-                (delay (constr 1 []))
-                (delay
-                   ((\!0 !0 -> constr 0 [!2, !1])
-                      (force headList !1)
-                      (!2 (force tailList !1))))))
+             (case
+                (constr 0
+                   [ !1
+                   , (delay (constr 1 []))
+                   , (delay
+                        ((\!0 !0 -> constr 0 [!2, !1])
+                           (force headList !1)
+                           (!2 (force tailList !1)))) ])
+                [(force (force chooseList))]))
         [1,2,3,4,5,6,7,8,9,10])
      [(\!0 !0 -> case !1 [(\!0 !0 -> !1), error]), error])
 termcont program
@@ -56,13 +62,15 @@ termcont program
            ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
               (\!0 !0 ->
                  force
-                   (force (force chooseList)
-                      !1
-                      (delay (constr 1 []))
-                      (delay
-                         ((\!0 !0 -> constr 0 [!2, !1])
-                            (force headList !1)
-                            (!2 (force tailList !1))))))
+                   (case
+                      (constr 0
+                         [ !1
+                         , (delay (constr 1 []))
+                         , (delay
+                              ((\!0 !0 -> constr 0 [!2, !1])
+                                 (force headList !1)
+                                 (!2 (force tailList !1)))) ])
+                      [(force (force chooseList))]))
               [1,2,3,4,5,6,7,8,9,10])
            [ (\!0 !0 -> case !1 [(\!0 !0 -> !1), (force (!3 !4 (delay error)))])
            , (force (!1 !2 (delay error))) ])
