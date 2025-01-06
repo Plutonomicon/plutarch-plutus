@@ -1,20 +1,38 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Pair (PPair (..)) where
 
+import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType)
-import Plutarch.Internal.ScottEncoding (PlutusTypeScott)
+import Plutarch.Internal.PlutusType (PlutusType)
 import Plutarch.Internal.Show (PShow)
-import Plutarch.Internal.Term (PType, S, Term)
+import Plutarch.Internal.Term (S, Term)
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 
 {- |
   Plutus encoding of Pairs.
 
   Note: This is represented differently than 'BuiltinPair'. It is scott-encoded.
 -}
-data PPair (a :: PType) (b :: PType) (s :: S)
+data PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PPair (Term s a) (Term s b)
-  deriving stock (Generic)
-  deriving anyclass (PlutusType, PEq, PShow)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      SOP.Generic
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      PShow
+    )
 
-instance DerivePlutusType (PPair a b) where type DPTStrat _ = PlutusTypeScott
+-- | @since WIP
+deriving via
+  DeriveAsSOPStruct (PPair a b)
+  instance
+    PlutusType (PPair a b)

@@ -41,6 +41,7 @@
 * `optimizeTerm` for separate optimization via UPLC from compilation
 * New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
 * `PNatural` type, corresponding to the Haskell `Natural`
+* Support for SoP encoding of data
 
 ## Changed
 
@@ -64,6 +65,7 @@
 * `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
 * `PPositive` (and `Positive`) are now exported from the prelude, along with
   some functionality
+* `PEither`, `PPair`, `PMaybe` and `PList` use SOP encoding instead of Scott
 
 ## Removed
 

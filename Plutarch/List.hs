@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 -- | Scott-encoded lists and ListLike typeclass
 module Plutarch.List (
   PList (PSCons, PSNil),
@@ -16,6 +18,7 @@ module Plutarch.List (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, ptrue, (#&&))
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
@@ -37,13 +40,9 @@ import Plutarch.Internal.ListLike (
 import Plutarch.Internal.Ord (POrd ((#<), (#<=)))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
   PlutusType,
   pcon,
   pmatch,
- )
-import Plutarch.Internal.ScottEncoding (
-  PlutusTypeScott,
  )
 import Plutarch.Internal.Show (PShow (pshow'), pshowList)
 import Plutarch.Internal.Term (
@@ -58,15 +57,29 @@ import Plutarch.Internal.Term (
 import Plutarch.Internal.Trace (ptraceInfo)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
+import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 
+{- | SOP-encoded list.
+
+@since WIP
+-}
 data PList (a :: S -> Type) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
-  deriving stock (Generic)
-  deriving anyclass (PlutusType)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      SOP.Generic
+    )
 
-instance DerivePlutusType (PList a) where
-  type DPTStrat _ = PlutusTypeScott
+-- | @since WIP
+deriving via
+  DeriveAsSOPStruct (PList a)
+  instance
+    PlutusType (PList a)
 
 instance PShow a => PShow (PList a) where
   pshow' _ x = pshowList @PList @a # x

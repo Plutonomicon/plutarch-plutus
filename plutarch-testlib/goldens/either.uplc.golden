@@ -1,40 +1,45 @@
 eq.true.left program
   1.0.0
   ((\!0 !0 ->
-      !2
-        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (\!0 -> False))
-        (\!0 -> !2 (\!0 -> False) (\!0 -> equalsInteger !2 !1)))
-     (\!0 !0 -> !2 42)
-     (\!0 !0 -> !2 42))
+      case
+        !2
+        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
+        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
+     (constr 0 [42])
+     (constr 0 [42]))
 eq.true.right program
   1.0.0
   ((\!0 !0 ->
-      !2
-        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (\!0 -> False))
-        (\!0 -> !2 (\!0 -> False) (\!0 -> equalsInteger !2 !1)))
-     (\!0 !0 -> !1 42)
-     (\!0 !0 -> !1 42))
+      case
+        !2
+        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
+        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
+     (constr 1 [42])
+     (constr 1 [42]))
 eq.false.left-right program
   1.0.0
   ((\!0 !0 ->
-      !2
-        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (\!0 -> False))
-        (\!0 -> !2 (\!0 -> False) (\!0 -> equalsInteger !2 !1)))
-     (\!0 !0 -> !2 42)
-     (\!0 !0 -> !1 42))
+      case
+        !2
+        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
+        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
+     (constr 0 [42])
+     (constr 1 [42]))
 eq.false.left-left program
   1.0.0
   ((\!0 !0 ->
-      !2
-        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (\!0 -> False))
-        (\!0 -> !2 (\!0 -> False) (\!0 -> equalsInteger !2 !1)))
-     (\!0 !0 -> !2 24)
-     (\!0 !0 -> !2 42))
+      case
+        !2
+        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
+        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
+     (constr 0 [24])
+     (constr 0 [42]))
 eq.false.right-right program
   1.0.0
   ((\!0 !0 ->
-      !2
-        (\!0 -> !2 (\!0 -> equalsInteger !2 !1) (\!0 -> False))
-        (\!0 -> !2 (\!0 -> False) (\!0 -> equalsInteger !2 !1)))
-     (\!0 !0 -> !1 24)
-     (\!0 !0 -> !1 42))
+      case
+        !2
+        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
+        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
+     (constr 1 [24])
+     (constr 1 [42]))
