@@ -90,7 +90,7 @@ import Plutarch.Internal.Term (
   (#$),
   type (:-->),
  )
-import Plutarch.Maybe (PMaybe, PMaybeSoP)
+import Plutarch.Maybe (PMaybe)
 
 import PlutusCore qualified as PLC
 
@@ -352,6 +352,3 @@ instance PShow PPositive
 
 -- | @since WIP
 instance PShow a => PShow (PMaybe a)
-
--- | @since WIP
-instance PShow a => PShow (PMaybeSoP a)

@@ -2,7 +2,7 @@ module Plutarch.Test.Suite.Plutarch.Maybe (tests) where
 
 import Data.Kind (Type)
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
-import Plutarch.Maybe (PMaybeSoP, pmapMaybe, pmapMaybeSoP, pmaybeSoPToMaybe, pmaybeToMaybeSoP)
+import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkPLiftableLaws)
@@ -40,14 +40,6 @@ tests =
         "pmaybeDataToMaybe . pmaybeToMaybeData= id"
         (\(m :: Maybe Integer) -> pmaybeDataToMaybe #$ pmaybeToMaybeData # pconstant @(PMaybe PInteger) m)
         (\(m :: Maybe Integer) -> pconstant m)
-    , propEvalEqual
-        "pmaybeToMaybeSoP . pmaybeSoPToMaybe = id"
-        (\(m :: Maybe Integer) -> pmaybeToMaybeSoP #$ pmaybeSoPToMaybe # pconstant @(PMaybeSoP PInteger) m)
-        (\(m :: Maybe Integer) -> pconstant m)
-    , propEvalEqual
-        "pmaybeSoPToMaybe . pmaybeToMaybeSoP = id"
-        (\(m :: Maybe Integer) -> pmaybeSoPToMaybe #$ pmaybeToMaybeSoP # pconstant @(PMaybe PInteger) m)
-        (\(m :: Maybe Integer) -> pconstant m)
     , testProperty "fmap = pmapMaybe" $
         checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
           (fmap even)
@@ -56,16 +48,10 @@ tests =
         checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
           (fmap even)
           (plam $ \m -> pmapMaybeData # plam (\v -> pdata (peven # pfromData v)) # m)
-    , testProperty "fmap = pmapMaybeSoP" $
-        checkHaskellEquivalent @(PMaybeData PInteger) @(PMaybeData PBool)
-          (fmap even)
-          (plam $ \m -> pmaybeToMaybeData #$ pmaybeSoPToMaybe #$ pmapMaybeSoP # peven #$ pmaybeToMaybeSoP #$ pmaybeDataToMaybe # m)
     , testGroup (instanceOfType @(S -> Type) @(PMaybe PInteger) "PLiftable") $
         checkPLiftableLaws @(PMaybe PInteger)
     , testGroup (instanceOfType @(S -> Type) @(PMaybeData PInteger) "PLiftable") $
         checkPLiftableLaws @(PMaybeData PInteger)
-    , testGroup (instanceOfType @(S -> Type) @(PMaybeSoP PInteger) "PLiftable") $
-        checkPLiftableLaws @(PMaybeSoP PInteger)
     ]
 
 peven :: Term s (PInteger :--> PBool)
