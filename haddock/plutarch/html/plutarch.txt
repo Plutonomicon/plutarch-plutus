@@ -1543,6 +1543,9 @@ CouldNotCompile :: Text -> LiftError
 
 -- | <tt>Data</tt> encoding was invalid for our type
 CouldNotDecodeData :: LiftError
+
+-- | @since WIP
+punsafeCoercePLifted :: PLifted s a -> PLifted s b
 instance GHC.Show.Show Plutarch.Internal.Lift.LiftError
 instance GHC.Classes.Eq Plutarch.Internal.Lift.LiftError
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Lift.DeriveBuiltinPLiftable a h)
@@ -1922,7 +1925,10 @@ data PPositive (s :: S)
 -- | @since WIP
 data Positive
 
--- | The addition operation.
+-- | @since WIP
+data PNatural (s :: S)
+
+-- | The addition operation, and the notion of scaling by a positive.
 --   
 --   <h1>Laws</h1>
 --   
@@ -1953,11 +1959,10 @@ class PAdditiveSemigroup (a :: S -> Type)
 
 -- | This defaults to exponentiation-by-squaring, which in general is the
 --   best we can do.
-pscalePositive :: forall (s :: S). PAdditiveSemigroup a => Term s (a :--> (PPositive :--> a))
+pscalePositive :: forall (s :: S). PAdditiveSemigroup a => Term s a -> Term s PPositive -> Term s a
 infix 6 #+
 
--- | The notion of zero, as well as a (kind of) reversal of
---   <a>pscalePositive</a>, similar to floor division by positive integers.
+-- | The notion of zero, as well as a way to scale by naturals.
 --   
 --   <h1>Laws</h1>
 --   
@@ -1968,9 +1973,21 @@ infix 6 #+
 --   (<tt>pzero</tt> does not scale up)</li>
 --   </ol>
 --   
+--   If you define <a>pscaleNatural</a>, ensure the following as well:
+--   
+--   <ol>
+--   <li><tt>pscaleNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
+--   <tt>pscalePositive # x # p</tt></li>
+--   <li><tt>pscaleNatural # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   </ol>
+--   
+--   The default implementation of <a>pscaleNatural</a> ensures these laws
+--   are followed.
+--   
 --   @since WIP
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
 pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
+pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatural -> Term s a
 
 -- | The notion of additive inverses, and the subtraction operation.
 --   
@@ -2012,7 +2029,7 @@ pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
 class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type)
 pnegate :: forall (s :: S). PAdditiveGroup a => Term s (a :--> a)
 (#-) :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s a -> Term s a
-pscaleInteger :: forall (s :: S). PAdditiveGroup a => Term s (a :--> (PInteger :--> a))
+pscaleInteger :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s PInteger -> Term s a
 infix 6 #-
 
 -- | The multiplication operation.
@@ -2047,10 +2064,11 @@ infix 6 #-
 class PMultiplicativeSemigroup (a :: S -> Type)
 (#*) :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s a -> Term s a
 (#*) :: forall (s :: S). (PMultiplicativeSemigroup a, PMultiplicativeSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
-ppowPositive :: forall (s :: S). PMultiplicativeSemigroup a => Term s (a :--> (PPositive :--> a))
+ppowPositive :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s PPositive -> Term s a
 infix 6 #*
 
--- | The notion of one (multiplicative identity).
+-- | The notion of one (multiplicative identity), and exponentiation by -
+--   naturals.
 --   
 --   <h1>Laws</h1>
 --   
@@ -2059,11 +2077,22 @@ infix 6 #*
 --   left identity of <tt>#*</tt>)</li>
 --   <li><tt>x #* pone</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
 --   right identity of <tt>#*</tt>)</li>
+--   <li><tt>ppowPositive # pone # p</tt> <tt>=</tt> <tt>pone</tt>
+--   (<tt>pone</tt> does not scale up)</li>
+--   </ol>
+--   
+--   If you define <a>ppowNatural</a>, ensure the following as well:
+--   
+--   <ol>
+--   <li><tt>ppowNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
+--   <tt>ppowPositive # x # p</tt></li>
+--   <li><tt>ppowNatural # x # pzero</tt> <tt>=</tt> <tt>pone</tt></li>
 --   </ol>
 --   
 --   @since WIP
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type)
 pone :: forall (s :: S). PMultiplicativeMonoid a => Term s a
+ppowNatural :: forall (s :: S). PMultiplicativeMonoid a => Term s a -> Term s PNatural -> Term s a
 
 -- | <h1>Laws</h1>
 --   
@@ -2113,14 +2142,33 @@ psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 
--- | Partial version of <a>PPositive</a>. Errors if argument is zero.
+-- | Partial version of <a>ppositive</a>. Errors if argument is not
+--   positive.
 --   
 --   @since WIP
 ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 
 -- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
---   <a>PNothing</a> if argument is zero.
+--   <a>PNothing</a> if argument is not positive.
 ppositive :: Term s (PInteger :--> PMaybe PPositive)
+
+-- | Partial version of <a>pnatural</a>. Errors if argument is negative.
+--   
+--   @since WIP
+ptryNatural :: forall (s :: S). Term s (PInteger :--> PNatural)
+
+-- | Build a <a>PNatural</a> from a <a>PInteger</a>. Yields <a>PNothing</a>
+--   if given a negative value.
+--   
+--   @since WIP
+pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
+
+-- | 'Relax' a <a>PPositive</a> to <a>PNatural</a>. This uses
+--   <a>punsafeCoerce</a> underneath, but because any positive is also a
+--   natural, is safe.
+--   
+--   @since WIP
+ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
 
 -- | A default implementation of exponentiation-by-squaring with a
 --   strictly-positive exponent.
@@ -2131,7 +2179,7 @@ ppositive :: Term s (PInteger :--> PMaybe PPositive)
 --   associative.
 --   
 --   @since WIP
-pbySquaringDefault :: forall (a :: S -> Type) (s :: S). (forall (s' :: S). Term s' a -> Term s' a -> Term s' a) -> Term s (a :--> (PPositive :--> a))
+pbySquaringDefault :: forall (a :: S -> Type) (s :: S). (forall (s' :: S). Term s' a -> Term s' a -> Term s' a) -> Term s a -> Term s PPositive -> Term s a
 
 -- | @since WIP
 pdiv :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
@@ -2155,24 +2203,35 @@ instance Test.QuickCheck.Arbitrary.Arbitrary Plutarch.Internal.Numeric.Positive
 instance GHC.Classes.Ord Plutarch.Internal.Numeric.Positive
 instance GHC.Classes.Eq Plutarch.Internal.Numeric.Positive
 instance GHC.Show.Show Plutarch.Internal.Numeric.Positive
+instance Plutarch.Internal.Ord.POrd Plutarch.Internal.Numeric.PNatural
+instance Plutarch.Internal.Eq.PEq Plutarch.Internal.Numeric.PNatural
+instance Plutarch.Internal.IsData.PIsData Plutarch.Internal.Numeric.PNatural
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Internal.Numeric.PNatural
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Internal.Numeric.PNatural s)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Internal.Numeric.PPositive
 instance Plutarch.Internal.Numeric.PIntegralDomain Plutarch.Builtin.Integer.PInteger
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Plutarch.Internal.Numeric.PIntegralDomain a => GHC.Num.Num (Plutarch.Internal.Term.Term s a)
 instance Plutarch.Internal.Numeric.PRing Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.Numeric.PMultiplicativeMonoid Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PMultiplicativeMonoid Plutarch.Internal.Numeric.PNatural
 instance Plutarch.Internal.Numeric.PMultiplicativeMonoid Plutarch.Builtin.Integer.PInteger
-instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Internal.Numeric.PPositive
-instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Internal.Numeric.PNatural
+instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Internal.Numeric.PNatural
 instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Internal.Numeric.PPositive
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Internal.Numeric.PNatural
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
-instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
-instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Internal.Numeric.PPositive
-instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Internal.Numeric.PAdditiveSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
+instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Internal.Numeric.PNatural
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Internal.Numeric.PNatural
 instance Test.QuickCheck.Function.Function Plutarch.Internal.Numeric.Positive
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.Internal.Numeric.PPositive
 
@@ -4038,7 +4097,10 @@ data Positive
 -- | @since WIP
 data PPositive (s :: S)
 
--- | The addition operation.
+-- | @since WIP
+data PNatural (s :: S)
+
+-- | The addition operation, and the notion of scaling by a positive.
 --   
 --   <h1>Laws</h1>
 --   
@@ -4069,11 +4131,10 @@ class PAdditiveSemigroup (a :: S -> Type)
 
 -- | This defaults to exponentiation-by-squaring, which in general is the
 --   best we can do.
-pscalePositive :: forall (s :: S). PAdditiveSemigroup a => Term s (a :--> (PPositive :--> a))
+pscalePositive :: forall (s :: S). PAdditiveSemigroup a => Term s a -> Term s PPositive -> Term s a
 infix 6 #+
 
--- | The notion of zero, as well as a (kind of) reversal of
---   <a>pscalePositive</a>, similar to floor division by positive integers.
+-- | The notion of zero, as well as a way to scale by naturals.
 --   
 --   <h1>Laws</h1>
 --   
@@ -4084,9 +4145,21 @@ infix 6 #+
 --   (<tt>pzero</tt> does not scale up)</li>
 --   </ol>
 --   
+--   If you define <a>pscaleNatural</a>, ensure the following as well:
+--   
+--   <ol>
+--   <li><tt>pscaleNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
+--   <tt>pscalePositive # x # p</tt></li>
+--   <li><tt>pscaleNatural # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   </ol>
+--   
+--   The default implementation of <a>pscaleNatural</a> ensures these laws
+--   are followed.
+--   
 --   @since WIP
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
 pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
+pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatural -> Term s a
 
 -- | The notion of additive inverses, and the subtraction operation.
 --   
@@ -4128,7 +4201,7 @@ pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
 class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type)
 pnegate :: forall (s :: S). PAdditiveGroup a => Term s (a :--> a)
 (#-) :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s a -> Term s a
-pscaleInteger :: forall (s :: S). PAdditiveGroup a => Term s (a :--> (PInteger :--> a))
+pscaleInteger :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s PInteger -> Term s a
 infix 6 #-
 
 -- | The multiplication operation.
@@ -4163,10 +4236,11 @@ infix 6 #-
 class PMultiplicativeSemigroup (a :: S -> Type)
 (#*) :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s a -> Term s a
 (#*) :: forall (s :: S). (PMultiplicativeSemigroup a, PMultiplicativeSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
-ppowPositive :: forall (s :: S). PMultiplicativeSemigroup a => Term s (a :--> (PPositive :--> a))
+ppowPositive :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s PPositive -> Term s a
 infix 6 #*
 
--- | The notion of one (multiplicative identity).
+-- | The notion of one (multiplicative identity), and exponentiation by -
+--   naturals.
 --   
 --   <h1>Laws</h1>
 --   
@@ -4175,11 +4249,22 @@ infix 6 #*
 --   left identity of <tt>#*</tt>)</li>
 --   <li><tt>x #* pone</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
 --   right identity of <tt>#*</tt>)</li>
+--   <li><tt>ppowPositive # pone # p</tt> <tt>=</tt> <tt>pone</tt>
+--   (<tt>pone</tt> does not scale up)</li>
+--   </ol>
+--   
+--   If you define <a>ppowNatural</a>, ensure the following as well:
+--   
+--   <ol>
+--   <li><tt>ppowNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
+--   <tt>ppowPositive # x # p</tt></li>
+--   <li><tt>ppowNatural # x # pzero</tt> <tt>=</tt> <tt>pone</tt></li>
 --   </ol>
 --   
 --   @since WIP
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type)
 pone :: forall (s :: S). PMultiplicativeMonoid a => Term s a
+ppowNatural :: forall (s :: S). PMultiplicativeMonoid a => Term s a -> Term s PNatural -> Term s a
 
 -- | <h1>Laws</h1>
 --   
@@ -4242,13 +4327,32 @@ pdiv :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 pmod :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
 -- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
---   <a>PNothing</a> if argument is zero.
+--   <a>PNothing</a> if argument is not positive.
 ppositive :: Term s (PInteger :--> PMaybe PPositive)
 
--- | Partial version of <a>PPositive</a>. Errors if argument is zero.
+-- | Partial version of <a>ppositive</a>. Errors if argument is not
+--   positive.
 --   
 --   @since WIP
 ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
+
+-- | Build a <a>PNatural</a> from a <a>PInteger</a>. Yields <a>PNothing</a>
+--   if given a negative value.
+--   
+--   @since WIP
+pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
+
+-- | Partial version of <a>pnatural</a>. Errors if argument is negative.
+--   
+--   @since WIP
+ptryNatural :: forall (s :: S). Term s (PInteger :--> PNatural)
+
+-- | 'Relax' a <a>PPositive</a> to <a>PNatural</a>. This uses
+--   <a>punsafeCoerce</a> underneath, but because any positive is also a
+--   natural, is safe.
+--   
+--   @since WIP
+ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
 
 -- | Safely coerce from a Term to it's <a>PInner</a> representation.
 pto :: Term s a -> Term s (PInner a)
