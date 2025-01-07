@@ -298,8 +298,12 @@ followed.
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
   pzero :: forall (s :: S). Term s a
   {-# INLINEABLE pscaleNatural #-}
-  pscaleNatural :: forall (s :: S). Term s (a :--> PNatural :--> a)
-  pscaleNatural = phoistAcyclic $ plam $ \x n ->
+  pscaleNatural ::
+    forall (s :: S).
+    Term s a ->
+    Term s PNatural ->
+    Term s a
+  pscaleNatural x n =
     plet n $ \n' ->
       pif
         (n' #== pzero)
@@ -311,30 +315,28 @@ instance PAdditiveMonoid PInteger where
   {-# INLINEABLE pzero #-}
   pzero = pconstantInteger 0
   {-# INLINEABLE pscaleNatural #-}
-  pscaleNatural = punsafeBuiltin PLC.MultiplyInteger
+  pscaleNatural i n = i #* punsafeCoerce n
 
 -- | @since WIP
 instance PAdditiveMonoid PNatural where
   {-# INLINEABLE pzero #-}
   pzero = pcon . PNatural . pconstantInteger $ 0
   {-# INLINEABLE pscaleNatural #-}
-  pscaleNatural = punsafeBuiltin PLC.MultiplyInteger
+  pscaleNatural n1 n2 = n1 #* n2
 
 -- | @since WIP
 instance PAdditiveMonoid PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G1_uncompress # pbls12_381_G1_compressed_zero
   {-# INLINEABLE pscaleNatural #-}
-  pscaleNatural = phoistAcyclic $ plam $ \x n ->
-    pbls12_381_G1_scalarMul # pto n # x
+  pscaleNatural x n = pbls12_381_G1_scalarMul # pto n # x
 
 -- | @since WIP
 instance PAdditiveMonoid PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G2_uncompress # pbls12_381_G2_compressed_zero
   {-# INLINEABLE pscaleNatural #-}
-  pscaleNatural = phoistAcyclic $ plam $ \x n ->
-    pbls12_381_G2_scalarMul # pto n # x
+  pscaleNatural x n = pbls12_381_G2_scalarMul # pto n # x
 
 {- | The notion of additive inverses, and the subtraction operation.
 
@@ -377,8 +379,12 @@ class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type) where
       inner = phoistAcyclic $ plam $ \x y ->
         x #+ (pnegate # y)
   {-# INLINEABLE pscaleInteger #-}
-  pscaleInteger :: forall (s :: S). Term s (a :--> PInteger :--> a)
-  pscaleInteger = phoistAcyclic $ plam $ \b e ->
+  pscaleInteger ::
+    forall (s :: S).
+    Term s a ->
+    Term s PInteger ->
+    Term s a
+  pscaleInteger b e =
     plet e $ \e' ->
       pif
         (e' #== pzero)
@@ -397,23 +403,21 @@ instance PAdditiveGroup PInteger where
   {-# INLINEABLE (#-) #-}
   x #- y = psubtractInteger # x # y
   {-# INLINEABLE pscaleInteger #-}
-  pscaleInteger = pmultiplyInteger
+  pscaleInteger = (#*)
 
 -- | @since WIP
 instance PAdditiveGroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G1_neg
   {-# INLINEABLE pscaleInteger #-}
-  pscaleInteger = phoistAcyclic $ plam $ \b e ->
-    pbls12_381_G1_scalarMul # e # b
+  pscaleInteger b e = pbls12_381_G1_scalarMul # e # b
 
 -- | @since WIP
 instance PAdditiveGroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G2_neg
   {-# INLINEABLE pscaleInteger #-}
-  pscaleInteger = phoistAcyclic $ plam $ \b e ->
-    pbls12_381_G2_scalarMul # e # b
+  pscaleInteger b e = pbls12_381_G2_scalarMul # e # b
 
 {- | The multiplication operation.
 
@@ -452,9 +456,10 @@ class PMultiplicativeSemigroup (a :: S -> Type) where
   {-# INLINEABLE ppowPositive #-}
   ppowPositive ::
     forall (s :: S).
-    Term s (a :--> PPositive :--> a)
-  ppowPositive = phoistAcyclic $ plam $ \x p ->
-    pbySquaringDefault (#*) # x # p
+    Term s a ->
+    Term s PPositive ->
+    Term s a
+  ppowPositive x p = pbySquaringDefault (#*) # x # p
 
 -- | @since WIP
 infix 6 #*
@@ -494,12 +499,16 @@ If you define 'ppowNatural', ensure the following as well:
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
   pone :: forall (s :: S). Term s a
   {-# INLINEABLE ppowNatural #-}
-  ppowNatural :: forall (s :: S). Term s (a :--> PNatural :--> a)
-  ppowNatural = phoistAcyclic $ plam $ \x n ->
+  ppowNatural ::
+    forall (s :: S).
+    Term s a ->
+    Term s PNatural ->
+    Term s a
+  ppowNatural x n = plet n $ \n' ->
     pif
-      (n #== pzero)
+      (n' #== pzero)
       pone
-      (ppowPositive # x # pcon (PPositive $ pto n))
+      (ppowPositive x (pcon (PPositive $ pto n')))
 
 -- | @since WIP
 instance PMultiplicativeMonoid PPositive where

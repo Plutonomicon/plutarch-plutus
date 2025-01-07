@@ -167,9 +167,8 @@ instance PAdditiveMonoid PRational where
   {-# INLINEABLE pzero #-}
   pzero = pcon . PRational pzero $ pone
   {-# INLINEABLE pscaleNatural #-}
-  pscaleNatural = phoistAcyclic $ plam $ \x n ->
-    pmatch x $ \(PRational xn xd) ->
-      preduce' # (xn #* pto n) # pto xd
+  pscaleNatural x n = pmatch x $ \(PRational xn xd) ->
+    preduce' # (xn #* pto n) # pto xd
 
 -- | @since WIP
 instance PAdditiveGroup PRational where
@@ -192,15 +191,8 @@ instance PAdditiveGroup PRational where
       # x'
       # y'
   {-# INLINEABLE pscaleInteger #-}
-  pscaleInteger = phoistAcyclic $ plam $ \x e ->
-    pmatch x $ \(PRational xn xd) ->
-      preduce' # (xn #* e) # pto xd
-
-{-
--- | @since WIP
-instance PAbs PRational where
-  {-# INLINEABLE pabs #-}
--}
+  pscaleInteger x e = pmatch x $ \(PRational xn xd) ->
+    preduce' # (xn #* e) # pto xd
 
 -- | @since WIP
 instance PMultiplicativeSemigroup PRational where
@@ -215,18 +207,19 @@ instance PMultiplicativeSemigroup PRational where
       # x'
       # y'
   {-# INLINEABLE ppowPositive #-}
-  ppowPositive = phoistAcyclic $ plam $ \x p ->
-    pmatch x $ \(PRational xn xd) ->
-      pcon . PRational (ppowPositive # xn # p) $ ppowPositive # xd # p
+  ppowPositive x p =
+    plet p $ \p' ->
+      pmatch x $ \(PRational xn xd) ->
+        pcon . PRational (ppowPositive xn p') $ ppowPositive xd p'
 
 -- | @since WIP
 instance PMultiplicativeMonoid PRational where
   {-# INLINEABLE pone #-}
   pone = pcon . PRational pone $ pone
   {-# INLINEABLE ppowNatural #-}
-  ppowNatural = phoistAcyclic $ plam $ \x n ->
+  ppowNatural x n = plet n $ \n' ->
     pmatch x $ \(PRational xn xd) ->
-      pcon . PRational (ppowNatural # xn # n) $ ppowNatural # xd # n
+      pcon . PRational (ppowNatural xn n') $ ppowNatural xd n'
 
 -- | @since WIP
 instance PRing PRational where
