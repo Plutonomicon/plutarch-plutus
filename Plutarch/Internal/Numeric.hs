@@ -236,7 +236,7 @@ class PAdditiveSemigroup (a :: S -> Type) where
     Term s a ->
     Term s PPositive ->
     Term s a
-  pscalePositive b e = pbySquaringDefault (#+) # b # e
+  pscalePositive = pbySquaringDefault (#+)
 
 -- | @since WIP
 infix 6 #+
@@ -459,7 +459,7 @@ class PMultiplicativeSemigroup (a :: S -> Type) where
     Term s a ->
     Term s PPositive ->
     Term s a
-  ppowPositive x p = pbySquaringDefault (#*) # x # p
+  ppowPositive = pbySquaringDefault (#*)
 
 -- | @since WIP
 infix 6 #*
@@ -559,26 +559,23 @@ This implementation assumes that the operation argument is associative.
 pbySquaringDefault ::
   forall (a :: S -> Type) (s :: S).
   (forall (s' :: S). Term s' a -> Term s' a -> Term s' a) ->
-  Term s (a :--> PPositive :--> a)
-pbySquaringDefault f = phoistAcyclic $ pfix #$ plam $ \self b e ->
-  -- We know that we can never have a value less than 1 for e, due to the type
-  -- constraint. Thus, we make two assumptions:
-  --
-  -- 1. The stopping condition is equality to 1
-  -- 2. The exponent is never negative
-  --
-  -- This allows us to use `pquot` and `prem` instead of `pdiv` and `pmod`,
-  -- which is a bit faster.
-  pif
-    (pto e #== pconstantInteger 1)
-    b
-    ( plet (self # b #$ punsafeDowncast (pquotientInteger # pto e # pconstantInteger 2)) $ \below ->
-        plet (f below below) $ \res ->
-          pif
-            ((premainderInteger # pto e # pconstantInteger 2) #== pconstantInteger 1)
-            (f b res)
-            res
-    )
+  Term s a ->
+  Term s PPositive ->
+  Term s a
+pbySquaringDefault f b e = go # b # e
+  where
+    go :: forall (s'' :: S). Term s'' (a :--> PPositive :--> a)
+    go = phoistAcyclic $ pfix #$ plam $ \self b e -> plet e $ \e' ->
+      pif
+        (pto e' #== pconstantInteger 1)
+        b
+        ( plet (self # b #$ punsafeDowncast (pquotientInteger # pto e' # pconstantInteger 2)) $ \below ->
+            plet (f below below) $ \res ->
+              pif
+                ((premainderInteger # pto e' # pconstantInteger 2) #== pconstantInteger 1)
+                (f b res)
+                res
+        )
 
 {- | = Laws
 
