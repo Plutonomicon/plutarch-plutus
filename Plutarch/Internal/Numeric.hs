@@ -22,6 +22,7 @@ module Plutarch.Internal.Numeric (
   ptryNatural,
   pnatural,
   ppositiveToNatural,
+  pnaturalToPositiveCPS,
   pbySquaringDefault,
   pdiv,
   pmod,
@@ -683,6 +684,24 @@ pquot = punsafeBuiltin PLC.QuotientInteger
 -- | @since WIP
 prem :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 prem = punsafeBuiltin PLC.RemainderInteger
+
+{- | Specialized form of @pmaybe@ for 'PNatural'. Given a default, and a way to
+turn a 'PPositive' into an answer, produce the default when given 'pzero',
+and apply the function otherwise.
+
+@since WIP
+-}
+pnaturalToPositiveCPS ::
+  forall (a :: S -> Type) (s :: S).
+  Term s a ->
+  (Term s PPositive -> Term s a) ->
+  Term s PNatural ->
+  Term s a
+pnaturalToPositiveCPS def f n = plet n $ \n' ->
+  pif
+    (n' #== pzero)
+    def
+    (f . punsafeCoerce $ n)
 
 {- | Partial version of 'pnatural'. Errors if argument is negative.
 

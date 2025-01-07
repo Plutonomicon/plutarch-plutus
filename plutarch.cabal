@@ -109,6 +109,7 @@ library
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Semigroup
     Plutarch.Internal.Show
     Plutarch.Internal.Subtype
     Plutarch.Internal.Term
