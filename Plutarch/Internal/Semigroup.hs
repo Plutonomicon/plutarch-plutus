@@ -1,31 +1,51 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Plutarch.Internal.Semigroup (
   -- * Type classes
   PSemigroup (..),
   PMonoid (..),
+
+  -- * Helper newtypes
+  PAnd (..),
+  POr (..),
+  PXor (..),
 ) where
 
 import Data.ByteString qualified as BS
 import Data.Kind (Type)
 import Data.Text qualified as Text
+import GHC.Generics (Generic)
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
   PBuiltinBLS12_381_MlResult,
  )
-import Plutarch.Builtin.Bool (pif)
+import Plutarch.Builtin.Bool (
+  PBool (PFalse, PTrue),
+  pif,
+  pif',
+  pnot,
+ )
 import Plutarch.Builtin.ByteString (
   PByteString,
+  pandBS,
   pindexBS,
   plengthBS,
+  porBS,
+  ppadding,
   preplicateBS,
+  pxorBS,
  )
+import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit, punit)
-import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (
   PNatural,
   PPositive,
   pbySquaringDefault,
+  pdiv,
   pnaturalToPositiveCPS,
   pscaleNatural,
   pscalePositive,
@@ -33,8 +53,9 @@ import Plutarch.Internal.Numeric (
   (#*),
   (#+),
  )
+import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PlutusType (PInner)
+import Plutarch.Internal.PlutusType (DerivePlutusType (DPTStrat), PlutusType (PInner), pcon)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -186,3 +207,187 @@ instance PMonoid PBuiltinBLS12_381_G2_Element where
   pmempty = pzero
   {-# INLINEABLE pmtimes #-}
   pmtimes n x = pscaleNatural x n
+
+{- | Wrapper for types which have logical AND semantics somehow.
+
+@since WIP
+-}
+newtype PAnd (a :: S -> Type) (s :: S)
+  = PAnd (Term s a)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      PlutusType
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      POrd
+    )
+
+-- | @since WIP
+instance DerivePlutusType (PAnd a) where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PSemigroup (PAnd PBool) where
+  {-# INLINEABLE (#<>) #-}
+  x #<> y = pif' # pto x # y # x
+
+  -- \| 'PBool' is idempotent under AND.
+  {-# INLINEABLE pstimes #-}
+  pstimes _ x = x
+
+-- | @since WIP
+instance PMonoid (PAnd PBool) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . PAnd . pcon $ PTrue
+
+{- | This uses padding semantics as specified in CIP-122, as this allows a
+'PMonoid' instance as well.
+
+@since WIP
+-}
+instance PSemigroup (PAnd PByteString) where
+  {-# INLINEABLE (#<>) #-}
+  x #<> y = punsafeDowncast $ pandBS # ppadding # pto x # pto y
+
+  -- \| 'PByteString' is idempotent under AND regardless of semantics.
+  {-# INLINEABLE pstimes #-}
+  pstimes _ x = x
+
+-- | @since WIP
+instance PMonoid (PAnd PByteString) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . PAnd $ mempty
+  {-# INLINEABLE pmtimes #-}
+  pmtimes _ x = x
+
+{- | Wrapper for types which have logical OR semantics somehow.
+
+@since WIP
+-}
+newtype POr (a :: S -> Type) (s :: S)
+  = POr (Term s a)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      PlutusType
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      POrd
+    )
+
+-- | @since WIP
+instance DerivePlutusType (POr a) where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PSemigroup (POr PBool) where
+  {-# INLINEABLE (#<>) #-}
+  x #<> y = pif (pto x) x y
+
+  -- \| 'PBool' is idempotent under OR.
+  {-# INLINEABLE pstimes #-}
+  pstimes _ x = x
+
+-- | @since WIP
+instance PMonoid (POr PBool) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . POr . pcon $ PFalse
+  {-# INLINEABLE pmtimes #-}
+  pmtimes _ x = x
+
+{- | This uses padding semantics as specified in CIP-122, as this allows a
+'PMonoid' instance as well.
+
+@since WIP
+-}
+instance PSemigroup (POr PByteString) where
+  {-# INLINEABLE (#<>) #-}
+  x #<> y = punsafeDowncast $ porBS # ppadding # pto x # pto y
+
+  -- \| 'PByteString' is idempotent under OR regardless of semantics.
+  {-# INLINEABLE pstimes #-}
+  pstimes _ x = x
+
+-- | @since WIP
+instance PMonoid (POr PByteString) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . POr $ mempty
+  {-# INLINEABLE pmtimes #-}
+  pmtimes _ x = x
+
+{- | Wrapper for types which have logical XOR semantics somehow.
+
+@since WIP
+-}
+newtype PXor (a :: S -> Type) (s :: S)
+  = PXor (Term s a)
+  deriving stock
+    ( -- | @since WIP
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since WIP
+      PlutusType
+    , -- | @since WIP
+      PEq
+    , -- | @since WIP
+      POrd
+    )
+
+-- | @since WIP
+instance DerivePlutusType (PXor a) where
+  type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+instance PSemigroup (PXor PBool) where
+  {-# INLINEABLE (#<>) #-}
+  x #<> y = pif' # pto x # (pcon . PXor $ pnot # pto y) # y
+
+  -- \| Because XOR is self-inverting, there are only two outcomes: either the
+  -- argument (if the exponent is odd) or 'PFalse' (if it's even).
+  {-# INLINEABLE pstimes #-}
+  pstimes = pxortimes (pcon PFalse)
+
+-- | @since WIP
+instance PMonoid (PXor PBool) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . PXor . pcon $ PFalse
+  {-# INLINEABLE pmtimes #-}
+  pmtimes = pxortimes (pcon PFalse)
+
+{- | This uses padding semantics as specified in CIP-122, as this allows a
+'PMonoid' instance as well.
+
+@since WIP
+-}
+instance PSemigroup (PXor PByteString) where
+  {-# INLINEABLE (#<>) #-}
+  x #<> y = punsafeDowncast $ pxorBS # ppadding # pto x # pto y
+
+  -- \| Because XOR is self-inverting, there are only two outcomes: either the
+  -- argument (if the exponent is odd) or the empty 'PByteString' (if it isn't).
+  {-# INLINEABLE pstimes #-}
+  pstimes = pxortimes mempty
+
+-- Helpers
+
+pxortimes ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  PInner a ~ PInteger =>
+  Term s b ->
+  Term s a ->
+  Term s (PXor b) ->
+  Term s (PXor b)
+pxortimes def x =
+  pif
+    ((pdiv # pto x # 2) #== 0)
+    (pcon . PXor $ def)

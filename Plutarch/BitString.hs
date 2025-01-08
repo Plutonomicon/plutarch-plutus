@@ -28,6 +28,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Semigroup (PMonoid, PSemigroup)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -63,6 +64,10 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
       PEq
     , -- | @since WIP
       POrd
+    , -- | @since WIP
+      PSemigroup
+    , -- | @since WIP
+      PMonoid
     )
 
 -- | @since WIP
