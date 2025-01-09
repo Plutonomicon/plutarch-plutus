@@ -104,7 +104,7 @@ instance PSemigroup PUnit where
   {-# INLINEABLE (#<>) #-}
   x #<> y = plet x $ \_ -> plet y $ const punit
   {-# INLINEABLE pstimes #-}
-  pstimes _ x = plet x $ const punit
+  pstimes p x = plet p $ \_ -> plet x $ const punit
 
 -- | @since WIP
 instance PSemigroup PString where
@@ -182,7 +182,7 @@ instance PMonoid PUnit where
   {-# INLINEABLE pmempty #-}
   pmempty = punit
   {-# INLINEABLE pmtimes #-}
-  pmtimes _ x = plet x $ const punit
+  pmtimes n x = plet n $ \_ -> plet x $ const punit
 
 -- | @since WIP
 instance PMonoid PString where
@@ -238,7 +238,7 @@ instance PSemigroup (PAnd PBool) where
 
   -- \| 'PBool' is idempotent under AND.
   {-# INLINEABLE pstimes #-}
-  pstimes _ x = x
+  pstimes p x = plet p $ const x
 
 -- | @since WIP
 instance PMonoid (PAnd PBool) where
@@ -256,14 +256,12 @@ instance PSemigroup (PAnd PByteString) where
 
   -- \| 'PByteString' is idempotent under AND regardless of semantics.
   {-# INLINEABLE pstimes #-}
-  pstimes _ x = x
+  pstimes p x = plet p $ const x
 
 -- | @since WIP
 instance PMonoid (PAnd PByteString) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . PAnd $ mempty
-  {-# INLINEABLE pmtimes #-}
-  pmtimes _ x = x
 
 {- | Wrapper for types which have logical OR semantics somehow.
 
@@ -295,14 +293,12 @@ instance PSemigroup (POr PBool) where
 
   -- \| 'PBool' is idempotent under OR.
   {-# INLINEABLE pstimes #-}
-  pstimes _ x = x
+  pstimes p x = plet p $ const x
 
 -- | @since WIP
 instance PMonoid (POr PBool) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . POr . pcon $ PFalse
-  {-# INLINEABLE pmtimes #-}
-  pmtimes _ x = x
 
 {- | This uses padding semantics as specified in CIP-122, as this allows a
 'PMonoid' instance as well.
@@ -315,14 +311,12 @@ instance PSemigroup (POr PByteString) where
 
   -- \| 'PByteString' is idempotent under OR regardless of semantics.
   {-# INLINEABLE pstimes #-}
-  pstimes _ x = x
+  pstimes p x = plet p $ const x
 
 -- | @since WIP
 instance PMonoid (POr PByteString) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . POr $ mempty
-  {-# INLINEABLE pmtimes #-}
-  pmtimes _ x = x
 
 {- | Wrapper for types which have logical XOR semantics somehow.
 
