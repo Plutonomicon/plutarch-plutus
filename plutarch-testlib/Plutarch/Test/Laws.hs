@@ -128,14 +128,14 @@ checkPLiftableLaws ::
   ) =>
   [TestTree]
 checkPLiftableLaws =
-  [ testProperty "fromPlutarch . toPlutarch = Right"
+  [ testProperty "plutToRepr . reprToPlut = Right"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
-        fromPlutarch @a (toPlutarch @a x) === Right x
-  , testProperty "fromPlutarchRepr . toPlutarchRepr = Just"
+        (reprToHask @a <$> plutToRepr @a (reprToPlut (haskToRepr @a x))) === (reprToHask @a <$> Right (haskToRepr @a x))
+  , testProperty "reprToHask . haskToRepr = Just"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
-        fromPlutarchRepr @a (toPlutarchRepr @a x) === Just x
+        reprToHask @a (haskToRepr @a x) === Just x
   , testProperty "plift . pconstant = id" . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
       plift (pconstant @a x) `prettyEquals` x
   ]
@@ -362,13 +362,13 @@ pisDataLaws tyName =
       testProperty "plift . pforgetData . pdata . pconstant = toData"
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: AsHaskell a) ->
-          plift (precompileTerm (plam (pforgetData . pdata)) # pconstant @a x) `prettyEquals` Plutus.toData x
+          plift (precompileTerm (plam (pforgetData . pdata)) # pconstant @a x) `prettyEquals` Plutus.toBuiltinData x
     coerceProp :: TestTree
     coerceProp =
       testProperty coerceName
         . forAllShrinkShow arbitrary shrink prettyShow
         $ \(x :: AsHaskell a) ->
-          plift (precompileTerm (plam (pfromData . punsafeCoerce @(PAsData a))) # pconstant @PData (Plutus.toData x)) `prettyEquals` x
+          plift (precompileTerm (plam (pfromData . punsafeCoerce @(PAsData a))) # pconstant @PData (Plutus.toBuiltinData x)) `prettyEquals` x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> tyName <> ") . pconstant . toData = id"
 
@@ -389,7 +389,7 @@ ptryFromLaws = [pDataAgreementProp]
     pDataAgreementProp = testProperty "can parse toData of original"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(x :: AsHaskell a) ->
-        plift (precompileTerm (plam $ \d -> ptryFrom @a d fst) # (pconstant @PData . Plutus.toData $ x))
+        plift (precompileTerm (plam $ \d -> ptryFrom @a d fst) # (pconstant @PData . Plutus.toBuiltinData $ x))
           `prettyEquals` x
 
 -- This is an ugly kludge because PValue doesn't have a direct PData conversion,
@@ -401,7 +401,7 @@ ptryFromLawsValue = [pDataAgreementProp]
     pDataAgreementProp = testProperty "can parse toData of original"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(v :: PLA.Value) ->
-        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PValue V1.Unsorted V1.NoGuarantees)) d $ fst) # pconstant @PData (Plutus.toData v))
+        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PValue V1.Unsorted V1.NoGuarantees)) d $ fst) # pconstant @PData (Plutus.toBuiltinData v))
           `prettyEquals` v
 
 -- Same as before
@@ -412,7 +412,7 @@ ptryFromLawsAssocMap = [pDataAgreementProp]
     pDataAgreementProp = testProperty "can parse toData of original"
       . forAllShrinkShow arbitrary shrink prettyShow
       $ \(v :: AssocMap.Map Integer Integer) ->
-        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) d $ fst) # pconstant @PData (Plutus.toData v))
+        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) d $ fst) # pconstant @PData (Plutus.toBuiltinData v))
           `prettyEquals` v
 
 -- Helpers

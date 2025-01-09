@@ -9,6 +9,13 @@ module Plutarch.Either (
 
   -- * Functions
 
+  -- ** PEither
+
+  -- *** Elimination
+  pisLeft,
+  pfromLeft,
+  pfromRight,
+
   -- ** PEitherData
 
   -- *** Construction
@@ -46,18 +53,19 @@ import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,
     PlutusRepr,
-    fromPlutarch,
-    fromPlutarchRepr,
-    toPlutarch,
-    toPlutarchRepr
+    haskToRepr,
+    plutToRepr,
+    reprToHask,
+    reprToPlut
   ),
   PLifted (PLifted),
   PLiftedClosed,
-  fromPlutarchReprClosed,
-  getPLifted,
-  mkPLifted,
+  getPLiftedClosed,
+  mkPLiftedClosed,
   pconstant,
-  toPlutarchReprClosed,
+  plift,
+  pliftedFromClosed,
+  pliftedToClosed,
  )
 import Plutarch.Internal.ListLike (pcons, phead, pnil)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
@@ -72,7 +80,6 @@ import Plutarch.Internal.Show (PShow)
 import Plutarch.Internal.Term (
   S,
   Term,
-  perror,
   phoistAcyclic,
   plet,
   (#),
@@ -115,7 +122,22 @@ deriving via
 instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
   type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = \case
+    Left x -> mkPLiftedClosed $ pcon $ PLeft (pconstant @a x)
+    Right x -> mkPLiftedClosed $ pcon $ PRight (pconstant @b x)
+  {-# INLINEABLE reprToHask #-}
+  reprToHask x =
+    Just $
+      if plift $ pisLeft # getPLiftedClosed x
+        then Left $ plift $ pfromLeft # getPLiftedClosed x
+        else Right $ plift $ pfromRight # getPLiftedClosed x
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = pliftedFromClosed
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = Right . pliftedToClosed
 
+{-
   {-# INLINEABLE toPlutarchRepr #-}
   toPlutarchRepr = toPlutarchReprClosed
 
@@ -144,6 +166,31 @@ instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
           fromPlutarch $
             mkPLifted $
               plam (\e -> pmatch e $ \case PLeft _ -> perror; PRight b -> b) # getPLifted t
+-}
+
+-- | @since WIP
+pisLeft ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PEither a b :--> PBool)
+pisLeft = phoistAcyclic $ plam $ \t -> pmatch t $ \case
+  PLeft _ -> pcon PTrue
+  PRight _ -> pcon PFalse
+
+-- | @since WIP
+pfromLeft ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PEither a b :--> a)
+pfromLeft = phoistAcyclic $ plam $ \t -> pmatch t $ \case
+  PLeft x -> x
+  PRight _ -> ptraceInfoError "pfromLeft: used on a PRight"
+
+-- | @since WIP
+pfromRight ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PEither a b :--> b)
+pfromRight = phoistAcyclic $ plam $ \t -> pmatch t $ \case
+  PLeft _ -> ptraceInfoError "pfromRight: used on a PLeft"
+  PRight x -> x
 
 {- | @Data@-encoded 'Either'.
 

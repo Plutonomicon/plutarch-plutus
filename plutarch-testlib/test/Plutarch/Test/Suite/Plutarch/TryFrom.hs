@@ -15,6 +15,7 @@ import Plutarch.Unsafe (
  )
 import PlutusTx (
   Data (B, Constr, I),
+  dataToBuiltinData,
  )
 import Test.Tasty (TestTree, testGroup)
 
@@ -53,14 +54,14 @@ tests =
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant @PData $ Constr 1 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ dataToBuiltinData $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEvalFail
                 "PDataSum wrong record type"
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PByteString, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant @PData $ Constr 2 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ dataToBuiltinData $ Constr 2 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEvalFail
                 "[ByteString] (with length == 2) /= PRational"
@@ -133,14 +134,14 @@ tests =
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant @PData $ Constr 0 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ dataToBuiltinData $ Constr 0 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEval
                 "PDataSum constr 1"
                 ( checkDeep
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
                     @(PDataSum '[ '["i1" ':= PInteger, "b2" ':= PByteString], '["i3" ':= PInteger, "b4" ':= PByteString]])
-                    (punsafeCoerce $ pconstant @PData $ Constr 1 [PlutusTx.I 5, B "foo"])
+                    (punsafeCoerce $ pconstant @PData $ dataToBuiltinData $ Constr 1 [PlutusTx.I 5, B "foo"])
                 )
             , goldenEval
                 "recover PWrapInt"
