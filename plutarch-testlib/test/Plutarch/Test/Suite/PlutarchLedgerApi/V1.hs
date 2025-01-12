@@ -9,6 +9,9 @@ import Plutarch.Test.Laws (
   checkLedgerProperties,
   checkLedgerPropertiesPCountable,
   checkLedgerPropertiesPEnumerable,
+  checkPAdditiveGroupLaws,
+  checkPAdditiveMonoidLaws,
+  checkPAdditiveSemigroupLaws,
  )
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval qualified as Interval
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value qualified as Value
@@ -33,6 +36,9 @@ tests =
         [ checkLedgerPropertiesPCountable @PLA.PPosixTime
         , checkLedgerPropertiesPEnumerable @PLA.PPosixTime
         , checkLedgerProperties @PLA.PPosixTime
+        , checkPAdditiveSemigroupLaws @PLA.PPosixTime
+        , checkPAdditiveMonoidLaws @PLA.PPosixTime
+        , checkPAdditiveGroupLaws @PLA.PPosixTime
         ]
     , -- We only care about intervals of PPosixTime, so we don't check anything else
       testGroup
