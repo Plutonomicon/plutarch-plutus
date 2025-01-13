@@ -1943,11 +1943,11 @@ data PNatural (s :: S)
 --   also hold:
 --   
 --   <ol>
---   <li><tt>pscalePositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
---   <li><tt>(pscalePositive # x # n) #+ (pscalePositive # x # m)</tt>
---   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
---   <li><tt>pscalePositive # (pscalePositive # x # n) # m</tt> <tt>=</tt>
---   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   <li><tt>pscalePositive x pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(pscalePositive x n) #+ (pscalePositive x m)</tt> <tt>=</tt>
+--   <tt>pscalePositive x (n #+ m)</tt></li>
+--   <li><tt>pscalePositive (pscalePositive x n) m</tt> <tt>=</tt>
+--   <tt>pscalePositive x (n #* m)</tt></li>
 --   </ol>
 --   
 --   The default implementation ensures these laws are satisfied.
@@ -1969,20 +1969,20 @@ infix 6 #+
 --   <ol>
 --   <li><tt>pzero #+ x</tt> <tt>=</tt> <tt>x</tt> (<tt>pzero</tt> is the
 --   identity of <tt>#+</tt>)</li>
---   <li><tt>pscalePositive # pzero # n</tt> <tt>=</tt> <tt>pzero</tt>
+--   <li><tt>pscalePositive pzero n</tt> <tt>=</tt> <tt>pzero</tt>
 --   (<tt>pzero</tt> does not scale up)</li>
 --   </ol>
 --   
 --   If you define <a>pscaleNatural</a>, ensure the following as well:
 --   
 --   <ol>
---   <li><tt>pscaleNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
---   <tt>pscalePositive # x # p</tt></li>
---   <li><tt>pscaleNatural # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pscaleNatural x (ppositiveToNatural # p)</tt> <tt>=</tt>
+--   <tt>pscalePositive x p</tt></li>
+--   <li><tt>pscaleNatural x pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
 --   </ol>
 --   
 --   The default implementation of <a>pscaleNatural</a> ensures these laws
---   are followed.
+--   hold.
 --   
 --   @since WIP
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
@@ -2020,9 +2020,9 @@ pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatur
 --   laws must hold:
 --   
 --   <ol>
---   <li><tt>pscaleInteger # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
---   <li><tt>pscaleInteger # x #$ pnegate y</tt> <tt>=</tt> <tt>pnegate #$
---   pscaleInteger # x # y</tt></li>
+--   <li><tt>pscaleInteger x pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pscaleInteger x (pnegate # y)</tt> <tt>=</tt> <tt>pnegate #
+--   (pscaleInteger x y)</tt></li>
 --   </ol>
 --   
 --   @since WIP
@@ -2045,11 +2045,11 @@ infix 6 #-
 --   also hold:
 --   
 --   <ol>
---   <li><tt>ppowPositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
---   <li><tt>(ppowPositive # x # n) #* (ppowPositive # x # m)</tt>
---   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
---   <li><tt>ppowPositive # (ppowPositive # x # n) # m</tt> <tt>=</tt>
---   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   <li><tt>ppowPositive x pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(ppowPositive x n) #* (ppowPositive x m)</tt> <tt>=</tt>
+--   <tt>ppowPositive x (n #+ m)</tt></li>
+--   <li><tt>ppowPositive (ppowPositive x n) m</tt> <tt>=</tt>
+--   <tt>ppowPositive x (n #* m)</tt></li>
 --   </ol>
 --   
 --   The default implementation ensures these laws are satisfied.
@@ -2077,16 +2077,16 @@ infix 6 #*
 --   left identity of <tt>#*</tt>)</li>
 --   <li><tt>x #* pone</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
 --   right identity of <tt>#*</tt>)</li>
---   <li><tt>ppowPositive # pone # p</tt> <tt>=</tt> <tt>pone</tt>
+--   <li><tt>ppowPositive pone p</tt> <tt>=</tt> <tt>pone</tt>
 --   (<tt>pone</tt> does not scale up)</li>
 --   </ol>
 --   
 --   If you define <a>ppowNatural</a>, ensure the following as well:
 --   
 --   <ol>
---   <li><tt>ppowNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
---   <tt>ppowPositive # x # p</tt></li>
---   <li><tt>ppowNatural # x # pzero</tt> <tt>=</tt> <tt>pone</tt></li>
+--   <li><tt>ppowNatural x (ppositiveToNatural # p)</tt> <tt>=</tt>
+--   <tt>ppowPositive x p</tt></li>
+--   <li><tt>ppowNatural x pzero</tt> <tt>=</tt> <tt>pone</tt></li>
 --   </ol>
 --   
 --   @since WIP
@@ -2170,6 +2170,13 @@ pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
 --   @since WIP
 ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
 
+-- | Specialized form of <tt>pmaybe</tt> for <a>PNatural</a>. Given a
+--   default, and a way to turn a <a>PPositive</a> into an answer, produce
+--   the default when given <a>pzero</a>, and apply the function otherwise.
+--   
+--   @since WIP
+pnaturalToPositiveCPS :: forall (a :: S -> Type) (s :: S). Term s a -> (Term s PPositive -> Term s a) -> Term s PNatural -> Term s a
+
 -- | A default implementation of exponentiation-by-squaring with a
 --   strictly-positive exponent.
 --   
@@ -2224,6 +2231,7 @@ instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.Integer.PInte
 instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Internal.Numeric.PPositive
 instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Internal.Numeric.PNatural
 instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Builtin.Integer.PInteger
+instance Plutarch.Internal.Numeric.PMultiplicativeSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult
 instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
 instance Plutarch.Internal.Numeric.PAdditiveGroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
 instance Plutarch.Internal.Numeric.PAdditiveMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
@@ -2427,12 +2435,119 @@ module Plutarch.Monadic
 --   </pre>
 fail :: String -> Term s a
 
+module Plutarch.Internal.Semigroup
+
+-- | <h1>Laws</h1>
+--   
+--   The only mandatory law is that <a>#&lt;&gt;</a> must be associative:
+--   
+--   <tt>x #&lt;&gt; (y #&lt;&gt; z)</tt> <tt>=</tt> <tt>(x #&lt;&gt; y)
+--   #&lt;&gt; z</tt>
+--   
+--   If you define <a>pstimes</a>, ensure the following also hold:
+--   
+--   <ol>
+--   <li><tt>pstimes pone x</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(pstimes p1 x) #&lt;&gt; (pstimes p2 x)</tt> <tt>=</tt>
+--   <tt>pstimes (p1 #+ p2) x</tt></li>
+--   <li><tt>pstimes p1 (pstimes p2 x)</tt> <tt>=</tt> <tt>pstimes (p1 #*
+--   p2) x</tt></li>
+--   </ol>
+--   
+--   The default implementation automatically ensures these laws hold.
+--   
+--   @since WIP
+class PSemigroup (a :: S -> Type)
+(#<>) :: forall (s :: S). PSemigroup a => Term s a -> Term s a -> Term s a
+(#<>) :: forall (s :: S). (PSemigroup a, PSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
+pstimes :: forall (s :: S). PSemigroup a => Term s PPositive -> Term s a -> Term s a
+infixr 6 #<>
+
+-- | <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pmempty #&lt;&gt; x</tt> <tt>=</tt> <tt>x #&lt;&gt;
+--   pmempty</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>pstimes n pmempty</tt> <tt>=</tt> <tt>pmempty</tt></li>
+--   </ol>
+--   
+--   If you define <a>pmtimes</a>, ensure the following as well:
+--   
+--   <ol>
+--   <li><tt>pmtimes (ppositiveToNatural # p) x</tt> <tt>=</tt> <tt>pstimes
+--   p x</tt></li>
+--   <li><tt>pmtimes pzero x</tt> <tt>=</tt> <tt>pmempty</tt></li>
+--   </ol>
+--   
+--   The default implementation of <a>pmtimes</a> ensures these laws hold.
+--   
+--   @since WIP
+class PSemigroup a => PMonoid (a :: S -> Type)
+pmempty :: forall (s :: S). PMonoid a => Term s a
+pmempty :: forall (s :: S). (PMonoid a, PMonoid (PInner a)) => Term s a
+pmtimes :: forall (s :: S). PMonoid a => Term s PNatural -> Term s a -> Term s a
+
+-- | Wrapper for types which have logical AND semantics somehow.
+--   
+--   @since WIP
+newtype PAnd (a :: S -> Type) (s :: S)
+PAnd :: Term s a -> PAnd (a :: S -> Type) (s :: S)
+
+-- | Wrapper for types which have logical OR semantics somehow.
+--   
+--   @since WIP
+newtype POr (a :: S -> Type) (s :: S)
+POr :: Term s a -> POr (a :: S -> Type) (s :: S)
+
+-- | Wrapper for types which have logical XOR semantics somehow.
+--   
+--   @since WIP
+newtype PXor (a :: S -> Type) (s :: S)
+PXor :: Term s a -> PXor (a :: S -> Type) (s :: S)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Ord.POrd a => Plutarch.Internal.Ord.POrd (Plutarch.Internal.Semigroup.PAnd a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Internal.Semigroup.PAnd a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Semigroup.PAnd a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Internal.Semigroup.PAnd a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Ord.POrd a => Plutarch.Internal.Ord.POrd (Plutarch.Internal.Semigroup.POr a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Internal.Semigroup.POr a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Semigroup.POr a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Internal.Semigroup.POr a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Ord.POrd a => Plutarch.Internal.Ord.POrd (Plutarch.Internal.Semigroup.PXor a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Internal.Semigroup.PXor a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Semigroup.PXor a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Internal.Semigroup.PXor a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Semigroup.PXor a)
+instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.Bool.PBool)
+instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.Bool.PBool)
+instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.ByteString.PByteString)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Semigroup.POr a)
+instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.POr Plutarch.Builtin.Bool.PBool)
+instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.POr Plutarch.Builtin.Bool.PBool)
+instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.POr Plutarch.Builtin.ByteString.PByteString)
+instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.POr Plutarch.Builtin.ByteString.PByteString)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Semigroup.PAnd a)
+instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.PAnd Plutarch.Builtin.Bool.PBool)
+instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.PAnd Plutarch.Builtin.Bool.PBool)
+instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.PAnd Plutarch.Builtin.ByteString.PByteString)
+instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.PAnd Plutarch.Builtin.ByteString.PByteString)
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.Builtin.Unit.PUnit
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.Builtin.String.PString
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.Builtin.ByteString.PByteString
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.Builtin.Unit.PUnit
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.Builtin.String.PString
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.Builtin.ByteString.PByteString
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult
+
 module Plutarch.Pair
 
 -- | Plutus encoding of Pairs.
 --   
 --   Note: This is represented differently than <tt>BuiltinPair</tt>. It is
---   scott-encoded.
+--   SoP encoded.
 data PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
 PPair :: Term s a -> Term s b -> PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Pair.PPair a b)
@@ -2440,6 +2555,8 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Pair.PPair a b s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Pair.PPair a b s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Pair.PPair a b)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Semigroup.PSemigroup a, Plutarch.Internal.Semigroup.PSemigroup b) => Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Pair.PPair a b)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Semigroup.PMonoid a, Plutarch.Internal.Semigroup.PMonoid b) => Plutarch.Internal.Semigroup.PMonoid (Plutarch.Pair.PPair a b)
 
 module Plutarch.Rational
 
@@ -2689,6 +2806,8 @@ pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 --   
 --   @since WIP
 pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--> PInteger)
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.BitString.PBitString
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.BitString.PBitString
 instance Plutarch.Internal.Ord.POrd Plutarch.BitString.PBitString
 instance Plutarch.Internal.Eq.PEq Plutarch.BitString.PBitString
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BitString.PBitString
@@ -4115,11 +4234,11 @@ data PNatural (s :: S)
 --   also hold:
 --   
 --   <ol>
---   <li><tt>pscalePositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
---   <li><tt>(pscalePositive # x # n) #+ (pscalePositive # x # m)</tt>
---   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
---   <li><tt>pscalePositive # (pscalePositive # x # n) # m</tt> <tt>=</tt>
---   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   <li><tt>pscalePositive x pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(pscalePositive x n) #+ (pscalePositive x m)</tt> <tt>=</tt>
+--   <tt>pscalePositive x (n #+ m)</tt></li>
+--   <li><tt>pscalePositive (pscalePositive x n) m</tt> <tt>=</tt>
+--   <tt>pscalePositive x (n #* m)</tt></li>
 --   </ol>
 --   
 --   The default implementation ensures these laws are satisfied.
@@ -4141,20 +4260,20 @@ infix 6 #+
 --   <ol>
 --   <li><tt>pzero #+ x</tt> <tt>=</tt> <tt>x</tt> (<tt>pzero</tt> is the
 --   identity of <tt>#+</tt>)</li>
---   <li><tt>pscalePositive # pzero # n</tt> <tt>=</tt> <tt>pzero</tt>
+--   <li><tt>pscalePositive pzero n</tt> <tt>=</tt> <tt>pzero</tt>
 --   (<tt>pzero</tt> does not scale up)</li>
 --   </ol>
 --   
 --   If you define <a>pscaleNatural</a>, ensure the following as well:
 --   
 --   <ol>
---   <li><tt>pscaleNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
---   <tt>pscalePositive # x # p</tt></li>
---   <li><tt>pscaleNatural # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pscaleNatural x (ppositiveToNatural # p)</tt> <tt>=</tt>
+--   <tt>pscalePositive x p</tt></li>
+--   <li><tt>pscaleNatural x pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
 --   </ol>
 --   
 --   The default implementation of <a>pscaleNatural</a> ensures these laws
---   are followed.
+--   hold.
 --   
 --   @since WIP
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
@@ -4192,9 +4311,9 @@ pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatur
 --   laws must hold:
 --   
 --   <ol>
---   <li><tt>pscaleInteger # x # pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
---   <li><tt>pscaleInteger # x #$ pnegate y</tt> <tt>=</tt> <tt>pnegate #$
---   pscaleInteger # x # y</tt></li>
+--   <li><tt>pscaleInteger x pzero</tt> <tt>=</tt> <tt>pzero</tt></li>
+--   <li><tt>pscaleInteger x (pnegate # y)</tt> <tt>=</tt> <tt>pnegate #
+--   (pscaleInteger x y)</tt></li>
 --   </ol>
 --   
 --   @since WIP
@@ -4217,11 +4336,11 @@ infix 6 #-
 --   also hold:
 --   
 --   <ol>
---   <li><tt>ppowPositive # x # pone</tt> <tt>=</tt> <tt>x</tt></li>
---   <li><tt>(ppowPositive # x # n) #* (ppowPositive # x # m)</tt>
---   <tt>=</tt> <tt>pscalePositive # x # (n #+ m)</tt></li>
---   <li><tt>ppowPositive # (ppowPositive # x # n) # m</tt> <tt>=</tt>
---   <tt>pscalePositive # x # (n #* m)</tt></li>
+--   <li><tt>ppowPositive x pone</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(ppowPositive x n) #* (ppowPositive x m)</tt> <tt>=</tt>
+--   <tt>ppowPositive x (n #+ m)</tt></li>
+--   <li><tt>ppowPositive (ppowPositive x n) m</tt> <tt>=</tt>
+--   <tt>ppowPositive x (n #* m)</tt></li>
 --   </ol>
 --   
 --   The default implementation ensures these laws are satisfied.
@@ -4249,16 +4368,16 @@ infix 6 #*
 --   left identity of <tt>#*</tt>)</li>
 --   <li><tt>x #* pone</tt> <tt>=</tt> <tt>x</tt> (<tt>pone</tt> is the
 --   right identity of <tt>#*</tt>)</li>
---   <li><tt>ppowPositive # pone # p</tt> <tt>=</tt> <tt>pone</tt>
+--   <li><tt>ppowPositive pone p</tt> <tt>=</tt> <tt>pone</tt>
 --   (<tt>pone</tt> does not scale up)</li>
 --   </ol>
 --   
 --   If you define <a>ppowNatural</a>, ensure the following as well:
 --   
 --   <ol>
---   <li><tt>ppowNatural # x #$ ppositiveToNatural # p</tt> <tt>=</tt>
---   <tt>ppowPositive # x # p</tt></li>
---   <li><tt>ppowNatural # x # pzero</tt> <tt>=</tt> <tt>pone</tt></li>
+--   <li><tt>ppowNatural x (ppositiveToNatural # p)</tt> <tt>=</tt>
+--   <tt>ppowPositive x p</tt></li>
+--   <li><tt>ppowNatural x pzero</tt> <tt>=</tt> <tt>pone</tt></li>
 --   </ol>
 --   
 --   @since WIP
@@ -4443,7 +4562,7 @@ PNothing :: PMaybe (a :: S -> Type) (s :: S)
 -- | Plutus encoding of Pairs.
 --   
 --   Note: This is represented differently than <tt>BuiltinPair</tt>. It is
---   scott-encoded.
+--   SoP encoded.
 data PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
 PPair :: Term s a -> Term s b -> PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
 
@@ -4573,3 +4692,53 @@ ptraceInfoShowId :: forall (a :: S -> Type) (s :: S). PShow a => Term s a -> Ter
 
 -- | <i>Deprecated: Use ptraceInfoShowId</i>
 ptraceShowId :: forall (a :: S -> Type) (s :: S). PShow a => Term s a -> Term s a
+
+-- | <h1>Laws</h1>
+--   
+--   The only mandatory law is that <a>#&lt;&gt;</a> must be associative:
+--   
+--   <tt>x #&lt;&gt; (y #&lt;&gt; z)</tt> <tt>=</tt> <tt>(x #&lt;&gt; y)
+--   #&lt;&gt; z</tt>
+--   
+--   If you define <a>pstimes</a>, ensure the following also hold:
+--   
+--   <ol>
+--   <li><tt>pstimes pone x</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>(pstimes p1 x) #&lt;&gt; (pstimes p2 x)</tt> <tt>=</tt>
+--   <tt>pstimes (p1 #+ p2) x</tt></li>
+--   <li><tt>pstimes p1 (pstimes p2 x)</tt> <tt>=</tt> <tt>pstimes (p1 #*
+--   p2) x</tt></li>
+--   </ol>
+--   
+--   The default implementation automatically ensures these laws hold.
+--   
+--   @since WIP
+class PSemigroup (a :: S -> Type)
+(#<>) :: forall (s :: S). PSemigroup a => Term s a -> Term s a -> Term s a
+(#<>) :: forall (s :: S). (PSemigroup a, PSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
+pstimes :: forall (s :: S). PSemigroup a => Term s PPositive -> Term s a -> Term s a
+infixr 6 #<>
+
+-- | <h1>Laws</h1>
+--   
+--   <ol>
+--   <li><tt>pmempty #&lt;&gt; x</tt> <tt>=</tt> <tt>x #&lt;&gt;
+--   pmempty</tt> <tt>=</tt> <tt>x</tt></li>
+--   <li><tt>pstimes n pmempty</tt> <tt>=</tt> <tt>pmempty</tt></li>
+--   </ol>
+--   
+--   If you define <a>pmtimes</a>, ensure the following as well:
+--   
+--   <ol>
+--   <li><tt>pmtimes (ppositiveToNatural # p) x</tt> <tt>=</tt> <tt>pstimes
+--   p x</tt></li>
+--   <li><tt>pmtimes pzero x</tt> <tt>=</tt> <tt>pmempty</tt></li>
+--   </ol>
+--   
+--   The default implementation of <a>pmtimes</a> ensures these laws hold.
+--   
+--   @since WIP
+class PSemigroup a => PMonoid (a :: S -> Type)
+pmempty :: forall (s :: S). PMonoid a => Term s a
+pmempty :: forall (s :: S). (PMonoid a, PMonoid (PInner a)) => Term s a
+pmtimes :: forall (s :: S). PMonoid a => Term s PNatural -> Term s a -> Term s a
