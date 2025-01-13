@@ -24,7 +24,6 @@ import Plutarch.Prelude
 import Plutarch.Script (Script)
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import PlutusLedgerApi.V1 qualified as Plutus
-import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString))
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -112,7 +111,7 @@ authValidatorTerm :: ClosedTerm (PData :--> PData :--> PScriptContext :--> POpaq
 authValidatorTerm =
   plam $ \datum redeemer ctx ->
     authorizedValidator
-      (pconstant (BuiltinByteString adminPubKey))
+      (pconstant adminPubKey)
       (pasByteStr # datum)
       (pasByteStr # redeemer)
       ctx

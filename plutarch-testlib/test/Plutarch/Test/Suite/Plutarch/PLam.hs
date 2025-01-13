@@ -5,7 +5,6 @@ import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Unsafe (punsafeBuiltin)
 import PlutusCore qualified as PLC
-import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString))
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -33,8 +32,8 @@ tests =
                 ]
             , goldenGroup
                 "bytestring"
-                [ goldenEval "1" (plam $ \_ -> pconstant @PByteString (BuiltinByteString ("1" :: ByteString)))
-                , goldenEval "1111111" (plam $ \_ -> pconstant @PByteString (BuiltinByteString ("1111111" :: ByteString)))
+                [ goldenEval "1" (plam $ \_ -> pconstant @PByteString ("1" :: ByteString))
+                , goldenEval "1111111" (plam $ \_ -> pconstant @PByteString ("1111111" :: ByteString))
                 ]
             , goldenGroup
                 "unit"

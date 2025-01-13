@@ -11,7 +11,7 @@ import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V1.Address (Address (Address))
 import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
-import PlutusTx (dataToBuiltinData, toData)
+import PlutusTx (toData)
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
@@ -222,7 +222,7 @@ someFields :: Term s (PDataRecord SomeFields)
 someFields =
   punsafeCoerce $
     pconstant @(PBuiltinList PData) $
-      fmap (dataToBuiltinData . toData) ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] :: [Integer])
+      fmap toData ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] :: [Integer])
 
 {- |
   We can also bind over a 'PDataRecord' directly.

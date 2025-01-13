@@ -7,7 +7,6 @@ import Plutarch.Prelude
 import Plutarch.String (pisHexDigit)
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Unit (testEvalEqual)
-import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString))
 import Test.Tasty (TestTree, testGroup)
 
 {-# HLINT ignore tests "Monoid law, left identity" #-}
@@ -22,7 +21,7 @@ tests =
         , goldenEval
             "phexByteStr"
             ( let a :: [String] = ["42", "ab", "df", "c9"]
-               in pconstant @PByteString (BuiltinByteString (BS.pack $ fmap readByte a)) #== phexByteStr (concat a)
+               in pconstant @PByteString (BS.pack $ fmap readByte a) #== phexByteStr (concat a)
             )
         , goldenEval "plengthByteStr" ((plengthBS # phexByteStr "012f") #== 2)
         , goldenEval
@@ -63,7 +62,7 @@ tests =
                 (pcon PTrue)
             , testEvalEqual
                 "no other ASCII code is a hex digit"
-                (pallBS # plam (\x -> pnot #$ pisHexDigit #$ pbyteToInteger # x) # pconstant (BuiltinByteString nonHexAscii))
+                (pallBS # plam (\x -> pnot #$ pisHexDigit #$ pbyteToInteger # x) # pconstant nonHexAscii)
                 (pcon PTrue)
             ]
         ]

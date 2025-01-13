@@ -87,7 +87,6 @@ import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
 import PlutusTx qualified as PTx
-import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString), BuiltinData (BuiltinData))
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
 
@@ -511,12 +510,12 @@ instance
 
 -- | @since WIP
 instance PLiftable PByteString where
-  type AsHaskell PByteString = BuiltinByteString
+  type AsHaskell PByteString = ByteString
   type PlutusRepr PByteString = ByteString
   {-# INLINEABLE haskToRepr #-}
-  haskToRepr (BuiltinByteString str) = str
+  haskToRepr = id
   {-# INLINEABLE reprToHask #-}
-  reprToHask = Just . BuiltinByteString
+  reprToHask = Just
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
@@ -524,12 +523,12 @@ instance PLiftable PByteString where
 
 -- | @since WIP
 instance PLiftable PData where
-  type AsHaskell PData = BuiltinData
+  type AsHaskell PData = PTx.Data
   type PlutusRepr PData = PTx.Data
   {-# INLINEABLE haskToRepr #-}
-  haskToRepr (BuiltinData str) = str
+  haskToRepr = id
   {-# INLINEABLE reprToHask #-}
-  reprToHask = Just . BuiltinData
+  reprToHask = Just
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
