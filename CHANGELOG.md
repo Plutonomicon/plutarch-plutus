@@ -42,6 +42,8 @@
 * New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
 * `PNatural` type, corresponding to the Haskell `Natural`
 * Support for SoP encoding of data
+* `PSemigroup` and `PMonoid`, as improved Plutarch versions of `Semigroup` and
+  `Monoid`
 
 ## Changed
 
