@@ -13,6 +13,9 @@ module Plutarch.Test.Laws (
   checkHaskellNumEquivalent,
   checkPLiftableLaws,
   checkPOrdLaws,
+  checkPAdditiveSemigroupLaws,
+  checkPAdditiveMonoidLaws,
+  checkPAdditiveGroupLaws,
 ) where
 
 import Control.Applicative ((<|>))
@@ -39,6 +42,117 @@ import Test.QuickCheck (
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
+
+{- | Verifies that the specified Plutarch type satisfies the
+'PAdditiveSemigroup' laws for mandatory methods.
+
+@since WIP
+-}
+checkPAdditiveSemigroupLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PAdditiveSemigroup a
+  , PEq a
+  , PLiftable a
+  ) =>
+  TestTree
+checkPAdditiveSemigroupLaws =
+  testGroup
+    "PAdditiveSemigroup"
+    [ testProperty "#+ is commutative" plusSymmetric
+    , testProperty "#+ is associative" plusAssociative
+    ]
+  where
+    plusSymmetric :: Property
+    plusSymmetric = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y :: AsHaskell a) ->
+      plift (precompileTerm (plam $ \arg1 arg2 -> (arg1 #+ arg2) #== (arg2 #+ arg1)) # pconstant @a x # pconstant @a y)
+    plusAssociative :: Property
+    plusAssociative = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a, y, z) ->
+        plift
+          ( precompileTerm (plam $ \arg1 arg2 arg3 -> ((arg1 #+ arg2) #+ arg3) #== (arg1 #+ (arg2 #+ arg3)))
+              # pconstant @a x
+              # pconstant y
+              # pconstant z
+          )
+
+{- | Verifies that the specified Plutarch type satisfies the 'PAdditiveMonoid'
+laws for mandatory methods.
+
+@since WIP
+-}
+checkPAdditiveMonoidLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PAdditiveMonoid a
+  , PEq a
+  , PLiftable a
+  ) =>
+  TestTree
+checkPAdditiveMonoidLaws =
+  testGroup
+    "PAdditiveMonoid"
+    [ testProperty "pzero is the identity for #+" pzeroIdentity
+    , testProperty "pzero does not scale" pzeroScale
+    ]
+  where
+    pzeroIdentity :: Property
+    pzeroIdentity = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a) -> plift (precompileTerm (plam $ \arg1 -> (arg1 #+ pzero) #== arg1) # pconstant @a x)
+    pzeroScale :: Property
+    pzeroScale = forAllShrinkShow arbitrary shrink prettyShow $
+      \(p :: Positive) -> plift (precompileTerm (plam $ \arg1 -> pscalePositive (pzero @a) arg1 #== pzero) # pconstant @PPositive p)
+
+{- | Verifies that the specified Plutarch type satisfies the 'PAdditiveGroup'
+laws for mandatory methods.
+
+@since WIP
+-}
+checkPAdditiveGroupLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PAdditiveGroup a
+  , PEq a
+  , PLiftable a
+  ) =>
+  TestTree
+checkPAdditiveGroupLaws =
+  testGroup
+    "PAdditiveGroup"
+    [ testProperty "pnegate is an additive inverse" pnegateAdditiveInverse
+    , testProperty "pnegate is self-inverting" pnegateSelfInverting
+    , testProperty "x #- x = pzero" pminusSelf
+    , testProperty "pnegate is difference from pzero" pnegatePZeroConsistency1
+    , testProperty "x #- y = x #+ pnegate y" pnegatePZeroConsistency2
+    ]
+  where
+    pnegateAdditiveInverse :: Property
+    pnegateAdditiveInverse = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a) ->
+        plift (precompileTerm (plam $ \arg1 -> ((pnegate # arg1) #+ arg1) #== pzero) # pconstant @a x)
+    pnegateSelfInverting :: Property
+    pnegateSelfInverting = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a) ->
+        plift (precompileTerm (plam $ \arg1 -> (pnegate #$ pnegate # arg1) #== arg1) # pconstant @a x)
+    pminusSelf :: Property
+    pminusSelf = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a) ->
+        plift (precompileTerm (plam $ \arg1 -> (arg1 #- arg1) #== pzero) # pconstant @a x)
+    pnegatePZeroConsistency1 :: Property
+    pnegatePZeroConsistency1 = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a) ->
+        plift (precompileTerm (plam $ \arg1 -> (pnegate # arg1) #== (pzero #- arg1)) # pconstant @a x)
+    pnegatePZeroConsistency2 :: Property
+    pnegatePZeroConsistency2 = forAllShrinkShow arbitrary shrink prettyShow $
+      \(x :: AsHaskell a, y) ->
+        plift
+          ( precompileTerm (plam $ \arg1 arg2 -> (arg1 #- arg2) #== (arg1 #+ (pnegate # arg2)))
+              # pconstant @a x
+              # pconstant y
+          )
 
 {- | Verifies that the specified Plutarch type satisfies the 'POrd' laws for
 mandatory methods.
