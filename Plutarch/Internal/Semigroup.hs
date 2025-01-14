@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.Semigroup (
   -- * Type classes
@@ -40,6 +41,11 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit, punit)
 import Plutarch.Internal.Eq (PEq ((#==)))
+import Plutarch.Internal.Lift (
+  DeriveNewtypePLiftable,
+  PLiftable (AsHaskell),
+  PLifted (PLifted),
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (
   PNatural,
@@ -232,6 +238,12 @@ instance DerivePlutusType (PAnd a) where
   type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
+deriving via
+  DeriveNewtypePLiftable (PAnd a) a (AsHaskell a)
+  instance
+    PLiftable a => PLiftable (PAnd a)
+
+-- | @since WIP
 instance PSemigroup (PAnd PBool) where
   {-# INLINEABLE (#<>) #-}
   x #<> y = pif' # pto x # y # x
@@ -285,6 +297,12 @@ newtype POr (a :: S -> Type) (s :: S)
 -- | @since WIP
 instance DerivePlutusType (POr a) where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveNewtypePLiftable (POr a) a (AsHaskell a)
+  instance
+    PLiftable a => PLiftable (POr a)
 
 -- | @since WIP
 instance PSemigroup (POr PBool) where
@@ -342,6 +360,12 @@ instance DerivePlutusType (PXor a) where
   type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
+deriving via
+  DeriveNewtypePLiftable (PXor a) a (AsHaskell a)
+  instance
+    PLiftable a => PLiftable (PXor a)
+
+-- | @since WIP
 instance PSemigroup (PXor PBool) where
   {-# INLINEABLE (#<>) #-}
   x #<> y = pif' # pto x # (pcon . PXor $ pnot # pto y) # y
@@ -371,6 +395,11 @@ instance PSemigroup (PXor PByteString) where
   -- argument (if the exponent is odd) or the empty 'PByteString' (if it isn't).
   {-# INLINEABLE pstimes #-}
   pstimes = pxortimes mempty
+
+-- | @since WIP
+instance PMonoid (PXor PByteString) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . PXor $ mempty
 
 -- Helpers
 

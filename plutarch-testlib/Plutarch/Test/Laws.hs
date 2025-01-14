@@ -16,6 +16,8 @@ module Plutarch.Test.Laws (
   checkPAdditiveSemigroupLaws,
   checkPAdditiveMonoidLaws,
   checkPAdditiveGroupLaws,
+  checkPSemigroupLaws,
+  checkPMonoidLaws,
 ) where
 
 import Control.Applicative ((<|>))
@@ -42,6 +44,63 @@ import Test.QuickCheck (
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 import Type.Reflection (Typeable, typeRep)
+
+{- | Verifies that the specified Plutarch type satisfies the 'PSemigroup' laws
+for mandatory methods.
+
+@since WIP
+-}
+checkPSemigroupLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PSemigroup a
+  , PEq a
+  , PLiftable a
+  ) =>
+  TestTree
+checkPSemigroupLaws =
+  testGroup
+    "PSemigroup"
+    [ testProperty "#<> is associative" psemiAssociative
+    ]
+  where
+    psemiAssociative :: Property
+    psemiAssociative = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a, y, z) ->
+      plift
+        ( precompileTerm (plam $ \arg1 arg2 arg3 -> (arg1 #<> (arg2 #<> arg3)) #== ((arg1 #<> arg2) #<> arg3))
+            # pconstant @a x
+            # pconstant y
+            # pconstant z
+        )
+
+{- | Verifies that the specified Plutarch type satisfies the 'PMonoid' laws for
+mandatory methods.
+
+@since WIP
+-}
+checkPMonoidLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PMonoid a
+  , PEq a
+  , PLiftable a
+  ) =>
+  TestTree
+checkPMonoidLaws =
+  testGroup
+    "PMonoid"
+    [ testProperty "pmempty is a left identity for #<>" pmemptyLeftId
+    , testProperty "pmemoty is a right identity for #<>" pmemptyRightId
+    ]
+  where
+    pmemptyLeftId :: Property
+    pmemptyLeftId = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
+      plift (precompileTerm (plam $ \arg1 -> (arg1 #<> pmempty) #== arg1) # pconstant @a x)
+    pmemptyRightId :: Property
+    pmemptyRightId = forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
+      plift (precompileTerm (plam $ \arg1 -> (pmempty #<> arg1) #== arg1) # pconstant @a x)
 
 {- | Verifies that the specified Plutarch type satisfies the
 'PAdditiveSemigroup' laws for mandatory methods.

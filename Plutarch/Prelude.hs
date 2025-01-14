@@ -257,6 +257,9 @@ module Plutarch.Prelude (
   -- * Semigroup and monoid
   PSemigroup (..),
   PMonoid (..),
+  PAnd (..),
+  POr (..),
+  PXor (..),
 ) where
 
 import Plutarch.Builtin
