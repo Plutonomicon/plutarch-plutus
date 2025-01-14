@@ -19,6 +19,7 @@ import Plutarch.Builtin.Data (PBuiltinList)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Numeric (pzero)
 import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -27,6 +28,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Semigroup (PMonoid, PSemigroup)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -62,6 +64,10 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
       PEq
     , -- | @since WIP
       POrd
+    , -- | @since WIP
+      PSemigroup
+    , -- | @since WIP
+      PMonoid
     )
 
 -- | @since WIP
@@ -139,6 +145,6 @@ pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 pfindFirstSetBit = phoistAcyclic $ plam $ \bs ->
   plet (punsafeBuiltin PLC.FindFirstSetBit # pto bs) $ \result ->
     pif
-      (result #< (0 :: Term _ PInteger))
+      (result #< pzero)
       (pcon PNothing)
       (pcon . PJust $ result)

@@ -14,6 +14,8 @@ module Plutarch.Builtin.Integer (
   psubtractInteger,
   pmultiplyInteger,
   pconstantInteger,
+  pquotientInteger,
+  premainderInteger,
 ) where
 
 import GHC.Generics (Generic)
@@ -70,3 +72,9 @@ pmultiplyInteger = punsafeBuiltin PLC.MultiplyInteger
 
 pconstantInteger :: forall (s :: S). Integer -> Term s PInteger
 pconstantInteger = punsafeConstantInternal . PLC.someValue
+
+pquotientInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+pquotientInteger = punsafeBuiltin PLC.QuotientInteger
+
+premainderInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+premainderInteger = punsafeBuiltin PLC.RemainderInteger

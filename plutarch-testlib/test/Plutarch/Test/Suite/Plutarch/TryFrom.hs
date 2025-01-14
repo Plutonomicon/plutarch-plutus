@@ -276,20 +276,20 @@ fullCheck = unTermCont $ fst <$> TermCont (ptryFrom $ pforgetData sampleStructur
 
 ------------------- Example: untrusted Redeemer ------------------------------------
 
-newtype PNatural (s :: S) = PMkNatural (Term s PInteger)
+newtype PNaturalle (s :: S) = PMkNatural (Term s PInteger)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, POrd)
-instance DerivePlutusType PNatural where type DPTStrat _ = PlutusTypeNewtype
+instance DerivePlutusType PNaturalle where type DPTStrat _ = PlutusTypeNewtype
 
 -- | partial
-pmkNatural :: Term s (PInteger :--> PNatural)
+pmkNatural :: Term s (PInteger :--> PNaturalle)
 pmkNatural = plam $ \i -> pif (i #< 0) (ptraceInfoError "could not make natural") (pcon $ PMkNatural i)
 
 newtype Flip f b a = Flip (f a b)
   deriving stock (Generic)
 
-instance PTryFrom PData (PAsData PNatural) where
-  type PTryFromExcess PData (PAsData PNatural) = Flip Term PNatural
+instance PTryFrom PData (PAsData PNaturalle) where
+  type PTryFromExcess PData (PAsData PNaturalle) = Flip Term PNaturalle
   ptryFrom' opq = runTermCont $ do
     (ter, exc) <- TermCont $ ptryFrom @(PAsData PInteger) opq
     ver <- tcont $ plet $ pmkNatural # exc

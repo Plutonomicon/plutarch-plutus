@@ -39,6 +39,11 @@
 * `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
 * New methods for `Data` and Scott encoding derivation
 * `optimizeTerm` for separate optimization via UPLC from compilation
+* New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
+* `PNatural` type, corresponding to the Haskell `Natural`
+* Support for SoP encoding of data
+* `PSemigroup` and `PMonoid`, as improved Plutarch versions of `Semigroup` and
+  `Monoid`
 
 ## Changed
 
@@ -60,6 +65,9 @@
 * `PIntegral` type class is now in `Plutarch.Internal.Numeric`
 * `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
 * `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
+* `PPositive` (and `Positive`) are now exported from the prelude, along with
+  some functionality
+* `PEither`, `PPair`, `PMaybe` and `PList` use SOP encoding instead of Scott
 
 ## Removed
 
@@ -76,6 +84,7 @@
 * `PIsData PRational` instance (made no sense)
 * `PPartialOrd` (all its functionality is now in `POrd`)
 * `Plutarch.FFI` module
+* `PNum` and `PIntegral` (replaced by new numerical hierarchy)
 
 ### Fixed
 

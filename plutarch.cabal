@@ -110,6 +110,7 @@ library
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
     Plutarch.Internal.ScottEncoding
+    Plutarch.Internal.Semigroup
     Plutarch.Internal.Show
     Plutarch.Internal.Subtype
     Plutarch.Internal.Term
@@ -122,7 +123,6 @@ library
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.Pair
-    Plutarch.Positive
     Plutarch.Prelude
     Plutarch.Pretty
     Plutarch.Pretty.Internal.BuiltinConstant

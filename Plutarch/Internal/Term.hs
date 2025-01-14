@@ -109,7 +109,7 @@ type UTerm = UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 data RawTerm
   = RVar Word64
   | RLamAbs Word64 RawTerm
-  | RApply RawTerm [RawTerm]
+  | RApply RawTerm [RawTerm] -- NB: (f a b c d) ~ RApply f [b c d a]
   | RForce RawTerm
   | RDelay RawTerm
   | RConstant (Some (ValueOf PLC.DefaultUni))
@@ -673,10 +673,16 @@ subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x 
 subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
 subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
 subst idx x (UPLC.Force () y) = UPLC.Force () (subst idx x y)
-subst idx x (UPLC.Var () (DeBruijn (Index idx'))) | idx == idx' = x idx
-subst idx _ y@(UPLC.Var () (DeBruijn (Index idx'))) | idx > idx' = y
-subst idx _ (UPLC.Var () (DeBruijn (Index idx'))) | idx < idx' = UPLC.Var () (DeBruijn . Index $ idx' - 1)
-subst _ _ y = y
+subst idx x y@(UPLC.Var () (DeBruijn (Index idx'))) =
+  case compare idx idx' of
+    EQ -> x idx
+    GT -> y
+    LT -> UPLC.Var () (DeBruijn . Index $ idx' - 1)
+subst idx x (UPLC.Case () t handlers) = UPLC.Case () (subst idx x t) (fmap (subst idx x) handlers)
+subst idx x (UPLC.Constr () w fields) = UPLC.Constr () w (fmap (subst idx x) fields)
+subst _ _ y@(UPLC.Constant () _) = y
+subst _ _ y@(UPLC.Builtin () _) = y
+subst _ _ y@(UPLC.Error ()) = y
 
 rawTermToUPLC ::
   (HoistedTerm -> Word64 -> UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
@@ -687,15 +693,30 @@ rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the f
 rawTermToUPLC m l (RLamAbs n t) =
   foldr ($) (rawTermToUPLC m (l + n + 1) t) (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
 rawTermToUPLC m l (RApply x y) =
-  let f y t@(UPLC.LamAbs () _ body) =
-        case rawTermToUPLC m l y of
-          -- Inline unconditionally if it's a variable or built-in.
-          -- These terms are very small and are always WHNF.
-          UPLC.Var () (DeBruijn (Index idx)) -> subst 1 (\lvl -> UPLC.Var () (DeBruijn . Index $ idx + lvl - 1)) body
-          arg@UPLC.Builtin {} -> subst 1 (const arg) body
-          arg -> UPLC.Apply () t arg
-      f y t = UPLC.Apply () t (rawTermToUPLC m l y)
-   in foldr f (rawTermToUPLC m l x) y
+  let
+    inline' :: Word64 -> UTerm -> [UTerm] -> (UTerm, [UTerm])
+    inline' _ func [] = (func, [])
+    inline' target (UPLC.LamAbs () _ body) ((UPLC.Var () (DeBruijn (Index idx))) : args) =
+      inline' target (subst 1 (\lvl -> UPLC.Var () (DeBruijn (Index $ idx + lvl - 1 + target))) body) args
+    inline' target (UPLC.LamAbs () _ body) (arg@UPLC.Builtin {} : args) =
+      inline' target (subst 1 (const arg) body) args
+    inline' target (UPLC.LamAbs () _ body) (arg@UPLC.Constant {} : args) =
+      inline' target (subst 1 (const arg) body) args
+    -- inline' _ func@(UPLC.LamAbs () _ _ ) args = (func, args) -- This will skip inlining after first encounter of non-inlinable term
+    inline' target (UPLC.LamAbs () x body) (arg : args) =
+      let (func', args') = inline' (target + 1) body args
+       in (UPLC.LamAbs () x func', arg : args')
+    inline' target func (arg : args) =
+      let (func', args') = inline' target func args
+       in (func', arg : args')
+
+    (body, args) = inline' 0 (rawTermToUPLC m l x) (reverse $ rawTermToUPLC m l <$> y)
+
+    applied
+      | length args <= 2 = foldl (UPLC.Apply ()) body args
+      | otherwise = UPLC.Case () (UPLC.Constr () 0 args) (V.singleton body)
+   in
+    applied
 rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
 rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
 rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f

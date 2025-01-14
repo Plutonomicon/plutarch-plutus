@@ -15,6 +15,8 @@ module Plutarch.Internal.TryFrom (
   pdowncastF,
 ) where
 
+import Data.Functor.Const (Const)
+import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool, pif, (#||))
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
@@ -36,11 +38,6 @@ import Plutarch.Builtin.Integer (
   peqInteger,
  )
 import Plutarch.Builtin.String (ptraceInfo)
-
--- import Plutarch.Builtin.Unit
-
-import Data.Functor.Const (Const)
-import GHC.Generics (Generic)
 import Plutarch.Internal.IsData (
   PIsData,
   pdata,
@@ -48,6 +45,7 @@ import Plutarch.Internal.IsData (
   pfromData,
  )
 import Plutarch.Internal.ListLike (PListLike (pnull), pmap)
+import Plutarch.Internal.Numeric (PPositive, ptryPositive)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Subtype (
@@ -183,3 +181,17 @@ instance PTryFrom PData (PAsData PData) where
 instance PTryFrom PData PData where
   type PTryFromExcess PData PData = Const ()
   ptryFrom' opq f = f (opq, ())
+
+-- | @since WIP
+instance PTryFrom PInteger PPositive where
+  type PTryFromExcess PInteger PPositive = Const ()
+  ptryFrom' opq = runTermCont $ pure (ptryPositive # opq, ())
+
+-- | @since WIP
+instance PTryFrom PData (PAsData PPositive) where
+  type PTryFromExcess PData (PAsData PPositive) = Flip Term PPositive
+  ptryFrom' opq = runTermCont $ do
+    (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq
+    res <- tcont . plet $ ptryPositive # i
+    resData <- tcont . plet $ pdata res
+    pure (resData, res)

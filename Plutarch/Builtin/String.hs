@@ -6,10 +6,8 @@ import Data.Kind (Type)
 import Data.String (IsString, fromString)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
-
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Opaque (POpaque)
-
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   S,

@@ -162,8 +162,25 @@ module Plutarch.Prelude (
   PlutusTypeScott,
 
   -- * Numeric
-  PIntegral (..),
-  PNum (..),
+  Positive,
+  PPositive,
+  PNatural,
+  PAdditiveSemigroup (..),
+  PAdditiveMonoid (..),
+  PAdditiveGroup (..),
+  PMultiplicativeSemigroup (..),
+  PMultiplicativeMonoid (..),
+  PRing (..),
+  PIntegralDomain (..),
+  pquot,
+  prem,
+  pdiv,
+  pmod,
+  ppositive,
+  ptryPositive,
+  pnatural,
+  ptryNatural,
+  ppositiveToNatural,
 
   -- * Other
   pto,
@@ -236,6 +253,10 @@ module Plutarch.Prelude (
   ptraceInfoIfTrue,
   ptraceInfoShowId,
   ptraceShowId,
+
+  -- * Semigroup and monoid
+  PSemigroup (..),
+  PMonoid (..),
 ) where
 
 import Plutarch.Builtin
@@ -263,6 +284,7 @@ import Plutarch.Internal.PLam
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Quantification
 import Plutarch.Internal.ScottEncoding
+import Plutarch.Internal.Semigroup
 import Plutarch.Internal.Show
 import Plutarch.Internal.Term
 import Plutarch.Internal.TryFrom
