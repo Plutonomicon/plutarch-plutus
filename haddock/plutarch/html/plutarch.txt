@@ -2516,10 +2516,14 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Inte
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Internal.Semigroup.PXor a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Semigroup.PXor a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Internal.Semigroup.PXor a s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Semigroup.PAnd a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Semigroup.POr a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Lift.PLiftable a => Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.Semigroup.PXor a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Semigroup.PXor a)
 instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.Bool.PBool)
 instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.Bool.PBool)
 instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.ByteString.PByteString)
+instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.PXor Plutarch.Builtin.ByteString.PByteString)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.Internal.Semigroup.POr a)
 instance Plutarch.Internal.Semigroup.PSemigroup (Plutarch.Internal.Semigroup.POr Plutarch.Builtin.Bool.PBool)
 instance Plutarch.Internal.Semigroup.PMonoid (Plutarch.Internal.Semigroup.POr Plutarch.Builtin.Bool.PBool)
@@ -2812,6 +2816,7 @@ instance Plutarch.Internal.Ord.POrd Plutarch.BitString.PBitString
 instance Plutarch.Internal.Eq.PEq Plutarch.BitString.PBitString
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BitString.PBitString
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.BitString.PBitString s)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.BitString.PBitString
 instance Plutarch.Internal.PlutusType.DerivePlutusType Plutarch.BitString.PBitString
 
 module Plutarch.DataRepr.Internal.FromData
@@ -4742,3 +4747,21 @@ class PSemigroup a => PMonoid (a :: S -> Type)
 pmempty :: forall (s :: S). PMonoid a => Term s a
 pmempty :: forall (s :: S). (PMonoid a, PMonoid (PInner a)) => Term s a
 pmtimes :: forall (s :: S). PMonoid a => Term s PNatural -> Term s a -> Term s a
+
+-- | Wrapper for types which have logical AND semantics somehow.
+--   
+--   @since WIP
+newtype PAnd (a :: S -> Type) (s :: S)
+PAnd :: Term s a -> PAnd (a :: S -> Type) (s :: S)
+
+-- | Wrapper for types which have logical OR semantics somehow.
+--   
+--   @since WIP
+newtype POr (a :: S -> Type) (s :: S)
+POr :: Term s a -> POr (a :: S -> Type) (s :: S)
+
+-- | Wrapper for types which have logical XOR semantics somehow.
+--   
+--   @since WIP
+newtype PXor (a :: S -> Type) (s :: S)
+PXor :: Term s a -> PXor (a :: S -> Type) (s :: S)
