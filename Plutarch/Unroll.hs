@@ -39,11 +39,11 @@ The inclusion of the additional, arbitrary Haskell value (typed @c@) enables fur
 punrollBound ::
   forall a b c s.
   Integer ->
-  Term s (a :--> b) ->
+  (c -> Term s (a :--> b)) ->
   ((c -> Term s (a :--> b)) -> c -> Term s (a :--> b)) ->
   c ->
   Term s (a :--> b)
-punrollBound 0 def _ _ = def
+punrollBound 0 def _ c = def c
 punrollBound d def f c = f (punrollBound (d - 1) def f) c
 
 {- |
@@ -64,4 +64,4 @@ This should perform better than @punrollUnbound@ when a function requires a larg
 @since WIP
 -}
 punrollUnboundWhole :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
-punrollUnboundWhole d f = pfix #$ plam $ \r -> punrollBound d r (\g () -> f (g ())) ()
+punrollUnboundWhole d f = pfix #$ plam $ \r -> punrollBound d (const r) (\g () -> f (g ())) ()
