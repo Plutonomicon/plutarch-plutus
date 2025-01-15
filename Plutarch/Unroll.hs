@@ -1,17 +1,3 @@
-module Plutarch.Unroll (punrollBound, punrollUnbound, punrollUnboundWhole) where
-
-import Plutarch.Builtin.Data
-import Plutarch.Builtin.Integer
-
-import Plutarch.Internal.Fix
-import Plutarch.Internal.Lift
-import Plutarch.Internal.ListLike
-import Plutarch.Internal.Numeric ()
-import Plutarch.Internal.PLam
-import Plutarch.Internal.Term
-
-import Plutarch.Pretty
-
 {- |
 Unrolling a recursive function involves explicitly laying out some or all of the recursive steps, rather than relying on recursion via a fixed-point combinator.
 In UPLC, the typical `pfix` implementation uses a Y-combinator under the hood. Each recursive step incurs additional evaluation costs (CPU and memory) due to
@@ -20,12 +6,12 @@ step is explicitly laid out, unrolled functions consume more script size.
 
 There are various unrolling strategies available. It is important to carefully study the implications of each strategy, as they may impose different requirements,
 such as hard limit on recursion depth.
-
-@since WIP
 -}
-foo :: Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
-foo 0 _ = perror
-foo d f = f (foo (d - 1) f)
+module Plutarch.Unroll (punrollBound, punrollUnbound, punrollUnboundWhole) where
+
+import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.Term (Term, (#$), (:-->))
 
 {- |
 The first argument specifies the unrolling depth.
