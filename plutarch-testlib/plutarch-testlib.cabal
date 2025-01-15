@@ -117,6 +117,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Rational
     Plutarch.Test.Suite.Plutarch.Recursion
     Plutarch.Test.Suite.Plutarch.Scripts
+    Plutarch.Test.Suite.Plutarch.Semigroup
     Plutarch.Test.Suite.Plutarch.Show
     Plutarch.Test.Suite.Plutarch.String
     Plutarch.Test.Suite.Plutarch.Tracing

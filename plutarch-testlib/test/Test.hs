@@ -16,6 +16,7 @@ import Plutarch.Test.Suite.Plutarch.Positive qualified as Positive
 import Plutarch.Test.Suite.Plutarch.Rational qualified as Rational
 import Plutarch.Test.Suite.Plutarch.Recursion qualified as Recursion
 import Plutarch.Test.Suite.Plutarch.Scripts qualified as Scripts
+import Plutarch.Test.Suite.Plutarch.Semigroup qualified as Semigroup
 import Plutarch.Test.Suite.Plutarch.Show qualified as Show
 import Plutarch.Test.Suite.Plutarch.String qualified as String
 import Plutarch.Test.Suite.Plutarch.Tracing qualified as Tracing
@@ -59,6 +60,7 @@ main = do
         , TryFrom.tests
         , Unit.tests
         , Uplc.tests
+        , Semigroup.tests
         ]
     , testGroup
         "PlutarchLedgerApi"
