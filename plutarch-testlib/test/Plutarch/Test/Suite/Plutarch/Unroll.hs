@@ -94,12 +94,14 @@ tests =
             , goldenEval "punrollUnboundWhole" (unrollLengthUnboundWhole # shortList)
             , goldenEval "punrollBound" (unrollLengthBound # shortList)
             , goldenEval "punrollBoundFailing" (unrollLengthBoundFailing # shortList)
+            , goldenEval "no unroll" (regularLength # shortList)
             ]
         , goldenGroup
             "applied long list"
             [ goldenEval "punrollUnbound" (unrollLengthUnbound # longList)
             , goldenEval "punrollUnboundWhole" (unrollLengthUnboundWhole # longList)
             , goldenEval "punrollBound" (unrollLengthBound # longList)
+            , goldenEval "no unroll" (regularLength # longList)
             ]
         , goldenGroup
             "unapplied"
@@ -107,6 +109,7 @@ tests =
             , goldenEval "punrollUnboundWhole" (unrollLengthUnboundWhole @PBuiltinList @PInteger)
             , goldenEval "punrollBound" (unrollLengthBound @PBuiltinList @PInteger)
             , goldenEval "punrollBoundFailing" (unrollLengthBoundFailing @PBuiltinList @PInteger)
+            , goldenEval "no unroll" (regularLength @PBuiltinList @PInteger)
             ]
         ]
     , testGroup
