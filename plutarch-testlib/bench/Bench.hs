@@ -1,9 +1,20 @@
 module Main (main) where
 
+import Plutarch.Internal.Term (
+  Config (NoTracing, Tracing),
+  LogLevel (LogInfo),
+  TracingMode (DoTracing),
+ )
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
 import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
-import Plutarch.Test.Bench (BenchConfig (Optimizing), bcompare, bench, benchWithConfig, defaultMain)
+import Plutarch.Test.Bench (
+  BenchConfig (NonOptimizing, Optimizing),
+  bcompare,
+  bench,
+  benchWithConfig,
+  defaultMain,
+ )
 import Test.Tasty (TestTree, testGroup)
 
 main :: IO ()
@@ -13,9 +24,24 @@ main =
       "Benchmarks"
       [ testGroup "Maybe" maybeBenches
       , testGroup "Exponentiation" expBenches
+      , testGroup "Tracing" tracingBenches
       ]
 
 -- Suites
+
+tracingBenches :: [TestTree]
+tracingBenches =
+  [ benchWithConfig "with tracing" traceConfig t
+  , bcompare "$(NF-1) == \"Tracing\" && $NF == \"with tracing\"" $
+      benchWithConfig "no tracing" noTraceConfig t
+  ]
+  where
+    traceConfig :: BenchConfig
+    traceConfig = NonOptimizing $ Tracing LogInfo DoTracing
+    noTraceConfig :: BenchConfig
+    noTraceConfig = NonOptimizing NoTracing
+    t :: forall (s :: S). Term s PBool
+    t = ptraceInfo "I am a very long string which hopefully uses a lot of space" (pconstant True)
 
 expBenches :: [TestTree]
 expBenches =

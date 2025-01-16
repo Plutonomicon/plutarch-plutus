@@ -24,6 +24,7 @@ module Plutarch.Internal.Numeric (
   ptryNatural,
   pnatural,
   ppositiveToNatural,
+  pnaturalToPositiveCPS,
   pbySquaringDefault,
   pdiv,
   pmod,
@@ -38,6 +39,7 @@ import Numeric.Natural (Natural)
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
+  PBuiltinBLS12_381_MlResult,
   pbls12_381_G1_add,
   pbls12_381_G1_compressed_zero,
   pbls12_381_G1_neg,
@@ -48,6 +50,7 @@ import Plutarch.Builtin.BLS (
   pbls12_381_G2_neg,
   pbls12_381_G2_scalarMul,
   pbls12_381_G2_uncompress,
+  pbls12_381_mulMlResult,
  )
 import Plutarch.Builtin.Bool (pcond, pif)
 import Plutarch.Builtin.Integer (
@@ -224,11 +227,11 @@ instance PLiftable PNatural where
 
 If you define a custom @pscalePositive@, ensure the following also hold:
 
-3. @pscalePositive # x # pone@ @=@ @x@
-4. @(pscalePositive # x # n) #+ (pscalePositive # x # m)@ @=@
-   @pscalePositive # x # (n #+ m)@
-5. @pscalePositive # (pscalePositive # x # n) # m@ @=@
-   @pscalePositive # x # (n #* m)@
+3. @pscalePositive x pone@ @=@ @x@
+4. @(pscalePositive x n) #+ (pscalePositive x m)@ @=@
+   @pscalePositive x (n #+ m)@
+5. @pscalePositive (pscalePositive x n) m@ @=@
+   @pscalePositive x (n #* m)@
 
 The default implementation ensures these laws are satisfied.
 
@@ -297,17 +300,16 @@ instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
 = Laws
 
 1. @pzero #+ x@ @=@ @x@ (@pzero@ is the identity of @#+@)
-2. @pscalePositive # pzero # n@ @=@
+2. @pscalePositive pzero n@ @=@
    @pzero@ (@pzero@ does not scale up)
 
 If you define 'pscaleNatural', ensure the following as well:
 
-3. @pscaleNatural # x #$ ppositiveToNatural # p@ @=@
-   @pscalePositive # x # p@
-4. @pscaleNatural # x # pzero@ @=@ @pzero@
+3. @pscaleNatural x (ppositiveToNatural # p)@ @=@
+   @pscalePositive x p@
+4. @pscaleNatural x pzero@ @=@ @pzero@
 
-The default implementation of 'pscaleNatural' ensures these laws are
-followed.
+The default implementation of 'pscaleNatural' ensures these laws hold.
 
 @since WIP
 -}
@@ -376,9 +378,9 @@ implementations of both @pnegate@ and @#-@ uphold these.
 Lastly, if you define a custom @pscaleInteger@, the following laws
 must hold:
 
-6. @pscaleInteger # x # pzero@ @=@ @pzero@
-7. @pscaleInteger # x #$ pnegate y@ @=@
-   @pnegate #$ pscaleInteger # x # y@
+6. @pscaleInteger x pzero@ @=@ @pzero@
+7. @pscaleInteger x (pnegate # y)@ @=@
+   @pnegate # (pscaleInteger x y)@
 
 @since WIP
 -}
@@ -443,11 +445,11 @@ instance PAdditiveGroup PBuiltinBLS12_381_G2_Element where
 
 If you define a custom @ppowPositive@, ensure the following also hold:
 
-3. @ppowPositive # x # pone@ @=@ @x@
-4. @(ppowPositive # x # n) #* (ppowPositive # x # m)@ @=@
-   @pscalePositive # x # (n #+ m)@
-5. @ppowPositive # (ppowPositive # x # n) # m@ @=@
-   @pscalePositive # x # (n #* m)@
+3. @ppowPositive x pone@ @=@ @x@
+4. @(ppowPositive x n) #* (ppowPositive x m)@ @=@
+   @ppowPositive x (n #+ m)@
+5. @ppowPositive (ppowPositive x n) m@ @=@
+   @ppowPositive x (n #* m)@
 
 The default implementation ensures these laws are satisfied.
 
@@ -495,6 +497,11 @@ instance PMultiplicativeSemigroup PInteger where
   {-# INLINEABLE (#*) #-}
   x #* y = pmultiplyInteger # x # y
 
+-- | @since WIP
+instance PMultiplicativeSemigroup PBuiltinBLS12_381_MlResult where
+  {-# INLINEABLE (#*) #-}
+  x #* y = pbls12_381_mulMlResult # x # y
+
 {- | The notion of one (multiplicative identity), and exponentiation by
  - naturals.
 
@@ -502,13 +509,13 @@ instance PMultiplicativeSemigroup PInteger where
 
 1. @pone #* x@ @=@ @x@ (@pone@ is the left identity of @#*@)
 2. @x #* pone@ @=@ @x@ (@pone@ is the right identity of @#*@)
-3. @ppowPositive # pone # p@ @=@ @pone@ (@pone@ does not scale up)
+3. @ppowPositive pone p@ @=@ @pone@ (@pone@ does not scale up)
 
 If you define 'ppowNatural', ensure the following as well:
 
-4. @ppowNatural # x #$ ppositiveToNatural # p@ @=@
-   @ppowPositive # x # p@
-5. @ppowNatural # x # pzero@ @=@ @pone@
+4. @ppowNatural x (ppositiveToNatural # p)@ @=@
+   @ppowPositive x p@
+5. @ppowNatural x pzero@ @=@ @pone@
 
 @since WIP
 -}
@@ -699,6 +706,24 @@ pquot = punsafeBuiltin PLC.QuotientInteger
 -- | @since WIP
 prem :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 prem = punsafeBuiltin PLC.RemainderInteger
+
+{- | Specialized form of @pmaybe@ for 'PNatural'. Given a default, and a way to
+turn a 'PPositive' into an answer, produce the default when given 'pzero',
+and apply the function otherwise.
+
+@since WIP
+-}
+pnaturalToPositiveCPS ::
+  forall (a :: S -> Type) (s :: S).
+  Term s a ->
+  (Term s PPositive -> Term s a) ->
+  Term s PNatural ->
+  Term s a
+pnaturalToPositiveCPS def f n = plet n $ \n' ->
+  pif
+    (n' #== pzero)
+    def
+    (f . punsafeCoerce $ n)
 
 {- | Partial version of 'pnatural'. Errors if argument is negative.
 

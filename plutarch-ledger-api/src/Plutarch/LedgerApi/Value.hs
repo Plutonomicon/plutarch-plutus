@@ -304,6 +304,11 @@ instance PEq (PValue 'AssocMap.Sorted 'NoGuarantees) where
       -- TODO benchmark with '(==)'
       # pto (punionResolvingCollisionsWith AssocMap.Commutative # plam (-) # a # b)
 
+-- | @since WIP
+instance PSemigroup (PValue 'AssocMap.Sorted 'Positive) where
+  {-# INLINEABLE (#<>) #-}
+  (#<>) = (<>)
+
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
@@ -313,6 +318,11 @@ instance Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
     punsafeDowncast (pto $ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b)
+
+-- | @since WIP
+instance PSemigroup (PValue 'AssocMap.Sorted 'NonZero) where
+  {-# INLINEABLE (#<>) #-}
+  (#<>) = (<>)
 
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
@@ -324,6 +334,11 @@ instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
   a <> b =
     pnormalize #$ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
 
+-- | @since WIP
+instance PSemigroup (PValue 'AssocMap.Sorted 'NoGuarantees) where
+  {-# INLINEABLE (#<>) #-}
+  (#<>) = (<>)
+
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
   a <> b =
@@ -333,6 +348,14 @@ instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
   a <> b =
     punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+
+-- | @since WIP
+instance
+  PSemigroup (PValue 'AssocMap.Sorted normalization) =>
+  PMonoid (PValue 'AssocMap.Sorted normalization)
+  where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon (PValue AssocMap.pempty)
 
 -- | @since 2.0.0
 instance

@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.BitString (
   -- * Type
   PBitString (..),
@@ -12,12 +14,18 @@ module Plutarch.BitString (
   pfindFirstSetBit',
 ) where
 
+import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (PBuiltinList)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
+import Plutarch.Internal.Lift (
+  DeriveNewtypePLiftable,
+  PLiftable,
+  PLifted (PLifted),
+ )
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (pzero)
 import Plutarch.Internal.Ord (POrd ((#<)))
@@ -28,6 +36,7 @@ import Plutarch.Internal.PlutusType (
   PlutusType,
   pcon,
  )
+import Plutarch.Internal.Semigroup (PMonoid, PSemigroup)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -63,11 +72,21 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
       PEq
     , -- | @since WIP
       POrd
+    , -- | @since WIP
+      PSemigroup
+    , -- | @since WIP
+      PMonoid
     )
 
 -- | @since WIP
 instance DerivePlutusType PBitString where
   type DPTStrat _ = PlutusTypeNewtype
+
+-- | @since WIP
+deriving via
+  DeriveNewtypePLiftable PBitString PByteString ByteString
+  instance
+    PLiftable PBitString
 
 {- | Bit access operation, as defined in [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#readbit).
 
