@@ -123,6 +123,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Tracing
     Plutarch.Test.Suite.Plutarch.TryFrom
     Plutarch.Test.Suite.Plutarch.Unit
+    Plutarch.Test.Suite.Plutarch.Unroll
     Plutarch.Test.Suite.Plutarch.Uplc
     Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
@@ -157,8 +158,8 @@ benchmark bench
   import:         lang
   type:           exitcode-stdio-1.0
   main-is:        Bench.hs
-  hs-source-dirs: bench
-  other-modules:  Plutarch.Bench.Unroll
+  hs-source-dirs: bench test
+  other-modules:  Plutarch.Test.Suite.Plutarch.Unroll
   build-depends:
     , plutarch
     , plutarch-ledger-api

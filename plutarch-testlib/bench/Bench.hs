@@ -17,7 +17,7 @@ import Plutarch.Test.Bench (
  )
 import Test.Tasty (TestTree, testGroup)
 
-import Plutarch.Bench.Unroll (unrollBenches)
+import Plutarch.Test.Suite.Plutarch.Unroll (unrollBenches)
 
 main :: IO ()
 main =
