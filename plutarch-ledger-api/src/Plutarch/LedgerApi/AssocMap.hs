@@ -82,6 +82,7 @@ import Data.Foldable (foldl')
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
+import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (
@@ -136,7 +137,14 @@ instance
   haskToRepr = fmap (bimap Plutus.toData Plutus.toData) . PlutusMap.toList
   {-# INLINEABLE reprToHask #-}
   reprToHask x =
-    PlutusMap.unsafeFromList <$> traverse (\(k, v) -> (,) <$> Plutus.fromData k <*> Plutus.fromData v) x
+    PlutusMap.unsafeFromList
+      <$> traverse
+        ( \(k, v) ->
+            (,)
+              <$> (maybe (Left CouldNotDecodeData) Right . Plutus.fromData) k
+              <*> (maybe (Left CouldNotDecodeData) Right . Plutus.fromData) v
+        )
+        x
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}

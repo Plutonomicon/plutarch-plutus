@@ -141,7 +141,7 @@ keep in mind:
 
 = Laws
 
-1. @'reprToHask' '.' 'haskToRepr'@ @=@ @'Just'@
+1. @'reprToHask' '.' 'haskToRepr'@ @=@ @'Right'@
 2. @'plutToRepr' '.' 'reprToPlut'@ @=@ @'Right'@
 
 Any derivations via 'DeriveBuiltinPLiftable', 'DeriveDataPLiftable', and
@@ -168,7 +168,7 @@ class PlutusType a => PLiftable (a :: S -> Type) where
 
   -- | Given @a@'s Plutus universe representation, turn it back into its (true)
   -- Haskell equivalent if possible.
-  reprToHask :: PlutusRepr a -> Maybe (AsHaskell a)
+  reprToHask :: PlutusRepr a -> Either LiftError (AsHaskell a)
 
   -- | Given @a@'s Plutus universe representation, lift it into Plutarch.
   reprToPlut :: forall (s :: S). PlutusRepr a -> PLifted s a
@@ -258,11 +258,12 @@ plift t = case plutToRepr @a $ mkPLifted t of
               OtherLiftError err -> "other error: " <> Text.unpack err
            )
   Right res -> case reprToHask @a res of
-    Nothing ->
+    Left _ ->
+      -- FIXME
       error $
         "plift failed: "
           <> "Plutus representation does not correspond to a Haskell value"
-    Just res' -> res'
+    Right res' -> res'
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
 @h@ that is directly part of the Plutus default universe (instead of by way
@@ -297,7 +298,7 @@ instance
   {-# INLINEABLE haskToRepr #-}
   haskToRepr = id
   {-# INLINEABLE reprToHask #-}
-  reprToHask = Just
+  reprToHask = Right
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
@@ -338,7 +339,7 @@ instance
   {-# INLINEABLE haskToRepr #-}
   haskToRepr = PTx.toData
   {-# INLINEABLE reprToHask #-}
-  reprToHask = PTx.fromData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . PTx.fromData
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
@@ -466,7 +467,7 @@ instance
   {-# INLINEABLE haskToRepr #-}
   haskToRepr = PTx.toData
   {-# INLINEABLE reprToHask #-}
-  reprToHask = PTx.fromData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . PTx.fromData
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
@@ -515,7 +516,7 @@ instance PLiftable PByteString where
   {-# INLINEABLE haskToRepr #-}
   haskToRepr = id
   {-# INLINEABLE reprToHask #-}
-  reprToHask = Just
+  reprToHask = Right
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
@@ -528,7 +529,7 @@ instance PLiftable PData where
   {-# INLINEABLE haskToRepr #-}
   haskToRepr = id
   {-# INLINEABLE reprToHask #-}
-  reprToHask = Just
+  reprToHask = Right
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
@@ -541,7 +542,7 @@ instance PLiftable PByte where
   {-# INLINEABLE haskToRepr #-}
   haskToRepr = fromIntegral
   {-# INLINEABLE reprToHask #-}
-  reprToHask = toIntegralSized -- fromIntegral <$> reprToHask @PInteger x
+  reprToHask = maybe (Left (OtherLiftError "Integral size out of range")) Right . toIntegralSized
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}

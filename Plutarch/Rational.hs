@@ -30,9 +30,9 @@ import Plutarch.Internal.Lift (
   ),
   PLiftedClosed,
   getPLiftedClosed,
+  mkPLifted,
   mkPLiftedClosed,
   pconstant,
-  plift,
   pliftedFromClosed,
   pliftedToClosed,
  )
@@ -119,11 +119,12 @@ instance PLiftable PRational where
                   _ ->
                     mkPLiftedClosed $ pcon . PRational (pconstant n) . pconstant $ dabs
   {-# INLINEABLE reprToHask #-}
-  reprToHask x =
-    Just $
-      let n = plift $ pnumerator # getPLiftedClosed x
-          d = plift $ pdenominator # getPLiftedClosed x
-       in PlutusTx.unsafeRatio n . positiveToInteger $ d
+  reprToHask x = do
+    n <- plutToRepr $ mkPLifted (pnumerator # getPLiftedClosed x)
+    dr :: PlutusRepr PPositive <- plutToRepr $ mkPLifted (pdenominator # getPLiftedClosed x)
+    d <- reprToHask @PPositive dr
+    pure . PlutusTx.unsafeRatio n . positiveToInteger $ d
+
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = Right . pliftedToClosed
   {-# INLINEABLE reprToPlut #-}

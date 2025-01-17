@@ -39,9 +39,9 @@ import Plutarch.Internal.Lift (
   ),
   PLiftedClosed,
   getPLiftedClosed,
+  mkPLifted,
   mkPLiftedClosed,
   pconstant,
-  plift,
   pliftedFromClosed,
   pliftedToClosed,
  )
@@ -88,11 +88,14 @@ instance PLiftable a => PLiftable (PMaybe a) where
     Nothing -> mkPLiftedClosed $ pcon PNothing
     Just x -> mkPLiftedClosed $ pcon $ PJust (pconstant @a x)
   {-# INLINEABLE reprToHask #-}
-  reprToHask x =
-    Just $
-      if plift $ pisJust # getPLiftedClosed x
-        then Just $ plift $ pfromJust # getPLiftedClosed x
-        else Nothing
+  reprToHask x = do
+    isJust :: Bool <- plutToRepr $ mkPLifted (pisJust # getPLiftedClosed x)
+    if isJust
+      then do
+        vr :: PlutusRepr a <- plutToRepr $ mkPLifted (pfromJust # getPLiftedClosed x)
+        vh :: AsHaskell a <- reprToHask @a vr
+        pure $ Just vh
+      else pure Nothing
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = pliftedFromClosed
   {-# INLINEABLE plutToRepr #-}

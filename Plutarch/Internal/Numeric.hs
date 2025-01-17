@@ -67,6 +67,7 @@ import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (
   DeriveNewtypePLiftable,
+  LiftError (OtherLiftError),
   PLiftable (
     AsHaskell,
     PlutusRepr,
@@ -211,8 +212,8 @@ instance PLiftable PNatural where
   haskToRepr = fromIntegral
   {-# INLINEABLE reprToHask #-}
   reprToHask i = case signum i of
-    (-1) -> Nothing
-    _ -> Just . fromIntegral $ i
+    (-1) -> Left $ OtherLiftError "Negative input"
+    _ -> Right . fromIntegral $ i
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = punsafeCoercePLifted . reprToPlut @PInteger . fromIntegral
   {-# INLINEABLE plutToRepr #-}
