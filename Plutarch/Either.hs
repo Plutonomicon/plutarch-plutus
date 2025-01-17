@@ -137,37 +137,6 @@ instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = Right . pliftedToClosed
 
-{-
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = toPlutarchReprClosed
-
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch (Left a) = mkPLifted $ pcon $ PLeft $ pconstant @a a
-  toPlutarch (Right b) = mkPLifted $ pcon $ PRight $ pconstant @b b
-
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr = fromPlutarchReprClosed
-
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch t = do
-    isLeft <-
-      fromPlutarch $
-        mkPLifted $
-          plam (\e -> pmatch e $ \case PLeft _ -> pconstant @PBool True; PRight _ -> pconstant @PBool False)
-            # getPLifted t
-    if isLeft
-      then
-        fmap Left $
-          fromPlutarch $
-            mkPLifted $
-              plam (\e -> pmatch e $ \case PLeft a -> a; PRight _ -> perror) # getPLifted t
-      else
-        fmap Right $
-          fromPlutarch $
-            mkPLifted $
-              plam (\e -> pmatch e $ \case PLeft _ -> perror; PRight b -> b) # getPLifted t
--}
-
 -- | @since WIP
 pisLeft ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).

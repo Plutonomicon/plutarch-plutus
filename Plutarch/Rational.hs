@@ -129,27 +129,6 @@ instance PLiftable PRational where
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = pliftedFromClosed
 
-{-
-{-# INLINEABLE toPlutarchRepr #-}
-toPlutarchRepr = toPlutarchReprClosed
-{-# INLINEABLE toPlutarch #-}
-toPlutarch r =
-  let n = PlutusTx.numerator r
-      d = PlutusTx.denominator r
-   in mkPLifted . pcon $
-        if
-          | n == 0 -> PRational pzero pone
-          | d < 0 -> PRational (pconstant . negate $ n) . punsafeCoerce . pconstant @PInteger . negate $ d
-          | otherwise -> PRational (pconstant n) . punsafeCoerce . pconstant @PInteger $ d
-{-# INLINEABLE fromPlutarchRepr #-}
-fromPlutarchRepr = fromPlutarchReprClosed
-{-# INLINEABLE fromPlutarch #-}
-fromPlutarch t = do
-  (n, d) <- fromPlutarch $ mkPLifted $ pmatch (getPLifted t) $ \(PRational n' d') ->
-    ppairDataBuiltin # pdata n' # pdata (pto d')
-  pure . PlutusTx.unsafeRatio n $ d
--}
-
 instance PEq PRational where
   {-# INLINEABLE (#==) #-}
   l' #== r' = inner # l' # r'
