@@ -263,6 +263,7 @@ module Plutarch.Prelude (
 
   -- * Unrolling utilities
   punrollBound,
+  punrollBound',
   punrollUnbound,
   punrollUnboundWhole,
 ) where
