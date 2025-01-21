@@ -1,9 +1,0 @@
-PData.1 (program 1.0.0 ((\i0 -> equalsData i1 i1) (List [Constr 1 [I 0]])))
-PData.2 (program
-   1.0.0
-   ((\i0 -> force ifThenElse i1 False True) (equalsData (Constr 0 []) (I 42))))
-PAsData.1 (program 1.0.0 (equalsData (iData 42) (iData 42)))
-PAsData.1 (program
-   1.0.0
-   ((\i0 -> force ifThenElse i1 False True)
-      (equalsData (bData #12) (bData #ab))))

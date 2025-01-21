@@ -1,5 +1,0 @@
-bool (program 1.0.0 (Constr 0 []))
-int (program 1.0.0 (I 42))
-pkh (program 1.0.0 (B #3034))
-minting (program 1.0.0 (Constr 0 [B #]))
-txoutref (program 1.0.0 (Constr 0 [Constr 0 [B #41], I 12]))
