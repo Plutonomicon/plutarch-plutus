@@ -75,7 +75,7 @@ import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData)
-import Plutarch.Internal.PlutusType (DeriveAsFake (DeriveAsFake), PlutusType (PInner))
+import Plutarch.Internal.PlutusType (DeriveFakePlutusType (DeriveFakePlutusType), PlutusType(PInner))
 import Plutarch.Internal.Subtype (PSubtype)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -282,7 +282,7 @@ newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveBuiltinPLiftable (a s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
-  deriving (PlutusType) via (DeriveAsFake (DeriveBuiltinPLiftable a h))
+  deriving (PlutusType) via (DeriveFakePlutusType (DeriveBuiltinPLiftable a h))
 
 -- | @since WIP
 instance
@@ -312,7 +312,7 @@ newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveDataPLiftable (a s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
-  deriving (PlutusType) via (DeriveAsFake (DeriveDataPLiftable a h))
+  deriving (PlutusType) via (DeriveFakePlutusType (DeriveDataPLiftable a h))
 
 -- | @since WIP
 instance
@@ -343,7 +343,7 @@ newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
   = DeriveNewtypePLiftable (wrapper s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
-  deriving (PlutusType) via (DeriveAsFake (DeriveNewtypePLiftable wrapper inner h))
+  deriving (PlutusType) via (DeriveFakePlutusType (DeriveNewtypePLiftable wrapper inner h))
 
 -- | @since WIP
 instance

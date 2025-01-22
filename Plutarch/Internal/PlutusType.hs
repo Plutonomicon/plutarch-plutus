@@ -29,7 +29,7 @@ module Plutarch.Internal.PlutusType (
   PCovariant'',
   PContravariant'',
   DeriveAsNewtype (DeriveAsNewtype, unDeriveAsNewtype),
-  DeriveAsFake (DeriveAsFake),
+  DeriveFakePlutusType (DeriveFakePlutusType),
 ) where
 
 import Plutarch.Builtin.BLS (
@@ -247,20 +247,20 @@ for deriving @PlutusType@ for another derivation strategy wrapper whose target i
 
 See @PLiftable@
 -}
-newtype DeriveAsFake (a :: S -> Type) (s :: S) = DeriveAsFake (a s)
+newtype DeriveFakePlutusType (a :: S -> Type) (s :: S) = DeriveFakePlutusType (a s)
 
-instance PlutusType (DeriveAsFake a) where
-  type PInner (DeriveAsFake a) = TypeError ('ShowType a ':<>: 'Text " derived PlutusType with DeriveAsFake. This type is not meant to be used as PlutusType.")
-  type PCovariant' (DeriveAsFake a) = Bottom
-  type PContravariant' (DeriveAsFake a) = Bottom
-  type PVariant' (DeriveAsFake a) = Bottom
+instance PlutusType (DeriveFakePlutusType a) where
+  type PInner (DeriveFakePlutusType a) = TypeError ('ShowType a ':<>: 'Text " derived PlutusType with DeriveFakePlutusType. This type is not meant to be used as PlutusType.")
+  type PCovariant' (DeriveFakePlutusType a) = Bottom
+  type PContravariant' (DeriveFakePlutusType a) = Bottom
+  type PVariant' (DeriveFakePlutusType a) = Bottom
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
-  pcon' :: forall s. DeriveAsFake a s -> Term s (PInner (DeriveAsFake a))
-  pcon' _ = error "Attepted to use a type derived with DeriveAsFake"
+  pcon' :: forall s. DeriveFakePlutusType a s -> Term s (PInner (DeriveFakePlutusType a))
+  pcon' _ = error "Attepted to use a type derived with DeriveFakePlutusType"
 
-  pmatch' :: forall s b. Term s (PInner (DeriveAsFake a)) -> (DeriveAsFake a s -> Term s b) -> Term s b
-  pmatch' _ _ = error "Attepted to use a type derived with DeriveAsFake"
+  pmatch' :: forall s b. Term s (PInner (DeriveFakePlutusType a)) -> (DeriveFakePlutusType a s -> Term s b) -> Term s b
+  pmatch' _ _ = error "Attepted to use a type derived with DeriveFakePlutusType"
 
 --------------------------------------------------------------------------------
 
