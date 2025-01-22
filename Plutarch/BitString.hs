@@ -46,7 +46,7 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Repr.Newtype (DeriveAsNewtype (DeriveAsNewtype))
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import PlutusCore qualified as PLC
 
 {- | A wrapper around 'PByteString' for CIP-122 and CIP-123 bitwise operations.
@@ -81,7 +81,7 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
     ( -- | @since WIP
       PlutusType
     )
-    via (DeriveAsNewtype PBitString)
+    via (DeriveNewtypePlutusType PBitString)
 
 -- | @since WIP
 deriving via

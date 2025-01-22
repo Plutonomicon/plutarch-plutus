@@ -84,7 +84,7 @@ import Plutarch.Internal.Ord (POrd ((#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DeriveAsNewtype (DeriveAsNewtype),
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   PlutusType (PInner),
   pcon,
  )
@@ -133,7 +133,7 @@ newtype PPositive (s :: S) = PPositive (Term s PInteger)
     ( -- | @since WIP
       PlutusType
     )
-    via (DeriveAsNewtype PPositive)
+    via (DeriveNewtypePlutusType PPositive)
 
 -- | @since WIP
 deriving via
@@ -200,7 +200,7 @@ newtype PNatural (s :: S) = PNatural (Term s PInteger)
     , -- | @since WIP
       POrd
     )
-  deriving (PlutusType) via DeriveAsNewtype PNatural
+  deriving (PlutusType) via DeriveNewtypePlutusType PNatural
 
 -- | @since WIP
 instance PLiftable PNatural where

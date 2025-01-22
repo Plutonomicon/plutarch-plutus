@@ -72,7 +72,7 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
-import Plutarch.Repr.Newtype (DeriveAsNewtype (DeriveAsNewtype))
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 import Universe (Includes)
@@ -239,7 +239,7 @@ newtype PAnd (a :: S -> Type) (s :: S)
     ( -- | @since WIP
       PlutusType
     )
-    via (DeriveAsNewtype (PAnd a))
+    via (DeriveNewtypePlutusType (PAnd a))
 
 -- | @since WIP
 deriving via
@@ -301,7 +301,7 @@ newtype POr (a :: S -> Type) (s :: S)
     ( -- | @since WIP
       PlutusType
     )
-    via (DeriveAsNewtype (POr a))
+    via (DeriveNewtypePlutusType (POr a))
 
 -- | @since WIP
 deriving via
@@ -363,7 +363,7 @@ newtype PXor (a :: S -> Type) (s :: S)
     ( -- | @since WIP
       PlutusType
     )
-    via (DeriveAsNewtype (PXor a))
+    via (DeriveNewtypePlutusType (PXor a))
 
 -- | @since WIP
 deriving via
