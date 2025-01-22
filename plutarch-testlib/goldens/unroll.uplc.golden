@@ -618,7 +618,7 @@ applied short list.punrollUnboundWhole program
                 (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))) ])
         (force (force chooseList)))
      (force tailList))
-applied short list.punrollBound program
+applied short list.punrollBound' program
   1.0.0
   ((\!0 ->
       (\!0 ->
@@ -1691,7 +1691,7 @@ applied long list.punrollUnboundWhole program
                 (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))) ])
         (force (force chooseList)))
      (force tailList))
-applied long list.punrollBound program
+applied long list.punrollBound' program
   1.0.0
   ((\!0 ->
       (\!0 ->
@@ -2542,7 +2542,7 @@ unapplied.punrollUnboundWhole program
            0)
         (force (force chooseList)))
      (force tailList))
-unapplied.punrollBound program
+unapplied.punrollBound' program
   1.0.0
   ((\!0 ->
       (\!0 !0 ->

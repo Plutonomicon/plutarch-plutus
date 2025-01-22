@@ -1,11 +1,11 @@
 applied short list.punrollUnbound program 1.0.0 5
 applied short list.punrollUnboundWhole program 1.0.0 5
-applied short list.punrollBound program 1.0.0 5
+applied short list.punrollBound' program 1.0.0 5
 applied short list.punrollBoundFailing program 1.0.0 5
 applied short list.no unroll program 1.0.0 5
 applied long list.punrollUnbound program 1.0.0 40
 applied long list.punrollUnboundWhole program 1.0.0 40
-applied long list.punrollBound program 1.0.0 -1
+applied long list.punrollBound' program 1.0.0 -1
 applied long list.no unroll program 1.0.0 40
 unapplied.punrollUnbound program
   1.0.0
@@ -608,7 +608,7 @@ unapplied.punrollUnboundWhole program
                      (addInteger !2 1)
                      (!5 !1))) ])
           [!4]))
-unapplied.punrollBound program
+unapplied.punrollBound' program
   1.0.0
   (\!0 ->
      force
