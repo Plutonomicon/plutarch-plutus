@@ -27,13 +27,13 @@
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-30"></span><span id="local-6989586621679230817"><span class="annot"><a href="Plutarch.Test.Unit.html#testEval"><span class="hs-identifier hs-type">testEval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230817"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
+</span><span id="line-30"></span><span id="local-6989586621679230798"><span class="annot"><a href="Plutarch.Test.Unit.html#testEval"><span class="hs-identifier hs-type">testEval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230798"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-31"></span><span id="testEval"><span class="annot"><span class="annottext">testEval :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
-</span><a href="Plutarch.Test.Unit.html#testEval"><span class="hs-identifier hs-var hs-var">testEval</span></a></span></span><span> </span><span id="local-6989586621679231080"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231080"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231081"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231081"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
+</span><a href="Plutarch.Test.Unit.html#testEval"><span class="hs-identifier hs-var hs-var">testEval</span></a></span></span><span> </span><span id="local-6989586621679231061"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231061"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231062"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231062"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231080"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
+</span><a href="#local-6989586621679231061"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-32"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
@@ -43,9 +43,9 @@ forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><span class="hs-identifier hs-var">LogDebug</span></span><span> </span><span class="annot"><span class="annottext">TracingMode
 </span><span class="hs-identifier hs-var">DetTracing</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231081"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-33"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231083"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231083"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
+</span><a href="#local-6989586621679231062"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-33"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231064"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679231064"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -54,9 +54,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231083"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-34"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231086"><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231086"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231064"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231067"><span class="annot"><span class="annottext">EvalError
+</span><a href="#local-6989586621679231067"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
@@ -67,7 +67,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; TestName
 forall a. Show a =&gt; a -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231086"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><a href="#local-6989586621679231067"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-35"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; Assertion
@@ -79,13 +79,13 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-41"></span><span id="local-6989586621679231089"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalFail"><span class="hs-identifier hs-type">testEvalFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231089"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
+</span><span id="line-41"></span><span id="local-6989586621679231070"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalFail"><span class="hs-identifier hs-type">testEvalFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231070"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-42"></span><span id="testEvalFail"><span class="annot"><span class="annottext">testEvalFail :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
-</span><a href="Plutarch.Test.Unit.html#testEvalFail"><span class="hs-identifier hs-var hs-var">testEvalFail</span></a></span></span><span> </span><span id="local-6989586621679231100"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231100"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231101"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231101"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
+</span><a href="Plutarch.Test.Unit.html#testEvalFail"><span class="hs-identifier hs-var hs-var">testEvalFail</span></a></span></span><span> </span><span id="local-6989586621679231081"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231081"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231082"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231082"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231100"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
+</span><a href="#local-6989586621679231081"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-43"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
@@ -93,9 +93,9 @@ forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var">evalTermResult</span></a></span><span> </span><span class="annot"><span class="annottext">Config
 </span><span class="hs-identifier hs-var">NoTracing</span></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231101"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-44"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231102"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231102"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
+</span><a href="#local-6989586621679231082"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-44"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231083"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679231083"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -104,34 +104,34 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231102"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><a href="#local-6989586621679231083"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-45"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; Assertion
 forall a. a -&gt; IO a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231103"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231103"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span id="line-46"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231084"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231084"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;Evaluated, but expected failure:\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231103"><span class="hs-identifier hs-var">script</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679231084"><span class="hs-identifier hs-var">script</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>
 </span><span id="line-48"></span><span class="annot"><span class="hs-comment">{- | Assert that term failed to compile
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-52"></span><span id="local-6989586621679231104"><span class="annot"><a href="Plutarch.Test.Unit.html#testCompileFail"><span class="hs-identifier hs-type">testCompileFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231104"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
+</span><span id="line-52"></span><span id="local-6989586621679231085"><span class="annot"><a href="Plutarch.Test.Unit.html#testCompileFail"><span class="hs-identifier hs-type">testCompileFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231085"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-53"></span><span id="testCompileFail"><span class="annot"><span class="annottext">testCompileFail :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
-</span><a href="Plutarch.Test.Unit.html#testCompileFail"><span class="hs-identifier hs-var hs-var">testCompileFail</span></a></span></span><span> </span><span id="local-6989586621679231184"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231184"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231185"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231185"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
+</span><a href="Plutarch.Test.Unit.html#testCompileFail"><span class="hs-identifier hs-var hs-var">testCompileFail</span></a></span></span><span> </span><span id="local-6989586621679231165"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231165"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231166"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231166"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231184"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
+</span><a href="#local-6989586621679231165"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-54"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
@@ -139,14 +139,14 @@ forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var">evalTermResult</span></a></span><span> </span><span class="annot"><span class="annottext">Config
 </span><span class="hs-identifier hs-var">NoTracing</span></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231185"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679231166"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-55"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">() -&gt; Assertion
 forall a. a -&gt; IO a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-56"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231186"><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231186"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span id="line-56"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231167"><span class="annot"><span class="annottext">EvalError
+</span><a href="#local-6989586621679231167"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
@@ -157,9 +157,9 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; TestName
 forall a. Show a =&gt; a -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231186"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-57"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231187"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231187"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231167"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231168"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231168"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
@@ -168,39 +168,39 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-string">&quot;Evaluated, but expected failure: &quot;</span></span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231187"><span class="hs-identifier hs-var">script</span></a></span><span>
+</span><a href="#local-6989586621679231168"><span class="hs-identifier hs-var">script</span></a></span><span>
 </span><span id="line-58"></span><span>
 </span><span id="line-59"></span><span class="annot"><span class="hs-comment">{- | Assert that term compiled and evaluated without errors and matches the expected value
 note that comparison is done on AST level, not by `Eq` or `PEq`
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-64"></span><span id="local-6989586621679230935"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalEqual"><span class="hs-identifier hs-type">testEvalEqual</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-64"></span><span id="local-6989586621679230916"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalEqual"><span class="hs-identifier hs-type">testEvalEqual</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-65"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-66"></span><span>  </span><span class="annot"><span class="hs-comment">-- | Actual</span></span><span>
-</span><span id="line-67"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230935"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-67"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230916"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-68"></span><span>  </span><span class="annot"><span class="hs-comment">-- | Expected</span></span><span>
-</span><span id="line-69"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230935"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-69"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230916"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-70"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-71"></span><span id="testEvalEqual"><span class="annot"><span class="annottext">testEvalEqual :: forall (a :: PType).
 TestName -&gt; ClosedTerm a -&gt; ClosedTerm a -&gt; TestTree
-</span><a href="Plutarch.Test.Unit.html#testEvalEqual"><span class="hs-identifier hs-var hs-var">testEvalEqual</span></a></span></span><span> </span><span id="local-6989586621679231290"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231290"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231291"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231291"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span id="local-6989586621679231292"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231292"><span class="hs-identifier hs-var">expectedTerm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
+</span><a href="Plutarch.Test.Unit.html#testEvalEqual"><span class="hs-identifier hs-var hs-var">testEvalEqual</span></a></span></span><span> </span><span id="local-6989586621679231271"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231271"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231272"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231272"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span id="local-6989586621679231273"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231273"><span class="hs-identifier hs-var">expectedTerm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231290"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
+</span><a href="#local-6989586621679231271"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-72"></span><span>  </span><span id="local-6989586621679231293"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231293"><span class="hs-identifier hs-var">actual</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679231274"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231274"><span class="hs-identifier hs-var">actual</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
 forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var">evalTermResult</span></a></span><span> </span><span class="annot"><span class="annottext">Config
 </span><span class="hs-identifier hs-var">NoTracing</span></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231291"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-73"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231294"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231294"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; IO TestName
+</span><a href="#local-6989586621679231272"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-73"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231275"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679231275"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; IO TestName
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; IO TestName) -&gt; TestName -&gt; IO TestName
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -209,9 +209,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231294"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-74"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231295"><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231295"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231275"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231276"><span class="annot"><span class="annottext">EvalError
+</span><a href="#local-6989586621679231276"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; IO TestName
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; IO TestName) -&gt; TestName -&gt; IO TestName
@@ -222,22 +222,22 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; TestName
 forall a. Show a =&gt; a -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231295"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-75"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231296"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231296"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231276"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231277"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231277"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; IO TestName
 forall a. a -&gt; IO a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231296"><span class="hs-identifier hs-var">script</span></a></span><span>
+</span><a href="#local-6989586621679231277"><span class="hs-identifier hs-var">script</span></a></span><span>
 </span><span id="line-76"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
 forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var">evalTermResult</span></a></span><span> </span><span class="annot"><span class="annottext">Config
 </span><span class="hs-identifier hs-var">NoTracing</span></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231292"><span class="hs-identifier hs-var">expectedTerm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-77"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231297"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231297"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
+</span><a href="#local-6989586621679231273"><span class="hs-identifier hs-var">expectedTerm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-77"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231278"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679231278"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -246,9 +246,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231297"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-78"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231298"><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231298"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231278"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-78"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span id="local-6989586621679231279"><span class="annot"><span class="annottext">EvalError
+</span><a href="#local-6989586621679231279"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
@@ -259,17 +259,17 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; TestName
 forall a. Show a =&gt; a -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231298"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-79"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231299"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231299"><span class="hs-identifier hs-var">expected</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231279"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span id="local-6989586621679231280"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231280"><span class="hs-identifier hs-var">expected</span></a></span></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; TestName -&gt; TestName -&gt; Assertion
 forall a.
 (Eq a, Show a, HasCallStack) =&gt;
 TestName -&gt; a -&gt; a -&gt; Assertion
 </span><span class="hs-identifier hs-var">assertEqual</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231299"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231293"><span class="hs-identifier hs-var">actual</span></a></span><span>
+</span><a href="#local-6989586621679231280"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231274"><span class="hs-identifier hs-var">actual</span></a></span><span>
 </span><span id="line-80"></span><span>
 </span><span id="line-81"></span><span class="annot"><span class="hs-comment">{- | Assert that term compiled (with specified tracing level and `TracingMode.DetTracing`) and evaluated
 without errors produced traces that match expected value. Note that this succeeds even if script
@@ -277,28 +277,28 @@ evaluated to error if traces still match
 
 @since WIP
 -}</span></span><span>
-</span><span id="line-87"></span><span id="local-6989586621679230942"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalEqualTraces"><span class="hs-identifier hs-type">testEvalEqualTraces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230942"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">LogLevel</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
+</span><span id="line-87"></span><span id="local-6989586621679230923"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalEqualTraces"><span class="hs-identifier hs-type">testEvalEqualTraces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230923"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">LogLevel</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-88"></span><span id="testEvalEqualTraces"><span class="annot"><span class="annottext">testEvalEqualTraces :: forall (a :: PType).
 TestName -&gt; ClosedTerm a -&gt; LogLevel -&gt; [Text] -&gt; TestTree
-</span><a href="Plutarch.Test.Unit.html#testEvalEqualTraces"><span class="hs-identifier hs-var hs-var">testEvalEqualTraces</span></a></span></span><span> </span><span id="local-6989586621679231319"><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231319"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231320"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231320"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span id="local-6989586621679231321"><span class="annot"><span class="annottext">LogLevel
-</span><a href="#local-6989586621679231321"><span class="hs-identifier hs-var">traceLevel</span></a></span></span><span> </span><span id="local-6989586621679231322"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231322"><span class="hs-identifier hs-var">expected</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
+</span><a href="Plutarch.Test.Unit.html#testEvalEqualTraces"><span class="hs-identifier hs-var hs-var">testEvalEqualTraces</span></a></span></span><span> </span><span id="local-6989586621679231300"><span class="annot"><span class="annottext">TestName
+</span><a href="#local-6989586621679231300"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621679231301"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231301"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span id="local-6989586621679231302"><span class="annot"><span class="annottext">LogLevel
+</span><a href="#local-6989586621679231302"><span class="hs-identifier hs-var">traceLevel</span></a></span></span><span> </span><span id="local-6989586621679231303"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231303"><span class="hs-identifier hs-var">expected</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion -&gt; TestTree
 </span><span class="hs-identifier hs-var">testCase</span></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><a href="#local-6989586621679231319"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
+</span><a href="#local-6989586621679231300"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">(Assertion -&gt; TestTree) -&gt; Assertion -&gt; TestTree
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
 </span><span id="line-89"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; TermResult
 forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var">evalTermResult</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">LogLevel -&gt; TracingMode -&gt; Config
 </span><span class="hs-identifier hs-var">Tracing</span></span><span> </span><span class="annot"><span class="annottext">LogLevel
-</span><a href="#local-6989586621679231321"><span class="hs-identifier hs-var">traceLevel</span></a></span><span> </span><span class="annot"><span class="annottext">TracingMode
+</span><a href="#local-6989586621679231302"><span class="hs-identifier hs-var">traceLevel</span></a></span><span> </span><span class="annot"><span class="annottext">TracingMode
 </span><span class="hs-identifier hs-var">DetTracing</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231320"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-90"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231323"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231323"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
+</span><a href="#local-6989586621679231301"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-90"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-type">FailedToCompile</span></a></span><span> </span><span id="local-6989586621679231304"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679231304"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; Assertion
 forall a. HasCallStack =&gt; TestName -&gt; IO a
 </span><span class="hs-identifier hs-var">assertFailure</span></span><span> </span><span class="annot"><span class="annottext">(TestName -&gt; Assertion) -&gt; TestName -&gt; Assertion
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -307,27 +307,27 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231323"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><a href="#local-6989586621679231304"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-91"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-type">FailedToEvaluate</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679231324"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231324"><span class="hs-identifier hs-var">traces</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [Text] -&gt; [Text] -&gt; Assertion
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679231305"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231305"><span class="hs-identifier hs-var">traces</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [Text] -&gt; [Text] -&gt; Assertion
 forall a.
 (Eq a, Show a, HasCallStack) =&gt;
 TestName -&gt; a -&gt; a -&gt; Assertion
 </span><span class="hs-identifier hs-var">assertEqual</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231322"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231324"><span class="hs-identifier hs-var">traces</span></a></span><span>
+</span><a href="#local-6989586621679231303"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231305"><span class="hs-identifier hs-var">traces</span></a></span><span>
 </span><span id="line-92"></span><span>    </span><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-type">Evaluated</span></a></span><span> </span><span class="annot"><span class="annottext">TestName
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679231325"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231325"><span class="hs-identifier hs-var">traces</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [Text] -&gt; [Text] -&gt; Assertion
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679231306"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231306"><span class="hs-identifier hs-var">traces</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [Text] -&gt; [Text] -&gt; Assertion
 forall a.
 (Eq a, Show a, HasCallStack) =&gt;
 TestName -&gt; a -&gt; a -&gt; Assertion
 </span><span class="hs-identifier hs-var">assertEqual</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;&quot;</span></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231322"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231325"><span class="hs-identifier hs-var">traces</span></a></span><span>
+</span><a href="#local-6989586621679231303"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231306"><span class="hs-identifier hs-var">traces</span></a></span><span>
 </span><span id="line-93"></span><span>
 </span><span id="line-94"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
 </span><span id="line-95"></span><span class="hs-keyword">data</span><span> </span><span id="TermResult"><span class="annot"><a href="Plutarch.Test.Unit.html#TermResult"><span class="hs-identifier hs-var">TermResult</span></a></span></span><span>
@@ -336,39 +336,39 @@ TestName -&gt; a -&gt; a -&gt; Assertion
 </span><span id="line-98"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Evaluated"><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-var">Evaluated</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-99"></span><span>
 </span><span id="line-100"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-101"></span><span id="local-6989586621679230921"><span class="annot"><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-type">evalTermResult</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Config</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230921"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Unit.html#TermResult"><span class="hs-identifier hs-type">TermResult</span></a></span></span><span>
+</span><span id="line-101"></span><span id="local-6989586621679230902"><span class="annot"><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-type">evalTermResult</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Config</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230902"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Unit.html#TermResult"><span class="hs-identifier hs-type">TermResult</span></a></span></span><span>
 </span><span id="line-102"></span><span id="evalTermResult"><span class="annot"><span class="annottext">evalTermResult :: forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
-</span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var hs-var">evalTermResult</span></a></span></span><span> </span><span id="local-6989586621679231326"><span class="annot"><span class="annottext">Config
-</span><a href="#local-6989586621679231326"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span id="local-6989586621679231327"><span class="annot"><span class="annottext">ClosedTerm a
-</span><a href="#local-6989586621679231327"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var hs-var">evalTermResult</span></a></span></span><span> </span><span id="local-6989586621679231307"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679231307"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span id="local-6989586621679231308"><span class="annot"><span class="annottext">ClosedTerm a
+</span><a href="#local-6989586621679231308"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-103"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; ClosedTerm a -&gt; Either Text Script
 forall (a :: PType). Config -&gt; ClosedTerm a -&gt; Either Text Script
 </span><span class="hs-identifier hs-var">compile</span></span><span> </span><span class="annot"><span class="annottext">Config
-</span><a href="#local-6989586621679231326"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
+</span><a href="#local-6989586621679231307"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
 ClosedTerm a
-</span><a href="#local-6989586621679231327"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-104"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679231328"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231328"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; TermResult
+</span><a href="#local-6989586621679231308"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-104"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679231309"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679231309"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-var">FailedToCompile</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679231328"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-105"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679231329"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679231329"><span class="hs-identifier hs-var">compiledTerm</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679231309"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-105"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679231310"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679231310"><span class="hs-identifier hs-var">compiledTerm</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-106"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Script -&gt; (Either EvalError Script, ExBudget, [Text])
 </span><span class="hs-identifier hs-var">evalScriptUnlimited</span></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679231329"><span class="hs-identifier hs-var">compiledTerm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-107"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679231330"><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231330"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679231331"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231331"><span class="hs-identifier hs-var">traces</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; [Text] -&gt; TermResult
+</span><a href="#local-6989586621679231310"><span class="hs-identifier hs-var">compiledTerm</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-107"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679231311"><span class="annot"><span class="annottext">EvalError
+</span><a href="#local-6989586621679231311"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679231312"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231312"><span class="hs-identifier hs-var">traces</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">EvalError -&gt; [Text] -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-var">FailedToEvaluate</span></a></span><span> </span><span class="annot"><span class="annottext">EvalError
-</span><a href="#local-6989586621679231330"><span class="hs-identifier hs-var">err</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231331"><span class="hs-identifier hs-var">traces</span></a></span><span>
-</span><span id="line-108"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679231332"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679231332"><span class="hs-identifier hs-var">evaluated</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679231333"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231333"><span class="hs-identifier hs-var">traces</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [Text] -&gt; TermResult
+</span><a href="#local-6989586621679231311"><span class="hs-identifier hs-var">err</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231312"><span class="hs-identifier hs-var">traces</span></a></span><span>
+</span><span id="line-108"></span><span>        </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679231313"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679231313"><span class="hs-identifier hs-var">evaluated</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679231314"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231314"><span class="hs-identifier hs-var">traces</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TestName -&gt; [Text] -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-var">Evaluated</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script -&gt; TestName
 </span><span class="hs-identifier hs-var">printScript</span></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679231332"><span class="hs-identifier hs-var">evaluated</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679231333"><span class="hs-identifier hs-var">traces</span></a></span><span>
+</span><a href="#local-6989586621679231313"><span class="hs-identifier hs-var">evaluated</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679231314"><span class="hs-identifier hs-var">traces</span></a></span><span>
 </span><span id="line-109"></span></pre></body></html>
