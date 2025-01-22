@@ -44,7 +44,7 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Term (S, Term)
 import Plutarch.Repr.Internal (groupHandlers)
-import Plutarch.Repr.Newtype (DeriveAsNewtype (DeriveAsNewtype))
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.TermCont (pletC, unTermCont)
 
 -- | @since WIP
@@ -58,7 +58,7 @@ newtype PTag (struct :: [S -> Type]) (s :: S) = PTag
 instance SOP.Generic (PTag struct s)
 
 -- | @since WIP
-deriving via DeriveAsNewtype (PTag struct) instance PlutusType (PTag struct)
+deriving via DeriveNewtypePlutusType (PTag struct) instance PlutusType (PTag struct)
 
 -- | @since WIP
 newtype DeriveAsTag (a :: S -> Type) s = DeriveAsTag
