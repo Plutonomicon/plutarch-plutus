@@ -222,6 +222,9 @@ instance
   ) =>
   PlutusType (DeriveNewtypePlutusType a)
   where
+  -- Note:
+  -- This is not @PInner (DeriveNewtypePlutusType a) = PInner a@ because
+  -- We want the PInner of wrapper type to be the type it wraps not the PInner of that.
   type PInner (DeriveNewtypePlutusType a) = UnTermSingle (Head (Head (Code (a Any))))
   type PCovariant' (DeriveNewtypePlutusType a) = PCovariant' a
   type PContravariant' (DeriveNewtypePlutusType a) = PContravariant' a

@@ -200,7 +200,11 @@ newtype PNatural (s :: S) = PNatural (Term s PInteger)
     , -- | @since WIP
       POrd
     )
-  deriving (PlutusType) via DeriveNewtypePlutusType PNatural
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via DeriveNewtypePlutusType PNatural
 
 -- | @since WIP
 instance PLiftable PNatural where
