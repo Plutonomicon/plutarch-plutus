@@ -14,7 +14,7 @@ regularLength = pfix # plam go #$ 0
     go self = plam $ \n -> pelimList (\_ xs -> self # (n + 1) # xs) n
 
 unrollLengthBoundNoPreCompute :: forall list a s. PIsListLike list a => Term s (list a :--> PInteger)
-unrollLengthBoundNoPreCompute = punrollBound 20 (const $ plam $ \_ _ -> -1) go () # 0
+unrollLengthBoundNoPreCompute = punrollBound' 20 (const $ plam $ \_ _ -> -1) go () # 0
   where
     go ::
       (() -> Term s (PInteger :--> list a :--> PInteger)) ->
@@ -23,7 +23,7 @@ unrollLengthBoundNoPreCompute = punrollBound 20 (const $ plam $ \_ _ -> -1) go (
     go self () = plam $ \n -> pelimList (\_ xs -> self () # (n + 1) # xs) n
 
 unrollLengthBound :: forall list a s. PIsListLike list a => Term s (list a :--> PInteger)
-unrollLengthBound = punrollBound 20 (const $ plam $ const -1) go 0
+unrollLengthBound = punrollBound' 20 (const $ plam $ const -1) go 0
   where
     go ::
       (Integer -> Term s (list a :--> PInteger)) ->
@@ -32,7 +32,7 @@ unrollLengthBound = punrollBound 20 (const $ plam $ const -1) go 0
     go self n = plam $ pelimList (\_ xs -> self (n + 1) # xs) (pconstant n)
 
 unrollLengthBoundFailing :: forall list a s. PIsListLike list a => Term s (list a :--> PInteger)
-unrollLengthBoundFailing = punrollBound 20 (const perror) go 0
+unrollLengthBoundFailing = punrollBound' 20 (const perror) go 0
   where
     go ::
       (Integer -> Term s (list a :--> PInteger)) ->
@@ -64,18 +64,18 @@ unrollBenches =
       "Unrolled 20 times, running 5 recursions"
       [ bench "length, punrollUnbound" (unrollLengthUnbound # shortList)
       , bench "length, punrollUnboundWhole" (unrollLengthUnboundWhole # shortList)
-      , bench "length, punrollBound" (unrollLengthBound # shortList)
+      , bench "length, punrollBound'" (unrollLengthBound # shortList)
       , bench "length, no unroll" (regularLength # shortList)
       ]
   , testGroup
       "Unrolled 20 times, running 40 recursions"
       [ bench "length, punrollUnbound" (unrollLengthUnbound # longList)
       , bench "length, punrollUnboundWhole" (unrollLengthUnboundWhole # longList)
-      , bench "length, punrollBound" (unrollLengthBound # longList)
+      , bench "length, punrollBound'" (unrollLengthBound # longList)
       , bench "length, no unroll" (regularLength # longList)
       ]
   , testGroup
-      "punrollBound pre-computation"
+      "punrollBound' pre-computation"
       [ bench "precompute constant values" (unrollLengthBound # longList)
       , bench "no precompute constant values" (unrollLengthBoundNoPreCompute # longList)
       ]
@@ -92,7 +92,7 @@ tests =
             "applied short list"
             [ goldenEval "punrollUnbound" (unrollLengthUnbound # shortList)
             , goldenEval "punrollUnboundWhole" (unrollLengthUnboundWhole # shortList)
-            , goldenEval "punrollBound" (unrollLengthBound # shortList)
+            , goldenEval "punrollBound'" (unrollLengthBound # shortList)
             , goldenEval "punrollBoundFailing" (unrollLengthBoundFailing # shortList)
             , goldenEval "no unroll" (regularLength # shortList)
             ]
@@ -100,14 +100,14 @@ tests =
             "applied long list"
             [ goldenEval "punrollUnbound" (unrollLengthUnbound # longList)
             , goldenEval "punrollUnboundWhole" (unrollLengthUnboundWhole # longList)
-            , goldenEval "punrollBound" (unrollLengthBound # longList)
+            , goldenEval "punrollBound'" (unrollLengthBound # longList)
             , goldenEval "no unroll" (regularLength # longList)
             ]
         , goldenGroup
             "unapplied"
             [ goldenEval "punrollUnbound" (unrollLengthUnbound @PBuiltinList @PInteger)
             , goldenEval "punrollUnboundWhole" (unrollLengthUnboundWhole @PBuiltinList @PInteger)
-            , goldenEval "punrollBound" (unrollLengthBound @PBuiltinList @PInteger)
+            , goldenEval "punrollBound'" (unrollLengthBound @PBuiltinList @PInteger)
             , goldenEval "punrollBoundFailing" (unrollLengthBoundFailing @PBuiltinList @PInteger)
             , goldenEval "no unroll" (regularLength @PBuiltinList @PInteger)
             ]
@@ -116,7 +116,7 @@ tests =
         "unrolled length short"
         [ testEvalEqual "punrollUnbound" (unrollLengthUnbound # shortList) (plength # shortList)
         , testEvalEqual "punrollUnboundWhole" (unrollLengthUnboundWhole # shortList) (plength # shortList)
-        , testEvalEqual "punrollBound" (unrollLengthBound # shortList) (plength # shortList)
+        , testEvalEqual "punrollBound'" (unrollLengthBound # shortList) (plength # shortList)
         , testEvalEqual "punrollBoundFailing" (unrollLengthBoundFailing # shortList) (plength # shortList)
         , testEvalEqual "no unroll" (regularLength # shortList) (plength # shortList)
         ]
@@ -124,7 +124,7 @@ tests =
         "unrolled length long"
         [ testEvalEqual "punrollUnbound" (unrollLengthUnbound # longList) (plength # longList)
         , testEvalEqual "punrollUnboundWhole" (unrollLengthUnboundWhole # longList) (plength # longList)
-        , testEvalEqual "punrollBound" (unrollLengthBound # longList) (-1)
+        , testEvalEqual "punrollBound'" (unrollLengthBound # longList) (-1)
         , testEvalFail "punrollBoundFailing" (unrollLengthBoundFailing # longList)
         , testEvalEqual "no unroll" (regularLength # longList) (plength # longList)
         ]
