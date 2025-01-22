@@ -4,7 +4,7 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Repr.Newtype (
-  DeriveAsNewtype (DeriveAsNewtype, unDeriveAsNewtype),
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType, unDeriveNewtypePlutusType),
 ) where
 
 import Data.Kind (Type)
@@ -30,8 +30,8 @@ import Plutarch.Internal.PlutusType (
 import Plutarch.Internal.Term (S, Term)
 
 -- | @since WIP
-newtype DeriveAsNewtype (a :: S -> Type) s = DeriveAsNewtype
-  { unDeriveAsNewtype :: a s
+newtype DeriveNewtypePlutusType (a :: S -> Type) s = DeriveNewtypePlutusType
+  { unDeriveNewtypePlutusType :: a s
   -- ^ @since WIP
   }
 
@@ -48,19 +48,19 @@ instance
   ( pt ~ UnTermSingle (Head (Head (Code (a Any))))
   , forall s. H s a pt
   ) =>
-  PlutusType (DeriveAsNewtype a)
+  PlutusType (DeriveNewtypePlutusType a)
   where
-  type PInner (DeriveAsNewtype a) = UnTermSingle (Head (Head (Code (a Any))))
-  type PCovariant' (DeriveAsNewtype a) = PCovariant' a
-  type PContravariant' (DeriveAsNewtype a) = PContravariant' a
-  type PVariant' (DeriveAsNewtype a) = PVariant' a
+  type PInner (DeriveNewtypePlutusType a) = UnTermSingle (Head (Head (Code (a Any))))
+  type PCovariant' (DeriveNewtypePlutusType a) = PCovariant' a
+  type PContravariant' (DeriveNewtypePlutusType a) = PContravariant' a
+  type PVariant' (DeriveNewtypePlutusType a) = PVariant' a
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
-  pcon' :: forall s. DeriveAsNewtype a s -> Term s (PInner (DeriveAsNewtype a))
-  pcon' (DeriveAsNewtype x) =
+  pcon' :: forall s. DeriveNewtypePlutusType a s -> Term s (PInner (DeriveNewtypePlutusType a))
+  pcon' (DeriveNewtypePlutusType x) =
     case SOP.unZ $ SOP.unSOP (SOP.from x :: SOP I '[ '[Term s pt]]) of
       (I x) :* Nil -> x :: Term s pt
 
-  pmatch' :: forall s b. Term s (PInner (DeriveAsNewtype a)) -> (DeriveAsNewtype a s -> Term s b) -> Term s b
+  pmatch' :: forall s b. Term s (PInner (DeriveNewtypePlutusType a)) -> (DeriveNewtypePlutusType a s -> Term s b) -> Term s b
   pmatch' x f =
-    f (DeriveAsNewtype $ SOP.to ((SOP $ Z $ I x :* Nil) :: SOP I '[ '[Term s pt]]))
+    f (DeriveNewtypePlutusType $ SOP.to ((SOP $ Z $ I x :* Nil) :: SOP I '[ '[Term s pt]]))

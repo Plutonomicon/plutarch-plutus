@@ -48,6 +48,7 @@ import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Word (Word8)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
@@ -67,8 +68,7 @@ import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
 import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
-import Plutarch.Internal.PlutusType (DPTStrat, DerivePlutusType, PlutusType (PInner))
+import Plutarch.Internal.PlutusType (DeriveFakePlutusType (DeriveFakePlutusType), PlutusType (PInner))
 import Plutarch.Internal.Subtype (PSubtype)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -273,18 +273,13 @@ of an encoding).
 -}
 newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveBuiltinPLiftable (a s)
-  deriving stock
-    ( -- | @since WIP
-      Generic
-    )
-  deriving anyclass
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving
     ( -- | @since WIP
       PlutusType
     )
-
--- | @since WIP
-instance DerivePlutusType (DeriveBuiltinPLiftable a h) where
-  type DPTStrat _ = PlutusTypeNewtype
+    via (DeriveFakePlutusType (DeriveBuiltinPLiftable a h))
 
 -- | @since WIP
 instance
@@ -312,18 +307,13 @@ the Plutus default universe.
 -}
 newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveDataPLiftable (a s)
-  deriving stock
-    ( -- | @since WIP
-      Generic
-    )
-  deriving anyclass
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving
     ( -- | @since WIP
       PlutusType
     )
-
--- | @since WIP
-instance DerivePlutusType (DeriveDataPLiftable a h) where
-  type DPTStrat _ = PlutusTypeNewtype
+    via (DeriveFakePlutusType (DeriveDataPLiftable a h))
 
 -- | @since WIP
 instance
@@ -352,18 +342,13 @@ instance
 -}
 newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
   = DeriveNewtypePLiftable (wrapper s)
-  deriving stock
-    ( -- | @since WIP
-      Generic
-    )
-  deriving anyclass
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving
     ( -- | @since WIP
       PlutusType
     )
-
--- | @since WIP
-instance DerivePlutusType (DeriveNewtypePLiftable w h) where
-  type DPTStrat _ = PlutusTypeNewtype
+    via (DeriveFakePlutusType (DeriveNewtypePLiftable wrapper h))
 
 -- | @since WIP
 instance

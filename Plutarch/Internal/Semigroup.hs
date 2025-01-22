@@ -16,6 +16,7 @@ import Data.ByteString qualified as BS
 import Data.Kind (Type)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
@@ -47,7 +48,6 @@ import Plutarch.Internal.Lift (
   PLifted (PLifted),
   PlutusRepr,
  )
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Numeric (
   PNatural,
   PPositive,
@@ -62,7 +62,7 @@ import Plutarch.Internal.Numeric (
  )
 import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PlutusType (DerivePlutusType (DPTStrat), PlutusType (PInner), pcon)
+import Plutarch.Internal.PlutusType (PlutusType (PInner), pcon)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -72,6 +72,7 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 import Universe (Includes)
@@ -228,16 +229,17 @@ newtype PAnd (a :: S -> Type) (s :: S)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
       POrd
     )
-
--- | @since WIP
-instance DerivePlutusType (PAnd a) where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PAnd a))
 
 -- | @since WIP
 deriving via
@@ -289,16 +291,17 @@ newtype POr (a :: S -> Type) (s :: S)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
       POrd
     )
-
--- | @since WIP
-instance DerivePlutusType (POr a) where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (POr a))
 
 -- | @since WIP
 deriving via
@@ -350,16 +353,17 @@ newtype PXor (a :: S -> Type) (s :: S)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
       POrd
     )
-
--- | @since WIP
-instance DerivePlutusType (PXor a) where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PXor a))
 
 -- | @since WIP
 deriving via
