@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Internal.Semigroup (
   -- * Type classes
@@ -15,6 +16,7 @@ import Data.ByteString qualified as BS
 import Data.Kind (Type)
 import Data.Text qualified as Text
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
@@ -40,7 +42,12 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit, punit)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Lift (
+  DeriveNewtypePLiftable,
+  PLiftable (AsHaskell),
+  PLifted (PLifted),
+  PlutusRepr,
+ )
 import Plutarch.Internal.Numeric (
   PNatural,
   PPositive,
@@ -55,7 +62,7 @@ import Plutarch.Internal.Numeric (
  )
 import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
-import Plutarch.Internal.PlutusType (DerivePlutusType (DPTStrat), PlutusType (PInner), pcon)
+import Plutarch.Internal.PlutusType (PlutusType (PInner), pcon)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -65,8 +72,10 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
+import Universe (Includes)
 
 {- | = Laws
 
@@ -220,16 +229,23 @@ newtype PAnd (a :: S -> Type) (s :: S)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
       POrd
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PAnd a))
 
 -- | @since WIP
-instance DerivePlutusType (PAnd a) where
-  type DPTStrat _ = PlutusTypeNewtype
+deriving via
+  DeriveNewtypePLiftable (PAnd a) (AsHaskell a)
+  instance
+    (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (PAnd a)
 
 -- | @since WIP
 instance PSemigroup (PAnd PBool) where
@@ -275,16 +291,23 @@ newtype POr (a :: S -> Type) (s :: S)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
       POrd
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (POr a))
 
 -- | @since WIP
-instance DerivePlutusType (POr a) where
-  type DPTStrat _ = PlutusTypeNewtype
+deriving via
+  DeriveNewtypePLiftable (POr a) (AsHaskell a)
+  instance
+    (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (POr a)
 
 -- | @since WIP
 instance PSemigroup (POr PBool) where
@@ -330,16 +353,23 @@ newtype PXor (a :: S -> Type) (s :: S)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
       POrd
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PXor a))
 
 -- | @since WIP
-instance DerivePlutusType (PXor a) where
-  type DPTStrat _ = PlutusTypeNewtype
+deriving via
+  DeriveNewtypePLiftable (PXor a) (AsHaskell a)
+  instance
+    (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (PXor a)
 
 -- | @since WIP
 instance PSemigroup (PXor PBool) where
@@ -371,6 +401,11 @@ instance PSemigroup (PXor PByteString) where
   -- argument (if the exponent is odd) or the empty 'PByteString' (if it isn't).
   {-# INLINEABLE pstimes #-}
   pstimes = pxortimes mempty
+
+-- | @since WIP
+instance PMonoid (PXor PByteString) where
+  {-# INLINEABLE pmempty #-}
+  pmempty = pcon . PXor $ mempty
 
 -- Helpers
 

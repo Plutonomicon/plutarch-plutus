@@ -112,8 +112,8 @@ module Plutarch.Prelude (
   DeriveDataPLiftable,
   DeriveNewtypePLiftable,
   PLifted (..),
-  fromPlutarchUni,
-  toPlutarchUni,
+  reprToPlutUni,
+  plutToReprUni,
   pconstant,
   plift,
 
@@ -254,9 +254,18 @@ module Plutarch.Prelude (
   ptraceInfoShowId,
   ptraceShowId,
 
-  -- * Semigroup and monoid
+  -- * Semigroup and Monoid
   PSemigroup (..),
   PMonoid (..),
+  PAnd (..),
+  POr (..),
+  PXor (..),
+
+  -- * Unrolling utilities
+  punrollBound,
+  punrollBound',
+  punrollUnbound,
+  punrollUnboundWhole,
 ) where
 
 import Plutarch.Builtin
@@ -294,4 +303,5 @@ import Plutarch.Pair
 import Plutarch.Rational
 import Plutarch.TermCont
 import Plutarch.Trace
+import Plutarch.Unroll
 import Prelude ()

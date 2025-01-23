@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.BitString (
   -- * Type
   PBitString (..),
@@ -12,19 +14,24 @@ module Plutarch.BitString (
   pfindFirstSetBit',
 ) where
 
+import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (PBuiltinList)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
+import Plutarch.Internal.Lift (
+  DeriveNewtypePLiftable,
+  PLiftable,
+  PLifted (PLifted),
+ )
 import Plutarch.Internal.Numeric (pzero)
 import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
   PlutusType,
   pcon,
  )
@@ -39,6 +46,7 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import PlutusCore qualified as PLC
 
 {- | A wrapper around 'PByteString' for CIP-122 and CIP-123 bitwise operations.
@@ -59,7 +67,7 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PEq
     , -- | @since WIP
@@ -69,10 +77,17 @@ newtype PBitString (s :: S) = PBitString (Term s PByteString)
     , -- | @since WIP
       PMonoid
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PBitString)
 
 -- | @since WIP
-instance DerivePlutusType PBitString where
-  type DPTStrat _ = PlutusTypeNewtype
+deriving via
+  DeriveNewtypePLiftable PBitString ByteString
+  instance
+    PLiftable PBitString
 
 {- | Bit access operation, as defined in [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#readbit).
 

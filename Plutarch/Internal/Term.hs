@@ -337,7 +337,7 @@ newtype Config = Config (Last (LogLevel, TracingMode))
 instance Pretty Config where
   pretty (Config (Last x)) = case x of
     Nothing -> "NoTracing"
-    Just (ll, tm) -> "Tracing " <+> pretty ll <+> pretty tm
+    Just (ll, tm) -> "Tracing" <+> pretty ll <+> pretty tm
 
 -- | @since 1.6.0
 instance ToJSON Config where

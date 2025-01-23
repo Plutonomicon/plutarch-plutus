@@ -17,6 +17,8 @@ module Plutarch.Internal.Numeric (
   PIntegralDomain (..),
 
   -- * Functions
+  positiveToInteger,
+  toPositiveAbs,
   ptryPositive,
   ppositive,
   ptryNatural,
@@ -33,6 +35,7 @@ module Plutarch.Internal.Numeric (
 import Data.Coerce (coerce)
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Numeric.Natural (Natural)
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
@@ -65,23 +68,23 @@ import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (
   DeriveNewtypePLiftable,
+  LiftError (OtherLiftError),
   PLiftable (
     AsHaskell,
     PlutusRepr,
-    fromPlutarch,
-    fromPlutarchRepr,
-    toPlutarch,
-    toPlutarchRepr
+    haskToRepr,
+    plutToRepr,
+    reprToHask,
+    reprToPlut
   ),
   PLifted (PLifted),
   punsafeCoercePLifted,
  )
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd ((#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   PlutusType (PInner),
   pcon,
  )
@@ -118,7 +121,7 @@ newtype PPositive (s :: S) = PPositive (Term s PInteger)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PIsData
     , -- | @since WIP
@@ -126,14 +129,15 @@ newtype PPositive (s :: S) = PPositive (Term s PInteger)
     , -- | @since WIP
       POrd
     )
-
--- | @since WIP
-instance DerivePlutusType PPositive where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PPositive)
 
 -- | @since WIP
 deriving via
-  DeriveNewtypePLiftable PPositive PInteger Positive
+  DeriveNewtypePLiftable PPositive Positive
   instance
     PLiftable PPositive
 
@@ -165,6 +169,21 @@ instance Function Positive where
   {-# INLINEABLE function #-}
   function = functionMap @Integer coerce coerce
 
+{- | Converts negative 'Integer's into their absolute values, positive
+'Integer's into their 'Positive' equivalents. Errors on 0.
+
+@since WIP
+-}
+toPositiveAbs :: Integer -> Positive
+toPositiveAbs i = UnsafeMkPositive $ case signum i of
+  (-1) -> abs i
+  0 -> error "toPositiveAbs: called with zero"
+  _ -> i
+
+-- | @since WIP
+positiveToInteger :: Positive -> Integer
+positiveToInteger = getPositive
+
 -- | @since WIP
 newtype PNatural (s :: S) = PNatural (Term s PInteger)
   deriving stock
@@ -173,7 +192,7 @@ newtype PNatural (s :: S) = PNatural (Term s PInteger)
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PIsData
     , -- | @since WIP
@@ -181,26 +200,26 @@ newtype PNatural (s :: S) = PNatural (Term s PInteger)
     , -- | @since WIP
       POrd
     )
-
--- | @since WIP
-instance DerivePlutusType PNatural where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via DeriveNewtypePlutusType PNatural
 
 -- | @since WIP
 instance PLiftable PNatural where
   type AsHaskell PNatural = Natural
   type PlutusRepr PNatural = Integer
-  {-# INLINEABLE toPlutarchRepr #-}
-  toPlutarchRepr = fromIntegral
-  {-# INLINEABLE toPlutarch #-}
-  toPlutarch = punsafeCoercePLifted . toPlutarch @PInteger . fromIntegral
-  {-# INLINEABLE fromPlutarchRepr #-}
-  fromPlutarchRepr x =
-    if x < 0
-      then Nothing
-      else Just . fromIntegral $ x
-  {-# INLINEABLE fromPlutarch #-}
-  fromPlutarch t = fromIntegral <$> fromPlutarch @PInteger (punsafeCoercePLifted t)
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = fromIntegral
+  {-# INLINEABLE reprToHask #-}
+  reprToHask i = case signum i of
+    (-1) -> Left $ OtherLiftError "Negative input"
+    _ -> Right . fromIntegral $ i
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = punsafeCoercePLifted . reprToPlut @PInteger . fromIntegral
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr t = plutToRepr @PInteger (punsafeCoercePLifted t)
 
 {- | The addition operation, and the notion of scaling by a positive.
 
