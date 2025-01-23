@@ -36,40 +36,35 @@ module Plutarch.LedgerApi.Interval (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import GHC.Records (getField)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude hiding (psingleton, pto)
+import Plutarch.Repr.Data
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0
-newtype PInterval (a :: S -> Type) (s :: S)
-  = PInterval
-      ( Term
-          s
-          ( PDataRecord
-              '[ "from" ':= PLowerBound a
-               , "to" ':= PUpperBound a
-               ]
-          )
-      )
+data PInterval (a :: S -> Type) (s :: S) = PInterval
+  { pinteral'from :: Term s (PLowerBound a)
+  , pinteral'to :: Term s (PLowerBound a)
+  }
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
-    , -- | @since 2.0.0
-      PDataFields
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType (PInterval a) where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since 2.0.0
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PInterval a))
 
 -- | @since WIP
 deriving via

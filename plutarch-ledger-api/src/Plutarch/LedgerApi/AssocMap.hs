@@ -82,6 +82,7 @@ import Data.Foldable (foldl')
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
@@ -113,14 +114,15 @@ newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: 
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
       PShow
+    , -- | @since 2.0.0
+      SOP.Generic
     )
-
--- | @since 2.0.0
-instance DerivePlutusType (PMap keysort k v) where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PMap keysort k v))
 
 -- | @since WIP
 instance
