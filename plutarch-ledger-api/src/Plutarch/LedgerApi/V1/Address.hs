@@ -39,8 +39,6 @@ newtype PAddress (s :: S)
       POrd
     , -- | @since 2.0.0
       PShow
-    , -- | @since 2.0.0
-      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -52,6 +50,3 @@ deriving via
   DeriveDataPLiftable PAddress Plutus.Address
   instance
     PLiftable PAddress
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PAddress)

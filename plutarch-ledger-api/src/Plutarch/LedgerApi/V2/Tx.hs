@@ -35,8 +35,6 @@ data POutputDatum (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -48,9 +46,6 @@ deriving via
   DeriveDataPLiftable POutputDatum Plutus.OutputDatum
   instance
     PLiftable POutputDatum
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData POutputDatum)
 
 -- | @since 2.0.0
 newtype PTxOut (s :: S)
@@ -80,8 +75,6 @@ newtype PTxOut (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
 
 -- | @since 2.0.0
@@ -93,6 +86,3 @@ deriving via
   DeriveDataPLiftable PTxOut Plutus.TxOut
   instance
     PLiftable PTxOut
-
--- | @since 3.1.0
-instance PTryFrom PData (PAsData PTxOut)

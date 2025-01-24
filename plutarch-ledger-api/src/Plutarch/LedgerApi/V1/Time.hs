@@ -10,12 +10,8 @@ module Plutarch.LedgerApi.V1.Time (
   unPPosixTime,
 ) where
 
-import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
-import Plutarch.Reducible (Reduce)
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
@@ -85,32 +81,6 @@ deriving via
   DeriveDataPLiftable PPosixTime Plutus.POSIXTime
   instance
     PLiftable PPosixTime
-
--- | @since 3.1.0
-instance PTryFrom PData PPosixTime where
-  type PTryFromExcess PData PPosixTime = Mret PPosixTime
-  ptryFrom' ::
-    forall (s :: S) (r :: S -> Type).
-    Term s PData ->
-    ((Term s PPosixTime, Reduce (PTryFromExcess PData PPosixTime s)) -> Term s r) ->
-    Term s r
-  ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
-      tcont $ ptryFrom @(PAsData PInteger) opq
-    pure (punsafeCoerce wrapped, pposixTime unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PPosixTime) where
-  type PTryFromExcess PData (PAsData PPosixTime) = Mret PPosixTime
-  ptryFrom' ::
-    forall (s :: S) (r :: S -> Type).
-    Term s PData ->
-    ((Term s (PAsData PPosixTime), Reduce (PTryFromExcess PData (PAsData PPosixTime) s)) -> Term s r) ->
-    Term s r
-  ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
-      tcont $ ptryFrom @(PAsData PInteger) opq
-    pure (punsafeCoerce wrapped, pposixTime unwrapped)
 
 {- | Construct a 'PPosixTime' from a 'PInteger'. Same as using the constructor,
 but a lot shorter.
