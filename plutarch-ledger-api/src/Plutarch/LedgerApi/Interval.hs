@@ -44,7 +44,7 @@ import PlutusLedgerApi.V3 qualified as Plutus
 -- | @since 2.0.0
 data PInterval (a :: S -> Type) (s :: S) = PInterval
   { pinteral'from :: Term s (PLowerBound a)
-  , pinteral'to :: Term s (PLowerBound a)
+  , pinteral'to :: Term s (PUpperBound a)
   }
   deriving stock
     ( -- | @since 2.0.0
@@ -71,12 +71,6 @@ deriving via
   DeriveDataPLiftable (PInterval a) (Plutus.Interval (AsHaskell a))
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PInterval a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PInterval a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PInterval a))
 
 -- | @since 2.0.0
 newtype PLowerBound (a :: S -> Type) (s :: S)
@@ -245,9 +239,7 @@ pisEmpty ::
   (PIsData a, PEnumerable a) =>
   Term s (PInterval a :--> PBool)
 pisEmpty = phoistAcyclic $ plam $ \i -> unTermCont $ do
-  unpacked <- tcont $ pletFields @'["from", "to"] i
-  let lowerBound = getField @"from" unpacked
-  let upperBound = getField @"to" unpacked
+  PInterval lowerBound upperBound <- pmatchC i
   let inclusiveLowerBound = pinclusiveLowerBound # lowerBound
   let inclusiveUpperBound = pinclusiveUpperBound # upperBound
   pure $ inclusiveLowerBound #> inclusiveUpperBound
@@ -318,12 +310,8 @@ pcontains ::
         :--> PBool
     )
 pcontains = phoistAcyclic $ plam $ \i1 i2 -> unTermCont $ do
-  unpackedI1 <- tcont $ pletFields @'["from", "to"] i1
-  unpackedI2 <- tcont $ pletFields @'["from", "to"] i2
-  let l1 = pfromData $ getField @"from" unpackedI1
-  let l2 = getField @"from" unpackedI2
-  let u1 = pfromData $ getField @"to" unpackedI1
-  let u2 = getField @"to" unpackedI2
+  PInterval l1 u1 <- pmatchC i1
+  PInterval l2 u2 <- pmatchC i2
   -- Note: This manually inlines `pisEmpty` to avoid redundant unpacking.
   let ilb2 = pinclusiveLowerBound # l2
   let iub2 = pinclusiveUpperBound # u2
@@ -411,15 +399,11 @@ phull ::
     )
 phull = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["from", "to"] x'
-    y <- tcont $ pletFields @'["from", "to"] y'
-    let lowerX = getField @"from" x
-    let upperX = getField @"to" x
-    let lowerY = getField @"from" y
-    let upperY = getField @"to" y
+    PInterval lowerX upperX <- pmatchC x'
+    PInterval lowerY upperY <- pmatchC y'
     let lower = minLower # lowerX # lowerY
     let upper = maxUpper # upperX # upperY
-    pure $ pinterval' # pdata lower # pdata upper
+    pure $ pinterval' # lower # upper
 
 {- | @'pintersection' i1 i2@ gives the largest interval that is contained in
 both @i1@ and @i2@.
@@ -437,15 +421,11 @@ pintersection ::
     )
 pintersection = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["from", "to"] x'
-    y <- tcont $ pletFields @'["from", "to"] y'
-    let lowerX = getField @"from" x
-    let upperX = getField @"to" x
-    let lowerY = getField @"from" y
-    let upperY = getField @"to" y
+    PInterval lowerX upperX <- pmatchC x'
+    PInterval lowerY upperY <- pmatchC y'
     let lower = maxLower # lowerX # lowerY
     let upper = minUpper # upperX # upperY
-    pure $ pinterval' # pdata lower # pdata upper
+    pure $ pinterval' # lower # upper
 
 {- | @'before' x i@ is true if @x@ is earlier than the start of @i@.
 
@@ -462,8 +442,7 @@ pbefore ::
     )
 pbefore = phoistAcyclic $
   plam $ \a y ->
-    let lower = pfield @"from" # y
-     in pbefore' # a # (lToE # lower)
+    pmatch y $ \(PInterval lower _) -> pbefore' # a # (lToE # lower)
 
 {- | @'after' x u@ is true if @x@ is later than the end of @i@.
 
@@ -480,8 +459,8 @@ pafter ::
     )
 pafter = phoistAcyclic $
   plam $ \a y ->
-    let upper = pfield @"to" # y
-     in pafter' # a # (uToE # upper)
+    pmatch y $ \(PInterval _ upper) ->
+      pafter' # a # (uToE # upper)
 
 {- | @'pinterval' x y@ creates the interval @[x, y]@.
 
@@ -531,26 +510,21 @@ pclosedInterval = phoistAcyclic $
                 #$ pdcons @"_1"
                 # closure
                 # pdnil
-     in pinterval' # pdata lower # pdata upper
+     in pinterval' # lower # upper
 
 --  interval from upper and lower
 pinterval' ::
   forall (a :: S -> Type) (s :: S).
   Term
     s
-    ( PAsData (PLowerBound a)
-        :--> PAsData (PUpperBound a)
+    ( PLowerBound a
+        :--> PUpperBound a
         :--> PInterval a
     )
 pinterval' = phoistAcyclic $
   plam $ \lower upper ->
     pcon $
-      PInterval $
-        pdcons @"from"
-          # lower
-          #$ pdcons @"to"
-          # upper
-          # pdnil
+      PInterval lower upper
 
 ltE' ::
   forall (a :: S -> Type) (s :: S).
