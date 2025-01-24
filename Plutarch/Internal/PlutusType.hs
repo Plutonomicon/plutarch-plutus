@@ -316,13 +316,8 @@ instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList 
         # pdelay (f PNil)
         # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
 
-type family IfSameThenData (a :: S -> Type) (b :: S -> Type) :: S -> Type where
-  IfSameThenData a a = PData
-  IfSameThenData _ POpaque = PData
-  IfSameThenData _ b = PAsData b
-
 instance PIsData a => PlutusType (PAsData a) where
-  type PInner (PAsData a) = IfSameThenData a (PInner a)
+  type PInner (PAsData a) = PData
   type PCovariant' (PAsData a) = PCovariant' a
   type PContravariant' (PAsData a) = PContravariant' a
   type PVariant' (PAsData a) = PVariant' a

@@ -1,16 +1,20 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Repr.Data (
+  PInnerIsData,
   PDataStruct (PDataStruct, unPDataStruct),
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
+  PInnest,
 ) where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
+import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
 import Generics.SOP (
   All,
   All2,
@@ -34,7 +38,7 @@ import Plutarch.Builtin.Data (
   psndBuiltin,
  )
 import Plutarch.Internal.Eq (PEq, (#==))
-import Plutarch.Internal.IsData (PIsData, pdata, pforgetData, pfromData)
+import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
@@ -64,6 +68,41 @@ import Plutarch.Repr.Internal (
  )
 import Plutarch.TermCont (pletC, unTermCont)
 
+-- TODO: move this to Plutarch.Internal
+type family PInnest' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
+  PInnest' a a = a
+  PInnest' a _b = PInnest' (PInner a) a
+
+type PInnest a = PInnest' (PInner a) a
+
+type family PNormalIsData' a b :: Constraint where
+  PNormalIsData' _ PData = ()
+  PNormalIsData' a b =
+    TypeError
+      ( 'Text "Data representation can only hold types whose inner most representation is PData"
+          ':$$: 'Text "Inner most representation of "
+            ':<>: 'ShowType a
+            ':<>: 'Text " is "
+            ':<>: 'ShowType b
+            ':<>: 'Text ", which is not PData"
+      )
+      ~ ()
+
+class (PNormalIsData' a (PInnest a), PInnest a ~ PData) => PNormalIsData a
+instance (PNormalIsData' a (PInnest a), PInnest a ~ PData) => PNormalIsData a
+
+-- TODO: refactor this
+type family PInnerIsData' (a :: S -> Type) (b :: S -> Type) :: Constraint where
+  PInnerIsData' PData _ = ()
+  PInnerIsData' a a =
+    TypeError
+      ('ShowType a ':<>: 'Text " does not reduce into PData ")
+      ~ ()
+  PInnerIsData' a _b = PInnerIsData' (PInner a) a
+
+class PInnerIsData' a (PInner a) => PInnerIsData a
+instance PInnerIsData' a (PInner a) => PInnerIsData a
+
 -- | @since WIP
 newtype PDataStruct (struct :: [[S -> Type]]) (s :: S) = PDataStruct {unPDataStruct :: PStruct struct s}
 
@@ -71,7 +110,7 @@ newtype PDataStruct (struct :: [[S -> Type]]) (s :: S) = PDataStruct {unPDataStr
 newtype PDataRec (struct :: [S -> Type]) (s :: S) = PDataRec {unPDataRec :: PRec struct s}
 
 -- | @since WIP
-instance (SListI2 struct, All2 PIsData struct) => PlutusType (PDataStruct struct) where
+instance (SListI2 struct, All2 PNormalIsData struct) => PlutusType (PDataStruct struct) where
   type PInner (PDataStruct struct) = PData
   type PCovariant' (PDataStruct struct) = All2 PCovariant'' struct
   type PContravariant' (PDataStruct struct) = All2 PContravariant'' struct
@@ -80,7 +119,7 @@ instance (SListI2 struct, All2 PIsData struct) => PlutusType (PDataStruct struct
   pmatch' x f = pmatchDataStruct (punsafeCoerce x) (f . PDataStruct)
 
 -- | @since WIP
-instance (SListI struct, All PIsData struct) => PlutusType (PDataRec struct) where
+instance (SListI struct, All PNormalIsData struct) => PlutusType (PDataRec struct) where
   type PInner (PDataRec struct) = PBuiltinList PData
   type PCovariant' (PDataRec struct) = All PCovariant'' struct
   type PContravariant' (PDataRec struct) = All PContravariant'' struct
@@ -111,7 +150,7 @@ instance
   ( SOP.Generic (a Any)
   , '[struct'] ~ Code (a Any)
   , struct ~ UnTermRec struct'
-  , All PIsData struct
+  , All PNormalIsData struct
   , SListI struct
   , forall s. StructSameRepr s a '[struct]
   , RecTypePrettyError (Code (a Any))
@@ -135,7 +174,7 @@ instance
   forall (a :: S -> Type) (struct :: [[S -> Type]]).
   ( SOP.Generic (a Any)
   , struct ~ UnTermStruct (a Any)
-  , All2 PIsData struct
+  , All2 PNormalIsData struct
   , SListI2 struct
   , forall s. StructSameRepr s a struct
   ) =>
@@ -162,48 +201,49 @@ instance
 
 pconDataRec ::
   forall (struct :: [S -> Type]) (s :: S).
-  All PIsData struct =>
+  All PNormalIsData struct =>
   PRec struct s ->
   Term s (PDataRec struct)
 pconDataRec (PRec xs) =
   let
-    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PIsData) (K . pforgetData . pdata) xs
+    collapesdData :: [Term s PData]
+    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PNormalIsData) (K . punsafeCoerce) xs
     builtinList = foldr (\x xs -> pconsBuiltin # x # xs) (pconstant []) collapesdData
    in
     punsafeCoerce builtinList
 
 pconDataStruct ::
   forall (struct :: [[S -> Type]]) (s :: S).
-  (SListI2 struct, All2 PIsData struct) =>
+  (SListI2 struct, All2 PNormalIsData struct) =>
   PStruct struct s ->
   Term s (PDataStruct struct)
 pconDataStruct (PStruct xs) =
   let
-    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PIsData) (K . pforgetData . pdata) xs
+    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PNormalIsData) (K . punsafeCoerce) xs
     builtinList = foldr (\x xs -> pconsBuiltin # x # xs) (pconstant []) collapesdData
     idx = pconstant $ toInteger $ SOP.hindex xs
    in
-    punsafeCoerce $ pforgetData $ pconstrBuiltin # idx #$ builtinList
+    punsafeCoerce $ pconstrBuiltin # idx #$ builtinList
 
 newtype H s struct = H {unH :: forall r. Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r}
 
 pmatchDataRec ::
   forall (struct :: [S -> Type]) b s.
-  All PIsData struct =>
+  All PNormalIsData struct =>
   Term s (PDataRec struct) ->
   (PRec struct s -> Term s b) ->
   Term s b
 pmatchDataRec (punsafeCoerce -> x) f =
   let
-    go :: forall y ys. PIsData y => H s ys -> H s (y ': ys)
+    go :: forall y ys. H s ys -> H s (y ': ys)
     go (H rest) = H $ \ds cps ->
       let
         tail = ptail # ds
-        parsed = pfromData @y $ punsafeCoerce $ phead # ds
+        parsed = punsafeCoerce $ phead # ds
        in
         rest tail $ \(PRec rest') ->
           cps $ PRec $ parsed :* rest'
-    record = unH $ SOP.cpara_SList (Proxy @PIsData) (H $ \_ cps -> cps $ PRec Nil) go
+    record = unH $ SOP.para_SList (H $ \_ cps -> cps $ PRec Nil) go
    in
     plet x (`record` f)
 
@@ -217,7 +257,7 @@ newtype StructureHandler s r struct = StructureHandler
 -- This is probably general enough to be used for non-Data encoded types
 pmatchDataStruct ::
   forall (struct :: [[S -> Type]]) b s.
-  All2 PIsData struct =>
+  All2 PNormalIsData struct =>
   Term s (PDataStruct struct) ->
   (PStruct struct s -> Term s b) ->
   Term s b
@@ -227,7 +267,7 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
   ds <- pletC $ psndBuiltin # x'
 
   let
-    go :: forall y ys. All PIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
+    go :: forall y ys. All PNormalIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
     go (StructureHandler rest) = StructureHandler $ \i cps ->
       let
         dataRecAsBuiltinList :: Term s (PBuiltinList PData) -> Term s (PDataRec y)
@@ -241,7 +281,7 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
     -- This builds "handlers"--that is each cases of SOP data
     -- By building this we can figure out which cases share same computation, hence which branches to group
     handlers' :: StructureHandler s b struct
-    handlers' = SOP.cpara_SList (Proxy @(All PIsData)) (StructureHandler $ \_ _ -> Nil) go
+    handlers' = SOP.cpara_SList (Proxy @(All PNormalIsData)) (StructureHandler $ \_ _ -> Nil) go
 
     handlers :: [(Integer, Term s b)]
     handlers = SOP.hcollapse $ unSBR handlers' 0 f
