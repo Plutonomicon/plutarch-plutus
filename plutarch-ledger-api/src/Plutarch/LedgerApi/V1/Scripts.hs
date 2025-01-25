@@ -9,19 +9,22 @@ module Plutarch.LedgerApi.V1.Scripts (
   PRedeemerHash (..),
 ) where
 
+import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusTx.Builtins.Internal qualified as PlutusTx
 
 -- | @since 2.0.0
-newtype PScriptHash (s :: S) = PScriptHash (Term s (PDataNewtype PByteString))
+newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -31,16 +34,24 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s (PDataNewtype PByteString))
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType PScriptHash where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PScriptHash)
 
 -- | @since WIP
-deriving via
-  DeriveDataPLiftable PScriptHash Plutus.ScriptHash
-  instance
-    PLiftable PScriptHash
+instance PLiftable PScriptHash where
+  type AsHaskell PScriptHash = Plutus.ScriptHash
+  type PlutusRepr PScriptHash = ByteString
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (Plutus.ScriptHash (PlutusTx.BuiltinByteString str)) = str
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Right . Plutus.ScriptHash . PlutusTx.BuiltinByteString
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = reprToPlutUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = plutToReprUni
 
 -- | @since 2.0.0
 newtype PDatum (s :: S) = PDatum (Term s PData)
@@ -70,14 +81,14 @@ deriving via
     PLiftable PDatum
 
 -- | @since 2.0.0
-newtype PDatumHash (s :: S) = PDatumHash (Term s (PDataNewtype PByteString))
+newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -87,16 +98,24 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s (PDataNewtype PByteString))
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType PDatumHash where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PDatumHash)
 
 -- | @since WIP
-deriving via
-  DeriveDataPLiftable PDatumHash Plutus.DatumHash
-  instance
-    PLiftable PDatumHash
+instance PLiftable PDatumHash where
+  type AsHaskell PDatumHash = Plutus.DatumHash
+  type PlutusRepr PDatumHash = ByteString
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (Plutus.DatumHash (PlutusTx.BuiltinByteString str)) = str
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Right . Plutus.DatumHash . PlutusTx.BuiltinByteString
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = reprToPlutUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = plutToReprUni
 
 -- | @since 2.0.0
 newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
@@ -126,14 +145,14 @@ deriving via
     PLiftable PRedeemer
 
 -- | @since 2.0.0
-newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s (PDataNewtype PByteString))
+newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
   deriving stock
     ( -- | @since 3.1.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.0
       PIsData
     , -- | @since 3.1.0
@@ -143,13 +162,21 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s (PDataNewtype PByteString
     , -- | @since 3.1.0
       PShow
     )
-
--- | @since 3.1.0
-instance DerivePlutusType PRedeemerHash where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PRedeemerHash)
 
 -- | @since WIP
-deriving via
-  DeriveDataPLiftable PRedeemerHash Plutus.RedeemerHash
-  instance
-    PLiftable PRedeemerHash
+instance PLiftable PRedeemerHash where
+  type AsHaskell PRedeemerHash = Plutus.RedeemerHash
+  type PlutusRepr PRedeemerHash = ByteString
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (Plutus.RedeemerHash (PlutusTx.BuiltinByteString str)) = str
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Right . Plutus.RedeemerHash . PlutusTx.BuiltinByteString
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = reprToPlutUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = plutToReprUni

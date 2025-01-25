@@ -5,26 +5,28 @@ module Plutarch.LedgerApi.V1.Contexts (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1
 data PScriptPurpose (s :: S)
-  = PMinting (Term s (PDataRecord '["_0" ':= Value.PCurrencySymbol]))
-  | PSpending (Term s (PDataRecord '["_0" ':= Tx.PTxOutRef]))
-  | PRewarding (Term s (PDataRecord '["_0" ':= Credential.PStakingCredential]))
-  | PCertifying (Term s (PDataRecord '["_0" ':= DCert.PDCert]))
+  = PMinting (Term s (PAsData Value.PCurrencySymbol))
+  | PSpending (Term s Tx.PTxOutRef)
+  | PRewarding (Term s Credential.PStakingCredential)
+  | PCertifying (Term s DCert.PDCert)
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
     , -- | @since 3.1.1
@@ -32,10 +34,11 @@ data PScriptPurpose (s :: S)
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PScriptPurpose where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PScriptPurpose)
 
 -- | @since WIP
 deriving via

@@ -69,6 +69,7 @@ module Plutarch.LedgerApi.V1 (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
@@ -82,27 +83,22 @@ import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1
-newtype PTxOut (s :: S)
-  = PTxOut
-      ( Term
-          s
-          ( PDataRecord
-              '[ "address" ':= Address.PAddress
-               , "value" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "datumHash" ':= Scripts.PDatumHash
-               ]
-          )
-      )
+data PTxOut (s :: S) = PTxOut
+  { ptxOut'address :: Term s (PAsData Address.PAddress)
+  , ptxOut'value :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
+  , ptxOut'datumHash :: Term s (PAsData Scripts.PDatumHash)
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
     , -- | @since 3.1.1
@@ -110,10 +106,11 @@ newtype PTxOut (s :: S)
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PTxOut where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxOut)
 
 -- | @since WIP
 deriving via
@@ -122,23 +119,17 @@ deriving via
     PLiftable PTxOut
 
 -- | @since 3.1.1
-newtype PTxInInfo (s :: S)
-  = PTxInInfo
-      ( Term
-          s
-          ( PDataRecord
-              '[ "outRef" ':= Tx.PTxOutRef
-               , "resolved" ':= PTxOut
-               ]
-          )
-      )
+data PTxInInfo (s :: S) = PTxInInfo
+  { ptxInInfo'outRef :: Term s Tx.PTxOutRef
+  , ptxInInfo'resolved :: Term s PTxOut
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
     , -- | @since 3.1.1
@@ -146,10 +137,11 @@ newtype PTxInInfo (s :: S)
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PTxInInfo where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxInInfo)
 
 -- | @since WIP
 deriving via
@@ -158,44 +150,37 @@ deriving via
     PLiftable PTxInInfo
 
 -- | @since WIP
-newtype PTxInfo (s :: S)
-  = PTxInfo
-      ( Term
-          s
-          ( PDataRecord
-              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-               , "outputs" ':= PBuiltinList (PAsData PTxOut)
-               , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
-               , "dCert" ':= PBuiltinList (PAsData DCert.PDCert)
-               , "wdrl" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData Credential.PStakingCredential) (PAsData PInteger))) -- Staking withdrawals
-               , "validRange" ':= Interval.PInterval Time.PPosixTime
-               , "signatories" ':= PBuiltinList (PAsData Crypto.PPubKeyHash)
-               , "data" ':= PBuiltinList (PAsData (PBuiltinPair (PAsData Scripts.PDatumHash) (PAsData Scripts.PDatum)))
-               , "id" ':= Tx.PTxId -- hash of the pending transaction
-               ]
-          )
-      )
+data PTxInfo (s :: S) = PTxInfo
+  { ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+  , ptxInfo'outputs :: Term s (PAsData (PBuiltinList (PAsData PTxOut)))
+  , ptxInfo'fee :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
+  , ptxInfo'mint :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees)) -- value minted by transaction
+  , ptxInfo'dCert :: Term s (PAsData (PBuiltinList (PAsData DCert.PDCert)))
+  , ptxInfo'wdrl :: Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData Credential.PStakingCredential) (PAsData PInteger))))) -- Staking withdrawals
+  , ptxInfo'validRange :: Term s (Interval.PInterval Time.PPosixTime)
+  , ptxInfo'signatories :: Term s (PAsData (PBuiltinList (PAsData Crypto.PPubKeyHash)))
+  , ptxInfo'data :: Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData Scripts.PDatumHash) (PAsData Scripts.PDatum)))))
+  , ptxInfo'id :: Term s (PAsData Tx.PTxId) -- hash of the pending transaction
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
-    , -- | @since 3.1.1
-      PDataFields
     , -- | @since 3.1.1
       PEq
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PTxInfo where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxInfo)
 
 -- | @since WIP
 deriving via
@@ -204,28 +189,29 @@ deriving via
     PLiftable PTxInfo
 
 -- | @since 3.1.1
-newtype PScriptContext (s :: S)
-  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= Contexts.PScriptPurpose]))
+data PScriptContext (s :: S) = PScriptContext
+  { pscriptContext'txInfo :: Term s PTxInfo
+  , pscriptContext'purpose :: Term s Contexts.PScriptPurpose
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
-    , -- | @since 3.1.1
-      PDataFields
     , -- | @since 3.1.1
       PEq
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PScriptContext where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PScriptContext)
 
 -- | @since WIP
 deriving via

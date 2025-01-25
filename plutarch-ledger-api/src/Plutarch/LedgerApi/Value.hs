@@ -65,25 +65,28 @@ module Plutarch.LedgerApi.Value (
   pisAdaOnlyValue,
 ) where
 
+import Data.ByteString (ByteString)
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusLedgerApi.V1.Value qualified as PlutusValue
 import PlutusLedgerApi.V3 qualified as Plutus
+import PlutusTx.Builtins.Internal qualified as PlutusTx
 import PlutusTx.Prelude qualified as PlutusTx
 
 -- | @since 2.2.0
-newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
+newtype PLovelace (s :: S) = PLovelace (Term s PInteger)
   deriving stock
     ( -- | @since 2.2.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.2.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.2.0
       PIsData
     , -- | @since 2.2.0
@@ -93,26 +96,27 @@ newtype PLovelace (s :: S) = PLovelace (Term s (PDataNewtype PInteger))
     , -- | @since 2.2.0
       PShow
     )
-
--- | @since 2.2.0
-instance DerivePlutusType PLovelace where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PLovelace)
 
 -- | @since WIP
 deriving via
-  DeriveDataPLiftable PLovelace Plutus.Lovelace
+  DeriveNewtypePLiftable PLovelace Plutus.Lovelace
   instance
     PLiftable PLovelace
 
 -- | @since 2.0.0
-newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
+newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -122,26 +126,36 @@ newtype PTokenName (s :: S) = PTokenName (Term s (PDataNewtype PByteString))
     , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PTokenName)
 
--- | @since 2.0.0
-instance DerivePlutusType PTokenName where
-  type DPTStrat _ = PlutusTypeNewtype
+-- Well this is kind of unfortunate, but BuiltinByteString is a thing.
 
 -- | @since WIP
-deriving via
-  DeriveDataPLiftable PTokenName Plutus.TokenName
-  instance
-    PLiftable PTokenName
+instance PLiftable PTokenName where
+  type AsHaskell PTokenName = Plutus.TokenName
+  type PlutusRepr PTokenName = ByteString
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (Plutus.TokenName (PlutusTx.BuiltinByteString str)) = str
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Right . Plutus.TokenName . PlutusTx.BuiltinByteString
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = reprToPlutUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = plutToReprUni
 
 -- | @since 2.0.0
-newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteString))
+newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -151,16 +165,24 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s (PDataNewtype PByteSt
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType PCurrencySymbol where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PTokenName)
 
 -- | @since WIP
-deriving via
-  DeriveDataPLiftable PCurrencySymbol Plutus.CurrencySymbol
-  instance
-    PLiftable PCurrencySymbol
+instance PLiftable PCurrencySymbol where
+  type AsHaskell PCurrencySymbol = Plutus.CurrencySymbol
+  type PlutusRepr PCurrencySymbol = ByteString
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr (Plutus.CurrencySymbol (PlutusTx.BuiltinByteString str)) = str
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = Right . Plutus.CurrencySymbol . PlutusTx.BuiltinByteString
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = reprToPlutUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = plutToReprUni
 
 -- | @since 2.0.0
 data AmountGuarantees = NoGuarantees | NonZero | Positive
@@ -173,19 +195,20 @@ newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PValue keys amounts))
 
 type role PValue nominal nominal nominal
-
--- | @since 2.0.0
-instance DerivePlutusType (PValue keys amounts) where
-  type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since WIP
 deriving via
@@ -340,14 +363,14 @@ instance
     punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'AssocMap.Sorted 'NoGuarantees))
 
 -- | @since WIP
-newtype PAssetClass (s :: S) = PAssetClass (Term s (PDataNewtype (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))))
+newtype PAssetClass (s :: S) = PAssetClass (Term s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)))
   deriving stock
     ( -- | @since WIP
       Generic
     )
   deriving anyclass
     ( -- | @since WIP
-      PlutusType
+      SOP.Generic
     , -- | @since WIP
       PIsData
     , -- | @since WIP
@@ -355,43 +378,40 @@ newtype PAssetClass (s :: S) = PAssetClass (Term s (PDataNewtype (PBuiltinPair (
     , -- | @since WIP
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PAssetClass)
 
 -- | @since WIP
 instance POrd PAssetClass where
   {-# INLINEABLE (#<=) #-}
-  ac1 #<= ac2 = pmatch ac1 $ \(PAssetClass ac1') ->
-    pmatch ac2 $ \(PAssetClass ac2') ->
-      pmatch ac1' $ \(PDataNewtype pair1) ->
-        pmatch ac2' $ \(PDataNewtype pair2) ->
-          plet (pfromData $ pfstBuiltin # pfromData pair1) $ \fst1 ->
-            plet (pfromData $ pfstBuiltin # pfromData pair2) $ \fst2 ->
-              (fst1 #< fst2)
-                #|| ( (fst1 #== fst2)
-                        #&& let snd1 = pfromData $ psndBuiltin # pfromData pair1
-                                snd2 = pfromData $ psndBuiltin # pfromData pair2
-                             in snd1 #<= snd2
-                    )
+  ac1 #<= ac2 = pmatch ac1 $ \(PAssetClass pair1) ->
+    pmatch ac2 $ \(PAssetClass pair2) ->
+      plet (pfromData $ pfstBuiltin # pair1) $ \fst1 ->
+        plet (pfromData $ pfstBuiltin # pair2) $ \fst2 ->
+          (fst1 #< fst2)
+            #|| ( (fst1 #== fst2)
+                    #&& let snd1 = pfromData $ psndBuiltin # pair1
+                            snd2 = pfromData $ psndBuiltin # pair2
+                         in snd1 #<= snd2
+                )
   {-# INLINEABLE (#<) #-}
-  ac1 #< ac2 = pmatch ac1 $ \(PAssetClass ac1') ->
-    pmatch ac2 $ \(PAssetClass ac2') ->
-      pmatch ac1' $ \(PDataNewtype pair1) ->
-        pmatch ac2' $ \(PDataNewtype pair2) ->
-          plet (pfromData $ pfstBuiltin # pfromData pair1) $ \fst1 ->
-            plet (pfromData $ pfstBuiltin # pfromData pair2) $ \fst2 ->
-              (fst1 #< fst2)
-                #|| ( (fst1 #== fst2)
-                        #&& let snd1 = pfromData $ psndBuiltin # pfromData pair1
-                                snd2 = pfromData $ psndBuiltin # pfromData pair2
-                             in snd1 #< snd2
-                    )
-
--- | @since WIP
-instance DerivePlutusType PAssetClass where
-  type DPTStrat _ = PlutusTypeNewtype
+  ac1 #< ac2 = pmatch ac1 $ \(PAssetClass pair1) ->
+    pmatch ac2 $ \(PAssetClass pair2) ->
+      plet (pfromData $ pfstBuiltin # pair1) $ \fst1 ->
+        plet (pfromData $ pfstBuiltin # pair2) $ \fst2 ->
+          (fst1 #< fst2)
+            #|| ( (fst1 #== fst2)
+                    #&& let snd1 = pfromData $ psndBuiltin # pair1
+                            snd2 = pfromData $ psndBuiltin # pair2
+                         in snd1 #< snd2
+                )
 
 -- | @since WIP
 deriving via
-  DeriveDataPLiftable PAssetClass PlutusValue.AssetClass
+  DeriveNewtypePLiftable PAssetClass PlutusValue.AssetClass
   instance
     PLiftable PAssetClass
 

@@ -7,34 +7,38 @@ module Plutarch.LedgerApi.V1.Tx (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 {- | Hashed with @BLAKE2b-256@.
 
 @since 3.1.0
 -}
-newtype PTxId (s :: S) = PTxId (Term s (PDataRecord '["_0" ':= PByteString]))
+newtype PTxId (s :: S) = PTxId (Term s (PAsData PByteString))
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
+    , -- , -- | @since 2.0.0
+      --   POrd
+
+      -- | @since 2.0.0
       PShow
     )
-
--- | @since 3.1.0
-instance DerivePlutusType PTxId where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxId)
 
 -- | @since WIP
 deriving via
@@ -47,38 +51,32 @@ output we mean.
 
 @since 2.0.0
 -}
-newtype PTxOutRef (s :: S)
-  = PTxOutRef
-      ( Term
-          s
-          ( PDataRecord
-              '[ "id" ':= PTxId
-               , "idx" ':= PInteger
-               ]
-          )
-      )
+data PTxOutRef (s :: S) = PTxOutRef
+  { ptxOutRef'id :: Term s PTxId
+  , ptxOutRef'idx :: Term s (PAsData PInteger)
+  }
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
       PEq
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
+    , -- , -- | @since 2.0.0
+      --   POrd
+
+      -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType PTxOutRef where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxOutRef)
 
 -- | @since WIP
 deriving via

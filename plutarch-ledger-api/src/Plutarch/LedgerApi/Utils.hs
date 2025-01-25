@@ -43,9 +43,10 @@ module Plutarch.LedgerApi.Utils (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import GHC.Records (getField)
+import Generics.SOP qualified as SOP
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
@@ -83,27 +84,18 @@ data PMaybeData (a :: S -> Type) (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
+    ( -- | @since WIP
+      SOP.Generic
+    , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since WIP
-instance PlutusType (PMaybeData a) where
-  type PInner (PMaybeData a) = PData
-  {-# INLINEABLE pcon' #-}
-  pcon' = \case
-    PDJust t ->
-      pforgetData $ pconstrBuiltin # 0 #$ pcons # pforgetData t # pnil
-    PDNothing ->
-      pforgetData $ pconstrBuiltin # 1 # pnil
-  {-# INLINEABLE pmatch' #-}
-  pmatch' t f = plet (pasConstr # t) $ \asConstr ->
-    pif
-      ((pfstBuiltin # asConstr) #== 1)
-      (f PDNothing)
-      (f . PDJust . punsafeCoerce $ phead #$ psndBuiltin # asConstr)
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PMaybeData a))
 
 -- | @since WIP
 deriving via
@@ -114,7 +106,7 @@ deriving via
 -- | @since WIP
 instance PIsData (PMaybeData a) where
   {-# INLINEABLE pdataImpl #-}
-  pdataImpl = pto
+  pdataImpl = pto . pto
   {-# INLINEABLE pfromDataImpl #-}
   pfromDataImpl = punsafeCoerce
 
@@ -159,32 +151,29 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a) where
 
 @since 3.1.0
 -}
-newtype PRationalData s
-  = PRationalData
-      ( Term
-          s
-          ( PDataRecord
-              '[ "numerator" ':= PInteger
-               , "denominator" ':= PPositive
-               ]
-          )
-      )
+data PRationalData s = PRationalData
+  { prationalData'numerator :: Term s (PAsData PInteger)
+  , prationalData'denominator :: Term s (PAsData PPositive)
+  }
   deriving stock
     ( -- | @since 3.1.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.0
       PIsData
-    , -- | @since 3.1.0
-      PDataFields
     , -- | @since 3.1.0
       PEq
     , -- | @since 3.1.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PRationalData)
 
 -- | @since 3.1.0
 instance POrd PRationalData where
@@ -192,10 +181,6 @@ instance POrd PRationalData where
   (#<=) = liftCompareOp (#<=)
   {-# INLINEABLE (#<) #-}
   (#<) = liftCompareOp (#<)
-
--- | @since 3.1.0
-instance DerivePlutusType PRationalData where
-  type DPTStrat _ = PlutusTypeData
 
 -- | @since WIP
 deriving via
@@ -207,8 +192,8 @@ deriving via
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 prationalFromData = phoistAcyclic $
   plam $ \x -> unTermCont $ do
-    l <- pletFieldsC @'["numerator", "denominator"] x
-    pure . pcon $ PRational (getField @"numerator" l) (getField @"denominator" l)
+    PRationalData n d <- pmatchC x
+    pure . pcon $ PRational (pfromData n) (pfromData d)
 
 {- | Extracts the element out of a 'PDJust' and throws an error if its
 argument is 'PDNothing'.
@@ -454,10 +439,6 @@ liftCompareOp f x y = phoistAcyclic (plam go) # x # y
       Term s' PRationalData ->
       Term s' PBool
     go l r = unTermCont $ do
-      l' <- pletFieldsC @'["numerator", "denominator"] l
-      r' <- pletFieldsC @'["numerator", "denominator"] r
-      let ln = pfromData $ getField @"numerator" l'
-      let ld = pfromData $ getField @"denominator" l'
-      let rn = pfromData $ getField @"numerator" r'
-      let rd = pfromData $ getField @"denominator" r'
-      pure $ f (ln * pto rd) (rn * pto ld)
+      PRationalData ln ld <- pmatchC l
+      PRationalData rn rd <- pmatchC r
+      pure $ f (pfromData ln * pto (pfromData rd)) (pfromData rn * pto (pfromData ld))
