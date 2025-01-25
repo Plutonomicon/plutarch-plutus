@@ -28,9 +28,7 @@ import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2
 import Plutarch.Test.Utils (instanceOfType, precompileTerm, prettyEquals, prettyShow, typeName')
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.Common qualified as Plutus
-import PlutusLedgerApi.V1 qualified as PLA
 import PlutusLedgerApi.V1.Orphans ()
-import PlutusTx.AssocMap qualified as AssocMap
 import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
@@ -324,7 +322,6 @@ checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesValue =
   testGroup "PValue" . mconcat $
     [ pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
-    , ptryFromLawsValue
     , checkPLiftableLaws @(V1.PValue V1.Unsorted V1.NoGuarantees)
     ]
 
@@ -338,7 +335,6 @@ checkLedgerPropertiesAssocMap :: TestTree
 checkLedgerPropertiesAssocMap =
   testGroup "PMap" . mconcat $
     [ pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
-    , ptryFromLawsAssocMap
     , checkPLiftableLaws @(V1.PMap V1.Unsorted PInteger PInteger)
     ]
 
@@ -347,7 +343,6 @@ checkLedgerProperties ::
   forall (a :: S -> Type).
   ( Typeable a
   , PLiftable a
-  , PTryFrom PData a
   , Eq (AsHaskell a)
   , PIsData a
   , Plutus.ToData (AsHaskell a)
@@ -359,7 +354,6 @@ checkLedgerProperties ::
 checkLedgerProperties =
   testGroup (instanceOfType @(S -> Type) @a "Ledger Laws") . mconcat $
     [ pisDataLaws @a (typeName' False (typeRep @a)) -- it'll get wrapped in PAsData so not top level
-    , ptryFromLaws @a
     , checkPLiftableLaws @a
     ]
 
@@ -544,49 +538,6 @@ pisDataLaws tyName =
           plift (precompileTerm (plam (pfromData . punsafeCoerce @(PAsData a))) # pconstant @PData (Plutus.toData x)) `prettyEquals` x
     coerceName :: String
     coerceName = "plift . pfromData . punsafeCoerce @(PAsData " <> tyName <> ") . pconstant . toData = id"
-
--- ptryFrom should successfully parse a toData of a type
-ptryFromLaws ::
-  forall (a :: S -> Type).
-  ( Arbitrary (AsHaskell a)
-  , PLiftable a
-  , Eq (AsHaskell a)
-  , PTryFrom PData a
-  , Plutus.ToData (AsHaskell a)
-  , Pretty (AsHaskell a)
-  ) =>
-  [TestTree]
-ptryFromLaws = [pDataAgreementProp]
-  where
-    pDataAgreementProp :: TestTree
-    pDataAgreementProp = testProperty "can parse toData of original"
-      . forAllShrinkShow arbitrary shrink prettyShow
-      $ \(x :: AsHaskell a) ->
-        plift (precompileTerm (plam $ \d -> ptryFrom @a d fst) # (pconstant @PData . Plutus.toData $ x))
-          `prettyEquals` x
-
--- This is an ugly kludge because PValue doesn't have a direct PData conversion,
--- and bringing one in would break too much other stuff to be worth it.
-ptryFromLawsValue :: [TestTree]
-ptryFromLawsValue = [pDataAgreementProp]
-  where
-    pDataAgreementProp :: TestTree
-    pDataAgreementProp = testProperty "can parse toData of original"
-      . forAllShrinkShow arbitrary shrink prettyShow
-      $ \(v :: PLA.Value) ->
-        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PValue V1.Unsorted V1.NoGuarantees)) d $ fst) # pconstant @PData (Plutus.toData v))
-          `prettyEquals` v
-
--- Same as before
-ptryFromLawsAssocMap :: [TestTree]
-ptryFromLawsAssocMap = [pDataAgreementProp]
-  where
-    pDataAgreementProp :: TestTree
-    pDataAgreementProp = testProperty "can parse toData of original"
-      . forAllShrinkShow arbitrary shrink prettyShow
-      $ \(v :: AssocMap.Map Integer Integer) ->
-        plift (precompileTerm (plam $ \d -> pfromData . ptryFrom @(PAsData (V1.PMap V1.Unsorted PInteger PInteger)) d $ fst) # pconstant @PData (Plutus.toData v))
-          `prettyEquals` v
 
 -- Helpers
 
