@@ -8,13 +8,18 @@
 module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where
 
 import Plutarch.Prelude
-import Plutarch.LedgerApi.V3 (PDatum, PRedeemer, PScriptContext, PPubKeyHash,
-  PScriptInfo(PSpendingScript))
+import Plutarch.LedgerApi.V3 (
+  PDatum,
+  PRedeemer,
+  PScriptContext (pscriptContext'scriptInfo, pscriptContext'txInfo),
+  PTxInfo (ptxInfo'signatories),
+  PPubKeyHash,
+  PScriptInfo(PSpendingScript)
+  )
 import Plutarch.Docs.Run (evalWithArgsT)
 import Plutarch.Script (Script)
 import qualified PlutusTx
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-import qualified Plutarch.Monadic as P
 import Data.Text (Text)
 ```
 
@@ -71,17 +76,19 @@ res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), Plutu
 
 ```haskell
 
-checkSignatory :: Term s (PPubKeyHash :--> PAsData PDatum :--> PAsData PRedeemer :--> PAsData PScriptContext :--> PUnit)
-checkSignatory = plam $ \ph _ _ ctx' -> P.do
-  ctx <- pletFields @["txInfo", "scriptInfo"] ctx'
-  PSpendingScript _ <- pmatch ctx.scriptInfo
-  let signatories = pfield @"signatories" # ctx.txInfo
-  pif
-    (pelem # pdata ph # pfromData signatories)
-    -- Success!
-    (pconstant ())
-    -- Signature not present.
-    perror
+checkSignatory :: Term s (PPubKeyHash :--> PAsData PDatum :--> PAsData PRedeemer :--> PScriptContext :--> PUnit)
+checkSignatory = plam $ \ph _ _ ctx' -> unTermCont $ do
+  ctx <- pmatchC ctx'
+  PSpendingScript _ _ <- pmatchC $ pscriptContext'scriptInfo ctx
+  txInfo <- pmatchC $ pscriptContext'txInfo ctx
+  let signatories = ptxInfo'signatories txInfo
+  pure $
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 ```
 
 > Note: The above snippet uses GHC 9 features (`QualifiedDo` and `OverloadedRecordDot`). Be sure to check out [Do syntax with `TermCont`](./../Usage/DoSyntaxWithTermCont.md) and [alternatives to `OverloadedRecordDot`](../Typeclasses/PIsDataReprAndPDataFields.md#alternatives-to-overloadedrecorddot).
