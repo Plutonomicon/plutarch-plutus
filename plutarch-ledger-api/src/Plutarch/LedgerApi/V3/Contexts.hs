@@ -678,6 +678,12 @@ data PTxInfo (s :: S) = PTxInfo
     )
     via (DeriveAsDataStruct PTxInfo)
 
+-- | @since WIP
+deriving via
+  DeriveDataPLiftable PTxInfo Plutus.TxInfo
+  instance
+    PLiftable PTxInfo
+
 -- | @since 3.1.0
 data PScriptContext (s :: S) = PScriptContext
   { pscriptContext'txInfo :: Term s PTxInfo
