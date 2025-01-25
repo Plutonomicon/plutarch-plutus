@@ -183,11 +183,11 @@ instance (POrd a, PIsData a) => POrd (PExtended a) where
       pmatch b $ \b' ->
         case (a', b') of
           (PNegInf, PNegInf) -> pconstant True
-          (PNegInf, _) -> pconstant False
-          (_, PNegInf) -> pconstant True
+          (PNegInf, _) -> pconstant True
+          (_, PNegInf) -> pconstant False
           (PPosInf, PPosInf) -> pconstant True
-          (_, PPosInf) -> pconstant False
-          (PPosInf, _) -> pconstant True
+          (_, PPosInf) -> pconstant True
+          (PPosInf, _) -> pconstant False
           (PFinite l, PFinite r) -> pfromData l #<= pfromData r
 
   a #< b =
@@ -195,11 +195,11 @@ instance (POrd a, PIsData a) => POrd (PExtended a) where
       pmatch b $ \b' ->
         case (a', b') of
           (PNegInf, PNegInf) -> pconstant False
-          (PNegInf, _) -> pconstant False
-          (_, PNegInf) -> pconstant True
+          (PNegInf, _) -> pconstant True
+          (_, PNegInf) -> pconstant False
           (PPosInf, PPosInf) -> pconstant False
-          (_, PPosInf) -> pconstant False
-          (PPosInf, _) -> pconstant True
+          (_, PPosInf) -> pconstant True
+          (PPosInf, _) -> pconstant False
           (PFinite l, PFinite r) -> pfromData l #< pfromData r
 
 {- | Check if a value is inside the given interval.
