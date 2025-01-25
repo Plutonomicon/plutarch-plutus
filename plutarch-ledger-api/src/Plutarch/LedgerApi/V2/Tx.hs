@@ -7,28 +7,34 @@ module Plutarch.LedgerApi.V2.Tx (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)
 import Plutarch.LedgerApi.V1.Scripts (PDatum, PDatumHash, PScriptHash)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 2.0.0
 data POutputDatum (s :: S)
-  = PNoOutputDatum (Term s (PDataRecord '[]))
-  | POutputDatumHash (Term s (PDataRecord '["datumHash" ':= PDatumHash]))
+  = PNoOutputDatum
+  | POutputDatumHash
+      { poutputDatum'datumHash :: Term s (PAsData PDatumHash)
+      }
   | -- | Inline datum as per
     -- [CIP-0032](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0032/README.md)
-    POutputDatum (Term s (PDataRecord '["outputDatum" ':= PDatum]))
+    POutputDatum
+      { poutputDatum'outputDatum :: Term s PDatum
+      }
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -36,10 +42,11 @@ data POutputDatum (s :: S)
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType POutputDatum where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct POutputDatum)
 
 -- | @since WIP
 deriving via

@@ -70,6 +70,7 @@ module Plutarch.LedgerApi.V2 (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils qualified as Utils
@@ -84,39 +85,33 @@ import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 3.1.1
-newtype PTxInInfo (s :: S)
-  = PTxInInfo
-      ( Term
-          s
-          ( PDataRecord
-              '[ "outRef" ':= V1Tx.PTxOutRef
-               , "resolved" ':= V2Tx.PTxOut
-               ]
-          )
-      )
+data PTxInInfo (s :: S) = PTxInInfo
+  { ptxInInfo'outRef :: Term s V1Tx.PTxOutRef
+  , ptxInInfo'resolved :: Term s V2Tx.PTxOut
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
-    , -- | @since 3.1.1
-      PDataFields
     , -- | @since 3.1.1
       PEq
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PTxInInfo where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxInInfo)
 
 -- | @since WIP
 deriving via
@@ -125,46 +120,39 @@ deriving via
     PLiftable PTxInInfo
 
 -- | @since 3.1.1
-newtype PTxInfo (s :: S)
-  = PTxInfo
-      ( Term
-          s
-          ( PDataRecord
-              '[ "inputs" ':= PBuiltinList (PAsData PTxInInfo)
-               , "referenceInputs" ':= PBuiltinList (PAsData PTxInInfo)
-               , "outputs" ':= PBuiltinList (PAsData V2Tx.PTxOut)
-               , "fee" ':= Value.PValue 'AssocMap.Sorted 'Value.Positive
-               , "mint" ':= Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees -- value minted by transaction
-               , "dcert" ':= PBuiltinList (PAsData DCert.PDCert)
-               , "wdrl" ':= AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger -- Staking withdrawals
-               , "validRange" ':= Interval.PInterval Time.PPosixTime
-               , "signatories" ':= PBuiltinList (PAsData Crypto.PPubKeyHash)
-               , "redeemers" ':= AssocMap.PMap 'AssocMap.Unsorted Contexts.PScriptPurpose Scripts.PRedeemer
-               , "data" ':= AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum
-               , "id" ':= V1Tx.PTxId -- hash of the pending transaction
-               ]
-          )
-      )
+data PTxInfo (s :: S) = PTxInfo
+  { ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+  , ptxInfo'referenceInputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+  , ptxInfo'outputs :: Term s (PAsData (PBuiltinList (PAsData V2Tx.PTxOut)))
+  , ptxInfo'fee :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
+  , ptxInfo'mint :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees)) -- value minted by transaction
+  , ptxInfo'dcert :: Term s (PAsData (PBuiltinList (PAsData DCert.PDCert)))
+  , ptxInfo'wdrl :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger)) -- Staking withdrawals
+  , ptxInfo'validRange :: Term s (Interval.PInterval Time.PPosixTime)
+  , ptxInfo'signatories :: Term s (PAsData (PBuiltinList (PAsData Crypto.PPubKeyHash)))
+  , ptxInfo'redeemers :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted Contexts.PScriptPurpose Scripts.PRedeemer))
+  , ptxInfo'data :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum))
+  , ptxInfo'id :: Term s V1Tx.PTxId -- hash of the pending transaction
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
-    , -- | @since 3.1.1
-      PDataFields
     , -- | @since 3.1.1
       PEq
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PTxInfo where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PTxInfo)
 
 -- | @since WIP
 deriving via
@@ -173,28 +161,29 @@ deriving via
     PLiftable PTxInfo
 
 -- | @since 3.1.1
-newtype PScriptContext (s :: S)
-  = PScriptContext (Term s (PDataRecord '["txInfo" ':= PTxInfo, "purpose" ':= Contexts.PScriptPurpose]))
+data PScriptContext (s :: S) = PScriptContext
+  { pscriptContext'txInfo :: Term s PTxInfo
+  , pscriptContext'purpose :: Term s Contexts.PScriptPurpose
+  }
   deriving stock
     ( -- | @since 3.1.1
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.1
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 3.1.1
       PIsData
-    , -- | @since 3.1.1
-      PDataFields
     , -- | @since 3.1.1
       PEq
     , -- | @since 3.1.1
       PShow
     )
-
--- | @since 3.1.1
-instance DerivePlutusType PScriptContext where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PScriptContext)
 
 -- | @since WIP
 deriving via
