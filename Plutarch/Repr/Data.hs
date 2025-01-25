@@ -80,11 +80,11 @@ type family PNormalIsData' a b :: Constraint where
   PNormalIsData' a b =
     TypeError
       ( 'Text "Data representation can only hold types whose inner most representation is PData"
-          ':$$: 'Text "Inner most representation of "
+          ':$$: 'Text "Inner most representation of \""
             ':<>: 'ShowType a
-            ':<>: 'Text " is "
+            ':<>: 'Text "\" is \""
             ':<>: 'ShowType b
-            ':<>: 'Text ", which is not PData"
+            ':<>: 'Text "\""
       )
       ~ ()
 
