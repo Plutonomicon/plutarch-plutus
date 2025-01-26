@@ -330,7 +330,6 @@ pmatchDataStruct ::
   Term s b
 pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
   let
-    pgetConstrBody = phoistAcyclic $ plam $ \d -> psndBuiltin #$ pasConstr # d
     go :: forall y ys. All PNormalIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
     go (StructureHandler rest) = StructureHandler $ \i ds cps ->
       let
@@ -350,7 +349,7 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
     handlers :: Term s (PBuiltinList PData) -> [(Integer, Term s b)]
     handlers d = SOP.hcollapse $ unSBR handlers' 0 d f
 
-  case handlers (pgetConstrBody # x) of
+  case handlers (psndBuiltin #$ pasConstr # x) of
     [(_, h)] -> pure h
     _ -> do
       x' <- pletC $ pasConstr # x
