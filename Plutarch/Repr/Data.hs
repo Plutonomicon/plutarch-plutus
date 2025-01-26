@@ -243,6 +243,8 @@ pmatchDataRec (punsafeCoerce -> x) f =
        in
         rest tail $ \(PRec rest') ->
           cps $ PRec $ parsed :* rest'
+
+    record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
     record = unH $ SOP.para_SList (H $ \_ cps -> cps $ PRec Nil) go
    in
     plet x (`record` f)
@@ -250,6 +252,7 @@ pmatchDataRec (punsafeCoerce -> x) f =
 newtype StructureHandler s r struct = StructureHandler
   { unSBR ::
       Integer ->
+      Term s (PBuiltinList PData) ->
       (PStruct struct s -> Term s r) ->
       NP (K (Integer, Term s r)) struct
   }
@@ -262,28 +265,31 @@ pmatchDataStruct ::
   (PStruct struct s -> Term s b) ->
   Term s b
 pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
-  x' <- pletC $ pasConstr # x
-  idx <- pletC $ pfstBuiltin # x'
-  ds <- pletC $ psndBuiltin # x'
-
   let
     go :: forall y ys. All PNormalIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
-    go (StructureHandler rest) = StructureHandler $ \i cps ->
+    go (StructureHandler rest) = StructureHandler $ \i ds cps ->
       let
         dataRecAsBuiltinList :: Term s (PBuiltinList PData) -> Term s (PDataRec y)
         dataRecAsBuiltinList = punsafeCoerce
 
         handler = pmatchDataRec @y (dataRecAsBuiltinList ds) $ \(PRec r) -> cps $ PStruct $ SOP $ Z r
-        restHandlers = rest (i + 1) (\(PStruct (SOP sop)) -> cps $ PStruct $ SOP $ SOP.S sop)
+        restHandlers = rest (i + 1) ds (\(PStruct (SOP sop)) -> cps $ PStruct $ SOP $ SOP.S sop)
        in
         K (i, handler) :* restHandlers
 
     -- This builds "handlers"--that is each cases of SOP data
     -- By building this we can figure out which cases share same computation, hence which branches to group
     handlers' :: StructureHandler s b struct
-    handlers' = SOP.cpara_SList (Proxy @(All PNormalIsData)) (StructureHandler $ \_ _ -> Nil) go
+    handlers' = SOP.cpara_SList (Proxy @(All PNormalIsData)) (StructureHandler $ \_ _ _ -> Nil) go
 
-    handlers :: [(Integer, Term s b)]
-    handlers = SOP.hcollapse $ unSBR handlers' 0 f
+    handlers :: Term s (PBuiltinList PData) -> [(Integer, Term s b)]
+    handlers d = SOP.hcollapse $ unSBR handlers' 0 d f
 
-  pure $ groupHandlers handlers idx
+  case handlers (psndBuiltin #$ pasConstr # x) of
+    [(_, h)] -> pure h
+    _ -> do
+      x' <- pletC $ pasConstr # x
+      idx <- pletC $ pfstBuiltin # x'
+      ds <- pletC $ psndBuiltin # x'
+
+      pure $ groupHandlers (handlers ds) idx
