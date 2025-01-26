@@ -42,6 +42,7 @@ import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PContravariant',
   PContravariant'',
@@ -56,7 +57,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
-import Plutarch.Internal.Term (S, Term, plet, punsafeCoerce, (#), (#$))
+import Plutarch.Internal.Term (S, Term, phoistAcyclic, plet, punsafeCoerce, (#), (#$))
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
@@ -225,7 +226,14 @@ pconDataStruct (PStruct xs) =
    in
     punsafeCoerce $ pconstrBuiltin # idx #$ builtinList
 
-newtype H s struct = H {unH :: forall r. Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r}
+newtype H s struct = H
+  { unH ::
+      forall r.
+      (forall s'. Term s' (PBuiltinList PData) -> Term s' PData) ->
+      Term s (PBuiltinList PData) ->
+      (PRec struct s -> Term s r) ->
+      Term s r
+  }
 
 pmatchDataRec ::
   forall (struct :: [S -> Type]) b s.
@@ -236,16 +244,18 @@ pmatchDataRec ::
 pmatchDataRec (punsafeCoerce -> x) f =
   let
     go :: forall y ys. H s ys -> H s (y ': ys)
-    go (H rest) = H $ \ds cps ->
+    go (H rest) = H $ \getCurr ds cps ->
       let
-        tail = ptail # ds
-        parsed = punsafeCoerce $ phead # ds
+        getNext :: (forall s'. Term s' (PBuiltinList PData) -> Term s' PData)
+        getNext xs = getCurr $ ptail # xs -- undefined -- phoistAcyclic $ plam $ \d -> getCurr #$ ptail # d
+        getCurrHoisted = phoistAcyclic $ plam getCurr
+        parsed = punsafeCoerce $ getCurrHoisted # ds
        in
-        rest tail $ \(PRec rest') ->
+        rest getNext ds $ \(PRec rest') ->
           cps $ PRec $ parsed :* rest'
 
     record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
-    record = unH $ SOP.para_SList (H $ \_ cps -> cps $ PRec Nil) go
+    record = (unH $ SOP.para_SList (H $ \_ _ cps -> cps $ PRec Nil) go) (phead #)
    in
     plet x (`record` f)
 
@@ -266,6 +276,7 @@ pmatchDataStruct ::
   Term s b
 pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
   let
+    pgetConstrBody = phoistAcyclic $ plam $ \d -> psndBuiltin #$ pasConstr # d
     go :: forall y ys. All PNormalIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
     go (StructureHandler rest) = StructureHandler $ \i ds cps ->
       let
@@ -285,7 +296,7 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
     handlers :: Term s (PBuiltinList PData) -> [(Integer, Term s b)]
     handlers d = SOP.hcollapse $ unSBR handlers' 0 d f
 
-  case handlers (psndBuiltin #$ pasConstr # x) of
+  case handlers (pgetConstrBody # x) of
     [(_, h)] -> pure h
     _ -> do
       x' <- pletC $ pasConstr # x
