@@ -292,8 +292,12 @@ pcontains ::
         :--> PBool
     )
 pcontains = phoistAcyclic $ plam $ \i1 i2 -> unTermCont $ do
-  PInterval l1 u1 <- pmatchC i1
-  PInterval l2 u2 <- pmatchC i2
+  PInterval l1' u1' <- pmatchC i1
+  PInterval l2' u2' <- pmatchC i2
+  l1 <- pletC l1'
+  u1 <- pletC u1'
+  l2 <- pletC l2'
+  u2 <- pletC u2'
   -- Note: This manually inlines `pisEmpty` to avoid redundant unpacking.
   let ilb2 = pinclusiveLowerBound # l2
   let iub2 = pinclusiveUpperBound # u2
