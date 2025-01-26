@@ -12,6 +12,7 @@ module Plutarch.Repr.Data (
 ) where
 
 import Data.Kind (Constraint, Type)
+import Data.Maybe (catMaybes)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
@@ -57,7 +58,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
-import Plutarch.Internal.Term (S, Term, phoistAcyclic, plet, punsafeCoerce, (#), (#$))
+import Plutarch.Internal.Term (S, Term, phoistAcyclic, plet, pplaceholder, punsafeCoerce, (#), (#$))
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
@@ -67,7 +68,7 @@ import Plutarch.Repr.Internal (
   UnTermStruct,
   groupHandlers,
  )
-import Plutarch.TermCont (pletC, unTermCont)
+import Plutarch.TermCont (pfindPlaceholder, pletC, unTermCont)
 
 -- TODO: move this to Plutarch.Internal
 type family PInnest' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
@@ -226,11 +227,28 @@ pconDataStruct (PStruct xs) =
    in
     punsafeCoerce $ pconstrBuiltin # idx #$ builtinList
 
+-- newtype H s struct = H
+--   { unH ::
+--       forall r.
+--       (forall s'. Term s' (PBuiltinList PData) -> Term s' PData) ->
+--       Term s (PBuiltinList PData) ->
+--       (PRec struct s -> Term s r) ->
+--       Term s r
+--   }
+
+newtype PHB s struct struct' = PHB
+  { unPHB ::
+      Integer ->
+      (PRec struct' s -> PRec struct s) ->
+      (PRec struct s, Integer)
+  }
+
 newtype H s struct = H
   { unH ::
       forall r.
-      (forall s'. Term s' (PBuiltinList PData) -> Term s' PData) ->
+      Integer ->
       Term s (PBuiltinList PData) ->
+      (Integer, Term s (PBuiltinList PData)) ->
       (PRec struct s -> Term s r) ->
       Term s r
   }
@@ -241,23 +259,97 @@ pmatchDataRec ::
   Term s (PDataRec struct) ->
   (PRec struct s -> Term s b) ->
   Term s b
-pmatchDataRec (punsafeCoerce -> x) f =
+pmatchDataRec (punsafeCoerce -> x) f = unTermCont $ do
   let
+    placeholderBuilder :: forall y ys. PHB s struct ys -> PHB s struct (y ': ys)
+    placeholderBuilder (PHB rest) = PHB $ \idx g ->
+      rest (idx + 1) (\(PRec prev) -> g (PRec $ pplaceholder idx :* prev))
+
+    placeholder :: (PRec struct s, Integer)
+    placeholder = (unPHB $ SOP.para_SList (PHB $ \idx g -> (g (PRec Nil), idx - 1)) placeholderBuilder) 0 id
+
+  usedFields <-
+    catMaybes
+      <$> traverse
+        ( \idx -> do
+            found <- pfindPlaceholder idx (f $ fst placeholder)
+            pure $ if found then Just idx else Nothing
+        )
+        ([0 .. (snd placeholder)] :: [Integer])
+
+  let
+    -- Technically, we don't need @running@ here since we are pretty sure there's nothing using field
+    -- that is not found in @usedFields@--because one can only @evalTerm@ closed terms and using bound field
+    -- means free variable. I added it regardlessly.
+    --
+    -- Also, this can be easily tweaked to have different performance characteristics
+    -- (i.e. CPU/MEM optimized or Size optimized).
+    -- Currently, to balance off both, we hoist "dropToCurrent" function. However, it could be made to
+    -- cost even less on CPU/MEM by not hoisting it. It is likely not a good trade off if there's a
+    -- whole bunch of record deconstruction.
     go :: forall y ys. H s ys -> H s (y ': ys)
-    go (H rest) = H $ \getCurr ds cps ->
-      let
-        getNext :: (forall s'. Term s' (PBuiltinList PData) -> Term s' PData)
-        getNext xs = getCurr $ ptail # xs
-        getCurrHoisted = phoistAcyclic $ plam getCurr
-        parsed = punsafeCoerce $ getCurrHoisted # ds
-       in
-        rest getNext ds $ \(PRec rest') ->
-          cps $ PRec $ parsed :* rest'
+    go (H rest) =
+      H $ \idx running lastBind@(lastBindIdx, lastBindT) g ->
+        if idx `elem` usedFields
+          then
+            let
+              lastBind = all (<= idx) usedFields
+              dropToCurrent' :: forall s'. Term s' (PBuiltinList PData) -> Term s' (PBuiltinList PData)
+              dropToCurrent' = foldr (.) id $ replicate (fromInteger $ idx - lastBindIdx) (ptail #)
+
+              currentTerm
+                | lastBind = dropToCurrent' lastBindT
+                | otherwise = phoistAcyclic (plam dropToCurrent') # lastBindT
+             in
+              (if lastBind then (\a h -> h a) else plet) currentTerm $ \newBind ->
+                rest
+                  (idx + 1)
+                  (ptail # running)
+                  (idx, newBind)
+                  $ \(PRec rest') -> g $ PRec $ punsafeCoerce (phead # newBind) :* rest'
+          else rest
+            (idx + 1)
+            (ptail # running)
+            lastBind
+            $ \(PRec rest') -> g $ PRec $ punsafeCoerce (phead # running) :* rest'
 
     record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
-    record = (unH $ SOP.para_SList (H $ \_ _ cps -> cps $ PRec Nil) go) (phead #)
-   in
-    plet x (`record` f)
+    record ds = (unH $ SOP.para_SList (H $ \_ _ _ g -> g $ PRec Nil) go) 0 ds (0, ds)
+
+  pure $ plet x (`record` f)
+
+-- newtype H s struct = H
+--   { unH ::
+--       forall r.
+--       (forall s'. Term s' (PBuiltinList PData) -> Term s' PData) ->
+--       Term s (PBuiltinList PData) ->
+--       (PRec struct s -> Term s r) ->
+--       Term s r
+--   }
+
+-- pmatchDataRec ::
+--   forall (struct :: [S -> Type]) b s.
+--   All PNormalIsData struct =>
+--   Term s (PDataRec struct) ->
+--   (PRec struct s -> Term s b) ->
+--   Term s b
+-- pmatchDataRec (punsafeCoerce -> x) f =
+--   let
+--     go :: forall y ys. H s ys -> H s (y ': ys)
+--     go (H rest) = H $ \getCurr ds cps ->
+--       let
+--         getNext :: (forall s'. Term s' (PBuiltinList PData) -> Term s' PData)
+--         getNext xs = getCurr $ ptail # xs
+--         getCurrHoisted = phoistAcyclic $ plam getCurr
+--         parsed = punsafeCoerce $ getCurrHoisted # ds
+--        in
+--         rest getNext ds $ \(PRec rest') ->
+--           cps $ PRec $ parsed :* rest'
+
+--     record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
+--     record = (unH $ SOP.para_SList (H $ \_ _ cps -> cps $ PRec Nil) go) (phead #)
+--    in
+--     plet x (`record` f)
 
 newtype StructureHandler s r struct = StructureHandler
   { unSBR ::

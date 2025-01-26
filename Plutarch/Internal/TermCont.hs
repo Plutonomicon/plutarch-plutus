@@ -6,6 +6,7 @@ module Plutarch.Internal.TermCont (
   runTermCont,
   unTermCont,
   tcont,
+  pfindPlaceholder,
 ) where
 
 import Data.Kind (Type)
@@ -13,7 +14,9 @@ import Data.String (fromString)
 import Plutarch.Internal.Term (
   Config (Tracing),
   Dig,
+  HoistedTerm (..),
   PType,
+  RawTerm (..),
   S,
   Term (Term),
   TracingMode (DetTracing),
@@ -62,3 +65,24 @@ hashOpenTerm :: Term s a -> TermCont s Dig
 hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
   asRawTerm (f . hashRawTerm . getTerm $ y) i
+
+-- This can technically be done outside of TermCont.
+-- Need to pay close attention when killing branch with this.
+-- If term is pre-evaluated (via `evalTerm`), RawTerm will no longer hold
+-- tagged RPlaceholder.
+pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
+pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
+  y <- asRawTerm x i
+
+  let
+    findPlaceholder (RLamAbs _ x) = findPlaceholder x
+    findPlaceholder (RApply x xs) = any findPlaceholder (x : xs)
+    findPlaceholder (RForce x) = findPlaceholder x
+    findPlaceholder (RDelay x) = findPlaceholder x
+    findPlaceholder (RHoisted (HoistedTerm _ x)) = findPlaceholder x
+    findPlaceholder (RPlaceHolder idx') = idx == idx'
+    findPlaceholder (RConstr _ xs) = any findPlaceholder xs
+    findPlaceholder (RCase x xs) = any findPlaceholder (x : xs)
+    findPlaceholder _ = False
+
+  asRawTerm (f . findPlaceholder . getTerm $ y) i
