@@ -47,9 +47,10 @@ auth_policy.0 program
                    , (delay ())
                    , (delay error) ])
                 [!5]))
-          (force (force sndPair) (unConstrData (force headList !1))))
-       (force (force sndPair) (unConstrData !1)))
-auth_policy.hash program 1.0.0 "581c5db2114f676e84e341c3b5c9849939d57297aab01c3834552fc934d7"
+          ((\!0 -> force (force sndPair) (unConstrData !1))
+             (force headList !1)))
+       ((\!0 -> force (force sndPair) (unConstrData !1)) !1))
+auth_policy.hash program 1.0.0 "581c6e0784eed00f20461910da27b75e69b38bb1172c6a4790a37ad36084"
 auth_stake_validator.0 program
   1.0.0
   (\!0 !0 ->
@@ -83,6 +84,7 @@ auth_stake_validator.0 program
                    , (delay ())
                    , (delay error) ])
                 [!5]))
-          (force (force sndPair) (unConstrData (force headList !1))))
-       (force (force sndPair) (unConstrData !1)))
-auth_stake_validator.hash program 1.0.0 "581c5db2114f676e84e341c3b5c9849939d57297aab01c3834552fc934d7"
+          ((\!0 -> force (force sndPair) (unConstrData !1))
+             (force headList !1)))
+       ((\!0 -> force (force sndPair) (unConstrData !1)) !1))
+auth_stake_validator.hash program 1.0.0 "581c6e0784eed00f20461910da27b75e69b38bb1172c6a4790a37ad36084"
