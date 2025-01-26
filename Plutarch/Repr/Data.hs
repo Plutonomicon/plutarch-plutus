@@ -227,15 +227,6 @@ pconDataStruct (PStruct xs) =
    in
     punsafeCoerce $ pconstrBuiltin # idx #$ builtinList
 
--- newtype H s struct = H
---   { unH ::
---       forall r.
---       (forall s'. Term s' (PBuiltinList PData) -> Term s' PData) ->
---       Term s (PBuiltinList PData) ->
---       (PRec struct s -> Term s r) ->
---       Term s r
---   }
-
 newtype PHB s struct struct' = PHB
   { unPHB ::
       Integer ->
@@ -293,14 +284,18 @@ pmatchDataRec (punsafeCoerce -> x) f = unTermCont $ do
         if idx `elem` usedFields
           then
             let
+              -- See if this is last field being used.
               lastBind = all (<= idx) usedFields
+              dropAmount = fromInteger $ idx - lastBindIdx
               dropToCurrent' :: forall s'. Term s' (PBuiltinList PData) -> Term s' (PBuiltinList PData)
-              dropToCurrent' = foldr (.) id $ replicate (fromInteger $ idx - lastBindIdx) (ptail #)
+              dropToCurrent' = foldr (.) id $ replicate dropAmount (ptail #)
 
+              -- If this is last term, or amount of @ptail@ we need is less than 3, we don't hoist.
               currentTerm
-                | lastBind = dropToCurrent' lastBindT
+                | lastBind || dropAmount <= 3 = dropToCurrent' lastBindT
                 | otherwise = phoistAcyclic (plam dropToCurrent') # lastBindT
              in
+              -- If this is the last field, we don't need to plet.
               (if lastBind then (\a h -> h a) else plet) currentTerm $ \newBind ->
                 rest
                   (idx + 1)
@@ -316,40 +311,7 @@ pmatchDataRec (punsafeCoerce -> x) f = unTermCont $ do
     record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
     record ds = (unH $ SOP.para_SList (H $ \_ _ _ g -> g $ PRec Nil) go) 0 ds (0, ds)
 
-  pure $ plet x (`record` f)
-
--- newtype H s struct = H
---   { unH ::
---       forall r.
---       (forall s'. Term s' (PBuiltinList PData) -> Term s' PData) ->
---       Term s (PBuiltinList PData) ->
---       (PRec struct s -> Term s r) ->
---       Term s r
---   }
-
--- pmatchDataRec ::
---   forall (struct :: [S -> Type]) b s.
---   All PNormalIsData struct =>
---   Term s (PDataRec struct) ->
---   (PRec struct s -> Term s b) ->
---   Term s b
--- pmatchDataRec (punsafeCoerce -> x) f =
---   let
---     go :: forall y ys. H s ys -> H s (y ': ys)
---     go (H rest) = H $ \getCurr ds cps ->
---       let
---         getNext :: (forall s'. Term s' (PBuiltinList PData) -> Term s' PData)
---         getNext xs = getCurr $ ptail # xs
---         getCurrHoisted = phoistAcyclic $ plam getCurr
---         parsed = punsafeCoerce $ getCurrHoisted # ds
---        in
---         rest getNext ds $ \(PRec rest') ->
---           cps $ PRec $ parsed :* rest'
-
---     record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
---     record = (unH $ SOP.para_SList (H $ \_ _ cps -> cps $ PRec Nil) go) (phead #)
---    in
---     plet x (`record` f)
+  pure $ record x f
 
 newtype StructureHandler s r struct = StructureHandler
   { unSBR ::

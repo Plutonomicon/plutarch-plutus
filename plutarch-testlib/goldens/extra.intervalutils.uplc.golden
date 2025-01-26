@@ -3209,42 +3209,40 @@ hull.hull 3 5 contains 3 5 program
                                                                                     (\!0 ->
                                                                                        (\!0 ->
                                                                                           (\!0 ->
-                                                                                             (\!0 ->
-                                                                                                force
-                                                                                                  (case
-                                                                                                     (constr 0
-                                                                                                        [ (!16
-                                                                                                             !2
-                                                                                                             !1)
-                                                                                                        , (delay
-                                                                                                             !6)
-                                                                                                        , (delay
-                                                                                                             (force
-                                                                                                                (case
-                                                                                                                   (constr 0
-                                                                                                                      [ (!16
-                                                                                                                           !1
-                                                                                                                           !2)
-                                                                                                                      , (delay
-                                                                                                                           !5)
-                                                                                                                      , (delay
-                                                                                                                           (case
-                                                                                                                              (constr 0
-                                                                                                                                 [ (!18
+                                                                                             force
+                                                                                               (case
+                                                                                                  (constr 0
+                                                                                                     [ (!15
+                                                                                                          !2
+                                                                                                          !1)
+                                                                                                     , (delay
+                                                                                                          !5)
+                                                                                                     , (delay
+                                                                                                          (force
+                                                                                                             (case
+                                                                                                                (constr 0
+                                                                                                                   [ (!15
+                                                                                                                        !1
+                                                                                                                        !2)
+                                                                                                                   , (delay
+                                                                                                                        !4)
+                                                                                                                   , (delay
+                                                                                                                        (case
+                                                                                                                           (constr 0
+                                                                                                                              [ (!17
+                                                                                                                                   (!19
                                                                                                                                       (!20
-                                                                                                                                         (!21
-                                                                                                                                            !4)))
-                                                                                                                                 , !6
-                                                                                                                                 , !5 ])
-                                                                                                                              [ !17 ])) ])
-                                                                                                                   [ !17 ]))) ])
-                                                                                                     [ !17 ]))
-                                                                                               (!19
-                                                                                                  !2))
+                                                                                                                                         !3)))
+                                                                                                                              , !5
+                                                                                                                              , !4 ])
+                                                                                                                           [ !16 ])) ])
+                                                                                                                [ !16 ]))) ])
+                                                                                                  [ !16 ]))
                                                                                             (!18
-                                                                                               !2))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                               (!20
+                                                                                                  !3)))
+                                                                                         (!17
+                                                                                            !1))
                                                                                       (!18
                                                                                          !2))
                                                                                    (!14
@@ -3256,42 +3254,40 @@ hull.hull 3 5 contains 3 5 program
                                                                                     (\!0 ->
                                                                                        (\!0 ->
                                                                                           (\!0 ->
-                                                                                             (\!0 ->
-                                                                                                force
-                                                                                                  (case
-                                                                                                     (constr 0
-                                                                                                        [ (!16
-                                                                                                             !2
-                                                                                                             !1)
-                                                                                                        , (delay
-                                                                                                             !5)
-                                                                                                        , (delay
-                                                                                                             (force
-                                                                                                                (case
-                                                                                                                   (constr 0
-                                                                                                                      [ (!16
-                                                                                                                           !1
-                                                                                                                           !2)
-                                                                                                                      , (delay
-                                                                                                                           !6)
-                                                                                                                      , (delay
-                                                                                                                           (case
-                                                                                                                              (constr 0
-                                                                                                                                 [ (!18
+                                                                                             force
+                                                                                               (case
+                                                                                                  (constr 0
+                                                                                                     [ (!15
+                                                                                                          !2
+                                                                                                          !1)
+                                                                                                     , (delay
+                                                                                                          !4)
+                                                                                                     , (delay
+                                                                                                          (force
+                                                                                                             (case
+                                                                                                                (constr 0
+                                                                                                                   [ (!15
+                                                                                                                        !1
+                                                                                                                        !2)
+                                                                                                                   , (delay
+                                                                                                                        !5)
+                                                                                                                   , (delay
+                                                                                                                        (case
+                                                                                                                           (constr 0
+                                                                                                                              [ (!17
+                                                                                                                                   (!19
                                                                                                                                       (!20
-                                                                                                                                         (!21
-                                                                                                                                            !4)))
-                                                                                                                                 , !6
-                                                                                                                                 , !5 ])
-                                                                                                                              [ !17 ])) ])
-                                                                                                                   [ !17 ]))) ])
-                                                                                                     [ !17 ]))
-                                                                                               (!19
-                                                                                                  !2))
+                                                                                                                                         !3)))
+                                                                                                                              , !5
+                                                                                                                              , !4 ])
+                                                                                                                           [ !16 ])) ])
+                                                                                                                [ !16 ]))) ])
+                                                                                                  [ !16 ]))
                                                                                             (!18
-                                                                                               !2))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                               (!20
+                                                                                                  !3)))
+                                                                                         (!17
+                                                                                            !1))
                                                                                       (!18
                                                                                          !2))
                                                                                    (!14
@@ -3714,42 +3710,40 @@ hull.2 not member of hull 3 5 program
                                                                               (\!0 ->
                                                                                  (\!0 ->
                                                                                     (\!0 ->
-                                                                                       (\!0 ->
-                                                                                          force
-                                                                                            (case
-                                                                                               (constr 0
-                                                                                                  [ (!16
-                                                                                                       !2
-                                                                                                       !1)
-                                                                                                  , (delay
-                                                                                                       !6)
-                                                                                                  , (delay
-                                                                                                       (force
-                                                                                                          (case
-                                                                                                             (constr 0
-                                                                                                                [ (!16
-                                                                                                                     !1
-                                                                                                                     !2)
-                                                                                                                , (delay
-                                                                                                                     !5)
-                                                                                                                , (delay
-                                                                                                                     (case
-                                                                                                                        (constr 0
-                                                                                                                           [ (!18
+                                                                                       force
+                                                                                         (case
+                                                                                            (constr 0
+                                                                                               [ (!15
+                                                                                                    !2
+                                                                                                    !1)
+                                                                                               , (delay
+                                                                                                    !5)
+                                                                                               , (delay
+                                                                                                    (force
+                                                                                                       (case
+                                                                                                          (constr 0
+                                                                                                             [ (!15
+                                                                                                                  !1
+                                                                                                                  !2)
+                                                                                                             , (delay
+                                                                                                                  !4)
+                                                                                                             , (delay
+                                                                                                                  (case
+                                                                                                                     (constr 0
+                                                                                                                        [ (!17
+                                                                                                                             (!19
                                                                                                                                 (!20
-                                                                                                                                   (!21
-                                                                                                                                      !4)))
-                                                                                                                           , !6
-                                                                                                                           , !5 ])
-                                                                                                                        [ !17 ])) ])
-                                                                                                             [ !17 ]))) ])
-                                                                                               [ !17 ]))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                                                                   !3)))
+                                                                                                                        , !5
+                                                                                                                        , !4 ])
+                                                                                                                     [ !16 ])) ])
+                                                                                                          [ !16 ]))) ])
+                                                                                            [ !16 ]))
                                                                                       (!18
-                                                                                         !2))
-                                                                                   (!19
-                                                                                      !2))
+                                                                                         (!20
+                                                                                            !3)))
+                                                                                   (!17
+                                                                                      !1))
                                                                                 (!18
                                                                                    !2))
                                                                              (!14
@@ -3761,42 +3755,40 @@ hull.2 not member of hull 3 5 program
                                                                               (\!0 ->
                                                                                  (\!0 ->
                                                                                     (\!0 ->
-                                                                                       (\!0 ->
-                                                                                          force
-                                                                                            (case
-                                                                                               (constr 0
-                                                                                                  [ (!16
-                                                                                                       !2
-                                                                                                       !1)
-                                                                                                  , (delay
-                                                                                                       !5)
-                                                                                                  , (delay
-                                                                                                       (force
-                                                                                                          (case
-                                                                                                             (constr 0
-                                                                                                                [ (!16
-                                                                                                                     !1
-                                                                                                                     !2)
-                                                                                                                , (delay
-                                                                                                                     !6)
-                                                                                                                , (delay
-                                                                                                                     (case
-                                                                                                                        (constr 0
-                                                                                                                           [ (!18
+                                                                                       force
+                                                                                         (case
+                                                                                            (constr 0
+                                                                                               [ (!15
+                                                                                                    !2
+                                                                                                    !1)
+                                                                                               , (delay
+                                                                                                    !4)
+                                                                                               , (delay
+                                                                                                    (force
+                                                                                                       (case
+                                                                                                          (constr 0
+                                                                                                             [ (!15
+                                                                                                                  !1
+                                                                                                                  !2)
+                                                                                                             , (delay
+                                                                                                                  !5)
+                                                                                                             , (delay
+                                                                                                                  (case
+                                                                                                                     (constr 0
+                                                                                                                        [ (!17
+                                                                                                                             (!19
                                                                                                                                 (!20
-                                                                                                                                   (!21
-                                                                                                                                      !4)))
-                                                                                                                           , !6
-                                                                                                                           , !5 ])
-                                                                                                                        [ !17 ])) ])
-                                                                                                             [ !17 ]))) ])
-                                                                                               [ !17 ]))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                                                                   !3)))
+                                                                                                                        , !5
+                                                                                                                        , !4 ])
+                                                                                                                     [ !16 ])) ])
+                                                                                                          [ !16 ]))) ])
+                                                                                            [ !16 ]))
                                                                                       (!18
-                                                                                         !2))
-                                                                                   (!19
-                                                                                      !2))
+                                                                                         (!20
+                                                                                            !3)))
+                                                                                   (!17
+                                                                                      !1))
                                                                                 (!18
                                                                                    !2))
                                                                              (!14
@@ -4198,42 +4190,40 @@ hull.6 not member of hull 3 5 program
                                                                               (\!0 ->
                                                                                  (\!0 ->
                                                                                     (\!0 ->
-                                                                                       (\!0 ->
-                                                                                          force
-                                                                                            (case
-                                                                                               (constr 0
-                                                                                                  [ (!16
-                                                                                                       !2
-                                                                                                       !1)
-                                                                                                  , (delay
-                                                                                                       !6)
-                                                                                                  , (delay
-                                                                                                       (force
-                                                                                                          (case
-                                                                                                             (constr 0
-                                                                                                                [ (!16
-                                                                                                                     !1
-                                                                                                                     !2)
-                                                                                                                , (delay
-                                                                                                                     !5)
-                                                                                                                , (delay
-                                                                                                                     (case
-                                                                                                                        (constr 0
-                                                                                                                           [ (!18
+                                                                                       force
+                                                                                         (case
+                                                                                            (constr 0
+                                                                                               [ (!15
+                                                                                                    !2
+                                                                                                    !1)
+                                                                                               , (delay
+                                                                                                    !5)
+                                                                                               , (delay
+                                                                                                    (force
+                                                                                                       (case
+                                                                                                          (constr 0
+                                                                                                             [ (!15
+                                                                                                                  !1
+                                                                                                                  !2)
+                                                                                                             , (delay
+                                                                                                                  !4)
+                                                                                                             , (delay
+                                                                                                                  (case
+                                                                                                                     (constr 0
+                                                                                                                        [ (!17
+                                                                                                                             (!19
                                                                                                                                 (!20
-                                                                                                                                   (!21
-                                                                                                                                      !4)))
-                                                                                                                           , !6
-                                                                                                                           , !5 ])
-                                                                                                                        [ !17 ])) ])
-                                                                                                             [ !17 ]))) ])
-                                                                                               [ !17 ]))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                                                                   !3)))
+                                                                                                                        , !5
+                                                                                                                        , !4 ])
+                                                                                                                     [ !16 ])) ])
+                                                                                                          [ !16 ]))) ])
+                                                                                            [ !16 ]))
                                                                                       (!18
-                                                                                         !2))
-                                                                                   (!19
-                                                                                      !2))
+                                                                                         (!20
+                                                                                            !3)))
+                                                                                   (!17
+                                                                                      !1))
                                                                                 (!18
                                                                                    !2))
                                                                              (!14
@@ -4245,42 +4235,40 @@ hull.6 not member of hull 3 5 program
                                                                               (\!0 ->
                                                                                  (\!0 ->
                                                                                     (\!0 ->
-                                                                                       (\!0 ->
-                                                                                          force
-                                                                                            (case
-                                                                                               (constr 0
-                                                                                                  [ (!16
-                                                                                                       !2
-                                                                                                       !1)
-                                                                                                  , (delay
-                                                                                                       !5)
-                                                                                                  , (delay
-                                                                                                       (force
-                                                                                                          (case
-                                                                                                             (constr 0
-                                                                                                                [ (!16
-                                                                                                                     !1
-                                                                                                                     !2)
-                                                                                                                , (delay
-                                                                                                                     !6)
-                                                                                                                , (delay
-                                                                                                                     (case
-                                                                                                                        (constr 0
-                                                                                                                           [ (!18
+                                                                                       force
+                                                                                         (case
+                                                                                            (constr 0
+                                                                                               [ (!15
+                                                                                                    !2
+                                                                                                    !1)
+                                                                                               , (delay
+                                                                                                    !4)
+                                                                                               , (delay
+                                                                                                    (force
+                                                                                                       (case
+                                                                                                          (constr 0
+                                                                                                             [ (!15
+                                                                                                                  !1
+                                                                                                                  !2)
+                                                                                                             , (delay
+                                                                                                                  !5)
+                                                                                                             , (delay
+                                                                                                                  (case
+                                                                                                                     (constr 0
+                                                                                                                        [ (!17
+                                                                                                                             (!19
                                                                                                                                 (!20
-                                                                                                                                   (!21
-                                                                                                                                      !4)))
-                                                                                                                           , !6
-                                                                                                                           , !5 ])
-                                                                                                                        [ !17 ])) ])
-                                                                                                             [ !17 ]))) ])
-                                                                                               [ !17 ]))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                                                                   !3)))
+                                                                                                                        , !5
+                                                                                                                        , !4 ])
+                                                                                                                     [ !16 ])) ])
+                                                                                                          [ !16 ]))) ])
+                                                                                            [ !16 ]))
                                                                                       (!18
-                                                                                         !2))
-                                                                                   (!19
-                                                                                      !2))
+                                                                                         (!20
+                                                                                            !3)))
+                                                                                   (!17
+                                                                                      !1))
                                                                                 (!18
                                                                                    !2))
                                                                              (!14
@@ -4683,42 +4671,40 @@ intersection.intersection [2,4] [3,5] contains [3,4] program
                                                                                     (\!0 ->
                                                                                        (\!0 ->
                                                                                           (\!0 ->
-                                                                                             (\!0 ->
-                                                                                                force
-                                                                                                  (case
-                                                                                                     (constr 0
-                                                                                                        [ (!16
-                                                                                                             !2
-                                                                                                             !1)
-                                                                                                        , (delay
-                                                                                                             !5)
-                                                                                                        , (delay
-                                                                                                             (force
-                                                                                                                (case
-                                                                                                                   (constr 0
-                                                                                                                      [ (!16
-                                                                                                                           !1
-                                                                                                                           !2)
-                                                                                                                      , (delay
-                                                                                                                           !6)
-                                                                                                                      , (delay
-                                                                                                                           (case
-                                                                                                                              (constr 0
-                                                                                                                                 [ (!18
+                                                                                             force
+                                                                                               (case
+                                                                                                  (constr 0
+                                                                                                     [ (!15
+                                                                                                          !2
+                                                                                                          !1)
+                                                                                                     , (delay
+                                                                                                          !4)
+                                                                                                     , (delay
+                                                                                                          (force
+                                                                                                             (case
+                                                                                                                (constr 0
+                                                                                                                   [ (!15
+                                                                                                                        !1
+                                                                                                                        !2)
+                                                                                                                   , (delay
+                                                                                                                        !5)
+                                                                                                                   , (delay
+                                                                                                                        (case
+                                                                                                                           (constr 0
+                                                                                                                              [ (!17
+                                                                                                                                   (!19
                                                                                                                                       (!20
-                                                                                                                                         (!21
-                                                                                                                                            !4)))
-                                                                                                                                 , !5
-                                                                                                                                 , !6 ])
-                                                                                                                              [ !17 ])) ])
-                                                                                                                   [ !17 ]))) ])
-                                                                                                     [ !17 ]))
-                                                                                               (!19
-                                                                                                  !2))
+                                                                                                                                         !3)))
+                                                                                                                              , !4
+                                                                                                                              , !5 ])
+                                                                                                                           [ !16 ])) ])
+                                                                                                                [ !16 ]))) ])
+                                                                                                  [ !16 ]))
                                                                                             (!18
-                                                                                               !2))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                               (!20
+                                                                                                  !3)))
+                                                                                         (!17
+                                                                                            !1))
                                                                                       (!18
                                                                                          !2))
                                                                                    (!14
@@ -4730,42 +4716,40 @@ intersection.intersection [2,4] [3,5] contains [3,4] program
                                                                                     (\!0 ->
                                                                                        (\!0 ->
                                                                                           (\!0 ->
-                                                                                             (\!0 ->
-                                                                                                force
-                                                                                                  (case
-                                                                                                     (constr 0
-                                                                                                        [ (!16
-                                                                                                             !2
-                                                                                                             !1)
-                                                                                                        , (delay
-                                                                                                             !6)
-                                                                                                        , (delay
-                                                                                                             (force
-                                                                                                                (case
-                                                                                                                   (constr 0
-                                                                                                                      [ (!16
-                                                                                                                           !1
-                                                                                                                           !2)
-                                                                                                                      , (delay
-                                                                                                                           !5)
-                                                                                                                      , (delay
-                                                                                                                           (case
-                                                                                                                              (constr 0
-                                                                                                                                 [ (!18
+                                                                                             force
+                                                                                               (case
+                                                                                                  (constr 0
+                                                                                                     [ (!15
+                                                                                                          !2
+                                                                                                          !1)
+                                                                                                     , (delay
+                                                                                                          !5)
+                                                                                                     , (delay
+                                                                                                          (force
+                                                                                                             (case
+                                                                                                                (constr 0
+                                                                                                                   [ (!15
+                                                                                                                        !1
+                                                                                                                        !2)
+                                                                                                                   , (delay
+                                                                                                                        !4)
+                                                                                                                   , (delay
+                                                                                                                        (case
+                                                                                                                           (constr 0
+                                                                                                                              [ (!17
+                                                                                                                                   (!19
                                                                                                                                       (!20
-                                                                                                                                         (!21
-                                                                                                                                            !4)))
-                                                                                                                                 , !5
-                                                                                                                                 , !6 ])
-                                                                                                                              [ !17 ])) ])
-                                                                                                                   [ !17 ]))) ])
-                                                                                                     [ !17 ]))
-                                                                                               (!19
-                                                                                                  !2))
+                                                                                                                                         !3)))
+                                                                                                                              , !4
+                                                                                                                              , !5 ])
+                                                                                                                           [ !16 ])) ])
+                                                                                                                [ !16 ]))) ])
+                                                                                                  [ !16 ]))
                                                                                             (!18
-                                                                                               !2))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                               (!20
+                                                                                                  !3)))
+                                                                                         (!17
+                                                                                            !1))
                                                                                       (!18
                                                                                          !2))
                                                                                    (!14
@@ -5187,42 +5171,40 @@ intersection.intersection [3,5] [2,4] contains [3,4] program
                                                                                     (\!0 ->
                                                                                        (\!0 ->
                                                                                           (\!0 ->
-                                                                                             (\!0 ->
-                                                                                                force
-                                                                                                  (case
-                                                                                                     (constr 0
-                                                                                                        [ (!16
-                                                                                                             !2
-                                                                                                             !1)
-                                                                                                        , (delay
-                                                                                                             !5)
-                                                                                                        , (delay
-                                                                                                             (force
-                                                                                                                (case
-                                                                                                                   (constr 0
-                                                                                                                      [ (!16
-                                                                                                                           !1
-                                                                                                                           !2)
-                                                                                                                      , (delay
-                                                                                                                           !6)
-                                                                                                                      , (delay
-                                                                                                                           (case
-                                                                                                                              (constr 0
-                                                                                                                                 [ (!18
+                                                                                             force
+                                                                                               (case
+                                                                                                  (constr 0
+                                                                                                     [ (!15
+                                                                                                          !2
+                                                                                                          !1)
+                                                                                                     , (delay
+                                                                                                          !4)
+                                                                                                     , (delay
+                                                                                                          (force
+                                                                                                             (case
+                                                                                                                (constr 0
+                                                                                                                   [ (!15
+                                                                                                                        !1
+                                                                                                                        !2)
+                                                                                                                   , (delay
+                                                                                                                        !5)
+                                                                                                                   , (delay
+                                                                                                                        (case
+                                                                                                                           (constr 0
+                                                                                                                              [ (!17
+                                                                                                                                   (!19
                                                                                                                                       (!20
-                                                                                                                                         (!21
-                                                                                                                                            !4)))
-                                                                                                                                 , !5
-                                                                                                                                 , !6 ])
-                                                                                                                              [ !17 ])) ])
-                                                                                                                   [ !17 ]))) ])
-                                                                                                     [ !17 ]))
-                                                                                               (!19
-                                                                                                  !2))
+                                                                                                                                         !3)))
+                                                                                                                              , !4
+                                                                                                                              , !5 ])
+                                                                                                                           [ !16 ])) ])
+                                                                                                                [ !16 ]))) ])
+                                                                                                  [ !16 ]))
                                                                                             (!18
-                                                                                               !2))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                               (!20
+                                                                                                  !3)))
+                                                                                         (!17
+                                                                                            !1))
                                                                                       (!18
                                                                                          !2))
                                                                                    (!14
@@ -5234,42 +5216,40 @@ intersection.intersection [3,5] [2,4] contains [3,4] program
                                                                                     (\!0 ->
                                                                                        (\!0 ->
                                                                                           (\!0 ->
-                                                                                             (\!0 ->
-                                                                                                force
-                                                                                                  (case
-                                                                                                     (constr 0
-                                                                                                        [ (!16
-                                                                                                             !2
-                                                                                                             !1)
-                                                                                                        , (delay
-                                                                                                             !6)
-                                                                                                        , (delay
-                                                                                                             (force
-                                                                                                                (case
-                                                                                                                   (constr 0
-                                                                                                                      [ (!16
-                                                                                                                           !1
-                                                                                                                           !2)
-                                                                                                                      , (delay
-                                                                                                                           !5)
-                                                                                                                      , (delay
-                                                                                                                           (case
-                                                                                                                              (constr 0
-                                                                                                                                 [ (!18
+                                                                                             force
+                                                                                               (case
+                                                                                                  (constr 0
+                                                                                                     [ (!15
+                                                                                                          !2
+                                                                                                          !1)
+                                                                                                     , (delay
+                                                                                                          !5)
+                                                                                                     , (delay
+                                                                                                          (force
+                                                                                                             (case
+                                                                                                                (constr 0
+                                                                                                                   [ (!15
+                                                                                                                        !1
+                                                                                                                        !2)
+                                                                                                                   , (delay
+                                                                                                                        !4)
+                                                                                                                   , (delay
+                                                                                                                        (case
+                                                                                                                           (constr 0
+                                                                                                                              [ (!17
+                                                                                                                                   (!19
                                                                                                                                       (!20
-                                                                                                                                         (!21
-                                                                                                                                            !4)))
-                                                                                                                                 , !5
-                                                                                                                                 , !6 ])
-                                                                                                                              [ !17 ])) ])
-                                                                                                                   [ !17 ]))) ])
-                                                                                                     [ !17 ]))
-                                                                                               (!19
-                                                                                                  !2))
+                                                                                                                                         !3)))
+                                                                                                                              , !4
+                                                                                                                              , !5 ])
+                                                                                                                           [ !16 ])) ])
+                                                                                                                [ !16 ]))) ])
+                                                                                                  [ !16 ]))
                                                                                             (!18
-                                                                                               !2))
-                                                                                         (!19
-                                                                                            !2))
+                                                                                               (!20
+                                                                                                  !3)))
+                                                                                         (!17
+                                                                                            !1))
                                                                                       (!18
                                                                                          !2))
                                                                                    (!14

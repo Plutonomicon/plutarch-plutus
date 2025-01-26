@@ -21,56 +21,53 @@ auth_policy.0 program
          (\!0 ->
             (\!0 ->
                (\!0 !0 !0 ->
-                  (\!0 ->
-                     (\!0 ->
-                        force
-                          (case
-                             (constr 0
-                                [ ((\!0 ->
-                                      (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                        (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                                     (\!0 !0 ->
-                                        force
-                                          (case
-                                             (constr 0
-                                                [ !1
-                                                , (delay False)
-                                                , (delay
-                                                     (force
-                                                        (case
-                                                           (constr 0
-                                                              [ (equalsData
-                                                                   (!9 !1)
-                                                                   (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                                                              , (delay True)
-                                                              , (delay
-                                                                   (!2
-                                                                      (!8
-                                                                         !1))) ])
-                                                           [!7]))) ])
-                                             [(force (force chooseList))]))
-                                     (unListData
-                                        (!7
-                                           (!6
-                                              (!6
-                                                 (!6
-                                                    (!6
-                                                       (!6
-                                                          (!6
+                  force
+                    (case
+                       (constr 0
+                          [ ((\!0 ->
+                                (\!0 -> !2 (\!0 -> !2 !2 !1))
+                                  (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                               (\!0 !0 ->
+                                  force
+                                    (case
+                                       (constr 0
+                                          [ !1
+                                          , (delay False)
+                                          , (delay
+                                               (force
+                                                  (case
+                                                     (constr 0
+                                                        [ (equalsData
+                                                             (!7 !1)
+                                                             (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                                                        , (delay True)
+                                                        , (delay
+                                                             (!2 (!6 !1))) ])
+                                                     [!5]))) ])
+                                       [(force (force chooseList))]))
+                               (unListData
+                                  (!5
+                                     (!4
+                                        (!4
+                                           (!4
+                                              (!4
+                                                 (!4
+                                                    (!4
+                                                       (!4
+                                                          (!4
                                                              (!6
-                                                                (!6
-                                                                   !1)))))))))))
-                                , (delay ())
-                                , (delay error) ])
-                             [!5]))
-                       (!7 (!6 !1)))
-                    (!6 !1))
+                                                                (!5
+                                                                   (!6
+                                                                      !1))))))))))))))
+                          , (delay ())
+                          , (delay error) ])
+                       [!3]))
                  (force ifThenElse))
               (force tailList))
            (force headList))
         (\!0 -> !2 (unConstrData !1)))
      (force (force sndPair)))
-auth_policy.hash program 1.0.0 "581c6e0784eed00f20461910da27b75e69b38bb1172c6a4790a37ad36084"
+auth_policy.hash program 1.0.0 "581c87582b33f34631f86ef219a387db38423a4de1a9a610f8d7572a3287"
 auth_stake_validator.0 program
   1.0.0
   ((\!0 ->
@@ -78,53 +75,50 @@ auth_stake_validator.0 program
          (\!0 ->
             (\!0 ->
                (\!0 !0 !0 ->
-                  (\!0 ->
-                     (\!0 ->
-                        force
-                          (case
-                             (constr 0
-                                [ ((\!0 ->
-                                      (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                        (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                                     (\!0 !0 ->
-                                        force
-                                          (case
-                                             (constr 0
-                                                [ !1
-                                                , (delay False)
-                                                , (delay
-                                                     (force
-                                                        (case
-                                                           (constr 0
-                                                              [ (equalsData
-                                                                   (!9 !1)
-                                                                   (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                                                              , (delay True)
-                                                              , (delay
-                                                                   (!2
-                                                                      (!8
-                                                                         !1))) ])
-                                                           [!7]))) ])
-                                             [(force (force chooseList))]))
-                                     (unListData
-                                        (!7
-                                           (!6
-                                              (!6
-                                                 (!6
-                                                    (!6
-                                                       (!6
-                                                          (!6
+                  force
+                    (case
+                       (constr 0
+                          [ ((\!0 ->
+                                (\!0 -> !2 (\!0 -> !2 !2 !1))
+                                  (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                               (\!0 !0 ->
+                                  force
+                                    (case
+                                       (constr 0
+                                          [ !1
+                                          , (delay False)
+                                          , (delay
+                                               (force
+                                                  (case
+                                                     (constr 0
+                                                        [ (equalsData
+                                                             (!7 !1)
+                                                             (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                                                        , (delay True)
+                                                        , (delay
+                                                             (!2 (!6 !1))) ])
+                                                     [!5]))) ])
+                                       [(force (force chooseList))]))
+                               (unListData
+                                  (!5
+                                     (!4
+                                        (!4
+                                           (!4
+                                              (!4
+                                                 (!4
+                                                    (!4
+                                                       (!4
+                                                          (!4
                                                              (!6
-                                                                (!6
-                                                                   !1)))))))))))
-                                , (delay ())
-                                , (delay error) ])
-                             [!5]))
-                       (!7 (!6 !1)))
-                    (!6 !1))
+                                                                (!5
+                                                                   (!6
+                                                                      !1))))))))))))))
+                          , (delay ())
+                          , (delay error) ])
+                       [!3]))
                  (force ifThenElse))
               (force tailList))
            (force headList))
         (\!0 -> !2 (unConstrData !1)))
      (force (force sndPair)))
-auth_stake_validator.hash program 1.0.0 "581c6e0784eed00f20461910da27b75e69b38bb1172c6a4790a37ad36084"
+auth_stake_validator.hash program 1.0.0 "581c87582b33f34631f86ef219a387db38423a4de1a9a610f8d7572a3287"
