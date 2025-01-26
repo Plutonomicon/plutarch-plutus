@@ -247,7 +247,7 @@ pmatchDataRec (punsafeCoerce -> x) f =
     go (H rest) = H $ \getCurr ds cps ->
       let
         getNext :: (forall s'. Term s' (PBuiltinList PData) -> Term s' PData)
-        getNext xs = getCurr $ ptail # xs -- undefined -- phoistAcyclic $ plam $ \d -> getCurr #$ ptail # d
+        getNext xs = getCurr $ ptail # xs
         getCurrHoisted = phoistAcyclic $ plam getCurr
         parsed = punsafeCoerce $ getCurrHoisted # ds
        in

@@ -177,30 +177,37 @@ deriving via
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PExtended a)
 
+-- phoistAcyclic is used because comparators generates very large code.
 instance (POrd a, PIsData a) => POrd (PExtended a) where
-  a #<= b =
-    pmatch a $ \a' ->
-      pmatch b $ \b' ->
-        case (a', b') of
-          (PNegInf, PNegInf) -> pconstant True
-          (PNegInf, _) -> pconstant True
-          (_, PNegInf) -> pconstant False
-          (PPosInf, PPosInf) -> pconstant True
-          (_, PPosInf) -> pconstant True
-          (PPosInf, _) -> pconstant False
-          (PFinite l, PFinite r) -> pfromData l #<= pfromData r
+  x #<= y = f # x # y
+    where
+      f = phoistAcyclic $
+        plam $ \a b ->
+          pmatch a $ \a' ->
+            pmatch b $ \b' ->
+              case (a', b') of
+                (PNegInf, PNegInf) -> pconstant True
+                (PNegInf, _) -> pconstant True
+                (_, PNegInf) -> pconstant False
+                (PPosInf, PPosInf) -> pconstant True
+                (_, PPosInf) -> pconstant True
+                (PPosInf, _) -> pconstant False
+                (PFinite l, PFinite r) -> pfromData l #<= pfromData r
 
-  a #< b =
-    pmatch a $ \a' ->
-      pmatch b $ \b' ->
-        case (a', b') of
-          (PNegInf, PNegInf) -> pconstant False
-          (PNegInf, _) -> pconstant True
-          (_, PNegInf) -> pconstant False
-          (PPosInf, PPosInf) -> pconstant False
-          (_, PPosInf) -> pconstant True
-          (PPosInf, _) -> pconstant False
-          (PFinite l, PFinite r) -> pfromData l #< pfromData r
+  x #< y = f # x # y
+    where
+      f = phoistAcyclic $
+        plam $ \a b ->
+          pmatch a $ \a' ->
+            pmatch b $ \b' ->
+              case (a', b') of
+                (PNegInf, PNegInf) -> pconstant False
+                (PNegInf, _) -> pconstant True
+                (_, PNegInf) -> pconstant False
+                (PPosInf, PPosInf) -> pconstant False
+                (_, PPosInf) -> pconstant True
+                (PPosInf, _) -> pconstant False
+                (PFinite l, PFinite r) -> pfromData l #< pfromData r
 
 {- | Check if a value is inside the given interval.
 
