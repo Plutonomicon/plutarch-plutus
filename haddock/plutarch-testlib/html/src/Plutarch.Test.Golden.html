@@ -39,7 +39,7 @@ To regenerate golden tests it is enough to remove @./goldens@ directory and reru
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="annot"><span class="hs-comment">{- | Opaque type representing tree of golden tests
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-44"></span><span class="hs-keyword">data</span><span> </span><span id="GoldenTestTree"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-var">GoldenTestTree</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-45"></span><span>  </span><span id="GoldenTestTree"><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-var">GoldenTestTree</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span>
@@ -49,7 +49,7 @@ To regenerate golden tests it is enough to remove @./goldens@ directory and reru
 </span><span id="line-49"></span><span class="annot"><span class="hs-comment">{- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
 by nested golden tests
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-54"></span><span class="annot"><a href="Plutarch.Test.Golden.html#plutarchGolden"><span class="hs-identifier hs-type">plutarchGolden</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-55"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
@@ -187,7 +187,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 
 Goldens in the group will be prefixed by the group name
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-104"></span><span class="annot"><a href="Plutarch.Test.Golden.html#goldenGroup"><span class="hs-identifier hs-type">goldenGroup</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span><span>
 </span><span id="line-105"></span><span id="goldenGroup"><span class="annot"><span class="annottext">goldenGroup :: TestName -&gt; [GoldenTestTree] -&gt; GoldenTestTree
@@ -196,7 +196,7 @@ Goldens in the group will be prefixed by the group name
 </span><span id="line-106"></span><span>
 </span><span id="line-107"></span><span class="annot"><span class="hs-comment">{- | Like `Plutarch.Test.Unit.testEval` but will append to goldens created by enclosing `plutarchGolden`
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-111"></span><span id="local-6989586621679229834"><span class="annot"><a href="Plutarch.Test.Golden.html#goldenEval"><span class="hs-identifier hs-type">goldenEval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679229834"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
 </span><span id="line-112"></span><span id="goldenEval"><span class="annot"><span class="annottext">goldenEval :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
@@ -206,7 +206,7 @@ forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree
 </span><span id="line-113"></span><span>
 </span><span id="line-114"></span><span class="annot"><span class="hs-comment">{- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-118"></span><span id="local-6989586621679230079"><span class="annot"><a href="Plutarch.Test.Golden.html#goldenEvalFail"><span class="hs-identifier hs-type">goldenEvalFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230079"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Golden.html#GoldenTestTree"><span class="hs-identifier hs-type">GoldenTestTree</span></a></span></span><span>
 </span><span id="line-119"></span><span id="goldenEvalFail"><span class="annot"><span class="annottext">goldenEvalFail :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; GoldenTestTree

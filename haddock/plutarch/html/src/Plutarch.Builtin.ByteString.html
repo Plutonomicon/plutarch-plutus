@@ -92,11 +92,11 @@ computed with. Instead, it ensures certain operations' type safety while also
 allowing more sensible signatures. If you want to do anything with 'PByte's,
 we recommend converting them to 'PInteger's first.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-67"></span><span class="hs-keyword">newtype</span><span> </span><span id="PByte"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-var">PByte</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610951"><span class="annot"><a href="#local-6989586621679610951"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PByte"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-var">PByte</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610951"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-68"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-69"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-70"></span><span>      </span><span id="local-6989586621679610953"><span id="local-6989586621679610955"><span class="annot"><span class="annottext">(forall x. PByte s -&gt; Rep (PByte s) x)
 -&gt; (forall x. Rep (PByte s) x -&gt; PByte s) -&gt; Generic (PByte s)
 forall x. Rep (PByte s) x -&gt; PByte s
@@ -169,11 +169,11 @@ most-significant-last. See
 [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#representation)
 for more details on this.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-87"></span><span class="hs-keyword">newtype</span><span> </span><span id="PEndianness"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PEndianness"><span class="hs-identifier hs-var">PEndianness</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611018"><span class="annot"><a href="#local-6989586621679611018"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PEndianness"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PEndianness"><span class="hs-identifier hs-var">PEndianness</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679611018"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-88"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-89"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-89"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-90"></span><span>      </span><span id="local-6989586621679611021"><span id="local-6989586621679611023"><span class="annot"><span class="annottext">(forall x. PEndianness s -&gt; Rep (PEndianness s) x)
 -&gt; (forall x. Rep (PEndianness s) x -&gt; PEndianness s)
 -&gt; Generic (PEndianness s)
@@ -210,7 +210,7 @@ to :: Rep (PEndianness s) -&gt; PEndianness s
 </span><span id="line-93"></span><span>
 </span><span id="line-94"></span><span class="annot"><span class="hs-comment">{- | Indicates the conversion should be most-significant-first.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-98"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pmostSignificantFirst"><span class="hs-identifier hs-type">pmostSignificantFirst</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610806"><span class="annot"><a href="#local-6989586621679610806"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610806"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span>
 </span><span id="line-99"></span><span id="pmostSignificantFirst"><span class="annot"><span class="annottext">pmostSignificantFirst :: forall (s :: S). Term s PEndianness
@@ -222,7 +222,7 @@ forall (s :: S). Term s PBool
 </span><span id="line-100"></span><span>
 </span><span id="line-101"></span><span class="annot"><span class="hs-comment">{- | Indicates the conversion should be most-significant-last.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-105"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pmostSignificantLast"><span class="hs-identifier hs-type">pmostSignificantLast</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611055"><span class="annot"><a href="#local-6989586621679611055"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679611055"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PEndianness"><span class="hs-identifier hs-type">PEndianness</span></a></span><span>
 </span><span id="line-106"></span><span id="pmostSignificantLast"><span class="annot"><span class="annottext">pmostSignificantLast :: forall (s :: S). Term s PEndianness
@@ -234,7 +234,7 @@ forall (s :: S). Term s PBool
 </span><span id="line-107"></span><span>
 </span><span id="line-108"></span><span class="annot"><span class="hs-comment">{- | Indicates that padding semantics should be used.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-112"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#ppadding"><span class="hs-identifier hs-type">ppadding</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610813"><span class="annot"><a href="#local-6989586621679610813"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610813"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PLogicOpSemantics"><span class="hs-identifier hs-type">PLogicOpSemantics</span></a></span><span>
 </span><span id="line-113"></span><span id="ppadding"><span class="annot"><span class="annottext">ppadding :: forall (s :: S). Term s PLogicOpSemantics
@@ -246,7 +246,7 @@ forall (s :: S). Term s PBool
 </span><span id="line-114"></span><span>
 </span><span id="line-115"></span><span class="annot"><span class="hs-comment">{- | Indicates that truncation semantics should be used.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-119"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#ptruncation"><span class="hs-identifier hs-type">ptruncation</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611056"><span class="annot"><a href="#local-6989586621679611056"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679611056"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PLogicOpSemantics"><span class="hs-identifier hs-type">PLogicOpSemantics</span></a></span><span>
 </span><span id="line-120"></span><span id="ptruncation"><span class="annot"><span class="annottext">ptruncation :: forall (s :: S). Term s PLogicOpSemantics
@@ -261,7 +261,7 @@ truncation semantics. See
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#padding-versus-truncation-semantics)
 for more details on this.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-129"></span><span class="hs-keyword">newtype</span><span> </span><span id="PLogicOpSemantics"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PLogicOpSemantics"><span class="hs-identifier hs-var">PLogicOpSemantics</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611057"><span class="annot"><a href="#local-6989586621679611057"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PLogicOpSemantics"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PLogicOpSemantics"><span class="hs-identifier hs-var">PLogicOpSemantics</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679611057"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-130"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611060"><span id="local-6989586621679611062"><span class="annot"><span class="annottext">(forall x. PLogicOpSemantics s -&gt; Rep (PLogicOpSemantics s) x)
@@ -307,7 +307,7 @@ to :: Rep (PLogicOpSemantics s) -&gt; PLogicOpSemantics s
 The 'PLogicOpSemantics' argument specifies what should be done if the lengths
 of the two 'PByteString' arguments do not match.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-140"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pandBS"><span class="hs-identifier hs-type">pandBS</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-141"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610821"><span class="annot"><a href="#local-6989586621679610821"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
@@ -331,7 +331,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 The 'PLogicOpSemantics' argument specifies what should be done if the lengths
 of the two 'PByteString' arguments do not match.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-152"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#porBS"><span class="hs-identifier hs-type">porBS</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-153"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611095"><span class="annot"><a href="#local-6989586621679611095"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
@@ -355,7 +355,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 The 'PLogicOpSemantics' argument specifies what should be done if the lengths
 of the two 'PByteString' arguments do not match.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-164"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pxorBS"><span class="hs-identifier hs-type">pxorBS</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-165"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679611097"><span class="annot"><a href="#local-6989586621679611097"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
@@ -377,7 +377,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-169"></span><span class="annot"><span class="hs-comment">{- | Perform the logical complement of a 'PByteString', as per
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bitwiselogicalcomplement).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-174"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pcomplementBS"><span class="hs-identifier hs-type">pcomplementBS</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-175"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610825"><span class="annot"><a href="#local-6989586621679610825"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
@@ -391,7 +391,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-179"></span><span class="annot"><span class="hs-comment">{- | Given a desired length and a 'PByte', construct a 'PByteString' of the
 specified length (0 if negative) consisting entirely of that 'PByte'.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-184"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#preplicateBS"><span class="hs-identifier hs-type">preplicateBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610827"><span class="annot"><a href="#local-6989586621679610827"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610827"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-type">PByte</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-185"></span><span id="preplicateBS"><span class="annot"><span class="annottext">preplicateBS :: forall (s :: S). Term s (PInteger :--&gt; (PByte :--&gt; PByteString))
@@ -402,7 +402,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-186"></span><span>
 </span><span id="line-187"></span><span class="annot"><span class="hs-comment">{- | Prepend a 'PByte' to a 'PByteString.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-191"></span><span id="local-6989586621679610830"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pconsBS"><span class="hs-identifier hs-type">pconsBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610830"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-type">PByte</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span></span><span>
 </span><span id="line-192"></span><span id="pconsBS"><span class="annot"><span class="annottext">pconsBS :: forall (s :: S). Term s (PByte :--&gt; (PByteString :--&gt; PByteString))
@@ -413,7 +413,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-193"></span><span>
 </span><span id="line-194"></span><span class="annot"><span class="hs-comment">{- | Convert a 'PByte' into its corresponding 'PInteger'.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-198"></span><span id="local-6989586621679610832"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pbyteToInteger"><span class="hs-identifier hs-type">pbyteToInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610832"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-type">PByte</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span></span><span>
 </span><span id="line-199"></span><span id="pbyteToInteger"><span class="annot"><span class="annottext">pbyteToInteger :: forall (s :: S). Term s (PByte :--&gt; PInteger)
@@ -441,7 +441,7 @@ forall (b :: PType) (a :: PType) (s :: S). Term s a -&gt; Term s b
 </span><span id="line-201"></span><span class="annot"><span class="hs-comment">{- | Try to convert a 'PInteger' into its corresponding 'PByte'. This operation
 unchecked: use with care.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-206"></span><span id="local-6989586621679610847"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pintegerToByte"><span class="hs-identifier hs-type">pintegerToByte</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610847"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-type">PByte</span></a></span><span class="hs-special">)</span></span><span>
 </span><span id="line-207"></span><span id="pintegerToByte"><span class="annot"><span class="annottext">pintegerToByte :: forall (s :: S). Term s (PInteger :--&gt; PByte)
@@ -492,7 +492,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-220"></span><span class="annot"><span class="hs-comment">{- | Given a valid index into a 'PByteString', returns the 'PByte' at that
 index. Will crash if given an out-of-bounds index.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-225"></span><span id="local-6989586621679610854"><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pindexBS"><span class="hs-identifier hs-type">pindexBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679610854"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByte"><span class="hs-identifier hs-type">PByte</span></a></span><span class="hs-special">)</span></span><span>
 </span><span id="line-226"></span><span id="pindexBS"><span class="annot"><span class="annottext">pindexBS :: forall (s :: S). Term s (PByteString :--&gt; (PInteger :--&gt; PByte))
@@ -559,7 +559,7 @@ forall a. a -&gt; [a] -&gt; [a]
 </span><span id="line-236"></span><span class="annot"><span class="hs-comment">{- | Convert a 'PByteString' into a 'PInteger', as per
 [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinbytestringtointeger).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-241"></span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#pbyteStringToInteger"><span class="hs-identifier hs-type">pbyteStringToInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-242"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679610868"><span class="annot"><a href="#local-6989586621679610868"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>

@@ -25,7 +25,7 @@
 </span><span id="line-25"></span><span>
 </span><span id="line-26"></span><span class="annot"><span class="hs-comment">{- | Assert that term compiled and evaluated without errors
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-30"></span><span id="local-6989586621679230923"><span class="annot"><a href="Plutarch.Test.Unit.html#testEval"><span class="hs-identifier hs-type">testEval</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679230923"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-31"></span><span id="testEval"><span class="annot"><span class="annottext">testEval :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
@@ -77,7 +77,7 @@ forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
 </span><span id="line-36"></span><span>
 </span><span id="line-37"></span><span class="annot"><span class="hs-comment">{- | Assert that term compiled correctly but evaluated with errors
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-41"></span><span id="local-6989586621679231195"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalFail"><span class="hs-identifier hs-type">testEvalFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231195"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-42"></span><span id="testEvalFail"><span class="annot"><span class="annottext">testEvalFail :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
@@ -123,7 +123,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-47"></span><span>
 </span><span id="line-48"></span><span class="annot"><span class="hs-comment">{- | Assert that term failed to compile
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-52"></span><span id="local-6989586621679231210"><span class="annot"><a href="Plutarch.Test.Unit.html#testCompileFail"><span class="hs-identifier hs-type">testCompileFail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231210"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-53"></span><span id="testCompileFail"><span class="annot"><span class="annottext">testCompileFail :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
@@ -173,7 +173,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-59"></span><span class="annot"><span class="hs-comment">{- | Assert that term compiled and evaluated without errors and matches the expected value
 note that comparison is done on AST level, not by `Eq` or `PEq`
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-64"></span><span id="local-6989586621679231041"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalEqual"><span class="hs-identifier hs-type">testEvalEqual</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-65"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
@@ -275,7 +275,7 @@ TestName -&gt; a -&gt; a -&gt; Assertion
 without errors produced traces that match expected value. Note that this succeeds even if script
 evaluated to error if traces still match
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-87"></span><span id="local-6989586621679231048"><span class="annot"><a href="Plutarch.Test.Unit.html#testEvalEqualTraces"><span class="hs-identifier hs-type">testEvalEqualTraces</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231048"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">LogLevel</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-88"></span><span id="testEvalEqualTraces"><span class="annot"><span class="annottext">testEvalEqualTraces :: forall (a :: PType).
@@ -329,13 +329,13 @@ TestName -&gt; a -&gt; a -&gt; Assertion
 </span><a href="#local-6989586621679231428"><span class="hs-identifier hs-var">expected</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
 </span><a href="#local-6989586621679231431"><span class="hs-identifier hs-var">traces</span></a></span><span>
 </span><span id="line-93"></span><span>
-</span><span id="line-94"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-94"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-95"></span><span class="hs-keyword">data</span><span> </span><span id="TermResult"><span class="annot"><a href="Plutarch.Test.Unit.html#TermResult"><span class="hs-identifier hs-var">TermResult</span></a></span></span><span>
 </span><span id="line-96"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="FailedToCompile"><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToCompile"><span class="hs-identifier hs-var">FailedToCompile</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>
 </span><span id="line-97"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="FailedToEvaluate"><span class="annot"><a href="Plutarch.Test.Unit.html#FailedToEvaluate"><span class="hs-identifier hs-var">FailedToEvaluate</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">EvalError</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-98"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Evaluated"><span class="annot"><a href="Plutarch.Test.Unit.html#Evaluated"><span class="hs-identifier hs-var">Evaluated</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-99"></span><span>
-</span><span id="line-100"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-100"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-101"></span><span id="local-6989586621679231027"><span class="annot"><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-type">evalTermResult</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Config</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679231027"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Unit.html#TermResult"><span class="hs-identifier hs-type">TermResult</span></a></span></span><span>
 </span><span id="line-102"></span><span id="evalTermResult"><span class="annot"><span class="annottext">evalTermResult :: forall (a :: PType). Config -&gt; ClosedTerm a -&gt; TermResult
 </span><a href="Plutarch.Test.Unit.html#evalTermResult"><span class="hs-identifier hs-var hs-var">evalTermResult</span></a></span></span><span> </span><span id="local-6989586621679231432"><span class="annot"><span class="annottext">Config

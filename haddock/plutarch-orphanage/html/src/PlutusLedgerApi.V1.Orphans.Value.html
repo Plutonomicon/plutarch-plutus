@@ -45,13 +45,13 @@
 </span><span id="line-45"></span><span>  </span><span class="annot"><span class="hs-identifier">vectorOf</span></span><span class="hs-special">,</span><span>
 </span><span id="line-46"></span><span> </span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-49"></span><span id="local-6989586621679136791"><span id="local-6989586621679136798"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span></span></span><span>
 </span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-52"></span><span id="local-6989586621679136808"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Value.CurrencySymbol</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.TokenName</span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span></span><span>
 </span><span id="line-53"></span><span>
-</span><span id="line-54"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-54"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.AssetClass</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-56"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-57"></span><span>  </span><span id="local-6989586621679136829"><span class="annot"><span class="annottext">function :: forall b. (AssetClass -&gt; b) -&gt; AssetClass :-&gt; b
@@ -207,7 +207,7 @@ showList :: [UTxOValue] -&gt; ShowS
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
 </span><span id="line-129"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-130"></span><span>
-</span><span id="line-131"></span><span class="hs-comment">-- @since WIP</span><span>
+</span><span id="line-131"></span><span class="hs-comment">-- @since 1.1.0</span><span>
 </span><span id="line-132"></span><span id="local-6989586621679136917"><span id="local-6989586621679136922"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#UTxOValue"><span class="hs-identifier hs-type">UTxOValue</span></a></span></span></span><span>
 </span><span id="line-133"></span><span>
 </span><span id="line-134"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.2</span></span><span>
@@ -1317,7 +1317,7 @@ showList :: [MintValue] -&gt; ShowS
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
 </span><span id="line-394"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-395"></span><span>
-</span><span id="line-396"></span><span class="hs-comment">-- @since WIP</span><span>
+</span><span id="line-396"></span><span class="hs-comment">-- @since 1.1.0</span><span>
 </span><span id="line-397"></span><span id="local-6989586621679137321"><span id="local-6989586621679137325"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span></span></span><span>
 </span><span id="line-398"></span><span>
 </span><span id="line-399"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.3</span></span><span>

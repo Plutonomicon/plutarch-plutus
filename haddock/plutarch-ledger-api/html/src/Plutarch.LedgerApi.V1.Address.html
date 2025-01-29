@@ -39,7 +39,7 @@ to :: forall x. Rep (PAddress s) x -&gt; PAddress s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
 </span><span id="line-24"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-26"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-27"></span><span>      </span><span id="local-6989586621679317828"><span id="local-6989586621679317837"><span class="annot"><span class="annottext">All SListI (Code (PAddress s))
 All SListI (Code (PAddress s)) =&gt;
 (PAddress s -&gt; Rep (PAddress s))
@@ -95,7 +95,7 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-39"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-40"></span><span>      </span><span id="local-6989586621679317932"><span id="local-6989586621679317943"><span class="annot"><span class="annottext">(forall (s :: S). PAddress s -&gt; Term s (PInner PAddress))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b)
@@ -118,7 +118,7 @@ Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b
 </span><span id="line-41"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveAsDataStruct</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-43"></span><span>
-</span><span id="line-44"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-44"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-45"></span><span id="local-6989586621679317997"><span id="local-6989586621679318007"><span id="local-6989586621679318016"><span id="local-6989586621679318025"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
 </span><span id="line-46"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Address</span></span><span>
 </span><span id="line-47"></span><span>  </span><span class="hs-keyword">instance</span><span>

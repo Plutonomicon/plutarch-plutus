@@ -3,7 +3,7 @@
 
 
 @package plutarch
-@version 1.9.0
+@version 1.10.0
 
 module Plutarch.DataRepr.Internal.HList.Utils
 newtype Labeled sym a
@@ -125,8 +125,6 @@ evalScript :: Script -> (Either EvalError Script, ExBudget, [Text])
 evalScriptHuge :: Script -> (Either EvalError Script, ExBudget, [Text])
 
 -- | Evaluate a script without budget limit
---   
---   @since WIP
 evalScriptUnlimited :: Script -> (Either (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script, ExBudget, [Text])
 
 -- | Evaluate a script with a specific budget, returning the trace log and
@@ -202,8 +200,6 @@ compile :: Config -> ClosedTerm a -> Either Text Script
 
 -- | As <a>compile</a>, but performs UPLC optimizations. Furthermore, this
 --   will always elide tracing (as if with <a>NoTracing</a>).
---   
---   @since WIP
 compileOptimized :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Either Text Script
 compile' :: TermResult -> UTerm
 
@@ -427,60 +423,39 @@ pfix :: Term s (((a :--> b) :--> (a :--> b)) :--> (a :--> b))
 module Plutarch.Builtin.Bool
 
 -- | Builtin Plutus boolean.
---   
---   @since WIP
 data PBool (s :: S)
 PTrue :: PBool (s :: S)
 PFalse :: PBool (s :: S)
 
--- | @since WIP
 pbuiltinIfThenElse :: forall (a :: S -> Type) (s :: S). Term s (PBool :--> (a :--> (a :--> PDelayed a)))
 
 -- | Strict if-then-else. Emits slightly less code than the lazy version.
---   
---   @since WIP
 pif' :: forall (a :: S -> Type) (s :: S). Term s (PBool :--> (a :--> (a :--> a)))
 
 -- | Lazy if-then-else.
---   
---   @since WIP
 pif :: forall (a :: S -> Type) (s :: S). Term s PBool -> Term s a -> Term s a -> Term s a
 
 -- | Boolean negation.
---   
---   @since WIP
 pnot :: forall (s :: S). Term s (PBool :--> PBool)
 
 -- | Lazy AND for terms.
---   
---   @since WIP
 (#&&) :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
 infixr 3 #&&
 
 -- | Lazy OR for terms.
---   
---   @since WIP
 (#||) :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
 infixr 2 #||
 
 -- | Hoisted lazy OR at the Plutarch level.
---   
---   @since WIP
 por :: forall (s :: S). Term s (PBool :--> (PDelayed PBool :--> PDelayed PBool))
 
 -- | Hoisted lazy AND at the Plutarch level.
---   
---   @since WIP
 pand :: forall (s :: S). Term s (PBool :--> (PDelayed PBool :--> PDelayed PBool))
 
 -- | As <a>pand</a>, but strict.
---   
---   @since WIP
 pand' :: forall (s :: S). Term s (PBool :--> (PBool :--> PBool))
 
 -- | As <a>por</a>, but strict.
---   
---   @since WIP
 por' :: Term s (PBool :--> (PBool :--> PBool))
 
 -- | Essentially multi-way <a>pif</a>. More precisely, given a list of
@@ -498,8 +473,6 @@ por' :: Term s (PBool :--> (PBool :--> PBool))
 --   <pre>
 --   pif cond1 act1 (pif cond2 act2 act3)
 --   </pre>
---   
---   @since WIP
 pcond :: forall (a :: S -> Type) (s :: S). [(Term s PBool, Term s a)] -> Term s a -> Term s a
 ptrue :: Term (s :: S) PBool
 pfalse :: Term (s :: S) PBool
@@ -508,8 +481,6 @@ instance forall (s :: Plutarch.Internal.Term.S). GHC.Show.Show (Plutarch.Builtin
 module Plutarch.Builtin.Integer
 
 -- | A builtin Plutus integer.
---   
---   @since WIP
 data PInteger s
 
 -- | Performs modulo exponentiation. More precisely, <tt>pexpModInteger b e
@@ -521,8 +492,6 @@ data PInteger s
 --   This will error if the modulus is zero. When given a negative
 --   exponent, this will try to find a modular multiplicative inverse, and
 --   will error if none exists.
---   
---   @since WIP
 pexpModInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> (PInteger :--> PInteger)))
 peqInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PBool))
 pleInteger :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PBool))
@@ -551,96 +520,66 @@ PByteString :: Term s POpaque -> PByteString s
 --   safety while also allowing more sensible signatures. If you want to do
 --   anything with <a>PByte</a>s, we recommend converting them to
 --   <a>PInteger</a>s first.
---   
---   @since WIP
 newtype PByte (s :: S)
 PByte :: Term s POpaque -> PByte (s :: S)
 
 -- | Type designating whether logical operations should use padding or
 --   truncation semantics. See <a>CIP-122</a> for more details on this.
---   
---   @since WIP
 newtype PLogicOpSemantics (s :: S)
 PLogicOpSemantics :: Term s PBool -> PLogicOpSemantics (s :: S)
 
 -- | Type designating whether a conversion should be most-significant-first
 --   or most-significant-last. See <a>CIP-121</a> for more details on this.
---   
---   @since WIP
 newtype PEndianness (s :: S)
 PEndianness :: Term s PBool -> PEndianness (s :: S)
 
 -- | Indicates that padding semantics should be used.
---   
---   @since WIP
 ppadding :: forall (s :: S). Term s PLogicOpSemantics
 
 -- | Indicates that truncation semantics should be used.
---   
---   @since WIP
 ptruncation :: forall (s :: S). Term s PLogicOpSemantics
 
 -- | Indicates the conversion should be most-significant-first.
---   
---   @since WIP
 pmostSignificantFirst :: forall (s :: S). Term s PEndianness
 
 -- | Indicates the conversion should be most-significant-last.
---   
---   @since WIP
 pmostSignificantLast :: forall (s :: S). Term s PEndianness
 
 -- | Perform the logical AND of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
 --   should be done if the lengths of the two <a>PByteString</a> arguments
 --   do not match.
---   
---   @since WIP
 pandBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
 
 -- | Perform the logical OR of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
 --   should be done if the lengths of the two <a>PByteString</a> arguments
 --   do not match.
---   
---   @since WIP
 porBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
 
 -- | Perform the logical XOR of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
 --   should be done if the lengths of the two <a>PByteString</a> arguments
 --   do not match.
---   
---   @since WIP
 pxorBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
 
 -- | Perform the logical complement of a <a>PByteString</a>, as per
 --   <a>CIP-122</a>.
---   
---   @since WIP
 pcomplementBS :: forall (s :: S). Term s (PByteString :--> PByteString)
 
 -- | Given a desired length and a <a>PByte</a>, construct a
 --   <a>PByteString</a> of the specified length (0 if negative) consisting
 --   entirely of that <a>PByte</a>.
---   
---   @since WIP
 preplicateBS :: forall (s :: S). Term s (PInteger :--> (PByte :--> PByteString))
 
 -- | Prepend a <a>PByte</a> to a 'PByteString.
---   
---   @since WIP
 pconsBS :: Term s (PByte :--> (PByteString :--> PByteString))
 
 -- | Convert a <a>PByte</a> into its corresponding <a>PInteger</a>.
---   
---   @since WIP
 pbyteToInteger :: Term s (PByte :--> PInteger)
 
 -- | Try to convert a <a>PInteger</a> into its corresponding <a>PByte</a>.
 --   This operation unchecked: use with care.
---   
---   @since WIP
 pintegerToByte :: Term s (PInteger :--> PByte)
 
 -- | Slice a <a>PByteString</a> with given start index and slice length.
@@ -656,8 +595,6 @@ plengthBS :: Term s (PByteString :--> PInteger)
 -- | Given a valid index into a <a>PByteString</a>, returns the
 --   <a>PByte</a> at that index. Will crash if given an out-of-bounds
 --   index.
---   
---   @since WIP
 pindexBS :: Term s (PByteString :--> (PInteger :--> PByte))
 
 -- | Interpret a hex string as a PByteString.
@@ -665,8 +602,6 @@ phexByteStr :: HasCallStack => String -> Term s PByteString
 
 -- | Convert a <a>PByteString</a> into a <a>PInteger</a>, as per
 --   <a>CIP-121</a>.
---   
---   @since WIP
 pbyteStringToInteger :: forall (s :: S). Term s (PEndianness :--> (PByteString :--> PInteger))
 
 -- | Converts a <a>PInteger</a> into a <a>PByteString</a>, given a desired
@@ -906,11 +841,9 @@ class PVariant' a => PVariant'' a
 class PCovariant' a => PCovariant'' a
 class PContravariant' a => PContravariant'' a
 
--- | @since WIP
 newtype DeriveNewtypePlutusType (a :: S -> Type) s
 DeriveNewtypePlutusType :: a s -> DeriveNewtypePlutusType (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveNewtypePlutusType:DeriveNewtypePlutusType] :: DeriveNewtypePlutusType (a :: S -> Type) s -> a s
 
 -- | This is a cursed derivation strategy that will give you
@@ -956,11 +889,9 @@ instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Unit.PUnit
 
 module Plutarch.Repr.Newtype
 
--- | @since WIP
 newtype DeriveNewtypePlutusType (a :: S -> Type) s
 DeriveNewtypePlutusType :: a s -> DeriveNewtypePlutusType (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveNewtypePlutusType:DeriveNewtypePlutusType] :: DeriveNewtypePlutusType (a :: S -> Type) s -> a s
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S) (pt :: Plutarch.Internal.Term.PType). (Generics.SOP.Universe.Generic (a s), (Generics.SOP.Universe.Code (a s) :: [[GHC.Types.Type]]) GHC.Types.~ ((':) @[GHC.Types.Type] ((':) @GHC.Types.Type (Plutarch.Internal.Term.Term s pt) ('[] @GHC.Types.Type)) ('[] @[GHC.Types.Type]) :: [[GHC.Types.Type]])) => Plutarch.Repr.Newtype.H s a pt
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (pt :: Plutarch.Internal.Term.S -> GHC.Types.Type). ((pt :: (Plutarch.Internal.Term.S -> GHC.Types.Type)) GHC.Types.~ (Plutarch.Repr.Newtype.UnTermSingle (Data.SOP.Constraint.Head @GHC.Types.Type (Data.SOP.Constraint.Head @[GHC.Types.Type] (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S))))) :: (Plutarch.Internal.Term.S -> GHC.Types.Type)), forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Newtype.H s a pt) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Newtype.DeriveNewtypePlutusType a)
@@ -1125,8 +1056,6 @@ evalScriptHuge :: Script -> (Either EvalError Script, ExBudget, [Text])
 evalScript' :: ExBudget -> Script -> (Either (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script, ExBudget, [Text])
 
 -- | Evaluate a script without budget limit
---   
---   @since WIP
 evalScriptUnlimited :: Script -> (Either (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script, ExBudget, [Text])
 type EvalError = (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
 
@@ -1377,8 +1306,6 @@ prettyTerm :: Config -> ClosedTerm a -> Doc ()
 
 -- | Same as <a>prettyTerm</a> but also includes the execution budget and
 --   script size
---   
---   @since WIP
 prettyTermAndCost :: forall a. Config -> ClosedTerm a -> Doc ()
 
 -- | Non-partial <a>prettyTerm</a>.
@@ -1418,8 +1345,6 @@ module Plutarch.Unroll
 
 -- | This is simplified version of <tt>punrollBound'</tt> without doing
 --   additional recursion on Haskell level value.
---   
---   @since WIP
 punrollBound :: forall a b s. Integer -> Term s (a :--> b) -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 
 -- | The first argument specifies the unrolling depth. The second argument
@@ -1437,14 +1362,10 @@ punrollBound :: forall a b s. Integer -> Term s (a :--> b) -> (Term s (a :--> b)
 --   Haskell-level value for constant replacement is only practical on a
 --   single branch recursion with constant value that needs to be added on
 --   each step. <tt>plength</tt> is one of the niche use case.
---   
---   @since WIP
 punrollBound' :: forall a b c s. Integer -> (c -> Term s (a :--> b)) -> ((c -> Term s (a :--> b)) -> c -> Term s (a :--> b)) -> c -> Term s (a :--> b)
 
 -- | Unroll given amount of steps, and for rest, uses <a>pfix</a> to
 --   support unbound recursion.
---   
---   @since WIP
 punrollUnbound :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 
 -- | Uses <a>pfix</a> to recurse unrolled function itself. Unlike
@@ -1453,8 +1374,6 @@ punrollUnbound :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> 
 --   
 --   This should perform better than <tt>punrollUnbound</tt> when a
 --   function requires a large recursion depth.
---   
---   @since WIP
 punrollUnboundWhole :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 
 module Plutarch.Unsafe
@@ -1523,8 +1442,6 @@ module Plutarch.Internal.Lift
 --   automatically follow these laws.
 --   
 --   Together, these imply <tt>plift . pconstant = id</tt>.
---   
---   @since WIP
 class PlutusType a => PLiftable (a :: S -> Type) where {
     type AsHaskell a :: Type;
     type PlutusRepr a :: Type;
@@ -1548,8 +1465,6 @@ plutToRepr :: PLiftable a => (forall (s :: S). PLifted s a) -> Either LiftError 
 
 -- | Used with <tt>fromPlutarch</tt> methods to give additional information
 --   about why evaluating a Plutarch term into a Haskell value went wrong.
---   
---   @since WIP
 data LiftError
 
 -- | Evaluation failed for some reason.
@@ -1569,8 +1484,6 @@ OtherLiftError :: Text -> LiftError
 
 -- | Given a Haskell-level representation of a Plutarch term, transform it
 --   into its equivalent term.
---   
---   @since WIP
 pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Term s a
 
 -- | Given a closed Plutarch term, compile and evaluate it, then produce
@@ -1578,15 +1491,11 @@ pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Ter
 --   somehow, this will call <a>error</a>: if you need to 'trap' these
 --   outcomes and handle them differently somehow, use <a>reprToPlut</a>
 --   and <a>reprToHask</a> manually.
---   
---   @since WIP
 plift :: forall (a :: S -> Type). PLiftable a => (forall (s :: S). Term s a) -> AsHaskell a
 
 -- | <tt>via</tt>-deriving helper, indicating that <tt>a</tt> has a
 --   Haskell-level equivalent <tt>h</tt> that is directly part of the
 --   Plutus default universe (instead of by way of an encoding).
---   
---   @since WIP
 newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 DeriveBuiltinPLiftable :: a s -> DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 
@@ -1594,16 +1503,12 @@ DeriveBuiltinPLiftable :: a s -> DeriveBuiltinPLiftable (a :: S -> Type) (h :: T
 --   Haskell-level equivalent <tt>h</tt> by way of its <tt>Data</tt>
 --   encoding, rather than by <tt>h</tt> being directly part of the Plutus
 --   default universe.
---   
---   @since WIP
 newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 DeriveDataPLiftable :: a s -> DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 
 -- | <tt>via</tt>-deriving helper, indicating that <tt>wrapper</tt> has a
 --   Haskell-level equivalent <tt>h</tt> by way <tt>PInner wrapper</tt>, up
 --   to coercibility.
---   
---   @since WIP
 newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
 DeriveNewtypePLiftable :: wrapper s -> DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
 
@@ -1611,20 +1516,14 @@ DeriveNewtypePLiftable :: wrapper s -> DeriveNewtypePLiftable (wrapper :: S -> T
 --   equivalent directly. This is unsafe: we cannot verify (in general)
 --   that <tt>h</tt> can be represented sensibly as an <tt>a</tt>, so use
 --   this with care.
---   
---   @since WIP
 unsafeHaskToUni :: forall (h :: Type) (a :: S -> Type) (s :: S). DefaultUni `Includes` h => h -> PLifted s a
 
 -- | Valid definition of <a>reprToPlut</a> if <tt>PlutusRepr a</tt> is in
 --   the Plutus universe.
---   
---   @since WIP
 reprToPlutUni :: forall (a :: S -> Type) (s :: S). (PLiftable a, DefaultUni `Includes` PlutusRepr a) => PlutusRepr a -> PLifted s a
 
 -- | Valid definition of <a>plutToRepr</a> if <tt>PlutusRepr a</tt> is in
 --   the Plutus universe.
---   
---   @since WIP
 plutToReprUni :: forall (a :: S -> Type). (PLiftable a, DefaultUni `Includes` PlutusRepr a) => (forall (s :: S). PLifted s a) -> Either LiftError (PlutusRepr a)
 
 -- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
@@ -1633,38 +1532,27 @@ plutToReprUni :: forall (a :: S -> Type). (PLiftable a, DefaultUni `Includes` Pl
 --   
 --   This is used for coercing Plutarch terms at Haskell level with `coerce
 --   :: PLifted s a -&gt; PLifted s b` for <tt>via</tt>-deriving helpers.
---   
---   @since WIP
 newtype PLifted (s :: S) (a :: S -> Type)
 PLifted :: Term s POpaque -> PLifted (s :: S) (a :: S -> Type)
 
--- | @since WIP
 mkPLifted :: Term s a -> PLifted s a
 
--- | @since WIP
 getPLifted :: PLifted s a -> Term s a
 
 -- | Use this as <a>PlutusRepr</a> when defining <a>PLiftable</a> instances
 --   for Scott encoded types.
---   
---   @since WIP
 newtype PLiftedClosed (a :: S -> Type)
 PLiftedClosed :: (forall (s :: S). Term s POpaque) -> PLiftedClosed (a :: S -> Type)
 [$sel:unPLiftedClosed:PLiftedClosed] :: PLiftedClosed (a :: S -> Type) -> forall (s :: S). Term s POpaque
 
--- | @since WIP
 getPLiftedClosed :: forall (a :: S -> Type). PLiftedClosed a -> forall (s :: S). Term s a
 
--- | @since WIP
 mkPLiftedClosed :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> PLiftedClosed a
 
--- | @since WIP
 pliftedToClosed :: forall (a :: S -> Type). (forall (s :: S). PLifted s a) -> PLiftedClosed a
 
--- | @since WIP
 pliftedFromClosed :: forall (a :: S -> Type) (s :: S). PLiftedClosed a -> PLifted s a
 
--- | @since WIP
 punsafeCoercePLifted :: PLifted s a -> PLifted s b
 instance GHC.Show.Show Plutarch.Internal.Lift.LiftError
 instance GHC.Classes.Eq Plutarch.Internal.Lift.LiftError
@@ -1718,85 +1606,62 @@ instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Elem
 
 module Plutarch.Repr.Internal
 
--- | @since WIP
 newtype PStruct (struct :: [[S -> Type]]) (s :: S)
 PStruct :: SOP (Term s) struct -> PStruct (struct :: [[S -> Type]]) (s :: S)
 
--- | @since WIP
 [$sel:unPStruct:PStruct] :: PStruct (struct :: [[S -> Type]]) (s :: S) -> SOP (Term s) struct
 
--- | @since WIP
 newtype PRec (struct :: [S -> Type]) (s :: S)
 PRec :: NP (Term s) struct -> PRec (struct :: [S -> Type]) (s :: S)
 
--- | @since WIP
 [$sel:unPRec:PRec] :: PRec (struct :: [S -> Type]) (s :: S) -> NP (Term s) struct
 
--- | @since WIP
 pletL :: All SListI as => SOP (Term s) as -> (SOP (Term s) as -> Term s r) -> Term s r
 
--- | @since WIP
 grecEq :: forall (s :: S) (struct :: [S -> Type]). All PEq struct => NP (Term s) struct -> NP (Term s) struct -> Term s PBool
 
--- | @since WIP
 gstructEq :: forall (s :: S) (struct :: [[S -> Type]]). All2 PEq struct => SOP (Term s) struct -> SOP (Term s) struct -> Term s PBool
 
 -- | This function handles optimization of function that require multiple
 --   handlers by checking hashes of each | handler item and merging them in
 --   a way it will minimize size and cost of all computation
---   
---   @since WIP
 groupHandlers :: forall (s :: S) (r :: S -> Type). [(Integer, Term s r)] -> Term s PInteger -> Term s r
 
--- | @since WIP
 class (Generic (a s), AllZipN @Type (Prod SOP) (LiftedCoercible I (Term s)) (Code (a s)) struct, AllZipN @Type (Prod SOP) (LiftedCoercible (Term s) I) struct (Code (a s))) => StructSameRepr s a struct
 
--- | @since WIP
 type family UnTermRec (struct :: [Type]) :: [S -> Type]
 
--- | @since WIP
 type UnTermStruct x = UnTermStruct' (Code x)
 
--- | @since WIP
 type RecTypePrettyError struct = RecTypePrettyError' struct ~ 'True
 instance forall l1 (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S) (struct :: l1). (Generics.SOP.Universe.Generic (a s), Data.SOP.Constraint.AllZipN @GHC.Types.Type @[[GHC.Types.Type]] @GHC.Types.Type @Plutarch.Internal.Term.PType @[[GHC.Types.Type]] @l1 (Data.SOP.Classes.Prod @GHC.Types.Type @[[GHC.Types.Type]] (Data.SOP.NS.SOP @GHC.Types.Type)) (Data.SOP.Constraint.LiftedCoercible @{GHC.Types.Type} @{GHC.Types.Type} @{Plutarch.Internal.Term.PType} Data.SOP.BasicFunctors.I (Plutarch.Internal.Term.Term s)) (Generics.SOP.Universe.Code (a s)) struct, Data.SOP.Constraint.AllZipN @GHC.Types.Type @[[GHC.Types.Type]] @Plutarch.Internal.Term.PType @GHC.Types.Type @l1 @[[GHC.Types.Type]] (Data.SOP.Classes.Prod @GHC.Types.Type @[[GHC.Types.Type]] (Data.SOP.NS.SOP @GHC.Types.Type)) (Data.SOP.Constraint.LiftedCoercible @{Plutarch.Internal.Term.PType} @{GHC.Types.Type} @{GHC.Types.Type} (Plutarch.Internal.Term.Term s) Data.SOP.BasicFunctors.I) struct (Generics.SOP.Universe.Code (a s))) => Plutarch.Repr.Internal.StructSameRepr @{l1} s a struct
 
 module Plutarch.Repr.Scott
 
--- | @since WIP
 newtype PScottStruct (struct :: [[S -> Type]]) (s :: S)
 PScottStruct :: PStruct struct s -> PScottStruct (struct :: [[S -> Type]]) (s :: S)
 
--- | @since WIP
 [$sel:unPScottStruct:PScottStruct] :: PScottStruct (struct :: [[S -> Type]]) (s :: S) -> PStruct struct s
 
--- | @since WIP
 newtype PScottRec (struct :: [S -> Type]) (s :: S)
 PScottRec :: PRec struct s -> PScottRec (struct :: [S -> Type]) (s :: S)
 
--- | @since WIP
 [$sel:unPScottRec:PScottRec] :: PScottRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
 
--- | @since WIP
 newtype PScottStructInner a r s
 PScottStructInner :: Term s (ScottFn (ScottList a r) r) -> PScottStructInner a r s
 
--- | @since WIP
 newtype PScottRecInner a r s
 PScottRecInner :: Term s (ScottFn a r) -> PScottRecInner a r s
 
--- | @since WIP
 newtype DeriveAsScottStruct (a :: S -> Type) s
 DeriveAsScottStruct :: a s -> DeriveAsScottStruct (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveAsScottStruct:DeriveAsScottStruct] :: DeriveAsScottStruct (a :: S -> Type) s -> a s
 
--- | @since WIP
 newtype DeriveAsScottRec (a :: S -> Type) s
 DeriveAsScottRec :: a s -> DeriveAsScottRec (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveAsScottRec:DeriveAsScottRec] :: DeriveAsScottRec (a :: S -> Type) s -> a s
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, Plutarch.Repr.Scott.PScottStructConstraint struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Scott.PScottStruct struct)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct, Plutarch.Repr.Scott.PScottStructConstraint struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Scott.DeriveAsScottStruct a)
@@ -1809,41 +1674,31 @@ instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Plu
 
 module Plutarch.Repr.SOP
 
--- | @since WIP
 newtype PSOPStruct (struct :: [[S -> Type]]) (s :: S)
 PSOPStruct :: PStruct struct s -> PSOPStruct (struct :: [[S -> Type]]) (s :: S)
 
--- | @since WIP
 [$sel:unPSOPStruct:PSOPStruct] :: PSOPStruct (struct :: [[S -> Type]]) (s :: S) -> PStruct struct s
 
--- | @since WIP
 newtype PSOPRec (struct :: [S -> Type]) (s :: S)
 PSOPRec :: PRec struct s -> PSOPRec (struct :: [S -> Type]) (s :: S)
 
--- | @since WIP
 [$sel:unPSOPRec:PSOPRec] :: PSOPRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
 
 -- | <tt>via</tt>-derivation helper to derive <a>PlutusType</a> instance
 --   using SoP encoding. If your type has only one constructor prefer using
 --   <a>DeriveAsSOPRec</a> instead.
---   
---   @since WIP
 newtype DeriveAsSOPStruct (a :: S -> Type) s
 DeriveAsSOPStruct :: a s -> DeriveAsSOPStruct (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveAsSOPStruct:DeriveAsSOPStruct] :: DeriveAsSOPStruct (a :: S -> Type) s -> a s
 
 -- | <tt>via</tt>-derivation helper for SoP encoding, currently behaves
 --   exactly like <a>DeriveAsSOPStruct</a> but can be used only on types
 --   with a single constructor. It is separate to leave a room for future
 --   optimizations
---   
---   @since WIP
 newtype DeriveAsSOPRec (a :: S -> Type) s
 DeriveAsSOPRec :: a s -> DeriveAsSOPRec (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveAsSOPRec:DeriveAsSOPRec] :: DeriveAsSOPRec (a :: S -> Type) s -> a s
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, Plutarch.Repr.SOP.PSOPStructConstraint struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.PSOPStruct struct)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct, Plutarch.Repr.SOP.PSOPStructConstraint struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.DeriveAsSOPStruct a)
@@ -1856,25 +1711,18 @@ instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Plu
 
 module Plutarch.Maybe
 
--- | @since WIP
 data PMaybe (a :: S -> Type) (s :: S)
 PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
 PNothing :: PMaybe (a :: S -> Type) (s :: S)
 
 -- | Construct a <a>PJust</a> value.
---   
---   @since WIP
 pjust :: forall (a :: S -> Type) (s :: S). Term s (a :--> PMaybe a)
 
 -- | Construct a <a>PNothing</a> value.
---   
---   @since WIP
 pnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a)
 
 -- | Yields true if the given <a>PMaybe</a> value is of form
 --   <tt><a>PJust</a> _</tt>.
---   
---   @since WIP
 pisJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a :--> PBool)
 
 -- | Extracts the element out of a <a>PJust</a> and throws an error if its
@@ -1883,34 +1731,24 @@ pfromJust :: forall (a :: S -> Type) (s :: S). Term s (PMaybe a :--> a)
 
 -- | Extracts the element out of a <a>PJust</a> and throws a custom error
 --   if it's given a <a>PNothing</a>.
---   
---   @since WIP
 ptraceIfNothing :: forall (a :: S -> Type) (s :: S). Term s PString -> Term s (PMaybe a) -> Term s a
 
 -- | Extract a <a>PMaybe</a> by providing a default value in case of
 --   <a>PJust</a>.
---   
---   @since WIP
 pfromMaybe :: forall (a :: S -> Type) (s :: S). Term s (a :--> (PMaybe a :--> a))
 
 -- | Given a default value, a function and a <a>PMaybe</a> value, yields
 --   the default value if the <a>PMaybe</a> value is <a>PNothing</a> and
 --   applies the function to the value stored in the <a>PJust</a>
 --   otherwise.
---   
---   @since WIP
 pmaybe :: forall (b :: S -> Type) (a :: S -> Type) (s :: S). Term s (b :--> ((a :--> b) :--> (PMaybe a :--> b)))
 
 -- | Extract the value stored in a <a>PMaybe</a> container. If there's no
 --   value, throw an error with the given message.
---   
---   @since WIP
 passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> (PMaybe a :--> a))
 
 -- | Map underlying value if <a>PMaybe</a> is <a>PJust</a>, do nothing if
 --   it is <a>PNothing</a>
---   
---   @since WIP
 pmapMaybe :: Term s ((a :--> b) :--> (PMaybe a :--> PMaybe b))
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.Maybe.PMaybe a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Maybe.PMaybe a s)
@@ -1965,35 +1803,25 @@ module Plutarch.Internal.Ord
 --   </ol>
 --   
 --   Laws 8-12 hold if you use the defaults provided by this type class.
---   
---   @since WIP
 class PEq t => POrd t
 
--- | @since WIP
 (#<=) :: POrd t => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 (#<=) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 (#<) :: POrd t => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 (#<) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 pmax :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 
--- | @since WIP
 pmin :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 infix 4 #<=
 infix 4 #<
 
--- | @since WIP
 (#>) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
 infix 4 #>
 
--- | @since WIP
 (#>=) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
 infix 4 #>=
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PLogicOpSemantics
@@ -2037,13 +1865,10 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Inte
 
 module Plutarch.Internal.Numeric
 
--- | @since WIP
 data PPositive (s :: S)
 
--- | @since WIP
 data Positive
 
--- | @since WIP
 data PNatural (s :: S)
 
 -- | The addition operation, and the notion of scaling by a positive.
@@ -2069,8 +1894,6 @@ data PNatural (s :: S)
 --   </ol>
 --   
 --   The default implementation ensures these laws are satisfied.
---   
---   @since WIP
 class PAdditiveSemigroup (a :: S -> Type)
 (#+) :: forall (s :: S). PAdditiveSemigroup a => Term s a -> Term s a -> Term s a
 (#+) :: forall (s :: S). (PAdditiveSemigroup a, PAdditiveSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
@@ -2101,8 +1924,6 @@ infix 6 #+
 --   
 --   The default implementation of <a>pscaleNatural</a> ensures these laws
 --   hold.
---   
---   @since WIP
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
 pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
 pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatural -> Term s a
@@ -2142,8 +1963,6 @@ pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatur
 --   <li><tt>pscaleInteger x (pnegate # y)</tt> <tt>=</tt> <tt>pnegate #
 --   (pscaleInteger x y)</tt></li>
 --   </ol>
---   
---   @since WIP
 class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type)
 pnegate :: forall (s :: S). PAdditiveGroup a => Term s (a :--> a)
 (#-) :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s a -> Term s a
@@ -2177,8 +1996,6 @@ infix 6 #-
 --   Unlike <a>PAdditiveSemigroup</a>, the multiplication operation doesn't
 --   need to be commutative. Currently, all Plutarch-provided instances
 --   are, but this need not be true for other instances.
---   
---   @since WIP
 class PMultiplicativeSemigroup (a :: S -> Type)
 (#*) :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s a -> Term s a
 (#*) :: forall (s :: S). (PMultiplicativeSemigroup a, PMultiplicativeSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
@@ -2206,8 +2023,6 @@ infix 6 #*
 --   <tt>ppowPositive x p</tt></li>
 --   <li><tt>ppowNatural x pzero</tt> <tt>=</tt> <tt>pone</tt></li>
 --   </ol>
---   
---   @since WIP
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type)
 pone :: forall (s :: S). PMultiplicativeMonoid a => Term s a
 ppowNatural :: forall (s :: S). PMultiplicativeMonoid a => Term s a -> Term s PNatural -> Term s a
@@ -2233,8 +2048,6 @@ ppowNatural :: forall (s :: S). PMultiplicativeMonoid a => Term s a -> Term s PN
 --   <li><tt>(y #+ z) #* x</tt> <tt>=</tt> <tt>(y #* x) #+ (z #* x)</tt>
 --   (<tt>#*</tt> right-distributes over <tt>#+</tt>)</li>
 --   </ol>
---   
---   @since WIP
 class (PAdditiveGroup a, PMultiplicativeMonoid a) => PRing (a :: S -> Type)
 pfromInteger :: forall (s :: S). PRing a => Integer -> Term s a
 pfromInteger :: forall (s :: S). (PRing a, PRing (PInner a)) => Integer -> Term s a
@@ -2252,27 +2065,20 @@ pfromInteger :: forall (s :: S). (PRing a, PRing (PInner a)) => Integer -> Term 
 --   to make any sense, we have to ensure a total order on the integral
 --   domain. Since all of our integral domains are 'at least as big' as the
 --   integers, this doesn't pose a huge problem.
---   
---   @since WIP
 class (PRing a, POrd a) => PIntegralDomain (a :: S -> Type)
 psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 
--- | @since WIP
 positiveToInteger :: Positive -> Integer
 
 -- | Converts negative <a>Integer</a>s into their absolute values, positive
 --   <a>Integer</a>s into their <a>Positive</a> equivalents. Errors on 0.
---   
---   @since WIP
 toPositiveAbs :: Integer -> Positive
 
 -- | Partial version of <a>ppositive</a>. Errors if argument is not
 --   positive.
---   
---   @since WIP
 ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 
 -- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
@@ -2280,28 +2086,20 @@ ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 ppositive :: Term s (PInteger :--> PMaybe PPositive)
 
 -- | Partial version of <a>pnatural</a>. Errors if argument is negative.
---   
---   @since WIP
 ptryNatural :: forall (s :: S). Term s (PInteger :--> PNatural)
 
 -- | Build a <a>PNatural</a> from a <a>PInteger</a>. Yields <a>PNothing</a>
 --   if given a negative value.
---   
---   @since WIP
 pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
 
 -- | 'Relax' a <a>PPositive</a> to <a>PNatural</a>. This uses
 --   <a>punsafeCoerce</a> underneath, but because any positive is also a
 --   natural, is safe.
---   
---   @since WIP
 ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
 
 -- | Specialized form of <tt>pmaybe</tt> for <a>PNatural</a>. Given a
 --   default, and a way to turn a <a>PPositive</a> into an answer, produce
 --   the default when given <a>pzero</a>, and apply the function otherwise.
---   
---   @since WIP
 pnaturalToPositiveCPS :: forall (a :: S -> Type) (s :: S). Term s a -> (Term s PPositive -> Term s a) -> Term s PNatural -> Term s a
 
 -- | A default implementation of exponentiation-by-squaring with a
@@ -2311,20 +2109,14 @@ pnaturalToPositiveCPS :: forall (a :: S -> Type) (s :: S). Term s a -> (Term s P
 --   
 --   This implementation assumes that the operation argument is
 --   associative.
---   
---   @since WIP
 pbySquaringDefault :: forall (a :: S -> Type) (s :: S). (forall (s' :: S). Term s' a -> Term s' a -> Term s' a) -> Term s a -> Term s PPositive -> Term s a
 
--- | @since WIP
 pdiv :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
--- | @since WIP
 pmod :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
--- | @since WIP
 pquot :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
--- | @since WIP
 prem :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Internal.Numeric.PPositive
 instance Plutarch.Internal.Ord.POrd Plutarch.Internal.Numeric.PPositive
@@ -2383,8 +2175,6 @@ data PString s
 --   <li>65-70 (upper-case A through upper-case F)</li>
 --   <li>97-102 (lower-case a through lower-case f)</li>
 --   </ul>
---   
---   @since WIP
 pisHexDigit :: forall (s :: S). Term s (PInteger :--> PBool)
 
 -- | Encode a <a>PString</a> using UTF-8.
@@ -2582,8 +2372,6 @@ module Plutarch.Internal.Semigroup
 --   </ol>
 --   
 --   The default implementation automatically ensures these laws hold.
---   
---   @since WIP
 class PSemigroup (a :: S -> Type)
 (#<>) :: forall (s :: S). PSemigroup a => Term s a -> Term s a -> Term s a
 (#<>) :: forall (s :: S). (PSemigroup a, PSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
@@ -2607,28 +2395,20 @@ infixr 6 #<>
 --   </ol>
 --   
 --   The default implementation of <a>pmtimes</a> ensures these laws hold.
---   
---   @since WIP
 class PSemigroup a => PMonoid (a :: S -> Type)
 pmempty :: forall (s :: S). PMonoid a => Term s a
 pmempty :: forall (s :: S). (PMonoid a, PMonoid (PInner a)) => Term s a
 pmtimes :: forall (s :: S). PMonoid a => Term s PNatural -> Term s a -> Term s a
 
 -- | Wrapper for types which have logical AND semantics somehow.
---   
---   @since WIP
 newtype PAnd (a :: S -> Type) (s :: S)
 PAnd :: Term s a -> PAnd (a :: S -> Type) (s :: S)
 
 -- | Wrapper for types which have logical OR semantics somehow.
---   
---   @since WIP
 newtype POr (a :: S -> Type) (s :: S)
 POr :: Term s a -> POr (a :: S -> Type) (s :: S)
 
 -- | Wrapper for types which have logical XOR semantics somehow.
---   
---   @since WIP
 newtype PXor (a :: S -> Type) (s :: S)
 PXor :: Term s a -> PXor (a :: S -> Type) (s :: S)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Semigroup.PAnd a)
@@ -2734,8 +2514,6 @@ instance Plutarch.Internal.Show.PShow Plutarch.Rational.PRational
 module Plutarch.List
 
 -- | SOP-encoded list.
---   
---   @since WIP
 data PList (a :: S -> Type) (s :: S)
 PSCons :: Term s a -> Term s (PList a) -> PList (a :: S -> Type) (s :: S)
 PSNil :: PList (a :: S -> Type) (s :: S)
@@ -2756,13 +2534,9 @@ pzip :: (PListLike list, PElemConstraint list a, PElemConstraint list b, PElemCo
 pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> (l a :--> PMaybe a))
 
 -- | <i> O(n) </i>. Reverse a list-like structure.
---   
---   @since WIP
 preverse :: forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S). PIsListLike l a => Term s (l a :--> l a)
 
 -- | <i> O(n) </i>. Checks if a list-list structure is sorted.
---   
---   @since WIP
 pcheckSorted :: forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S). (PIsListLike l a, POrd a) => Term s (l a :--> PBool)
 
 -- | <i> O(n) </i>. Check if element is in the list
@@ -2815,18 +2589,13 @@ module Plutarch.Enum
 --   Law 1 ensures no value is its own successor. Laws 2 and 3 ensure that
 --   there are no 'gaps': every value is 'reachable' from any lower value
 --   by a finite number of applications of <tt>successor</tt>.
---   
---   @since WIP
 class POrd a => PCountable (a :: S -> Type)
 
--- | @since WIP
 psuccessor :: forall (s :: S). PCountable a => Term s (a :--> a)
 
 -- | The default implementation of this function is inefficient: if at all
 --   possible, give instances an optimized version that doesn't require
 --   recursion.
---   
---   @since WIP
 psuccessorN :: forall (s :: S). PCountable a => Term s (PPositive :--> (a :--> a))
 
 -- | Similar to <a>PCountable</a>, but has the ability to get a 'previous'
@@ -2854,18 +2623,13 @@ psuccessorN :: forall (s :: S). PCountable a => Term s (PPositive :--> (a :--> a
 --   <ul>
 --   <li><pre>x /= predecessor x</pre></li>
 --   </ul>
---   
---   @since WIP
 class PCountable a => PEnumerable (a :: S -> Type)
 
--- | @since WIP
 ppredecessor :: forall (s :: S). PEnumerable a => Term s (a :--> a)
 
 -- | The default implementation of this function is inefficient: if at all
 --   possible, give instances an optimized version that doesn't require
 --   recursion.
---   
---   @since WIP
 ppredecessorN :: forall (s :: S). PEnumerable a => Term s (PPositive :--> (a :--> a))
 instance Plutarch.Enum.PEnumerable Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Enum.PCountable Plutarch.Builtin.Integer.PInteger
@@ -2882,14 +2646,10 @@ module Plutarch.BitString
 --   different directions. To avoid confusing behaviour, we require an
 --   explicit wrapping of <a>PByteString</a>s to use bitwise functionality:
 --   this way, it's clear where which scheme applies.
---   
---   @since WIP
 newtype PBitString (s :: S)
 PBitString :: Term s PByteString -> PBitString (s :: S)
 
 -- | Bit access operation, as defined in <a>CIP-122</a>.
---   
---   @since WIP
 preadBit :: forall (s :: S). Term s (PBitString :--> (PInteger :--> PBool))
 
 -- | Given a list of positions, set the bits at those positions.
@@ -2900,32 +2660,20 @@ preadBit :: forall (s :: S). Term s (PBitString :--> (PInteger :--> PBool))
 --   True) $ ixes</tt>. All caveats that this entails from the CIP-122
 --   description apply.
 --   
---   @since WIP
---   
 --   Sets bits, as per <a>CIP-122</a>.
---   
---   @since WIP
 pwriteBits :: forall (s :: S). Term s (PBitString :--> (PBuiltinList PInteger :--> (PBool :--> PBitString)))
 
 -- | Performs a shift, as per <a>CIP-123</a>.
---   
---   @since WIP
 pshift :: forall (s :: S). Term s (PBitString :--> (PInteger :--> PBitString))
 
 -- | Performs a rotation, as per <a>CIP-123</a>.
---   
---   @since WIP
 protate :: forall (s :: S). Term s (PBitString :--> (PInteger :--> PBitString))
 
 -- | Counts the number of set bits, as per <a>CIP-123</a>.
---   
---   @since WIP
 pcountSetBits :: forall (s :: S). Term s (PBitString :--> PInteger)
 
 -- | As <tt>pfindFirstSetBit'</tt>, but produces <a>PNothing</a> if the
 --   argument is empty, or contains no set bits.
---   
---   @since WIP
 pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 
 -- | Finds the index of the first set bit, as per <a>CIP-123</a>.
@@ -2934,8 +2682,6 @@ pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 --   
 --   This returns <tt>-1</tt> if the argument is either empty, or contains
 --   no set bits.
---   
---   @since WIP
 pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--> PInteger)
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.BitString.PBitString
 instance Plutarch.Internal.Semigroup.PMonoid Plutarch.BitString.PBitString
@@ -3048,64 +2794,43 @@ instance forall (name :: GHC.Types.Symbol) (c :: Plutarch.Internal.Term.PType) (
 module Plutarch.Either
 
 -- | SOP-encoded <a>Either</a>.
---   
---   @since WIP
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PLeft :: Term s a -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PRight :: Term s b -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 
 -- | <tt>Data</tt>-encoded <a>Either</a>.
---   
---   @since WIP
 data PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
 PDLeft :: Term s (PAsData a) -> PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
 PDRight :: Term s (PAsData b) -> PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
 
--- | @since WIP
 pisLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEither a b :--> PBool)
 
--- | @since WIP
 pfromLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEither a b :--> a)
 
--- | @since WIP
 pfromRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEither a b :--> b)
 
 -- | Make a <tt>Data</tt>-encoded <tt>Left</tt>.
---   
---   @since WIP
 pdleft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (a :--> PEitherData a b)
 
 -- | Make a <tt>Data</tt>-encoded <tt>Right</tt>.
---   
---   @since WIP
 pdright :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (b :--> PEitherData a b)
 
 -- | Eliminator for <a>PEitherData</a>.
---   
---   @since WIP
 peitherData :: forall (a :: S -> Type) (b :: S -> Type) (r :: S -> Type) (s :: S). (PIsData a, PIsData b) => Term s ((a :--> r) :--> ((b :--> r) :--> (PEitherData a b :--> r)))
 
 -- | Verifies if a <a>PEitherData</a> is a <a>PDLeft</a>. Less code than
 --   using <a>peitherData</a>, as it doesn't need to inspect the contents.
---   
---   @since WIP
 pdisLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEitherData a b :--> PBool)
 
 -- | As <a>pdisLeft</a>, except verifies whether we have a <a>PDRight</a>.
---   
---   @since WIP
 pdisRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (PEitherData a b :--> PBool)
 
 -- | Return the value inside a <tt>PDEither</tt> if it's a <a>PDLeft</a>,
 --   error otherwise.
---   
---   @since WIP
 pdfromLeft :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData a => Term s (PEitherData a b :--> a)
 
 -- | As <a>pdfromLeft</a>, but yields a value if given a <a>PDRight</a>
 --   instead.
---   
---   @since WIP
 pdfromRight :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). PIsData b => Term s (PEitherData a b :--> b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Show.PShow a, Plutarch.Internal.Show.PShow b) => Plutarch.Internal.Show.PShow (Plutarch.Either.PEither a b)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Eq.PEq a, Plutarch.Internal.Eq.PEq b) => Plutarch.Internal.Eq.PEq (Plutarch.Either.PEither a b)
@@ -3491,31 +3216,23 @@ ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b
 
 -- | Escape with a particular value on expecting <a>PJust</a>. For use in
 --   monadic context.
---   
---   @since WIP
 pexpectJustC :: forall (a :: S -> Type) (r :: S -> Type) (s :: S). Term s r -> Term s (PMaybe a) -> TermCont @r s (Term s a)
 
 module Plutarch.Repr.Tag
 
--- | @since WIP
 newtype PTag (struct :: [S -> Type]) (s :: S)
 PTag :: Term s PInteger -> PTag (struct :: [S -> Type]) (s :: S)
 
--- | @since WIP
 [$sel:unPTag:PTag] :: PTag (struct :: [S -> Type]) (s :: S) -> Term s PInteger
 
--- | @since WIP
 newtype DeriveAsTag (a :: S -> Type) s
 DeriveAsTag :: a s -> DeriveAsTag (a :: S -> Type) s
 
--- | @since WIP
 [$sel:unDeriveAsTag:DeriveAsTag] :: DeriveAsTag (a :: S -> Type) s -> a s
 
--- | @since WIP
 newtype TagLiftHelper r struct
 TagLiftHelper :: (Integer -> (SOP I struct -> r) -> r) -> TagLiftHelper r struct
 
--- | @since WIP
 [$sel:unTagLiftHelper:TagLiftHelper] :: TagLiftHelper r struct -> Integer -> (SOP I struct -> r) -> r
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Repr.Tag.PTag struct s)
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.PTag struct)
@@ -3527,22 +3244,18 @@ instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: P
 module Plutarch.Repr.Data
 class (PInnerMostIsData' a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData a
 
--- | @since WIP
 newtype PDataStruct (struct :: [[S -> Type]]) (s :: S)
 PDataStruct :: PStruct struct s -> PDataStruct (struct :: [[S -> Type]]) (s :: S)
 [$sel:unPDataStruct:PDataStruct] :: PDataStruct (struct :: [[S -> Type]]) (s :: S) -> PStruct struct s
 
--- | @since WIP
 newtype PDataRec (struct :: [S -> Type]) (s :: S)
 PDataRec :: PRec struct s -> PDataRec (struct :: [S -> Type]) (s :: S)
 [$sel:unPDataRec:PDataRec] :: PDataRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
 
--- | @since WIP
 newtype DeriveAsDataRec (a :: S -> Type) s
 DeriveAsDataRec :: a s -> DeriveAsDataRec (a :: S -> Type) s
 [$sel:unDeriveAsDataRec:DeriveAsDataRec] :: DeriveAsDataRec (a :: S -> Type) s -> a s
 
--- | @since WIP
 newtype DeriveAsDataStruct (a :: S -> Type) s
 DeriveAsDataStruct :: a s -> DeriveAsDataStruct (a :: S -> Type) s
 [$sel:unDeriveAsDataStruct:DeriveAsDataStruct] :: DeriveAsDataStruct (a :: S -> Type) s -> a s
@@ -3614,15 +3327,11 @@ newtype PDataNewtype (a :: S -> Type) (s :: S)
 PDataNewtype :: Term s (PAsData a) -> PDataNewtype (a :: S -> Type) (s :: S)
 
 -- | Builtin Plutus boolean.
---   
---   @since WIP
 data PBool (s :: S)
 PTrue :: PBool (s :: S)
 PFalse :: PBool (s :: S)
 
 -- | As <a>pand</a>, but strict.
---   
---   @since WIP
 pand' :: forall (s :: S). Term s (PBool :--> (PBool :--> PBool))
 
 -- | Essentially multi-way <a>pif</a>. More precisely, given a list of
@@ -3640,39 +3349,25 @@ pand' :: forall (s :: S). Term s (PBool :--> (PBool :--> PBool))
 --   <pre>
 --   pif cond1 act1 (pif cond2 act2 act3)
 --   </pre>
---   
---   @since WIP
 pcond :: forall (a :: S -> Type) (s :: S). [(Term s PBool, Term s a)] -> Term s a -> Term s a
 
 -- | Lazy if-then-else.
---   
---   @since WIP
 pif :: forall (a :: S -> Type) (s :: S). Term s PBool -> Term s a -> Term s a -> Term s a
 
 -- | Strict if-then-else. Emits slightly less code than the lazy version.
---   
---   @since WIP
 pif' :: forall (a :: S -> Type) (s :: S). Term s (PBool :--> (a :--> (a :--> a)))
 
 -- | Boolean negation.
---   
---   @since WIP
 pnot :: forall (s :: S). Term s (PBool :--> PBool)
 
 -- | As <a>por</a>, but strict.
---   
---   @since WIP
 por' :: Term s (PBool :--> (PBool :--> PBool))
 
 -- | Lazy AND for terms.
---   
---   @since WIP
 (#&&) :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
 infixr 3 #&&
 
 -- | Lazy OR for terms.
---   
---   @since WIP
 (#||) :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
 infixr 2 #||
 
@@ -3685,8 +3380,6 @@ infixr 2 #||
 --   safety while also allowing more sensible signatures. If you want to do
 --   anything with <a>PByte</a>s, we recommend converting them to
 --   <a>PInteger</a>s first.
---   
---   @since WIP
 data PByte (s :: S)
 
 -- | Plutus <tt>BuiltinByteString</tt>
@@ -3694,32 +3387,22 @@ data PByteString s
 
 -- | Type designating whether logical operations should use padding or
 --   truncation semantics. See <a>CIP-122</a> for more details on this.
---   
---   @since WIP
 data PLogicOpSemantics (s :: S)
 
 -- | Perform the logical AND of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
 --   should be done if the lengths of the two <a>PByteString</a> arguments
 --   do not match.
---   
---   @since WIP
 pandBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
 
 -- | Convert a <a>PByte</a> into its corresponding <a>PInteger</a>.
---   
---   @since WIP
 pbyteToInteger :: Term s (PByte :--> PInteger)
 
 -- | Perform the logical complement of a <a>PByteString</a>, as per
 --   <a>CIP-122</a>.
---   
---   @since WIP
 pcomplementBS :: forall (s :: S). Term s (PByteString :--> PByteString)
 
 -- | Prepend a <a>PByte</a> to a 'PByteString.
---   
---   @since WIP
 pconsBS :: Term s (PByte :--> (PByteString :--> PByteString))
 
 -- | Interpret a hex string as a PByteString.
@@ -3728,14 +3411,10 @@ phexByteStr :: HasCallStack => String -> Term s PByteString
 -- | Given a valid index into a <a>PByteString</a>, returns the
 --   <a>PByte</a> at that index. Will crash if given an out-of-bounds
 --   index.
---   
---   @since WIP
 pindexBS :: Term s (PByteString :--> (PInteger :--> PByte))
 
 -- | Try to convert a <a>PInteger</a> into its corresponding <a>PByte</a>.
 --   This operation unchecked: use with care.
---   
---   @since WIP
 pintegerToByte :: Term s (PInteger :--> PByte)
 
 -- | Find the length of a <a>PByteString</a>.
@@ -3745,20 +3424,14 @@ plengthBS :: Term s (PByteString :--> PInteger)
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
 --   should be done if the lengths of the two <a>PByteString</a> arguments
 --   do not match.
---   
---   @since WIP
 porBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
 
 -- | Indicates that padding semantics should be used.
---   
---   @since WIP
 ppadding :: forall (s :: S). Term s PLogicOpSemantics
 
 -- | Given a desired length and a <a>PByte</a>, construct a
 --   <a>PByteString</a> of the specified length (0 if negative) consisting
 --   entirely of that <a>PByte</a>.
---   
---   @since WIP
 preplicateBS :: forall (s :: S). Term s (PInteger :--> (PByte :--> PByteString))
 
 -- | Slice a <a>PByteString</a> with given start index and slice length.
@@ -3769,16 +3442,12 @@ preplicateBS :: forall (s :: S). Term s (PInteger :--> (PByte :--> PByteString))
 psliceBS :: Term s (PInteger :--> (PInteger :--> (PByteString :--> PByteString)))
 
 -- | Indicates that truncation semantics should be used.
---   
---   @since WIP
 ptruncation :: forall (s :: S). Term s PLogicOpSemantics
 
 -- | Perform the logical XOR of two <a>PByteString</a>s, as per
 --   <a>CIP-122</a>. The <a>PLogicOpSemantics</a> argument specifies what
 --   should be done if the lengths of the two <a>PByteString</a> arguments
 --   do not match.
---   
---   @since WIP
 pxorBS :: forall (s :: S). Term s (PLogicOpSemantics :--> (PByteString :--> (PByteString :--> PByteString)))
 
 -- | Hash a <a>PByteString</a> using SHA-256.
@@ -3830,8 +3499,6 @@ psndBuiltin :: Term s (PBuiltinPair a b :--> b)
 ptailBuiltin :: Term s (PBuiltinList a :--> PBuiltinList a)
 
 -- | A builtin Plutus integer.
---   
---   @since WIP
 data PInteger s
 
 -- | An Arbitrary Term with an unknown type
@@ -3896,8 +3563,6 @@ pfield :: forall name b p s a as n. (PDataFields p, as ~ PFields p, n ~ PLabelIn
 pletFields :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> (HRecOf a fs s -> Term s b) -> Term s b
 
 -- | SOP-encoded <a>Either</a>.
---   
---   @since WIP
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PLeft :: Term s a -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 PRight :: Term s b -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
@@ -3925,18 +3590,13 @@ PRight :: Term s b -> PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
 --   Law 1 ensures no value is its own successor. Laws 2 and 3 ensure that
 --   there are no 'gaps': every value is 'reachable' from any lower value
 --   by a finite number of applications of <tt>successor</tt>.
---   
---   @since WIP
 class POrd a => PCountable (a :: S -> Type)
 
--- | @since WIP
 psuccessor :: forall (s :: S). PCountable a => Term s (a :--> a)
 
 -- | The default implementation of this function is inefficient: if at all
 --   possible, give instances an optimized version that doesn't require
 --   recursion.
---   
---   @since WIP
 psuccessorN :: forall (s :: S). PCountable a => Term s (PPositive :--> (a :--> a))
 
 -- | Similar to <a>PCountable</a>, but has the ability to get a 'previous'
@@ -3964,18 +3624,13 @@ psuccessorN :: forall (s :: S). PCountable a => Term s (PPositive :--> (a :--> a
 --   <ul>
 --   <li><pre>x /= predecessor x</pre></li>
 --   </ul>
---   
---   @since WIP
 class PCountable a => PEnumerable (a :: S -> Type)
 
--- | @since WIP
 ppredecessor :: forall (s :: S). PEnumerable a => Term s (a :--> a)
 
 -- | The default implementation of this function is inefficient: if at all
 --   possible, give instances an optimized version that doesn't require
 --   recursion.
---   
---   @since WIP
 ppredecessorN :: forall (s :: S). PEnumerable a => Term s (PPositive :--> (a :--> a))
 class PEq t
 (#==) :: PEq t => Term s t -> Term s t -> Term s PBool
@@ -4027,35 +3682,25 @@ infix 4 #==
 --   </ol>
 --   
 --   Laws 8-12 hold if you use the defaults provided by this type class.
---   
---   @since WIP
 class PEq t => POrd t
 
--- | @since WIP
 (#<=) :: POrd t => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 (#<=) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 (#<) :: POrd t => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 (#<) :: (POrd t, POrd (PInner t)) => Term s t -> Term s t -> Term s PBool
 
--- | @since WIP
 pmax :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 
--- | @since WIP
 pmin :: forall (s :: S). POrd t => Term s t -> Term s t -> Term s t
 infix 4 #<=
 infix 4 #<
 
--- | @since WIP
 (#>) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
 infix 4 #>
 
--- | @since WIP
 (#>=) :: forall (a :: S -> Type) (s :: S). POrd a => Term s a -> Term s a -> Term s PBool
 infix 4 #>=
 
@@ -4139,8 +3784,6 @@ pfromData :: PIsData a => Term s (PAsData a) -> Term s a
 --   automatically follow these laws.
 --   
 --   Together, these imply <tt>plift . pconstant = id</tt>.
---   
---   @since WIP
 class PlutusType a => PLiftable (a :: S -> Type) where {
     type AsHaskell a :: Type;
     type PlutusRepr a :: Type;
@@ -4166,15 +3809,11 @@ plutToRepr :: PLiftable a => (forall (s :: S). PLifted s a) -> Either LiftError 
 --   Haskell-level equivalent <tt>h</tt> by way of its <tt>Data</tt>
 --   encoding, rather than by <tt>h</tt> being directly part of the Plutus
 --   default universe.
---   
---   @since WIP
 data DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 
 -- | <tt>via</tt>-deriving helper, indicating that <tt>wrapper</tt> has a
 --   Haskell-level equivalent <tt>h</tt> by way <tt>PInner wrapper</tt>, up
 --   to coercibility.
---   
---   @since WIP
 data DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
 
 -- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
@@ -4183,27 +3822,19 @@ data DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
 --   
 --   This is used for coercing Plutarch terms at Haskell level with `coerce
 --   :: PLifted s a -&gt; PLifted s b` for <tt>via</tt>-deriving helpers.
---   
---   @since WIP
 newtype PLifted (s :: S) (a :: S -> Type)
 PLifted :: Term s POpaque -> PLifted (s :: S) (a :: S -> Type)
 
 -- | Valid definition of <a>reprToPlut</a> if <tt>PlutusRepr a</tt> is in
 --   the Plutus universe.
---   
---   @since WIP
 reprToPlutUni :: forall (a :: S -> Type) (s :: S). (PLiftable a, DefaultUni `Includes` PlutusRepr a) => PlutusRepr a -> PLifted s a
 
 -- | Valid definition of <a>plutToRepr</a> if <tt>PlutusRepr a</tt> is in
 --   the Plutus universe.
---   
---   @since WIP
 plutToReprUni :: forall (a :: S -> Type). (PLiftable a, DefaultUni `Includes` PlutusRepr a) => (forall (s :: S). PLifted s a) -> Either LiftError (PlutusRepr a)
 
 -- | Given a Haskell-level representation of a Plutarch term, transform it
 --   into its equivalent term.
---   
---   @since WIP
 pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Term s a
 
 -- | Given a closed Plutarch term, compile and evaluate it, then produce
@@ -4211,8 +3842,6 @@ pconstant :: forall (a :: S -> Type) (s :: S). PLiftable a => AsHaskell a -> Ter
 --   somehow, this will call <a>error</a>: if you need to 'trap' these
 --   outcomes and handle them differently somehow, use <a>reprToPlut</a>
 --   and <a>reprToHask</a> manually.
---   
---   @since WIP
 plift :: forall (a :: S -> Type). PLiftable a => (forall (s :: S). Term s a) -> AsHaskell a
 type PElemConstraint list (a :: S -> Type) :: Constraint
 
@@ -4224,8 +3853,6 @@ type PIsListLike list a = (PListLike list, PElemConstraint list a)
 class PListLike (list :: (S -> Type) -> S -> Type)
 
 -- | SOP-encoded list.
---   
---   @since WIP
 data PList (a :: S -> Type) (s :: S)
 PSCons :: Term s a -> Term s (PList a) -> PList (a :: S -> Type) (s :: S)
 PSNil :: PList (a :: S -> Type) (s :: S)
@@ -4364,7 +3991,6 @@ pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
 data PlutusTypeNewtype
 data PlutusTypeScott
 
--- | @since WIP
 newtype DeriveNewtypePlutusType (a :: S -> Type) s
 DeriveNewtypePlutusType :: a s -> DeriveNewtypePlutusType (a :: S -> Type) s
 
@@ -4378,13 +4004,10 @@ DeriveNewtypePlutusType :: a s -> DeriveNewtypePlutusType (a :: S -> Type) s
 newtype DeriveFakePlutusType (a :: S -> Type) (s :: S)
 DeriveFakePlutusType :: a s -> DeriveFakePlutusType (a :: S -> Type) (s :: S)
 
--- | @since WIP
 data Positive
 
--- | @since WIP
 data PPositive (s :: S)
 
--- | @since WIP
 data PNatural (s :: S)
 
 -- | The addition operation, and the notion of scaling by a positive.
@@ -4410,8 +4033,6 @@ data PNatural (s :: S)
 --   </ol>
 --   
 --   The default implementation ensures these laws are satisfied.
---   
---   @since WIP
 class PAdditiveSemigroup (a :: S -> Type)
 (#+) :: forall (s :: S). PAdditiveSemigroup a => Term s a -> Term s a -> Term s a
 (#+) :: forall (s :: S). (PAdditiveSemigroup a, PAdditiveSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
@@ -4442,8 +4063,6 @@ infix 6 #+
 --   
 --   The default implementation of <a>pscaleNatural</a> ensures these laws
 --   hold.
---   
---   @since WIP
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type)
 pzero :: forall (s :: S). PAdditiveMonoid a => Term s a
 pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatural -> Term s a
@@ -4483,8 +4102,6 @@ pscaleNatural :: forall (s :: S). PAdditiveMonoid a => Term s a -> Term s PNatur
 --   <li><tt>pscaleInteger x (pnegate # y)</tt> <tt>=</tt> <tt>pnegate #
 --   (pscaleInteger x y)</tt></li>
 --   </ol>
---   
---   @since WIP
 class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type)
 pnegate :: forall (s :: S). PAdditiveGroup a => Term s (a :--> a)
 (#-) :: forall (s :: S). PAdditiveGroup a => Term s a -> Term s a -> Term s a
@@ -4518,8 +4135,6 @@ infix 6 #-
 --   Unlike <a>PAdditiveSemigroup</a>, the multiplication operation doesn't
 --   need to be commutative. Currently, all Plutarch-provided instances
 --   are, but this need not be true for other instances.
---   
---   @since WIP
 class PMultiplicativeSemigroup (a :: S -> Type)
 (#*) :: forall (s :: S). PMultiplicativeSemigroup a => Term s a -> Term s a -> Term s a
 (#*) :: forall (s :: S). (PMultiplicativeSemigroup a, PMultiplicativeSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
@@ -4547,8 +4162,6 @@ infix 6 #*
 --   <tt>ppowPositive x p</tt></li>
 --   <li><tt>ppowNatural x pzero</tt> <tt>=</tt> <tt>pone</tt></li>
 --   </ol>
---   
---   @since WIP
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type)
 pone :: forall (s :: S). PMultiplicativeMonoid a => Term s a
 ppowNatural :: forall (s :: S). PMultiplicativeMonoid a => Term s a -> Term s PNatural -> Term s a
@@ -4574,8 +4187,6 @@ ppowNatural :: forall (s :: S). PMultiplicativeMonoid a => Term s a -> Term s PN
 --   <li><tt>(y #+ z) #* x</tt> <tt>=</tt> <tt>(y #* x) #+ (z #* x)</tt>
 --   (<tt>#*</tt> right-distributes over <tt>#+</tt>)</li>
 --   </ol>
---   
---   @since WIP
 class (PAdditiveGroup a, PMultiplicativeMonoid a) => PRing (a :: S -> Type)
 pfromInteger :: forall (s :: S). PRing a => Integer -> Term s a
 pfromInteger :: forall (s :: S). (PRing a, PRing (PInner a)) => Integer -> Term s a
@@ -4593,24 +4204,18 @@ pfromInteger :: forall (s :: S). (PRing a, PRing (PInner a)) => Integer -> Term 
 --   to make any sense, we have to ensure a total order on the integral
 --   domain. Since all of our integral domains are 'at least as big' as the
 --   integers, this doesn't pose a huge problem.
---   
---   @since WIP
 class (PRing a, POrd a) => PIntegralDomain (a :: S -> Type)
 psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 psignum :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 pabs :: forall (s :: S). PIntegralDomain a => Term s (a :--> a)
 
--- | @since WIP
 pquot :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
--- | @since WIP
 prem :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
--- | @since WIP
 pdiv :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
--- | @since WIP
 pmod :: forall (s :: S). Term s (PInteger :--> (PInteger :--> PInteger))
 
 -- | Build a <a>PPositive</a> from a <a>PInteger</a>. Yields
@@ -4619,26 +4224,18 @@ ppositive :: Term s (PInteger :--> PMaybe PPositive)
 
 -- | Partial version of <a>ppositive</a>. Errors if argument is not
 --   positive.
---   
---   @since WIP
 ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 
 -- | Build a <a>PNatural</a> from a <a>PInteger</a>. Yields <a>PNothing</a>
 --   if given a negative value.
---   
---   @since WIP
 pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
 
 -- | Partial version of <a>pnatural</a>. Errors if argument is negative.
---   
---   @since WIP
 ptryNatural :: forall (s :: S). Term s (PInteger :--> PNatural)
 
 -- | 'Relax' a <a>PPositive</a> to <a>PNatural</a>. This uses
 --   <a>punsafeCoerce</a> underneath, but because any positive is also a
 --   natural, is safe.
---   
---   @since WIP
 ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
 
 -- | Safely coerce from a Term to it's <a>PInner</a> representation.
@@ -4722,7 +4319,6 @@ ptryFrom' :: forall s r. (PTryFrom a b, PTryFrom a (PInner b), PTryFromExcess a 
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 
--- | @since WIP
 data PMaybe (a :: S -> Type) (s :: S)
 PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)
 PNothing :: PMaybe (a :: S -> Type) (s :: S)
@@ -4879,8 +4475,6 @@ ptraceShowId :: forall (a :: S -> Type) (s :: S). PShow a => Term s a -> Term s 
 --   </ol>
 --   
 --   The default implementation automatically ensures these laws hold.
---   
---   @since WIP
 class PSemigroup (a :: S -> Type)
 (#<>) :: forall (s :: S). PSemigroup a => Term s a -> Term s a -> Term s a
 (#<>) :: forall (s :: S). (PSemigroup a, PSemigroup (PInner a)) => Term s a -> Term s a -> Term s a
@@ -4904,35 +4498,25 @@ infixr 6 #<>
 --   </ol>
 --   
 --   The default implementation of <a>pmtimes</a> ensures these laws hold.
---   
---   @since WIP
 class PSemigroup a => PMonoid (a :: S -> Type)
 pmempty :: forall (s :: S). PMonoid a => Term s a
 pmempty :: forall (s :: S). (PMonoid a, PMonoid (PInner a)) => Term s a
 pmtimes :: forall (s :: S). PMonoid a => Term s PNatural -> Term s a -> Term s a
 
 -- | Wrapper for types which have logical AND semantics somehow.
---   
---   @since WIP
 newtype PAnd (a :: S -> Type) (s :: S)
 PAnd :: Term s a -> PAnd (a :: S -> Type) (s :: S)
 
 -- | Wrapper for types which have logical OR semantics somehow.
---   
---   @since WIP
 newtype POr (a :: S -> Type) (s :: S)
 POr :: Term s a -> POr (a :: S -> Type) (s :: S)
 
 -- | Wrapper for types which have logical XOR semantics somehow.
---   
---   @since WIP
 newtype PXor (a :: S -> Type) (s :: S)
 PXor :: Term s a -> PXor (a :: S -> Type) (s :: S)
 
 -- | This is simplified version of <tt>punrollBound'</tt> without doing
 --   additional recursion on Haskell level value.
---   
---   @since WIP
 punrollBound :: forall a b s. Integer -> Term s (a :--> b) -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 
 -- | The first argument specifies the unrolling depth. The second argument
@@ -4950,14 +4534,10 @@ punrollBound :: forall a b s. Integer -> Term s (a :--> b) -> (Term s (a :--> b)
 --   Haskell-level value for constant replacement is only practical on a
 --   single branch recursion with constant value that needs to be added on
 --   each step. <tt>plength</tt> is one of the niche use case.
---   
---   @since WIP
 punrollBound' :: forall a b c s. Integer -> (c -> Term s (a :--> b)) -> ((c -> Term s (a :--> b)) -> c -> Term s (a :--> b)) -> c -> Term s (a :--> b)
 
 -- | Unroll given amount of steps, and for rest, uses <a>pfix</a> to
 --   support unbound recursion.
---   
---   @since WIP
 punrollUnbound :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 
 -- | Uses <a>pfix</a> to recurse unrolled function itself. Unlike
@@ -4966,6 +4546,4 @@ punrollUnbound :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> 
 --   
 --   This should perform better than <tt>punrollUnbound</tt> when a
 --   function requires a large recursion depth.
---   
---   @since WIP
 punrollUnboundWhole :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)

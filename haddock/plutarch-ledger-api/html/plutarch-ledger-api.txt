@@ -3,7 +3,7 @@
 
 
 @package plutarch-ledger-api
-@version 3.2.1
+@version 3.3.0
 
 
 -- | This module is meant to be imported qualified, as some of its
@@ -43,26 +43,18 @@ palways :: forall (a :: S -> Type) (s :: S). (FromData (AsHaskell a), ToData (As
 pinterval :: forall (a :: S -> Type) (s :: S). Term s (PAsData a :--> (PAsData a :--> PInterval a))
 
 -- | Turn a <a>PLowerBound</a> into a single inclusive bounding value.
---   
---   @since WIP
 pinclusiveLowerBound :: forall (a :: S -> Type) (s :: S). (PIsData a, PCountable a) => Term s (PLowerBound a :--> PExtended a)
 
 -- | Turn a <a>PUpperBound</a> into a single inclusive bounding value.
---   
---   @since WIP
 pinclusiveUpperBound :: forall (a :: S -> Type) (s :: S). (PIsData a, PEnumerable a) => Term s (PUpperBound a :--> PExtended a)
 
 -- | Check if a value is inside the given interval.
---   
---   @since WIP
 pmember :: forall (a :: S -> Type) (s :: S). (PIsData a, PEnumerable a) => Term s (PAsData a :--> (PInterval a :--> PBool))
 
 -- | <tt><a>pcontains</a> # i1 # i2</tt> is true if <tt>i2</tt> is entirely
 --   contained in <tt>i1</tt>: more specifically, if for any <tt>s</tt>, if
 --   <tt><a>pmember</a> # s # i2</tt>, then <tt><a>pmember</a> # s #
 --   i1</tt>.
---   
---   @since WIP
 pcontains :: forall (a :: S -> Type) (s :: S). (PIsData a, PEnumerable a) => Term s (PInterval a :--> (PInterval a :--> PBool))
 
 -- | <tt><tt>before</tt> x i</tt> is true if <tt>x</tt> is earlier than the
@@ -74,8 +66,6 @@ pbefore :: forall (a :: S -> Type) (s :: S). (POrd a, PIsData a) => Term s (a :-
 pafter :: forall (a :: S -> Type) (s :: S). (POrd a, PIsData a) => Term s (a :--> (PInterval a :--> PBool))
 
 -- | Check if a <a>PInterval</a> is empty.
---   
---   @since WIP
 pisEmpty :: forall (a :: S -> Type) (s :: S). (PIsData a, PEnumerable a) => Term s (PInterval a :--> PBool)
 
 -- | <tt><a>phull</a> i1 i2</tt> gives the smallest interval that contains
@@ -143,7 +133,6 @@ module Plutarch.LedgerApi.Utils
 newtype Mret (a :: S -> Type) (s :: S)
 Mret :: Term s a -> Mret (a :: S -> Type) (s :: S)
 
--- | @since WIP
 data PMaybeData (a :: S -> Type) (s :: S)
 PDJust :: Term s (PAsData a) -> PMaybeData (a :: S -> Type) (s :: S)
 PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
@@ -156,8 +145,6 @@ PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRat
 [$sel:prationalData'denominator:PRationalData] :: PRationalData s -> Term s (PAsData PPositive)
 
 -- | Scott-encoded boolean.
---   
---   @since WIP
 data PSBool (s :: S)
 PSTrue :: PSBool (s :: S)
 PSFalse :: PSBool (s :: S)
@@ -184,61 +171,42 @@ pdnothing :: forall (a :: S -> Type) (s :: S). Term s (PMaybeData a)
 pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybe a :--> PMaybeData a)
 
 -- | Inverse of <a>pmaybeToMaybeData</a>
---   
---   @since WIP
 pmaybeDataToMaybe :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMaybeData a :--> PMaybe a)
 
 -- | Extract the value stored in a <a>PMaybeData</a> container. If there's
 --   no value, throw an error with the given message.
 passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
--- | @since WIP
 pmapMaybeData :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s ((PAsData a :--> PAsData b) :--> (PMaybeData a :--> PMaybeData b))
 
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 
 -- | Strict version of <a>pmatch</a> for <a>PSBool</a>.
---   
---   @since WIP
 pmatchStrict :: forall (r :: S -> Type) (s :: S). Term s PSBool -> (PSBool s -> Term s r) -> Term s r
 
--- | @since WIP
 pstrue :: forall (s :: S). Term s PSBool
 
--- | @since WIP
 psfalse :: forall (s :: S). Term s PSBool
 
 -- | Lazy <tt>if</tt> on Scott-encoded bool.
---   
---   @since WIP
 psif :: forall (s :: S) (a :: S -> Type). Term s PSBool -> Term s a -> Term s a -> Term s a
 
 -- | Strict <tt>if</tt> on Scott-encoded bool.
---   
---   @since WIP
 psif' :: forall (s :: S) (a :: S -> Type). Term s PSBool -> Term s a -> Term s a -> Term s a
 
 -- | <tt>not</tt> on Scott-encoded bool.
---   
---   @since WIP
 psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
 
 -- | Lazy AND on Scott-encoded bool.
 psand :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 
 -- | Strict AND on Scott-encoded bool.
---   
---   @since WIP
 psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 
 -- | Lazy OR on Scott-encoded bool
---   
---   @since WIP
 psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 
 -- | Strict OR on Scott-encoded bool.
---   
---   @since WIP
 psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.Mret a s)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PMaybeData a)
@@ -501,7 +469,6 @@ Positive :: AmountGuarantees
 newtype PLovelace (s :: S)
 PLovelace :: Term s PInteger -> PLovelace (s :: S)
 
--- | @since WIP
 newtype PAssetClass (s :: S)
 PAssetClass :: Term s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)) -> PAssetClass (s :: S)
 
@@ -553,26 +520,18 @@ pnoAdaValue :: forall (v :: AmountGuarantees) (s :: S). Term s (PValue 'Sorted v
 
 -- | Mimics the <tt>lt</tt> operation on <tt>plutus-ledger-api</tt>'s
 --   <tt>Value</tt>.
---   
---   @since WIP
 pltPositive :: forall (s :: S). Term s (PValue 'Sorted 'Positive) -> Term s (PValue 'Sorted 'Positive) -> Term s PBool
 
 -- | As <a>pltPositive</a>, but for nonzero guaranteed <a>PValue</a>s
 --   instead.
---   
---   @since WIP
 pltNonZero :: forall (s :: S). Term s (PValue 'Sorted 'NonZero) -> Term s (PValue 'Sorted 'NonZero) -> Term s PBool
 
 -- | Mimics the <tt>leq</tt> operation on <tt>plutus-ledger-api</tt>'s
 --   <tt>Value</tt>.
---   
---   @since WIP
 pleqPositive :: forall (s :: S). Term s (PValue 'Sorted 'Positive) -> Term s (PValue 'Sorted 'Positive) -> Term s PBool
 
 -- | As <tt>pletPositive</tt>, but for nonzero guaranteed <a>PValue</a>s
 --   instead.
---   
---   @since WIP
 pleqNonZero :: forall (s :: S). Term s (PValue 'Sorted 'NonZero) -> Term s (PValue 'Sorted 'NonZero) -> Term s PBool
 
 -- | Given a description of a relation on amounts, check whether that
@@ -877,15 +836,11 @@ PPosixTime :: Term s PInteger -> PPosixTime (s :: S)
 
 -- | Construct a <a>PPosixTime</a> from a <a>PInteger</a>. Same as using
 --   the constructor, but a lot shorter.
---   
---   @since WIP
 pposixTime :: forall (s :: S). Term s PInteger -> Term s PPosixTime
 
 -- | Unwrap a <a>PPosixTime</a> to get a <a>PInteger</a>. Same as using
 --   <a>pmatch</a>, but a lot shorter. Also unwraps the <tt>Data</tt>
 --   encoding.
---   
---   @since WIP
 unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
 
 data PInterval (a :: S -> Type) (s :: S)
@@ -991,7 +946,6 @@ PPubKeyHash :: Term s PByteString -> PPubKeyHash (s :: S)
 
 pubKeyHash :: PubKey -> PubKeyHash
 
--- | @since WIP
 data PMaybeData (a :: S -> Type) (s :: S)
 PDJust :: Term s (PAsData a) -> PMaybeData (a :: S -> Type) (s :: S)
 PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
@@ -1085,15 +1039,11 @@ PPosixTime :: Term s PInteger -> PPosixTime (s :: S)
 
 -- | Construct a <a>PPosixTime</a> from a <a>PInteger</a>. Same as using
 --   the constructor, but a lot shorter.
---   
---   @since WIP
 pposixTime :: forall (s :: S). Term s PInteger -> Term s PPosixTime
 
 -- | Unwrap a <a>PPosixTime</a> to get a <a>PInteger</a>. Same as using
 --   <a>pmatch</a>, but a lot shorter. Also unwraps the <tt>Data</tt>
 --   encoding.
---   
---   @since WIP
 unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
 
 data PExtended (a :: S -> Type) (s :: S)
@@ -1193,7 +1143,6 @@ data Commutativity
 Commutative :: Commutativity
 NonCommutative :: Commutativity
 
--- | @since WIP
 data PMaybeData (a :: S -> Type) (s :: S)
 PDJust :: Term s (PAsData a) -> PMaybeData (a :: S -> Type) (s :: S)
 PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
@@ -1305,15 +1254,11 @@ PPosixTime :: Term s PInteger -> PPosixTime (s :: S)
 
 -- | Construct a <a>PPosixTime</a> from a <a>PInteger</a>. Same as using
 --   the constructor, but a lot shorter.
---   
---   @since WIP
 pposixTime :: forall (s :: S). Term s PInteger -> Term s PPosixTime
 
 -- | Unwrap a <a>PPosixTime</a> to get a <a>PInteger</a>. Same as using
 --   <a>pmatch</a>, but a lot shorter. Also unwraps the <tt>Data</tt>
 --   encoding.
---   
---   @since WIP
 unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
 
 data PExtended (a :: S -> Type) (s :: S)
@@ -1377,7 +1322,6 @@ PTxOutRef :: Term s PTxId -> Term s (PAsData PInteger) -> PTxOutRef (s :: S)
 newtype PPubKeyHash (s :: S)
 PPubKeyHash :: Term s PByteString -> PPubKeyHash (s :: S)
 
--- | @since WIP
 data PTxInfo (s :: S)
 PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxOut))) -> Term s (PAsData (PValue 'Sorted 'Positive)) -> Term s (PAsData (PValue 'Sorted 'NoGuarantees)) -> Term s (PAsData (PBuiltinList (PAsData PDCert))) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PStakingCredential) (PAsData PInteger))))) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum))))) -> Term s (PAsData PTxId) -> PTxInfo (s :: S)
 [$sel:ptxInfo'inputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
@@ -1402,7 +1346,6 @@ data Commutativity
 Commutative :: Commutativity
 NonCommutative :: Commutativity
 
--- | @since WIP
 data PMaybeData (a :: S -> Type) (s :: S)
 PDJust :: Term s (PAsData a) -> PMaybeData (a :: S -> Type) (s :: S)
 PDNothing :: PMaybeData (a :: S -> Type) (s :: S)

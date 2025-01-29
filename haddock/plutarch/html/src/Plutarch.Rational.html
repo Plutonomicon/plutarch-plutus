@@ -130,7 +130,7 @@ to :: Rep (PRational s) -&gt; PRational s
 </span><span id="line-101"></span><span>
 </span><span id="line-102"></span><span id="local-6989586621679625814"><span id="local-6989586621679625826"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.SOP.html#DeriveAsSOPRec"><span class="hs-identifier hs-type">DeriveAsSOPRec</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-type">PlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span></span></span><span>
 </span><span id="line-103"></span><span>
-</span><span id="line-104"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-104"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-105"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PLiftable"><span class="hs-identifier hs-type">PLiftable</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-106"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><a href="Plutarch.Internal.Lift.html#AsHaskell"><span class="hs-identifier hs-var">AsHaskell</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Rational</span></span><span>
 </span><span id="line-107"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><a href="Plutarch.Internal.Lift.html#PlutusRepr"><span class="hs-identifier hs-var">PlutusRepr</span></a></span></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PLiftedClosed"><span class="hs-identifier hs-type">PLiftedClosed</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span>
@@ -602,7 +602,7 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PRational
 </span><a href="#local-6989586621679625973"><span class="hs-identifier hs-var">r</span></a></span><span>
 </span><span id="line-154"></span><span>
-</span><span id="line-155"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-155"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-156"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PAdditiveSemigroup"><span class="hs-identifier hs-type">PAdditiveSemigroup</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-157"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#+</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-158"></span><span>  </span><span id="local-6989586621679625981"><span class="annot"><span class="annottext">Term s PRational
@@ -792,7 +792,7 @@ forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
 </span><a href="#local-6989586621679626023"><span class="hs-identifier hs-var">xd</span></a></span><span>
 </span><span id="line-172"></span><span>
-</span><span id="line-173"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-173"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-174"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PAdditiveMonoid"><span class="hs-identifier hs-type">PAdditiveMonoid</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-175"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#pzero"><span class="hs-pragma hs-type">pzero</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-176"></span><span>  </span><span id="local-6989586621679626034"><span class="annot"><span class="annottext">pzero :: forall (s :: S). Term s PRational
@@ -857,7 +857,7 @@ forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
 </span><a href="#local-6989586621679626041"><span class="hs-identifier hs-var">xd</span></a></span><span>
 </span><span id="line-180"></span><span>
-</span><span id="line-181"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-181"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-182"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PAdditiveGroup"><span class="hs-identifier hs-type">PAdditiveGroup</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-183"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#pnegate"><span class="hs-pragma hs-type">pnegate</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-184"></span><span>  </span><span id="local-6989586621679626051"><span class="annot"><span class="annottext">pnegate :: forall (s :: S). Term s (PRational :--&gt; PRational)
@@ -1103,7 +1103,7 @@ forall (s :: S) (a :: PType). Term s a -&gt; Term s (PInner a)
 </span><a href="Plutarch.Internal.Other.html#pto"><span class="hs-identifier hs-var">pto</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
 </span><a href="#local-6989586621679626100"><span class="hs-identifier hs-var">xd</span></a></span><span>
 </span><span id="line-204"></span><span>
-</span><span id="line-205"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-205"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-206"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PMultiplicativeSemigroup"><span class="hs-identifier hs-type">PMultiplicativeSemigroup</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-207"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#*</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-208"></span><span>  </span><span id="local-6989586621679626107"><span class="annot"><span class="annottext">Term s PRational
@@ -1267,7 +1267,7 @@ Term s a -&gt; Term s PPositive -&gt; Term s a
 </span><a href="#local-6989586621679626139"><span class="hs-identifier hs-var">xd</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
 </span><a href="#local-6989586621679626137"><span class="hs-identifier hs-var">p'</span></a></span><span>
 </span><span id="line-222"></span><span>
-</span><span id="line-223"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-223"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-224"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PMultiplicativeMonoid"><span class="hs-identifier hs-type">PMultiplicativeMonoid</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-225"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#pone"><span class="hs-pragma hs-type">pone</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-226"></span><span>  </span><span id="local-6989586621679626150"><span class="annot"><span class="annottext">pone :: forall (s :: S). Term s PRational
@@ -1347,7 +1347,7 @@ Term s a -&gt; Term s PNatural -&gt; Term s a
 </span><a href="#local-6989586621679626160"><span class="hs-identifier hs-var">xd</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PNatural
 </span><a href="#local-6989586621679626158"><span class="hs-identifier hs-var">n'</span></a></span><span>
 </span><span id="line-231"></span><span>
-</span><span id="line-232"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-232"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-233"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PRing"><span class="hs-identifier hs-type">PRing</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-234"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#pfromInteger"><span class="hs-pragma hs-type">pfromInteger</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-235"></span><span>  </span><span id="local-6989586621679626172"><span class="annot"><span class="annottext">pfromInteger :: forall (s :: S). Integer -&gt; Term s PRational
@@ -1367,7 +1367,7 @@ forall (s :: S). Term s PPositive
 forall (a :: PType) (s :: S). PMultiplicativeMonoid a =&gt; Term s a
 </span><a href="Plutarch.Internal.Numeric.html#pone"><span class="hs-identifier hs-var">pone</span></a></span><span>
 </span><span id="line-236"></span><span>
-</span><span id="line-237"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-237"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-238"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#PIntegralDomain"><span class="hs-identifier hs-type">PIntegralDomain</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-239"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><a href="Plutarch.Internal.Numeric.html#pabs"><span class="hs-pragma hs-type">pabs</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-240"></span><span>  </span><span id="local-6989586621679626184"><span class="annot"><span class="annottext">pabs :: forall (s :: S). Term s (PRational :--&gt; PRational)
@@ -1518,7 +1518,7 @@ forall (s :: S). Term s PRational
 forall (a :: PType) (s :: S). PMultiplicativeMonoid a =&gt; Term s a
 </span><a href="Plutarch.Internal.Numeric.html#pone"><span class="hs-identifier hs-var">pone</span></a></span><span>
 </span><span id="line-253"></span><span>
-</span><span id="line-254"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-254"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-255"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679625574"><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#Fractional"><span class="hs-identifier hs-type">Fractional</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679625574"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Rational.html#PRational"><span class="hs-identifier hs-type">PRational</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-256"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">/</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-257"></span><span>  </span><span id="local-6989586621679626229"><span class="annot"><span class="annottext">Term s PRational

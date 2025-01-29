@@ -117,7 +117,7 @@ run with @--csv@ flag again.
 </span><span id="line-117"></span><span> </span><span class="hs-special">)</span><span>
 </span><span id="line-118"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Text.Printf.html"><span class="hs-identifier">Text.Printf</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Text.Printf.html#printf"><span class="hs-identifier">printf</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-119"></span><span>
-</span><span id="line-120"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-120"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-121"></span><span class="hs-keyword">data</span><span> </span><span id="BenchConfig"><span class="annot"><a href="Plutarch.Test.Bench.html#BenchConfig"><span class="hs-identifier hs-var">BenchConfig</span></a></span></span><span>
 </span><span id="line-122"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-comment">-- | Compile with UPLC simplifier pass and no tracing</span></span><span>
 </span><span id="line-123"></span><span>    </span><span id="Optimizing"><span class="annot"><a href="Plutarch.Test.Bench.html#Optimizing"><span class="hs-identifier hs-var">Optimizing</span></a></span></span><span>
@@ -126,7 +126,7 @@ run with @--csv@ flag again.
 </span><span id="line-126"></span><span>
 </span><span id="line-127"></span><span class="annot"><span class="hs-comment">{- | Create benchmark from Plutarch term without tracing and no UPLC simplifier
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-131"></span><span id="local-6989586621679227599"><span class="annot"><a href="Plutarch.Test.Bench.html#bench"><span class="hs-identifier hs-type">bench</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227599"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-132"></span><span id="bench"><span class="annot"><span class="annottext">bench :: forall (a :: PType). TestName -&gt; ClosedTerm a -&gt; TestTree
@@ -141,7 +141,7 @@ TestName -&gt; BenchConfig -&gt; ClosedTerm a -&gt; TestTree
 </span><span id="line-133"></span><span>
 </span><span id="line-134"></span><span class="annot"><span class="hs-comment">{- | Like 'bench' but with customizable compilation config
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-138"></span><span id="local-6989586621679227607"><span class="annot"><a href="Plutarch.Test.Bench.html#benchWithConfig"><span class="hs-identifier hs-type">benchWithConfig</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestName</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#BenchConfig"><span class="hs-identifier hs-type">BenchConfig</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ClosedTerm</span></span><span> </span><span class="annot"><a href="#local-6989586621679227607"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span></span><span>
 </span><span id="line-139"></span><span id="benchWithConfig"><span class="annot"><span class="annottext">benchWithConfig :: forall (a :: PType).
@@ -163,7 +163,7 @@ ClosedTerm a
 </span><span id="line-140"></span><span>
 </span><span id="line-141"></span><span class="annot"><span class="hs-comment">{- | Compare benchmarks, reporting relative CPU, MEM, and size differences
 
- @since WIP
+ @since 1.0.0
 -}</span></span><span>
 </span><span id="line-145"></span><span class="annot"><a href="Plutarch.Test.Bench.html#bcompare"><span class="hs-identifier hs-type">bcompare</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-146"></span><span>  </span><span class="annot"><span class="hs-comment">-- | Tasty pattern to compare as baseline</span></span><span>
@@ -206,7 +206,7 @@ forall a. Fractional a =&gt; a -&gt; a -&gt; a
 </span><span id="line-152"></span><span>
 </span><span id="line-153"></span><span class="annot"><span class="hs-comment">{- | Like 'bcompare' but with customizable upper and lower bounds of relative differences
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-157"></span><span class="annot"><a href="Plutarch.Test.Bench.html#bcompareWithin"><span class="hs-identifier hs-type">bcompareWithin</span></a></span><span> </span><span class="hs-glyph">::</span><span>
 </span><span id="line-158"></span><span>  </span><span class="annot"><span class="hs-comment">-- | CPU bounds</span></span><span>
@@ -273,7 +273,7 @@ a
 </span><span id="line-172"></span><span>
 </span><span id="line-173"></span><span class="annot"><span class="hs-comment">{- | Use this instead of 'Test.Tasty.defaultMain' from @Test.Tasty@ to run benchmarks to get formatted output
 
-@since WIP
+@since 1.0.0
 -}</span></span><span>
 </span><span id="line-177"></span><span class="annot"><a href="Plutarch.Test.Bench.html#defaultMain"><span class="hs-identifier hs-type">defaultMain</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">TestTree</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#IO"><span class="hs-identifier hs-type">IO</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><span id="line-178"></span><span id="defaultMain"><span class="annot"><span class="annottext">defaultMain :: TestTree -&gt; IO ()
@@ -331,7 +331,7 @@ forall a. IO a
 forall a. IO a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/System.Exit.html#exitFailure"><span class="hs-identifier hs-var">exitFailure</span></a></span><span>
 </span><span id="line-187"></span><span>
-</span><span id="line-188"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-188"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-189"></span><span class="annot"><a href="Plutarch.Test.Bench.html#consoleBenchReporter"><span class="hs-identifier hs-type">consoleBenchReporter</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ingredient</span></span><span>
 </span><span id="line-190"></span><span id="consoleBenchReporter"><span class="annot"><span class="annottext">consoleBenchReporter :: Ingredient
 </span><a href="Plutarch.Test.Bench.html#consoleBenchReporter"><span class="hs-identifier hs-var hs-var">consoleBenchReporter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[OptionDescription]
@@ -682,7 +682,7 @@ forall r. PrintfType r =&gt; TestName -&gt; r
 </span><a href="#local-6989586621679228457"><span class="hs-identifier hs-var">ratioSize</span></a></span><span>
 </span><span id="line-260"></span><span>                          </span><span class="hs-special">)</span><span>
 </span><span id="line-261"></span><span>
-</span><span id="line-262"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-262"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-263"></span><span class="annot"><a href="Plutarch.Test.Bench.html#csvReporter"><span class="hs-identifier hs-type">csvReporter</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ingredient</span></span><span>
 </span><span id="line-264"></span><span id="csvReporter"><span class="annot"><span class="annottext">csvReporter :: Ingredient
 </span><a href="Plutarch.Test.Bench.html#csvReporter"><span class="hs-identifier hs-var hs-var">csvReporter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[OptionDescription]
@@ -812,10 +812,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Plutarch.Test.Bench.html#isSuccessful"><span class="hs-identifier hs-var">isSuccessful</span></a></span><span> </span><span class="annot"><span class="annottext">StatusMap
 </span><a href="#local-6989586621679228465"><span class="hs-identifier hs-var">smap</span></a></span><span>
 </span><span id="line-286"></span><span>
-</span><span id="line-287"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-287"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-288"></span><span class="hs-keyword">newtype</span><span> </span><span id="FailIfMoreCpu"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfMoreCpu"><span class="hs-identifier hs-var">FailIfMoreCpu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FailIfMoreCpu"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfMoreCpu"><span class="hs-identifier hs-var">FailIfMoreCpu</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-289"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-290"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-290"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-291"></span><span>      </span><span id="local-6989586621679228476"><span id="local-6989586621679228480"><span class="annot"><span class="annottext">FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Bool
 (FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Bool)
 -&gt; (FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Bool) -&gt; Eq FailIfMoreCpu
@@ -825,7 +825,7 @@ $c== :: FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Bool
 $c/= :: FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Bool
 /= :: FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-292"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-292"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-293"></span><span>      </span><span id="local-6989586621679228487"><span id="local-6989586621679228490"><span id="local-6989586621679228493"><span id="local-6989586621679228497"><span id="local-6989586621679228500"><span id="local-6989586621679228503"><span id="local-6989586621679228506"><span class="annot"><span class="annottext">Eq FailIfMoreCpu
 Eq FailIfMoreCpu =&gt;
 (FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; Ordering)
@@ -864,7 +864,7 @@ max :: FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; FailIfMoreCpu
 $cmin :: FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; FailIfMoreCpu
 min :: FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; FailIfMoreCpu
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-294"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-294"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-295"></span><span>      </span><span id="local-6989586621679228510"><span id="local-6989586621679228515"><span id="local-6989586621679228519"><span class="annot"><span class="annottext">Key -&gt; FailIfMoreCpu -&gt; TestName -&gt; TestName
 [FailIfMoreCpu] -&gt; TestName -&gt; TestName
 FailIfMoreCpu -&gt; TestName
@@ -882,7 +882,7 @@ show :: FailIfMoreCpu -&gt; TestName
 $cshowList :: [FailIfMoreCpu] -&gt; TestName -&gt; TestName
 showList :: [FailIfMoreCpu] -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
-</span><span id="line-296"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-296"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-297"></span><span>      </span><span id="local-6989586621679228523"><span id="local-6989586621679228527"><span id="local-6989586621679228530"><span id="local-6989586621679228537"><span class="annot"><span class="annottext">ReadPrec [FailIfMoreCpu]
 ReadPrec FailIfMoreCpu
 Key -&gt; ReadS FailIfMoreCpu
@@ -906,7 +906,7 @@ readListPrec :: ReadPrec [FailIfMoreCpu]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span>
 </span><span id="line-298"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-299"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-300"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-300"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-301"></span><span>      </span><span id="local-6989586621679228541"><span id="local-6989586621679228545"><span id="local-6989586621679228549"><span id="local-6989586621679228553"><span id="local-6989586621679228557"><span id="local-6989586621679228561"><span id="local-6989586621679228565"><span class="annot"><span class="annottext">Integer -&gt; FailIfMoreCpu
 FailIfMoreCpu -&gt; FailIfMoreCpu
 FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; FailIfMoreCpu
@@ -942,7 +942,7 @@ signum :: FailIfMoreCpu -&gt; FailIfMoreCpu
 $cfromInteger :: Integer -&gt; FailIfMoreCpu
 fromInteger :: Integer -&gt; FailIfMoreCpu
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-302"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-302"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-303"></span><span>      </span><span id="local-6989586621679228573"><span id="local-6989586621679228577"><span id="local-6989586621679228581"><span class="annot"><span class="annottext">Num FailIfMoreCpu
 Num FailIfMoreCpu =&gt;
 (FailIfMoreCpu -&gt; FailIfMoreCpu -&gt; FailIfMoreCpu)
@@ -965,7 +965,7 @@ fromRational :: Rational -&gt; FailIfMoreCpu
 </span><span id="line-304"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-305"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-306"></span><span>
-</span><span id="line-307"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-307"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-308"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679228593"><span id="local-6989586621679228597"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfMoreCpu"><span class="hs-identifier hs-type">FailIfMoreCpu</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-309"></span><span>  </span><span id="local-6989586621679228603"><span class="annot"><span class="annottext">defaultValue :: FailIfMoreCpu
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; FailIfMoreCpu
@@ -995,10 +995,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;If a benchmark uses unacceptably more CPU than baseline (see --baseline), it will be reported as failed.&quot;</span></span><span>
 </span><span id="line-313"></span><span>
-</span><span id="line-314"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-314"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-315"></span><span class="hs-keyword">newtype</span><span> </span><span id="FailIfLessCpu"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfLessCpu"><span class="hs-identifier hs-var">FailIfLessCpu</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FailIfLessCpu"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfLessCpu"><span class="hs-identifier hs-var">FailIfLessCpu</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-316"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-317"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-317"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-318"></span><span>      </span><span id="local-6989586621679228613"><span id="local-6989586621679228616"><span class="annot"><span class="annottext">FailIfLessCpu -&gt; FailIfLessCpu -&gt; Bool
 (FailIfLessCpu -&gt; FailIfLessCpu -&gt; Bool)
 -&gt; (FailIfLessCpu -&gt; FailIfLessCpu -&gt; Bool) -&gt; Eq FailIfLessCpu
@@ -1008,7 +1008,7 @@ $c== :: FailIfLessCpu -&gt; FailIfLessCpu -&gt; Bool
 $c/= :: FailIfLessCpu -&gt; FailIfLessCpu -&gt; Bool
 /= :: FailIfLessCpu -&gt; FailIfLessCpu -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-319"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-319"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-320"></span><span>      </span><span id="local-6989586621679228622"><span id="local-6989586621679228625"><span id="local-6989586621679228628"><span id="local-6989586621679228632"><span id="local-6989586621679228635"><span id="local-6989586621679228638"><span id="local-6989586621679228641"><span class="annot"><span class="annottext">Eq FailIfLessCpu
 Eq FailIfLessCpu =&gt;
 (FailIfLessCpu -&gt; FailIfLessCpu -&gt; Ordering)
@@ -1047,7 +1047,7 @@ max :: FailIfLessCpu -&gt; FailIfLessCpu -&gt; FailIfLessCpu
 $cmin :: FailIfLessCpu -&gt; FailIfLessCpu -&gt; FailIfLessCpu
 min :: FailIfLessCpu -&gt; FailIfLessCpu -&gt; FailIfLessCpu
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-321"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-321"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-322"></span><span>      </span><span id="local-6989586621679228644"><span id="local-6989586621679228648"><span id="local-6989586621679228652"><span class="annot"><span class="annottext">Key -&gt; FailIfLessCpu -&gt; TestName -&gt; TestName
 [FailIfLessCpu] -&gt; TestName -&gt; TestName
 FailIfLessCpu -&gt; TestName
@@ -1065,7 +1065,7 @@ show :: FailIfLessCpu -&gt; TestName
 $cshowList :: [FailIfLessCpu] -&gt; TestName -&gt; TestName
 showList :: [FailIfLessCpu] -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
-</span><span id="line-323"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-323"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-324"></span><span>      </span><span id="local-6989586621679228655"><span id="local-6989586621679228659"><span id="local-6989586621679228662"><span id="local-6989586621679228668"><span class="annot"><span class="annottext">ReadPrec [FailIfLessCpu]
 ReadPrec FailIfLessCpu
 Key -&gt; ReadS FailIfLessCpu
@@ -1089,7 +1089,7 @@ readListPrec :: ReadPrec [FailIfLessCpu]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span>
 </span><span id="line-325"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-326"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-327"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-327"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-328"></span><span>      </span><span id="local-6989586621679228671"><span id="local-6989586621679228675"><span id="local-6989586621679228679"><span id="local-6989586621679228683"><span id="local-6989586621679228687"><span id="local-6989586621679228691"><span id="local-6989586621679228695"><span class="annot"><span class="annottext">Integer -&gt; FailIfLessCpu
 FailIfLessCpu -&gt; FailIfLessCpu
 FailIfLessCpu -&gt; FailIfLessCpu -&gt; FailIfLessCpu
@@ -1125,7 +1125,7 @@ signum :: FailIfLessCpu -&gt; FailIfLessCpu
 $cfromInteger :: Integer -&gt; FailIfLessCpu
 fromInteger :: Integer -&gt; FailIfLessCpu
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-329"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-329"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-330"></span><span>      </span><span id="local-6989586621679228702"><span id="local-6989586621679228706"><span id="local-6989586621679228710"><span class="annot"><span class="annottext">Num FailIfLessCpu
 Num FailIfLessCpu =&gt;
 (FailIfLessCpu -&gt; FailIfLessCpu -&gt; FailIfLessCpu)
@@ -1148,7 +1148,7 @@ fromRational :: Rational -&gt; FailIfLessCpu
 </span><span id="line-331"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-332"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-333"></span><span>
-</span><span id="line-334"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-334"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-335"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679228721"><span id="local-6989586621679228725"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfLessCpu"><span class="hs-identifier hs-type">FailIfLessCpu</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-336"></span><span>  </span><span id="local-6989586621679228730"><span class="annot"><span class="annottext">defaultValue :: FailIfLessCpu
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; FailIfLessCpu
@@ -1178,10 +1178,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;If a benchmark uses unacceptably less CPU than baseline (see --baseline), it will be reported as failed.&quot;</span></span><span>
 </span><span id="line-340"></span><span>
-</span><span id="line-341"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-341"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-342"></span><span class="hs-keyword">newtype</span><span> </span><span id="FailIfMoreMem"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfMoreMem"><span class="hs-identifier hs-var">FailIfMoreMem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FailIfMoreMem"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfMoreMem"><span class="hs-identifier hs-var">FailIfMoreMem</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-343"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-344"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-344"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-345"></span><span>      </span><span id="local-6989586621679228739"><span id="local-6989586621679228742"><span class="annot"><span class="annottext">FailIfMoreMem -&gt; FailIfMoreMem -&gt; Bool
 (FailIfMoreMem -&gt; FailIfMoreMem -&gt; Bool)
 -&gt; (FailIfMoreMem -&gt; FailIfMoreMem -&gt; Bool) -&gt; Eq FailIfMoreMem
@@ -1191,7 +1191,7 @@ $c== :: FailIfMoreMem -&gt; FailIfMoreMem -&gt; Bool
 $c/= :: FailIfMoreMem -&gt; FailIfMoreMem -&gt; Bool
 /= :: FailIfMoreMem -&gt; FailIfMoreMem -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-346"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-346"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-347"></span><span>      </span><span id="local-6989586621679228748"><span id="local-6989586621679228751"><span id="local-6989586621679228754"><span id="local-6989586621679228758"><span id="local-6989586621679228761"><span id="local-6989586621679228764"><span id="local-6989586621679228767"><span class="annot"><span class="annottext">Eq FailIfMoreMem
 Eq FailIfMoreMem =&gt;
 (FailIfMoreMem -&gt; FailIfMoreMem -&gt; Ordering)
@@ -1230,7 +1230,7 @@ max :: FailIfMoreMem -&gt; FailIfMoreMem -&gt; FailIfMoreMem
 $cmin :: FailIfMoreMem -&gt; FailIfMoreMem -&gt; FailIfMoreMem
 min :: FailIfMoreMem -&gt; FailIfMoreMem -&gt; FailIfMoreMem
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-348"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-348"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-349"></span><span>      </span><span id="local-6989586621679228770"><span id="local-6989586621679228774"><span id="local-6989586621679228778"><span class="annot"><span class="annottext">Key -&gt; FailIfMoreMem -&gt; TestName -&gt; TestName
 [FailIfMoreMem] -&gt; TestName -&gt; TestName
 FailIfMoreMem -&gt; TestName
@@ -1248,7 +1248,7 @@ show :: FailIfMoreMem -&gt; TestName
 $cshowList :: [FailIfMoreMem] -&gt; TestName -&gt; TestName
 showList :: [FailIfMoreMem] -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
-</span><span id="line-350"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-350"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-351"></span><span>      </span><span id="local-6989586621679228781"><span id="local-6989586621679228785"><span id="local-6989586621679228788"><span id="local-6989586621679228794"><span class="annot"><span class="annottext">ReadPrec [FailIfMoreMem]
 ReadPrec FailIfMoreMem
 Key -&gt; ReadS FailIfMoreMem
@@ -1272,7 +1272,7 @@ readListPrec :: ReadPrec [FailIfMoreMem]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span>
 </span><span id="line-352"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-353"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-354"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-354"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-355"></span><span>      </span><span id="local-6989586621679228797"><span id="local-6989586621679228801"><span id="local-6989586621679228805"><span id="local-6989586621679228809"><span id="local-6989586621679228813"><span id="local-6989586621679228817"><span id="local-6989586621679228821"><span class="annot"><span class="annottext">Integer -&gt; FailIfMoreMem
 FailIfMoreMem -&gt; FailIfMoreMem
 FailIfMoreMem -&gt; FailIfMoreMem -&gt; FailIfMoreMem
@@ -1308,7 +1308,7 @@ signum :: FailIfMoreMem -&gt; FailIfMoreMem
 $cfromInteger :: Integer -&gt; FailIfMoreMem
 fromInteger :: Integer -&gt; FailIfMoreMem
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-356"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-356"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-357"></span><span>      </span><span id="local-6989586621679228828"><span id="local-6989586621679228832"><span id="local-6989586621679228836"><span class="annot"><span class="annottext">Num FailIfMoreMem
 Num FailIfMoreMem =&gt;
 (FailIfMoreMem -&gt; FailIfMoreMem -&gt; FailIfMoreMem)
@@ -1331,7 +1331,7 @@ fromRational :: Rational -&gt; FailIfMoreMem
 </span><span id="line-358"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-359"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-360"></span><span>
-</span><span id="line-361"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-361"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-362"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679228847"><span id="local-6989586621679228851"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfMoreMem"><span class="hs-identifier hs-type">FailIfMoreMem</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-363"></span><span>  </span><span id="local-6989586621679228856"><span class="annot"><span class="annottext">defaultValue :: FailIfMoreMem
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; FailIfMoreMem
@@ -1361,10 +1361,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;If a benchmark uses unacceptably more MEM than baseline (see --baseline), it will be reported as failed.&quot;</span></span><span>
 </span><span id="line-367"></span><span>
-</span><span id="line-368"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-368"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-369"></span><span class="hs-keyword">newtype</span><span> </span><span id="FailIfLessMem"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfLessMem"><span class="hs-identifier hs-var">FailIfLessMem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FailIfLessMem"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfLessMem"><span class="hs-identifier hs-var">FailIfLessMem</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-370"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-371"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-371"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-372"></span><span>      </span><span id="local-6989586621679228865"><span id="local-6989586621679228868"><span class="annot"><span class="annottext">FailIfLessMem -&gt; FailIfLessMem -&gt; Bool
 (FailIfLessMem -&gt; FailIfLessMem -&gt; Bool)
 -&gt; (FailIfLessMem -&gt; FailIfLessMem -&gt; Bool) -&gt; Eq FailIfLessMem
@@ -1374,7 +1374,7 @@ $c== :: FailIfLessMem -&gt; FailIfLessMem -&gt; Bool
 $c/= :: FailIfLessMem -&gt; FailIfLessMem -&gt; Bool
 /= :: FailIfLessMem -&gt; FailIfLessMem -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-373"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-373"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-374"></span><span>      </span><span id="local-6989586621679228874"><span id="local-6989586621679228877"><span id="local-6989586621679228880"><span id="local-6989586621679228884"><span id="local-6989586621679228887"><span id="local-6989586621679228890"><span id="local-6989586621679228893"><span class="annot"><span class="annottext">Eq FailIfLessMem
 Eq FailIfLessMem =&gt;
 (FailIfLessMem -&gt; FailIfLessMem -&gt; Ordering)
@@ -1413,7 +1413,7 @@ max :: FailIfLessMem -&gt; FailIfLessMem -&gt; FailIfLessMem
 $cmin :: FailIfLessMem -&gt; FailIfLessMem -&gt; FailIfLessMem
 min :: FailIfLessMem -&gt; FailIfLessMem -&gt; FailIfLessMem
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-375"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-375"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-376"></span><span>      </span><span id="local-6989586621679228896"><span id="local-6989586621679228900"><span id="local-6989586621679228904"><span class="annot"><span class="annottext">Key -&gt; FailIfLessMem -&gt; TestName -&gt; TestName
 [FailIfLessMem] -&gt; TestName -&gt; TestName
 FailIfLessMem -&gt; TestName
@@ -1431,7 +1431,7 @@ show :: FailIfLessMem -&gt; TestName
 $cshowList :: [FailIfLessMem] -&gt; TestName -&gt; TestName
 showList :: [FailIfLessMem] -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
-</span><span id="line-377"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-377"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-378"></span><span>      </span><span id="local-6989586621679228907"><span id="local-6989586621679228911"><span id="local-6989586621679228914"><span id="local-6989586621679228920"><span class="annot"><span class="annottext">ReadPrec [FailIfLessMem]
 ReadPrec FailIfLessMem
 Key -&gt; ReadS FailIfLessMem
@@ -1455,7 +1455,7 @@ readListPrec :: ReadPrec [FailIfLessMem]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span>
 </span><span id="line-379"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-380"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-381"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-381"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-382"></span><span>      </span><span id="local-6989586621679228923"><span id="local-6989586621679228927"><span id="local-6989586621679228931"><span id="local-6989586621679228935"><span id="local-6989586621679228939"><span id="local-6989586621679228943"><span id="local-6989586621679228947"><span class="annot"><span class="annottext">Integer -&gt; FailIfLessMem
 FailIfLessMem -&gt; FailIfLessMem
 FailIfLessMem -&gt; FailIfLessMem -&gt; FailIfLessMem
@@ -1491,7 +1491,7 @@ signum :: FailIfLessMem -&gt; FailIfLessMem
 $cfromInteger :: Integer -&gt; FailIfLessMem
 fromInteger :: Integer -&gt; FailIfLessMem
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-383"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-383"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-384"></span><span>      </span><span id="local-6989586621679228954"><span id="local-6989586621679228958"><span id="local-6989586621679228962"><span class="annot"><span class="annottext">Num FailIfLessMem
 Num FailIfLessMem =&gt;
 (FailIfLessMem -&gt; FailIfLessMem -&gt; FailIfLessMem)
@@ -1514,7 +1514,7 @@ fromRational :: Rational -&gt; FailIfLessMem
 </span><span id="line-385"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-386"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-387"></span><span>
-</span><span id="line-388"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-388"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-389"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679228973"><span id="local-6989586621679228977"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfLessMem"><span class="hs-identifier hs-type">FailIfLessMem</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-390"></span><span>  </span><span id="local-6989586621679228982"><span class="annot"><span class="annottext">defaultValue :: FailIfLessMem
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; FailIfLessMem
@@ -1544,10 +1544,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;If a benchmark uses unacceptably less MEM than baseline (see --baseline), it will be reported as failed.&quot;</span></span><span>
 </span><span id="line-394"></span><span>
-</span><span id="line-395"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-395"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-396"></span><span class="hs-keyword">newtype</span><span> </span><span id="FailIfBigger"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfBigger"><span class="hs-identifier hs-var">FailIfBigger</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FailIfBigger"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfBigger"><span class="hs-identifier hs-var">FailIfBigger</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-397"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-398"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-398"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-399"></span><span>      </span><span id="local-6989586621679228991"><span id="local-6989586621679228994"><span class="annot"><span class="annottext">FailIfBigger -&gt; FailIfBigger -&gt; Bool
 (FailIfBigger -&gt; FailIfBigger -&gt; Bool)
 -&gt; (FailIfBigger -&gt; FailIfBigger -&gt; Bool) -&gt; Eq FailIfBigger
@@ -1557,7 +1557,7 @@ $c== :: FailIfBigger -&gt; FailIfBigger -&gt; Bool
 $c/= :: FailIfBigger -&gt; FailIfBigger -&gt; Bool
 /= :: FailIfBigger -&gt; FailIfBigger -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-400"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-400"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-401"></span><span>      </span><span id="local-6989586621679229000"><span id="local-6989586621679229003"><span id="local-6989586621679229006"><span id="local-6989586621679229010"><span id="local-6989586621679229013"><span id="local-6989586621679229016"><span id="local-6989586621679229019"><span class="annot"><span class="annottext">Eq FailIfBigger
 Eq FailIfBigger =&gt;
 (FailIfBigger -&gt; FailIfBigger -&gt; Ordering)
@@ -1596,7 +1596,7 @@ max :: FailIfBigger -&gt; FailIfBigger -&gt; FailIfBigger
 $cmin :: FailIfBigger -&gt; FailIfBigger -&gt; FailIfBigger
 min :: FailIfBigger -&gt; FailIfBigger -&gt; FailIfBigger
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-402"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-402"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-403"></span><span>      </span><span id="local-6989586621679229022"><span id="local-6989586621679229026"><span id="local-6989586621679229030"><span class="annot"><span class="annottext">Key -&gt; FailIfBigger -&gt; TestName -&gt; TestName
 [FailIfBigger] -&gt; TestName -&gt; TestName
 FailIfBigger -&gt; TestName
@@ -1614,7 +1614,7 @@ show :: FailIfBigger -&gt; TestName
 $cshowList :: [FailIfBigger] -&gt; TestName -&gt; TestName
 showList :: [FailIfBigger] -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
-</span><span id="line-404"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-404"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-405"></span><span>      </span><span id="local-6989586621679229033"><span id="local-6989586621679229037"><span id="local-6989586621679229040"><span id="local-6989586621679229046"><span class="annot"><span class="annottext">ReadPrec [FailIfBigger]
 ReadPrec FailIfBigger
 Key -&gt; ReadS FailIfBigger
@@ -1638,7 +1638,7 @@ readListPrec :: ReadPrec [FailIfBigger]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span>
 </span><span id="line-406"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-407"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-408"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-408"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-409"></span><span>      </span><span id="local-6989586621679229049"><span id="local-6989586621679229053"><span id="local-6989586621679229057"><span id="local-6989586621679229061"><span id="local-6989586621679229065"><span id="local-6989586621679229069"><span id="local-6989586621679229073"><span class="annot"><span class="annottext">Integer -&gt; FailIfBigger
 FailIfBigger -&gt; FailIfBigger
 FailIfBigger -&gt; FailIfBigger -&gt; FailIfBigger
@@ -1674,7 +1674,7 @@ signum :: FailIfBigger -&gt; FailIfBigger
 $cfromInteger :: Integer -&gt; FailIfBigger
 fromInteger :: Integer -&gt; FailIfBigger
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-410"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-410"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-411"></span><span>      </span><span id="local-6989586621679229080"><span id="local-6989586621679229084"><span id="local-6989586621679229088"><span class="annot"><span class="annottext">Num FailIfBigger
 Num FailIfBigger =&gt;
 (FailIfBigger -&gt; FailIfBigger -&gt; FailIfBigger)
@@ -1697,7 +1697,7 @@ fromRational :: Rational -&gt; FailIfBigger
 </span><span id="line-412"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-413"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-414"></span><span>
-</span><span id="line-415"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-415"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-416"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679229099"><span id="local-6989586621679229103"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfBigger"><span class="hs-identifier hs-type">FailIfBigger</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-417"></span><span>  </span><span id="local-6989586621679229108"><span class="annot"><span class="annottext">defaultValue :: FailIfBigger
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; FailIfBigger
@@ -1727,10 +1727,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;If a benchmark is unacceptably bigger than baseline (see --baseline), it will be reported as failed.&quot;</span></span><span>
 </span><span id="line-421"></span><span>
-</span><span id="line-422"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-422"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-423"></span><span class="hs-keyword">newtype</span><span> </span><span id="FailIfSmaller"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfSmaller"><span class="hs-identifier hs-var">FailIfSmaller</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="FailIfSmaller"><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfSmaller"><span class="hs-identifier hs-var">FailIfSmaller</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-424"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-425"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-425"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-426"></span><span>      </span><span id="local-6989586621679229117"><span id="local-6989586621679229120"><span class="annot"><span class="annottext">FailIfSmaller -&gt; FailIfSmaller -&gt; Bool
 (FailIfSmaller -&gt; FailIfSmaller -&gt; Bool)
 -&gt; (FailIfSmaller -&gt; FailIfSmaller -&gt; Bool) -&gt; Eq FailIfSmaller
@@ -1740,7 +1740,7 @@ $c== :: FailIfSmaller -&gt; FailIfSmaller -&gt; Bool
 $c/= :: FailIfSmaller -&gt; FailIfSmaller -&gt; Bool
 /= :: FailIfSmaller -&gt; FailIfSmaller -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-427"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-427"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-428"></span><span>      </span><span id="local-6989586621679229126"><span id="local-6989586621679229129"><span id="local-6989586621679229132"><span id="local-6989586621679229136"><span id="local-6989586621679229139"><span id="local-6989586621679229142"><span id="local-6989586621679229145"><span class="annot"><span class="annottext">Eq FailIfSmaller
 Eq FailIfSmaller =&gt;
 (FailIfSmaller -&gt; FailIfSmaller -&gt; Ordering)
@@ -1779,7 +1779,7 @@ max :: FailIfSmaller -&gt; FailIfSmaller -&gt; FailIfSmaller
 $cmin :: FailIfSmaller -&gt; FailIfSmaller -&gt; FailIfSmaller
 min :: FailIfSmaller -&gt; FailIfSmaller -&gt; FailIfSmaller
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-429"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-429"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-430"></span><span>      </span><span id="local-6989586621679229148"><span id="local-6989586621679229152"><span id="local-6989586621679229156"><span class="annot"><span class="annottext">Key -&gt; FailIfSmaller -&gt; TestName -&gt; TestName
 [FailIfSmaller] -&gt; TestName -&gt; TestName
 FailIfSmaller -&gt; TestName
@@ -1797,7 +1797,7 @@ show :: FailIfSmaller -&gt; TestName
 $cshowList :: [FailIfSmaller] -&gt; TestName -&gt; TestName
 showList :: [FailIfSmaller] -&gt; TestName -&gt; TestName
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
-</span><span id="line-431"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-431"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-432"></span><span>      </span><span id="local-6989586621679229159"><span id="local-6989586621679229163"><span id="local-6989586621679229166"><span id="local-6989586621679229172"><span class="annot"><span class="annottext">ReadPrec [FailIfSmaller]
 ReadPrec FailIfSmaller
 Key -&gt; ReadS FailIfSmaller
@@ -1821,7 +1821,7 @@ readListPrec :: ReadPrec [FailIfSmaller]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span>
 </span><span id="line-433"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-434"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-435"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-435"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-436"></span><span>      </span><span id="local-6989586621679229175"><span id="local-6989586621679229179"><span id="local-6989586621679229183"><span id="local-6989586621679229187"><span id="local-6989586621679229191"><span id="local-6989586621679229195"><span id="local-6989586621679229199"><span class="annot"><span class="annottext">Integer -&gt; FailIfSmaller
 FailIfSmaller -&gt; FailIfSmaller
 FailIfSmaller -&gt; FailIfSmaller -&gt; FailIfSmaller
@@ -1857,7 +1857,7 @@ signum :: FailIfSmaller -&gt; FailIfSmaller
 $cfromInteger :: Integer -&gt; FailIfSmaller
 fromInteger :: Integer -&gt; FailIfSmaller
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span>
-</span><span id="line-437"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-437"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-438"></span><span>      </span><span id="local-6989586621679229206"><span id="local-6989586621679229210"><span id="local-6989586621679229214"><span class="annot"><span class="annottext">Num FailIfSmaller
 Num FailIfSmaller =&gt;
 (FailIfSmaller -&gt; FailIfSmaller -&gt; FailIfSmaller)
@@ -1880,7 +1880,7 @@ fromRational :: Rational -&gt; FailIfSmaller
 </span><span id="line-439"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-440"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Double"><span class="hs-identifier hs-type">Double</span></a></span><span>
 </span><span id="line-441"></span><span>
-</span><span id="line-442"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-442"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-443"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679229225"><span id="local-6989586621679229229"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#FailIfSmaller"><span class="hs-identifier hs-type">FailIfSmaller</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-444"></span><span>  </span><span id="local-6989586621679229234"><span class="annot"><span class="annottext">defaultValue :: FailIfSmaller
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; FailIfSmaller
@@ -1910,10 +1910,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;If a benchmark is unacceptably smaller than baseline (see --baseline), it will be reported as failed.&quot;</span></span><span>
 </span><span id="line-448"></span><span>
-</span><span id="line-449"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-449"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-450"></span><span class="hs-keyword">newtype</span><span> </span><span id="BaselinePath"><span class="annot"><a href="Plutarch.Test.Bench.html#BaselinePath"><span class="hs-identifier hs-var">BaselinePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="BaselinePath"><span class="annot"><a href="Plutarch.Test.Bench.html#BaselinePath"><span class="hs-identifier hs-var">BaselinePath</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span>
 </span><span id="line-451"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-452"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-452"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-453"></span><span>      </span><span id="local-6989586621679229243"><span id="local-6989586621679229246"><span class="annot"><span class="annottext">BaselinePath -&gt; BaselinePath -&gt; Bool
 (BaselinePath -&gt; BaselinePath -&gt; Bool)
 -&gt; (BaselinePath -&gt; BaselinePath -&gt; Bool) -&gt; Eq BaselinePath
@@ -1923,7 +1923,7 @@ $c== :: BaselinePath -&gt; BaselinePath -&gt; Bool
 $c/= :: BaselinePath -&gt; BaselinePath -&gt; Bool
 /= :: BaselinePath -&gt; BaselinePath -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-454"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-454"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-455"></span><span>      </span><span id="local-6989586621679229252"><span id="local-6989586621679229255"><span id="local-6989586621679229258"><span id="local-6989586621679229262"><span id="local-6989586621679229265"><span id="local-6989586621679229268"><span id="local-6989586621679229271"><span class="annot"><span class="annottext">Eq BaselinePath
 Eq BaselinePath =&gt;
 (BaselinePath -&gt; BaselinePath -&gt; Ordering)
@@ -1964,7 +1964,7 @@ min :: BaselinePath -&gt; BaselinePath -&gt; BaselinePath
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
 </span><span id="line-456"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-457"></span><span>
-</span><span id="line-458"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-458"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-459"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679229282"><span id="local-6989586621679229285"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#BaselinePath"><span class="hs-identifier hs-type">BaselinePath</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-460"></span><span>  </span><span id="local-6989586621679229287"><span class="annot"><span class="annottext">defaultValue :: Maybe BaselinePath
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe BaselinePath
@@ -1996,10 +1996,10 @@ forall {k} (s :: k) b. b -&gt; Tagged @k s b
 </span><span class="hs-identifier hs-var">Tagged</span></span><span> </span><span class="annot"><span class="annottext">TestName
 </span><span class="hs-string">&quot;File with baseline results in CSV format to compare against&quot;</span></span><span>
 </span><span id="line-464"></span><span>
-</span><span id="line-465"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-465"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-466"></span><span class="hs-keyword">newtype</span><span> </span><span id="CsvPath"><span class="annot"><a href="Plutarch.Test.Bench.html#CsvPath"><span class="hs-identifier hs-var">CsvPath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CsvPath"><span class="annot"><a href="Plutarch.Test.Bench.html#CsvPath"><span class="hs-identifier hs-var">CsvPath</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span>
 </span><span id="line-467"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-468"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-468"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-469"></span><span>      </span><span id="local-6989586621679229294"><span id="local-6989586621679229297"><span class="annot"><span class="annottext">CsvPath -&gt; CsvPath -&gt; Bool
 (CsvPath -&gt; CsvPath -&gt; Bool)
 -&gt; (CsvPath -&gt; CsvPath -&gt; Bool) -&gt; Eq CsvPath
@@ -2009,7 +2009,7 @@ $c== :: CsvPath -&gt; CsvPath -&gt; Bool
 $c/= :: CsvPath -&gt; CsvPath -&gt; Bool
 /= :: CsvPath -&gt; CsvPath -&gt; Bool
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
-</span><span id="line-470"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-470"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-471"></span><span>      </span><span id="local-6989586621679229303"><span id="local-6989586621679229306"><span id="local-6989586621679229309"><span id="local-6989586621679229313"><span id="local-6989586621679229316"><span id="local-6989586621679229319"><span id="local-6989586621679229322"><span class="annot"><span class="annottext">Eq CsvPath
 Eq CsvPath =&gt;
 (CsvPath -&gt; CsvPath -&gt; Ordering)
@@ -2050,7 +2050,7 @@ min :: CsvPath -&gt; CsvPath -&gt; CsvPath
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
 </span><span id="line-472"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-473"></span><span>
-</span><span id="line-474"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-474"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-475"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679229333"><span id="local-6989586621679229336"><span class="annot"><span class="hs-identifier hs-type">IsOption</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="Plutarch.Test.Bench.html#CsvPath"><span class="hs-identifier hs-type">CsvPath</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-476"></span><span>  </span><span id="local-6989586621679229338"><span class="annot"><span class="annottext">defaultValue :: Maybe CsvPath
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">defaultValue</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe CsvPath

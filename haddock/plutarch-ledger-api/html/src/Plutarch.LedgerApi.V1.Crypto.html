@@ -32,7 +32,7 @@ to :: forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
 </span><span id="line-20"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-21"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-22"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-23"></span><span>      </span><span id="local-6989586621679315564"><span id="local-6989586621679315573"><span class="annot"><span class="annottext">All SListI (Code (PPubKeyHash s))
 All SListI (Code (PPubKeyHash s)) =&gt;
 (PPubKeyHash s -&gt; Rep (PPubKeyHash s))
@@ -130,7 +130,7 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
 </span><span id="line-32"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-35"></span><span>      </span><span id="local-6989586621679315669"><span id="local-6989586621679315677"><span class="annot"><span class="annottext">(forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner PPubKeyHash)
@@ -157,7 +157,7 @@ Term s (PInner PPubKeyHash)
 </span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-41"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><span class="hs-identifier hs-var">AsHaskell</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span>
 </span><span id="line-42"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><span class="hs-identifier hs-var">PlutusRepr</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>

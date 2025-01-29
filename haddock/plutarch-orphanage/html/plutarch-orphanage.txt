@@ -3,7 +3,7 @@
 
 
 @package plutarch-orphanage
-@version 1.0.3
+@version 1.1.0
 
 module PlutusLedgerApi.QuickCheck.Utils
 
@@ -48,10 +48,8 @@ instance Test.QuickCheck.Function.Function (PlutusLedgerApi.QuickCheck.Utils.Siz
 
 module PlutusLedgerApi.V1.Orphans
 
--- | @since WIP
 data UnsortedAssocMap k v
 
--- | @since WIP
 getUnsortedAssocMap :: UnsortedAssocMap k v -> Map k v
 
 -- | Similar to <a>NonAdaValue</a>, but also does not have nonzero amounts.
@@ -166,11 +164,8 @@ module PlutusLedgerApi.V3.Orphans
 --   constructor directly, be <i>very</i> certain that the Value being
 --   wrapped satisfies the invariants described above: failing to do so
 --   means all guarantees of this type are off the table.
---   
---   @since WIP
 data MintValue
 
--- | @since WIP
 getMintValue :: MintValue -> Value
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential

@@ -21,7 +21,6 @@
 --   regenreate baseline file run with <tt>--csv</tt> flag again.
 module Plutarch.Test.Bench
 
--- | @since WIP
 data BenchConfig
 
 -- | Compile with UPLC simplifier pass and no tracing
@@ -32,60 +31,40 @@ NonOptimizing :: Config -> BenchConfig
 
 -- | Use this instead of <a>defaultMain</a> from <tt>Test.Tasty</tt> to run
 --   benchmarks to get formatted output
---   
---   @since WIP
 defaultMain :: TestTree -> IO ()
 
 -- | Create benchmark from Plutarch term without tracing and no UPLC
 --   simplifier
---   
---   @since WIP
 bench :: TestName -> ClosedTerm a -> TestTree
 
 -- | Like <a>bench</a> but with customizable compilation config
---   
---   @since WIP
 benchWithConfig :: TestName -> BenchConfig -> ClosedTerm a -> TestTree
 
 -- | Compare benchmarks, reporting relative CPU, MEM, and size differences
---   
---   @since WIP
 bcompare :: String -> TestTree -> TestTree
 
 -- | Like <a>bcompare</a> but with customizable upper and lower bounds of
 --   relative differences
---   
---   @since WIP
 bcompareWithin :: (Double, Double) -> (Double, Double) -> (Double, Double) -> String -> TestTree -> TestTree
 
--- | @since WIP
 data BaselinePath
 
--- | @since WIP
 data CsvPath
 
--- | @since WIP
 data FailIfMoreCpu
 
--- | @since WIP
 data FailIfLessCpu
 
--- | @since WIP
 data FailIfMoreMem
 
--- | @since WIP
 data FailIfLessMem
 
--- | @since WIP
 data FailIfBigger
 
--- | @since WIP
 data FailIfSmaller
 
--- | @since WIP
 consoleBenchReporter :: Ingredient
 
--- | @since WIP
 csvReporter :: Ingredient
 instance GHC.Real.Fractional Plutarch.Test.Bench.FailIfMoreCpu
 instance GHC.Num.Num Plutarch.Test.Bench.FailIfMoreCpu
@@ -152,33 +131,23 @@ instance Test.Tasty.Options.IsOption Plutarch.Test.Bench.FailIfMoreCpu
 module Plutarch.Test.Golden
 
 -- | Opaque type representing tree of golden tests
---   
---   @since WIP
 data GoldenTestTree
 
 -- | Convert tree of golden tests into standard Tasty <a>TestTree</a>,
 --   capturing results produced by nested golden tests
---   
---   @since WIP
 plutarchGolden :: TestName -> FilePath -> [GoldenTestTree] -> TestTree
 
 -- | Like <a>testGroup</a> but for golden tests
 --   
 --   Goldens in the group will be prefixed by the group name
---   
---   @since WIP
 goldenGroup :: TestName -> [GoldenTestTree] -> GoldenTestTree
 
 -- | Like <a>testEval</a> but will append to goldens created by enclosing
 --   <a>plutarchGolden</a>
---   
---   @since WIP
 goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
 
 -- | Like <a>testEvalFail</a> but will append to goldens created by
 --   enclosing <a>plutarchGolden</a>
---   
---   @since WIP
 goldenEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
 instance GHC.Show.Show Plutarch.Test.Golden.Benchmark
 instance Data.Aeson.Types.ToJSON.ToJSON Plutarch.Test.Golden.PerfBenchmark
@@ -188,8 +157,6 @@ instance Data.Aeson.Types.ToJSON.ToJSON Plutarch.Test.Golden.PerfBenchmark
 module Plutarch.Test.SpecTypes
 
 -- | Tuple of three elements of the same type
---   
---   @since WIP
 data Triplet a
 Triplet :: a -> a -> a -> Triplet a
 
@@ -197,8 +164,6 @@ Triplet :: a -> a -> a -> Triplet a
 --   
 --   With an appropriate instance of <tt>PIsDataRepr</tt>, we can
 --   automatically derive <a>PDataFields</a>.
---   
---   @since WIP
 newtype PTriplet (a :: S -> Type) (s :: S)
 PTriplet :: Term s (PDataRecord '["x" ':= a, "y" ':= a, "z" ':= a]) -> PTriplet (a :: S -> Type) (s :: S)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Test.SpecTypes.PTriplet a)
@@ -223,42 +188,30 @@ instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pre
 module Plutarch.Test.Unit
 
 -- | Assert that term failed to compile
---   
---   @since WIP
 testCompileFail :: TestName -> ClosedTerm a -> TestTree
 
 -- | Assert that term compiled and evaluated without errors
---   
---   @since WIP
 testEval :: TestName -> ClosedTerm a -> TestTree
 
 -- | Assert that term compiled correctly but evaluated with errors
---   
---   @since WIP
 testEvalFail :: TestName -> ClosedTerm a -> TestTree
 
 -- | Assert that term compiled and evaluated without errors and matches the
 --   expected value note that comparison is done on AST level, not by
 --   <a>Eq</a> or <a>PEq</a>
---   
---   @since WIP
 testEvalEqual :: TestName -> ClosedTerm a -> ClosedTerm a -> TestTree
 
 -- | Assert that term compiled (with specified tracing level and
 --   <a>DetTracing</a>) and evaluated without errors produced traces that
 --   match expected value. Note that this succeeds even if script evaluated
 --   to error if traces still match
---   
---   @since WIP
 testEvalEqualTraces :: TestName -> ClosedTerm a -> LogLevel -> [Text] -> TestTree
 
--- | @since WIP
 data TermResult
 FailedToCompile :: Text -> TermResult
 FailedToEvaluate :: EvalError -> [Text] -> TermResult
 Evaluated :: String -> [Text] -> TermResult
 
--- | @since WIP
 evalTermResult :: Config -> ClosedTerm a -> TermResult
 
 module Plutarch.Test.Utils
@@ -271,35 +224,24 @@ typeName :: forall k (a :: k). Typeable a => String
 instanceOfType :: forall k (a :: k). Typeable a => String -> String
 typeName' :: Bool -> TypeRep k -> String
 
--- | @since WIP
 precompileTerm :: forall (p :: S -> Type). ClosedTerm p -> ClosedTerm p
 
 module Plutarch.Test.QuickCheck
 
 -- | Like <a>testEval</a> but generate terms
---   
---   @since WIP
 propEval :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
 
 -- | Like <a>testEvalFail</a> but generate terms
---   
---   @since WIP
 propEvalFail :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
 
 -- | Like <a>testCompileFail</a> but generate terms
---   
---   @since WIP
 propCompileFail :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
 
 -- | Like <a>testEvalEqual</a> but generate terms
---   
---   @since WIP
 propEvalEqual :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> (a -> ClosedTerm b) -> TestTree
 
--- | @since WIP
 checkHaskellEquivalent :: forall (plutarchInput :: S -> Type) (plutarchOutput :: S -> Type). (PLiftable plutarchInput, PLiftable plutarchOutput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Pretty (AsHaskell plutarchOutput), Eq (AsHaskell plutarchOutput)) => (AsHaskell plutarchInput -> AsHaskell plutarchOutput) -> ClosedTerm (plutarchInput :--> plutarchOutput) -> Property
 
--- | @since WIP
 checkHaskellEquivalent2 :: forall (plutarchInput1 :: S -> Type) (plutarchInput2 :: S -> Type) (plutarchOutput :: S -> Type). (PLiftable plutarchInput1, Pretty (AsHaskell plutarchInput1), Arbitrary (AsHaskell plutarchInput1), PLiftable plutarchInput2, Pretty (AsHaskell plutarchInput2), Arbitrary (AsHaskell plutarchInput2), PLiftable plutarchOutput, Pretty (AsHaskell plutarchOutput), Eq (AsHaskell plutarchOutput)) => (AsHaskell plutarchInput1 -> AsHaskell plutarchInput2 -> AsHaskell plutarchOutput) -> ClosedTerm (plutarchInput1 :--> (plutarchInput2 :--> plutarchOutput)) -> Property
 instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pretty (Test.QuickCheck.Modifiers.Positive a)
 instance forall a. Prettyprinter.Internal.Pretty a => Prettyprinter.Internal.Pretty (Test.QuickCheck.Modifiers.Negative a)
@@ -314,70 +256,48 @@ module Plutarch.Test.Laws
 --   This is an ugly kludge because PValue doesn't have a direct PData
 --   conversion, and bringing one in would break too much other stuff to be
 --   worth it.
---   
---   @since WIP
 checkLedgerPropertiesValue :: TestTree
 
 -- | Like <a>checkLedgerProperties</a> but specialized to <tt>PMap</tt>
 --   
 --   Same as above
---   
---   @since WIP
 checkLedgerPropertiesAssocMap :: TestTree
 
--- | @since WIP
 checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PLiftable a, Eq (AsHaskell a), PIsData a, ToData (AsHaskell a), Arbitrary (AsHaskell a), Pretty (AsHaskell a), Show (AsHaskell a)) => TestTree
 
--- | @since WIP
 checkLedgerPropertiesPCountable :: forall (a :: S -> Type). (Typeable a, PCountable a, Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), Show (AsHaskell a), PLiftable a) => TestTree
 
--- | @since WIP
 checkLedgerPropertiesPEnumerable :: forall (a :: S -> Type). (Typeable a, PEnumerable a, Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a) => TestTree
 
--- | @since WIP
 checkHaskellOrdEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Ord (AsHaskell plutarchInput), Typeable plutarchInput, POrd plutarchInput) => TestTree
 checkHaskellNumEquivalent :: forall (plutarchInput :: S -> Type). (PLiftable plutarchInput, Pretty (AsHaskell plutarchInput), Arbitrary (AsHaskell plutarchInput), Eq (AsHaskell plutarchInput), Typeable (AsHaskell plutarchInput), Num (AsHaskell plutarchInput), Typeable plutarchInput, PIntegralDomain plutarchInput) => TestTree
 
 -- | Verifies that the specified Plutarch and Haskell types satisfy the
 --   laws of <a>PLiftable</a>.
---   
---   @since WIP
 checkPLiftableLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), PLiftable a, Show (AsHaskell a)) => [TestTree]
 
 -- | Verifies that the specified Plutarch type satisfies the <a>POrd</a>
 --   laws for mandatory methods.
---   
---   @since WIP
 checkPOrdLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PLiftable a, POrd a) => [TestTree]
 
 -- | Verifies that the specified Plutarch type satisfies the
 --   <a>PAdditiveSemigroup</a> laws for mandatory methods.
---   
---   @since WIP
 checkPAdditiveSemigroupLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PAdditiveSemigroup a, PEq a, PLiftable a) => TestTree
 
 -- | Verifies that the specified Plutarch type satisfies the
 --   <a>PAdditiveMonoid</a> laws for mandatory methods.
---   
---   @since WIP
 checkPAdditiveMonoidLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PAdditiveMonoid a, PEq a, PLiftable a) => TestTree
 
 -- | Verifies that the specified Plutarch type satisfies the
 --   <a>PAdditiveGroup</a> laws for mandatory methods.
---   
---   @since WIP
 checkPAdditiveGroupLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PAdditiveGroup a, PEq a, PLiftable a) => TestTree
 
 -- | Verifies that the specified Plutarch type satisfies the
 --   <a>PSemigroup</a> laws for mandatory methods.
---   
---   @since WIP
 checkPSemigroupLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PSemigroup a, PEq a, PLiftable a) => TestTree
 
 -- | Verifies that the specified Plutarch type satisfies the <a>PMonoid</a>
 --   laws for mandatory methods.
---   
---   @since WIP
 checkPMonoidLaws :: forall (a :: S -> Type). (Arbitrary (AsHaskell a), Pretty (AsHaskell a), PMonoid a, PEq a, PLiftable a) => TestTree
 instance forall a. GHC.Show.Show a => GHC.Show.Show (Plutarch.Test.Laws.Triplet a)
 instance forall a. GHC.Classes.Eq a => GHC.Classes.Eq (Plutarch.Test.Laws.Triplet a)

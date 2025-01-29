@@ -38,7 +38,7 @@ to :: forall x. Rep (PScriptPurpose s) x -&gt; PScriptPurpose s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
 </span><span id="line-26"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-28"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-29"></span><span>      </span><span id="local-6989586621679329476"><span id="local-6989586621679329485"><span class="annot"><span class="annottext">All SListI (Code (PScriptPurpose s))
 All SListI (Code (PScriptPurpose s)) =&gt;
 (PScriptPurpose s -&gt; Rep (PScriptPurpose s))
@@ -99,7 +99,7 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PScriptPurpose -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-38"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-39"></span><span>      </span><span id="local-6989586621679329623"><span id="local-6989586621679329634"><span class="annot"><span class="annottext">(forall (s :: S).
  PScriptPurpose s -&gt; Term s (PInner PScriptPurpose))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
@@ -127,7 +127,7 @@ Term s (PInner PScriptPurpose)
 </span><span id="line-40"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-41"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveAsDataStruct</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-44"></span><span id="local-6989586621679329728"><span id="local-6989586621679329738"><span id="local-6989586621679329747"><span id="local-6989586621679329756"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
 </span><span id="line-45"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptPurpose</span></span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-keyword">instance</span><span>

@@ -183,7 +183,7 @@ to :: Rep (PMap keysort k v s) -&gt; PMap keysort k v s
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
 </span><span id="line-119"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-120"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-121"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-121"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-122"></span><span>      </span><span id="local-6989586621679313686"><span id="local-6989586621679313694"><span class="annot"><span class="annottext">(forall (s :: S).
  PMap keysort k v s -&gt; Term s (PInner (PMap keysort k v)))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
@@ -223,7 +223,7 @@ Term s (PInner (PMap keysort k v))
 </span><span id="line-123"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-124"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.AssocMap.html#PMap"><span class="hs-identifier hs-type">PMap</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679313015"><span class="hs-identifier hs-type">keysort</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679313013"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679313014"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-125"></span><span>
-</span><span id="line-126"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-126"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-127"></span><span class="hs-keyword">instance</span><span>
 </span><span id="line-128"></span><span>  </span><span id="local-6989586621679312753"><span id="local-6989586621679312754"><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ToData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679312753"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-129"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ToData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679312754"><span class="hs-identifier hs-type">v</span></a></span><span class="hs-special">)</span><span>

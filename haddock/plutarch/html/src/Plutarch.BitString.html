@@ -58,11 +58,11 @@ directions. To avoid confusing behaviour, we require an explicit wrapping of
 'PByteString's to use bitwise functionality: this way, it's clear where which
 scheme applies.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-63"></span><span class="hs-keyword">newtype</span><span> </span><span id="PBitString"><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-var">PBitString</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627740"><span class="annot"><a href="#local-6989586621679627740"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PBitString"><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-var">PBitString</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627740"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-64"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-65"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-66"></span><span>      </span><span id="local-6989586621679627743"><span id="local-6989586621679627745"><span class="annot"><span class="annottext">(forall x. PBitString s -&gt; Rep (PBitString s) x)
 -&gt; (forall x. Rep (PBitString s) x -&gt; PBitString s)
 -&gt; Generic (PBitString s)
@@ -79,7 +79,7 @@ to :: forall x. Rep (PBitString s) x -&gt; PBitString s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
 </span><span id="line-67"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-68"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-69"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-70"></span><span>      </span><span id="local-6989586621679627752"><span id="local-6989586621679627761"><span class="annot"><span class="annottext">All @[Type] (SListI @Type) (Code (PBitString s))
 All @[Type] (SListI @Type) (Code (PBitString s)) =&gt;
 (PBitString s -&gt; Rep (PBitString s))
@@ -97,7 +97,7 @@ from :: PBitString s -&gt; Rep (PBitString s)
 $cto :: forall (s :: S). Rep (PBitString s) -&gt; PBitString s
 to :: Rep (PBitString s) -&gt; PBitString s
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
-</span><span id="line-71"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-71"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-72"></span><span>      </span><span id="local-6989586621679627791"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool)
 -&gt; PEq PBitString
@@ -110,7 +110,7 @@ Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
 #== :: forall (s :: S).
 Term s PBitString -&gt; Term s PBitString -&gt; Term s PBool
 </span><a href="Plutarch.Internal.Eq.html#PEq"><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></a></span></span><span>
-</span><span id="line-73"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-73"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-74"></span><span>      </span><span id="local-6989586621679627810"><span id="local-6989586621679627816"><span id="local-6989586621679627821"><span id="local-6989586621679627824"><span class="annot"><span class="annottext">PEq PBitString
 PEq PBitString =&gt;
 (forall (s :: S).
@@ -150,7 +150,7 @@ Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
 pmin :: forall (s :: S).
 Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString
 </span><a href="Plutarch.Internal.Ord.html#POrd"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></a></span></span></span></span></span><span>
-</span><span id="line-75"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-76"></span><span>      </span><span id="local-6989586621679627829"><span id="local-6989586621679627835"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PBitString -&gt; Term s PBitString -&gt; Term s PBitString)
 -&gt; (forall (s :: S).
@@ -173,7 +173,7 @@ Term s PPositive -&gt; Term s PBitString -&gt; Term s PBitString
 pstimes :: forall (s :: S).
 Term s PPositive -&gt; Term s PBitString -&gt; Term s PBitString
 </span><a href="Plutarch.Internal.Semigroup.html#PSemigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PSemigroup</span></a></span></span></span><span>
-</span><span id="line-77"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-77"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-78"></span><span>      </span><span id="local-6989586621679627842"><span id="local-6989586621679627848"><span class="annot"><span class="annottext">PSemigroup PBitString
 PSemigroup PBitString =&gt;
 (forall (s :: S). Term s PBitString)
@@ -197,7 +197,7 @@ Term s PNatural -&gt; Term s PBitString -&gt; Term s PBitString
 </span><a href="Plutarch.Internal.Semigroup.html#PMonoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PMonoid</span></a></span></span></span><span>
 </span><span id="line-79"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-80"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-81"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-81"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-82"></span><span>      </span><span id="local-6989586621679627853"><span id="local-6989586621679627861"><span class="annot"><span class="annottext">(forall (s :: S). PBitString s -&gt; Term s (PInner PBitString))
 -&gt; (forall (s :: S) (b :: PType).
     Term s (PInner PBitString)
@@ -224,7 +224,7 @@ Term s (PInner PBitString)
 </span><span id="line-83"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-84"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Newtype.html#DeriveNewtypePlutusType"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-85"></span><span>
-</span><span id="line-86"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-86"></span><span class="annot"><span class="hs-comment">-- | @since 1.10.0</span></span><span>
 </span><span id="line-87"></span><span id="local-6989586621679627873"><span id="local-6989586621679627882"><span id="local-6989586621679627890"><span id="local-6989586621679627898"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
 </span><span id="line-88"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#DeriveNewtypePLiftable"><span class="hs-identifier hs-type">DeriveNewtypePLiftable</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
 </span><span id="line-89"></span><span>  </span><span class="hs-keyword">instance</span><span>
@@ -232,7 +232,7 @@ Term s (PInner PBitString)
 </span><span id="line-91"></span><span>
 </span><span id="line-92"></span><span class="annot"><span class="hs-comment">{- | Bit access operation, as defined in [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#readbit).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-96"></span><span class="annot"><a href="Plutarch.BitString.html#preadBit"><span class="hs-identifier hs-type">preadBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627662"><span class="annot"><a href="#local-6989586621679627662"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627662"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-97"></span><span id="preadBit"><span class="annot"><span class="annottext">preadBit :: forall (s :: S). Term s (PBitString :--&gt; (PInteger :--&gt; PBool))
@@ -249,13 +249,13 @@ with regard to the list of indexes. Effectively, @psetBits b ixes@ is
 equivalent to @writeBits b . map (, True) $ ixes@. All caveats that this
 entails from the CIP-122 description apply.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-109"></span><span>
 </span><span id="line-110"></span><span class="annot"><span class="hs-comment">{- | Sets bits, as per
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-115"></span><span class="annot"><a href="Plutarch.BitString.html#pwriteBits"><span class="hs-identifier hs-type">pwriteBits</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627669"><span class="annot"><a href="#local-6989586621679627669"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627669"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Data.html#PBuiltinList"><span class="hs-identifier hs-type">PBuiltinList</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-116"></span><span id="pwriteBits"><span class="annot"><span class="annottext">pwriteBits :: forall (s :: S).
@@ -275,7 +275,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-118"></span><span class="annot"><span class="hs-comment">{- | Performs a shift, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiseshift).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-123"></span><span class="annot"><a href="Plutarch.BitString.html#pshift"><span class="hs-identifier hs-type">pshift</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627672"><span class="annot"><a href="#local-6989586621679627672"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627672"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-124"></span><span id="pshift"><span class="annot"><span class="annottext">pshift :: forall (s :: S).
@@ -288,7 +288,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-126"></span><span class="annot"><span class="hs-comment">{- | Performs a rotation, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiserotate).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-131"></span><span class="annot"><a href="Plutarch.BitString.html#protate"><span class="hs-identifier hs-type">protate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627929"><span class="annot"><a href="#local-6989586621679627929"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627929"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-132"></span><span id="protate"><span class="annot"><span class="annottext">protate :: forall (s :: S).
@@ -301,7 +301,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-134"></span><span class="annot"><span class="hs-comment">{- | Counts the number of set bits, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#countsetbits).
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-139"></span><span class="annot"><a href="Plutarch.BitString.html#pcountSetBits"><span class="hs-identifier hs-type">pcountSetBits</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627675"><span class="annot"><a href="#local-6989586621679627675"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627675"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-140"></span><span id="pcountSetBits"><span class="annot"><span class="annottext">pcountSetBits :: forall (s :: S). Term s (PBitString :--&gt; PInteger)
@@ -317,7 +317,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 
 This returns @-1@ if the argument is either empty, or contains no set bits.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-151"></span><span class="annot"><a href="Plutarch.BitString.html#pfindFirstSetBit%27"><span class="hs-identifier hs-type">pfindFirstSetBit'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627932"><span class="annot"><a href="#local-6989586621679627932"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627932"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-152"></span><span id="pfindFirstSetBit%27"><span class="annot"><span class="annottext">pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--&gt; PInteger)
@@ -329,7 +329,7 @@ forall (s :: S) (a :: PType). DefaultFun -&gt; Term s a
 </span><span id="line-154"></span><span class="annot"><span class="hs-comment">{- | As @pfindFirstSetBit'@, but produces 'PNothing' if the argument is empty,
 or contains no set bits.
 
-@since WIP
+@since 1.10.0
 -}</span></span><span>
 </span><span id="line-159"></span><span class="annot"><a href="Plutarch.BitString.html#pfindFirstSetBit"><span class="hs-identifier hs-type">pfindFirstSetBit</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679627678"><span class="annot"><a href="#local-6989586621679627678"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679627678"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.BitString.html#PBitString"><span class="hs-identifier hs-type">PBitString</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Maybe.html#PMaybe"><span class="hs-identifier hs-type">PMaybe</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-160"></span><span id="pfindFirstSetBit"><span class="annot"><span class="annottext">pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--&gt; PMaybe PInteger)

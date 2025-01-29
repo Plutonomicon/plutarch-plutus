@@ -42,11 +42,11 @@ be /very/ certain that the Value being wrapped satisfies the invariants
 described above: failing to do so means all guarantees of this type are off
 the table.
 
-@since WIP
+@since 1.1.0
 -}</span></span><span>
 </span><span id="line-47"></span><span class="hs-keyword">newtype</span><span> </span><span id="MintValue"><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MintValue"><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-48"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-49"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-50"></span><span>      </span><span id="local-6989586621679139222"><span id="local-6989586621679139227"><span class="annot"><span class="annottext">MintValue -&gt; MintValue -&gt; Bool
 (MintValue -&gt; MintValue -&gt; Bool)
 -&gt; (MintValue -&gt; MintValue -&gt; Bool) -&gt; Eq MintValue
@@ -59,7 +59,7 @@ $c/= :: MintValue -&gt; MintValue -&gt; Bool
 </span><span id="line-51"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-52"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span>
 </span><span id="line-53"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-54"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-54"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-55"></span><span>      </span><span id="local-6989586621679139233"><span id="local-6989586621679139239"><span id="local-6989586621679139243"><span class="annot"><span class="annottext">Int -&gt; MintValue -&gt; ShowS
 [MintValue] -&gt; ShowS
 MintValue -&gt; String
@@ -78,7 +78,7 @@ showList :: [MintValue] -&gt; ShowS
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-57"></span><span>
-</span><span id="line-58"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-58"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-59"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-60"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-61"></span><span>  </span><span id="local-6989586621679139307"><span class="annot"><span class="annottext">arbitrary :: Gen MintValue
@@ -420,10 +420,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(CurrencySymbol, [(TokenName, Integer)])]
 </span><a href="#local-6989586621679139353"><span class="hs-identifier hs-var">shrunk</span></a></span><span>
 </span><span id="line-99"></span><span>
-</span><span id="line-100"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-100"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-101"></span><span id="local-6989586621679139360"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.Value</span></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span></span><span>
 </span><span id="line-102"></span><span>
-</span><span id="line-103"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-103"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-104"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-105"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-106"></span><span>  </span><span id="local-6989586621679139372"><span class="annot"><span class="annottext">function :: forall b. (MintValue -&gt; b) -&gt; MintValue :-&gt; b
@@ -437,7 +437,7 @@ forall a b. Coercible a b =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; MintValue
 </span><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-var">MintValue</span></a></span><span>
 </span><span id="line-107"></span><span>
-</span><span id="line-108"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-108"></span><span class="annot"><span class="hs-comment">-- | @since 1.1.0</span></span><span>
 </span><span id="line-109"></span><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#getMintValue"><span class="hs-identifier hs-type">getMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Orphans.Value.html#MintValue"><span class="hs-identifier hs-type">MintValue</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value.Value</span></span><span>
 </span><span id="line-110"></span><span id="getMintValue"><span class="annot"><span class="annottext">getMintValue :: MintValue -&gt; Value
 </span><a href="PlutusLedgerApi.V3.Orphans.Value.html#getMintValue"><span class="hs-identifier hs-var hs-var">getMintValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MintValue -&gt; Value
