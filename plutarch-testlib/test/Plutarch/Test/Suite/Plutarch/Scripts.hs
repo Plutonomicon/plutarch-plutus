@@ -17,7 +17,8 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.LedgerApi.V3 (
   PPubKeyHash,
-  PScriptContext,
+  PScriptContext (pscriptContext'txInfo),
+  PTxInfo (ptxInfo'signatories),
   scriptHash,
  )
 import Plutarch.Prelude
@@ -76,11 +77,11 @@ authorizedPolicy ::
   Term s PData ->
   Term s PScriptContext ->
   Term s POpaque
-authorizedPolicy authHash _redeemer ctx =
-  let sigs :: Term s (PBuiltinList (PAsData PPubKeyHash))
-      sigs = pfromData (pfield @"signatories" #$ pfield @"txInfo" # ctx)
-   in pif
-        (pelem # authHash # sigs)
+authorizedPolicy authHash _redeemer ctx' =
+  pmatch ctx' $ \ctx ->
+    pmatch (pscriptContext'txInfo ctx) $ \txinfo ->
+      pif
+        (pelem # authHash # pfromData (ptxInfo'signatories txinfo))
         (popaque $ pcon PUnit)
         perror
 
@@ -90,11 +91,11 @@ authorizedStakeValidator ::
   Term s PData ->
   Term s PScriptContext ->
   Term s POpaque
-authorizedStakeValidator authHash _redeemer ctx =
-  let sigs :: Term s (PBuiltinList (PAsData PPubKeyHash))
-      sigs = pfromData (pfield @"signatories" #$ pfield @"txInfo" # ctx)
-   in pif
-        (pelem # authHash # sigs)
+authorizedStakeValidator authHash _redeemer ctx' =
+  pmatch ctx' $ \ctx ->
+    pmatch (pscriptContext'txInfo ctx) $ \txinfo ->
+      pif
+        (pelem # authHash # pfromData (ptxInfo'signatories txinfo))
         (popaque $ pcon PUnit)
         perror
 

@@ -84,7 +84,6 @@ executable plutarch-docs
     Plutarch.Docs.PBuiltinPair
     Plutarch.Docs.PByteString
     Plutarch.Docs.PData
-    Plutarch.Docs.PDataFields
     Plutarch.Docs.PDataSumAndRecord
     Plutarch.Docs.PEqAndPOrd
     Plutarch.Docs.PInteger
@@ -110,7 +109,6 @@ executable plutarch-docs
     Plutarch.Docs.UsingHaskellLevelFunctions
     Plutarch.Docs.ValidatorExample
     Plutarch.Docs.WorkDuplication
-    Plutarch.Docs.WorkingWithBoundFields
 
   hs-source-dirs:     . compilable
   ghc-options:        -pgmL markdown-unlit

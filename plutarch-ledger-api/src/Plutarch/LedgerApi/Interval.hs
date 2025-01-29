@@ -35,41 +35,35 @@ module Plutarch.LedgerApi.Interval (
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import GHC.Records (getField)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude hiding (psingleton, pto)
+import Plutarch.Repr.Data
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0
-newtype PInterval (a :: S -> Type) (s :: S)
-  = PInterval
-      ( Term
-          s
-          ( PDataRecord
-              '[ "from" ':= PLowerBound a
-               , "to" ':= PUpperBound a
-               ]
-          )
-      )
+data PInterval (a :: S -> Type) (s :: S) = PInterval
+  { pinteral'from :: Term s (PLowerBound a)
+  , pinteral'to :: Term s (PUpperBound a)
+  }
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
-    , -- | @since 2.0.0
-      PDataFields
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
       PShow
     )
-
--- | @since 2.0.0
-instance DerivePlutusType (PInterval a) where
-  type DPTStrat _ = PlutusTypeData
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PInterval a))
 
 -- | @since WIP
 deriving via
@@ -77,37 +71,26 @@ deriving via
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PInterval a)
 
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PInterval a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PInterval a))
-
 -- | @since 2.0.0
-newtype PLowerBound (a :: S -> Type) (s :: S)
-  = PLowerBound
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PBool
-               ]
-          )
-      )
+data PLowerBound (a :: S -> Type) (s :: S)
+  = PLowerBound (Term s (PExtended a)) (Term s (PAsData PBool))
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PLowerBound a))
 
 deriving via
   DeriveDataPLiftable (PLowerBound a) (Plutus.LowerBound (AsHaskell a))
@@ -127,40 +110,25 @@ instance (PIsData a, PCountable a) => POrd (PLowerBound a) where
   lb1 #< lb2 = (pinclusiveLowerBound # lb1) #< (pinclusiveLowerBound # lb2)
 
 -- | @since 2.0.0
-instance DerivePlutusType (PLowerBound a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PLowerBound a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PLowerBound a))
-
--- | @since 2.0.0
-newtype PUpperBound (a :: S -> Type) (s :: S)
-  = PUpperBound
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PExtended a
-               , "_1" ':= PBool
-               ]
-          )
-      )
+data PUpperBound (a :: S -> Type) (s :: S)
+  = PUpperBound (Term s (PExtended a)) (Term s (PAsData PBool))
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
-      PDataFields
-    , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PUpperBound a))
 
 deriving via
   DeriveDataPLiftable (PUpperBound a) (Plutus.UpperBound (AsHaskell a))
@@ -180,51 +148,66 @@ instance (PIsData a, PEnumerable a) => POrd (PUpperBound a) where
   ub1 #< ub2 = (pinclusiveUpperBound # ub1) #< (pinclusiveUpperBound # ub2)
 
 -- | @since 2.0.0
-instance DerivePlutusType (PUpperBound a) where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PUpperBound a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PUpperBound a))
-
--- | @since 2.0.0
 data PExtended (a :: S -> Type) (s :: S)
-  = PNegInf (Term s (PDataRecord '[]))
-  | PFinite (Term s (PDataRecord '["_0" ':= a]))
-  | PPosInf (Term s (PDataRecord '[]))
+  = PNegInf
+  | PFinite (Term s (PAsData a))
+  | PPosInf
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PExtended a))
 
 deriving via
   DeriveDataPLiftable (PExtended a) (Plutus.Extended (AsHaskell a))
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PExtended a)
 
--- | @since 2.0.0
-instance DerivePlutusType (PExtended a) where
-  type DPTStrat _ = PlutusTypeData
+-- phoistAcyclic is used because comparators generates very large code.
+instance (POrd a, PIsData a) => POrd (PExtended a) where
+  x #<= y = f # x # y
+    where
+      f = phoistAcyclic $
+        plam $ \a b ->
+          pmatch a $ \a' ->
+            pmatch b $ \b' ->
+              case (a', b') of
+                (PNegInf, PNegInf) -> pconstant True
+                (PNegInf, _) -> pconstant True
+                (_, PNegInf) -> pconstant False
+                (PPosInf, PPosInf) -> pconstant True
+                (_, PPosInf) -> pconstant True
+                (PPosInf, _) -> pconstant False
+                (PFinite l, PFinite r) -> pfromData l #<= pfromData r
 
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PExtended a)
-
--- | @since 3.1.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PExtended a))
+  x #< y = f # x # y
+    where
+      f = phoistAcyclic $
+        plam $ \a b ->
+          pmatch a $ \a' ->
+            pmatch b $ \b' ->
+              case (a', b') of
+                (PNegInf, PNegInf) -> pconstant False
+                (PNegInf, _) -> pconstant True
+                (_, PNegInf) -> pconstant False
+                (PPosInf, PPosInf) -> pconstant False
+                (_, PPosInf) -> pconstant True
+                (PPosInf, _) -> pconstant False
+                (PFinite l, PFinite r) -> pfromData l #< pfromData r
 
 {- | Check if a value is inside the given interval.
 
@@ -250,9 +233,7 @@ pisEmpty ::
   (PIsData a, PEnumerable a) =>
   Term s (PInterval a :--> PBool)
 pisEmpty = phoistAcyclic $ plam $ \i -> unTermCont $ do
-  unpacked <- tcont $ pletFields @'["from", "to"] i
-  let lowerBound = getField @"from" unpacked
-  let upperBound = getField @"to" unpacked
+  PInterval lowerBound upperBound <- pmatchC i
   let inclusiveLowerBound = pinclusiveLowerBound # lowerBound
   let inclusiveUpperBound = pinclusiveUpperBound # upperBound
   pure $ inclusiveLowerBound #> inclusiveUpperBound
@@ -266,18 +247,15 @@ pinclusiveLowerBound ::
   (PIsData a, PCountable a) =>
   Term s (PLowerBound a :--> PExtended a)
 pinclusiveLowerBound = phoistAcyclic $ plam $ \lb -> unTermCont $ do
-  unpacked <- tcont $ pletFields @'["_0", "_1"] lb
-  let extended = getField @"_0" unpacked
-  let closure = getField @"_1" unpacked
+  PLowerBound extended closure <- pmatchC lb
   pure $
     pif
-      closure
+      (pfromData closure)
       -- We are already closed
       extended
       ( pmatch extended $ \case
           -- Open at a finite value, get its successor
-          PFinite t -> pletFields @'["_0"] t $ \unpackedT ->
-            pcon . PFinite $ pdcons # pdata (psuccessor # getField @"_0" unpackedT) # pdnil
+          PFinite t -> pcon $ PFinite (pdata $ psuccessor # pfromData t)
           -- We have an infinity, who cares
           _ -> extended
       )
@@ -291,18 +269,16 @@ pinclusiveUpperBound ::
   (PIsData a, PEnumerable a) =>
   Term s (PUpperBound a :--> PExtended a)
 pinclusiveUpperBound = phoistAcyclic $ plam $ \ub -> unTermCont $ do
-  unpacked <- tcont $ pletFields @'["_0", "_1"] ub
-  let extended = getField @"_0" unpacked
-  let closure = getField @"_1" unpacked
+  PUpperBound extended closure <- pmatchC ub
   pure $
     pif
-      closure
+      (pfromData closure)
       -- We are already closed
       extended
       ( pmatch extended $ \case
           -- Open at a finite value, get its predecessor
-          PFinite t -> pletFields @'["_0"] t $ \unpackedT ->
-            pcon . PFinite $ pdcons # pdata (ppredecessor # getField @"_0" unpackedT) # pdnil
+          PFinite t ->
+            pcon $ PFinite (pdata $ ppredecessor # pfromData t)
           -- We have an infinity, who cares
           _ -> extended
       )
@@ -323,12 +299,12 @@ pcontains ::
         :--> PBool
     )
 pcontains = phoistAcyclic $ plam $ \i1 i2 -> unTermCont $ do
-  unpackedI1 <- tcont $ pletFields @'["from", "to"] i1
-  unpackedI2 <- tcont $ pletFields @'["from", "to"] i2
-  let l1 = pfromData $ getField @"from" unpackedI1
-  let l2 = getField @"from" unpackedI2
-  let u1 = pfromData $ getField @"to" unpackedI1
-  let u2 = getField @"to" unpackedI2
+  PInterval l1' u1' <- pmatchC i1
+  PInterval l2' u2' <- pmatchC i2
+  l1 <- pletC l1'
+  u1 <- pletC u1'
+  l2 <- pletC l2'
+  u2 <- pletC u2'
   -- Note: This manually inlines `pisEmpty` to avoid redundant unpacking.
   let ilb2 = pinclusiveLowerBound # l2
   let iub2 = pinclusiveUpperBound # u2
@@ -359,7 +335,7 @@ psingleton ::
   Term s (PAsData a :--> PInterval a)
 psingleton = phoistAcyclic $
   plam $ \x ->
-    plet (pcon $ PFinite $ pdcons @"_0" # x # pdnil) $ \start ->
+    plet (pcon $ PFinite x) $ \start ->
       pclosedInterval # start # start
 
 {- | Given @x@, create the interval @[x, +infty)@
@@ -371,8 +347,8 @@ pfrom ::
   Term s (PAsData a :--> PInterval a)
 pfrom = phoistAcyclic $
   plam $ \a ->
-    let start = pcon $ PFinite $ pdcons @"_0" # a # pdnil
-        end = pcon $ PPosInf pdnil
+    let start = pcon $ PFinite a
+        end = pcon PPosInf
      in pclosedInterval # start # end
 
 {- | Given @x@, create the interval @(-infty, x]@.
@@ -384,8 +360,8 @@ pto ::
   Term s (PAsData a :--> PInterval a)
 pto = phoistAcyclic $
   plam $ \a ->
-    let start = pcon $ PNegInf pdnil
-        end = pcon $ PFinite $ pdcons @"_0" # a # pdnil
+    let start = pcon PNegInf
+        end = pcon $ PFinite a
      in pclosedInterval # start # end
 
 -- TODO: Rename this, as this name is too specific to slots.
@@ -416,15 +392,11 @@ phull ::
     )
 phull = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["from", "to"] x'
-    y <- tcont $ pletFields @'["from", "to"] y'
-    let lowerX = getField @"from" x
-    let upperX = getField @"to" x
-    let lowerY = getField @"from" y
-    let upperY = getField @"to" y
+    PInterval lowerX upperX <- pmatchC x'
+    PInterval lowerY upperY <- pmatchC y'
     let lower = minLower # lowerX # lowerY
     let upper = maxUpper # upperX # upperY
-    pure $ pinterval' # pdata lower # pdata upper
+    pure $ pinterval' # lower # upper
 
 {- | @'pintersection' i1 i2@ gives the largest interval that is contained in
 both @i1@ and @i2@.
@@ -442,15 +414,11 @@ pintersection ::
     )
 pintersection = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["from", "to"] x'
-    y <- tcont $ pletFields @'["from", "to"] y'
-    let lowerX = getField @"from" x
-    let upperX = getField @"to" x
-    let lowerY = getField @"from" y
-    let upperY = getField @"to" y
+    PInterval lowerX upperX <- pmatchC x'
+    PInterval lowerY upperY <- pmatchC y'
     let lower = maxLower # lowerX # lowerY
     let upper = minUpper # upperX # upperY
-    pure $ pinterval' # pdata lower # pdata upper
+    pure $ pinterval' # lower # upper
 
 {- | @'before' x i@ is true if @x@ is earlier than the start of @i@.
 
@@ -467,8 +435,13 @@ pbefore ::
     )
 pbefore = phoistAcyclic $
   plam $ \a y ->
-    let lower = pfield @"from" # y
-     in pbefore' # a # (lToE # lower)
+    pmatch y $ \(PInterval lower _) -> unTermCont $ do
+      PLowerBound t c <- pmatchC lower
+      pure $
+        pif
+          (pfromData c)
+          (pmatch t (ltE' a))
+          (pmatch t (leqE' a))
 
 {- | @'after' x u@ is true if @x@ is later than the end of @i@.
 
@@ -485,8 +458,13 @@ pafter ::
     )
 pafter = phoistAcyclic $
   plam $ \a y ->
-    let upper = pfield @"to" # y
-     in pafter' # a # (uToE # upper)
+    pmatch y $ \(PInterval _ upper) -> unTermCont $ do
+      PUpperBound t c <- pmatchC upper
+      pure $
+        pif
+          (pfromData c)
+          (pmatch t (gtE' a))
+          (pmatch t (geqE' a))
 
 {- | @'pinterval' x y@ creates the interval @[x, y]@.
 
@@ -502,8 +480,8 @@ pinterval ::
     )
 pinterval = phoistAcyclic $
   plam $ \x y ->
-    let start = pcon $ PFinite $ pdcons @"_0" # x # pdnil
-        end = pcon $ PFinite $ pdcons @"_0" # y # pdnil
+    let start = pcon $ PFinite x
+        end = pcon $ PFinite y
      in pclosedInterval # start # end
 
 -- Helpers
@@ -520,42 +498,23 @@ pclosedInterval ::
 pclosedInterval = phoistAcyclic $
   plam $ \start end ->
     let closure = pconstant @(PAsData PBool) True
-        upper =
-          pcon $
-            PUpperBound $
-              pdcons @"_0"
-                # pdata end
-                #$ pdcons @"_1"
-                # closure
-                # pdnil
-        lower =
-          pcon $
-            PLowerBound $
-              pdcons @"_0"
-                # pdata start
-                #$ pdcons @"_1"
-                # closure
-                # pdnil
-     in pinterval' # pdata lower # pdata upper
+        upper = pcon $ PUpperBound end closure
+        lower = pcon $ PLowerBound start closure
+     in pinterval' # lower # upper
 
 --  interval from upper and lower
 pinterval' ::
   forall (a :: S -> Type) (s :: S).
   Term
     s
-    ( PAsData (PLowerBound a)
-        :--> PAsData (PUpperBound a)
+    ( PLowerBound a
+        :--> PUpperBound a
         :--> PInterval a
     )
 pinterval' = phoistAcyclic $
   plam $ \lower upper ->
     pcon $
-      PInterval $
-        pdcons @"from"
-          # lower
-          #$ pdcons @"to"
-          # upper
-          # pdnil
+      PInterval lower upper
 
 ltE' ::
   forall (a :: S -> Type) (s :: S).
@@ -564,19 +523,9 @@ ltE' ::
   PExtended a s ->
   Term s PBool
 ltE' x = \case
-  PNegInf _ -> pconstant False
-  PPosInf _ -> pconstant True
-  PFinite r -> x #< pfield @"_0" # r
-
-lToE ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (PLowerBound a :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool])
-lToE = phoistAcyclic $ plam $ \x -> pmatch x (\(PLowerBound a) -> a)
-
-uToE ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (PUpperBound a :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool])
-uToE = phoistAcyclic $ plam $ \x -> pmatch x (\(PUpperBound a) -> a)
+  PNegInf -> pconstant False
+  PPosInf -> pconstant True
+  PFinite r -> x #< pfromData r
 
 eqE' ::
   forall (a :: S -> Type) (s :: S).
@@ -586,8 +535,7 @@ eqE' ::
   Term s PBool
 eqE' a y' = case y' of
   PFinite r -> unTermCont $ do
-    b <- tcont $ plet $ pfield @"_0" # r
-    pure $ a #== b
+    pure $ a #== pfromData r
   _ -> pconstant False
 
 minLower ::
@@ -598,16 +546,16 @@ minLower ::
     (PLowerBound a :--> PLowerBound a :--> PLowerBound a)
 minLower = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["_0", "_1"] (lToE # x')
-    y <- tcont $ pletFields @'["_0", "_1"] (lToE # y')
-    let xt = getField @"_0" x
-    let yt = getField @"_0" y
-    let xc = getField @"_1" x
+    PLowerBound xt' xc <- pmatchC x'
+    PLowerBound yt' _ <- pmatchC y'
+    xt <- pletC xt'
+    yt <- pletC yt'
+
     pure $
       pif
-        (pfromData xt #< pfromData yt)
+        (xt #< yt)
         x'
-        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # x' # y'))
+        (pif (yt #< xt) y' (pif' # pfromData xc # x' # y'))
 
 maxLower ::
   forall (a :: S -> Type) (s :: S).
@@ -617,16 +565,16 @@ maxLower ::
     (PLowerBound a :--> PLowerBound a :--> PLowerBound a)
 maxLower = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["_0", "_1"] (lToE # x')
-    y <- tcont $ pletFields @'["_0", "_1"] (lToE # y')
-    let xt = getField @"_0" x
-    let yt = getField @"_0" y
-    let xc = getField @"_1" x
+    PLowerBound xt' xc <- pmatchC x'
+    PLowerBound yt' _ <- pmatchC y'
+    xt <- pletC xt'
+    yt <- pletC yt'
+
     pure $
       pif
-        (pfromData xt #< pfromData yt)
+        (xt #< yt)
         y'
-        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # y' # x'))
+        (pif (yt #< xt) x' (pif' # pfromData xc # y' # x'))
 
 minUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -636,16 +584,16 @@ minUpper ::
     (PUpperBound a :--> PUpperBound a :--> PUpperBound a)
 minUpper = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["_0", "_1"] (uToE # x')
-    y <- tcont $ pletFields @'["_0", "_1"] (uToE # y')
-    let xt = getField @"_0" x
-    let yt = getField @"_0" y
-    let xc = getField @"_1" x
+    PUpperBound xt' xc <- pmatchC x'
+    PUpperBound yt' _ <- pmatchC y'
+    xt <- pletC xt'
+    yt <- pletC yt'
+
     pure $
       pif
-        (pfromData xt #< pfromData yt)
+        (xt #< yt)
         x'
-        (pif (pfromData yt #< pfromData xt) y' (pif' # xc # y' # x'))
+        (pif (yt #< xt) y' (pif' # pfromData xc # y' # x'))
 
 maxUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -655,58 +603,16 @@ maxUpper ::
     (PUpperBound a :--> PUpperBound a :--> PUpperBound a)
 maxUpper = phoistAcyclic $
   plam $ \x' y' -> unTermCont $ do
-    x <- tcont $ pletFields @'["_0", "_1"] (uToE # x')
-    y <- tcont $ pletFields @'["_0", "_1"] (uToE # y')
-    let xt = getField @"_0" x
-    let yt = getField @"_0" y
-    let xc = getField @"_1" x
+    PUpperBound xt' xc <- pmatchC x'
+    PUpperBound yt' _ <- pmatchC y'
+    xt <- pletC xt'
+    yt <- pletC yt'
+
     pure $
       pif
-        (pfromData xt #< pfromData yt)
+        (xt #< yt)
         y'
-        (pif (pfromData yt #< pfromData xt) x' (pif' # xc # x' # y'))
-
--- value < endpoint
-pbefore' ::
-  forall (a :: S -> Type) (s :: S).
-  (PIsData a, POrd a) =>
-  Term
-    s
-    ( a
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PBool
-    )
-pbefore' = phoistAcyclic $
-  plam $ \a y' -> unTermCont $ do
-    y <- tcont $ pletFields @'["_0", "_1"] y'
-    let yt = getField @"_0" y
-    let yc = getField @"_1" y
-    pure $
-      pif
-        yc
-        (pmatch yt (ltE' a))
-        (pmatch yt (leqE' a))
-
--- value > endpoint
-pafter' ::
-  forall (a :: S -> Type) (s :: S).
-  (PIsData a, POrd a) =>
-  Term
-    s
-    ( a
-        :--> PDataRecord '["_0" ':= PExtended a, "_1" ':= PBool]
-        :--> PBool
-    )
-pafter' = phoistAcyclic $
-  plam $ \a y' -> unTermCont $ do
-    y <- tcont $ pletFields @'["_0", "_1"] y'
-    let yt = getField @"_0" y
-    let yc = getField @"_1" y
-    pure $
-      pif
-        yc
-        (pmatch yt (gtE' a))
-        (pmatch yt (geqE' a))
+        (pif (yt #< xt) x' (pif' # pfromData xc # x' # y'))
 
 -- value <= PExtended
 leqE' ::
@@ -734,8 +640,6 @@ gtE' ::
   PExtended a s ->
   Term s PBool
 gtE' x = \case
-  PNegInf _ -> pconstant True
-  PPosInf _ -> pconstant False
-  PFinite r ->
-    let y = pfield @"_0" # r
-     in y #< x
+  PNegInf -> pconstant True
+  PPosInf -> pconstant False
+  PFinite r -> pfromData r #< x

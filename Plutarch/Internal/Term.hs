@@ -17,6 +17,7 @@ module Plutarch.Internal.Term (
   pforce,
   phoistAcyclic,
   perror,
+  pplaceholder,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
@@ -117,7 +118,7 @@ data RawTerm
   | RCompiled UTerm
   | RError
   | RHoisted HoistedTerm
-  | RPlaceHolder Dig
+  | RPlaceHolder Integer
   | RConstr Word64 [RawTerm]
   | RCase RawTerm [RawTerm]
   deriving stock (Show)
@@ -151,7 +152,7 @@ hashRawTerm' (RBuiltin x) = addHashIndex 6 . flip hashUpdate (F.flat x)
 hashRawTerm' RError = addHashIndex 7
 hashRawTerm' (RHoisted (HoistedTerm hash _)) = addHashIndex 8 . flip hashUpdate hash
 hashRawTerm' (RCompiled code) = addHashIndex 9 . flip hashUpdate (hashUTerm @alg code hashInit)
-hashRawTerm' (RPlaceHolder hash) = addHashIndex 10 . flip hashUpdate hash
+hashRawTerm' (RPlaceHolder x) = addHashIndex 10 . addHashIndex x
 hashRawTerm' (RConstr x y) =
   addHashIndex 11 . flip hashUpdate (F.flat (fromIntegral x :: Integer)) . flip (foldl' $ flip hashRawTerm') y
 hashRawTerm' (RCase x y) =
@@ -625,6 +626,15 @@ pforce x =
 -}
 perror :: Term s a
 perror = Term \_ -> pure $ mkTermRes RError
+
+{- |
+Same as @perror@ except this holds integer id for AST look-ahead.
+
+This can be used to "tag" branch and generate AST first to see if that branch is actually used or not,
+allowing optimization cutting unused branches. For more detailed uscases, check @pmatchDataRec@.
+-}
+pplaceholder :: Integer -> Term s a
+pplaceholder x = Term \_ -> pure $ mkTermRes $ RPlaceHolder x
 
 pgetConfig :: (Config -> Term s a) -> Term s a
 pgetConfig f = Term \lvl -> TermMonad $ do

@@ -7,37 +7,39 @@ module Plutarch.LedgerApi.V1.Credential (
 ) where
 
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
 data PCredential (s :: S)
-  = PPubKeyCredential (Term s (PDataRecord '["_0" ':= PPubKeyHash]))
-  | PScriptCredential (Term s (PDataRecord '["_0" ':= PScriptHash]))
+  = PPubKeyCredential (Term s (PAsData PPubKeyHash))
+  | PScriptCredential (Term s (PAsData PScriptHash))
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    , -- | @since 2.0.0
-      PTryFrom PData
-    )
+    , -- , -- | @since 2.0.0
+      --   POrd
 
--- | @since 2.0.0
-instance DerivePlutusType PCredential where
-  type DPTStrat _ = PlutusTypeData
+      -- | @since 2.0.0
+      PShow
+    )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PCredential)
 
 -- | @since WIP
 deriving via
@@ -46,49 +48,34 @@ deriving via
     PLiftable PCredential
 
 -- | @since 2.0.0
-instance PTryFrom PData (PAsData PCredential)
-
--- | @since 2.0.0
 data PStakingCredential (s :: S)
-  = PStakingHash (Term s (PDataRecord '["_0" ':= PCredential]))
-  | PStakingPtr
-      ( Term
-          s
-          ( PDataRecord
-              '[ "_0" ':= PInteger
-               , "_1" ':= PInteger
-               , "_2" ':= PInteger
-               ]
-          )
-      )
+  = PStakingHash (Term s PCredential)
+  | PStakingPtr (Term s (PAsData PInteger)) (Term s (PAsData PInteger)) (Term s (PAsData PInteger))
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- | @since 2.0.0
-      POrd
-    , -- | @since 2.0.0
-      PShow
-    , -- | @since 2.0.0
-      PTryFrom PData
-    )
+    , -- , -- | @since 2.0.0
+      --   POrd
 
--- | @since 2.0.0
-instance DerivePlutusType PStakingCredential where
-  type DPTStrat _ = PlutusTypeData
+      -- | @since 2.0.0
+      PShow
+    )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveAsDataStruct PStakingCredential)
 
 -- | @since WIP
 deriving via
   DeriveDataPLiftable PStakingCredential Plutus.StakingCredential
   instance
     PLiftable PStakingCredential
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PStakingCredential)

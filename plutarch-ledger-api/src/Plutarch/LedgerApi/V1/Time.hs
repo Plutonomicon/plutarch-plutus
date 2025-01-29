@@ -10,23 +10,20 @@ module Plutarch.LedgerApi.V1.Time (
   unPPosixTime,
 ) where
 
-import Data.Kind (Type)
 import GHC.Generics (Generic)
-import Plutarch.LedgerApi.Utils (Mret)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude
-import Plutarch.Reducible (Reduce)
-import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
-newtype PPosixTime (s :: S) = PPosixTime (Term s (PDataNewtype PInteger))
+newtype PPosixTime (s :: S) = PPosixTime (Term s PInteger)
   deriving stock
     ( -- | @since 2.0.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since WIP
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -36,6 +33,11 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s (PDataNewtype PInteger))
     , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PPosixTime)
 
 -- | @since WIP
 instance PCountable PPosixTime where
@@ -43,7 +45,7 @@ instance PCountable PPosixTime where
   psuccessor = phoistAcyclic $ plam (\x -> x #+ pposixTime pone)
   {-# INLINEABLE psuccessorN #-}
   psuccessorN = phoistAcyclic $ plam $ \p t ->
-    let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
+    let p' = pcon . PPosixTime . pto $ p
      in p' #+ t
 
 -- | @since WIP
@@ -52,7 +54,7 @@ instance PEnumerable PPosixTime where
   ppredecessor = phoistAcyclic $ plam (\x -> x #- pposixTime pone)
   {-# INLINEABLE ppredecessorN #-}
   ppredecessorN = phoistAcyclic $ plam $ \p t ->
-    let p' = pcon . PPosixTime . pcon . PDataNewtype . pdata . pto $ p
+    let p' = pcon . PPosixTime . pto $ p
      in t #- p'
 
 -- | @since WIP
@@ -82,35 +84,9 @@ instance DerivePlutusType PPosixTime where
 
 -- | @since WIP
 deriving via
-  DeriveDataPLiftable PPosixTime Plutus.POSIXTime
+  DeriveNewtypePLiftable PPosixTime Plutus.POSIXTime
   instance
     PLiftable PPosixTime
-
--- | @since 3.1.0
-instance PTryFrom PData PPosixTime where
-  type PTryFromExcess PData PPosixTime = Mret PPosixTime
-  ptryFrom' ::
-    forall (s :: S) (r :: S -> Type).
-    Term s PData ->
-    ((Term s PPosixTime, Reduce (PTryFromExcess PData PPosixTime s)) -> Term s r) ->
-    Term s r
-  ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
-      tcont $ ptryFrom @(PAsData PInteger) opq
-    pure (punsafeCoerce wrapped, pposixTime unwrapped)
-
--- | @since 2.0.0
-instance PTryFrom PData (PAsData PPosixTime) where
-  type PTryFromExcess PData (PAsData PPosixTime) = Mret PPosixTime
-  ptryFrom' ::
-    forall (s :: S) (r :: S -> Type).
-    Term s PData ->
-    ((Term s (PAsData PPosixTime), Reduce (PTryFromExcess PData (PAsData PPosixTime) s)) -> Term s r) ->
-    Term s r
-  ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
-      tcont $ ptryFrom @(PAsData PInteger) opq
-    pure (punsafeCoerce wrapped, pposixTime unwrapped)
 
 {- | Construct a 'PPosixTime' from a 'PInteger'. Same as using the constructor,
 but a lot shorter.
@@ -118,7 +94,7 @@ but a lot shorter.
 @since WIP
 -}
 pposixTime :: forall (s :: S). Term s PInteger -> Term s PPosixTime
-pposixTime = pcon . PPosixTime . pcon . PDataNewtype . pdata
+pposixTime = pcon . PPosixTime
 
 {- | Unwrap a 'PPosixTime' to get a 'PInteger'. Same as using 'pmatch', but a
 lot shorter. Also unwraps the @Data@ encoding.
@@ -126,6 +102,4 @@ lot shorter. Also unwraps the @Data@ encoding.
 @since WIP
 -}
 unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
-unPPosixTime t = pmatch t $ \(PPosixTime t') ->
-  pmatch t' $ \(PDataNewtype t'') ->
-    pfromData t''
+unPPosixTime = pto

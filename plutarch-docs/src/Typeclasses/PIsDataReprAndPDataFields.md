@@ -40,6 +40,7 @@ import Plutarch.Docs.Run (evalWithArgsT)
 </p>
 </details>
 
+# PDataRecord is deprecated in favor of `Plutarch.Repr.Data`. This documentation is unmaintained.
 
 # `PlutusType` via `PlutusTypeData` & `PDataFields`
 

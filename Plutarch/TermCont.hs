@@ -6,6 +6,7 @@ module Plutarch.TermCont (
   TC.runTermCont,
   TC.unTermCont,
   TC.tcont,
+  TC.pfindPlaceholder,
   pletC,
   pmatchC,
   pletFieldsC,
