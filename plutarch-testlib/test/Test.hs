@@ -20,7 +20,6 @@ import Plutarch.Test.Suite.Plutarch.Semigroup qualified as Semigroup
 import Plutarch.Test.Suite.Plutarch.Show qualified as Show
 import Plutarch.Test.Suite.Plutarch.String qualified as String
 import Plutarch.Test.Suite.Plutarch.Tracing qualified as Tracing
-import Plutarch.Test.Suite.Plutarch.TryFrom qualified as TryFrom
 import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
 import Plutarch.Test.Suite.Plutarch.Unroll qualified as Unroll
 import Plutarch.Test.Suite.Plutarch.Uplc qualified as Uplc
@@ -58,7 +57,6 @@ main = do
         , Show.tests
         , String.tests
         , Tracing.tests
-        , TryFrom.tests
         , Unit.tests
         , Uplc.tests
         , Semigroup.tests

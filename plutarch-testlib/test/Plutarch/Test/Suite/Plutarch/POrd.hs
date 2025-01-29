@@ -2,6 +2,10 @@
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 
+-- Commented codes were previously for testing POrd auto derivation
+-- But we decided not to provide that because POrd can be misleading
+-- on few instances
+
 import Data.Kind (Type)
 import GHC.Records (getField)
 import Plutarch.LedgerApi.V1 (
@@ -27,15 +31,12 @@ tests =
             "pisdata.lt"
             [ goldenGroup
                 "PCredential"
-                [ -- goldenGroup "derived" (ltWith @PCredential (#<) c1 c2)
-                  goldenGroup "pmatch" (ltWith ltCred c1 c2)
-                  -- , goldenGroup "pmatch-pdatarecord" (ltWith ltCred' c1 c2)
+                [ goldenGroup "pmatch" (ltWith ltCred c1 c2)
                 ]
             , goldenGroup
                 "PTriplet"
                 [ goldenGroup "derived" (ltWith @(PTriplet PInteger) (#<) t1 t2)
                 , goldenGroup "pmatch" (ltWith ltTrip t1 t2)
-                -- , goldenGroup "pmatch-pdatarecord" (ltWith ltTrip' t1 t2)
                 ]
             ]
         , plutarchGolden
@@ -43,15 +44,12 @@ tests =
             "pisdata.lte"
             [ goldenGroup
                 "PCredential"
-                [ -- goldenGroup "derived" (lteWith @PCredential (#<=) c1 c2)
-                  goldenGroup "pmatch" (lteWith lteCred c1 c2)
-                  -- , goldenGroup "pmatch-pdatarecord" (lteWith lteCred' c1 c2)
+                [ goldenGroup "pmatch" (lteWith lteCred c1 c2)
                 ]
             , goldenGroup
                 "PTriplet"
                 [ goldenGroup "derived" (lteWith @(PTriplet PInteger) (#<=) t1 t2)
                 , goldenGroup "pmatch" (lteWith lteTrip t1 t2)
-                -- , goldenGroup "pmatch-pdatarecord" (lteWith lteTrip' t1 t2)
                 ]
             ]
         ]
@@ -60,7 +58,6 @@ tests =
         [ checkHaskellOrdEquivalent @PBool
         , checkHaskellOrdEquivalent @(PMaybeData PInteger)
         , checkHaskellOrdEquivalent @(PTriplet PInteger)
-        -- , checkHaskellOrdEquivalent @PAddress
         ]
     , testGroup
         "Laws"
