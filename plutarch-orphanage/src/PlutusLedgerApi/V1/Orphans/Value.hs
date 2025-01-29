@@ -45,13 +45,13 @@ import Test.QuickCheck (
   vectorOf,
  )
 
--- | @since WIP
+-- | @since 1.1.0
 deriving via (Value.CurrencySymbol, Value.TokenName) instance Arbitrary Value.AssetClass
 
--- | @since WIP
+-- | @since 1.1.0
 deriving via (Value.CurrencySymbol, Value.TokenName) instance CoArbitrary Value.AssetClass
 
--- | @since WIP
+-- | @since 1.1.0
 instance Function Value.AssetClass where
   {-# INLINEABLE function #-}
   function = functionMap into outOf
@@ -128,7 +128,7 @@ newtype UTxOValue = UTxOValue PLA.Value
       Show
     )
 
--- @since WIP
+-- @since 1.1.0
 deriving via PLA.Value instance Pretty UTxOValue
 
 -- | @since 1.0.2
@@ -393,7 +393,7 @@ newtype MintValue = MintValue PLA.Value
       Show
     )
 
--- @since WIP
+-- @since 1.1.0
 deriving via PLA.Value instance Pretty MintValue
 
 -- | @since 1.0.3
