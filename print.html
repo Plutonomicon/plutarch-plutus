@@ -189,7 +189,11 @@
 <ul>
 <li><a href="./Run.html#common-extensions-and-ghc-options">Common Extensions and GHC options</a></li>
 <li><a href="./Run.html#evaluation">Evaluation</a></li>
+<li>Nix binary cache is recommended. Otherwise nix will build from GHC itself.</li>
 </ul>
+<p>Use Plutonomicon binary cache via cachix: https://plutonomicon.cachix.org</p>
+<p>DO NOT add your user to <code>trusted-users</code> as <code>cachix use</code> suggests because this is
+<a href="https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-trusted-users">insecure</a>.</p>
 <h2 id="introduction-and-basic-syntax"><a class="header" href="#introduction-and-basic-syntax">Introduction and Basic Syntax</a></h2>
 <p>The <a href="./Introduction.html">Introduction section</a> serves as a introduction to Plutarch's basic concepts and core syntactic constructs. It will help build a mental model of Plutarch, but is insufficient to write production-ready code.</p>
 <ul>
