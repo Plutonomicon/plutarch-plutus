@@ -23,7 +23,7 @@ data PCredential (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -36,12 +36,12 @@ data PCredential (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PCredential)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PCredential Plutus.Credential
   instance
@@ -56,7 +56,7 @@ data PStakingCredential (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -69,12 +69,12 @@ data PStakingCredential (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PStakingCredential)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PStakingCredential Plutus.StakingCredential
   instance

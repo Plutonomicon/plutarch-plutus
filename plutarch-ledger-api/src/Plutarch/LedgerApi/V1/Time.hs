@@ -22,7 +22,7 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s PInteger)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -34,12 +34,12 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s PInteger)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PPosixTime)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PCountable PPosixTime where
   {-# INLINEABLE psuccessor #-}
   psuccessor = phoistAcyclic $ plam (\x -> x #+ pposixTime pone)
@@ -48,7 +48,7 @@ instance PCountable PPosixTime where
     let p' = pcon . PPosixTime . pto $ p
      in p' #+ t
 
--- | @since WIP
+-- | @since 3.3.0
 instance PEnumerable PPosixTime where
   {-# INLINEABLE ppredecessor #-}
   ppredecessor = phoistAcyclic $ plam (\x -> x #- pposixTime pone)
@@ -57,21 +57,21 @@ instance PEnumerable PPosixTime where
     let p' = pcon . PPosixTime . pto $ p
      in t #- p'
 
--- | @since WIP
+-- | @since 3.3.0
 instance PAdditiveSemigroup PPosixTime where
   {-# INLINEABLE (#+) #-}
   t1 #+ t2 = pposixTime (unPPosixTime t1 #+ unPPosixTime t2)
   {-# INLINEABLE pscalePositive #-}
   pscalePositive t p = pposixTime (unPPosixTime t #* pto p)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PAdditiveMonoid PPosixTime where
   {-# INLINEABLE pzero #-}
   pzero = pposixTime pzero
   {-# INLINEABLE pscaleNatural #-}
   pscaleNatural t n = pposixTime (unPPosixTime t #* pto n)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PAdditiveGroup PPosixTime where
   {-# INLINEABLE pnegate #-}
   pnegate = phoistAcyclic $ plam $ \t -> pposixTime (pnegate # unPPosixTime t)
@@ -82,7 +82,7 @@ instance PAdditiveGroup PPosixTime where
 instance DerivePlutusType PPosixTime where
   type DPTStrat _ = PlutusTypeNewtype
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveNewtypePLiftable PPosixTime Plutus.POSIXTime
   instance
@@ -91,7 +91,7 @@ deriving via
 {- | Construct a 'PPosixTime' from a 'PInteger'. Same as using the constructor,
 but a lot shorter.
 
-@since WIP
+@since 3.3.0
 -}
 pposixTime :: forall (s :: S). Term s PInteger -> Term s PPosixTime
 pposixTime = pcon . PPosixTime
@@ -99,7 +99,7 @@ pposixTime = pcon . PPosixTime
 {- | Unwrap a 'PPosixTime' to get a 'PInteger'. Same as using 'pmatch', but a
 lot shorter. Also unwraps the @Data@ encoding.
 
-@since WIP
+@since 3.3.0
 -}
 unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
 unPPosixTime = pto

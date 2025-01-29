@@ -43,12 +43,12 @@ data POutputDatum (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct POutputDatum)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable POutputDatum Plutus.OutputDatum
   instance
@@ -76,12 +76,12 @@ data PTxOut (s :: S) = PTxOut
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxOut)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxOut Plutus.TxOut
   instance

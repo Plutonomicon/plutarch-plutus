@@ -23,7 +23,7 @@ newtype PTxId (s :: S) = PTxId (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -35,12 +35,12 @@ newtype PTxId (s :: S) = PTxId (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PTxId)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PTxId where
   type AsHaskell PTxId = Plutus.TxId
   type PlutusRepr PTxId = ByteString
@@ -63,7 +63,7 @@ data PTxOutRef (s :: S) = PTxOutRef
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -76,12 +76,12 @@ data PTxOutRef (s :: S) = PTxOutRef
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxOutRef)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
   instance

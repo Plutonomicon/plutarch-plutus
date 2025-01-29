@@ -19,7 +19,7 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -31,12 +31,12 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PPubKeyHash)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PPubKeyHash where
   type AsHaskell PPubKeyHash = Plutus.PubKeyHash
   type PlutusRepr PPubKeyHash = ByteString

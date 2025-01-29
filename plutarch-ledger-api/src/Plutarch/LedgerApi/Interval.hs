@@ -60,12 +60,12 @@ data PInterval (a :: S -> Type) (s :: S) = PInterval
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct (PInterval a))
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable (PInterval a) (Plutus.Interval (AsHaskell a))
   instance
@@ -87,7 +87,7 @@ data PLowerBound (a :: S -> Type) (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct (PLowerBound a))
@@ -97,12 +97,12 @@ deriving via
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PLowerBound a)
 
--- | @since WIP
+-- | @since 3.3.0
 instance (PIsData a, PCountable a) => PEq (PLowerBound a) where
   {-# INLINEABLE (#==) #-}
   lb1 #== lb2 = (pinclusiveLowerBound # lb1) #== (pinclusiveLowerBound # lb2)
 
--- | @since WIP
+-- | @since 3.3.0
 instance (PIsData a, PCountable a) => POrd (PLowerBound a) where
   {-# INLINEABLE (#<=) #-}
   lb1 #<= lb2 = (pinclusiveLowerBound # lb1) #<= (pinclusiveLowerBound # lb2)
@@ -125,7 +125,7 @@ data PUpperBound (a :: S -> Type) (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct (PUpperBound a))
@@ -135,12 +135,12 @@ deriving via
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PUpperBound a)
 
--- | @since WIP
+-- | @since 3.3.0
 instance (PIsData a, PEnumerable a) => PEq (PUpperBound a) where
   {-# INLINEABLE (#==) #-}
   ub1 #== ub2 = (pinclusiveUpperBound # ub1) #== (pinclusiveUpperBound # ub2)
 
--- | @since WIP
+-- | @since 3.3.0
 instance (PIsData a, PEnumerable a) => POrd (PUpperBound a) where
   {-# INLINEABLE (#<=) #-}
   ub1 #<= ub2 = (pinclusiveUpperBound # ub1) #<= (pinclusiveUpperBound # ub2)
@@ -167,7 +167,7 @@ data PExtended (a :: S -> Type) (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct (PExtended a))
@@ -211,7 +211,7 @@ instance (POrd a, PIsData a) => POrd (PExtended a) where
 
 {- | Check if a value is inside the given interval.
 
-@since WIP
+@since 3.3.0
 -}
 pmember ::
   forall (a :: S -> Type) (s :: S).
@@ -226,7 +226,7 @@ pmember = phoistAcyclic $ plam $ \x i -> pcontains # i # (psingleton # x)
 
 {- | Check if a 'PInterval' is empty.
 
-@since WIP
+@since 3.3.0
 -}
 pisEmpty ::
   forall (a :: S -> Type) (s :: S).
@@ -240,7 +240,7 @@ pisEmpty = phoistAcyclic $ plam $ \i -> unTermCont $ do
 
 {- | Turn a 'PLowerBound' into a single inclusive bounding value.
 
-@since WIP
+@since 3.3.0
 -}
 pinclusiveLowerBound ::
   forall (a :: S -> Type) (s :: S).
@@ -262,7 +262,7 @@ pinclusiveLowerBound = phoistAcyclic $ plam $ \lb -> unTermCont $ do
 
 {- | Turn a 'PUpperBound' into a single inclusive bounding value.
 
-@since WIP
+@since 3.3.0
 -}
 pinclusiveUpperBound ::
   forall (a :: S -> Type) (s :: S).
@@ -287,7 +287,7 @@ pinclusiveUpperBound = phoistAcyclic $ plam $ \ub -> unTermCont $ do
 specifically, if for any @s@, if @'pmember' # s # i2@, then @'pmember' # s #
 i1@.
 
-@since WIP
+@since 3.3.0
 -}
 pcontains ::
   forall (a :: S -> Type) (s :: S).

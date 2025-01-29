@@ -23,7 +23,7 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -35,12 +35,12 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PScriptHash)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PScriptHash where
   type AsHaskell PScriptHash = Plutus.ScriptHash
   type PlutusRepr PScriptHash = ByteString
@@ -74,7 +74,7 @@ newtype PDatum (s :: S) = PDatum (Term s PData)
 instance DerivePlutusType PDatum where
   type DPTStrat _ = PlutusTypeNewtype
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PDatum Plutus.Datum
   instance
@@ -87,7 +87,7 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -99,12 +99,12 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PDatumHash)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PDatumHash where
   type AsHaskell PDatumHash = Plutus.DatumHash
   type PlutusRepr PDatumHash = ByteString
@@ -138,7 +138,7 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
 instance DerivePlutusType PRedeemer where
   type DPTStrat _ = PlutusTypeNewtype
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PRedeemer Plutus.Redeemer
   instance
@@ -151,7 +151,7 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -163,12 +163,12 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PRedeemerHash)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PRedeemerHash where
   type AsHaskell PRedeemerHash = Plutus.RedeemerHash
   type PlutusRepr PRedeemerHash = ByteString

@@ -118,12 +118,12 @@ newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: 
       SOP.Generic
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType (PMap keysort k v))
 
--- | @since WIP
+-- | @since 3.3.0
 instance
   ( Plutus.ToData (AsHaskell k)
   , Plutus.ToData (AsHaskell v)

@@ -75,7 +75,7 @@ newtype Mret (a :: S -> Type) (s :: S) = Mret (Term s a)
       Generic
     )
 
--- | @since WIP
+-- | @since 3.3.0
 data PMaybeData (a :: S -> Type) (s :: S)
   = PDJust (Term s (PAsData a))
   | PDNothing
@@ -84,7 +84,7 @@ data PMaybeData (a :: S -> Type) (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PEq
@@ -92,18 +92,18 @@ data PMaybeData (a :: S -> Type) (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct (PMaybeData a))
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable (PMaybeData a) (Maybe (AsHaskell a))
   instance
     (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PIsData (PMaybeData a) where
   {-# INLINEABLE pdataImpl #-}
   pdataImpl = pto . pto
@@ -160,7 +160,7 @@ data PRationalData s = PRationalData
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -170,7 +170,7 @@ data PRationalData s = PRationalData
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PRationalData)
@@ -182,7 +182,7 @@ instance POrd PRationalData where
   {-# INLINEABLE (#<) #-}
   (#<) = liftCompareOp (#<)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PRationalData Plutus.Rational
   instance
@@ -272,7 +272,7 @@ pmaybeToMaybeData = phoistAcyclic $
 
 {- | Inverse of `pmaybeToMaybeData`
 
-@since WIP
+@since 3.3.0
 -}
 pmaybeDataToMaybe ::
   forall (a :: S -> Type) (s :: S).
@@ -297,7 +297,7 @@ passertPDJust = phoistAcyclic $
     PDJust t' -> pfromData t'
     PDNothing -> ptraceInfoError emsg
 
--- | @since WIP
+-- | @since 3.3.0
 pmapMaybeData ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s ((PAsData a :--> PAsData b) :--> PMaybeData a :--> PMaybeData b)
@@ -308,21 +308,21 @@ pmapMaybeData = phoistAcyclic $
 
 {- | Scott-encoded boolean.
 
-@since WIP
+@since 3.3.0
 -}
 data PSBool (s :: S)
   = PSTrue
   | PSFalse
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       Eq
-    , -- | @since WIP
+    , -- | @since 3.3.0
       Ord
-    , -- | @since WIP
+    , -- | @since 3.3.0
       Show
     )
 
--- | @since WIP
+-- | @since 3.3.0
 instance PlutusType PSBool where
   type PInner PSBool = PForall PSBoolRaw
   {-# INLINEABLE pcon' #-}
@@ -337,7 +337,7 @@ instance PlutusType PSBool where
 
 {- | Strict version of 'pmatch' for 'PSBool'.
 
-@since WIP
+@since 3.3.0
 -}
 pmatchStrict ::
   forall (r :: S -> Type) (s :: S).
@@ -349,17 +349,17 @@ pmatchStrict x' f =
     pmatch raw $ \(PSBoolRaw x) ->
       x # f PSTrue # f PSFalse
 
--- | @since WIP
+-- | @since 3.3.0
 pstrue :: forall (s :: S). Term s PSBool
 pstrue = pcon PSTrue
 
--- | @since WIP
+-- | @since 3.3.0
 psfalse :: forall (s :: S). Term s PSBool
 psfalse = pcon PSFalse
 
 {- | Strict @if@ on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psif' ::
   forall (s :: S) (a :: S -> Type).
@@ -373,7 +373,7 @@ psif' b t f = pmatchStrict b $ \case
 
 {- | Lazy @if@ on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psif ::
   forall (s :: S) (a :: S -> Type).
@@ -385,14 +385,14 @@ psif b t f = pforce $ psif' b (pdelay t) (pdelay f)
 
 {- | @not@ on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
 psnot b = psif' b psfalse pstrue
 
 {- | Strict AND on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psand' a b = psif' a b psfalse
@@ -403,14 +403,14 @@ psand a b = psif a b psfalse
 
 {- | Strict OR on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psor' a = psif' a pstrue
 
 {- | Lazy OR on Scott-encoded bool
 
-@since WIP
+@since 3.3.0
 -}
 psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psor a = psif a pstrue

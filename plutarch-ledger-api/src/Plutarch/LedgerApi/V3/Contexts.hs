@@ -66,7 +66,7 @@ newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCr
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -76,12 +76,12 @@ newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCr
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PColdCommitteeCredential)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PColdCommitteeCredential Plutus.ColdCommitteeCredential
   instance
@@ -104,12 +104,12 @@ newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCred
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PHotCommitteeCredential)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PHotCommitteeCredential Plutus.HotCommitteeCredential
   instance
@@ -132,12 +132,12 @@ newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PDRepCredential)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PDRepCredential Plutus.DRepCredential
   instance
@@ -153,7 +153,7 @@ data PDRep (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -163,12 +163,12 @@ data PDRep (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PDRep)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PDRep Plutus.DRep
   instance
@@ -184,7 +184,7 @@ data PDelegatee (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -194,12 +194,12 @@ data PDelegatee (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PDelegatee)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PDelegatee Plutus.Delegatee
   instance
@@ -223,7 +223,7 @@ data PTxCert (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -233,12 +233,12 @@ data PTxCert (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxCert)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxCert Plutus.TxCert
   instance
@@ -254,7 +254,7 @@ data PVoter (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -264,12 +264,12 @@ data PVoter (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PVoter)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PVoter Plutus.Voter
   instance
@@ -295,12 +295,12 @@ data PVote (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PVote)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PVote Plutus.Vote
   instance
@@ -324,12 +324,12 @@ data PGovernanceActionId (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PGovernanceActionId)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PGovernanceActionId Plutus.GovernanceActionId
   instance
@@ -347,7 +347,7 @@ data PCommittee (s :: S) = PCommittee
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -357,12 +357,12 @@ data PCommittee (s :: S) = PCommittee
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PCommittee)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PCommittee Plutus.Committee
   instance
@@ -378,7 +378,7 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -388,12 +388,12 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PConstitution)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PConstitution Plutus.Constitution
   instance
@@ -409,7 +409,7 @@ data PProtocolVersion (s :: S) = PProtocolVersion
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -419,12 +419,12 @@ data PProtocolVersion (s :: S) = PProtocolVersion
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PProtocolVersion)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PProtocolVersion Plutus.ProtocolVersion
   instance
@@ -438,7 +438,7 @@ newtype PChangedParameters (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -448,12 +448,12 @@ newtype PChangedParameters (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PChangedParameters)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PChangedParameters Plutus.ChangedParameters
   instance
@@ -479,7 +479,7 @@ data PGovernanceAction (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -489,12 +489,12 @@ data PGovernanceAction (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PGovernanceAction)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PGovernanceAction Plutus.GovernanceAction
   instance
@@ -521,12 +521,12 @@ data PProposalProcedure (s :: S) = PProposalProcedure
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PProposalProcedure)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PProposalProcedure Plutus.ProposalProcedure
   instance
@@ -558,12 +558,12 @@ data PScriptPurpose (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PScriptPurpose)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PScriptPurpose Plutus.ScriptPurpose
   instance
@@ -582,7 +582,7 @@ data PScriptInfo (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.0
       PIsData
@@ -592,12 +592,12 @@ data PScriptInfo (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PScriptInfo)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PScriptInfo Plutus.ScriptInfo
   instance
@@ -616,7 +616,7 @@ data PTxInInfo (s :: S) = PTxInInfo
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -626,12 +626,12 @@ data PTxInInfo (s :: S) = PTxInInfo
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxInInfo)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
@@ -639,7 +639,7 @@ deriving via
 
 -- A pending transaction. This is the view as seen by a validator script.
 --
--- @since WIP
+-- @since 3.3.0
 data PTxInfo (s :: S) = PTxInfo
   { ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
   , ptxInfo'referenceInputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
@@ -673,12 +673,12 @@ data PTxInfo (s :: S) = PTxInfo
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxInfo)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxInfo Plutus.TxInfo
   instance
@@ -695,7 +695,7 @@ data PScriptContext (s :: S) = PScriptContext
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -705,12 +705,12 @@ data PScriptContext (s :: S) = PScriptContext
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PScriptContext)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance

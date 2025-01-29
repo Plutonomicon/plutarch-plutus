@@ -98,7 +98,7 @@ data PTxInInfo (s :: S) = PTxInInfo
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.1
       PIsData
@@ -108,12 +108,12 @@ data PTxInInfo (s :: S) = PTxInInfo
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxInInfo)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
@@ -139,7 +139,7 @@ data PTxInfo (s :: S) = PTxInfo
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.1
       PIsData
@@ -149,12 +149,12 @@ data PTxInfo (s :: S) = PTxInfo
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PTxInfo)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PTxInfo Plutus.TxInfo
   instance
@@ -170,7 +170,7 @@ data PScriptContext (s :: S) = PScriptContext
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.1
       PIsData
@@ -180,12 +180,12 @@ data PScriptContext (s :: S) = PScriptContext
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PScriptContext)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance

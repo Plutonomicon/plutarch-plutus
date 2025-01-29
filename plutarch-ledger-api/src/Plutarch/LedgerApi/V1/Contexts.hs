@@ -25,7 +25,7 @@ data PScriptPurpose (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 3.1.1
       PIsData
@@ -35,12 +35,12 @@ data PScriptPurpose (s :: S)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveAsDataStruct PScriptPurpose)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PScriptPurpose Plutus.ScriptPurpose
   instance

@@ -85,24 +85,24 @@ newtype PLovelace (s :: S) = PLovelace (Term s PInteger)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.2.0
       PIsData
     , -- | @since 2.2.0
       PEq
-    , -- | @since WIP
+    , -- | @since 3.3.0
       POrd
     , -- | @since 2.2.0
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PLovelace)
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveNewtypePLiftable PLovelace Plutus.Lovelace
   instance
@@ -115,7 +115,7 @@ newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -127,14 +127,14 @@ newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PTokenName)
 
 -- Well this is kind of unfortunate, but BuiltinByteString is a thing.
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PTokenName where
   type AsHaskell PTokenName = Plutus.TokenName
   type PlutusRepr PTokenName = ByteString
@@ -154,7 +154,7 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -166,12 +166,12 @@ newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PTokenName)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PLiftable PCurrencySymbol where
   type AsHaskell PCurrencySymbol = Plutus.CurrencySymbol
   type PlutusRepr PCurrencySymbol = ByteString
@@ -195,7 +195,7 @@ newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
     , -- | @since 2.0.0
       PIsData
@@ -203,14 +203,14 @@ newtype PValue (keys :: AssocMap.KeyGuarantees) (amounts :: AmountGuarantees) (s
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType (PValue keys amounts))
 
 type role PValue nominal nominal nominal
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveNewtypePLiftable
     (PValue 'AssocMap.Unsorted 'NoGuarantees)
@@ -228,7 +228,7 @@ instance PEq (PValue 'AssocMap.Sorted 'NonZero) where
 
 {- | Mimics the @lt@ operation on @plutus-ledger-api@'s @Value@.
 
-@since WIP
+@since 3.3.0
 -}
 pltPositive ::
   forall (s :: S).
@@ -239,7 +239,7 @@ pltPositive t1 t2 = pltNonZero (pforgetPositive t1) (pforgetPositive t2)
 
 {- | As 'pltPositive', but for nonzero guaranteed 'PValue's instead.
 
-@since WIP
+@since 3.3.0
 -}
 pltNonZero ::
   forall (s :: S).
@@ -250,7 +250,7 @@ pltNonZero t1 t2 = pleqNonZero t1 t2 #&& (pnot # (t1 #== t2))
 
 {- | Mimics the @leq@ operation on @plutus-ledger-api@'s @Value@.
 
-@since WIP
+@since 3.3.0
 -}
 pleqPositive ::
   forall (s :: S).
@@ -261,7 +261,7 @@ pleqPositive t1 t2 = pleqNonZero (pforgetPositive t1) (pforgetPositive t2)
 
 {- | As 'pletPositive', but for nonzero guaranteed 'PValue's instead.
 
-@since WIP
+@since 3.3.0
 -}
 pleqNonZero ::
   forall (s :: S).
@@ -280,7 +280,7 @@ instance PEq (PValue 'AssocMap.Sorted 'NoGuarantees) where
       -- TODO benchmark with '(==)'
       # pto (punionResolvingCollisionsWith AssocMap.Commutative # plam (-) # a # b)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'Positive) where
   {-# INLINEABLE (#<>) #-}
   (#<>) = (<>)
@@ -295,7 +295,7 @@ instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
     punsafeDowncast (pto $ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'NonZero) where
   {-# INLINEABLE (#<>) #-}
   (#<>) = (<>)
@@ -310,7 +310,7 @@ instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
   a <> b =
     pnormalize #$ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
 
--- | @since WIP
+-- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'NoGuarantees) where
   {-# INLINEABLE (#<>) #-}
   (#<>) = (<>)
@@ -325,7 +325,7 @@ instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) whe
   a <> b =
     punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
 
--- | @since WIP
+-- | @since 3.3.0
 instance
   PSemigroup (PValue 'AssocMap.Sorted normalization) =>
   PMonoid (PValue 'AssocMap.Sorted normalization)
@@ -362,29 +362,29 @@ instance
   inv a =
     punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'AssocMap.Sorted 'NoGuarantees))
 
--- | @since WIP
+-- | @since 3.3.0
 newtype PAssetClass (s :: S) = PAssetClass (Term s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)))
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 3.3.0
       PIsData
-    , -- | @since WIP
+    , -- | @since 3.3.0
       PEq
-    , -- | @since WIP
+    , -- | @since 3.3.0
       PShow
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PAssetClass)
 
--- | @since WIP
+-- | @since 3.3.0
 instance POrd PAssetClass where
   {-# INLINEABLE (#<=) #-}
   ac1 #<= ac2 = pmatch ac1 $ \(PAssetClass pair1) ->
@@ -409,7 +409,7 @@ instance POrd PAssetClass where
                          in snd1 #< snd2
                 )
 
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveNewtypePLiftable PAssetClass PlutusValue.AssetClass
   instance
