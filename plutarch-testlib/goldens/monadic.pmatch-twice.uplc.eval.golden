@@ -1,0 +1,76 @@
+normal program
+  1.0.0
+  (constr 0
+     [ 3
+     , (constr 0
+          [ 4
+          , (constr 0
+               [ 5
+               , (constr 0
+                    [ 6
+                    , (constr 0
+                         [ 7
+                         , (constr 0
+                              [ 8
+                              , (constr 0
+                                   [ 9
+                                   , (constr 0
+                                        [ 10
+                                        , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])
+do program
+  1.0.0
+  (constr 0
+     [ 3
+     , (constr 0
+          [ 4
+          , (constr 0
+               [ 5
+               , (constr 0
+                    [ 6
+                    , (constr 0
+                         [ 7
+                         , (constr 0
+                              [ 8
+                              , (constr 0
+                                   [ 9
+                                   , (constr 0
+                                        [ 10
+                                        , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])
+cont program
+  1.0.0
+  (constr 0
+     [ 3
+     , (constr 0
+          [ 4
+          , (constr 0
+               [ 5
+               , (constr 0
+                    [ 6
+                    , (constr 0
+                         [ 7
+                         , (constr 0
+                              [ 8
+                              , (constr 0
+                                   [ 9
+                                   , (constr 0
+                                        [ 10
+                                        , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])
+termcont program
+  1.0.0
+  (constr 0
+     [ 3
+     , (constr 0
+          [ 4
+          , (constr 0
+               [ 5
+               , (constr 0
+                    [ 6
+                    , (constr 0
+                         [ 7
+                         , (constr 0
+                              [ 8
+                              , (constr 0
+                                   [ 9
+                                   , (constr 0
+                                        [ 10
+                                        , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])

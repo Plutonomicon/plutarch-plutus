@@ -1,0 +1,28 @@
+add1 program 1.0.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
+add1Hoisted program 1.0.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
+example1 program 1.0.0 55
+example2 program
+  1.0.0
+  (\!0 -> case !1 [(\!0 -> addInteger !1 1), (\!0 -> subtractInteger !1 1)])
+fib.lam program
+  1.0.0
+  (\!0 ->
+     force
+       (case
+          (constr 0
+             [ (equalsInteger !1 0)
+             , (delay 0)
+             , (delay
+                  (force
+                     (case
+                        (constr 0
+                           [ (equalsInteger !1 1)
+                           , (delay 1)
+                           , (delay
+                                (addInteger
+                                   (!2 (subtractInteger !1 1))
+                                   (!2 (subtractInteger !1 2)))) ])
+                        [!3]))) ])
+          [!3]))
+fib.app.9 program 1.0.0 34
+uglyDouble program 1.0.0 (\!0 -> addInteger !1 !1)

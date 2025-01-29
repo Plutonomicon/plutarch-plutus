@@ -1,32 +1,18 @@
 {-# LANGUAGE PatternSynonyms #-}
 
-module Plutarch.Pretty (prettyTerm, prettyTerm', prettyScript) where
+module Plutarch.Pretty (prettyTerm, prettyTermAndCost, prettyTerm', prettyScript) where
 
 import Control.Monad.Reader (ReaderT (runReaderT))
 import Control.Monad.ST (runST)
 import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, modify')
-import Data.Foldable (fold)
+import Data.ByteString.Short qualified as SBS
+import Data.Foldable (fold, toList)
 import Data.Functor (($>), (<&>))
 import Data.Text (Text)
 import Data.Text qualified as Txt
 import Data.Traversable (for)
-
-import System.Random.Stateful (mkStdGen, newSTGenM)
-
-import Prettyprinter ((<+>))
-import Prettyprinter qualified as PP
-
-import Plutarch.Internal (ClosedTerm, Config, compile)
-import Plutarch.Script (Script (unScript))
-import PlutusCore qualified as PLC
-import UntypedPlutusCore (
-  DeBruijn (DeBruijn),
-  DefaultFun,
-  DefaultUni,
-  Program (_progTerm),
-  Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
- )
-
+import Plutarch.Evaluate (evalTerm)
+import Plutarch.Internal.Term (ClosedTerm, Config, compile)
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
 import Plutarch.Pretty.Internal.Config (indentWidth)
 import Plutarch.Pretty.Internal.Name (freshVarName, smartName)
@@ -47,6 +33,20 @@ import Plutarch.Pretty.Internal.Types (
   nameOfRef,
   normalizeCursor,
   specializeCursor,
+ )
+import Plutarch.Script (Script (unScript))
+import PlutusCore qualified as PLC
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget (ExBudget))
+import PlutusLedgerApi.Common (serialiseUPLC)
+import Prettyprinter ((<+>))
+import Prettyprinter qualified as PP
+import System.Random.Stateful (mkStdGen, newSTGenM)
+import UntypedPlutusCore (
+  DeBruijn (DeBruijn),
+  DefaultFun,
+  DefaultUni,
+  Program (_progTerm),
+  Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
  )
 
 -- | 'prettyTerm' for pre-compiled 'Script's.
@@ -215,6 +215,24 @@ To achieve better prettification, certain AST structures are given special handl
 prettyTerm :: Config -> ClosedTerm a -> PP.Doc ()
 prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
 
+{- | Same as `prettyTerm` but also includes the execution budget and script size
+
+@since 1.10.0
+-}
+prettyTermAndCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
+prettyTermAndCost conf x =
+  let
+    pp = either (error . Txt.unpack) id $ prettyTerm' conf x
+    (_, ExBudget cpu mem, _) = either (error . Txt.unpack) id $ evalTerm @a conf x
+    scriptSize =
+      SBS.length $
+        serialiseUPLC $
+          unScript $
+            either (error . Txt.unpack) id $
+              compile conf x
+   in
+    pp <> "\n" <> "CPU: " <> PP.pretty cpu <> "\nMEM: " <> PP.pretty mem <> "\nSIZE: " <> PP.pretty scriptSize
+
 -- | Non-partial 'prettyTerm'.
 prettyTerm' :: Config -> ClosedTerm p -> Either Text (PP.Doc ())
 prettyTerm' conf x = prettyScript <$> compile conf x
@@ -236,7 +254,7 @@ prettyUPLC uplc = runST $ do
       PrettyState {ps'nameMap} <- get
       pure $ case nameOfRef x ps'nameMap of
         Just nm -> PP.pretty nm
-        Nothing -> error "impossible: free variable"
+        Nothing -> "(impossible: FREE VARIABLE: " <> PP.pretty x <> ")"
     go (IfThenElseLikeAST (Force () (Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) = prettyIfThenElse (forkState . go) cond trueBranch falseBranch
     go ast@(IfThenElseLikeAST scrutinee cond trueBranch falseBranch) = do
       PrettyState {ps'nameMap} <- get
@@ -297,8 +315,13 @@ prettyUPLC uplc = runST $ do
         PP.hang indentWidth $
           PP.sep $
             functionDoc : argsDoc
-    go (Constr {}) = pure $ PP.pretty ("UPLC.Constr not implemented" :: String)
-    go (Case {}) = pure $ PP.pretty ("UPLC.Case not implemented" :: String)
+    go (Constr _ i args) = do
+      vals <- traverse go args
+      pure $ PP.parens $ "Constr" <+> PP.pretty i <+> PP.parens (PP.hsep vals)
+    go (Case _ x handlers) = do
+      val <- go x
+      handlers <- map PP.parens . toList <$> traverse go handlers
+      pure $ PP.parens $ "Case" <+> PP.hang -3 (PP.parens (PP.vsep (val : handlers)))
 
 prettyIfThenElse ::
   (t -> PrettyMonad s (PP.Doc ann)) ->

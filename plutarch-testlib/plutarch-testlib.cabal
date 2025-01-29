@@ -1,0 +1,166 @@
+cabal-version: 3.0
+name:          plutarch-testlib
+version:       1.0.0
+license:       MIT
+data-files:    goldens/*.golden
+
+common lang
+  default-language:   GHC2021
+  default-extensions:
+    BlockArguments
+    DataKinds
+    DefaultSignatures
+    DeriveAnyClass
+    DerivingStrategies
+    DerivingVia
+    DisambiguateRecordFields
+    DuplicateRecordFields
+    FunctionalDependencies
+    GADTs
+    ImpredicativeTypes
+    LambdaCase
+    LexicalNegation
+    LiberalTypeSynonyms
+    MonadComprehensions
+    MultiWayIf
+    NegativeLiterals
+    NoFlexibleInstances
+    NoMonomorphismRestriction
+    NoStarIsType
+    NondecreasingIndentation
+    NumDecimals
+    OverloadedLabels
+    OverloadedLists
+    OverloadedRecordDot
+    OverloadedStrings
+    PackageImports
+    PartialTypeSignatures
+    PatternSynonyms
+    QualifiedDo
+    QuantifiedConstraints
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    RecursiveDo
+    RoleAnnotations
+    TypeFamilies
+    TypeFamilyDependencies
+    UnicodeSyntax
+    UnliftedFFITypes
+    UnliftedNewtypes
+    ViewPatterns
+
+  build-depends:      base >=4.9 && <5
+  ghc-options:
+    -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
+    -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
+    -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
+    -Wno-missing-local-signatures -Wno-prepositive-qualified-module
+    -Wno-missing-import-lists -Wno-monomorphism-restriction
+    -Wno-missed-specialisations -Wno-all-missed-specializations
+    -Wno-unrecognised-warning-flags -Wno-unrecognised-pragmas
+    -Wno-operator-whitespace -Wno-unticked-promoted-constructors
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-foralls -Wno-missing-export-lists
+
+library
+  import:          lang
+  build-depends:
+    , aeson
+    , bytestring
+    , containers
+    , deepseq
+    , filepath
+    , plutarch
+    , plutarch-ledger-api
+    , plutarch-orphanage
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , prettyprinter
+    , QuickCheck
+    , tagged
+    , tasty
+    , tasty-golden
+    , tasty-hunit
+    , tasty-quickcheck
+    , text
+
+  exposed-modules:
+    Plutarch.Test.Bench
+    Plutarch.Test.Golden
+    Plutarch.Test.Laws
+    Plutarch.Test.QuickCheck
+    Plutarch.Test.SpecTypes
+    Plutarch.Test.Unit
+    Plutarch.Test.Utils
+
+test-suite tests
+  import:         lang
+  type:           exitcode-stdio-1.0
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  main-is:        Test.hs
+  hs-source-dirs: test
+  other-modules:
+    Plutarch.Test.Suite.Plutarch.Bool
+    Plutarch.Test.Suite.Plutarch.ByteString
+    Plutarch.Test.Suite.Plutarch.Either
+    Plutarch.Test.Suite.Plutarch.Field
+    Plutarch.Test.Suite.Plutarch.Integer
+    Plutarch.Test.Suite.Plutarch.List
+    Plutarch.Test.Suite.Plutarch.Maybe
+    Plutarch.Test.Suite.Plutarch.Monadic
+    Plutarch.Test.Suite.Plutarch.Pair
+    Plutarch.Test.Suite.Plutarch.PLam
+    Plutarch.Test.Suite.Plutarch.POrd
+    Plutarch.Test.Suite.Plutarch.Positive
+    Plutarch.Test.Suite.Plutarch.Rational
+    Plutarch.Test.Suite.Plutarch.Recursion
+    Plutarch.Test.Suite.Plutarch.Scripts
+    Plutarch.Test.Suite.Plutarch.Semigroup
+    Plutarch.Test.Suite.Plutarch.Show
+    Plutarch.Test.Suite.Plutarch.String
+    Plutarch.Test.Suite.Plutarch.Tracing
+    Plutarch.Test.Suite.Plutarch.Unit
+    Plutarch.Test.Suite.Plutarch.Unroll
+    Plutarch.Test.Suite.Plutarch.Uplc
+    Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
+    Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
+    Plutarch.Test.Suite.PlutarchLedgerApi.Utils
+    Plutarch.Test.Suite.PlutarchLedgerApi.V1
+    Plutarch.Test.Suite.PlutarchLedgerApi.V1.Interval
+    Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value
+    Plutarch.Test.Suite.PlutarchLedgerApi.V2
+    Plutarch.Test.Suite.PlutarchLedgerApi.V3
+    Plutarch.Test.Suite.PlutarchLedgerApi.V3.Value
+
+  build-depends:
+    , base16-bytestring
+    , bytestring
+    , plutarch
+    , plutarch-ledger-api
+    , plutarch-orphanage
+    , plutarch-testlib
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , prettyprinter
+    , QuickCheck
+    , serialise
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , text
+    , transformers
+
+benchmark bench
+  import:         lang
+  type:           exitcode-stdio-1.0
+  main-is:        Bench.hs
+  hs-source-dirs: bench test
+  other-modules:  Plutarch.Test.Suite.Plutarch.Unroll
+  build-depends:
+    , plutarch
+    , plutarch-ledger-api
+    , plutarch-testlib
+    , tasty

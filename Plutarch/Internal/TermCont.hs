@@ -6,23 +6,27 @@ module Plutarch.Internal.TermCont (
   runTermCont,
   unTermCont,
   tcont,
+  pfindPlaceholder,
 ) where
 
 import Data.Kind (Type)
 import Data.String (fromString)
-import Plutarch.Internal (
+import Plutarch.Internal.Term (
+  Config (Tracing),
   Dig,
+  HoistedTerm (..),
   PType,
+  RawTerm (..),
   S,
   Term (Term),
+  TracingMode (DetTracing),
   asRawTerm,
   getTerm,
   hashRawTerm,
+  perror,
   pgetConfig,
-  tracingMode,
-  pattern DetTracing,
  )
-import Plutarch.Trace (ptraceError)
+import Plutarch.Internal.Trace (ptraceInfo)
 
 newtype TermCont :: forall (r :: PType). S -> Type -> Type where
   TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
@@ -48,9 +52,11 @@ instance Monad (TermCont s) where
 
 instance MonadFail (TermCont s) where
   fail s = TermCont $ \_ ->
-    pgetConfig \c -> case tracingMode c of
-      DetTracing -> ptraceError "Pattern matching failure in TermCont"
-      _ -> ptraceError $ fromString s
+    pgetConfig $ \case
+      -- Note: This currently works because DetTracing is the most specific
+      -- tracing mode.
+      Tracing _ DetTracing -> ptraceInfo "Pattern matching failure in TermCont" perror
+      _ -> ptraceInfo (fromString s) perror
 
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
@@ -59,3 +65,32 @@ hashOpenTerm :: Term s a -> TermCont s Dig
 hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
   asRawTerm (f . hashRawTerm . getTerm $ y) i
+
+-- This can technically be done outside of TermCont.
+-- Need to pay close attention when killing branch with this.
+-- If term is pre-evaluated (via `evalTerm`), RawTerm will no longer hold
+-- tagged RPlaceholder.
+
+{- | Given a term, and an integer tag, this function checks if the term holds and
+@PPlaceholder@ with the given integer tag.
+-}
+pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
+pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
+  y <- asRawTerm x i
+
+  let
+    findPlaceholder (RLamAbs _ x) = findPlaceholder x
+    findPlaceholder (RApply x xs) = any findPlaceholder (x : xs)
+    findPlaceholder (RForce x) = findPlaceholder x
+    findPlaceholder (RDelay x) = findPlaceholder x
+    findPlaceholder (RHoisted (HoistedTerm _ x)) = findPlaceholder x
+    findPlaceholder (RPlaceHolder idx') = idx == idx'
+    findPlaceholder (RConstr _ xs) = any findPlaceholder xs
+    findPlaceholder (RCase x xs) = any findPlaceholder (x : xs)
+    findPlaceholder (RVar _) = False
+    findPlaceholder (RConstant _) = False
+    findPlaceholder (RBuiltin _) = False
+    findPlaceholder (RCompiled _) = False
+    findPlaceholder RError = False
+
+  asRawTerm (f . findPlaceholder . getTerm $ y) i

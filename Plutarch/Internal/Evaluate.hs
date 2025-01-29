@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Plutarch.Internal.Evaluate (uplcVersion, evalScript, evalScriptHuge, evalScript', EvalError) where
+module Plutarch.Internal.Evaluate (uplcVersion, evalScript, evalScriptHuge, evalScriptUnlimited, evalScript', EvalError) where
 
 import Data.Text (Text)
 import Plutarch.Script (Script (Script))
@@ -10,7 +10,7 @@ import PlutusCore.Evaluation.Machine.ExBudget (
   ExRestrictingBudget (ExRestrictingBudget),
   minusExBudget,
  )
-import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParameters)
+import PlutusCore.Evaluation.Machine.ExBudgetingDefaults (defaultCekParametersForTesting)
 import PlutusCore.Evaluation.Machine.ExMemory (ExCPU (ExCPU), ExMemory (ExMemory))
 import UntypedPlutusCore (
   Program (Program),
@@ -44,6 +44,15 @@ evalScript' :: ExBudget -> Script -> (Either (Cek.CekEvaluationException PLC.Nam
 evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMapNames UPLC.fakeNameDeBruijn t) of
   (res, remaining, logs) -> (Script . Program () uplcVersion . UPLC.termMapNames UPLC.unNameDeBruijn <$> res, remaining, logs)
 
+{- | Evaluate a script without budget limit
+
+@since 1.10.0
+-}
+evalScriptUnlimited :: Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
+evalScriptUnlimited (Script (Program _ _ t)) =
+  case Cek.runCekDeBruijn defaultCekParametersForTesting Cek.counting Cek.logEmitter (UPLC.termMapNames UPLC.fakeNameDeBruijn t) of
+    (errOrRes, Cek.CountingSt final, logs) -> (Script . Program () uplcVersion . UPLC.termMapNames UPLC.unNameDeBruijn <$> errOrRes, final, logs)
+
 evalTerm ::
   ExBudget ->
   Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun () ->
@@ -54,5 +63,5 @@ evalTerm ::
   , [Text]
   )
 evalTerm budget t =
-  case Cek.runCekDeBruijn defaultCekParameters (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
+  case Cek.runCekDeBruijn defaultCekParametersForTesting (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
     (errOrRes, Cek.RestrictingSt (ExRestrictingBudget final), logs) -> (errOrRes, budget `minusExBudget` final, logs)

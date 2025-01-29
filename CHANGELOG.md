@@ -1,8 +1,183 @@
 # Revision history for plutarch
 
-# 1.5.0
+# 1.10.0 -- 29-01-2025
 
-- Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
+## Added
+
+* `pmax` and `pmin` as new methods of `POrd`
+* `#>` and `#>=` as argument-flipping versions of `#<` and `#<=`
+* `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra`)
+* `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
+* `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
+  `plutarch-extra`)
+* `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
+  `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
+* `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
+* `PCountable` and `PEnumerable` type classes, as well as instances
+* `PByte` type as a limited Plutarch-level equivalent to `Word8`
+* `PLogicSemantics`, and construction functions, to help use of logical
+   `PByteString` operations
+* `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
+* `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
+  `ReplicateByte`
+* `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
+* `PBitString` and associated functionality for CIP-122 and CIP-123 operations
+  on bits, in `Plutarch.BitString`
+* `PEitherData`, a `Data`-encoded counterpart to `PEither`, plus some functions
+* `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
+  `PPositive`
+* `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
+* `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
+* `pmapMaybe` to `Plutarch.Maybe`
+* `PLiftable` type class
+* `Plutarch.Builtin.Bool` module
+* `Plutarch.Internal.Eq` module
+* `Plutarch.Internal.Ord` module
+* `pif'` to `Plutarch.Prelude`
+* `pcond` as a Plutarch equivalent to multi-way if
+* `PLiftable PRational` instance
+* `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
+* New methods for `Data` and Scott encoding derivation
+* `optimizeTerm` for separate optimization via UPLC from compilation
+* New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
+* `PNatural` type, corresponding to the Haskell `Natural`
+* Support for SoP encoding of data
+* `PSemigroup` and `PMonoid`, as improved Plutarch versions of `Semigroup` and
+  `Monoid`
+* Unrolling utilities--`punrollBound`, `punrollUnbound`, and `punrollUnboundWhole`--is added to `Plutarch.Unroll`
+* `evalTerm'` is added to `Plutarch.Evaluate`
+
+## Changed
+
+* `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
+* `pindexBS` now returns a `PByte` instead of a `PInteger`
+* `pexpModInteger` is now in `Plutarch.Integer`
+* `PMaybeData` no longer uses `PDataRecord`
+* `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
+  actual contents
+* `PBool` definition is now in `Plutarch.Builtin.Bool`
+* `PEq` type class definition is now in `Plutarch.Internal.Eq`
+* `PPartialOrd` and `POrd` type class definitions are now in
+  `Plutarch.Internal.Ord`
+* `pif`, `pif'`, `pand`, `pand'`, `por`, `por'`, `pnot`, `#&&`, `#||` are
+   now in `Plutarch.Builtin.Bool`
+* `Term s PRational` is now `Fractional` directly, instead of by way of
+  `PFractional`
+* `Plutarch.Num` is now `Plutarch.Internal.Numeric`
+* `PIntegral` type class is now in `Plutarch.Internal.Numeric`
+* `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
+* `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
+* `PPositive` (and `Positive`) are now exported from the prelude, along with
+  some functionality
+* `PEither`, `PPair`, `PMaybe` and `PList` use SOP encoding instead of Scott
+
+## Removed
+
+* `plutarch-extra`, as all its functionality has been folded into Plutarch
+  itself
+* `pbyteStr` (as it's deprecated)
+* `Plutarch.Bitwise` module, as its functionality has been superseded by more
+  type-safe operations in `Plutarch.ByteString` and  `Plutarch.BitString`
+* `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
+* `Plutarch` module, as it served no useful purpose and was just confusing
+* `PType` synonym (use `S -> Type` honestly instead)
+* `PSBool` and functionality (now in `plutarch-ledger-api`)
+* `PFractional` type class (only one instance, unlikely to ever have more)
+* `PIsData PRational` instance (made no sense)
+* `PPartialOrd` (all its functionality is now in `POrd`)
+* `Plutarch.FFI` module
+* `PNum` and `PIntegral` (replaced by new numerical hierarchy)
+
+### Fixed
+
+* Bug in `ppredecessorN` for `PPosixTime` where order of subtraction was flipped
+* Bugs in `pintersection` and `phull` that assigned wrong open/close bounds
+* Bug in `pafter` that will give opposite result when comparing against infinities
+
+# 1.9.0 - 25-09-2024
+
+## Added
+
+* Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`
+* PlutusV3 BLS primitives to `Plutarch.BLS`
+* PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
+* `unsafeEvalTerm`  to `Plutarch.Evaluate`
+* `PCountable` and `PEnumerable` type classes in `Plutarch.Enum`
+
+## Changed
+
+* Bumped `plutus-core` version to `1.33.0.0`
+* Updated getArity mapping to handle the new builtins in `Plutarch.Internal`
+* Updated `printScript` in `Plutarch.Internal.Other` to new PlutusCore version.
+
+# 1.8.1 - 11-07-2024
+
+## Added
+
+* `applyArguments` to `Plutarch.Evaluate`
+
+# 1.8.0 - 24-06-2024
+
+## Changed
+
+* Bumped `plutus-core` version to `1.30.0.0`
+
+# 1.7.0 - 11-06-2024
+
+## Added
+
+* `PDataNewtype` derivation aid
+* `PTryFrom PData PBool` instance
+
+## Changed
+
+* Bumped `plutus-core` version to `1.29.0.0`
+
+# 1.6.0 - 27-05-2024
+
+## Added
+
+* `ptraceInfo` and `ptraceDebug`, which allow tracing only when a particular log
+  level is active.
+* `logLevel` to get the `LogLevel` of a `Config`.
+* `LogLevel` to indicate what level of logging we'd like to run with.
+* `ptraceInfoShowId`, `ptraceInfoError`, `ptraceInfoIfTrue`, `ptraceInfoIfFalse`
+  (and similar for `Debug`), mirroring the deprecated originals, but with the
+  logging level included.
+* `Eq`, `Show`, `Pretty`, `ToJSON`, `FromJSON` instances for `Config`.
+* `Pretty`, `ToJSON`, `FromJSON` instances for `TracingMode`.
+
+## Changed
+
+* `ptrace`, `ptraceShowId`, `ptraceError`, `ptraceIfTrue` and `ptraceIfFalse`
+  are now synonyms of `ptraceInfo` (and similar), and also deprecated.
+* `Config` now includes a `LogLevel` as well as a `TracingMode`.
+* `Config` now has pattern synonyms to make it look like a sum type with two
+  arms: `NoTracing` which indicates that we do not trace, and `Tracing` which
+  contains a `TracingMode` and a `LogLevel`.
+* `TracingMode` no longer includes `NoTracing`, as this has been superseded by
+  the new `Config`.
+* `tracingMode` now returns in a `Maybe`.
+* `Config` is now a `Semigroup` and a `Monoid`, with the second mimicking the
+  semantics of its old `Default` instance.
+* `TracingMode` is now a `Semigroup` based on generality.
+* `TracingMode` is now an `Ord` based on generality.
+* `TracingMode` now has `Eq` and `Show` instances.
+
+## Removed
+
+* `Default` instance for `Config`.
+* `data-default` direct dependency.
+
+# 1.5.0 - 26-01-2024
+
+## Changed
+
+*  Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
+
+## Removed
+
+* `Plutarch.LedgerApi`, plus all submodules, as these are now under `plutarch-ledger-api`
 
 # 1.4.0
 

@@ -1,0 +1,5 @@
+letSomeFields.lam {"exBudgetCPU":192100,"exBudgetMemory":1300,"scriptSizeBytes":55}
+letSomeFields.order {"exBudgetCPU":192100,"exBudgetMemory":1300,"scriptSizeBytes":55}
+letSomeFields.app {"exBudgetCPU":2013839,"exBudgetMemory":6320,"scriptSizeBytes":95}
+nFields.lam {"exBudgetCPU":80100,"exBudgetMemory":600,"scriptSizeBytes":23}
+nFields.app {"exBudgetCPU":710759,"exBudgetMemory":2262,"scriptSizeBytes":106}

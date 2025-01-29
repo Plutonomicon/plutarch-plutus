@@ -4,7 +4,6 @@
 module Plutarch.Internal.Newtype (PlutusTypeNewtype) where
 
 import Generics.SOP qualified as SOP
-import Plutarch.Internal (PType)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PlutusType (
   DerivedPInner,
@@ -13,6 +12,7 @@ import Plutarch.Internal.PlutusType (
   derivedPCon,
   derivedPMatch,
  )
+import Plutarch.Internal.Term (PType)
 
 data PlutusTypeNewtype
 

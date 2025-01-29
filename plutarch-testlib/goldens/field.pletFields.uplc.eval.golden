@@ -1,0 +1,38 @@
+letSomeFields.lam program
+  1.0.0
+  (\!0 ->
+     (\!0 ->
+        (\!0 ->
+           addInteger
+             (addInteger
+                (unIData (force headList !2))
+                (unIData (force headList !1)))
+             (unIData
+                (force headList
+                   ((\!0 -> force tailList (force tailList !1))
+                      (force tailList !1)))))
+          (force tailList !1))
+       (force tailList ((\!0 -> force tailList (force tailList !1)) !1)))
+letSomeFields.order program
+  1.0.0
+  (\!0 ->
+     (\!0 ->
+        (\!0 ->
+           addInteger
+             (addInteger
+                (unIData (force headList !2))
+                (unIData (force headList !1)))
+             (unIData
+                (force headList
+                   ((\!0 -> force tailList (force tailList !1))
+                      (force tailList !1)))))
+          (force tailList !1))
+       (force tailList ((\!0 -> force tailList (force tailList !1)) !1)))
+letSomeFields.app program 1.0.0 14
+nFields.lam program
+  1.0.0
+  (\!0 ->
+     addInteger
+       (unIData (force headList !1))
+       (unIData (force headList (force tailList !1))))
+nFields.app program 1.0.0 1

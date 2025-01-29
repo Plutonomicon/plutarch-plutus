@@ -1,0 +1,24 @@
+pmatch-pfield.pmatch.newtype program
+  1.0.0
+  ((\!0 ->
+      (\!0 -> mkPairData (!2 !1) (!2 (force tailList !1)))
+        (force (force sndPair)
+           (unConstrData (Constr 0 [Constr 0 [B #ab], Constr 1 []]))))
+     (force headList))
+pmatch-pfield.pfield.newtype program
+  1.0.0
+  ((\!0 ->
+      (\!0 -> mkPairData (!2 !1) (!2 (force tailList !1)))
+        (force (force sndPair)
+           (unConstrData (Constr 0 [Constr 0 [B #ab], Constr 1 []]))))
+     (force headList))
+pfield-pletFields.pfield.single program
+  1.0.0
+  (force headList
+     (force (force sndPair)
+        (unConstrData (Constr 0 [Constr 0 [B #ab], Constr 1 []]))))
+pfield-pletFields.pletFields.single program
+  1.0.0
+  (force headList
+     (force (force sndPair)
+        (unConstrData (Constr 0 [Constr 0 [B #ab], Constr 1 []]))))

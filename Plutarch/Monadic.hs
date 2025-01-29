@@ -1,10 +1,16 @@
+{-# OPTIONS_GHC -Wno-missing-import-lists #-}
+
 module Plutarch.Monadic ((>>=), (>>), fail) where
 
-import Prelude hiding (fail, (>>), (>>=))
-
 import Data.String (fromString)
-import Plutarch (pgetConfig, tracingMode, pattern DetTracing)
-import Plutarch.Prelude
+import Plutarch.Internal.Term (
+  Config (Tracing),
+  Term,
+  TracingMode (DetTracing),
+  pgetConfig,
+ )
+import Plutarch.Trace (ptraceInfoError)
+import Prelude hiding (fail, (>>), (>>=))
 
 {- | Bind function used within do syntax.
 
@@ -50,7 +56,6 @@ Enables elegant usage of 'ptrace' and similar.
 @
 -}
 fail :: String -> Term s a
-fail s =
-  pgetConfig \c -> case tracingMode c of
-    DetTracing -> ptraceError "Pattern matching failure in QualifiedDo syntax"
-    _ -> ptraceError $ fromString s
+fail s = pgetConfig $ \case
+  Tracing _ DetTracing -> ptraceInfoError "Pattern matching failure in QualifiedDo syntax"
+  _ -> ptraceInfoError $ fromString s

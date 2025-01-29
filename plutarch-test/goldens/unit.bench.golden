@@ -1,5 +1,0 @@
-pcon {"exBudgetCPU":23100,"exBudgetMemory":200,"scriptSizeBytes":6}
-pmatch {"exBudgetCPU":92100,"exBudgetMemory":500,"scriptSizeBytes":8}
-compare.== {"exBudgetCPU":161100,"exBudgetMemory":800,"scriptSizeBytes":10}
-compare.< {"exBudgetCPU":161100,"exBudgetMemory":800,"scriptSizeBytes":10}
-compare.<= {"exBudgetCPU":161100,"exBudgetMemory":800,"scriptSizeBytes":10}

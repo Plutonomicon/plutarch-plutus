@@ -18,13 +18,15 @@
     iohk-nix.url = "github:input-output-hk/iohk-nix";
     iohk-nix.inputs.nixpkgs.follows = "haskell-nix/nixpkgs";
 
-    CHaP.url = "github:input-output-hk/cardano-haskell-packages?ref=repo";
-    CHaP.flake = false;
+    CHaP = {
+      url = "github:intersectmbo/cardano-haskell-packages?ref=repo";
+      flake = false;
+    };
 
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
-    emanote.url = "github:srid/emanote";
+    herbage.url = "github:seungheonoh/herbage";
   };
 
   outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
@@ -32,7 +34,6 @@
       imports = [
         ./nix/pre-commit.nix
         ./nix/hercules-ci.nix
-        inputs.emanote.flakeModule
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
@@ -47,16 +48,20 @@
                 haskell-nix.overlay
                 iohk-nix.overlays.crypto
                 iohk-nix.overlays.haskell-nix-crypto
+                inputs.herbage.overlays.default
               ];
               inherit (haskell-nix) config;
             };
+
+          herbage = inputs.herbage.lib { inherit pkgs; };
+
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
-            compiler-nix-name = "ghc964";
+            compiler-nix-name = "ghc966";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2024-01-16T11:00:00Z";
+            index-state = "2024-10-09T22:38:57Z";
             inputMap = {
-              "https://input-output-hk.github.io/cardano-haskell-packages" = CHaP;
+              "https://chap.intersectmbo.org/" = CHaP;
             };
             shell = {
               withHoogle = true;
@@ -64,6 +69,10 @@
               exactDeps = false;
               # TODO(peter-mlabs): Use `apply-refact` for repo wide refactoring `find -name '*.hs' -not -path './dist-*/*' -exec hlint -j --refactor --refactor-options="--inplace" {} +``
               shellHook = config.pre-commit.installationScript;
+              nativeBuildInputs = with pkgs; [
+                mdbook
+                hackage-repo-tool
+              ];
               tools = {
                 cabal = { };
                 haskell-language-server = { };
@@ -79,20 +88,16 @@
         in
         {
           inherit (flake) devShells;
-          emanote = {
-            sites.plutarch-docs = {
-              layers = [
-                {
-                  path = ./plutarch-docs;
-                  pathString = "./plutarch-docs";
-                }
-              ];
-              baseUrl = "/plutarch-plutus/";
-            };
-          };
-
           hercules-ci.github-pages.settings.contents = self'.packages.combined-docs;
           packages = flake.packages // {
+            plutarch-docs = pkgs.stdenv.mkDerivation {
+              name = "pluatrch-docs";
+              src = ./plutarch-docs;
+              buildInputs = with pkgs; [ mdbook ];
+              buildPhase = ''
+                mdbook build . -d $out
+              '';
+            };
             haddock = (import ./nix/combine-haddock.nix) { inherit pkgs lib; } {
               cabalProject = project;
               targetPackages = [
@@ -105,27 +110,27 @@
                 = Plutarch Documentation
                 Documentation of Plutarch /and/ Documentation of Plutus libraries.
               '';
+
             };
+            # We do have keys for signing hackage set exposed in the repository. Once I figure out how to
+            # store secrets in Hercules CI, I'd have to fix this.
+            # However, since deployment of hackage sets are fully automatized using Hercules CI,
+            # This should remain secure as long as Plutonomicon/Plutarch repository is secure.
+            hackage =
+              herbage.genHackage
+                ./keys
+                (import ./nix/hackage.nix { inherit pkgs; });
+
             combined-docs = pkgs.runCommand "combined-docs"
               { } ''
               mkdir -p $out/haddock
               cp ${self'.packages.haddock}/share/doc/* $out/haddock -r
               cp ${self'.packages.plutarch-docs}/* $out -r
+              cp ${self'.packages.hackage}/* $out -r
             '';
           };
 
-          checks = flake.checks // {
-            plutarch-test = pkgs.stdenv.mkDerivation
-              {
-                name = "plutarch-test";
-                src = ./plutarch-test;
-                nativeBuildInputs = [ flake.packages."plutarch-test:exe:plutarch-test" ];
-                buildPhase = ''
-                  plutarch-test
-                  touch $out
-                '';
-              };
-          };
+          inherit (flake) checks;
         };
     };
 }

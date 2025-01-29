@@ -1,4 +1,0 @@
-eq.true.nothing {"exBudgetCPU":529100,"exBudgetMemory":2400,"scriptSizeBytes":34}
-eq.true.just {"exBudgetCPU":1014033,"exBudgetMemory":3601,"scriptSizeBytes":43}
-eq.false.nothing-just {"exBudgetCPU":621100,"exBudgetMemory":2800,"scriptSizeBytes":38}
-eq.false.just-just {"exBudgetCPU":1014033,"exBudgetMemory":3601,"scriptSizeBytes":43}

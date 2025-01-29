@@ -6,6 +6,7 @@ module Plutarch.TermCont (
   TC.runTermCont,
   TC.unTermCont,
   TC.tcont,
+  TC.pfindPlaceholder,
   pletC,
   pmatchC,
   pletFieldsC,
@@ -13,25 +14,26 @@ module Plutarch.TermCont (
   pguardC,
   pguardC',
   ptryFromC,
+  pexpectJustC,
 ) where
 
-import Plutarch.Bool (PBool, pif)
-import Plutarch.Internal (Term, plet)
-import Plutarch.Internal.PlutusType (PlutusType, pmatch)
-import Plutarch.String (PString)
-import Plutarch.Trace (ptrace, ptraceError)
-
+import Data.Kind (Type)
+import Plutarch.Builtin.Bool (PBool, pif)
+import Plutarch.Builtin.String (PString)
 import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
 import Plutarch.DataRepr.Internal.Field (
   BindFields,
   Bindings,
   BoundTerms,
  )
-import Plutarch.Internal.TermCont
-import Plutarch.Reducible (Reduce)
-import Plutarch.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
-
+import Plutarch.Internal.PlutusType (PlutusType, pmatch)
+import Plutarch.Internal.Term (S, Term, plet)
+import Plutarch.Internal.TermCont (TermCont, tcont)
 import Plutarch.Internal.TermCont qualified as TC
+import Plutarch.Internal.TryFrom (PTryFrom (PTryFromExcess), ptryFrom)
+import Plutarch.Maybe (PMaybe (PJust, PNothing))
+import Plutarch.Reducible (Reduce)
+import Plutarch.Trace (ptraceInfo, ptraceInfoError)
 
 -- | Like `plet` but works in a `TermCont` monad
 pletC :: Term s a -> TermCont s (Term s a)
@@ -65,7 +67,7 @@ foo = unTermCont $ do
 @
 -}
 ptraceC :: Term s PString -> TermCont s ()
-ptraceC s = tcont $ \f -> ptrace s (f ())
+ptraceC s = tcont $ \f -> ptraceInfo s (f ())
 
 {- | Trace a message and raise error if 'cond' is false. Otherwise, continue.
 
@@ -79,7 +81,7 @@ onlyAllow42 = plam $ \i -> unTermCont $ do
 @
 -}
 pguardC :: Term s PString -> Term s PBool -> TermCont s ()
-pguardC s cond = tcont $ \f -> pif cond (f ()) $ ptraceError s
+pguardC s cond = tcont $ \f -> pif cond (f ()) $ ptraceInfoError s
 
 {- | Stop computation and return given term if 'cond' is false. Otherwise, continue.
 
@@ -98,3 +100,17 @@ pguardC' r cond = tcont $ \f -> pif cond (f ()) r
 -- | 'TermCont' producing version of 'ptryFrom'.
 ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
 ptryFromC = tcont . ptryFrom
+
+{- | Escape with a particular value on expecting 'PJust'. For use in monadic context.
+
+@since 1.10.0
+-}
+pexpectJustC ::
+  forall (a :: S -> Type) (r :: S -> Type) (s :: S).
+  Term s r ->
+  Term s (PMaybe a) ->
+  TermCont @r s (Term s a)
+pexpectJustC escape ma = tcont $ \f ->
+  pmatch ma $ \case
+    PJust v -> f v
+    PNothing -> escape

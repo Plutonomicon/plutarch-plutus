@@ -26,7 +26,7 @@ module Plutarch.DataRepr.Internal.HList (
 import Data.Kind (Constraint, Type)
 import GHC.Records (HasField, getField)
 import GHC.TypeLits (Symbol)
-import Plutarch.Builtin (PAsData)
+import Plutarch.Builtin.Data (PAsData)
 import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
 import Plutarch.DataRepr.Internal.HList.Utils (
   Drop,
@@ -36,7 +36,7 @@ import Plutarch.DataRepr.Internal.HList.Utils (
   Labeled (Labeled, unLabeled),
   SingleItem,
  )
-import Plutarch.Internal (Term)
+import Plutarch.Internal.Term (Term)
 import Plutarch.Internal.TypeFamily (Snd)
 
 --------------------------------------------------------------------------------

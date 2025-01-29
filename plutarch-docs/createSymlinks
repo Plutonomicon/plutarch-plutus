@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+rm -rf compilable
+mkdir -p compilable/Plutarch/Docs
+
+cd compilable/Plutarch/Docs
+
+function mkSymlink {
+    name=$(sed -n "s/^module\s[^\n ]*\.\([^\n ]*\) .*$/\1/p" "$0" | head -n 1)
+    [ -z "$name" ] && exit
+    ln -s "$0" "$name".lhs
+}
+
+export -f mkSymlink
+find ../../../src -name '*.md' -exec bash -c "mkSymlink $@" {} \;

@@ -1,197 +1,309 @@
 module Plutarch.Prelude (
-  -- * eDSL types and functions.
-  (:-->),
-  PDelayed,
-  Term,
-  ClosedTerm,
-  plam,
-  papp,
-  pdelay,
-  pforce,
-  phoistAcyclic,
-  perror,
-  (#$),
-  (#),
-  plet,
-  pinl,
-  pto,
-  pfix,
-  pthrow,
-  Type,
-  S,
-  PType,
-  PlutusType (PInner),
-  DerivePlutusType,
-  DPTStrat,
-  PlutusTypeScott,
-  PlutusTypeNewtype,
-  PlutusTypeData,
-  PCon,
-  PMatch,
-  pcon,
-  pmatch,
-  PForall (PForall),
+  PDataNewtype (..),
 
-  -- * Integers and integer utilities
-  PInteger,
-  PIntegral (pdiv, pmod, pquot, prem),
-
-  -- * Rational numbers and utilities
-  PRational (PRational),
-  pnumerator,
-  pdenominator,
-  pround,
-
-  -- * Booleans and boolean functions
+  -- * Boolean
   PBool (..),
-  PEq ((#==)),
-  PPartialOrd ((#<=), (#<)),
-  POrd,
+  pand',
+  pcond,
   pif,
+  pif',
   pnot,
+  por',
   (#&&),
   (#||),
 
-  -- * Bytestrings and bytestring utilities
+  -- * Bytestring
+  PByte,
   PByteString,
-  phexByteStr,
+  PLogicOpSemantics,
+  pandBS,
+  pbyteToInteger,
+  pcomplementBS,
   pconsBS,
-  psliceBS,
-  plengthBS,
+  phexByteStr,
   pindexBS,
+  pintegerToByte,
+  plengthBS,
+  porBS,
+  ppadding,
+  preplicateBS,
+  psliceBS,
+  ptruncation,
+  pxorBS,
 
-  -- * String and string utilities
-  PString,
-  pencodeUtf8,
-  pdecodeUtf8,
-
-  -- * Unit type and utilities
-  PUnit (..),
-
-  -- * Common list typeclass and utilities
-  PListLike (PElemConstraint, pelimList, pcons, pnil, phead, ptail, pnull),
-  PIsListLike,
-  plistEquals,
-  pelem,
-  pelemAt,
-  plength,
-  ptryIndex,
-  pdrop,
-  psingleton,
-  pconcat,
-  pzipWith,
-  pzipWith',
-  pzip,
-  pmap,
-  pfilter,
-  pfind,
-  precList,
-  pfoldr,
-  pfoldrLazy,
-  pfoldl,
-  pall,
-  pany,
-  (#!!),
-
-  -- * Scott encoded list type
-  PList (..),
-
-  -- * Scott encoded maybe type and utilities
-  PMaybe (..),
-
-  -- * Scott encoded either type and utilities
-  PEither (..),
-
-  -- * Scott encoded pair type and utilities
-  PPair (..),
-
-  -- * Opaque type
-  POpaque (POpaque),
-  popaque,
-
-  -- * Builtin types and utilities
-  PData,
-  pfstBuiltin,
-  psndBuiltin,
-  PBuiltinPair,
-  PBuiltinList (..),
-  PIsData,
-  pfromData,
-  pdata,
-  PAsData,
-
-  -- * DataRepr and related functions
-  PDataRecord,
-  PDataSum,
-  PLabeledType ((:=)),
-  pdcons,
-  pdnil,
-  pfield,
-  getField,
-  pletFields,
-
-  -- * Tracing
-  PShow,
-  pshow,
-  ptrace,
-  ptraceShowId,
-  ptraceIfFalse,
-  ptraceIfTrue,
-  ptraceError,
-
-  -- * Cryptographic hashes and signatures
+  -- * Cryptographic primitives
   psha2_256,
   psha3_256,
   pverifySignature,
 
-  -- * Conversion between Plutarch terms and Haskell types
-  pconstant,
-  pconstantData,
-  plift,
-  PConstant,
-  PLift,
-  PConstantData,
-  PLiftData,
+  -- * Data encoding
+  PAsData (..),
+  PBuiltinList (..),
+  PBuiltinPair (..),
+  PData (..),
+  pasByteStr,
+  pasConstr,
+  pasInt,
+  pasList,
+  pasMap,
+  pchooseData,
+  pchooseListBuiltin,
+  pconsBuiltin,
+  pconstrBuiltin,
+  pfstBuiltin,
+  pheadBuiltin,
+  plistData,
+  pnullBuiltin,
+  ppairDataBuiltin,
+  pserialiseData,
+  psndBuiltin,
+  ptailBuiltin,
 
-  -- * Continuation monad
-  TermCont (TermCont, runTermCont),
-  unTermCont,
-  tcont,
-  pletC,
-  pmatchC,
-  pletFieldsC,
-  ptraceC,
+  -- * Integer
+  PInteger,
+
+  -- * Opaque
+  POpaque (..),
+  popaque,
+
+  -- * String
+  PString,
+  pdecodeUtf8,
+  pencodeUtf8,
+
+  -- * Unit
+  PUnit (..),
+
+  -- * DataRepr
+  PDataFields,
+  PDataRecord,
+  PDataSum,
+  PLabeledType ((:=)),
+  PlutusTypeData,
+  pdcons,
+  pdnil,
+  pfield,
+  pletFields,
+
+  -- * Either
+  PEither (..),
+
+  -- * Enumerable and Countable
+  PCountable (..),
+  PEnumerable (..),
+
+  -- * Eq and Ord
+  PEq (..),
+  POrd (..),
+  (#>),
+  (#>=),
+
+  -- * Fixed point
+  pfix,
+
+  -- * IsData
+  PIsData (..),
+  pdata,
+  pforgetData,
+  pfromData,
+
+  -- * Lifting and lowering
+  PLiftable (..),
+  DeriveDataPLiftable,
+  DeriveNewtypePLiftable,
+  PLifted (..),
+  reprToPlutUni,
+  plutToReprUni,
+  pconstant,
+  plift,
+
+  -- * Lists
+  PElemConstraint,
+  PIsListLike,
+  PListLike,
+  PList (..),
+  pelem,
+  pelemAt,
+  pfind,
+  plistEquals,
+  puncons,
+  pzip,
+  (#!!),
+  pall,
+  pany,
+  pconcat,
+  pcons,
+  pdrop,
+  pelimList,
+  pfilter,
+  pfoldl,
+  pfoldr,
+  pfoldrLazy,
+  phead,
+  plength,
+  pmap,
+  pnil,
+  pnull,
+  precList,
+  psingleton,
+  ptail,
+  ptryIndex,
+  pzipWith,
+  pzipWith',
+
+  -- * PlutusType
+  DerivePlutusType (DPTStrat),
+  PCon,
+  PMatch,
+  PlutusType (PInner),
+  pcon,
+  pmatch,
+  PlutusTypeNewtype,
+  PlutusTypeScott,
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
+  DeriveFakePlutusType (DeriveFakePlutusType),
+
+  -- * Numeric
+  Positive,
+  PPositive,
+  PNatural,
+  PAdditiveSemigroup (..),
+  PAdditiveMonoid (..),
+  PAdditiveGroup (..),
+  PMultiplicativeSemigroup (..),
+  PMultiplicativeMonoid (..),
+  PRing (..),
+  PIntegralDomain (..),
+  pquot,
+  prem,
+  pdiv,
+  pmod,
+  ppositive,
+  ptryPositive,
+  pnatural,
+  ptryNatural,
+  ppositiveToNatural,
+
+  -- * Other
+  pto,
+  pinl,
+  plam,
+  PForall (..),
+
+  -- * Show
+  PShow,
+  pshow,
+
+  -- * Term and related functionality
+  Term,
+  S,
+  ClosedTerm,
+  PDelayed,
+  papp,
+  pdelay,
+  pforce,
+  perror,
+  phoistAcyclic,
+  plet,
+  pthrow,
+  (#),
+  (#$),
+  (:-->),
+
+  -- * Conversion
+  PSubtype,
+  PTryFrom (..),
+  ptryFrom,
+  pupcast,
+
+  -- * Maybe
+  PMaybe (..),
+
+  -- * Pair
+  PPair (..),
+
+  -- * Rational
+  PRational (..),
+  pdenominator,
+  pnumerator,
+  pround,
+
+  -- * TermCont
+  TermCont (..),
   pguardC,
   pguardC',
+  pletC,
+  pletFieldsC,
+  pmatchC,
+  ptraceC,
   ptryFromC,
-  pupcast,
-  ptryFrom,
-  PTryFrom,
-  PSubtype,
-  Generic,
+  unTermCont,
+  tcont,
+
+  -- * Tracing
+  ptrace,
+  ptraceDebug,
+  ptraceDebugError,
+  ptraceDebugIfFalse,
+  ptraceDebugIfTrue,
+  ptraceDebugShowId,
+  ptraceError,
+  ptraceIfFalse,
+  ptraceInfo,
+  ptraceInfoError,
+  ptraceInfoIfFalse,
+  ptraceInfoIfTrue,
+  ptraceInfoShowId,
+  ptraceShowId,
+
+  -- * Semigroup and Monoid
+  PSemigroup (..),
+  PMonoid (..),
+  PAnd (..),
+  POr (..),
+  PXor (..),
+
+  -- * Unrolling utilities
+  punrollBound,
+  punrollBound',
+  punrollUnbound,
+  punrollUnboundWhole,
 ) where
 
-import Prelude ()
-
-import Data.Kind (Type)
-import GHC.Generics (Generic)
-import GHC.Records (getField)
-import Plutarch
-import Plutarch.Bool
 import Plutarch.Builtin
-import Plutarch.ByteString
-import Plutarch.Crypto
+import Plutarch.Builtin.Bool
+import Plutarch.Builtin.ByteString
+import Plutarch.Builtin.Crypto
+import Plutarch.Builtin.Data
+import Plutarch.Builtin.Integer
+import Plutarch.Builtin.Opaque
+import Plutarch.Builtin.String
+import Plutarch.Builtin.Unit
 import Plutarch.DataRepr
 import Plutarch.Either
-import Plutarch.Integer
-import Plutarch.Lift
+import Plutarch.Enum
+import Plutarch.Internal.Eq
+import Plutarch.Internal.Fix
+import Plutarch.Internal.IsData
+import Plutarch.Internal.Lift
+import Plutarch.Internal.ListLike
+import Plutarch.Internal.Newtype
+import Plutarch.Internal.Numeric
+import Plutarch.Internal.Ord
+import Plutarch.Internal.Other
+import Plutarch.Internal.PLam
+import Plutarch.Internal.PlutusType
+import Plutarch.Internal.Quantification
+import Plutarch.Internal.ScottEncoding
+import Plutarch.Internal.Semigroup
+import Plutarch.Internal.Show
+import Plutarch.Internal.Term
+import Plutarch.Internal.TryFrom
 import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
-import Plutarch.Show
-import Plutarch.String
 import Plutarch.TermCont
 import Plutarch.Trace
-import Plutarch.TryFrom
-import Plutarch.Unit
+import Plutarch.Unroll
+import Prelude ()

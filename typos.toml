@@ -8,6 +8,11 @@ Strat = "Strat"
 deriver = "deriver"
 preverse = "preverse"
 intesection = "intesection"
+padd = "padd"
+TIO = "TIO"
+frst = "frst"
+PN = "PN"
+anc = "anc"
 
 [type.pdf]
 extend-glob = ["*.pdf"]
