@@ -39,7 +39,7 @@ import Test.Tasty.HUnit (assertFailure, testCase)
 
 {- | Opaque type representing tree of golden tests
 
-@since WIP
+@since 1.0.0
 -}
 data GoldenTestTree where
   GoldenTestTree :: TestName -> [GoldenTestTree] -> GoldenTestTree
@@ -49,7 +49,7 @@ data GoldenTestTree where
 {- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
 by nested golden tests
 
-@since WIP
+@since 1.0.0
 -}
 plutarchGolden ::
   TestName ->
@@ -99,21 +99,21 @@ plutarchGolden topName goldenPath tests = testGroup topName testsWithGoldens
 
 Goldens in the group will be prefixed by the group name
 
-@since WIP
+@since 1.0.0
 -}
 goldenGroup :: TestName -> [GoldenTestTree] -> GoldenTestTree
 goldenGroup = GoldenTestTree
 
 {- | Like `Plutarch.Test.Unit.testEval` but will append to goldens created by enclosing `plutarchGolden`
 
-@since WIP
+@since 1.0.0
 -}
 goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEval = GoldenTestTreeEval
 
 {- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
 
-@since WIP
+@since 1.0.0
 -}
 goldenEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
 goldenEvalFail = GoldenTestTreeEvalFail

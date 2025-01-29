@@ -70,7 +70,7 @@ instanceOfType ::
   String
 instanceOfType instanceName = instanceName <> " " <> typeName' False (typeRep @a)
 
--- | @since WIP
+-- | @since 1.0.0
 precompileTerm :: forall (p :: S -> Type). ClosedTerm p -> ClosedTerm p
 precompileTerm t =
   case compile NoTracing t of

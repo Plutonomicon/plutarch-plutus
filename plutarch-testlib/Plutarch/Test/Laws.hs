@@ -46,7 +46,7 @@ import Type.Reflection (Typeable, typeRep)
 {- | Verifies that the specified Plutarch type satisfies the 'PSemigroup' laws
 for mandatory methods.
 
-@since WIP
+@since 1.0.0
 -}
 checkPSemigroupLaws ::
   forall (a :: S -> Type).
@@ -75,7 +75,7 @@ checkPSemigroupLaws =
 {- | Verifies that the specified Plutarch type satisfies the 'PMonoid' laws for
 mandatory methods.
 
-@since WIP
+@since 1.0.0
 -}
 checkPMonoidLaws ::
   forall (a :: S -> Type).
@@ -103,7 +103,7 @@ checkPMonoidLaws =
 {- | Verifies that the specified Plutarch type satisfies the
 'PAdditiveSemigroup' laws for mandatory methods.
 
-@since WIP
+@since 1.0.0
 -}
 checkPAdditiveSemigroupLaws ::
   forall (a :: S -> Type).
@@ -137,7 +137,7 @@ checkPAdditiveSemigroupLaws =
 {- | Verifies that the specified Plutarch type satisfies the 'PAdditiveMonoid'
 laws for mandatory methods.
 
-@since WIP
+@since 1.0.0
 -}
 checkPAdditiveMonoidLaws ::
   forall (a :: S -> Type).
@@ -165,7 +165,7 @@ checkPAdditiveMonoidLaws =
 {- | Verifies that the specified Plutarch type satisfies the 'PAdditiveGroup'
 laws for mandatory methods.
 
-@since WIP
+@since 1.0.0
 -}
 checkPAdditiveGroupLaws ::
   forall (a :: S -> Type).
@@ -214,7 +214,7 @@ checkPAdditiveGroupLaws =
 {- | Verifies that the specified Plutarch type satisfies the 'POrd' laws for
 mandatory methods.
 
-@since WIP
+@since 1.0.0
 -}
 checkPOrdLaws ::
   forall (a :: S -> Type).
@@ -287,7 +287,7 @@ checkPOrdLaws =
 {- | Verifies that the specified Plutarch and Haskell types satisfy the laws of
 'PLiftable'.
 
-@since WIP
+@since 1.0.0
 -}
 checkPLiftableLaws ::
   forall (a :: S -> Type).
@@ -316,7 +316,7 @@ checkPLiftableLaws =
 This is an ugly kludge because PValue doesn't have a direct PData conversion,
 and bringing one in would break too much other stuff to be worth it.
 
-@since WIP
+@since 1.0.0
 -}
 checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesValue =
@@ -329,7 +329,7 @@ checkLedgerPropertiesValue =
 
 Same as above
 
-@since WIP
+@since 1.0.0
 -}
 checkLedgerPropertiesAssocMap :: TestTree
 checkLedgerPropertiesAssocMap =
@@ -338,7 +338,7 @@ checkLedgerPropertiesAssocMap =
     , checkPLiftableLaws @(V1.PMap V1.Unsorted PInteger PInteger)
     ]
 
--- | @since WIP
+-- | @since 1.0.0
 checkLedgerProperties ::
   forall (a :: S -> Type).
   ( Typeable a
@@ -357,7 +357,7 @@ checkLedgerProperties =
     , checkPLiftableLaws @a
     ]
 
--- | @since WIP
+-- | @since 1.0.0
 checkLedgerPropertiesPCountable ::
   forall (a :: S -> Type).
   ( Typeable a
@@ -372,7 +372,7 @@ checkLedgerPropertiesPCountable ::
 checkLedgerPropertiesPCountable =
   testGroup (instanceOfType @(S -> Type) @a "PCountable") (pcountableLaws @a)
 
--- | @since WIP
+-- | @since 1.0.0
 checkLedgerPropertiesPEnumerable ::
   forall (a :: S -> Type).
   ( Typeable a
@@ -386,7 +386,7 @@ checkLedgerPropertiesPEnumerable ::
 checkLedgerPropertiesPEnumerable =
   testGroup (instanceOfType @(S -> Type) @a "PEnumerable") (penumerableLaws @a)
 
--- | @since WIP
+-- | @since 1.0.0
 checkHaskellOrdEquivalent ::
   forall (plutarchInput :: S -> Type).
   ( PLiftable plutarchInput

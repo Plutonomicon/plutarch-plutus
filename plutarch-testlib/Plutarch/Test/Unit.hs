@@ -25,7 +25,7 @@ import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
 
 {- | Assert that term compiled and evaluated without errors
 
-@since WIP
+@since 1.0.0
 -}
 testEval :: TestName -> ClosedTerm a -> TestTree
 testEval name term = testCase name $ do
@@ -36,7 +36,7 @@ testEval name term = testCase name $ do
 
 {- | Assert that term compiled correctly but evaluated with errors
 
-@since WIP
+@since 1.0.0
 -}
 testEvalFail :: TestName -> ClosedTerm a -> TestTree
 testEvalFail name term = testCase name $ do
@@ -47,7 +47,7 @@ testEvalFail name term = testCase name $ do
 
 {- | Assert that term failed to compile
 
-@since WIP
+@since 1.0.0
 -}
 testCompileFail :: TestName -> ClosedTerm a -> TestTree
 testCompileFail name term = testCase name $ do
@@ -59,7 +59,7 @@ testCompileFail name term = testCase name $ do
 {- | Assert that term compiled and evaluated without errors and matches the expected value
 note that comparison is done on AST level, not by `Eq` or `PEq`
 
-@since WIP
+@since 1.0.0
 -}
 testEvalEqual ::
   TestName ->
@@ -82,7 +82,7 @@ testEvalEqual name term expectedTerm = testCase name $ do
 without errors produced traces that match expected value. Note that this succeeds even if script
 evaluated to error if traces still match
 
-@since WIP
+@since 1.0.0
 -}
 testEvalEqualTraces :: TestName -> ClosedTerm a -> LogLevel -> [Text] -> TestTree
 testEvalEqualTraces name term traceLevel expected = testCase name $
@@ -91,13 +91,13 @@ testEvalEqualTraces name term traceLevel expected = testCase name $
     FailedToEvaluate _ traces -> assertEqual "" expected traces
     Evaluated _ traces -> assertEqual "" expected traces
 
--- | @since WIP
+-- | @since 1.0.0
 data TermResult
   = FailedToCompile Text
   | FailedToEvaluate EvalError [Text]
   | Evaluated String [Text]
 
--- | @since WIP
+-- | @since 1.0.0
 evalTermResult :: Config -> ClosedTerm a -> TermResult
 evalTermResult config term =
   case compile config term of
