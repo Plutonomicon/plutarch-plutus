@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-ledger-api
-version:       3.2.1
+version:       3.3.0
 
 common common-lang
   default-language:   Haskell2010
