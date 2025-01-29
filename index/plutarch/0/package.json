@@ -1,1 +1,1 @@
-{"signatures":[],"signed":{"_type":"Targets","expires":null,"targets":{"<repo>/package/plutarch-0.tar.gz":{"hashes":{"sha256":"afdaf209661883bbc799e5c2517e8c31710e39b3073a3908dcf7c67f698dd118"},"length":90164}},"version":1}}
+{"signatures":[],"signed":{"_type":"Targets","expires":null,"targets":{"<repo>/package/plutarch-0.tar.gz":{"hashes":{"sha256":"3fed0933a5da63aca1ed3f355c564bdbc52f296d990375ce1695dcdcae18c181"},"length":91808}},"version":1}}

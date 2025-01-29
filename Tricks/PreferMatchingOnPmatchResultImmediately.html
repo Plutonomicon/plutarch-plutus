@@ -180,9 +180,9 @@
 import Plutarch.Prelude
 import Plutarch.LedgerApi.V3 (
   PScriptPurpose (
-    PSpending, 
-    PMinting, 
-    PRewarding, 
+    PSpending,
+    PMinting,
+    PRewarding,
     PCertifying,
     PVoting,
     PProposing
@@ -199,21 +199,21 @@ this = plam $ \x -&gt; pmatch x $ \l -&gt;
     PMinting _ -&gt; i + 3
     PSpending _ -&gt; i + 4
     PRewarding _ -&gt; i + 5
-    PCertifying _ -&gt; i + 6
+    PCertifying _ _ -&gt; i + 6
     PVoting _ -&gt; i + 7
-    PProposing _ -&gt; i + 8
+    PProposing _ _ -&gt; i + 8
 </code></pre>
 <p>Notice how the above code <code>plet</code>s a computation <em>before</em> matching on <code>l</code>, the <code>pmatch</code> result. This will make the <code>plet $ 1 + 2 $ \i -&gt; i + &lt;something&gt;</code> be inlined in every branch of your pattern match! That is, not only will it compute the <code>1 + 2</code> every time, it will <em>also</em> <code>plet</code> it, which introduced an extra lambda, only to immediately apply the lambda!</p>
 <p>You <em>should always</em> match on the result immediately, whenever possible:</p>
 <pre><code class="language-haskell">this' :: Term s (PScriptPurpose :--&gt; PInteger)
-this' = plam $ \x -&gt; plet  (1 + 2) $ \i -&gt;
+this' = plam $ \x -&gt; plet (1 + 2) $ \i -&gt;
   pmatch x $ \case
     PMinting _ -&gt; i + 3
     PSpending _ -&gt; i + 4
     PRewarding _ -&gt; i + 5
-    PCertifying _ -&gt; i + 6
+    PCertifying _ _ -&gt; i + 6
     PVoting _ -&gt; i + 7
-    PProposing _ -&gt; i + 8
+    PProposing _ _ -&gt; i + 8
 </code></pre>
 <p>This applies much the same with <code>do</code> syntax (whether with <code>TermCont</code> or with <code>QualifiedDo</code>). Try to use inline partial pattern matching (e.g <code>PMinting _ &lt;- pmatch x</code>), or pattern match on the very next line (e.g <code>l &lt;- pmatch x; case l of ...</code>).</p>
 

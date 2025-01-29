@@ -181,13 +181,18 @@
 module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where
 
 import Plutarch.Prelude
-import Plutarch.LedgerApi.V3 (PDatum, PRedeemer, PScriptContext, PPubKeyHash,
-  PScriptInfo(PSpendingScript))
+import Plutarch.LedgerApi.V3 (
+  PDatum,
+  PRedeemer,
+  PScriptContext (pscriptContext'scriptInfo, pscriptContext'txInfo),
+  PTxInfo (ptxInfo'signatories),
+  PPubKeyHash,
+  PScriptInfo(PSpendingScript)
+  )
 import Plutarch.Docs.Run (evalWithArgsT)
 import Plutarch.Script (Script)
 import qualified PlutusTx
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-import qualified Plutarch.Monadic as P
 import Data.Text (Text)
 </code></pre>
 </p>
@@ -229,17 +234,19 @@ res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), Plutu
 </code></pre>
 <h1 id="validator-that-checks-whether-a-value-is-present-within-signatories"><a class="header" href="#validator-that-checks-whether-a-value-is-present-within-signatories">Validator that checks whether a value is present within signatories</a></h1>
 <pre><code class="language-haskell">
-checkSignatory :: Term s (PPubKeyHash :--&gt; PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
-checkSignatory = plam $ \ph _ _ ctx' -&gt; P.do
-  ctx &lt;- pletFields @["txInfo", "scriptInfo"] ctx'
-  PSpendingScript _ &lt;- pmatch ctx.scriptInfo
-  let signatories = pfield @"signatories" # ctx.txInfo
-  pif
-    (pelem # pdata ph # pfromData signatories)
-    -- Success!
-    (pconstant ())
-    -- Signature not present.
-    perror
+checkSignatory :: Term s (PPubKeyHash :--&gt; PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PScriptContext :--&gt; PUnit)
+checkSignatory = plam $ \ph _ _ ctx' -&gt; unTermCont $ do
+  ctx &lt;- pmatchC ctx'
+  PSpendingScript _ _ &lt;- pmatchC $ pscriptContext'scriptInfo ctx
+  txInfo &lt;- pmatchC $ pscriptContext'txInfo ctx
+  let signatories = ptxInfo'signatories txInfo
+  pure $
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 </code></pre>
 <blockquote>
 <p>Note: The above snippet uses GHC 9 features (<code>QualifiedDo</code> and <code>OverloadedRecordDot</code>). Be sure to check out <a href="./../Usage/DoSyntaxWithTermCont.html">Do syntax with <code>TermCont</code></a> and <a href="../Typeclasses/PIsDataReprAndPDataFields.html#alternatives-to-overloadedrecorddot">alternatives to <code>OverloadedRecordDot</code></a>.</p>

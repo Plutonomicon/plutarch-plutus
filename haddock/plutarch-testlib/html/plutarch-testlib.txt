@@ -326,7 +326,7 @@ checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesAssocMap :: TestTree
 
 -- | @since WIP
-checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PLiftable a, PTryFrom PData a, Eq (AsHaskell a), PIsData a, ToData (AsHaskell a), Arbitrary (AsHaskell a), Pretty (AsHaskell a), Show (AsHaskell a)) => TestTree
+checkLedgerProperties :: forall (a :: S -> Type). (Typeable a, PLiftable a, Eq (AsHaskell a), PIsData a, ToData (AsHaskell a), Arbitrary (AsHaskell a), Pretty (AsHaskell a), Show (AsHaskell a)) => TestTree
 
 -- | @since WIP
 checkLedgerPropertiesPCountable :: forall (a :: S -> Type). (Typeable a, PCountable a, Arbitrary (AsHaskell a), Pretty (AsHaskell a), Eq (AsHaskell a), Show (AsHaskell a), PLiftable a) => TestTree

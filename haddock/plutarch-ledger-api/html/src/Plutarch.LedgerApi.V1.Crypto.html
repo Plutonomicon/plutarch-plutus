@@ -5,17 +5,18 @@
 </span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier">PPubKeyHash</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
 </span><span id="line-6"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-7"></span><span>
-</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html"><span class="hs-identifier">Plutarch.LedgerApi.Utils</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier">Mret</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Unsafe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">punsafeCoerce</span></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
 </span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
-</span><span id="line-13"></span><span>
-</span><span id="line-14"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-15"></span><span class="hs-keyword">newtype</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679286473"><span class="annot"><a href="#local-6989586621679286473"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679286473"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataNewtype</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-16"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-17"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-18"></span><span>      </span><span id="local-6989586621679286484"><span id="local-6989586621679286486"><span class="annot"><span class="annottext">(forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x)
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Builtins.Internal</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">newtype</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679315552"><span class="annot"><a href="#local-6989586621679315552"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679315552"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-19"></span><span>      </span><span id="local-6989586621679315555"><span id="local-6989586621679315557"><span class="annot"><span class="annottext">(forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x)
 -&gt; (forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s)
 -&gt; Generic (PPubKeyHash s)
 forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
@@ -29,40 +30,35 @@ from :: forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x
 $cto :: forall (s :: S) x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
 to :: forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-19"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-21"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-22"></span><span>      </span><span id="local-6989586621679286490"><span id="local-6989586621679286496"><span class="annot"><span class="annottext">(forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash))
--&gt; (forall (s :: S) (b :: PType).
-    Term s (PInner PPubKeyHash)
-    -&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b)
--&gt; PlutusType PPubKeyHash
-forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
-forall (s :: S) (b :: PType).
-Term s (PInner PPubKeyHash)
--&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
-forall (a :: PType).
-(forall (s :: S). a s -&gt; Term s (PInner a))
--&gt; (forall (s :: S) (b :: PType).
-    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
--&gt; PlutusType a
-$cpcon' :: forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
-pcon' :: forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
-$cpmatch' :: forall (s :: S) (b :: PType).
-Term s (PInner PPubKeyHash)
--&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
-pmatch' :: forall (s :: S) (b :: PType).
-Term s (PInner PPubKeyHash)
--&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-23"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-24"></span><span>      </span><span id="local-6989586621679286501"><span id="local-6989586621679286507"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-20"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-23"></span><span>      </span><span id="local-6989586621679315564"><span id="local-6989586621679315573"><span class="annot"><span class="annottext">All SListI (Code (PPubKeyHash s))
+All SListI (Code (PPubKeyHash s)) =&gt;
+(PPubKeyHash s -&gt; Rep (PPubKeyHash s))
+-&gt; (Rep (PPubKeyHash s) -&gt; PPubKeyHash s)
+-&gt; Generic (PPubKeyHash s)
+Rep (PPubKeyHash s) -&gt; PPubKeyHash s
+PPubKeyHash s -&gt; Rep (PPubKeyHash s)
+forall a.
+All SListI (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S). All SListI (Code (PPubKeyHash s))
+forall (s :: S). Rep (PPubKeyHash s) -&gt; PPubKeyHash s
+forall (s :: S). PPubKeyHash s -&gt; Rep (PPubKeyHash s)
+$cfrom :: forall (s :: S). PPubKeyHash s -&gt; Rep (PPubKeyHash s)
+from :: PPubKeyHash s -&gt; Rep (PPubKeyHash s)
+$cto :: forall (s :: S). Rep (PPubKeyHash s) -&gt; PPubKeyHash s
+to :: Rep (PPubKeyHash s) -&gt; PPubKeyHash s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-25"></span><span>      </span><span id="local-6989586621679315603"><span id="local-6989586621679315609"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash)
 -&gt; (forall (s :: S). Term s PPubKeyHash -&gt; Term s PData)
 -&gt; PIsData PPubKeyHash
 forall (s :: S). Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash
 forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
-forall (a :: PType).
+forall (a :: S -&gt; Type).
 (forall (s :: S). Term s (PAsData a) -&gt; Term s a)
 -&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
 $cpfromDataImpl :: forall (s :: S). Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash
@@ -70,21 +66,21 @@ pfromDataImpl :: forall (s :: S). Term s (PAsData PPubKeyHash) -&gt; Term s PPub
 $cpdataImpl :: forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-25"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-26"></span><span>      </span><span id="local-6989586621679286514"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-26"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-27"></span><span>      </span><span id="local-6989586621679315616"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
 -&gt; PEq PPubKeyHash
 forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
-forall (t :: PType).
+forall (t :: S -&gt; Type).
 (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
 $c#== :: forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
 #== :: forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
-</span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-28"></span><span>      </span><span id="local-6989586621679286534"><span id="local-6989586621679286540"><span id="local-6989586621679286545"><span id="local-6989586621679286548"><span class="annot"><span class="annottext">PEq PPubKeyHash
+</span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-29"></span><span>      </span><span id="local-6989586621679315635"><span id="local-6989586621679315641"><span id="local-6989586621679315646"><span id="local-6989586621679315649"><span class="annot"><span class="annottext">PEq PPubKeyHash
 PEq PPubKeyHash =&gt;
 (forall (s :: S).
  Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
@@ -99,7 +95,7 @@ forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
 forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PPubKeyHash
-forall (t :: PType).
+forall (t :: S -&gt; Type).
 PEq t =&gt;
 (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
 -&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
@@ -123,312 +119,83 @@ Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PPubKeyHash
 pmin :: forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PPubKeyHash
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
-</span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-30"></span><span>      </span><span id="local-6989586621679286559"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString)
+</span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679315654"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString)
 -&gt; PShow PPubKeyHash
 forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString
-forall (t :: PType).
+forall (t :: S -&gt; Type).
 (forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-32"></span><span>
-</span><span id="line-33"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-35"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeNewtype</span></span><span>
-</span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-38"></span><span id="local-6989586621679286597"><span id="local-6989586621679286607"><span id="local-6989586621679286616"><span id="local-6989586621679286625"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-39"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span>
-</span><span id="line-40"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-41"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span></span></span></span></span><span>
-</span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.0</span></span><span>
-</span><span id="line-44"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-45"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PTryFromExcess"><span class="annot"><span class="hs-identifier hs-var">PTryFromExcess</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier hs-type">Mret</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span>
-</span><span id="line-46"></span><span>  </span><span id="local-6989586621679286676"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: PType).
-Term s PData
--&gt; ((Term s PPubKeyHash,
-     Reduce (PTryFromExcess PData PPubKeyHash s))
-    -&gt; Term s r)
--&gt; Term s r
-</span><a href="#local-6989586621679286676"><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></a></span></span><span> </span><span id="local-6989586621679286678"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679286678"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
-  s (Term s PPubKeyHash, Reduce (PTryFromExcess PData PPubKeyHash s))
--&gt; ((Term s PPubKeyHash,
-     Reduce (PTryFromExcess PData PPubKeyHash s))
-    -&gt; Term s r)
--&gt; Term s r
-forall (r :: PType) (s :: S) a.
-TermCont s a -&gt; (a -&gt; Term s r) -&gt; Term s r
-</span><span class="hs-identifier hs-var">runTermCont</span></span><span> </span><span class="annot"><span class="annottext">(TermCont
-   s (Term s PPubKeyHash, Reduce (PTryFromExcess PData PPubKeyHash s))
- -&gt; ((Term s PPubKeyHash,
-      Reduce (PTryFromExcess PData PPubKeyHash s))
-     -&gt; Term s r)
- -&gt; Term s r)
--&gt; TermCont
-     s (Term s PPubKeyHash, Reduce (PTryFromExcess PData PPubKeyHash s))
--&gt; ((Term s PPubKeyHash,
-     Reduce (PTryFromExcess PData PPubKeyHash s))
-    -&gt; Term s r)
--&gt; Term s r
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-47"></span><span>    </span><span id="local-6989586621679286680"><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679286680"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PByteString -&gt; Term s r) -&gt; Term s r)
--&gt; TermCont s (Term s PByteString)
-forall a (s :: S) (r :: PType).
-((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
-</span><span class="hs-identifier hs-var">tcont</span></span><span> </span><span class="annot"><span class="annottext">(((Term s PByteString -&gt; Term s r) -&gt; Term s r)
- -&gt; TermCont s (Term s PByteString))
--&gt; (Term s PByteString
-    -&gt; (Term s PByteString -&gt; Term s r) -&gt; Term s r)
--&gt; Term s PByteString
--&gt; TermCont s (Term s PByteString)
+</span><span id="line-32"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679315669"><span id="local-6989586621679315677"><span class="annot"><span class="annottext">(forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner PPubKeyHash)
+    -&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PPubKeyHash
+forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PPubKeyHash)
+-&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
+pcon' :: forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash)
+$cpmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PPubKeyHash)
+-&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PPubKeyHash)
+-&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><span class="hs-identifier hs-var">AsHaskell</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><span class="hs-identifier hs-var">PlutusRepr</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">haskToRepr</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621679315695"><span class="annot"><span class="annottext">haskToRepr :: AsHaskell PPubKeyHash -&gt; PlutusRepr PPubKeyHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span id="local-6989586621679315698"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679315698"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+PlutusRepr PPubKeyHash
+</span><a href="#local-6989586621679315698"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">reprToHask</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679315700"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr PPubKeyHash -&gt; Either LiftError (AsHaskell PPubKeyHash)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToHask</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Either LiftError PubKeyHash
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(PubKeyHash -&gt; Either LiftError PubKeyHash)
+-&gt; (ByteString -&gt; PubKeyHash)
+-&gt; ByteString
+-&gt; Either LiftError PubKeyHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString -&gt; (Term s PByteString -&gt; Term s r) -&gt; Term s r
-forall (s :: S) (a :: PType) (b :: PType).
-Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
-</span><span class="hs-identifier hs-var">plet</span></span><span> </span><span class="annot"><span class="annottext">(Term s PByteString -&gt; TermCont s (Term s PByteString))
--&gt; Term s PByteString -&gt; TermCont s (Term s PByteString)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (b :: PType) (a :: PType) (s :: S) (r :: PType).
-PTryFrom a b =&gt;
-Term s a
--&gt; ((Term s b, Reduce (PTryFromExcess a b s)) -&gt; Term s r)
--&gt; Term s r
-</span><span class="hs-identifier hs-var">ptryFrom</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679286678"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString), Term s PByteString)
--&gt; Term s PByteString
-(Term s (PAsData PByteString),
- Reduce (PTryFromExcess PData (PAsData PByteString) s))
--&gt; Term s PByteString
-forall a b. (a, b) -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#snd"><span class="hs-identifier hs-var">snd</span></a></span><span>
-</span><span id="line-48"></span><span>    </span><span class="annot"><span class="annottext">((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
-forall a (s :: S) (r :: PType).
-((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
-</span><span class="hs-identifier hs-var">tcont</span></span><span> </span><span class="annot"><span class="annottext">(((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ())
--&gt; ((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679286686"><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679286686"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-49"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
-forall (a :: PType) (s :: S).
-Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
-</span><span class="hs-identifier hs-var">pif</span></span><span>
-</span><span id="line-50"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
-forall (s :: S). Term s (PByteString :--&gt; PInteger)
-</span><span class="hs-identifier hs-var">plengthBS</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
--&gt; Term s PByteString -&gt; Term s PInteger
-forall (s :: S) (a :: PType) (b :: PType).
-Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
-</span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679286680"><span class="hs-identifier hs-var">unwrapped</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
-forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
-forall (t :: PType) (s :: S).
-PEq t =&gt;
-Term s t -&gt; Term s t -&gt; Term s PBool
-</span><span class="hs-operator hs-var">#==</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><span class="hs-number">28</span></span><span class="hs-special">)</span><span>
-</span><span id="line-51"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679286686"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-52"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s r
-forall (a :: PType) (s :: S). Term s PString -&gt; Term s a
-</span><span class="hs-identifier hs-var">ptraceInfoError</span></span><span> </span><span class="annot"><span class="annottext">Term s PString
-</span><span class="hs-string">&quot;ptryFrom(PPubKeyHash): must be 28 bytes long&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-53"></span><span>    </span><span class="annot"><span class="annottext">(Term s PPubKeyHash, Term s PPubKeyHash)
--&gt; TermCont s (Term s PPubKeyHash, Term s PPubKeyHash)
-forall a. a -&gt; TermCont s a
-forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PData -&gt; Term s PPubKeyHash
-forall (b :: PType) (a :: PType) (s :: S). Term s a -&gt; Term s b
-</span><span class="hs-identifier hs-var">punsafeCoerce</span></span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679286678"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PPubKeyHash s -&gt; Term s PPubKeyHash
-forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
-</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PPubKeyHash s -&gt; Term s PPubKeyHash)
--&gt; (Term s PByteString -&gt; PPubKeyHash s)
--&gt; Term s PByteString
--&gt; Term s PPubKeyHash
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; PubKeyHash
+</span><span class="hs-identifier hs-var">Plutus.PubKeyHash</span></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; PubKeyHash)
+-&gt; (ByteString -&gt; BuiltinByteString) -&gt; ByteString -&gt; PubKeyHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PDataNewtype PByteString) -&gt; PPubKeyHash s
-forall (s :: S). Term s (PDataNewtype PByteString) -&gt; PPubKeyHash s
-</span><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PDataNewtype PByteString) -&gt; PPubKeyHash s)
--&gt; (Term s PByteString -&gt; Term s (PDataNewtype PByteString))
--&gt; Term s PByteString
--&gt; PPubKeyHash s
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">PDataNewtype PByteString s -&gt; Term s (PDataNewtype PByteString)
-forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
-</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PDataNewtype PByteString s -&gt; Term s (PDataNewtype PByteString))
--&gt; (Term s PByteString -&gt; PDataNewtype PByteString s)
--&gt; Term s PByteString
--&gt; Term s (PDataNewtype PByteString)
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PByteString) -&gt; PDataNewtype PByteString s
-forall (a :: PType) (s :: S).
-Term s (PAsData a) -&gt; PDataNewtype a s
-</span><span class="hs-identifier hs-var">PDataNewtype</span></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString) -&gt; PDataNewtype PByteString s)
--&gt; (Term s PByteString -&gt; Term s (PAsData PByteString))
--&gt; Term s PByteString
--&gt; PDataNewtype PByteString s
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString -&gt; Term s (PAsData PByteString)
-forall (a :: PType) (s :: S).
-PIsData a =&gt;
-Term s a -&gt; Term s (PAsData a)
-</span><span class="hs-identifier hs-var">pdata</span></span><span> </span><span class="annot"><span class="annottext">(Term s PByteString -&gt; Term s PPubKeyHash)
--&gt; Term s PByteString -&gt; Term s PPubKeyHash
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679286680"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-54"></span><span>
-</span><span id="line-55"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-57"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PTryFromExcess"><span class="annot"><span class="hs-identifier hs-var">PTryFromExcess</span></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#Mret"><span class="hs-identifier hs-type">Mret</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span>
-</span><span id="line-58"></span><span>  </span><span id="local-6989586621679286713"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: PType).
-Term s PData
--&gt; ((Term s (PAsData PPubKeyHash),
-     Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
-    -&gt; Term s r)
--&gt; Term s r
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></span></span><span> </span><span id="local-6989586621679286714"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679286714"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
-  s
-  (Term s (PAsData PPubKeyHash),
-   Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
--&gt; ((Term s (PAsData PPubKeyHash),
-     Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
-    -&gt; Term s r)
--&gt; Term s r
-forall (r :: PType) (s :: S) a.
-TermCont s a -&gt; (a -&gt; Term s r) -&gt; Term s r
-</span><span class="hs-identifier hs-var">runTermCont</span></span><span> </span><span class="annot"><span class="annottext">(TermCont
-   s
-   (Term s (PAsData PPubKeyHash),
-    Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
- -&gt; ((Term s (PAsData PPubKeyHash),
-      Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
-     -&gt; Term s r)
- -&gt; Term s r)
--&gt; TermCont
-     s
-     (Term s (PAsData PPubKeyHash),
-      Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
--&gt; ((Term s (PAsData PPubKeyHash),
-     Reduce (PTryFromExcess PData (PAsData PPubKeyHash) s))
-    -&gt; Term s r)
--&gt; Term s r
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-59"></span><span>    </span><span id="local-6989586621679286715"><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679286715"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PByteString -&gt; Term s r) -&gt; Term s r)
--&gt; TermCont s (Term s PByteString)
-forall a (s :: S) (r :: PType).
-((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
-</span><span class="hs-identifier hs-var">tcont</span></span><span> </span><span class="annot"><span class="annottext">(((Term s PByteString -&gt; Term s r) -&gt; Term s r)
- -&gt; TermCont s (Term s PByteString))
--&gt; (Term s PByteString
-    -&gt; (Term s PByteString -&gt; Term s r) -&gt; Term s r)
--&gt; Term s PByteString
--&gt; TermCont s (Term s PByteString)
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString -&gt; (Term s PByteString -&gt; Term s r) -&gt; Term s r
-forall (s :: S) (a :: PType) (b :: PType).
-Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
-</span><span class="hs-identifier hs-var">plet</span></span><span> </span><span class="annot"><span class="annottext">(Term s PByteString -&gt; TermCont s (Term s PByteString))
--&gt; Term s PByteString -&gt; TermCont s (Term s PByteString)
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (b :: PType) (a :: PType) (s :: S) (r :: PType).
-PTryFrom a b =&gt;
-Term s a
--&gt; ((Term s b, Reduce (PTryFromExcess a b s)) -&gt; Term s r)
--&gt; Term s r
-</span><span class="hs-identifier hs-var">ptryFrom</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679286714"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString), Term s PByteString)
--&gt; Term s PByteString
-(Term s (PAsData PByteString),
- Reduce (PTryFromExcess PData (PAsData PByteString) s))
--&gt; Term s PByteString
-forall a b. (a, b) -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#snd"><span class="hs-identifier hs-var">snd</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span class="annot"><span class="annottext">((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
-forall a (s :: S) (r :: PType).
-((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
-</span><span class="hs-identifier hs-var">tcont</span></span><span> </span><span class="annot"><span class="annottext">(((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ())
--&gt; ((() -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s ()
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679286716"><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679286716"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-61"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
-forall (a :: PType) (s :: S).
-Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
-</span><span class="hs-identifier hs-var">pif</span></span><span>
-</span><span id="line-62"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
-forall (s :: S). Term s (PByteString :--&gt; PInteger)
-</span><span class="hs-identifier hs-var">plengthBS</span></span><span> </span><span class="annot"><span class="annottext">Term s (PByteString :--&gt; PInteger)
--&gt; Term s PByteString -&gt; Term s PInteger
-forall (s :: S) (a :: PType) (b :: PType).
-Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
-</span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679286715"><span class="hs-identifier hs-var">unwrapped</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
-forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
-forall (t :: PType) (s :: S).
-PEq t =&gt;
-Term s t -&gt; Term s t -&gt; Term s PBool
-</span><span class="hs-operator hs-var">#==</span></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
-</span><span class="hs-number">28</span></span><span class="hs-special">)</span><span>
-</span><span id="line-63"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">() -&gt; Term s r
-</span><a href="#local-6989586621679286716"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-64"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PString -&gt; Term s r
-forall (a :: PType) (s :: S). Term s PString -&gt; Term s a
-</span><span class="hs-identifier hs-var">ptraceInfoError</span></span><span> </span><span class="annot"><span class="annottext">Term s PString
-</span><span class="hs-string">&quot;ptryFrom(PPubKeyHash): must be 28 bytes long&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-65"></span><span>    </span><span class="annot"><span class="annottext">(Term s (PAsData PPubKeyHash), Term s PPubKeyHash)
--&gt; TermCont s (Term s (PAsData PPubKeyHash), Term s PPubKeyHash)
-forall a. a -&gt; TermCont s a
-forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PData -&gt; Term s (PAsData PPubKeyHash)
-forall (b :: PType) (a :: PType) (s :: S). Term s a -&gt; Term s b
-</span><span class="hs-identifier hs-var">punsafeCoerce</span></span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679286714"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PPubKeyHash s -&gt; Term s PPubKeyHash
-forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
-</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PPubKeyHash s -&gt; Term s PPubKeyHash)
--&gt; (Term s PByteString -&gt; PPubKeyHash s)
--&gt; Term s PByteString
--&gt; Term s PPubKeyHash
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PDataNewtype PByteString) -&gt; PPubKeyHash s
-forall (s :: S). Term s (PDataNewtype PByteString) -&gt; PPubKeyHash s
-</span><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s (PDataNewtype PByteString) -&gt; PPubKeyHash s)
--&gt; (Term s PByteString -&gt; Term s (PDataNewtype PByteString))
--&gt; Term s PByteString
--&gt; PPubKeyHash s
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">PDataNewtype PByteString s -&gt; Term s (PDataNewtype PByteString)
-forall (a :: PType) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
-</span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PDataNewtype PByteString s -&gt; Term s (PDataNewtype PByteString))
--&gt; (Term s PByteString -&gt; PDataNewtype PByteString s)
--&gt; Term s PByteString
--&gt; Term s (PDataNewtype PByteString)
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PByteString) -&gt; PDataNewtype PByteString s
-forall (a :: PType) (s :: S).
-Term s (PAsData a) -&gt; PDataNewtype a s
-</span><span class="hs-identifier hs-var">PDataNewtype</span></span><span> </span><span class="annot"><span class="annottext">(Term s (PAsData PByteString) -&gt; PDataNewtype PByteString s)
--&gt; (Term s PByteString -&gt; Term s (PAsData PByteString))
--&gt; Term s PByteString
--&gt; PDataNewtype PByteString s
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString -&gt; Term s (PAsData PByteString)
-forall (a :: PType) (s :: S).
-PIsData a =&gt;
-Term s a -&gt; Term s (PAsData a)
-</span><span class="hs-identifier hs-var">pdata</span></span><span> </span><span class="annot"><span class="annottext">(Term s PByteString -&gt; Term s PPubKeyHash)
--&gt; Term s PByteString -&gt; Term s PPubKeyHash
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PByteString
-</span><a href="#local-6989586621679286715"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-66"></span></pre></body></html>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
+</span><span class="hs-identifier hs-var">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">reprToPlut</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679315709"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S). PlutusRepr PPubKeyHash -&gt; PLifted s PPubKeyHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToPlut</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PlutusRepr PPubKeyHash -&gt; PLifted s PPubKeyHash
+forall (a :: S -&gt; Type) (s :: S).
+(PLiftable a, Includes DefaultUni (PlutusRepr a)) =&gt;
+PlutusRepr a -&gt; PLifted s a
+</span><span class="hs-identifier hs-var">reprToPlutUni</span></span><span>
+</span><span id="line-49"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">plutToRepr</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-50"></span><span>  </span><span id="local-6989586621679315716"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s PPubKeyHash)
+-&gt; Either LiftError (PlutusRepr PPubKeyHash)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">plutToRepr</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). PLifted s PPubKeyHash)
+-&gt; Either LiftError (PlutusRepr PPubKeyHash)
+forall (a :: S -&gt; Type).
+(PLiftable a, Includes DefaultUni (PlutusRepr a)) =&gt;
+(forall (s :: S). PLifted s a) -&gt; Either LiftError (PlutusRepr a)
+</span><span class="hs-identifier hs-var">plutToReprUni</span></span><span>
+</span><span id="line-51"></span></pre></body></html>

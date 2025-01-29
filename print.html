@@ -1153,13 +1153,18 @@ Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf integer 2))))
 module Plutarch.Docs.ValidatorExample (alwaysSucceeds, checkSignatory, res', res, alwaysFails) where
 
 import Plutarch.Prelude
-import Plutarch.LedgerApi.V3 (PDatum, PRedeemer, PScriptContext, PPubKeyHash,
-  PScriptInfo(PSpendingScript))
+import Plutarch.LedgerApi.V3 (
+  PDatum,
+  PRedeemer,
+  PScriptContext (pscriptContext'scriptInfo, pscriptContext'txInfo),
+  PTxInfo (ptxInfo'signatories),
+  PPubKeyHash,
+  PScriptInfo(PSpendingScript)
+  )
 import Plutarch.Docs.Run (evalWithArgsT)
 import Plutarch.Script (Script)
 import qualified PlutusTx
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
-import qualified Plutarch.Monadic as P
 import Data.Text (Text)
 </code></pre>
 </p>
@@ -1201,17 +1206,19 @@ res = alwaysFails `evalWithArgsT` [PlutusTx.toData (), PlutusTx.toData (), Plutu
 </code></pre>
 <h1 id="validator-that-checks-whether-a-value-is-present-within-signatories"><a class="header" href="#validator-that-checks-whether-a-value-is-present-within-signatories">Validator that checks whether a value is present within signatories</a></h1>
 <pre><code class="language-haskell">
-checkSignatory :: Term s (PPubKeyHash :--&gt; PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PAsData PScriptContext :--&gt; PUnit)
-checkSignatory = plam $ \ph _ _ ctx' -&gt; P.do
-  ctx &lt;- pletFields @["txInfo", "scriptInfo"] ctx'
-  PSpendingScript _ &lt;- pmatch ctx.scriptInfo
-  let signatories = pfield @"signatories" # ctx.txInfo
-  pif
-    (pelem # pdata ph # pfromData signatories)
-    -- Success!
-    (pconstant ())
-    -- Signature not present.
-    perror
+checkSignatory :: Term s (PPubKeyHash :--&gt; PAsData PDatum :--&gt; PAsData PRedeemer :--&gt; PScriptContext :--&gt; PUnit)
+checkSignatory = plam $ \ph _ _ ctx' -&gt; unTermCont $ do
+  ctx &lt;- pmatchC ctx'
+  PSpendingScript _ _ &lt;- pmatchC $ pscriptContext'scriptInfo ctx
+  txInfo &lt;- pmatchC $ pscriptContext'txInfo ctx
+  let signatories = ptxInfo'signatories txInfo
+  pure $
+    pif
+      (pelem # pdata ph # pfromData signatories)
+      -- Success!
+      (pconstant ())
+      -- Signature not present.
+      perror
 </code></pre>
 <blockquote>
 <p>Note: The above snippet uses GHC 9 features (<code>QualifiedDo</code> and <code>OverloadedRecordDot</code>). Be sure to check out <a href="examples/./../Usage/DoSyntaxWithTermCont.html">Do syntax with <code>TermCont</code></a> and <a href="examples/../Typeclasses/PIsDataReprAndPDataFields.html#alternatives-to-overloadedrecorddot">alternatives to <code>OverloadedRecordDot</code></a>.</p>
@@ -2262,6 +2269,7 @@ import Plutarch.Docs.Run (evalWithArgsT)
 </code></pre>
 </p>
 </details>
+<h1 id="pdatarecord-is-deprecated-in-favor-of-plutarchreprdata-this-documentation-is-unmaintained"><a class="header" href="#pdatarecord-is-deprecated-in-favor-of-plutarchreprdata-this-documentation-is-unmaintained">PDataRecord is deprecated in favor of <code>Plutarch.Repr.Data</code>. This documentation is unmaintained.</a></h1>
 <h1 id="plutustype-via-plutustypedata--pdatafields"><a class="header" href="#plutustype-via-plutustypedata--pdatafields"><code>PlutusType</code> via <code>PlutusTypeData</code> &amp; <code>PDataFields</code></a></h1>
 <p>Deriving <code>PlutusType</code> with <code>DPTStrat PlutusTypeData</code> allows for easily constructing <em>and</em> deconstructing <code>Constr</code>
 <a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md"><code>BuiltinData</code>/<code>Data</code></a> values. It allows fully type safe matching on
@@ -3309,9 +3317,9 @@ pfoo' = plam $ \x l -&gt;
 import Plutarch.Prelude
 import Plutarch.LedgerApi.V3 (
   PScriptPurpose (
-    PSpending, 
-    PMinting, 
-    PRewarding, 
+    PSpending,
+    PMinting,
+    PRewarding,
     PCertifying,
     PVoting,
     PProposing
@@ -3328,21 +3336,21 @@ this = plam $ \x -&gt; pmatch x $ \l -&gt;
     PMinting _ -&gt; i + 3
     PSpending _ -&gt; i + 4
     PRewarding _ -&gt; i + 5
-    PCertifying _ -&gt; i + 6
+    PCertifying _ _ -&gt; i + 6
     PVoting _ -&gt; i + 7
-    PProposing _ -&gt; i + 8
+    PProposing _ _ -&gt; i + 8
 </code></pre>
 <p>Notice how the above code <code>plet</code>s a computation <em>before</em> matching on <code>l</code>, the <code>pmatch</code> result. This will make the <code>plet $ 1 + 2 $ \i -&gt; i + &lt;something&gt;</code> be inlined in every branch of your pattern match! That is, not only will it compute the <code>1 + 2</code> every time, it will <em>also</em> <code>plet</code> it, which introduced an extra lambda, only to immediately apply the lambda!</p>
 <p>You <em>should always</em> match on the result immediately, whenever possible:</p>
 <pre><code class="language-haskell">this' :: Term s (PScriptPurpose :--&gt; PInteger)
-this' = plam $ \x -&gt; plet  (1 + 2) $ \i -&gt;
+this' = plam $ \x -&gt; plet (1 + 2) $ \i -&gt;
   pmatch x $ \case
     PMinting _ -&gt; i + 3
     PSpending _ -&gt; i + 4
     PRewarding _ -&gt; i + 5
-    PCertifying _ -&gt; i + 6
+    PCertifying _ _ -&gt; i + 6
     PVoting _ -&gt; i + 7
-    PProposing _ -&gt; i + 8
+    PProposing _ _ -&gt; i + 8
 </code></pre>
 <p>This applies much the same with <code>do</code> syntax (whether with <code>TermCont</code> or with <code>QualifiedDo</code>). Try to use inline partial pattern matching (e.g <code>PMinting _ &lt;- pmatch x</code>), or pattern match on the very next line (e.g <code>l &lt;- pmatch x; case l of ...</code>).</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="prefer-plutarch-level-functions"><a class="header" href="#prefer-plutarch-level-functions">Prefer Plutarch level functions</a></h1>
@@ -3369,8 +3377,8 @@ viaconstant = pconstant (Minting "f1e301")
 -- (or)
 
 viacon :: Term s PScriptPurpose
-viacon = let currSym = pcon . PCurrencySymbol . pcon . PDataNewtype . pdata $ phexByteStr "f1e301"
- in pcon $ PMinting $ pdcons # pdata currSym # pdnil
+viacon = let currSym = pcon . PCurrencySymbol $ phexByteStr "f1e301"
+ in pcon $ PMinting $ pdata currSym
 </code></pre>
 <p>The semantics are both are the same. But the former (<code>pconstant</code>) compiles to a constant term directly. Whereas the latter compiles to some code that <em>builds</em> the constant during Plutus Core runtime.</p>
 <blockquote>
@@ -3480,6 +3488,7 @@ import Plutarch.LedgerApi.V3 (PTxInfo, PScriptContext)
 </code></pre>
 </p>
 </details>
+<h1 id="pdatarecord-is-deprecated-in-favor-of-plutarchreprdata-this-documentation-is-unmaintained-1"><a class="header" href="#pdatarecord-is-deprecated-in-favor-of-plutarchreprdata-this-documentation-is-unmaintained-1">PDataRecord is deprecated in favor of <code>Plutarch.Repr.Data</code>. This documentation is unmaintained.</a></h1>
 <h1 id="working-with-bound-fields-yielded-by-pletfields"><a class="header" href="#working-with-bound-fields-yielded-by-pletfields">Working with bound fields yielded by <code>pletFields</code></a></h1>
 <p>You may have noticed that <code>pletFields</code> actually returns a Haskell level heterogenous list, with all the interesting fields
 "bound" to it. Only the fields you actually use from these bindings are extracted and put into the resulting script. Therefore,

@@ -5,22 +5,24 @@
 </span><span id="line-5"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-6"></span><span>
 </span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Credential</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Credential</span></span><span>
-</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.DCert</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">DCert</span></span><span>
-</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Tx.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Tx</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Tx</span></span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html"><span class="hs-identifier">Plutarch.LedgerApi.Value</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Value</span></span><span>
-</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
-</span><span id="line-14"></span><span>
-</span><span id="line-15"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-16"></span><span class="hs-keyword">data</span><span> </span><span id="PScriptPurpose"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-var">PScriptPurpose</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679301225"><span class="annot"><a href="#local-6989586621679301225"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span>
-</span><span id="line-17"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PMinting"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PMinting"><span class="hs-identifier hs-var">PMinting</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679301225"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PCurrencySymbol"><span class="hs-identifier hs-type">Value.PCurrencySymbol</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-18"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PSpending"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PSpending"><span class="hs-identifier hs-var">PSpending</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679301225"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Tx.html#PTxOutRef"><span class="hs-identifier hs-type">Tx.PTxOutRef</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-19"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PRewarding"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PRewarding"><span class="hs-identifier hs-var">PRewarding</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679301225"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier hs-type">Credential.PStakingCredential</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PCertifying"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PCertifying"><span class="hs-identifier hs-var">PCertifying</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679301225"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span> </span><span class="hs-special">'</span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;_0&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-type">DCert.PDCert</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-21"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-22"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-23"></span><span>      </span><span id="local-6989586621679301231"><span id="local-6989586621679301233"><span class="annot"><span class="annottext">(forall x. PScriptPurpose s -&gt; Rep (PScriptPurpose s) x)
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Credential</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Credential</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.DCert</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">DCert</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Tx.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Tx</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Tx</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html"><span class="hs-identifier">Plutarch.LedgerApi.Value</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Value</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Repr.Data</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">DeriveAsDataStruct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">DeriveAsDataStruct</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
+</span><span id="line-16"></span><span>
+</span><span id="line-17"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">data</span><span> </span><span id="PScriptPurpose"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-var">PScriptPurpose</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679329461"><span class="annot"><a href="#local-6989586621679329461"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PMinting"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PMinting"><span class="hs-identifier hs-var">PMinting</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679329461"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PCurrencySymbol"><span class="hs-identifier hs-type">Value.PCurrencySymbol</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PSpending"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PSpending"><span class="hs-identifier hs-var">PSpending</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679329461"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Tx.html#PTxOutRef"><span class="hs-identifier hs-type">Tx.PTxOutRef</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PRewarding"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PRewarding"><span class="hs-identifier hs-var">PRewarding</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679329461"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PStakingCredential"><span class="hs-identifier hs-type">Credential.PStakingCredential</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="PCertifying"><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PCertifying"><span class="hs-identifier hs-var">PCertifying</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679329461"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.DCert.html#PDCert"><span class="hs-identifier hs-type">DCert.PDCert</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-25"></span><span>      </span><span id="local-6989586621679329467"><span id="local-6989586621679329469"><span class="annot"><span class="annottext">(forall x. PScriptPurpose s -&gt; Rep (PScriptPurpose s) x)
 -&gt; (forall x. Rep (PScriptPurpose s) x -&gt; PScriptPurpose s)
 -&gt; Generic (PScriptPurpose s)
 forall x. Rep (PScriptPurpose s) x -&gt; PScriptPurpose s
@@ -34,42 +36,36 @@ from :: forall x. PScriptPurpose s -&gt; Rep (PScriptPurpose s) x
 $cto :: forall (s :: S) x. Rep (PScriptPurpose s) x -&gt; PScriptPurpose s
 to :: forall x. Rep (PScriptPurpose s) x -&gt; PScriptPurpose s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-24"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-25"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-26"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-27"></span><span>      </span><span id="local-6989586621679301237"><span id="local-6989586621679301243"><span class="annot"><span class="annottext">(forall (s :: S).
- PScriptPurpose s -&gt; Term s (PInner PScriptPurpose))
--&gt; (forall (s :: S) (b :: PType).
-    Term s (PInner PScriptPurpose)
-    -&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b)
--&gt; PlutusType PScriptPurpose
-forall (s :: S). PScriptPurpose s -&gt; Term s (PInner PScriptPurpose)
-forall (s :: S) (b :: PType).
-Term s (PInner PScriptPurpose)
--&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b
-forall (a :: PType).
-(forall (s :: S). a s -&gt; Term s (PInner a))
--&gt; (forall (s :: S) (b :: PType).
-    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
--&gt; PlutusType a
-$cpcon' :: forall (s :: S). PScriptPurpose s -&gt; Term s (PInner PScriptPurpose)
-pcon' :: forall (s :: S). PScriptPurpose s -&gt; Term s (PInner PScriptPurpose)
-$cpmatch' :: forall (s :: S) (b :: PType).
-Term s (PInner PScriptPurpose)
--&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b
-pmatch' :: forall (s :: S) (b :: PType).
-Term s (PInner PScriptPurpose)
--&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-29"></span><span>      </span><span id="local-6989586621679301248"><span id="local-6989586621679301254"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-26"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-29"></span><span>      </span><span id="local-6989586621679329476"><span id="local-6989586621679329485"><span class="annot"><span class="annottext">All SListI (Code (PScriptPurpose s))
+All SListI (Code (PScriptPurpose s)) =&gt;
+(PScriptPurpose s -&gt; Rep (PScriptPurpose s))
+-&gt; (Rep (PScriptPurpose s) -&gt; PScriptPurpose s)
+-&gt; Generic (PScriptPurpose s)
+Rep (PScriptPurpose s) -&gt; PScriptPurpose s
+PScriptPurpose s -&gt; Rep (PScriptPurpose s)
+forall a.
+All SListI (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S). All SListI (Code (PScriptPurpose s))
+forall (s :: S). Rep (PScriptPurpose s) -&gt; PScriptPurpose s
+forall (s :: S). PScriptPurpose s -&gt; Rep (PScriptPurpose s)
+$cfrom :: forall (s :: S). PScriptPurpose s -&gt; Rep (PScriptPurpose s)
+from :: PScriptPurpose s -&gt; Rep (PScriptPurpose s)
+$cto :: forall (s :: S). Rep (PScriptPurpose s) -&gt; PScriptPurpose s
+to :: Rep (PScriptPurpose s) -&gt; PScriptPurpose s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679329550"><span id="local-6989586621679329556"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PAsData PScriptPurpose) -&gt; Term s PScriptPurpose)
 -&gt; (forall (s :: S). Term s PScriptPurpose -&gt; Term s PData)
 -&gt; PIsData PScriptPurpose
 forall (s :: S).
 Term s (PAsData PScriptPurpose) -&gt; Term s PScriptPurpose
 forall (s :: S). Term s PScriptPurpose -&gt; Term s PData
-forall (a :: PType).
+forall (a :: S -&gt; Type).
 (forall (s :: S). Term s (PAsData a) -&gt; Term s a)
 -&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
 $cpfromDataImpl :: forall (s :: S).
@@ -79,42 +75,61 @@ Term s (PAsData PScriptPurpose) -&gt; Term s PScriptPurpose
 $cpdataImpl :: forall (s :: S). Term s PScriptPurpose -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PScriptPurpose -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-31"></span><span>      </span><span id="local-6989586621679301261"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-33"></span><span>      </span><span id="local-6989586621679329563"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PScriptPurpose -&gt; Term s PScriptPurpose -&gt; Term s PBool)
 -&gt; PEq PScriptPurpose
 forall (s :: S).
 Term s PScriptPurpose -&gt; Term s PScriptPurpose -&gt; Term s PBool
-forall (t :: PType).
+forall (t :: S -&gt; Type).
 (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
 $c#== :: forall (s :: S).
 Term s PScriptPurpose -&gt; Term s PScriptPurpose -&gt; Term s PBool
 #== :: forall (s :: S).
 Term s PScriptPurpose -&gt; Term s PScriptPurpose -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
-</span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-33"></span><span>      </span><span id="local-6989586621679301288"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PScriptPurpose -&gt; Term s PString)
+</span><span id="line-34"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679329592"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PScriptPurpose -&gt; Term s PString)
 -&gt; PShow PScriptPurpose
 forall (s :: S). Bool -&gt; Term s PScriptPurpose -&gt; Term s PString
-forall (t :: PType).
+forall (t :: S -&gt; Type).
 (forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PScriptPurpose -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PScriptPurpose -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-34"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-35"></span><span>      </span><span id="local-6989586621679301335"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-37"></span><span>
-</span><span id="line-38"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-40"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeData</span></span><span>
-</span><span id="line-41"></span><span>
-</span><span id="line-42"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
-</span><span id="line-43"></span><span id="local-6989586621679301431"><span id="local-6989586621679301441"><span id="local-6989586621679301450"><span id="local-6989586621679301459"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-44"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptPurpose</span></span><span>
-</span><span id="line-45"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-46"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span></span></span></span></span><span>
-</span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | @since 3.1.1</span></span><span>
-</span><span id="line-49"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679301487"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-50"></span></pre></body></html>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-39"></span><span>      </span><span id="local-6989586621679329623"><span id="local-6989586621679329634"><span class="annot"><span class="annottext">(forall (s :: S).
+ PScriptPurpose s -&gt; Term s (PInner PScriptPurpose))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner PScriptPurpose)
+    -&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PScriptPurpose
+forall (s :: S). PScriptPurpose s -&gt; Term s (PInner PScriptPurpose)
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PScriptPurpose)
+-&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PScriptPurpose s -&gt; Term s (PInner PScriptPurpose)
+pcon' :: forall (s :: S). PScriptPurpose s -&gt; Term s (PInner PScriptPurpose)
+$cpmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PScriptPurpose)
+-&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PScriptPurpose)
+-&gt; (PScriptPurpose s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveAsDataStruct</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-44"></span><span id="local-6989586621679329728"><span id="local-6989586621679329738"><span id="local-6989586621679329747"><span id="local-6989586621679329756"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-45"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptPurpose</span></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-47"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Contexts.html#PScriptPurpose"><span class="hs-identifier hs-type">PScriptPurpose</span></a></span></span></span></span></span><span>
+</span><span id="line-48"></span></pre></body></html>
