@@ -91,7 +91,7 @@ If you define 'pstimes', ensure the following also hold:
 
 The default implementation automatically ensures these laws hold.
 
-@since WIP
+@since 1.10.0
 -}
 class PSemigroup (a :: S -> Type) where
   (#<>) :: forall (s :: S). Term s a -> Term s a -> Term s a
@@ -108,19 +108,19 @@ class PSemigroup (a :: S -> Type) where
 
 infixr 6 #<>
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup PUnit where
   {-# INLINEABLE (#<>) #-}
   x #<> y = plet x $ \_ -> plet y $ const punit
   {-# INLINEABLE pstimes #-}
   pstimes p x = plet p $ \_ -> plet x $ const punit
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup PString where
   {-# INLINEABLE (#<>) #-}
   x #<> y = punsafeBuiltin PLC.AppendString # x # y
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup PByteString where
   {-# INLINEABLE (#<>) #-}
   x #<> y = punsafeBuiltin PLC.AppendByteString # x # y
@@ -136,7 +136,7 @@ niche to be useful. Unlike other types which could be semigroups (or monoids)
 in many ways, BLS points have only one (essentially their additive
 instances), so we can provide these.
 
-@since WIP
+@since 1.10.0
 -}
 instance PSemigroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE (#<>) #-}
@@ -144,7 +144,7 @@ instance PSemigroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pstimes #-}
   pstimes p x = pscalePositive x p
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE (#<>) #-}
   (#<>) = (#+)
@@ -154,7 +154,7 @@ instance PSemigroup PBuiltinBLS12_381_G2_Element where
 {- | Since multiplication of Miller loop results exists, they are technically
 semigroups, though confusingly in a /different/ way to BLS curve points.
 
-@since WIP
+@since 1.10.0
 -}
 instance PSemigroup PBuiltinBLS12_381_MlResult where
   {-# INLINEABLE (#<>) #-}
@@ -173,7 +173,7 @@ If you define 'pmtimes', ensure the following as well:
 
 The default implementation of 'pmtimes' ensures these laws hold.
 
-@since WIP
+@since 1.10.0
 -}
 class PSemigroup a => PMonoid (a :: S -> Type) where
   pmempty :: forall (s :: S). Term s a
@@ -186,31 +186,31 @@ class PSemigroup a => PMonoid (a :: S -> Type) where
   pmtimes :: forall (s :: S). Term s PNatural -> Term s a -> Term s a
   pmtimes n x = pnaturalToPositiveCPS pmempty (`pstimes` x) n
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid PUnit where
   {-# INLINEABLE pmempty #-}
   pmempty = punit
   {-# INLINEABLE pmtimes #-}
   pmtimes n x = plet n $ \_ -> plet x $ const punit
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid PString where
   {-# INLINEABLE pmempty #-}
   pmempty = punsafeConstantInternal $ PLC.someValue Text.empty
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid PByteString where
   {-# INLINEABLE pmempty #-}
   pmempty = punsafeConstantInternal $ PLC.someValue BS.empty
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pmempty #-}
   pmempty = pzero
   {-# INLINEABLE pmtimes #-}
   pmtimes n x = pscaleNatural x n
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pmempty #-}
   pmempty = pzero
@@ -219,35 +219,35 @@ instance PMonoid PBuiltinBLS12_381_G2_Element where
 
 {- | Wrapper for types which have logical AND semantics somehow.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PAnd (a :: S -> Type) (s :: S)
   = PAnd (Term s a)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       POrd
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveNewtypePlutusType (PAnd a))
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveNewtypePLiftable (PAnd a) (AsHaskell a)
   instance
     (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (PAnd a)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup (PAnd PBool) where
   {-# INLINEABLE (#<>) #-}
   x #<> y = pif' # pto x # y # x
@@ -256,7 +256,7 @@ instance PSemigroup (PAnd PBool) where
   {-# INLINEABLE pstimes #-}
   pstimes p x = plet p $ const x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid (PAnd PBool) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . PAnd . pcon $ PTrue
@@ -264,7 +264,7 @@ instance PMonoid (PAnd PBool) where
 {- | This uses padding semantics as specified in CIP-122, as this allows a
 'PMonoid' instance as well.
 
-@since WIP
+@since 1.10.0
 -}
 instance PSemigroup (PAnd PByteString) where
   {-# INLINEABLE (#<>) #-}
@@ -274,42 +274,42 @@ instance PSemigroup (PAnd PByteString) where
   {-# INLINEABLE pstimes #-}
   pstimes p x = plet p $ const x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid (PAnd PByteString) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . PAnd $ mempty
 
 {- | Wrapper for types which have logical OR semantics somehow.
 
-@since WIP
+@since 1.10.0
 -}
 newtype POr (a :: S -> Type) (s :: S)
   = POr (Term s a)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       POrd
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveNewtypePlutusType (POr a))
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveNewtypePLiftable (POr a) (AsHaskell a)
   instance
     (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (POr a)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup (POr PBool) where
   {-# INLINEABLE (#<>) #-}
   x #<> y = pif (pto x) x y
@@ -318,7 +318,7 @@ instance PSemigroup (POr PBool) where
   {-# INLINEABLE pstimes #-}
   pstimes p x = plet p $ const x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid (POr PBool) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . POr . pcon $ PFalse
@@ -326,7 +326,7 @@ instance PMonoid (POr PBool) where
 {- | This uses padding semantics as specified in CIP-122, as this allows a
 'PMonoid' instance as well.
 
-@since WIP
+@since 1.10.0
 -}
 instance PSemigroup (POr PByteString) where
   {-# INLINEABLE (#<>) #-}
@@ -336,42 +336,42 @@ instance PSemigroup (POr PByteString) where
   {-# INLINEABLE pstimes #-}
   pstimes p x = plet p $ const x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid (POr PByteString) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . POr $ mempty
 
 {- | Wrapper for types which have logical XOR semantics somehow.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PXor (a :: S -> Type) (s :: S)
   = PXor (Term s a)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       POrd
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveNewtypePlutusType (PXor a))
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveNewtypePLiftable (PXor a) (AsHaskell a)
   instance
     (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) => PLiftable (PXor a)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PSemigroup (PXor PBool) where
   {-# INLINEABLE (#<>) #-}
   x #<> y = pif' # pto x # (pcon . PXor $ pnot # pto y) # y
@@ -381,7 +381,7 @@ instance PSemigroup (PXor PBool) where
   {-# INLINEABLE pstimes #-}
   pstimes = pxortimes (pcon PFalse)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid (PXor PBool) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . PXor . pcon $ PFalse
@@ -391,7 +391,7 @@ instance PMonoid (PXor PBool) where
 {- | This uses padding semantics as specified in CIP-122, as this allows a
 'PMonoid' instance as well.
 
-@since WIP
+@since 1.10.0
 -}
 instance PSemigroup (PXor PByteString) where
   {-# INLINEABLE (#<>) #-}
@@ -402,7 +402,7 @@ instance PSemigroup (PXor PByteString) where
   {-# INLINEABLE pstimes #-}
   pstimes = pxortimes mempty
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMonoid (PXor PByteString) where
   {-# INLINEABLE pmempty #-}
   pmempty = pcon . PXor $ mempty

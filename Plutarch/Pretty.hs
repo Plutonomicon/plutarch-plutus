@@ -217,7 +217,7 @@ prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
 
 {- | Same as `prettyTerm` but also includes the execution budget and script size
 
-@since WIP
+@since 1.10.0
 -}
 prettyTermAndCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
 prettyTermAndCost conf x =

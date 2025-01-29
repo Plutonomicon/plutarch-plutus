@@ -93,13 +93,13 @@ type family PInnerMostIsData' a b :: Constraint where
 class (PInnerMostIsData' a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData a
 instance (PInnerMostIsData' a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData a
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PDataStruct (struct :: [[S -> Type]]) (s :: S) = PDataStruct {unPDataStruct :: PStruct struct s}
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PDataRec (struct :: [S -> Type]) (s :: S) = PDataRec {unPDataRec :: PRec struct s}
 
--- | @since WIP
+-- | @since 1.10.0
 instance (SListI2 struct, All2 PInnerMostIsData struct) => PlutusType (PDataStruct struct) where
   type PInner (PDataStruct struct) = PData
   type PCovariant' (PDataStruct struct) = All2 PCovariant'' struct
@@ -108,7 +108,7 @@ instance (SListI2 struct, All2 PInnerMostIsData struct) => PlutusType (PDataStru
   pcon' (PDataStruct x) = punsafeCoerce $ pconDataStruct x
   pmatch' x f = pmatchDataStruct (punsafeCoerce x) (f . PDataStruct)
 
--- | @since WIP
+-- | @since 1.10.0
 instance (SListI struct, All PInnerMostIsData struct) => PlutusType (PDataRec struct) where
   type PInner (PDataRec struct) = PBuiltinList PData
   type PCovariant' (PDataRec struct) = All PCovariant'' struct
@@ -117,24 +117,24 @@ instance (SListI struct, All PInnerMostIsData struct) => PlutusType (PDataRec st
   pcon' (PDataRec x) = punsafeCoerce $ pconDataRec x
   pmatch' x f = pmatchDataRec (punsafeCoerce x) (f . PDataRec)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PEq (PDataStruct struct) where
   a #== b = pto a #== pto b
 
--- | @since WIP
+-- | @since 1.10.0
 instance PEq (PDataRec struct) where
   a #== b = pto a #== pto b
 
--- | @since WIP
+-- | @since 1.10.0
 instance PIsData (PDataRec struct)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PIsData (PDataStruct struct)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveAsDataRec (a :: S -> Type) s = DeriveAsDataRec {unDeriveAsDataRec :: a s}
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
   ( SOP.Generic (a Any)
@@ -156,10 +156,10 @@ instance
   pmatch' x f =
     pmatch x (f . DeriveAsDataRec . SOP.to . SOP.hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPDataRec)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveAsDataStruct (a :: S -> Type) s = DeriveAsDataStruct {unDeriveAsDataStruct :: a s}
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   forall (a :: S -> Type) (struct :: [[S -> Type]]).
   ( SOP.Generic (a Any)

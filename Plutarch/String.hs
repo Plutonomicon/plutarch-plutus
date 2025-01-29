@@ -36,7 +36,7 @@ includes specifically the following ASCII ranges (inclusively):
 * 65-70 (upper-case A through upper-case F)
 * 97-102 (lower-case a through lower-case f)
 
-@since WIP
+@since 1.10.0
 -}
 pisHexDigit :: forall (s :: S). Term s (PInteger :--> PBool)
 pisHexDigit = phoistAcyclic $ plam $ \c ->

@@ -114,7 +114,7 @@ pands ts' =
     Nothing -> pcon PTrue
     Just ts -> foldl1 (#&&) ts
 
--- | @since WIP
+-- | @since 1.10.0
 instance PEq PInteger where
   {-# INLINEABLE (#==) #-}
   x #== y = peqInteger # x # y
@@ -159,7 +159,7 @@ instance (PEq a, PEq b) => PEq (PBuiltinPair a b) where
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
 
--- | @since WIP
+-- | @since 1.10.0
 instance PEq PByte where
   {-# INLINEABLE (#==) #-}
   x #== y = punsafeBuiltin PLC.EqualsInteger # x # y
@@ -178,5 +178,5 @@ instance PEq PBuiltinBLS12_381_G1_Element where
 instance PEq PBuiltinBLS12_381_G2_Element where
   x #== y = punsafeBuiltin PLC.Bls12_381_G2_equal # x # y
 
--- | @since WIP
+-- | @since 1.10.0
 deriving anyclass instance PEq PEndianness

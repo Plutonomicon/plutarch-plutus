@@ -58,13 +58,13 @@ import Plutarch.Repr.Internal (
   pletL,
  )
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PScottStruct (struct :: [[S -> Type]]) (s :: S) = PScottStruct
   { unPScottStruct :: PStruct struct s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance forall struct. (SListI2 struct, PScottStructConstraint struct) => PlutusType (PScottStruct struct) where
   type PInner (PScottStruct struct) = PForall (PScottStructInner struct) -- try `Any`
   type PCovariant' (PScottStruct struct) = All2 PCovariant'' struct
@@ -77,7 +77,7 @@ instance forall struct. (SListI2 struct, PScottStructConstraint struct) => Plutu
 -- NOTE: Hoisting here is so that there's no duplicated computation on each argument.
 -- GHC freaks out when I put hoist part in a let.
 
--- | @since WIP
+-- | @since 1.10.0
 instance (PlutusType (PScottStruct struct), SListI2 struct, All2 PEq struct) => PEq (PScottStruct struct) where
   x #== y =
     phoistAcyclic
@@ -89,13 +89,13 @@ instance (PlutusType (PScottStruct struct), SListI2 struct, All2 PEq struct) => 
       # x
       # y
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PScottRec (struct :: [S -> Type]) (s :: S) = PScottRec
   { unPScottRec :: PRec struct s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance SListI struct => PlutusType (PScottRec struct) where
   type PInner (PScottRec struct) = PForall (PScottRecInner struct)
   type PCovariant' (PScottRec struct) = All PCovariant'' struct
@@ -104,7 +104,7 @@ instance SListI struct => PlutusType (PScottRec struct) where
   pcon' (PScottRec x) = punsafeCoerce $ pconScottRec x
   pmatch' x f = pmatchScottRec (punsafeCoerce x) (f . PScottRec)
 
--- | @since WIP
+-- | @since 1.10.0
 instance All PEq struct => PEq (PScottRec struct) where
   x #== y =
     phoistAcyclic
@@ -118,19 +118,19 @@ instance All PEq struct => PEq (PScottRec struct) where
 
 -- This could be better
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PScottStructInner a r s = PScottStructInner (Term s (ScottFn (ScottList a r) r))
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PScottRecInner a r s = PScottRecInner (Term s (ScottFn a r))
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveAsScottStruct (a :: S -> Type) s = DeriveAsScottStruct
   { unDeriveAsScottStruct :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   forall (a :: S -> Type) (struct :: [[S -> Type]]).
   ( SOP.Generic (a Any)
@@ -150,13 +150,13 @@ instance
   pmatch' x f =
     pmatch @(PScottStruct (UnTermStruct (a Any))) x (f . DeriveAsScottStruct . SOP.to . SOP.hcoerce . unPStruct . unPScottStruct)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveAsScottRec (a :: S -> Type) s = DeriveAsScottRec
   { unDeriveAsScottRec :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
   ( SOP.Generic (a Any)

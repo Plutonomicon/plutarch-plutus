@@ -61,21 +61,21 @@ import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 
 {- | SOP-encoded list.
 
-@since WIP
+@since 1.10.0
 -}
 data PList (a :: S -> Type) (s :: S)
   = PSCons (Term s a) (Term s (PList a))
   | PSNil
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
     )
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveAsSOPStruct (PList a)
   instance
@@ -148,7 +148,7 @@ pfind = phoistAcyclic $
 
 {- | / O(n) /. Reverse a list-like structure.
 
-@since WIP
+@since 1.10.0
 -}
 preverse ::
   forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S).
@@ -158,7 +158,7 @@ preverse = phoistAcyclic $ pfoldl # plam (\xs x -> pcons # x # xs) # pnil
 
 {- | / O(n) /. Checks if a list-list structure is sorted.
 
-@since WIP
+@since 1.10.0
 -}
 pcheckSorted ::
   forall (l :: (S -> Type) -> S -> Type) (a :: S -> Type) (s :: S).

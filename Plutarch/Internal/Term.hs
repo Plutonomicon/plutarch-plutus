@@ -803,7 +803,7 @@ compile config t = case asClosedRawTerm t of
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
 
-@since WIP
+@since 1.10.0
 -}
 compileOptimized ::
   forall (a :: S -> Type).

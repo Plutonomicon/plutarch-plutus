@@ -70,13 +70,13 @@ import Plutarch.Repr.Internal (
   pletL,
  )
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PSOPStruct (struct :: [[S -> Type]]) (s :: S) = PSOPStruct
   { unPSOPStruct :: PStruct struct s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance (SListI2 struct, PSOPStructConstraint struct) => PlutusType (PSOPStruct struct) where
   type PInner (PSOPStruct struct) = POpaque
   type PCovariant' (PSOPStruct struct) = All2 PCovariant'' struct
@@ -97,13 +97,13 @@ instance (PlutusType (PSOPStruct struct), All2 PEq struct) => PEq (PSOPStruct st
       # x
       # y
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PSOPRec (struct :: [S -> Type]) (s :: S) = PSOPRec
   { unPSOPRec :: PRec struct s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance SListI struct => PlutusType (PSOPRec struct) where
   type PInner (PSOPRec struct) = POpaque
   type PCovariant' (PSOPRec struct) = All PCovariant'' struct
@@ -112,7 +112,7 @@ instance SListI struct => PlutusType (PSOPRec struct) where
   pcon' (PSOPRec x) = punsafeCoerce $ pconSOPRec x
   pmatch' x f = pmatchSOPRec (punsafeCoerce x) (f . PSOPRec)
 
--- | @since WIP
+-- | @since 1.10.0
 instance All PEq struct => PEq (PSOPRec struct) where
   x #== y =
     phoistAcyclic
@@ -127,14 +127,14 @@ instance All PEq struct => PEq (PSOPRec struct) where
 {- | @via@-derivation helper to derive 'PlutusType' instance using SoP encoding. If your type has
 only one constructor prefer using 'DeriveAsSOPRec' instead.
 
-@since WIP
+@since 1.10.0
 -}
 newtype DeriveAsSOPStruct (a :: S -> Type) s = DeriveAsSOPStruct
   { unDeriveAsSOPStruct :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   forall (a :: S -> Type) (struct :: [[S -> Type]]).
   ( SOP.Generic (a Any)
@@ -158,14 +158,14 @@ instance
 but can be used only on types with a single constructor. It is separate to leave a room for
 future optimizations
 
-@since WIP
+@since 1.10.0
 -}
 newtype DeriveAsSOPRec (a :: S -> Type) s = DeriveAsSOPRec
   { unDeriveAsSOPRec :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
   ( SOP.Generic (a Any)

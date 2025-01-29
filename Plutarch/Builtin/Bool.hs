@@ -40,11 +40,11 @@ import PlutusCore qualified as PLC
 
 {- | Builtin Plutus boolean.
 
-@since WIP
+@since 1.10.0
 -}
 data PBool (s :: S) = PTrue | PFalse
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Show
     )
 
@@ -54,7 +54,7 @@ ptrue = punsafeConstantInternal $ PLC.someValue True
 pfalse :: Term (s :: S) PBool
 pfalse = punsafeConstantInternal $ PLC.someValue False
 
--- | @since WIP
+-- | @since 1.10.0
 pbuiltinIfThenElse ::
   forall (a :: S -> Type) (s :: S).
   Term s (PBool :--> a :--> a :--> PDelayed a)
@@ -62,7 +62,7 @@ pbuiltinIfThenElse = punsafeBuiltin PLC.IfThenElse
 
 {- | Strict if-then-else. Emits slightly less code than the lazy version.
 
-@since WIP
+@since 1.10.0
 -}
 pif' ::
   forall (a :: S -> Type) (s :: S).
@@ -71,7 +71,7 @@ pif' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
 
 {- | Lazy if-then-else.
 
-@since WIP
+@since 1.10.0
 -}
 pif ::
   forall (a :: S -> Type) (s :: S).
@@ -84,7 +84,7 @@ pif cond ifT ifF =
 
 {- | Boolean negation.
 
-@since WIP
+@since 1.10.0
 -}
 pnot ::
   forall (s :: S).
@@ -94,7 +94,7 @@ pnot = phoistAcyclic $ plam $ \x ->
 
 {- | Lazy AND for terms.
 
-@since WIP
+@since 1.10.0
 -}
 (#&&) :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
 x #&& y = pforce $ pand # x # pdelay y
@@ -103,7 +103,7 @@ infixr 3 #&&
 
 {- | Lazy OR for terms.
 
-@since WIP
+@since 1.10.0
 -}
 (#||) :: forall (s :: S). Term s PBool -> Term s PBool -> Term s PBool
 x #|| y = pforce $ por # x # pdelay y
@@ -112,28 +112,28 @@ infixr 2 #||
 
 {- | Hoisted lazy AND at the Plutarch level.
 
-@since WIP
+@since 1.10.0
 -}
 pand :: forall (s :: S). Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
 pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # phoistAcyclic (pdelay pfalse)
 
 {- | As 'pand', but strict.
 
-@since WIP
+@since 1.10.0
 -}
 pand' :: forall (s :: S). Term s (PBool :--> PBool :--> PBool)
 pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # pfalse
 
 {- | Hoisted lazy OR at the Plutarch level.
 
-@since WIP
+@since 1.10.0
 -}
 por :: forall (s :: S). Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
 por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay ptrue)
 
 {- | As 'por', but strict.
 
-@since WIP
+@since 1.10.0
 -}
 por' :: Term s (PBool :--> PBool :--> PBool)
 por' = phoistAcyclic $ plam $ \x -> pif' # x # ptrue
@@ -150,7 +150,7 @@ does the same thing as
 
 > pif cond1 act1 (pif cond2 act2 act3)
 
-@since WIP
+@since 1.10.0
 -}
 pcond ::
   forall (a :: S -> Type) (s :: S).

@@ -29,10 +29,10 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Term (S, Term)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveNewtypePlutusType (a :: S -> Type) s = DeriveNewtypePlutusType
   { unDeriveNewtypePlutusType :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
 -- Helpers

@@ -23,7 +23,7 @@ import Plutarch.Internal.Term (Term, (#$), (:-->))
 {- |
 This is simplified version of @punrollBound'@ without doing additional recursion on Haskell level value.
 
-@since WIP
+@since 1.10.0
 -}
 punrollBound ::
   forall a b s.
@@ -43,7 +43,7 @@ The inclusion of the additional, arbitrary Haskell value (typed @c@) enables fur
 This function will be used in a very niche situations. Using Haskell-level value for constant replacement is only practical on a single branch recursion with constant value that needs to be added
 on each step. @plength@ is one of the niche use case.
 
-@since WIP
+@since 1.10.0
 -}
 punrollBound' ::
   forall a b c s.
@@ -58,7 +58,7 @@ punrollBound' d def f c = f (punrollBound' (d - 1) def f) c
 {- |
 Unroll given amount of steps, and for rest, uses `pfix` to support unbound recursion.
 
-@since WIP
+@since 1.10.0
 -}
 punrollUnbound :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 punrollUnbound 0 f = pfix #$ plam f
@@ -70,7 +70,7 @@ within `pfix` recursions.
 
 This should perform better than @punrollUnbound@ when a function requires a large recursion depth.
 
-@since WIP
+@since 1.10.0
 -}
 punrollUnboundWhole :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
 punrollUnboundWhole d f = pfix #$ plam $ \r -> punrollBound d r f

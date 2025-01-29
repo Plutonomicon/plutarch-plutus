@@ -101,7 +101,7 @@ data PRational s
 
 deriving via (DeriveAsSOPRec PRational) instance PlutusType PRational
 
--- | @since WIP
+-- | @since 1.10.0
 instance PLiftable PRational where
   type AsHaskell PRational = PlutusTx.Rational
   type PlutusRepr PRational = PLiftedClosed PRational
@@ -152,7 +152,7 @@ instance POrd PRational where
       inner = phoistAcyclic $ plam $ \l r ->
         cmpHelper # punsafeBuiltin PLC.LessThanInteger # l # r
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveSemigroup PRational where
   {-# INLINEABLE (#+) #-}
   x' #+ y' =
@@ -170,7 +170,7 @@ instance PAdditiveSemigroup PRational where
   pscalePositive x p = pmatch x $ \(PRational xn xd) ->
     preduce' # (xn #* pto p) # pto xd
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveMonoid PRational where
   {-# INLINEABLE pzero #-}
   pzero = pcon . PRational pzero $ pone
@@ -178,7 +178,7 @@ instance PAdditiveMonoid PRational where
   pscaleNatural x n = pmatch x $ \(PRational xn xd) ->
     preduce' # (xn #* pto n) # pto xd
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveGroup PRational where
   {-# INLINEABLE pnegate #-}
   pnegate =
@@ -202,7 +202,7 @@ instance PAdditiveGroup PRational where
   pscaleInteger x e = pmatch x $ \(PRational xn xd) ->
     preduce' # (xn #* e) # pto xd
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeSemigroup PRational where
   {-# INLINEABLE (#*) #-}
   x' #* y' =
@@ -220,7 +220,7 @@ instance PMultiplicativeSemigroup PRational where
       pmatch x $ \(PRational xn xd) ->
         pcon . PRational (ppowPositive xn p') $ ppowPositive xd p'
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeMonoid PRational where
   {-# INLINEABLE pone #-}
   pone = pcon . PRational pone $ pone
@@ -229,12 +229,12 @@ instance PMultiplicativeMonoid PRational where
     pmatch x $ \(PRational xn xd) ->
       pcon . PRational (ppowNatural xn n') $ ppowNatural xd n'
 
--- | @since WIP
+-- | @since 1.10.0
 instance PRing PRational where
   {-# INLINEABLE pfromInteger #-}
   pfromInteger n = pcon $ PRational (fromInteger n) pone
 
--- | @since WIP
+-- | @since 1.10.0
 instance PIntegralDomain PRational where
   {-# INLINEABLE pabs #-}
   pabs =
@@ -251,7 +251,7 @@ instance PIntegralDomain PRational where
         ]
         pone
 
--- | @since WIP
+-- | @since 1.10.0
 instance Fractional (Term s PRational) where
   {-# INLINEABLE (/) #-}
   x / y = inner # x # y
