@@ -70,6 +70,10 @@ hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
 -- Need to pay close attention when killing branch with this.
 -- If term is pre-evaluated (via `evalTerm`), RawTerm will no longer hold
 -- tagged RPlaceholder.
+
+{- | Given a term, and an integer tag, this function checks if the term holds and
+@PPlaceholder@ with the given integer tag.
+-}
 pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
 pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
@@ -83,6 +87,10 @@ pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
     findPlaceholder (RPlaceHolder idx') = idx == idx'
     findPlaceholder (RConstr _ xs) = any findPlaceholder xs
     findPlaceholder (RCase x xs) = any findPlaceholder (x : xs)
-    findPlaceholder _ = False
+    findPlaceholder (RVar _) = False
+    findPlaceholder (RConstant _) = False
+    findPlaceholder (RBuiltin _) = False
+    findPlaceholder (RCompiled _) = False
+    findPlaceholder RError = False
 
   asRawTerm (f . findPlaceholder . getTerm $ y) i

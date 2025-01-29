@@ -3,7 +3,7 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Repr.Data (
-  PInnerIsData,
+  PInnerMostIsData,
   PDataStruct (PDataStruct, unPDataStruct),
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),

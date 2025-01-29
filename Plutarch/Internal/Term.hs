@@ -627,7 +627,12 @@ pforce x =
 perror :: Term s a
 perror = Term \_ -> pure $ mkTermRes RError
 
--- | Same as @perror@ except this holds integer id for AST look-ahead
+{- |
+Same as @perror@ except this holds integer id for AST look-ahead.
+
+This can be used to "tag" branch and generate AST first to see if that branch is actually used or not,
+allowing optimization cutting unused branches. For more detailed uscases, check @pmatchDataRec@.
+-}
 pplaceholder :: Integer -> Term s a
 pplaceholder x = Term \_ -> pure $ mkTermRes $ RPlaceHolder x
 
