@@ -1302,8 +1302,8 @@ newtype PTxId (s :: S)
 PTxId :: Term s (PAsData PByteString) -> PTxId (s :: S)
 
 data PTxOut (s :: S)
-PTxOut :: Term s (PAsData PAddress) -> Term s (PAsData (PValue 'Sorted 'Positive)) -> Term s (PAsData PDatumHash) -> PTxOut (s :: S)
-[$sel:ptxOut'address:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData PAddress)
+PTxOut :: Term s PAddress -> Term s (PAsData (PValue 'Sorted 'Positive)) -> Term s (PAsData PDatumHash) -> PTxOut (s :: S)
+[$sel:ptxOut'address:PTxOut] :: PTxOut (s :: S) -> Term s PAddress
 [$sel:ptxOut'value:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData (PValue 'Sorted 'Positive))
 [$sel:ptxOut'datumHash:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData PDatumHash)
 
