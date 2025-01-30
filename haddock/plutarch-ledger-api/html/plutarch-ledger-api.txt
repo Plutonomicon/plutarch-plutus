@@ -644,7 +644,7 @@ PScriptContext :: Term s PTxInfo -> Term s PRedeemer -> Term s PScriptInfo -> PS
 [$sel:pscriptContext'redeemer:PScriptContext] :: PScriptContext (s :: S) -> Term s PRedeemer
 [$sel:pscriptContext'scriptInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PScriptInfo
 data PTxInfo (s :: S)
-PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxOut))) -> Term s (PAsData PLovelace) -> Term s (PAsData (PValue 'Sorted 'NonZero)) -> Term s (PAsData (PBuiltinList (PAsData PTxCert))) -> Term s (PAsData (PMap 'Unsorted PCredential PLovelace)) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PMap 'Unsorted PScriptPurpose PRedeemer)) -> Term s (PAsData (PMap 'Unsorted PDatumHash PDatum)) -> Term s (PAsData PTxId) -> Term s (PAsData (PMap 'Unsorted PVoter (PMap 'Unsorted PGovernanceActionId PVote))) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure))) -> Term s (PAsData (PMaybeData PLovelace)) -> Term s (PMaybeData PLovelace) -> PTxInfo (s :: S)
+PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxOut))) -> Term s (PAsData PLovelace) -> Term s (PAsData (PValue 'Sorted 'NonZero)) -> Term s (PAsData (PBuiltinList (PAsData PTxCert))) -> Term s (PAsData (PMap 'Unsorted PCredential PLovelace)) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PMap 'Unsorted PScriptPurpose PRedeemer)) -> Term s (PAsData (PMap 'Unsorted PDatumHash PDatum)) -> Term s (PAsData PTxId) -> Term s (PAsData (PMap 'Unsorted PVoter (PMap 'Unsorted PGovernanceActionId PVote))) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure))) -> Term s (PMaybeData PLovelace) -> Term s (PMaybeData PLovelace) -> PTxInfo (s :: S)
 [$sel:ptxInfo'inputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
 [$sel:ptxInfo'referenceInputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
 [$sel:ptxInfo'outputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
@@ -659,7 +659,7 @@ PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsDat
 [$sel:ptxInfo'id:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
 [$sel:ptxInfo'votes:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PMap 'Unsorted PVoter (PMap 'Unsorted PGovernanceActionId PVote)))
 [$sel:ptxInfo'proposalProcedures:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
-[$sel:ptxInfo'currentTreasuryAmount:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PMaybeData PLovelace))
+[$sel:ptxInfo'currentTreasuryAmount:PTxInfo] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
 [$sel:ptxInfo'treasuryDonation:PTxInfo] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
 
 data PScriptInfo (s :: S)
