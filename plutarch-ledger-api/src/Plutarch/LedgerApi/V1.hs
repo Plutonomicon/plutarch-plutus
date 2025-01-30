@@ -88,7 +88,7 @@ import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1
 data PTxOut (s :: S) = PTxOut
-  { ptxOut'address :: Term s (PAsData Address.PAddress)
+  { ptxOut'address :: Term s Address.PAddress
   , ptxOut'value :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
   , ptxOut'datumHash :: Term s (PAsData Scripts.PDatumHash)
   }
