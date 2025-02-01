@@ -1,8 +1,21 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 
-module Plutarch.Internal.IsData (PIsData, pfromDataImpl, pdataImpl, pdata, pfromData, pforgetData, prememberData, pforgetData', prememberData') where
+module Plutarch.Internal.IsData (
+  PInnerMostIsData,
+  PIsData,
+  pfromDataImpl,
+  pdataImpl,
+  pdata,
+  pfromData,
+  pforgetData,
+  prememberData,
+  pforgetData',
+  prememberData',
+) where
 
+import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
 import Plutarch.Builtin.Bool (PBool, pif')
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
@@ -21,7 +34,7 @@ import Plutarch.Builtin.Data (
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Builtin.Unit (PUnit, punit)
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 
 import Plutarch.Internal.Eq (PEq ((#==)))
@@ -33,6 +46,7 @@ import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (
   PCovariant,
+  PInnerMost,
   PVariant,
   PlutusType (PInner),
  )
@@ -53,6 +67,31 @@ import Plutarch.Unsafe (punsafeDowncast)
 
 import PlutusCore qualified as PLC
 import PlutusTx qualified as PTx
+
+type family PInnerMostIsData' msg a b :: Constraint where
+  PInnerMostIsData' _ _ PData = ()
+  PInnerMostIsData' ('Just msg) a b =
+    TypeError
+      ( 'Text msg
+          ':$$: 'Text "Inner most representation of \""
+            ':<>: 'ShowType a
+            ':<>: 'Text "\" is \""
+            ':<>: 'ShowType b
+            ':<>: 'Text "\""
+      )
+      ~ ()
+  PInnerMostIsData' 'Nothing a b =
+    TypeError
+      ( 'Text "Inner most representation of \""
+          ':<>: 'ShowType a
+          ':<>: 'Text "\" is \""
+          ':<>: 'ShowType b
+          ':<>: 'Text "\""
+      )
+      ~ ()
+
+class (PInnerMostIsData' msg a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData msg a
+instance (PInnerMostIsData' msg a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData msg a
 
 {- | Laws:
  - If @PSubtype PData a@, then @pdataImpl a@ must be `pupcast`.
@@ -102,11 +141,13 @@ prememberData Proxy = let _ = witness (Proxy @(PVariant p)) in punsafeCoerce
 -- | Like 'prememberData' but generalised.
 prememberData' ::
   forall a (p :: (S -> Type) -> S -> Type) (s :: S).
-  (PSubtype PData a, PVariant p) =>
+  (PInnerMostIsData 'Nothing a, PSubtype PData a, PVariant p) =>
   Proxy p ->
   Term s (p a) ->
   Term s (p (PAsData a))
-prememberData' Proxy = let _ = witness (Proxy @(PSubtype PData a, PVariant p)) in punsafeCoerce
+prememberData' Proxy =
+  let _ = witness (Proxy @(PInnerMostIsData 'Nothing a, PSubtype PData a, PVariant p))
+   in punsafeCoerce
 
 instance PIsData PData where
   pfromDataImpl = pupcast
@@ -166,6 +207,12 @@ instance PIsData PUnit where
   pfromDataImpl _ = punit
   pdataImpl _ = punsafeConstantInternal $ PLC.someValue (PTx.Constr 0 [])
 
-instance forall (a :: S -> Type). PSubtype PData a => PIsData (PBuiltinList a) where
+instance
+  forall (a :: S -> Type).
+  ( PInnerMostIsData ('Just "PBuiltinList only implements PIsData when inner most type of its elements are PData") a
+  , PSubtype PData a
+  ) =>
+  PIsData (PBuiltinList a)
+  where
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
   pdataImpl x = plistData # pupcastF @PData @a (Proxy @PBuiltinList) x
