@@ -62,11 +62,11 @@ computed with. Instead, it ensures certain operations' type safety while also
 allowing more sensible signatures. If you want to do anything with 'PByte's,
 we recommend converting them to 'PInteger's first.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PByte (s :: S) = PByte (Term s POpaque)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass (SOP.Generic)
@@ -82,39 +82,39 @@ most-significant-last. See
 [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#representation)
 for more details on this.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PEndianness (s :: S) = PEndianness (Term s PBool)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass (SOP.Generic)
 
 {- | Indicates the conversion should be most-significant-first.
 
-@since WIP
+@since 1.10.0
 -}
 pmostSignificantFirst :: forall (s :: S). Term s PEndianness
 pmostSignificantFirst = punsafeCoerce ptrue
 
 {- | Indicates the conversion should be most-significant-last.
 
-@since WIP
+@since 1.10.0
 -}
 pmostSignificantLast :: forall (s :: S). Term s PEndianness
 pmostSignificantLast = punsafeCoerce pfalse
 
 {- | Indicates that padding semantics should be used.
 
-@since WIP
+@since 1.10.0
 -}
 ppadding :: forall (s :: S). Term s PLogicOpSemantics
 ppadding = punsafeCoerce ptrue
 
 {- | Indicates that truncation semantics should be used.
 
-@since WIP
+@since 1.10.0
 -}
 ptruncation :: forall (s :: S). Term s PLogicOpSemantics
 ptruncation = punsafeCoerce pfalse
@@ -124,7 +124,7 @@ truncation semantics. See
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#padding-versus-truncation-semantics)
 for more details on this.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PLogicOpSemantics (s :: S) = PLogicOpSemantics (Term s PBool)
   deriving stock (Generic)
@@ -135,7 +135,7 @@ newtype PLogicOpSemantics (s :: S) = PLogicOpSemantics (Term s PBool)
 The 'PLogicOpSemantics' argument specifies what should be done if the lengths
 of the two 'PByteString' arguments do not match.
 
-@since WIP
+@since 1.10.0
 -}
 pandBS ::
   forall (s :: S).
@@ -147,7 +147,7 @@ pandBS = punsafeBuiltin PLC.AndByteString
 The 'PLogicOpSemantics' argument specifies what should be done if the lengths
 of the two 'PByteString' arguments do not match.
 
-@since WIP
+@since 1.10.0
 -}
 porBS ::
   forall (s :: S).
@@ -159,7 +159,7 @@ porBS = punsafeBuiltin PLC.OrByteString
 The 'PLogicOpSemantics' argument specifies what should be done if the lengths
 of the two 'PByteString' arguments do not match.
 
-@since WIP
+@since 1.10.0
 -}
 pxorBS ::
   forall (s :: S).
@@ -169,7 +169,7 @@ pxorBS = punsafeBuiltin PLC.XorByteString
 {- | Perform the logical complement of a 'PByteString', as per
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#bitwiselogicalcomplement).
 
-@since WIP
+@since 1.10.0
 -}
 pcomplementBS ::
   forall (s :: S).
@@ -179,21 +179,21 @@ pcomplementBS = punsafeBuiltin PLC.ComplementByteString
 {- | Given a desired length and a 'PByte', construct a 'PByteString' of the
 specified length (0 if negative) consisting entirely of that 'PByte'.
 
-@since WIP
+@since 1.10.0
 -}
 preplicateBS :: forall (s :: S). Term s (PInteger :--> PByte :--> PByteString)
 preplicateBS = punsafeBuiltin PLC.ReplicateByte
 
 {- | Prepend a 'PByte' to a 'PByteString.
 
-@since WIP
+@since 1.10.0
 -}
 pconsBS :: Term s (PByte :--> PByteString :--> PByteString)
 pconsBS = punsafeBuiltin PLC.ConsByteString
 
 {- | Convert a 'PByte' into its corresponding 'PInteger'.
 
-@since WIP
+@since 1.10.0
 -}
 pbyteToInteger :: Term s (PByte :--> PInteger)
 pbyteToInteger = phoistAcyclic $ plam punsafeCoerce
@@ -201,7 +201,7 @@ pbyteToInteger = phoistAcyclic $ plam punsafeCoerce
 {- | Try to convert a 'PInteger' into its corresponding 'PByte'. This operation
 unchecked: use with care.
 
-@since WIP
+@since 1.10.0
 -}
 pintegerToByte :: Term s (PInteger :--> PByte)
 pintegerToByte = phoistAcyclic $ plam punsafeCoerce
@@ -220,7 +220,7 @@ plengthBS = punsafeBuiltin PLC.LengthOfByteString
 {- | Given a valid index into a 'PByteString', returns the 'PByte' at that
 index. Will crash if given an out-of-bounds index.
 
-@since WIP
+@since 1.10.0
 -}
 pindexBS :: Term s (PByteString :--> PInteger :--> PByte)
 pindexBS = punsafeBuiltin PLC.IndexByteString
@@ -236,7 +236,7 @@ phexByteStr = punsafeConstantInternal . PLC.someValue . BS.pack . f
 {- | Convert a 'PByteString' into a 'PInteger', as per
 [CIP-121](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121#builtinbytestringtointeger).
 
-@since WIP
+@since 1.10.0
 -}
 pbyteStringToInteger ::
   forall (s :: S).

@@ -221,10 +221,12 @@ pgetContinuingOutputs ::
 pgetContinuingOutputs = phoistAcyclic $
   plam $ \inputs outputs outRef ->
     pmatch (pfindOwnInput # inputs # outRef) $ \case
-      PJust tx -> do
-        let resolved = pfield @"resolved" # tx
-            outAddr = pfield @"address" # resolved
-        pfilter # (matches # outAddr) # outputs
+      PJust tx -> unTermCont $ do
+        txInInfo <- pmatchC tx
+        txOut <- pmatchC $ Contexts.ptxInInfo'resolved txInInfo
+        outAddr <- pletC $ V2Tx.ptxOut'address txOut
+
+        pure $ pfilter # (matches # outAddr) # outputs
       PNothing ->
         ptraceInfoError "can't get any continuing outputs"
   where
@@ -233,7 +235,8 @@ pgetContinuingOutputs = phoistAcyclic $
       Term s' (Address.PAddress :--> V2Tx.PTxOut :--> PBool)
     matches = phoistAcyclic $
       plam $ \adr txOut ->
-        adr #== pfield @"address" # txOut
+        pmatch txOut $ \out ->
+          adr #== V2Tx.ptxOut'address out
 
 {- | Find the input being spent in the current transaction.
 
@@ -271,7 +274,8 @@ pfindOwnInput = phoistAcyclic $
       Term s' (V3Tx.PTxOutRef :--> Contexts.PTxInInfo :--> PBool)
     matches = phoistAcyclic $
       plam $ \outref txininfo ->
-        outref #== pfield @"outRef" # txininfo
+        pmatch txininfo $ \ininfo ->
+          outref #== Contexts.ptxInInfo'outRef ininfo
 
 {- | Lookup up the datum given the datum hash.
 

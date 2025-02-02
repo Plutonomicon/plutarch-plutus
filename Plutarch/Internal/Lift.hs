@@ -93,7 +93,7 @@ import UntypedPlutusCore qualified as UPLC
 {- | Used with 'fromPlutarch' methods to give additional information about why
 evaluating a Plutarch term into a Haskell value went wrong.
 
-@since WIP
+@since 1.10.0
 -}
 data LiftError
   = -- | Evaluation failed for some reason.
@@ -107,9 +107,9 @@ data LiftError
   | -- | Something else went wrong.
     OtherLiftError Text
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       Show
     )
 
@@ -149,7 +149,7 @@ Any derivations via 'DeriveBuiltinPLiftable', 'DeriveDataPLiftable', and
 
 Together, these imply @plift . pconstant = id@.
 
-@since WIP
+@since 1.10.0
 -}
 class PlutusType a => PLiftable (a :: S -> Type) where
   type AsHaskell a :: Type
@@ -179,7 +179,7 @@ class PlutusType a => PLiftable (a :: S -> Type) where
 
 {- | Valid definition of 'reprToPlut' if @PlutusRepr a@ is in the Plutus universe.
 
-@since WIP
+@since 1.10.0
 -}
 reprToPlutUni ::
   forall (a :: S -> Type) (s :: S).
@@ -192,7 +192,7 @@ reprToPlutUni = unsafeHaskToUni
 directly. This is unsafe: we cannot verify (in general) that @h@ can be
 represented sensibly as an @a@, so use this with care.
 
-@since WIP
+@since 1.10.0
 -}
 unsafeHaskToUni ::
   forall (h :: Type) (a :: S -> Type) (s :: S).
@@ -205,7 +205,7 @@ unsafeHaskToUni x =
 {- | Valid definition of 'plutToRepr' if @PlutusRepr a@ is in the Plutus
 universe.
 
-@since WIP
+@since 1.10.0
 -}
 plutToReprUni ::
   forall (a :: S -> Type).
@@ -225,7 +225,7 @@ plutToReprUni t = case compile (Tracing LogInfo DoTracing) $ unPLifted t of
 {- | Given a Haskell-level representation of a Plutarch term, transform it into
 its equivalent term.
 
-@since WIP
+@since 1.10.0
 -}
 pconstant ::
   forall (a :: S -> Type) (s :: S).
@@ -239,7 +239,7 @@ corresponding Haskell value. If compilation or evaluation fails somehow, this
 will call 'error': if you need to \'trap\' these outcomes and handle them
 differently somehow, use 'reprToPlut' and 'reprToHask' manually.
 
-@since WIP
+@since 1.10.0
 -}
 plift ::
   forall (a :: S -> Type).
@@ -269,19 +269,19 @@ plift t = case plutToRepr @a $ mkPLifted t of
 @h@ that is directly part of the Plutus default universe (instead of by way
 of an encoding).
 
-@since WIP
+@since 1.10.0
 -}
 newtype DeriveBuiltinPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveBuiltinPLiftable (a s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveFakePlutusType (DeriveBuiltinPLiftable a h))
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   ( PlutusType a
   , PLC.DefaultUni `Includes` h
@@ -303,19 +303,19 @@ instance
 @h@ by way of its @Data@ encoding, rather than by @h@ being directly part of
 the Plutus default universe.
 
-@since WIP
+@since 1.10.0
 -}
 newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
   = DeriveDataPLiftable (a s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveFakePlutusType (DeriveDataPLiftable a h))
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   ( PlutusType a
   , PSubtype PData a
@@ -338,19 +338,19 @@ instance
 {- | @via@-deriving helper, indicating that @wrapper@ has a Haskell-level equivalent
 @h@ by way @PInner wrapper@, up to coercibility.
 
-@since WIP
+@since 1.10.0
 -}
 newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
   = DeriveNewtypePLiftable (wrapper s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveFakePlutusType (DeriveNewtypePLiftable wrapper h))
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   ( PLiftable (PInner wrapper)
   , Coercible h (AsHaskell (PInner wrapper))
@@ -376,73 +376,73 @@ and 'plutToRepr' directly.
 This is used for coercing Plutarch terms at Haskell level with
 `coerce :: PLifted s a -> PLifted s b` for @via@-deriving helpers.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PLifted (s :: S) (a :: S -> Type) = PLifted {unPLifted :: Term s POpaque}
 
 type role PLifted nominal nominal
 
--- | @since WIP
+-- | @since 1.10.0
 punsafeCoercePLifted :: PLifted s a -> PLifted s b
 punsafeCoercePLifted (PLifted t) = PLifted t
 
--- | @since WIP
+-- | @since 1.10.0
 getPLifted :: PLifted s a -> Term s a
 getPLifted (PLifted t) = punsafeCoerce t
 
--- | @since WIP
+-- | @since 1.10.0
 mkPLifted :: Term s a -> PLifted s a
 mkPLifted t = PLifted (popaque t)
 
 {- |  Use this as 'PlutusRepr' when defining 'PLiftable' instances for Scott encoded types.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PLiftedClosed (a :: S -> Type) = PLiftedClosed
   { unPLiftedClosed :: forall (s :: S). Term s POpaque
   }
 
--- | @since WIP
+-- | @since 1.10.0
 getPLiftedClosed ::
   forall (a :: S -> Type).
   PLiftedClosed a ->
   (forall (s :: S). Term s a)
 getPLiftedClosed (PLiftedClosed x) = punsafeCoerce x
 
--- | @since WIP
+-- | @since 1.10.0
 mkPLiftedClosed ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
   PLiftedClosed a
 mkPLiftedClosed t = PLiftedClosed $ popaque t
 
--- | @since WIP
+-- | @since 1.10.0
 pliftedToClosed ::
   forall (a :: S -> Type).
   (forall (s :: S). PLifted s a) ->
   PLiftedClosed a
 pliftedToClosed x = PLiftedClosed $ popaque $ getPLifted x
 
--- | @since WIP
+-- | @since 1.10.0
 pliftedFromClosed ::
   forall (a :: S -> Type) (s :: S).
   PLiftedClosed a ->
   PLifted s a
 pliftedFromClosed (PLiftedClosed x) = PLifted x
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   (DeriveBuiltinPLiftable PInteger Integer)
   instance
     PLiftable PInteger
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   (DeriveBuiltinPLiftable PBool Bool)
   instance
     PLiftable PBool
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   (PTx.ToData (AsHaskell a), PTx.FromData (AsHaskell a), PIsData a) =>
   PLiftable (PAsData a)
@@ -458,7 +458,7 @@ instance
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   ( PLiftable a
   , PLC.DefaultUni `Includes` PlutusRepr a
@@ -478,7 +478,7 @@ instance
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   (PLiftable a, PLC.DefaultUni `Includes` PlutusRepr a) =>
   PLiftable (PBuiltinList a)
@@ -494,7 +494,7 @@ instance
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since WIP
+-- | @since 1.10.0
 instance PLiftable PByteString where
   type AsHaskell PByteString = ByteString
   type PlutusRepr PByteString = ByteString
@@ -507,7 +507,7 @@ instance PLiftable PByteString where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since WIP
+-- | @since 1.10.0
 instance PLiftable PData where
   type AsHaskell PData = PTx.Data
   type PlutusRepr PData = PTx.Data
@@ -520,7 +520,7 @@ instance PLiftable PData where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since WIP
+-- | @since 1.10.0
 instance PLiftable PByte where
   type AsHaskell PByte = Word8
   type PlutusRepr PByte = Integer
@@ -533,7 +533,7 @@ instance PLiftable PByte where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   (DeriveBuiltinPLiftable PUnit ())
   instance
@@ -544,19 +544,19 @@ deriving via
   instance
     PLiftable PString
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_G1_Element BLS12_381.G1.Element)
   instance
     PLiftable PBuiltinBLS12_381_G1_Element
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_G2_Element BLS12_381.G2.Element)
   instance
     PLiftable PBuiltinBLS12_381_G2_Element
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_MlResult BLS12_381.Pairing.MlResult)
   instance

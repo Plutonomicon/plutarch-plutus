@@ -6,6 +6,7 @@ module Plutarch.TermCont (
   TC.runTermCont,
   TC.unTermCont,
   TC.tcont,
+  TC.pfindPlaceholder,
   pletC,
   pmatchC,
   pletFieldsC,
@@ -102,7 +103,7 @@ ptryFromC = tcont . ptryFrom
 
 {- | Escape with a particular value on expecting 'PJust'. For use in monadic context.
 
-@since WIP
+@since 1.10.0
 -}
 pexpectJustC ::
   forall (a :: S -> Type) (r :: S -> Type) (s :: S).

@@ -47,23 +47,23 @@ import Plutarch.Repr.Internal (groupHandlers)
 import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.TermCont (pletC, unTermCont)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PTag (struct :: [S -> Type]) (s :: S) = PTag
   { unPTag :: Term s PInteger
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
   deriving stock (GHC.Generic)
 
--- | @since WIP
+-- | @since 1.10.0
 instance SOP.Generic (PTag struct s)
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via DeriveNewtypePlutusType (PTag struct) instance PlutusType (PTag struct)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveAsTag (a :: S -> Type) s = DeriveAsTag
   { unDeriveAsTag :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
 {- | This derives tag-only PlutusType automatically. Resulted instances will use `PInteger` as underlying type, making this much more efficient than using regular Data/Scott/SOP based encoding. As name suggests, types with no-argument constructors can use this.
@@ -79,7 +79,7 @@ data PFoo s = A | B | C | D | E
 instance SOP.Generic (PFoo s)
 @@
 
-@since WIP
+@since 1.10.0
 -}
 instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a) where
   type PInner (DeriveAsTag a) = PInteger
@@ -111,10 +111,10 @@ instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a)
 
     pure $ groupHandlers handlers tag'
 
--- | @since WIP
+-- | @since 1.10.0
 newtype TagLiftHelper r struct = TagLiftHelper
   { unTagLiftHelper :: Integer -> (SOP I struct -> r) -> r
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
 -- Helpers

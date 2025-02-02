@@ -1,16 +1,14 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 
+-- TODO: Remove this module once old DataRepr stuff is fully gone
+
 module Plutarch.Test.Suite.Plutarch.Field (tests) where
 
-import GHC.Records (getField)
-import Plutarch.LedgerApi.V1 (PAddress (PAddress))
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.SpecTypes (PTriplet)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
-import PlutusLedgerApi.V1.Address (Address (Address))
-import PlutusLedgerApi.V1.Credential (Credential (PubKeyCredential))
 import PlutusTx (toData)
 import Test.Tasty (TestTree, testGroup)
 
@@ -66,52 +64,6 @@ tests =
             "field.other"
             [ goldenEval "by" by
             , goldenEval "dotPlus" dotPlus
-            ]
-        , plutarchGolden
-            "data"
-            "field.data"
-            [ goldenGroup
-                "pmatch-pfield"
-                [ goldenGroup
-                    "pmatch"
-                    [ goldenEval
-                        "newtype"
-                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
-                           in pmatch addr $ \(PAddress addrFields) ->
-                                pletFields @'["credential", "stakingCredential"] addrFields $ \y ->
-                                  ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
-                        )
-                    ]
-                , goldenGroup
-                    "pfield"
-                    [ goldenEval
-                        "newtype"
-                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
-                           in pletFields @'["credential", "stakingCredential"] addr $ \y ->
-                                ppairDataBuiltin # getField @"credential" y # getField @"stakingCredential" y
-                        )
-                    ]
-                ]
-            , goldenGroup
-                "pfield-pletFields"
-                [ goldenGroup
-                    "pfield"
-                    [ goldenEval
-                        "single"
-                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
-                           in pfromData $ pfield @"credential" # addr
-                        )
-                    ]
-                , goldenGroup
-                    "pletFields"
-                    [ goldenEval
-                        "single"
-                        ( let addr = pconstant @PAddress $ Address (PubKeyCredential "ab") Nothing
-                           in pletFields @'["credential"] addr $ \y ->
-                                pfromData $ getField @"credential" y
-                        )
-                    ]
-                ]
             ]
         ]
     ]

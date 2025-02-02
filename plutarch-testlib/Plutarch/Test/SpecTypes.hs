@@ -13,7 +13,7 @@ import Test.Tasty.QuickCheck (Arbitrary, arbitrary)
 
 {- | Tuple of three elements of the same type
 
-@since WIP
+@since 1.0.0
 -}
 data Triplet a = Triplet a a a
   deriving stock (Show, Eq, Ord)
@@ -27,7 +27,7 @@ instance Pretty a => Pretty (Triplet a) where
   With an appropriate instance of 'PIsDataRepr', we can automatically
   derive 'PDataFields'.
 
-@since WIP
+@since 1.0.0
 -}
 newtype PTriplet (a :: S -> Type) (s :: S)
   = PTriplet
@@ -43,16 +43,16 @@ newtype PTriplet (a :: S -> Type) (s :: S)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, POrd, PDataFields)
 
--- | @since WIP
+-- | @since 1.0.0
 instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
 
 PlutusTx.makeIsDataIndexed ''Triplet [('Triplet, 0)]
 
--- | @since WIP
+-- | @since 1.0.0
 instance Arbitrary a => Arbitrary (Triplet a) where
   arbitrary = Triplet <$> arbitrary <*> arbitrary <*> arbitrary
 
--- | @since WIP
+-- | @since 1.0.0
 deriving via
   DeriveDataPLiftable (PTriplet a) (Triplet (AsHaskell a))
   instance

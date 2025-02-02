@@ -46,7 +46,7 @@ evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMap
 
 {- | Evaluate a script without budget limit
 
-@since WIP
+@since 1.10.0
 -}
 evalScriptUnlimited :: Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
 evalScriptUnlimited (Script (Program _ _ t)) =

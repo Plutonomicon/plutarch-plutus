@@ -41,12 +41,12 @@ module Plutarch.LedgerApi.Utils (
   psor',
 ) where
 
-import Data.Bifunctor (first)
 import Data.Kind (Type)
 import GHC.Generics (Generic)
-import GHC.Records (getField)
+import Generics.SOP qualified as SOP
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Prelude
+import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
@@ -75,7 +75,7 @@ newtype Mret (a :: S -> Type) (s :: S) = Mret (Term s a)
       Generic
     )
 
--- | @since WIP
+-- | @since 3.3.0
 data PMaybeData (a :: S -> Type) (s :: S)
   = PDJust (Term s (PAsData a))
   | PDNothing
@@ -84,46 +84,31 @@ data PMaybeData (a :: S -> Type) (s :: S)
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
+    ( -- | @since 3.3.0
+      SOP.Generic
+    , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since 3.3.0
+      PlutusType
+    )
+    via (DeriveAsDataStruct (PMaybeData a))
 
--- | @since WIP
-instance PlutusType (PMaybeData a) where
-  type PInner (PMaybeData a) = PData
-  {-# INLINEABLE pcon' #-}
-  pcon' = \case
-    PDJust t ->
-      pforgetData $ pconstrBuiltin # 0 #$ pcons # pforgetData t # pnil
-    PDNothing ->
-      pforgetData $ pconstrBuiltin # 1 # pnil
-  {-# INLINEABLE pmatch' #-}
-  pmatch' t f = plet (pasConstr # t) $ \asConstr ->
-    pif
-      ((pfstBuiltin # asConstr) #== 1)
-      (f PDNothing)
-      (f . PDJust . punsafeCoerce $ phead #$ psndBuiltin # asConstr)
-
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable (PMaybeData a) (Maybe (AsHaskell a))
   instance
     (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
 
--- | @since WIP
+-- | @since 3.3.0
 instance PIsData (PMaybeData a) where
   {-# INLINEABLE pdataImpl #-}
-  pdataImpl = pto
+  pdataImpl = pto . pto
   {-# INLINEABLE pfromDataImpl #-}
   pfromDataImpl = punsafeCoerce
-
--- | @since 2.0.0
-instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
-
--- | @since 2.0.0
-instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
 
 -- | @since 2.0.0
 instance (PIsData a, POrd a) => POrd (PMaybeData a) where
@@ -166,32 +151,29 @@ instance (PIsData a, POrd a) => POrd (PMaybeData a) where
 
 @since 3.1.0
 -}
-newtype PRationalData s
-  = PRationalData
-      ( Term
-          s
-          ( PDataRecord
-              '[ "numerator" ':= PInteger
-               , "denominator" ':= PPositive
-               ]
-          )
-      )
+data PRationalData s = PRationalData
+  { prationalData'numerator :: Term s (PAsData PInteger)
+  , prationalData'denominator :: Term s (PAsData PPositive)
+  }
   deriving stock
     ( -- | @since 3.1.0
       Generic
     )
   deriving anyclass
-    ( -- | @since 3.1.0
-      PlutusType
+    ( -- | @since 3.3.0
+      SOP.Generic
     , -- | @since 3.1.0
       PIsData
-    , -- | @since 3.1.0
-      PDataFields
     , -- | @since 3.1.0
       PEq
     , -- | @since 3.1.0
       PShow
     )
+  deriving
+    ( -- | @since 3.3.0
+      PlutusType
+    )
+    via (DeriveAsDataStruct PRationalData)
 
 -- | @since 3.1.0
 instance POrd PRationalData where
@@ -200,43 +182,18 @@ instance POrd PRationalData where
   {-# INLINEABLE (#<) #-}
   (#<) = liftCompareOp (#<)
 
--- | @since 3.1.0
-instance DerivePlutusType PRationalData where
-  type DPTStrat _ = PlutusTypeData
-
--- | @since WIP
+-- | @since 3.3.0
 deriving via
   DeriveDataPLiftable PRationalData Plutus.Rational
   instance
     PLiftable PRationalData
 
 -- | @since 3.1.0
-instance PTryFrom PData PRationalData where
-  type PTryFromExcess PData PRationalData = Mret PPositive
-  ptryFrom' opq cont = ptryFrom @(PAsData PRationalData) opq (cont . first punsafeCoerce)
-
-{- | This instance produces a verified positive denominator as the excess output.
-
-@since 3.1.0
--}
-instance PTryFrom PData (PAsData PRationalData) where
-  type PTryFromExcess PData (PAsData PRationalData) = Mret PPositive
-  ptryFrom' opq = runTermCont $ do
-    opq' <- pletC $ pasConstr # opq
-    pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
-    flds <- pletC $ psndBuiltin # opq'
-    _numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
-    ratTail <- pletC $ ptail # flds
-    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) snd
-    pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
-    pure (punsafeCoerce opq, denm)
-
--- | @since 3.1.0
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
 prationalFromData = phoistAcyclic $
   plam $ \x -> unTermCont $ do
-    l <- pletFieldsC @'["numerator", "denominator"] x
-    pure . pcon $ PRational (getField @"numerator" l) (getField @"denominator" l)
+    PRationalData n d <- pmatchC x
+    pure . pcon $ PRational (pfromData n) (pfromData d)
 
 {- | Extracts the element out of a 'PDJust' and throws an error if its
 argument is 'PDNothing'.
@@ -315,7 +272,7 @@ pmaybeToMaybeData = phoistAcyclic $
 
 {- | Inverse of `pmaybeToMaybeData`
 
-@since WIP
+@since 3.3.0
 -}
 pmaybeDataToMaybe ::
   forall (a :: S -> Type) (s :: S).
@@ -340,7 +297,7 @@ passertPDJust = phoistAcyclic $
     PDJust t' -> pfromData t'
     PDNothing -> ptraceInfoError emsg
 
--- | @since WIP
+-- | @since 3.3.0
 pmapMaybeData ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s ((PAsData a :--> PAsData b) :--> PMaybeData a :--> PMaybeData b)
@@ -351,21 +308,21 @@ pmapMaybeData = phoistAcyclic $
 
 {- | Scott-encoded boolean.
 
-@since WIP
+@since 3.3.0
 -}
 data PSBool (s :: S)
   = PSTrue
   | PSFalse
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 3.3.0
       Eq
-    , -- | @since WIP
+    , -- | @since 3.3.0
       Ord
-    , -- | @since WIP
+    , -- | @since 3.3.0
       Show
     )
 
--- | @since WIP
+-- | @since 3.3.0
 instance PlutusType PSBool where
   type PInner PSBool = PForall PSBoolRaw
   {-# INLINEABLE pcon' #-}
@@ -380,7 +337,7 @@ instance PlutusType PSBool where
 
 {- | Strict version of 'pmatch' for 'PSBool'.
 
-@since WIP
+@since 3.3.0
 -}
 pmatchStrict ::
   forall (r :: S -> Type) (s :: S).
@@ -392,17 +349,17 @@ pmatchStrict x' f =
     pmatch raw $ \(PSBoolRaw x) ->
       x # f PSTrue # f PSFalse
 
--- | @since WIP
+-- | @since 3.3.0
 pstrue :: forall (s :: S). Term s PSBool
 pstrue = pcon PSTrue
 
--- | @since WIP
+-- | @since 3.3.0
 psfalse :: forall (s :: S). Term s PSBool
 psfalse = pcon PSFalse
 
 {- | Strict @if@ on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psif' ::
   forall (s :: S) (a :: S -> Type).
@@ -416,7 +373,7 @@ psif' b t f = pmatchStrict b $ \case
 
 {- | Lazy @if@ on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psif ::
   forall (s :: S) (a :: S -> Type).
@@ -428,14 +385,14 @@ psif b t f = pforce $ psif' b (pdelay t) (pdelay f)
 
 {- | @not@ on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psnot :: forall (s :: S). Term s PSBool -> Term s PSBool
 psnot b = psif' b psfalse pstrue
 
 {- | Strict AND on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psand' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psand' a b = psif' a b psfalse
@@ -446,14 +403,14 @@ psand a b = psif a b psfalse
 
 {- | Strict OR on Scott-encoded bool.
 
-@since WIP
+@since 3.3.0
 -}
 psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psor' a = psif' a pstrue
 
 {- | Lazy OR on Scott-encoded bool
 
-@since WIP
+@since 3.3.0
 -}
 psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 psor a = psif a pstrue
@@ -482,10 +439,6 @@ liftCompareOp f x y = phoistAcyclic (plam go) # x # y
       Term s' PRationalData ->
       Term s' PBool
     go l r = unTermCont $ do
-      l' <- pletFieldsC @'["numerator", "denominator"] l
-      r' <- pletFieldsC @'["numerator", "denominator"] r
-      let ln = pfromData $ getField @"numerator" l'
-      let ld = pfromData $ getField @"denominator" l'
-      let rn = pfromData $ getField @"numerator" r'
-      let rd = pfromData $ getField @"denominator" r'
-      pure $ f (ln * pto rd) (rn * pto ld)
+      PRationalData ln ld <- pmatchC l
+      PRationalData rn rd <- pmatchC r
+      pure $ f (pfromData ln * pto (pfromData rd)) (pfromData rn * pto (pfromData ld))

@@ -23,25 +23,25 @@ import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 data PPair (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PPair (Term s a) (Term s b)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PShow
     )
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveAsSOPStruct (PPair a b)
   instance
     PlutusType (PPair a b)
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   (PSemigroup a, PSemigroup b) =>
   PSemigroup (PPair a b)
@@ -54,7 +54,7 @@ instance
   pstimes p x = pmatch x $ \(PPair x1 x2) ->
     pcon . PPair (pstimes p x1) $ pstimes p x2
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   (PMonoid a, PMonoid b) =>
   PMonoid (PPair a b)

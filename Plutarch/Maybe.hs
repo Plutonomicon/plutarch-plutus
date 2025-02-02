@@ -61,25 +61,25 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 
--- | @since WIP
+-- | @since 1.10.0
 data PMaybe (a :: S -> Type) (s :: S)
   = PJust (Term s a)
   | PNothing
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
     )
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via DeriveAsSOPStruct (PMaybe a) instance PlutusType (PMaybe a)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PLiftable a => PLiftable (PMaybe a) where
   type AsHaskell (PMaybe a) = Maybe (AsHaskell a)
   type PlutusRepr (PMaybe a) = PLiftedClosed (PMaybe a)
@@ -112,7 +112,7 @@ pfromJust = phoistAcyclic $
 
 {- | Extracts the element out of a 'PJust' and throws a custom error if it's given a 'PNothing'.
 
-@since WIP
+@since 1.10.0
 -}
 ptraceIfNothing ::
   forall (a :: S -> Type) (s :: S).
@@ -126,7 +126,7 @@ ptraceIfNothing err t = pmatch t $ \case
 
 {- | Yields true if the given 'PMaybe' value is of form @'PJust' _@.
 
-@since WIP
+@since 1.10.0
 -}
 pisJust ::
   forall (a :: S -> Type) (s :: S).
@@ -139,7 +139,7 @@ pisJust = phoistAcyclic $
 
 {- | Extract a 'PMaybe' by providing a default value in case of 'PJust'.
 
-@since WIP
+@since 1.10.0
 -}
 pfromMaybe ::
   forall (a :: S -> Type) (s :: S).
@@ -151,7 +151,7 @@ pfromMaybe = phoistAcyclic $
 
 {- | Construct a 'PJust' value.
 
-@since WIP
+@since 1.10.0
 -}
 pjust ::
   forall (a :: S -> Type) (s :: S).
@@ -160,7 +160,7 @@ pjust = phoistAcyclic $ plam $ pcon . PJust
 
 {- | Construct a 'PNothing' value.
 
-@since WIP
+@since 1.10.0
 -}
 pnothing ::
   forall (a :: S -> Type) (s :: S).
@@ -171,7 +171,7 @@ pnothing = phoistAcyclic $ pcon PNothing
 value if the 'PMaybe' value is 'PNothing' and applies the function to the
 value stored in the 'PJust' otherwise.
 
-@since WIP
+@since 1.10.0
 -}
 pmaybe ::
   forall (b :: S -> Type) (a :: S -> Type) (s :: S).
@@ -184,7 +184,7 @@ pmaybe = phoistAcyclic $
 {- | Extract the value stored in a 'PMaybe' container. If there's no value,
 throw an error with the given message.
 
-@since WIP
+@since 1.10.0
 -}
 passertPJust ::
   forall (a :: S -> Type) (s :: S).
@@ -196,7 +196,7 @@ passertPJust = phoistAcyclic $
 
 {- | Map underlying value if `PMaybe` is `PJust`, do nothing if it is `PNothing`
 
-@since WIP
+@since 1.10.0
 -}
 pmapMaybe :: Term s ((a :--> b) :--> PMaybe a :--> PMaybe b)
 pmapMaybe = phoistAcyclic $

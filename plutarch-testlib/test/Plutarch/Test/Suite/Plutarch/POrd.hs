@@ -2,19 +2,20 @@
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 
+-- Commented codes were previously for testing POrd auto derivation
+-- But we decided not to provide that because POrd can be misleading
+-- on few instances
+
 import Data.Kind (Type)
 import GHC.Records (getField)
 import Plutarch.LedgerApi.V1 (
-  PAddress,
   PCredential (PPubKeyCredential, PScriptCredential),
   PMaybeData,
-  PPubKeyHash (PPubKeyHash),
-  PScriptHash (PScriptHash),
  )
 import Plutarch.Prelude
 import Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkHaskellOrdEquivalent, checkPOrdLaws)
-import Plutarch.Test.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
+import Plutarch.Test.SpecTypes (PTriplet, Triplet (Triplet))
 import PlutusLedgerApi.QuickCheck.Utils ()
 import PlutusLedgerApi.V1 (Credential (PubKeyCredential, ScriptCredential))
 import Test.Tasty (TestTree, testGroup)
@@ -30,15 +31,12 @@ tests =
             "pisdata.lt"
             [ goldenGroup
                 "PCredential"
-                [ goldenGroup "derived" (ltWith @PCredential (#<) c1 c2)
-                , goldenGroup "pmatch" (ltWith ltCred c1 c2)
-                , goldenGroup "pmatch-pdatarecord" (ltWith ltCred' c1 c2)
+                [ goldenGroup "pmatch" (ltWith ltCred c1 c2)
                 ]
             , goldenGroup
                 "PTriplet"
                 [ goldenGroup "derived" (ltWith @(PTriplet PInteger) (#<) t1 t2)
                 , goldenGroup "pmatch" (ltWith ltTrip t1 t2)
-                , goldenGroup "pmatch-pdatarecord" (ltWith ltTrip' t1 t2)
                 ]
             ]
         , plutarchGolden
@@ -46,15 +44,12 @@ tests =
             "pisdata.lte"
             [ goldenGroup
                 "PCredential"
-                [ goldenGroup "derived" (lteWith @PCredential (#<=) c1 c2)
-                , goldenGroup "pmatch" (lteWith lteCred c1 c2)
-                , goldenGroup "pmatch-pdatarecord" (lteWith lteCred' c1 c2)
+                [ goldenGroup "pmatch" (lteWith lteCred c1 c2)
                 ]
             , goldenGroup
                 "PTriplet"
                 [ goldenGroup "derived" (lteWith @(PTriplet PInteger) (#<=) t1 t2)
                 , goldenGroup "pmatch" (lteWith lteTrip t1 t2)
-                , goldenGroup "pmatch-pdatarecord" (lteWith lteTrip' t1 t2)
                 ]
             ]
         ]
@@ -63,7 +58,6 @@ tests =
         [ checkHaskellOrdEquivalent @PBool
         , checkHaskellOrdEquivalent @(PMaybeData PInteger)
         , checkHaskellOrdEquivalent @(PTriplet PInteger)
-        , checkHaskellOrdEquivalent @PAddress
         ]
     , testGroup
         "Laws"
@@ -85,11 +79,12 @@ ltCred = pmatchHelperCred (#<)
 lteCred :: Term s PCredential -> Term s PCredential -> Term s PBool
 lteCred = pmatchHelperCred (#<=)
 
-ltCred' :: Term s PCredential -> Term s PCredential -> Term s PBool
-ltCred' = pmatchDataRecHelperCred (#<)
+-- NOTE(Seungheon, Jan 25): We no longer provide default Ord for PDataStruct/PDataRec
+-- ltCred' :: Term s PCredential -> Term s PCredential -> Term s PBool
+-- ltCred' = pmatchDataRecHelperCred (#<)
 
-lteCred' :: Term s PCredential -> Term s PCredential -> Term s PBool
-lteCred' = pmatchDataRecHelperCred (#<=)
+-- lteCred' :: Term s PCredential -> Term s PCredential -> Term s PBool
+-- lteCred' = pmatchDataRecHelperCred (#<=)
 
 -- manual 'pmatch' + manual field extraction impl.
 pmatchHelperCred ::
@@ -101,39 +96,26 @@ pmatchHelperCred f cred1 cred2 = unTermCont $ do
   x <- tcont $ pmatch cred1
   y <- tcont $ pmatch cred2
   pure $ case (x, y) of
-    (PPubKeyCredential a, PPubKeyCredential b) ->
-      let a' = pfromData $ pfield @"_0" # a
-          b' = pfromData $ pfield @"_0" # b
-       in pmatch a' $ \(PPubKeyHash a'') ->
-            pmatch b' $ \(PPubKeyHash b'') ->
-              pmatch a'' $ \(PDataNewtype a''') ->
-                pmatch b'' $ \(PDataNewtype b''') ->
-                  f (pfromData a''') (pfromData b''')
+    (PPubKeyCredential (pto . pfromData -> a), PPubKeyCredential (pto . pfromData -> b)) -> f a b
     (PPubKeyCredential _, PScriptCredential _) -> pconstant True
     (PScriptCredential _, PPubKeyCredential _) -> pconstant False
-    (PScriptCredential a, PScriptCredential b) ->
-      let a' = pfield @"_0" # a
-          b' = pfield @"_0" # b
-       in pmatch a' $ \(PScriptHash a'') ->
-            pmatch b' $ \(PScriptHash b'') ->
-              pmatch a'' $ \(PDataNewtype a''') ->
-                pmatch b'' $ \(PDataNewtype b''') ->
-                  f (pfromData a''') (pfromData b''')
+    (PScriptCredential (pto . pfromData -> a), PScriptCredential (pto . pfromData -> b)) -> f a b
 
 -- manual 'pmatch' + 'PDataRecord' Ord impl.
-pmatchDataRecHelperCred ::
-  (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
-  Term s PCredential ->
-  Term s PCredential ->
-  Term s PBool
-pmatchDataRecHelperCred f cred1 cred2 = unTermCont $ do
-  x <- tcont $ pmatch cred1
-  y <- tcont $ pmatch cred2
-  pure $ case (x, y) of
-    (PPubKeyCredential a, PPubKeyCredential b) -> a `f` b
-    (PPubKeyCredential _, PScriptCredential _) -> pconstant True
-    (PScriptCredential _, PPubKeyCredential _) -> pconstant False
-    (PScriptCredential a, PScriptCredential b) -> a `f` b
+-- NOTE(Seungheon, Jan 25): We no longer provide default Ord for PDataStruct/PDataRec
+-- pmatchDataRecHelperCred ::
+--   (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
+--   Term s PCredential ->
+--   Term s PCredential ->
+--   Term s PBool
+-- pmatchDataRecHelperCred f cred1 cred2 = unTermCont $ do
+--   x <- tcont $ pmatch cred1
+--   y <- tcont $ pmatch cred2
+--   pure $ case (x, y) of
+--     (PPubKeyCredential a, PPubKeyCredential b) -> a `f` b
+--     (PPubKeyCredential _, PScriptCredential _) -> pconstant True
+--     (PScriptCredential _, PPubKeyCredential _) -> pconstant False
+--     (PScriptCredential a, PScriptCredential b) -> a `f` b
 
 -- Triplet utils
 
@@ -164,8 +146,8 @@ ltTrip trip1 trip2 = unTermCont $ do
                 )
           )
 
-ltTrip' :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
-ltTrip' = pmatchDataRecHelperTrip (#<)
+-- ltTrip' :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
+-- ltTrip' = pmatchDataRecHelperTrip (#<)
 
 lteTrip :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
 lteTrip trip1 trip2 = unTermCont $ do
@@ -187,19 +169,19 @@ lteTrip trip1 trip2 = unTermCont $ do
                 )
           )
 
-lteTrip' :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
-lteTrip' = pmatchDataRecHelperTrip (#<=)
+-- lteTrip' :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
+-- lteTrip' = pmatchDataRecHelperTrip (#<=)
 
 -- manual 'pmatch' + 'PDataRecord' Ord impl.
-pmatchDataRecHelperTrip ::
-  (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
-  Term s (PTriplet PInteger) ->
-  Term s (PTriplet PInteger) ->
-  Term s PBool
-pmatchDataRecHelperTrip f trip1 trip2 = unTermCont $ do
-  PTriplet a <- tcont $ pmatch trip1
-  PTriplet b <- tcont $ pmatch trip2
-  pure $ a `f` b
+-- pmatchDataRecHelperTrip ::
+--   (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
+--   Term s (PTriplet PInteger) ->
+--   Term s (PTriplet PInteger) ->
+--   Term s PBool
+-- pmatchDataRecHelperTrip f trip1 trip2 = unTermCont $ do
+--   PTriplet a <- tcont $ pmatch trip1
+--   PTriplet b <- tcont $ pmatch trip2
+--   pure $ a `f` b
 
 -- Ord utils
 

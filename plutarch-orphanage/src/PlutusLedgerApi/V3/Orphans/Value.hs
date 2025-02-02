@@ -42,20 +42,20 @@ be /very/ certain that the Value being wrapped satisfies the invariants
 described above: failing to do so means all guarantees of this type are off
 the table.
 
-@since WIP
+@since 1.1.0
 -}
 newtype MintValue = MintValue PLA.Value
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.1.0
       Eq
     )
     via PLA.Value
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.1.0
       Show
     )
 
--- | @since WIP
+-- | @since 1.1.0
 instance Arbitrary MintValue where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
@@ -97,15 +97,15 @@ instance Arbitrary MintValue where
       shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getNonZero <$> shrink (NonZero amount)) inner) asList
       pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
 
--- | @since WIP
+-- | @since 1.1.0
 deriving via PLA.Value instance CoArbitrary MintValue
 
--- | @since WIP
+-- | @since 1.1.0
 instance Function MintValue where
   {-# INLINEABLE function #-}
   function = functionMap coerce MintValue
 
--- | @since WIP
+-- | @since 1.1.0
 getMintValue :: MintValue -> Value.Value
 getMintValue = coerce
 

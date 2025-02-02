@@ -160,6 +160,8 @@ module Plutarch.Prelude (
   pmatch,
   PlutusTypeNewtype,
   PlutusTypeScott,
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
+  DeriveFakePlutusType (DeriveFakePlutusType),
 
   -- * Numeric
   Positive,

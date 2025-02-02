@@ -182,12 +182,12 @@ instance PTryFrom PData PData where
   type PTryFromExcess PData PData = Const ()
   ptryFrom' opq f = f (opq, ())
 
--- | @since WIP
+-- | @since 1.10.0
 instance PTryFrom PInteger PPositive where
   type PTryFromExcess PInteger PPositive = Const ()
   ptryFrom' opq = runTermCont $ pure (ptryPositive # opq, ())
 
--- | @since WIP
+-- | @since 1.10.0
 instance PTryFrom PData (PAsData PPositive) where
   type PTryFromExcess PData (PAsData PPositive) = Flip Term PPositive
   ptryFrom' opq = runTermCont $ do

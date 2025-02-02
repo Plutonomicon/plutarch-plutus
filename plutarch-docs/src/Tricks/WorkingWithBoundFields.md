@@ -15,6 +15,8 @@ import Plutarch.LedgerApi.V3 (PTxInfo, PScriptContext)
 </p>
 </details>
 
+# PDataRecord is deprecated in favor of `Plutarch.Repr.Data`. This documentation is unmaintained.
+
 # Working with bound fields yielded by `pletFields`
 
 You may have noticed that `pletFields` actually returns a Haskell level heterogenous list, with all the interesting fields

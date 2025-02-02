@@ -94,31 +94,31 @@ import PlutusLedgerApi.V3 qualified as Plutus
 
 {- | SOP-encoded 'Either'.
 
-@since WIP
+@since 1.10.0
 -}
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLeft (Term s a)
   | PRight (Term s b)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PShow
     )
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveAsSOPStruct (PEither a b)
   instance
     PlutusType (PEither a b)
 
--- | @since WIP
+-- | @since 1.10.0
 instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   type AsHaskell (PEither a b) = Either (AsHaskell a) (AsHaskell b)
   type PlutusRepr (PEither a b) = PLiftedClosed (PEither a b)
@@ -143,7 +143,7 @@ instance (PLiftable a, PLiftable b) => PLiftable (PEither a b) where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = Right . pliftedToClosed
 
--- | @since WIP
+-- | @since 1.10.0
 pisLeft ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (PEither a b :--> PBool)
@@ -151,7 +151,7 @@ pisLeft = phoistAcyclic $ plam $ \t -> pmatch t $ \case
   PLeft _ -> pcon PTrue
   PRight _ -> pcon PFalse
 
--- | @since WIP
+-- | @since 1.10.0
 pfromLeft ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (PEither a b :--> a)
@@ -159,7 +159,7 @@ pfromLeft = phoistAcyclic $ plam $ \t -> pmatch t $ \case
   PLeft x -> x
   PRight _ -> ptraceInfoError "pfromLeft: used on a PRight"
 
--- | @since WIP
+-- | @since 1.10.0
 pfromRight ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (PEither a b :--> b)
@@ -169,23 +169,23 @@ pfromRight = phoistAcyclic $ plam $ \t -> pmatch t $ \case
 
 {- | @Data@-encoded 'Either'.
 
-@since WIP
+@since 1.10.0
 -}
 data PEitherData (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PDLeft (Term s (PAsData a))
   | PDRight (Term s (PAsData b))
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PShow
     )
 
--- | @since WIP
+-- | @since 1.10.0
 instance
   (POrd a, POrd b, PIsData a, PIsData b) =>
   POrd (PEitherData a b)
@@ -223,7 +223,7 @@ instance
       PDLeft _ -> t2
       PDRight t2' -> pif' # (pfromData t1' #< pfromData t2') # t1 # t2
 
--- | @since WIP
+-- | @since 1.10.0
 instance PlutusType (PEitherData a b) where
   type PInner (PEitherData a b) = PData
   {-# INLINEABLE pcon' #-}
@@ -240,7 +240,7 @@ instance PlutusType (PEitherData a b) where
         (f . PDLeft . punsafeCoerce $ arg)
         (f . PDRight . punsafeCoerce $ arg)
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveDataPLiftable (PEitherData a b) (Either (AsHaskell a) (AsHaskell b))
   instance
@@ -251,22 +251,22 @@ deriving via
     ) =>
     PLiftable (PEitherData a b)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PIsData (PEitherData a b) where
   {-# INLINEABLE pdataImpl #-}
   pdataImpl = pto
   {-# INLINEABLE pfromDataImpl #-}
   pfromDataImpl = punsafeCoerce
 
--- | @since WIP
+-- | @since 1.10.0
 instance (PTryFrom PData a, PTryFrom PData b) => PTryFrom PData (PEitherData a b)
 
--- | @since WIP
+-- | @since 1.10.0
 instance (PTryFrom PData a, PTryFrom PData b) => PTryFrom PData (PAsData (PEitherData a b))
 
 {- | Make a @Data@-encoded @Left@.
 
-@since WIP
+@since 1.10.0
 -}
 pdleft ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -277,7 +277,7 @@ pdleft = phoistAcyclic $ plam $ \x ->
 
 {- | Make a @Data@-encoded @Right@.
 
-@since WIP
+@since 1.10.0
 -}
 pdright ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -288,7 +288,7 @@ pdright = phoistAcyclic $ plam $ \x ->
 
 {- | Eliminator for 'PEitherData'.
 
-@since WIP
+@since 1.10.0
 -}
 peitherData ::
   forall (a :: S -> Type) (b :: S -> Type) (r :: S -> Type) (s :: S).
@@ -302,7 +302,7 @@ peitherData = phoistAcyclic $ plam $ \whenLeft whenRight t ->
 {- | Verifies if a 'PEitherData' is a 'PDLeft'. Less code than using
 'peitherData', as it doesn't need to inspect the contents.
 
-@since WIP
+@since 1.10.0
 -}
 pdisLeft ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -314,7 +314,7 @@ pdisLeft = phoistAcyclic $ plam $ \t ->
 
 {- | As 'pdisLeft', except verifies whether we have a 'PDRight'.
 
-@since WIP
+@since 1.10.0
 -}
 pdisRight ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -326,7 +326,7 @@ pdisRight = phoistAcyclic $ plam $ \t ->
 
 {- | Return the value inside a 'PDEither' if it's a 'PDLeft', error otherwise.
 
-@since WIP
+@since 1.10.0
 -}
 pdfromLeft ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -339,7 +339,7 @@ pdfromLeft = phoistAcyclic $ plam $ \t ->
 
 {- | As 'pdfromLeft', but yields a value if given a 'PDRight' instead.
 
-@since WIP
+@since 1.10.0
 -}
 pdfromRight ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).

@@ -58,32 +58,32 @@ directions. To avoid confusing behaviour, we require an explicit wrapping of
 'PByteString's to use bitwise functionality: this way, it's clear where which
 scheme applies.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PBitString (s :: S) = PBitString (Term s PByteString)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       POrd
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PSemigroup
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PMonoid
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PBitString)
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveNewtypePLiftable PBitString ByteString
   instance
@@ -91,7 +91,7 @@ deriving via
 
 {- | Bit access operation, as defined in [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#readbit).
 
-@since WIP
+@since 1.10.0
 -}
 preadBit :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBool)
 preadBit = punsafeBuiltin PLC.ReadBit
@@ -104,13 +104,13 @@ with regard to the list of indexes. Effectively, @psetBits b ixes@ is
 equivalent to @writeBits b . map (, True) $ ixes@. All caveats that this
 entails from the CIP-122 description apply.
 
-@since WIP
+@since 1.10.0
 -}
 
 {- | Sets bits, as per
 [CIP-122](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122#writebits).
 
-@since WIP
+@since 1.10.0
 -}
 pwriteBits :: forall (s :: S). Term s (PBitString :--> PBuiltinList PInteger :--> PBool :--> PBitString)
 pwriteBits = punsafeBuiltin PLC.WriteBits
@@ -118,7 +118,7 @@ pwriteBits = punsafeBuiltin PLC.WriteBits
 {- | Performs a shift, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiseshift).
 
-@since WIP
+@since 1.10.0
 -}
 pshift :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBitString)
 pshift = punsafeBuiltin PLC.ShiftByteString
@@ -126,7 +126,7 @@ pshift = punsafeBuiltin PLC.ShiftByteString
 {- | Performs a rotation, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#bitwiserotate).
 
-@since WIP
+@since 1.10.0
 -}
 protate :: forall (s :: S). Term s (PBitString :--> PInteger :--> PBitString)
 protate = punsafeBuiltin PLC.RotateByteString
@@ -134,7 +134,7 @@ protate = punsafeBuiltin PLC.RotateByteString
 {- | Counts the number of set bits, as per
 [CIP-123](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0123/README.md#countsetbits).
 
-@since WIP
+@since 1.10.0
 -}
 pcountSetBits :: forall (s :: S). Term s (PBitString :--> PInteger)
 pcountSetBits = punsafeBuiltin PLC.CountSetBits
@@ -146,7 +146,7 @@ pcountSetBits = punsafeBuiltin PLC.CountSetBits
 
 This returns @-1@ if the argument is either empty, or contains no set bits.
 
-@since WIP
+@since 1.10.0
 -}
 pfindFirstSetBit' :: forall (s :: S). Term s (PBitString :--> PInteger)
 pfindFirstSetBit' = punsafeBuiltin PLC.FindFirstSetBit
@@ -154,7 +154,7 @@ pfindFirstSetBit' = punsafeBuiltin PLC.FindFirstSetBit
 {- | As @pfindFirstSetBit'@, but produces 'PNothing' if the argument is empty,
 or contains no set bits.
 
-@since WIP
+@since 1.10.0
 -}
 pfindFirstSetBit :: forall (s :: S). Term s (PBitString :--> PMaybe PInteger)
 pfindFirstSetBit = phoistAcyclic $ plam $ \bs ->

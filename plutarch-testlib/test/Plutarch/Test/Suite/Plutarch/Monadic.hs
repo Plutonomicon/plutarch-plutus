@@ -4,12 +4,6 @@ module Plutarch.Test.Suite.Plutarch.Monadic (tests) where
 
 import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch.Internal.ListLike (pconvertLists)
-import Plutarch.LedgerApi.Utils (PMaybeData)
-import Plutarch.LedgerApi.V1 (
-  PAddress (PAddress),
-  PCredential,
-  PStakingCredential,
- )
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, plutarchGolden)
@@ -66,15 +60,4 @@ tests =
                   pure xs''
             ]
         ]
-    , plutarchGolden
-        "api.example.getFields"
-        "api.example.getFields"
-        [ goldenEval "0" getFields
-        ]
     ]
-
-getFields :: Term s (PAddress :--> PDataRecord '["credential" ':= PCredential, "stakingCredential" ':= PMaybeData PStakingCredential])
-getFields = phoistAcyclic $
-  plam $ \addr -> P.do
-    PAddress addrFields <- pmatch addr
-    addrFields

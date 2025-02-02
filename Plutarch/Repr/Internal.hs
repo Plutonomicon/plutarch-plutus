@@ -45,19 +45,19 @@ import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Term (Dig, S, Term, plet)
 import Plutarch.Internal.TermCont (hashOpenTerm, unTermCont)
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PStruct (struct :: [[S -> Type]]) (s :: S) = PStruct
   { unPStruct :: SOP (Term s) struct
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PRec (struct :: [S -> Type]) (s :: S) = PRec
   { unPRec :: NP (Term s) struct
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
--- | @since WIP
+-- | @since 1.10.0
 pletL :: All SListI as => SOP (Term s) as -> (SOP (Term s) as -> Term s r) -> Term s r
 pletL (SOP (Z x)) f = pletL' x \x' -> f (SOP $ Z x')
 pletL (SOP (S xs)) f = pletL (SOP xs) \(SOP xs') -> f (SOP $ S xs')
@@ -66,7 +66,7 @@ pletL (SOP (S xs)) f = pletL (SOP xs) \(SOP xs') -> f (SOP $ S xs')
 -- We are stuck with this for SOP and Scott however. Need some benchmark
 -- reason: https://github.com/IntersectMBO/plutus/pull/5440
 
--- | @since WIP
+-- | @since 1.10.0
 grecEq ::
   forall (s :: S) (struct :: [S -> Type]).
   All PEq struct =>
@@ -75,7 +75,7 @@ grecEq ::
   Term s PBool
 grecEq x y = pands $ hcollapse $ hcliftA2 (Proxy @PEq) (\a b -> K (a #== b)) x y
 
--- | @since WIP
+-- | @since 1.10.0
 gstructEq ::
   forall (s :: S) (struct :: [[S -> Type]]).
   All2 PEq struct =>
@@ -98,7 +98,7 @@ gstructEq x y =
 {- | This function handles optimization of function that require multiple handlers by checking hashes of each
 | handler item and merging them in a way it will minimize size and cost of all computation
 
-@since WIP
+@since 1.10.0
 -}
 groupHandlers :: forall (s :: S) (r :: S -> Type). [(Integer, Term s r)] -> Term s PInteger -> Term s r
 groupHandlers handlers idx = unTermCont $ do
@@ -143,7 +143,7 @@ groupHandlers handlers idx = unTermCont $ do
       -- first one seems to be faster
       pgo groupedHandlers
 
--- | @since WIP
+-- | @since 1.10.0
 class
   ( SOP.Generic (a s)
   , AllZipN @Type (Prod SOP) (LiftedCoercible I (Term s)) (Code (a s)) struct
@@ -158,15 +158,15 @@ instance
   ) =>
   StructSameRepr s a struct
 
--- | @since WIP
+-- | @since 1.10.0
 type family UnTermRec (struct :: [Type]) :: [S -> Type] where
   UnTermRec '[] = '[]
   UnTermRec (Term _ a ': rest) = a ': UnTermRec rest
 
--- | @since WIP
+-- | @since 1.10.0
 type UnTermStruct x = UnTermStruct' (Code x)
 
--- | @since WIP
+-- | @since 1.10.0
 type RecTypePrettyError struct = RecTypePrettyError' struct ~ 'True
 
 -- Helpers

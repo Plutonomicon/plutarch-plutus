@@ -41,17 +41,17 @@ Law 1 ensures no value is its own successor. Laws 2 and 3 ensure that there
 are no \'gaps\': every value is \'reachable\' from any lower value by a
 finite number of applications of 'successor'.
 
-@since WIP
+@since 1.10.0
 -}
 class POrd a => PCountable (a :: S -> Type) where
-  -- | @since WIP
+  -- | @since 1.10.0
   psuccessor :: forall (s :: S). Term s (a :--> a)
 
   -- | The default implementation of this function is inefficient: if at all
   -- possible, give instances an optimized version that doesn't require
   -- recursion.
   --
-  -- @since WIP
+  -- @since 1.10.0
   {-# INLINEABLE psuccessorN #-}
   psuccessorN :: forall (s :: S). Term s (PPositive :--> a :--> a)
   psuccessorN = phoistAcyclic $ plam $ \n x -> go n # (psuccessor # x) # pone
@@ -66,14 +66,14 @@ class POrd a => PCountable (a :: S -> Type) where
           acc
           (self # (psuccessor # acc) # (count #+ pone))
 
--- | @since WIP
+-- | @since 1.10.0
 instance PCountable PInteger where
   {-# INLINEABLE psuccessor #-}
   psuccessor = phoistAcyclic $ plam (+ 1)
   {-# INLINEABLE psuccessorN #-}
   psuccessorN = phoistAcyclic $ plam $ \p i -> pto p + i
 
--- | @since WIP
+-- | @since 1.10.0
 instance PCountable PPositive where
   {-# INLINEABLE psuccessor #-}
   psuccessor = phoistAcyclic $ plam (#+ pone)
@@ -98,17 +98,17 @@ From Law 1, we obtain the following theorem:
 
 * @x /= predecessor x@
 
-@since WIP
+@since 1.10.0
 -}
 class PCountable a => PEnumerable (a :: S -> Type) where
-  -- | @since WIP
+  -- | @since 1.10.0
   ppredecessor :: forall (s :: S). Term s (a :--> a)
 
   -- | The default implementation of this function is inefficient: if at all
   -- possible, give instances an optimized version that doesn't require
   -- recursion.
   --
-  -- @since WIP
+  -- @since 1.10.0
   {-# INLINEABLE ppredecessorN #-}
   ppredecessorN :: forall (s :: S). Term s (PPositive :--> a :--> a)
   ppredecessorN = phoistAcyclic $ plam $ \n x -> go n # (ppredecessor # x) # pone
@@ -123,7 +123,7 @@ class PCountable a => PEnumerable (a :: S -> Type) where
           acc
           (self # (ppredecessor # acc) # (count #+ pone))
 
--- | @since WIP
+-- | @since 1.10.0
 instance PEnumerable PInteger where
   {-# INLINEABLE ppredecessor #-}
   ppredecessor = phoistAcyclic $ plam (- 1)

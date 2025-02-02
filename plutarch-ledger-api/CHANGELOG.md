@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## WIP
+## 3.3.0 -- 01-29-2025
 
 ### Added
 
@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+* All ledger types are now derived with new derivation tactics--namely ones found in `Plutarch.Repr.Data`.
 * `PPosixTime` now permits negative values as a result of its operations
 * `PEq`, `PPartialOrd` and `POrd` for `PLowerBound` and `PUpperBound` match the
   semantics of `plutus-ledger-api`'s equivalents for these types
@@ -127,7 +128,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
       fields
     * `PTxId` now guarantees 32 byte length
     * `PTxInfo`'s `mint` field now ensures that no zero entries are included
-    * `PScriptContext` lost the `purpose` field, but gained `redeemer` and 
+    * `PScriptContext` lost the `purpose` field, but gained `redeemer` and
        `scriptInfo` fields
 * `PRedeemerHash` now has the same type classes instantiated as `PDatumHash` did
 
@@ -145,18 +146,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-* `padaSymbol`, `padaToken`, `plookup`, `plookupData`, `plookupDataWith`, 
+* `padaSymbol`, `padaToken`, `plookup`, `plookupData`, `plookupDataWith`,
   `psingleton`, `psingletonData`, `pfoldAt`, `pfoldAtData`, `pleftBiasedUnion`,
-  `pdifference`, `punionResolvingCollisionsWithData`, `pany`, `pfindWithDefault` 
+  `pdifference`, `punionResolvingCollisionsWithData`, `pany`, `pfindWithDefault`
   `pinsert`, `pdelete`, `pzipWithDefaults`, `pintersectionWith`,
   `pintersectionWithData`, `pforgetSorted`, `punsortedMapFromFoldable`,
   `psortedMapFromFoldable`, `pmapWithKey`, `ptryLookup`, `pkeysEqual`,
   `pkeysEqualUnsorted`, `pupdate`, `padjust`, `pfomdMapWithKey`,
   `pfoldlWithKey`, `pkeys`, `pkvPairKey`, `pkvPairValue`, `pkvPairLt` to `Plutarch.Api.AssocMap`
-* `pconstantPositiveSingleton`, `pforgetSorted`, `psingleton`, `psingletonData` 
+* `pconstantPositiveSingleton`, `pforgetSorted`, `psingleton`, `psingletonData`
   `pleftBiasedCurrencyUnion`, `pleftBiasedTokenUnion`,
   `punionResolvingCollisionsWithData`, `pvalueOf`, `passertSorted`,
-  `padaSymbolData`, `plovelaceValueOf`, `pisAdaOnlyValue`, `padaOnlyValue`, 
+  `padaSymbolData`, `plovelaceValueOf`, `pisAdaOnlyValue`, `padaOnlyValue`,
   `pnoAdaValue` to `Plutarch.Api.Value`
 * `PTryFrom` instance for `PData (PAsData (PValue Unsorted NonZero))`
 * `Plutarch.Api.Interval` module, with extra functionality originally from
@@ -165,11 +166,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `pmaybeToMaybeData`, `passertDJust` in `Plutarch.Api` (ported from
   `plutarch-extra`)
 
-### Modified 
+### Modified
 
 * `pparseDatum` now takes `PMap` as datum lookup table in order to be compatible with Ledger V2 types.
 * `PInterval`, `PLowerBound`, `PUpperBound` and `PExtended` are now in
-  `Plutarch.Api.Interval`, with re-exports from `Plutarch.Api`. 
+  `Plutarch.Api.Interval`, with re-exports from `Plutarch.Api`.
 
 ## 2.1.0 -- 22-01-2024
 

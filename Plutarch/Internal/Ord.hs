@@ -67,27 +67,27 @@ If you define 'pmax' or 'pmin', ensure the following also hold:
 
 Laws 8-12 hold if you use the defaults provided by this type class.
 
-@since WIP
+@since 1.10.0
 -}
 class PEq t => POrd t where
-  -- | @since WIP
+  -- | @since 1.10.0
   {-# INLINEABLE (#<=) #-}
   (#<=) :: Term s t -> Term s t -> Term s PBool
   default (#<=) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
   x #<= y = pto x #<= pto y
 
-  -- | @since WIP
+  -- | @since 1.10.0
   {-# INLINEABLE (#<) #-}
   (#<) :: Term s t -> Term s t -> Term s PBool
   default (#<) :: POrd (PInner t) => Term s t -> Term s t -> Term s PBool
   x #< y = pto x #< pto y
 
-  -- | @since WIP
+  -- | @since 1.10.0
   {-# INLINEABLE pmax #-}
   pmax :: forall (s :: S). Term s t -> Term s t -> Term s t
   pmax x y = pif' # (x #<= y) # y # x
 
-  -- | @since WIP
+  -- | @since 1.10.0
   {-# INLINEABLE pmin #-}
   pmin :: forall (s :: S). Term s t -> Term s t -> Term s t
   pmin x y = pif' # (x #<= y) # x # y
@@ -95,7 +95,7 @@ class PEq t => POrd t where
 infix 4 #<=
 infix 4 #<
 
--- | @since WIP
+-- | @since 1.10.0
 (#>) ::
   forall (a :: S -> Type) (s :: S).
   POrd a =>
@@ -106,7 +106,7 @@ x #> y = y #< x
 
 infix 4 #>
 
--- | @since WIP
+-- | @since 1.10.0
 (#>=) ::
   forall (a :: S -> Type) (s :: S).
   POrd a =>
@@ -133,14 +133,14 @@ instance POrd PInteger where
   {-# INLINEABLE (#<) #-}
   x #< y = pltInteger # x # y
 
--- | @since WIP
+-- | @since 1.10.0
 instance POrd PByteString where
   {-# INLINEABLE (#<=) #-}
   x #<= y = punsafeBuiltin PLC.LessThanEqualsByteString # x # y
   {-# INLINEABLE (#<) #-}
   x #< y = punsafeBuiltin PLC.LessThanByteString # x # y
 
--- | @since WIP
+-- | @since 1.10.0
 instance POrd PByte where
   {-# INLINEABLE (#<=) #-}
   x #<= y = punsafeBuiltin PLC.LessThanEqualsInteger # x # y
@@ -149,7 +149,7 @@ instance POrd PByte where
 
 deriving anyclass instance POrd PLogicOpSemantics
 
--- | @since WIP
+-- | @since 1.10.0
 instance POrd PUnit where
   {-# INLINEABLE (#<=) #-}
   x #<= y = plet x $ \_ -> plet y $ const ptrue
@@ -160,5 +160,5 @@ instance POrd PUnit where
   {-# INLINEABLE pmin #-}
   pmin = pmax
 
--- | @since WIP
+-- | @since 1.10.0
 deriving anyclass instance POrd PEndianness

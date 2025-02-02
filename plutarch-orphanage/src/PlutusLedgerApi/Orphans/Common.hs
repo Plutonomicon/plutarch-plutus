@@ -36,7 +36,7 @@ import Test.QuickCheck (
   variant,
  )
 
--- | @since WIP
+-- | @since 1.1.0
 instance Arbitrary PlutusTx.Rational where
   {-# INLINEABLE arbitrary #-}
   arbitrary = fromGHC <$> arbitrary
@@ -241,11 +241,11 @@ instance (Function k, Function v) => Function (AssocMap.Map k v) where
   {-# INLINEABLE function #-}
   function = functionMap AssocMap.toList AssocMap.unsafeFromList
 
--- | @since WIP
+-- | @since 1.1.0
 newtype UnsortedAssocMap k v = UnsortedAssocMap (AssocMap.Map k v)
   deriving newtype (Show, Eq, Ord, Pretty)
 
--- | @since WIP
+-- | @since 1.1.0
 instance (Arbitrary k, Ord k) => Arbitrary1 (UnsortedAssocMap k) where
   {-# INLINEABLE liftArbitrary #-}
   liftArbitrary genVal =
@@ -260,7 +260,7 @@ instance (Arbitrary k, Ord k) => Arbitrary1 (UnsortedAssocMap k) where
       let asList = AssocMap.toList aMap
       liftShrink (\(key, val) -> (key,) <$> shrinkVal val) asList
 
--- | @since WIP
+-- | @since 1.1.0
 instance (Arbitrary k, Arbitrary v, Ord k) => Arbitrary (UnsortedAssocMap k v) where
   {-# INLINEABLE arbitrary #-}
   arbitrary = liftArbitrary arbitrary
@@ -268,16 +268,16 @@ instance (Arbitrary k, Arbitrary v, Ord k) => Arbitrary (UnsortedAssocMap k v) w
   {-# INLINEABLE shrink #-}
   shrink = liftShrink shrink
 
--- | @since WIP
+-- | @since 1.1.0
 instance (CoArbitrary k, CoArbitrary v) => CoArbitrary (UnsortedAssocMap k v) where
   {-# INLINEABLE coarbitrary #-}
   coarbitrary (UnsortedAssocMap aMap) = coarbitrary aMap
 
--- | @since WIP
+-- | @since 1.1.0
 instance (Function k, Function v) => Function (UnsortedAssocMap k v) where
   {-# INLINEABLE function #-}
   function = functionMap @(AssocMap.Map k v) coerce coerce
 
--- | @since WIP
+-- | @since 1.1.0
 getUnsortedAssocMap :: UnsortedAssocMap k v -> AssocMap.Map k v
 getUnsortedAssocMap = coerce

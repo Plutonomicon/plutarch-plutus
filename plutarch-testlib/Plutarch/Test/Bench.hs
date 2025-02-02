@@ -117,7 +117,7 @@ import Test.Tasty.Runners (
  )
 import Text.Printf (printf)
 
--- | @since WIP
+-- | @since 1.0.0
 data BenchConfig
   = -- | Compile with UPLC simplifier pass and no tracing
     Optimizing
@@ -126,21 +126,21 @@ data BenchConfig
 
 {- | Create benchmark from Plutarch term without tracing and no UPLC simplifier
 
-@since WIP
+@since 1.0.0
 -}
 bench :: TestName -> ClosedTerm a -> TestTree
 bench name = benchWithConfig name (NonOptimizing NoTracing)
 
 {- | Like 'bench' but with customizable compilation config
 
-@since WIP
+@since 1.0.0
 -}
 benchWithConfig :: TestName -> BenchConfig -> ClosedTerm a -> TestTree
 benchWithConfig name config term = singleTest name $ PBenchmarkable config term
 
 {- | Compare benchmarks, reporting relative CPU, MEM, and size differences
 
- @since WIP
+ @since 1.0.0
 -}
 bcompare ::
   -- | Tasty pattern to compare as baseline
@@ -152,7 +152,7 @@ bcompare = bcompareWithin (-1 / 0, 1 / 0) (-1 / 0, 1 / 0) (-1 / 0, 1 / 0)
 
 {- | Like 'bcompare' but with customizable upper and lower bounds of relative differences
 
-@since WIP
+@since 1.0.0
 -}
 bcompareWithin ::
   -- | CPU bounds
@@ -172,7 +172,7 @@ bcompareWithin cpu mem size s = case parseExpr s of
 
 {- | Use this instead of 'Test.Tasty.defaultMain' from @Test.Tasty@ to run benchmarks to get formatted output
 
-@since WIP
+@since 1.0.0
 -}
 defaultMain :: TestTree -> IO ()
 defaultMain bs = do
@@ -185,7 +185,7 @@ defaultMain bs = do
     Nothing -> exitFailure
     Just act -> act >>= \x -> if x then exitSuccess else exitFailure
 
--- | @since WIP
+-- | @since 1.0.0
 consoleBenchReporter :: Ingredient
 consoleBenchReporter = modifyConsoleReporter [Option (Proxy :: Proxy (Maybe BaselinePath))] $ \opts -> do
   baseline <- case lookupOption opts of
@@ -259,7 +259,7 @@ consoleBenchReporter = modifyConsoleReporter [Option (Proxy :: Proxy (Maybe Base
                           , printf "%.2fx" ratioSize
                           )
 
--- | @since WIP
+-- | @since 1.0.0
 csvReporter :: Ingredient
 csvReporter = TestReporter [Option (Proxy :: Proxy (Maybe CsvPath))] $
   \opts tree -> do
@@ -284,194 +284,194 @@ csvReporter = TestReporter [Option (Proxy :: Proxy (Maybe CsvPath))] $
         (`csvOutput` augmented)
       pure $ const $ isSuccessful smap
 
--- | @since WIP
+-- | @since 1.0.0
 newtype FailIfMoreCpu = FailIfMoreCpu Double
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Read
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Num
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Fractional
     )
     via Double
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption FailIfMoreCpu where
   defaultValue = FailIfMoreCpu (1.0 / 0.0)
   parseValue = fmap FailIfMoreCpu . parsePositivePercents
   optionName = Tagged "fail-if-more-cpu"
   optionHelp = Tagged "If a benchmark uses unacceptably more CPU than baseline (see --baseline), it will be reported as failed."
 
--- | @since WIP
+-- | @since 1.0.0
 newtype FailIfLessCpu = FailIfLessCpu Double
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Read
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Num
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Fractional
     )
     via Double
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption FailIfLessCpu where
   defaultValue = FailIfLessCpu (1.0 / 0.0)
   parseValue = fmap FailIfLessCpu . parsePositivePercents
   optionName = Tagged "fail-if-less-cpu"
   optionHelp = Tagged "If a benchmark uses unacceptably less CPU than baseline (see --baseline), it will be reported as failed."
 
--- | @since WIP
+-- | @since 1.0.0
 newtype FailIfMoreMem = FailIfMoreMem Double
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Read
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Num
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Fractional
     )
     via Double
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption FailIfMoreMem where
   defaultValue = FailIfMoreMem (1.0 / 0.0)
   parseValue = fmap FailIfMoreMem . parsePositivePercents
   optionName = Tagged "fail-if-more-cpu"
   optionHelp = Tagged "If a benchmark uses unacceptably more MEM than baseline (see --baseline), it will be reported as failed."
 
--- | @since WIP
+-- | @since 1.0.0
 newtype FailIfLessMem = FailIfLessMem Double
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Read
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Num
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Fractional
     )
     via Double
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption FailIfLessMem where
   defaultValue = FailIfLessMem (1.0 / 0.0)
   parseValue = fmap FailIfLessMem . parsePositivePercents
   optionName = Tagged "fail-if-less-mem"
   optionHelp = Tagged "If a benchmark uses unacceptably less MEM than baseline (see --baseline), it will be reported as failed."
 
--- | @since WIP
+-- | @since 1.0.0
 newtype FailIfBigger = FailIfBigger Double
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Read
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Num
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Fractional
     )
     via Double
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption FailIfBigger where
   defaultValue = FailIfBigger (1.0 / 0.0)
   parseValue = fmap FailIfBigger . parsePositivePercents
   optionName = Tagged "fail-if-bigger"
   optionHelp = Tagged "If a benchmark is unacceptably bigger than baseline (see --baseline), it will be reported as failed."
 
--- | @since WIP
+-- | @since 1.0.0
 newtype FailIfSmaller = FailIfSmaller Double
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Read
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Num
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Fractional
     )
     via Double
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption FailIfSmaller where
   defaultValue = FailIfSmaller (1.0 / 0.0)
   parseValue = fmap FailIfSmaller . parsePositivePercents
   optionName = Tagged "fail-if-smaller"
   optionHelp = Tagged "If a benchmark is unacceptably smaller than baseline (see --baseline), it will be reported as failed."
 
--- | @since WIP
+-- | @since 1.0.0
 newtype BaselinePath = BaselinePath FilePath
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
     )
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption (Maybe BaselinePath) where
   defaultValue = Nothing
   parseValue = Just . Just . BaselinePath
   optionName = Tagged "baseline"
   optionHelp = Tagged "File with baseline results in CSV format to compare against"
 
--- | @since WIP
+-- | @since 1.0.0
 newtype CsvPath = CsvPath FilePath
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.0.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.0.0
       Ord
     )
 
--- | @since WIP
+-- | @since 1.0.0
 instance IsOption (Maybe CsvPath) where
   defaultValue = Nothing
   parseValue = Just . Just . CsvPath

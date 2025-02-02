@@ -113,58 +113,58 @@ import Test.QuickCheck (
  )
 import Test.QuickCheck qualified as QuickCheck
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PPositive (s :: S) = PPositive (Term s PInteger)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PIsData
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       POrd
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via (DeriveNewtypePlutusType PPositive)
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via
   DeriveNewtypePLiftable PPositive Positive
   instance
     PLiftable PPositive
 
--- | @since WIP
+-- | @since 1.10.0
 newtype Positive = UnsafeMkPositive {getPositive :: Integer}
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Show
-    , -- | @since WIP
+    , -- | @since 1.10.0
       Eq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       Ord
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Arbitrary
     )
     via QuickCheck.Positive Integer
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       CoArbitrary
-    , -- | @since WIP
+    , -- | @since 1.10.0
       Pretty
     )
     via Integer
 
--- | @since WIP
+-- | @since 1.10.0
 instance Function Positive where
   {-# INLINEABLE function #-}
   function = functionMap @Integer coerce coerce
@@ -172,7 +172,7 @@ instance Function Positive where
 {- | Converts negative 'Integer's into their absolute values, positive
 'Integer's into their 'Positive' equivalents. Errors on 0.
 
-@since WIP
+@since 1.10.0
 -}
 toPositiveAbs :: Integer -> Positive
 toPositiveAbs i = UnsafeMkPositive $ case signum i of
@@ -180,33 +180,33 @@ toPositiveAbs i = UnsafeMkPositive $ case signum i of
   0 -> error "toPositiveAbs: called with zero"
   _ -> i
 
--- | @since WIP
+-- | @since 1.10.0
 positiveToInteger :: Positive -> Integer
 positiveToInteger = getPositive
 
--- | @since WIP
+-- | @since 1.10.0
 newtype PNatural (s :: S) = PNatural (Term s PInteger)
   deriving stock
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       Generic
     )
   deriving anyclass
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       SOP.Generic
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PIsData
-    , -- | @since WIP
+    , -- | @since 1.10.0
       PEq
-    , -- | @since WIP
+    , -- | @since 1.10.0
       POrd
     )
   deriving
-    ( -- | @since WIP
+    ( -- | @since 1.10.0
       PlutusType
     )
     via DeriveNewtypePlutusType PNatural
 
--- | @since WIP
+-- | @since 1.10.0
 instance PLiftable PNatural where
   type AsHaskell PNatural = Natural
   type PlutusRepr PNatural = Integer
@@ -238,7 +238,7 @@ If you define a custom @pscalePositive@, ensure the following also hold:
 
 The default implementation ensures these laws are satisfied.
 
-@since WIP
+@since 1.10.0
 -}
 class PAdditiveSemigroup (a :: S -> Type) where
   (#+) :: forall (s :: S). Term s a -> Term s a -> Term s a
@@ -260,38 +260,38 @@ class PAdditiveSemigroup (a :: S -> Type) where
     Term s a
   pscalePositive = pbySquaringDefault (#+)
 
--- | @since WIP
+-- | @since 1.10.0
 infix 6 #+
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveSemigroup PPositive where
   {-# INLINEABLE (#+) #-}
   x #+ y = punsafeCoerce $ paddInteger # pto x # pto y
   {-# INLINEABLE pscalePositive #-}
   pscalePositive b e = b #* e
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveSemigroup PNatural where
   {-# INLINEABLE (#+) #-}
   x #+ y = pcon . PNatural $ paddInteger # pto x # pto y
   {-# INLINEABLE pscalePositive #-}
   pscalePositive b e = b #* punsafeCoerce e
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveSemigroup PInteger where
   {-# INLINEABLE (#+) #-}
   x #+ y = paddInteger # x # y
   {-# INLINEABLE pscalePositive #-}
   pscalePositive b e = b #* pto e
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveSemigroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE (#+) #-}
   x #+ y = pbls12_381_G1_add # x # y
   {-# INLINEABLE pscalePositive #-}
   pscalePositive x p = pbls12_381_G1_scalarMul # pto p # x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveSemigroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE (#+) #-}
   x #+ y = pbls12_381_G2_add # x # y
@@ -314,7 +314,7 @@ If you define 'pscaleNatural', ensure the following as well:
 
 The default implementation of 'pscaleNatural' ensures these laws hold.
 
-@since WIP
+@since 1.10.0
 -}
 class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
   pzero :: forall (s :: S). Term s a
@@ -331,28 +331,28 @@ class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
         pzero
         (pscalePositive x (punsafeCoerce n'))
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveMonoid PInteger where
   {-# INLINEABLE pzero #-}
   pzero = pconstantInteger 0
   {-# INLINEABLE pscaleNatural #-}
   pscaleNatural i n = i #* punsafeCoerce n
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveMonoid PNatural where
   {-# INLINEABLE pzero #-}
   pzero = pcon . PNatural . pconstantInteger $ 0
   {-# INLINEABLE pscaleNatural #-}
   pscaleNatural n1 n2 = n1 #* n2
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveMonoid PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G1_uncompress # pbls12_381_G1_compressed_zero
   {-# INLINEABLE pscaleNatural #-}
   pscaleNatural x n = pbls12_381_G1_scalarMul # pto n # x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveMonoid PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pzero #-}
   pzero = pbls12_381_G2_uncompress # pbls12_381_G2_compressed_zero
@@ -385,7 +385,7 @@ must hold:
 7. @pscaleInteger x (pnegate # y)@ @=@
    @pnegate # (pscaleInteger x y)@
 
-@since WIP
+@since 1.10.0
 -}
 class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type) where
   {-# MINIMAL pnegate | (#-) #-}
@@ -416,24 +416,24 @@ class PAdditiveMonoid a => PAdditiveGroup (a :: S -> Type) where
             (pscalePositive b (punsafeDowncast e'))
         )
 
--- | @since WIP
+-- | @since 1.10.0
 infix 6 #-
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveGroup PInteger where
   {-# INLINEABLE (#-) #-}
   x #- y = psubtractInteger # x # y
   {-# INLINEABLE pscaleInteger #-}
   pscaleInteger = (#*)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveGroup PBuiltinBLS12_381_G1_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G1_neg
   {-# INLINEABLE pscaleInteger #-}
   pscaleInteger b e = pbls12_381_G1_scalarMul # e # b
 
--- | @since WIP
+-- | @since 1.10.0
 instance PAdditiveGroup PBuiltinBLS12_381_G2_Element where
   {-# INLINEABLE pnegate #-}
   pnegate = pbls12_381_G2_neg
@@ -462,7 +462,7 @@ Unlike 'PAdditiveSemigroup', the multiplication operation doesn't need to be
 commutative. Currently, all Plutarch-provided instances are, but this need
 not be true for other instances.
 
-@since WIP
+@since 1.10.0
 -}
 class PMultiplicativeSemigroup (a :: S -> Type) where
   {-# INLINEABLE (#*) #-}
@@ -482,25 +482,25 @@ class PMultiplicativeSemigroup (a :: S -> Type) where
     Term s a
   ppowPositive = pbySquaringDefault (#*)
 
--- | @since WIP
+-- | @since 1.10.0
 infix 6 #*
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeSemigroup PPositive where
   {-# INLINEABLE (#*) #-}
   x #* y = punsafeCoerce $ pmultiplyInteger # pto x # pto y
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeSemigroup PNatural where
   {-# INLINEABLE (#*) #-}
   x #* y = pcon . PNatural $ pmultiplyInteger # pto x # pto y
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeSemigroup PInteger where
   {-# INLINEABLE (#*) #-}
   x #* y = pmultiplyInteger # x # y
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeSemigroup PBuiltinBLS12_381_MlResult where
   {-# INLINEABLE (#*) #-}
   x #* y = pbls12_381_mulMlResult # x # y
@@ -520,7 +520,7 @@ If you define 'ppowNatural', ensure the following as well:
    @ppowPositive x p@
 5. @ppowNatural x pzero@ @=@ @pone@
 
-@since WIP
+@since 1.10.0
 -}
 class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
   pone :: forall (s :: S). Term s a
@@ -536,24 +536,24 @@ class PMultiplicativeSemigroup a => PMultiplicativeMonoid (a :: S -> Type) where
       pone
       (ppowPositive x (pcon (PPositive $ pto n')))
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeMonoid PPositive where
   {-# INLINEABLE pone #-}
   pone = punsafeCoerce $ pconstantInteger 1
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeMonoid PNatural where
   {-# INLINEABLE pone #-}
   pone = pcon . PNatural $ pconstantInteger 1
 
--- | @since WIP
+-- | @since 1.10.0
 instance PMultiplicativeMonoid PInteger where
   {-# INLINEABLE pone #-}
   pone = pconstantInteger 1
 
 {- | Partial version of 'ppositive'. Errors if argument is not positive.
 
-@since WIP
+@since 1.10.0
 -}
 ptryPositive :: forall (s :: S). Term s (PInteger :--> PPositive)
 ptryPositive = phoistAcyclic $
@@ -580,7 +580,7 @@ strictly-positive exponent.
 
 This implementation assumes that the operation argument is associative.
 
-@since WIP
+@since 1.10.0
 -}
 pbySquaringDefault ::
   forall (a :: S -> Type) (s :: S).
@@ -618,7 +618,7 @@ instances of 'PAdditiveGroup' and 'PMultiplicativeMonoid' for @a@:
 6. @(y #+ z) #* x@ @=@ @(y #* x) #+ (z #* x)@ (@#*@ right-distributes over
    @#+@)
 
-@since WIP
+@since 1.10.0
 -}
 class
   (PAdditiveGroup a, PMultiplicativeMonoid a) =>
@@ -628,7 +628,7 @@ class
   default pfromInteger :: forall (s :: S). PRing (PInner a) => Integer -> Term s a
   pfromInteger x = punsafeDowncast $ pfromInteger x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PRing PInteger where
   {-# INLINEABLE pfromInteger #-}
   pfromInteger = pconstantInteger
@@ -646,7 +646,7 @@ itself. Thus, in order for the laws to make any sense, we have to ensure a
 total order on the integral domain. Since all of our integral domains are
 \'at least as big\' as the integers, this doesn't pose a huge problem.
 
-@since WIP
+@since 1.10.0
 -}
 class (PRing a, POrd a) => PIntegralDomain (a :: S -> Type) where
   {-# INLINEABLE psignum #-}
@@ -667,7 +667,7 @@ class (PRing a, POrd a) => PIntegralDomain (a :: S -> Type) where
       (pnegate # x)
       x
 
--- | @since WIP
+-- | @since 1.10.0
 instance PIntegralDomain PInteger where
   {-# INLINEABLE psignum #-}
   psignum = phoistAcyclic $ plam $ \x ->
@@ -694,19 +694,19 @@ instance PIntegralDomain a => Num (Term s a) where
   {-# INLINEABLE fromInteger #-}
   fromInteger = pfromInteger
 
--- | @since WIP
+-- | @since 1.10.0
 pdiv :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 pdiv = punsafeBuiltin PLC.DivideInteger
 
--- | @since WIP
+-- | @since 1.10.0
 pmod :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 pmod = punsafeBuiltin PLC.ModInteger
 
--- | @since WIP
+-- | @since 1.10.0
 pquot :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 pquot = punsafeBuiltin PLC.QuotientInteger
 
--- | @since WIP
+-- | @since 1.10.0
 prem :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 prem = punsafeBuiltin PLC.RemainderInteger
 
@@ -714,7 +714,7 @@ prem = punsafeBuiltin PLC.RemainderInteger
 turn a 'PPositive' into an answer, produce the default when given 'pzero',
 and apply the function otherwise.
 
-@since WIP
+@since 1.10.0
 -}
 pnaturalToPositiveCPS ::
   forall (a :: S -> Type) (s :: S).
@@ -730,7 +730,7 @@ pnaturalToPositiveCPS def f n = plet n $ \n' ->
 
 {- | Partial version of 'pnatural'. Errors if argument is negative.
 
-@since WIP
+@since 1.10.0
 -}
 ptryNatural :: forall (s :: S). Term s (PInteger :--> PNatural)
 ptryNatural = phoistAcyclic $ plam $ \i ->
@@ -742,7 +742,7 @@ ptryNatural = phoistAcyclic $ plam $ \i ->
 {- | Build a 'PNatural' from a 'PInteger'. Yields 'PNothing' if given a negative
 value.
 
-@since WIP
+@since 1.10.0
 -}
 pnatural :: forall (s :: S). Term s (PInteger :--> PMaybe PNatural)
 pnatural = phoistAcyclic $ plam $ \i ->
@@ -754,7 +754,7 @@ pnatural = phoistAcyclic $ plam $ \i ->
 {- | \'Relax\' a 'PPositive' to 'PNatural'. This uses 'punsafeCoerce'
 underneath, but because any positive is also a natural, is safe.
 
-@since WIP
+@since 1.10.0
 -}
 ppositiveToNatural :: forall (s :: S). Term s (PPositive :--> PNatural)
 ppositiveToNatural = phoistAcyclic $ plam $ \x -> punsafeCoerce x

@@ -28,7 +28,7 @@ import PlutusCore qualified as PLC
 
 {- | A builtin Plutus integer.
 
-@since WIP
+@since 1.10.0
 -}
 newtype PInteger s = PInteger (Term s POpaque)
   deriving stock (Generic)
@@ -44,7 +44,7 @@ This will error if the modulus is zero. When given a negative exponent, this
 will try to find a modular multiplicative inverse, and will error if none
 exists.
 
-@since WIP
+@since 1.10.0
 -}
 pexpModInteger ::
   forall (s :: S).

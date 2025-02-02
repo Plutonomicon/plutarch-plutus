@@ -36,7 +36,7 @@ import Test.Tasty.QuickCheck (
 
 {- | Like `Plutarch.Test.Unit.testEvalFail` but generate terms
 
-@since WIP
+@since 1.0.0
 -}
 propEvalFail ::
   (Arbitrary a, Show a) =>
@@ -52,7 +52,7 @@ propEvalFail name mkTerm =
 
 {- | Like `Plutarch.Test.Unit.testCompileFail` but generate terms
 
-@since WIP
+@since 1.0.0
 -}
 propCompileFail ::
   (Arbitrary a, Show a) =>
@@ -68,7 +68,7 @@ propCompileFail name mkTerm =
 
 {- | Like `Plutarch.Test.Unit.testEvalEqual` but generate terms
 
-@since WIP
+@since 1.0.0
 -}
 propEvalEqual ::
   (Arbitrary a, Show a) =>
@@ -90,7 +90,7 @@ propEvalEqual name mkTerm mkExpected =
 
 {- | Like `Plutarch.Test.Unit.testEval` but generate terms
 
-@since WIP
+@since 1.0.0
 -}
 propEval :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
 propEval name mkTerm =
@@ -100,7 +100,7 @@ propEval name mkTerm =
       FailedToEvaluate err _ -> counterexample ("Failed to evaluate: " <> show err) False
       Evaluated _ _ -> property True
 
--- | @since WIP
+-- | @since 1.0.0
 checkHaskellEquivalent ::
   forall (plutarchInput :: S -> Type) (plutarchOutput :: S -> Type).
   ( PLiftable plutarchInput
@@ -120,7 +120,7 @@ checkHaskellEquivalent goHaskell goPlutarch =
     pfun :: ClosedTerm (plutarchInput :--> plutarchOutput)
     pfun = precompileTerm goPlutarch
 
--- | @since WIP
+-- | @since 1.0.0
 checkHaskellEquivalent2 ::
   forall (plutarchInput1 :: S -> Type) (plutarchInput2 :: S -> Type) (plutarchOutput :: S -> Type).
   ( PLiftable plutarchInput1
@@ -146,17 +146,17 @@ checkHaskellEquivalent2 goHaskell goPlutarch =
 
 -- * Orphans
 
--- | @since WIP
+-- | @since 1.0.0
 deriving newtype instance Pretty a => Pretty (QuickCheck.Positive a)
 
--- | @since WIP
+-- | @since 1.0.0
 deriving newtype instance Pretty a => Pretty (Negative a)
 
--- | @since WIP
+-- | @since 1.0.0
 deriving newtype instance Pretty a => Pretty (NonZero a)
 
--- | @since WIP
+-- | @since 1.0.0
 deriving newtype instance Pretty a => Pretty (NonNegative a)
 
--- | @since WIP
+-- | @since 1.0.0
 deriving newtype instance Pretty a => Pretty (NonPositive a)

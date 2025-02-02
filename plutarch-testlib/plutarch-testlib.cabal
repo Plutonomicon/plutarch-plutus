@@ -121,7 +121,6 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Show
     Plutarch.Test.Suite.Plutarch.String
     Plutarch.Test.Suite.Plutarch.Tracing
-    Plutarch.Test.Suite.Plutarch.TryFrom
     Plutarch.Test.Suite.Plutarch.Unit
     Plutarch.Test.Suite.Plutarch.Unroll
     Plutarch.Test.Suite.Plutarch.Uplc

@@ -201,10 +201,10 @@ type family GetPNewtype (a :: PType) :: PType where
 
 --------------------------------------------------------------------------------
 
--- | @since WIP
+-- | @since 1.10.0
 newtype DeriveNewtypePlutusType (a :: S -> Type) s = DeriveNewtypePlutusType
   { unDeriveNewtypePlutusType :: a s
-  -- ^ @since WIP
+  -- ^ @since 1.10.0
   }
 
 -- Helpers
@@ -277,7 +277,7 @@ instance PlutusType POpaque where
   pcon' (POpaque x) = x
   pmatch' x f = f (POpaque x)
 
--- | @since WIP
+-- | @since 1.10.0
 instance PlutusType PBool where
   type PInner PBool = PBool
   {-# INLINEABLE pcon' #-}
@@ -316,29 +316,24 @@ instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList 
         # pdelay (f PNil)
         # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
 
-type family IfSameThenData (a :: S -> Type) (b :: S -> Type) :: S -> Type where
-  IfSameThenData a a = PData
-  IfSameThenData _ POpaque = PData
-  IfSameThenData _ b = PAsData b
-
 instance PIsData a => PlutusType (PAsData a) where
-  type PInner (PAsData a) = IfSameThenData a (PInner a)
+  type PInner (PAsData a) = PData
   type PCovariant' (PAsData a) = PCovariant' a
   type PContravariant' (PAsData a) = PContravariant' a
   type PVariant' (PAsData a) = PVariant' a
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PByteString) instance PlutusType PByteString
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PByte) instance PlutusType PByte
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PLogicOpSemantics) instance PlutusType PLogicOpSemantics
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PString) instance PlutusType PString
 
 instance PlutusType PUnit where
@@ -346,14 +341,14 @@ instance PlutusType PUnit where
   pcon' PUnit = punit
   pmatch' x f = plet x \_ -> f PUnit
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PBuiltinBLS12_381_G1_Element) instance PlutusType PBuiltinBLS12_381_G1_Element
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PBuiltinBLS12_381_G2_Element) instance PlutusType PBuiltinBLS12_381_G2_Element
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PBuiltinBLS12_381_MlResult) instance PlutusType PBuiltinBLS12_381_MlResult
 
--- | @since WIP
+-- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PEndianness) instance PlutusType PEndianness

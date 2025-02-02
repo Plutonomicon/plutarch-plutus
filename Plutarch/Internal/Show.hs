@@ -347,8 +347,8 @@ instance
 instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
   pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
 
--- | @since WIP
+-- | @since 1.10.0
 instance PShow PPositive
 
--- | @since WIP
+-- | @since 1.10.0
 instance PShow a => PShow (PMaybe a)
