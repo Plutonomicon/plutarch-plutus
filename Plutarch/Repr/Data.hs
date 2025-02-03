@@ -2,15 +2,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-{- HLINT ignore "Use newtype instead of data" -}
-
 module Plutarch.Repr.Data (
   PDataStruct (PDataStruct, unPDataStruct),
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
   DerivePLiftableAsDataRec (DerivePLiftableAsDataRec),
-  WrapperAsHaskell (WrapperAsHaskell, unWrapperAsHaskell),
 ) where
 
 import Data.Kind (Type)
@@ -65,6 +62,7 @@ import Plutarch.Internal.Term (S, Term, phoistAcyclic, plet, pplaceholder, punsa
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
+  RecAsHaskell,
   RecTypePrettyError,
   StructSameRepr,
   UnTermRec,
@@ -333,33 +331,15 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
 
 --------------------------------------------------------------------------------
 
-type family RecAsHaskell a where
-  RecAsHaskell (x ': xs) = AsHaskell x ': RecAsHaskell xs
-  RecAsHaskell '[] = '[]
-
--- For some reason, type checking gets stupid when I used newtype here.
-
--- | @since WIP
-data WrapperAsHaskell (a :: S -> Type) = WrapperAsHaskell {unWrapperAsHaskell :: AsHaskell a}
-
--- | @since WIP
-deriving stock instance Show (AsHaskell a) => Show (WrapperAsHaskell a)
-
--- | @since WIP
-deriving stock instance Eq (AsHaskell a) => Eq (WrapperAsHaskell a)
-
--- | @since WIP
-deriving stock instance Ord (AsHaskell a) => Ord (WrapperAsHaskell a)
-
 class (PLiftable a, PlutusRepr a ~ PLA.Data) => EachDataLiftable (a :: S -> Type)
 instance (PLiftable a, PlutusRepr a ~ PLA.Data) => EachDataLiftable (a :: S -> Type)
 
-newtype RTH struct = RTH {unRTH :: [PLA.Data] -> Either LiftError (NP WrapperAsHaskell struct)}
+class (a ~ AsHaskell b, PLiftable b, PlutusRepr b ~ PLA.Data) => ToAsHaskell (a :: Type) (b :: S -> Type)
+instance (a ~ AsHaskell b, PLiftable b, PlutusRepr b ~ PLA.Data) => ToAsHaskell (a :: Type) (b :: S -> Type)
 
--- NOTE(Seungheon): I know this can be done without WrapperAsHaskell, and I've actually tried it.
--- But if we proceed without WrapperAsHaskell, that'd mean GHC have to magically come up with
--- @PAsData PInteger@ or @PInteger@ magically from given @Integer@ value, which GHC can't.
--- Having this wrapper allows GHC to resolve types correctly.
+newtype RTH struct = RTH
+  { unRTH :: [PLA.Data] -> Either LiftError (NP SOP.I (RecAsHaskell struct))
+  }
 
 -- | @since WIP
 instance
@@ -372,29 +352,36 @@ instance
   ) =>
   PLiftable (PDataRec struct)
   where
-  type AsHaskell (PDataRec struct) = SOP WrapperAsHaskell '[struct]
+  type AsHaskell (PDataRec struct) = SOP SOP.I '[RecAsHaskell struct]
   type PlutusRepr (PDataRec struct) = [PLA.Data]
+  haskToRepr :: SOP SOP.I '[RecAsHaskell struct] -> [PLA.Data]
   haskToRepr x =
     let
-      f :: forall a x. EachDataLiftable a => WrapperAsHaskell a -> SOP.K PLA.Data x
-      f = SOP.K . haskToRepr @a . unWrapperAsHaskell
-     in
-      SOP.hcollapse $ SOP.hcmap (Proxy @EachDataLiftable) f x
-  reprToPlut x = mkPLifted $ punsafeCoerce $ pconstant @(PBuiltinList PData) x
+      g :: forall a b. ToAsHaskell a b => SOP.I a -> SOP.K PLA.Data b
+      g (SOP.I d) = SOP.K $ haskToRepr @b d
 
+      ds :: SOP (SOP.K PLA.Data) '[struct]
+      ds = SOP.htrans (Proxy @ToAsHaskell) g x
+     in
+      SOP.hcollapse ds
+  reprToPlut x = mkPLifted $ punsafeCoerce $ pconstant @(PBuiltinList PData) x
   plutToRepr x = plutToRepr @(PBuiltinList PData) $ punsafeCoercePLifted x
-  reprToHask :: [PLA.Data] -> Either LiftError (SOP WrapperAsHaskell '[struct])
+  reprToHask :: [PLA.Data] -> Either LiftError (SOP SOP.I '[hstruct])
   reprToHask x =
     let
-      go :: forall (y :: S -> Type) (ys :: [S -> Type]). EachDataLiftable y => RTH ys -> RTH (y ': ys)
+      go :: forall y ys. EachDataLiftable y => RTH ys -> RTH (y ': ys)
       go (RTH rest) = RTH $ \case
         [] -> Left $ OtherLiftError "Not enough fields are provided"
         (d : ds) -> do
-          d <- reprToHask @y d
-          dRest <- rest ds
-          pure $ WrapperAsHaskell d :* dRest
+          curr <- reprToHask @y d
+          rest <- rest ds
+
+          pure $ SOP.I curr :* rest
+
+      y :: RTH struct
+      y = SOP.cpara_SList (Proxy @EachDataLiftable) (RTH $ const $ Right Nil) go
      in
-      SOP.SOP . SOP.Z <$> (unRTH $ SOP.cpara_SList (Proxy @EachDataLiftable) (RTH $ const $ Right SOP.Nil) go) x
+      SOP.SOP . SOP.Z <$> unRTH y x
 
 -- | @since WIP
 newtype DerivePLiftableAsDataRec (wrapper :: S -> Type) (h :: Type) (s :: S)
@@ -402,12 +389,6 @@ newtype DerivePLiftableAsDataRec (wrapper :: S -> Type) (h :: Type) (s :: S)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
   deriving (PlutusType) via (DeriveFakePlutusType (DerivePLiftableAsDataRec wrapper h))
-
-class a ~ AsHaskell b => ToAsHaskell a b
-instance a ~ AsHaskell b => ToAsHaskell a b
-
-class a ~ AsHaskell b => FromAsHaskell b a
-instance a ~ AsHaskell b => FromAsHaskell b a
 
 -- | @since WIP
 instance
@@ -419,8 +400,6 @@ instance
   , '[struct'] ~ Code (wrapper Any)
   , struct ~ UnTermRec struct'
   , hstruct ~ RecAsHaskell struct
-  , SOP.AllZip ToAsHaskell hstruct struct
-  , SOP.AllZip FromAsHaskell struct hstruct
   , PInner wrapper ~ PDataRec struct
   ) =>
   PLiftable (DerivePLiftableAsDataRec wrapper h)
@@ -428,18 +407,8 @@ instance
   type AsHaskell (DerivePLiftableAsDataRec wrapper h) = h
   type PlutusRepr (DerivePLiftableAsDataRec wrapper h) = PlutusRepr (PInner wrapper)
   haskToRepr :: h -> PlutusRepr (PInner wrapper)
-  haskToRepr x =
-    let
-      f :: ToAsHaskell a b => SOP.I a -> WrapperAsHaskell b
-      f (SOP.I d) = WrapperAsHaskell d
-     in
-      haskToRepr @(PInner wrapper) $ SOP.htrans (Proxy @ToAsHaskell) f (SOP.from x)
+  haskToRepr x = haskToRepr @(PInner wrapper) $ SOP.from x
   reprToHask :: PlutusRepr (PInner wrapper) -> Either LiftError h
-  reprToHask x = do
-    ds :: SOP WrapperAsHaskell '[struct] <- reprToHask @(PInner wrapper) x
-    let
-      f :: FromAsHaskell a b => WrapperAsHaskell a -> SOP.I b
-      f (WrapperAsHaskell d) = SOP.I d
-    pure $ SOP.to $ SOP.htrans (Proxy @FromAsHaskell) f ds
+  reprToHask x = SOP.to <$> reprToHask @(PInner wrapper) x
   reprToPlut x = punsafeCoercePLifted $ reprToPlut @(PInner wrapper) x
   plutToRepr x = plutToRepr @(PInner wrapper) $ punsafeCoercePLifted x

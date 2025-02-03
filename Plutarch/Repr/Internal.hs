@@ -3,6 +3,7 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Repr.Internal (
+  RecAsHaskell,
   PStruct (PStruct, unPStruct),
   PRec (PRec, unPRec),
   pletL,
@@ -41,7 +42,7 @@ import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq (PEq, (#==))
-import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Lift (AsHaskell, pconstant)
 import Plutarch.Internal.Term (Dig, S, Term, plet)
 import Plutarch.Internal.TermCont (hashOpenTerm, unTermCont)
 
@@ -196,3 +197,9 @@ pands :: [Term s PBool] -> Term s PBool
 pands [] = pconstant True
 pands [x'] = x'
 pands (x' : xs') = pif x' (pands xs') (pconstant False)
+
+--------------------------------------------------------------------------------
+
+type family RecAsHaskell a where
+  RecAsHaskell (x ': xs) = AsHaskell x ': RecAsHaskell xs
+  RecAsHaskell '[] = '[]
