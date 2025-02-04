@@ -7,7 +7,7 @@ module Plutarch.Repr.Data (
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
-  DerivePLiftableAsDataRec (DerivePLiftableAsDataRec),
+  DerivePLiftableAsRec (DerivePLiftableAsRec),
 ) where
 
 import Data.Kind (Type)
@@ -384,11 +384,11 @@ instance
       SOP.SOP . SOP.Z <$> unRTH y x
 
 -- | @since WIP
-newtype DerivePLiftableAsDataRec (wrapper :: S -> Type) (h :: Type) (s :: S)
-  = DerivePLiftableAsDataRec (wrapper s)
+newtype DerivePLiftableAsRec (wrapper :: S -> Type) (h :: Type) (s :: S)
+  = DerivePLiftableAsRec (wrapper s)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic)
-  deriving (PlutusType) via (DeriveFakePlutusType (DerivePLiftableAsDataRec wrapper h))
+  deriving (PlutusType) via (DeriveFakePlutusType (DerivePLiftableAsRec wrapper h))
 
 -- | @since WIP
 instance
@@ -400,12 +400,12 @@ instance
   , '[struct'] ~ Code (wrapper Any)
   , struct ~ UnTermRec struct'
   , hstruct ~ RecAsHaskell struct
-  , PInner wrapper ~ PDataRec struct
+  , AsHaskell (PInner wrapper) ~ SOP SOP.I '[hstruct]
   ) =>
-  PLiftable (DerivePLiftableAsDataRec wrapper h)
+  PLiftable (DerivePLiftableAsRec wrapper h)
   where
-  type AsHaskell (DerivePLiftableAsDataRec wrapper h) = h
-  type PlutusRepr (DerivePLiftableAsDataRec wrapper h) = PlutusRepr (PInner wrapper)
+  type AsHaskell (DerivePLiftableAsRec wrapper h) = h
+  type PlutusRepr (DerivePLiftableAsRec wrapper h) = PlutusRepr (PInner wrapper)
   haskToRepr :: h -> PlutusRepr (PInner wrapper)
   haskToRepr x = haskToRepr @(PInner wrapper) $ SOP.from x
   reprToHask :: PlutusRepr (PInner wrapper) -> Either LiftError h

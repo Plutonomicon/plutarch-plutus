@@ -30,6 +30,7 @@ import Generics.SOP.Constraint (
  )
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Eq (PEq, (#==))
+import Plutarch.Internal.Lift
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PContravariant',
@@ -61,6 +62,7 @@ import Plutarch.Internal.Term (
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
+  RecAsHaskell,
   RecTypePrettyError,
   StructSameRepr,
   UnTermRec,
@@ -279,4 +281,65 @@ pmatchSOPStruct xs h = Term $ \i -> do
     handlerTerms = fst <$> handlers
     handlerDeps = mconcat $ snd <$> handlers
 
-  pure $ TermResult (RCase term handlerTerms) (deps <> handlerDeps)
+  pure $ TermResult (RCase term handlerTerms) (handlerDeps <> deps)
+
+--------------------------------------------------------------------------------
+
+class (a ~ AsHaskell b, PLiftable b) => ToAsHaskell (a :: Type) (b :: S -> Type)
+instance (a ~ AsHaskell b, PLiftable b) => ToAsHaskell (a :: Type) (b :: S -> Type)
+
+newtype LAB (struct :: [S -> Type]) = LAB
+  { unLAB ::
+      PLiftedClosed (PSOPRec struct) ->
+      Either LiftError (SOP.NP SOP.I (RecAsHaskell struct))
+  }
+
+-- | @since WIP
+instance
+  forall (struct :: [S -> Type]) (hstruct :: [Type]).
+  ( SListI struct
+  , hstruct ~ RecAsHaskell struct
+  , SOP.AllZip ToAsHaskell hstruct struct
+  , SOP.All PLiftable struct
+  ) =>
+  PLiftable (PSOPRec struct)
+  where
+  type AsHaskell (PSOPRec struct) = SOP SOP.I '[RecAsHaskell struct]
+  type PlutusRepr (PSOPRec struct) = PLiftedClosed (PSOPRec struct)
+  haskToRepr x =
+    let
+      f :: forall a b s. ToAsHaskell a b => SOP.I a -> Term s b
+      f = pconstant @b . SOP.unI
+     in
+      mkPLiftedClosed $
+        pcon $
+          PSOPRec $
+            PRec $
+              SOP.unZ $
+                SOP.unSOP $
+                  SOP.htrans (Proxy @ToAsHaskell) f x
+  reprToHask x =
+    let
+      go :: forall y ys. (SOP.SListI ys, PLiftable y) => LAB ys -> LAB (y ': ys)
+      go (LAB rest) = LAB $ \x -> do
+        rest' <-
+          rest $
+            mkPLiftedClosed $
+              pmatch (getPLiftedClosed x) $ \case
+                (PSOPRec (PRec (_ :* ds))) -> pcon $ PSOPRec $ PRec ds
+        curr <-
+          ( plutToRepr @y $
+              mkPLifted $
+                pmatch (getPLiftedClosed x) $ \case
+                  (PSOPRec (PRec (d :* _))) -> d
+            )
+            >>= reprToHask @y
+
+        pure $ SOP.I curr :* rest'
+     in
+      SOP.SOP . SOP.Z
+        <$> (unLAB $ SOP.cpara_SList (Proxy @PLiftable) (LAB $ const $ Right Nil) go) x
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = pliftedFromClosed
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = Right . pliftedToClosed
