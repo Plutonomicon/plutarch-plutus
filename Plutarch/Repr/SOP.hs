@@ -10,14 +10,14 @@ module Plutarch.Repr.SOP (
 ) where
 
 import Control.Arrow ((&&&))
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import Generics.SOP (
   Code,
   K (K),
   NP (Nil, (:*)),
-  NS (Z),
+  NS (S, Z),
   SOP (SOP),
  )
 import Generics.SOP qualified as SOP
@@ -28,6 +28,7 @@ import Generics.SOP.Constraint (
   SListI,
   SListI2,
  )
+import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Lift
@@ -54,6 +55,7 @@ import Plutarch.Internal.Term (
   asRawTerm,
   getDeps,
   getTerm,
+  perror,
   phoistAcyclic,
   punsafeCoerce,
   (#),
@@ -64,6 +66,7 @@ import Plutarch.Repr.Internal (
   PStruct (PStruct, unPStruct),
   RecAsHaskell,
   RecTypePrettyError,
+  StructAsHaskell,
   StructSameRepr,
   UnTermRec,
   UnTermStruct,
@@ -343,3 +346,112 @@ instance
   reprToPlut = pliftedFromClosed
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = Right . pliftedToClosed
+
+newtype LAC struct = LAC
+  { unLAC ::
+      PLiftedClosed (PSOPStruct struct) ->
+      Either LiftError (SOP SOP.I (StructAsHaskell struct))
+  }
+
+class (SOP.AllZip ToAsHaskell (RecAsHaskell y) y, All PLiftable y) => SOPEntryConstraints y
+instance (SOP.AllZip ToAsHaskell (RecAsHaskell y) y, All PLiftable y) => SOPEntryConstraints y
+
+class (SListI2 ys, PSOPStructConstraint ys) => SOPRestConstraint ys
+instance (SListI2 ys, PSOPStructConstraint ys) => SOPRestConstraint ys
+
+-- | @since WIP
+instance
+  forall (struct :: [[S -> Type]]) (hstruct :: [[Type]]).
+  ( SListI2 struct
+  , hstruct ~ StructAsHaskell struct
+  , SOP.AllZip2 ToAsHaskell hstruct struct
+  , SOP.All2 PLiftable struct
+  , MyAll SOPEntryConstraints SOPRestConstraint struct
+  , PSOPStructConstraint struct
+  ) =>
+  PLiftable (PSOPStruct struct)
+  where
+  type AsHaskell (PSOPStruct struct) = SOP SOP.I (StructAsHaskell struct)
+  type PlutusRepr (PSOPStruct struct) = PLiftedClosed (PSOPStruct struct)
+  haskToRepr :: SOP SOP.I hstruct -> PLiftedClosed (PSOPStruct struct)
+  haskToRepr x =
+    let
+      f :: forall a b s. ToAsHaskell a b => SOP.I a -> Term s b
+      f = pconstant @b . SOP.unI
+     in
+      mkPLiftedClosed $ pcon $ PSOPStruct $ PStruct $ SOP.htrans (Proxy @ToAsHaskell) f x
+  reprToHask :: PLiftedClosed (PSOPStruct struct) -> Either LiftError (SOP SOP.I hstruct)
+  reprToHask x =
+    let
+      go ::
+        forall (y :: [S -> Type]) (ys :: [[S -> Type]]).
+        (SOPRestConstraint ys, SOPEntryConstraints y) =>
+        LAC ys ->
+        LAC (y ': ys)
+      go (LAC rest) = LAC $ \d -> do
+        let
+          isCurrent :: Bool
+          isCurrent =
+            plift $
+              pmatch (getPLiftedClosed d) $ \case
+                (PSOPStruct (PStruct (SOP (S _)))) -> pconstant @PBool False
+                (PSOPStruct (PStruct (SOP (Z _)))) -> pconstant @PBool True
+
+        if isCurrent
+          then do
+            curr <-
+              ( plutToRepr @(PSOPRec y) $
+                  mkPLifted $
+                    pmatch (getPLiftedClosed d) $ \case
+                      (PSOPStruct (PStruct (SOP (S _x')))) -> perror
+                      (PSOPStruct (PStruct (SOP (Z x')))) -> pcon $ PSOPRec $ PRec x'
+                )
+                >>= reprToHask @(PSOPRec y)
+
+            pure $ case curr of
+              (SOP (Z (curr' :: NP SOP.I (RecAsHaskell y)))) -> SOP $ Z curr'
+              _ -> error "no B"
+          else do
+            SOP next <-
+              rest $
+                mkPLiftedClosed $
+                  pmatch (getPLiftedClosed d) $ \case
+                    (PSOPStruct (PStruct (SOP (S x')))) -> pcon $ PSOPStruct $ PStruct $ SOP x'
+                    (PSOPStruct (PStruct (SOP (Z _x')))) -> perror
+
+            pure $ SOP $ S next
+     in
+      ( unLAC $
+          my_cpara_SList
+            (Proxy @SOPEntryConstraints)
+            (Proxy @SOPRestConstraint)
+            (LAC $ const $ pure $ SOP $ error "absurd: empty SOP")
+            go
+      )
+        x
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = pliftedFromClosed
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = Right . pliftedToClosed
+
+-- "my" copy of `cpara_SList` that allows you to add constraint on the "rest" part of the type
+type family MyAllF (c :: k -> Constraint) (d :: [k] -> Constraint) (xs :: [k]) :: Constraint where
+  MyAllF _c _d '[] = ()
+  MyAllF c d (x ': xs) = (c x, d xs, MyAll c d xs)
+
+class (MyAllF c d xs, SListI xs) => MyAll (c :: k -> Constraint) (d :: [k] -> Constraint) (xs :: [k]) where
+  my_cpara_SList ::
+    Proxy c ->
+    Proxy d ->
+    r '[] ->
+    (forall y ys. (c y, d ys, MyAll c d ys) => r ys -> r (y ': ys)) ->
+    r xs
+
+instance MyAll c d '[] where
+  my_cpara_SList _p _d nil _cons = nil
+  {-# INLINE my_cpara_SList #-}
+
+instance (c x, d xs, MyAll c d xs) => MyAll c d (x ': xs) where
+  my_cpara_SList p d nil cons =
+    cons (my_cpara_SList p d nil cons)
+  {-# INLINE my_cpara_SList #-}

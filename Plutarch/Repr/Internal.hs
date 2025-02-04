@@ -4,6 +4,7 @@
 
 module Plutarch.Repr.Internal (
   RecAsHaskell,
+  StructAsHaskell,
   PStruct (PStruct, unPStruct),
   PRec (PRec, unPRec),
   pletL,
@@ -13,6 +14,7 @@ module Plutarch.Repr.Internal (
   StructSameRepr,
   UnTermRec,
   UnTermStruct,
+  UnTermStruct',
   RecTypePrettyError,
 ) where
 
@@ -200,6 +202,10 @@ pands (x' : xs') = pif x' (pands xs') (pconstant False)
 
 --------------------------------------------------------------------------------
 
-type family RecAsHaskell a where
+type family RecAsHaskell (x :: [S -> Type]) where
   RecAsHaskell (x ': xs) = AsHaskell x ': RecAsHaskell xs
   RecAsHaskell '[] = '[]
+
+type family StructAsHaskell (x :: [[S -> Type]]) where
+  StructAsHaskell (x ': xs) = RecAsHaskell x ': StructAsHaskell xs
+  StructAsHaskell '[] = '[]

@@ -7,14 +7,12 @@ module Plutarch.Repr.Data (
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
-  DerivePLiftableAsRec (DerivePLiftableAsRec),
 ) where
 
 import Data.Kind (Type)
 import Data.Maybe (catMaybes)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
-import GHC.Generics (Generic)
 import Generics.SOP (
   All,
   All2,
@@ -44,7 +42,6 @@ import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DeriveFakePlutusType (DeriveFakePlutusType),
   PContravariant',
   PContravariant'',
   PCovariant',
@@ -382,33 +379,3 @@ instance
       y = SOP.cpara_SList (Proxy @EachDataLiftable) (RTH $ const $ Right Nil) go
      in
       SOP.SOP . SOP.Z <$> unRTH y x
-
--- | @since WIP
-newtype DerivePLiftableAsRec (wrapper :: S -> Type) (h :: Type) (s :: S)
-  = DerivePLiftableAsRec (wrapper s)
-  deriving stock (Generic)
-  deriving anyclass (SOP.Generic)
-  deriving (PlutusType) via (DeriveFakePlutusType (DerivePLiftableAsRec wrapper h))
-
--- | @since WIP
-instance
-  forall wrapper h (struct' :: [Type]) (struct :: [S -> Type]) (hstruct :: [Type]).
-  ( PLiftable (PInner wrapper)
-  , SOP.Generic (wrapper Any)
-  , SOP.Generic h
-  , '[hstruct] ~ Code h
-  , '[struct'] ~ Code (wrapper Any)
-  , struct ~ UnTermRec struct'
-  , hstruct ~ RecAsHaskell struct
-  , AsHaskell (PInner wrapper) ~ SOP SOP.I '[hstruct]
-  ) =>
-  PLiftable (DerivePLiftableAsRec wrapper h)
-  where
-  type AsHaskell (DerivePLiftableAsRec wrapper h) = h
-  type PlutusRepr (DerivePLiftableAsRec wrapper h) = PlutusRepr (PInner wrapper)
-  haskToRepr :: h -> PlutusRepr (PInner wrapper)
-  haskToRepr x = haskToRepr @(PInner wrapper) $ SOP.from x
-  reprToHask :: PlutusRepr (PInner wrapper) -> Either LiftError h
-  reprToHask x = SOP.to <$> reprToHask @(PInner wrapper) x
-  reprToPlut x = punsafeCoercePLifted $ reprToPlut @(PInner wrapper) x
-  plutToRepr x = plutToRepr @(PInner wrapper) $ punsafeCoercePLifted x
