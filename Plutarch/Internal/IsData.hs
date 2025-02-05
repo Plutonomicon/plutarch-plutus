@@ -3,7 +3,7 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Internal.IsData (
-  PInnerMostIsData,
+  PInnermostIsData,
   PIsData,
   pfromDataImpl,
   pdataImpl,
@@ -46,7 +46,7 @@ import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (
   PCovariant,
-  PInnerMost,
+  PInnermost,
   PVariant,
   PlutusType (PInner),
  )
@@ -68,9 +68,9 @@ import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusTx qualified as PTx
 
-type family PInnerMostIsData' msg a b :: Constraint where
-  PInnerMostIsData' _ _ PData = ()
-  PInnerMostIsData' ('Just msg) a b =
+type family PInnermostIsData' msg a b :: Constraint where
+  PInnermostIsData' _ _ PData = ()
+  PInnermostIsData' ('Just msg) a b =
     TypeError
       ( 'Text msg
           ':$$: 'Text "Inner most representation of \""
@@ -80,7 +80,7 @@ type family PInnerMostIsData' msg a b :: Constraint where
             ':<>: 'Text "\""
       )
       ~ ()
-  PInnerMostIsData' 'Nothing a b =
+  PInnermostIsData' 'Nothing a b =
     TypeError
       ( 'Text "Inner most representation of \""
           ':<>: 'ShowType a
@@ -90,8 +90,8 @@ type family PInnerMostIsData' msg a b :: Constraint where
       )
       ~ ()
 
-class (PInnerMostIsData' msg a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData msg a
-instance (PInnerMostIsData' msg a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData msg a
+class (PInnermostIsData' msg a (PInnermost a), PInnermost a ~ PData) => PInnermostIsData msg a
+instance (PInnermostIsData' msg a (PInnermost a), PInnermost a ~ PData) => PInnermostIsData msg a
 
 {- | Laws:
  - If @PSubtype PData a@, then @pdataImpl a@ must be `pupcast`.
@@ -141,12 +141,12 @@ prememberData Proxy = let _ = witness (Proxy @(PVariant p)) in punsafeCoerce
 -- | Like 'prememberData' but generalised.
 prememberData' ::
   forall a (p :: (S -> Type) -> S -> Type) (s :: S).
-  (PInnerMostIsData 'Nothing a, PSubtype PData a, PVariant p) =>
+  (PInnermostIsData 'Nothing a, PSubtype PData a, PVariant p) =>
   Proxy p ->
   Term s (p a) ->
   Term s (p (PAsData a))
 prememberData' Proxy =
-  let _ = witness (Proxy @(PInnerMostIsData 'Nothing a, PSubtype PData a, PVariant p))
+  let _ = witness (Proxy @(PInnermostIsData 'Nothing a, PSubtype PData a, PVariant p))
    in punsafeCoerce
 
 instance PIsData PData where
@@ -209,7 +209,7 @@ instance PIsData PUnit where
 
 instance
   forall (a :: S -> Type).
-  ( PInnerMostIsData ('Just "PBuiltinList only implements PIsData when inner most type of its elements are PData") a
+  ( PInnermostIsData ('Just "PBuiltinList only implements PIsData when inner most type of its elements are PData") a
   , PSubtype PData a
   ) =>
   PIsData (PBuiltinList a)

@@ -291,8 +291,8 @@ pmatchSOPStruct xs h = Term $ \i -> do
 class (a ~ AsHaskell b, PLiftable b) => ToAsHaskell (a :: Type) (b :: S -> Type)
 instance (a ~ AsHaskell b, PLiftable b) => ToAsHaskell (a :: Type) (b :: S -> Type)
 
-newtype LAB (struct :: [S -> Type]) = LAB
-  { unLAB ::
+newtype PSOPRecPLiftableHelper (struct :: [S -> Type]) = PSOPRecPLiftableHelper
+  { unPSOPRecPLiftableHelper ::
       PLiftedClosed (PSOPRec struct) ->
       Either LiftError (SOP.NP SOP.I (RecAsHaskell struct))
   }
@@ -323,8 +323,8 @@ instance
                   SOP.htrans (Proxy @ToAsHaskell) f x
   reprToHask x =
     let
-      go :: forall y ys. (SOP.SListI ys, PLiftable y) => LAB ys -> LAB (y ': ys)
-      go (LAB rest) = LAB $ \x -> do
+      go :: forall y ys. (SOP.SListI ys, PLiftable y) => PSOPRecPLiftableHelper ys -> PSOPRecPLiftableHelper (y ': ys)
+      go (PSOPRecPLiftableHelper rest) = PSOPRecPLiftableHelper $ \x -> do
         rest' <-
           rest $
             mkPLiftedClosed $
@@ -341,14 +341,14 @@ instance
         pure $ SOP.I curr :* rest'
      in
       SOP.SOP . SOP.Z
-        <$> (unLAB $ SOP.cpara_SList (Proxy @PLiftable) (LAB $ const $ Right Nil) go) x
+        <$> (unPSOPRecPLiftableHelper $ SOP.cpara_SList (Proxy @PLiftable) (PSOPRecPLiftableHelper $ const $ Right Nil) go) x
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = pliftedFromClosed
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = Right . pliftedToClosed
 
-newtype LAC struct = LAC
-  { unLAC ::
+newtype PSOPStructPLiftableHelper struct = PSOPStructPLiftableHelper
+  { unPSOPStructPLiftableHelper ::
       PLiftedClosed (PSOPStruct struct) ->
       Either LiftError (SOP SOP.I (StructAsHaskell struct))
   }
@@ -386,9 +386,9 @@ instance
       go ::
         forall (y :: [S -> Type]) (ys :: [[S -> Type]]).
         (SOPRestConstraint ys, SOPEntryConstraints y) =>
-        LAC ys ->
-        LAC (y ': ys)
-      go (LAC rest) = LAC $ \d -> do
+        PSOPStructPLiftableHelper ys ->
+        PSOPStructPLiftableHelper (y ': ys)
+      go (PSOPStructPLiftableHelper rest) = PSOPStructPLiftableHelper $ \d -> do
         let
           isCurrent :: Bool
           isCurrent =
@@ -421,11 +421,11 @@ instance
 
             pure $ SOP $ S next
      in
-      ( unLAC $
+      ( unPSOPStructPLiftableHelper $
           my_cpara_SList
             (Proxy @SOPEntryConstraints)
             (Proxy @SOPRestConstraint)
-            (LAC $ const $ pure $ SOP $ error "absurd: empty SOP")
+            (PSOPStructPLiftableHelper $ const $ pure $ SOP $ error "absurd: empty SOP")
             go
       )
         x
