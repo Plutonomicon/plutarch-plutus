@@ -1,21 +1,18 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Repr.Data (
-  PInnerMostIsData,
   PDataStruct (PDataStruct, unPDataStruct),
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
-  PInnerMost,
 ) where
 
-import Data.Kind (Constraint, Type)
+import Data.Kind (Type)
 import Data.Maybe (catMaybes)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
-import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
 import Generics.SOP (
   All,
   All2,
@@ -39,8 +36,8 @@ import Plutarch.Builtin.Data (
   psndBuiltin,
  )
 import Plutarch.Internal.Eq (PEq, (#==))
-import Plutarch.Internal.IsData (PIsData)
-import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.IsData (PInnermostIsData, PIsData)
+import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -62,6 +59,7 @@ import Plutarch.Internal.Term (S, Term, phoistAcyclic, plet, pplaceholder, punsa
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
+  RecAsHaskell,
   RecTypePrettyError,
   StructSameRepr,
   UnTermRec,
@@ -69,29 +67,11 @@ import Plutarch.Repr.Internal (
   groupHandlers,
  )
 import Plutarch.TermCont (pfindPlaceholder, pletC, unTermCont)
+import PlutusLedgerApi.V3 qualified as PLA
 
--- TODO: move this to Plutarch.Internal
-type family PInnerMost' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
-  PInnerMost' a a = a
-  PInnerMost' a _b = PInnerMost' (PInner a) a
-
-type PInnerMost a = PInnerMost' (PInner a) a
-
-type family PInnerMostIsData' a b :: Constraint where
-  PInnerMostIsData' _ PData = ()
-  PInnerMostIsData' a b =
-    TypeError
-      ( 'Text "Data representation can only hold types whose inner most representation is PData"
-          ':$$: 'Text "Inner most representation of \""
-            ':<>: 'ShowType a
-            ':<>: 'Text "\" is \""
-            ':<>: 'ShowType b
-            ':<>: 'Text "\""
-      )
-      ~ ()
-
-class (PInnerMostIsData' a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData a
-instance (PInnerMostIsData' a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData a
+type PInnermostIsDataDataRepr =
+  PInnermostIsData
+    ('Just "Data representation can only hold types whose inner most representation is PData")
 
 -- | @since 1.10.0
 newtype PDataStruct (struct :: [[S -> Type]]) (s :: S) = PDataStruct {unPDataStruct :: PStruct struct s}
@@ -100,7 +80,7 @@ newtype PDataStruct (struct :: [[S -> Type]]) (s :: S) = PDataStruct {unPDataStr
 newtype PDataRec (struct :: [S -> Type]) (s :: S) = PDataRec {unPDataRec :: PRec struct s}
 
 -- | @since 1.10.0
-instance (SListI2 struct, All2 PInnerMostIsData struct) => PlutusType (PDataStruct struct) where
+instance (SListI2 struct, All2 PInnermostIsDataDataRepr struct) => PlutusType (PDataStruct struct) where
   type PInner (PDataStruct struct) = PData
   type PCovariant' (PDataStruct struct) = All2 PCovariant'' struct
   type PContravariant' (PDataStruct struct) = All2 PContravariant'' struct
@@ -109,7 +89,7 @@ instance (SListI2 struct, All2 PInnerMostIsData struct) => PlutusType (PDataStru
   pmatch' x f = pmatchDataStruct (punsafeCoerce x) (f . PDataStruct)
 
 -- | @since 1.10.0
-instance (SListI struct, All PInnerMostIsData struct) => PlutusType (PDataRec struct) where
+instance (SListI struct, All PInnermostIsDataDataRepr struct) => PlutusType (PDataRec struct) where
   type PInner (PDataRec struct) = PBuiltinList PData
   type PCovariant' (PDataRec struct) = All PCovariant'' struct
   type PContravariant' (PDataRec struct) = All PContravariant'' struct
@@ -140,7 +120,7 @@ instance
   ( SOP.Generic (a Any)
   , '[struct'] ~ Code (a Any)
   , struct ~ UnTermRec struct'
-  , All PInnerMostIsData struct
+  , All PInnermostIsDataDataRepr struct
   , SListI struct
   , forall s. StructSameRepr s a '[struct]
   , RecTypePrettyError (Code (a Any))
@@ -164,7 +144,7 @@ instance
   forall (a :: S -> Type) (struct :: [[S -> Type]]).
   ( SOP.Generic (a Any)
   , struct ~ UnTermStruct (a Any)
-  , All2 PInnerMostIsData struct
+  , All2 PInnermostIsDataDataRepr struct
   , SListI2 struct
   , forall s. StructSameRepr s a struct
   ) =>
@@ -191,25 +171,25 @@ instance
 
 pconDataRec ::
   forall (struct :: [S -> Type]) (s :: S).
-  All PInnerMostIsData struct =>
+  All PInnermostIsDataDataRepr struct =>
   PRec struct s ->
   Term s (PDataRec struct)
 pconDataRec (PRec xs) =
   let
     collapesdData :: [Term s PData]
-    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PInnerMostIsData) (K . punsafeCoerce) xs
+    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PInnermostIsDataDataRepr) (K . punsafeCoerce) xs
     builtinList = foldr (\x xs -> pconsBuiltin # x # xs) (pconstant []) collapesdData
    in
     punsafeCoerce builtinList
 
 pconDataStruct ::
   forall (struct :: [[S -> Type]]) (s :: S).
-  (SListI2 struct, All2 PInnerMostIsData struct) =>
+  (SListI2 struct, All2 PInnermostIsDataDataRepr struct) =>
   PStruct struct s ->
   Term s (PDataStruct struct)
 pconDataStruct (PStruct xs) =
   let
-    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PInnerMostIsData) (K . punsafeCoerce) xs
+    collapesdData = SOP.hcollapse $ SOP.hcmap (Proxy @PInnermostIsDataDataRepr) (K . punsafeCoerce) xs
     builtinList = foldr (\x xs -> pconsBuiltin # x # xs) (pconstant []) collapesdData
     idx = pconstant $ toInteger $ SOP.hindex xs
    in
@@ -234,7 +214,7 @@ newtype H s struct = H
 
 pmatchDataRec ::
   forall (struct :: [S -> Type]) b s.
-  All PInnerMostIsData struct =>
+  All PInnermostIsDataDataRepr struct =>
   Term s (PDataRec struct) ->
   (PRec struct s -> Term s b) ->
   Term s b
@@ -312,13 +292,13 @@ newtype StructureHandler s r struct = StructureHandler
 -- This is probably general enough to be used for non-Data encoded types
 pmatchDataStruct ::
   forall (struct :: [[S -> Type]]) b s.
-  All2 PInnerMostIsData struct =>
+  All2 PInnermostIsDataDataRepr struct =>
   Term s (PDataStruct struct) ->
   (PStruct struct s -> Term s b) ->
   Term s b
 pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
   let
-    go :: forall y ys. All PInnerMostIsData y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
+    go :: forall y ys. All PInnermostIsDataDataRepr y => StructureHandler s b ys -> StructureHandler s b (y ': ys)
     go (StructureHandler rest) = StructureHandler $ \i ds cps ->
       let
         dataRecAsBuiltinList :: Term s (PBuiltinList PData) -> Term s (PDataRec y)
@@ -332,7 +312,7 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
     -- This builds "handlers"--that is each cases of SOP data
     -- By building this we can figure out which cases share same computation, hence which branches to group
     handlers' :: StructureHandler s b struct
-    handlers' = SOP.cpara_SList (Proxy @(All PInnerMostIsData)) (StructureHandler $ \_ _ _ -> Nil) go
+    handlers' = SOP.cpara_SList (Proxy @(All PInnermostIsDataDataRepr)) (StructureHandler $ \_ _ _ -> Nil) go
 
     handlers :: Term s (PBuiltinList PData) -> [(Integer, Term s b)]
     handlers d = SOP.hcollapse $ unSBR handlers' 0 d f
@@ -345,3 +325,57 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
       ds <- pletC $ psndBuiltin # x'
 
       pure $ groupHandlers (handlers ds) idx
+
+--------------------------------------------------------------------------------
+
+class (PLiftable a, PlutusRepr a ~ PLA.Data) => EachDataLiftable (a :: S -> Type)
+instance (PLiftable a, PlutusRepr a ~ PLA.Data) => EachDataLiftable (a :: S -> Type)
+
+class (a ~ AsHaskell b, PLiftable b, PlutusRepr b ~ PLA.Data) => ToAsHaskell (a :: Type) (b :: S -> Type)
+instance (a ~ AsHaskell b, PLiftable b, PlutusRepr b ~ PLA.Data) => ToAsHaskell (a :: Type) (b :: S -> Type)
+
+newtype PDataRecPLiftableHelper struct = PDataRecPLiftableHelper
+  { unPDataRecPLiftableHelper :: [PLA.Data] -> Either LiftError (NP SOP.I (RecAsHaskell struct))
+  }
+
+-- | @since WIP
+instance
+  forall (struct :: [S -> Type]) (hstruct :: [Type]).
+  ( SListI struct
+  , All EachDataLiftable struct
+  , All PInnermostIsDataDataRepr struct
+  , hstruct ~ RecAsHaskell struct
+  , SOP.AllZip ToAsHaskell hstruct struct
+  ) =>
+  PLiftable (PDataRec struct)
+  where
+  type AsHaskell (PDataRec struct) = SOP SOP.I '[RecAsHaskell struct]
+  type PlutusRepr (PDataRec struct) = [PLA.Data]
+  haskToRepr :: SOP SOP.I '[RecAsHaskell struct] -> [PLA.Data]
+  haskToRepr x =
+    let
+      g :: forall a b. ToAsHaskell a b => SOP.I a -> SOP.K PLA.Data b
+      g (SOP.I d) = SOP.K $ haskToRepr @b d
+
+      ds :: SOP (SOP.K PLA.Data) '[struct]
+      ds = SOP.htrans (Proxy @ToAsHaskell) g x
+     in
+      SOP.hcollapse ds
+  reprToPlut x = mkPLifted $ punsafeCoerce $ pconstant @(PBuiltinList PData) x
+  plutToRepr x = plutToRepr @(PBuiltinList PData) $ punsafeCoercePLifted x
+  reprToHask :: [PLA.Data] -> Either LiftError (SOP SOP.I '[hstruct])
+  reprToHask x =
+    let
+      go :: forall y ys. EachDataLiftable y => PDataRecPLiftableHelper ys -> PDataRecPLiftableHelper (y ': ys)
+      go (PDataRecPLiftableHelper rest) = PDataRecPLiftableHelper $ \case
+        [] -> Left $ OtherLiftError "Not enough fields are provided"
+        (d : ds) -> do
+          curr <- reprToHask @y d
+          rest <- rest ds
+
+          pure $ SOP.I curr :* rest
+
+      y :: PDataRecPLiftableHelper struct
+      y = SOP.cpara_SList (Proxy @EachDataLiftable) (PDataRecPLiftableHelper $ const $ Right Nil) go
+     in
+      SOP.SOP . SOP.Z <$> unPDataRecPLiftableHelper y x

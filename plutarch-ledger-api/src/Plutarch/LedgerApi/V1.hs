@@ -151,11 +151,11 @@ deriving via
 
 -- | @since 3.3.0
 data PTxInfo (s :: S) = PTxInfo
-  { ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-  , ptxInfo'outputs :: Term s (PAsData (PBuiltinList (PAsData PTxOut)))
+  { ptxInfo'inputs :: Term s (PAsData (PBuiltinList PTxInInfo))
+  , ptxInfo'outputs :: Term s (PAsData (PBuiltinList PTxOut))
   , ptxInfo'fee :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
   , ptxInfo'mint :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees)) -- value minted by transaction
-  , ptxInfo'dCert :: Term s (PAsData (PBuiltinList (PAsData DCert.PDCert)))
+  , ptxInfo'dCert :: Term s (PAsData (PBuiltinList DCert.PDCert))
   , ptxInfo'wdrl :: Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData Credential.PStakingCredential) (PAsData PInteger))))) -- Staking withdrawals
   , ptxInfo'validRange :: Term s (Interval.PInterval Time.PPosixTime)
   , ptxInfo'signatories :: Term s (PAsData (PBuiltinList (PAsData Crypto.PPubKeyHash)))
