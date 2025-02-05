@@ -132,6 +132,7 @@ library
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Repr.Data
+    Plutarch.Repr.Derive
     Plutarch.Repr.Internal
     Plutarch.Repr.Newtype
     Plutarch.Repr.Scott

@@ -809,6 +809,7 @@ instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.
 
 module Plutarch.Internal.PlutusType
 class PlutusType (a :: PType)
+type PInnermost a = PInnermost' (PInner a) a
 type PlutusTypeStratConstraint strategy :: PType -> Constraint
 
 -- | <i>Deprecated: Use PlutusType</i>
@@ -1605,6 +1606,8 @@ instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Elem
 instance Plutarch.Internal.Eq.PEq Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element
 
 module Plutarch.Repr.Internal
+type family RecAsHaskell (x :: [S -> Type])
+type family StructAsHaskell (x :: [[S -> Type]])
 
 newtype PStruct (struct :: [[S -> Type]]) (s :: S)
 PStruct :: SOP (Term s) struct -> PStruct (struct :: [[S -> Type]]) (s :: S)
@@ -1632,6 +1635,7 @@ class (Generic (a s), AllZipN @Type (Prod SOP) (LiftedCoercible I (Term s)) (Cod
 type family UnTermRec (struct :: [Type]) :: [S -> Type]
 
 type UnTermStruct x = UnTermStruct' (Code x)
+type family UnTermStruct' (struct :: [[Type]]) :: [[S -> Type]]
 
 type RecTypePrettyError struct = RecTypePrettyError' struct ~ 'True
 instance forall l1 (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S) (struct :: l1). (Generics.SOP.Universe.Generic (a s), Data.SOP.Constraint.AllZipN @GHC.Types.Type @[[GHC.Types.Type]] @GHC.Types.Type @Plutarch.Internal.Term.PType @[[GHC.Types.Type]] @l1 (Data.SOP.Classes.Prod @GHC.Types.Type @[[GHC.Types.Type]] (Data.SOP.NS.SOP @GHC.Types.Type)) (Data.SOP.Constraint.LiftedCoercible @{GHC.Types.Type} @{GHC.Types.Type} @{Plutarch.Internal.Term.PType} Data.SOP.BasicFunctors.I (Plutarch.Internal.Term.Term s)) (Generics.SOP.Universe.Code (a s)) struct, Data.SOP.Constraint.AllZipN @GHC.Types.Type @[[GHC.Types.Type]] @Plutarch.Internal.Term.PType @GHC.Types.Type @l1 @[[GHC.Types.Type]] (Data.SOP.Classes.Prod @GHC.Types.Type @[[GHC.Types.Type]] (Data.SOP.NS.SOP @GHC.Types.Type)) (Data.SOP.Constraint.LiftedCoercible @{Plutarch.Internal.Term.PType} @{GHC.Types.Type} @{GHC.Types.Type} (Plutarch.Internal.Term.Term s) Data.SOP.BasicFunctors.I) struct (Generics.SOP.Universe.Code (a s))) => Plutarch.Repr.Internal.StructSameRepr @{l1} s a struct
@@ -1700,6 +1704,13 @@ newtype DeriveAsSOPRec (a :: S -> Type) s
 DeriveAsSOPRec :: a s -> DeriveAsSOPRec (a :: S -> Type) s
 
 [$sel:unDeriveAsSOPRec:DeriveAsSOPRec] :: DeriveAsSOPRec (a :: S -> Type) s -> a s
+instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) (hstruct :: [[GHC.Types.Type]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, (hstruct :: [[GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.StructAsHaskell struct :: [[GHC.Types.Type]]), Data.SOP.Constraint.AllZip2 @{GHC.Types.Type} @{Plutarch.Internal.Term.S -> GHC.Types.Type} Plutarch.Repr.SOP.ToAsHaskell hstruct struct, Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} Plutarch.Internal.Lift.PLiftable struct, Plutarch.Repr.SOP.MyAll @[Plutarch.Internal.Term.S -> GHC.Types.Type] Plutarch.Repr.SOP.SOPEntryConstraints Plutarch.Repr.SOP.SOPRestConstraint struct, Plutarch.Repr.SOP.PSOPStructConstraint struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.SOP.PSOPStruct struct)
+instance forall k (c :: k -> GHC.Types.Constraint) (d :: [k] -> GHC.Types.Constraint). Plutarch.Repr.SOP.MyAll @k c d ('[] @k)
+instance forall a (c :: a -> GHC.Types.Constraint) (x :: a) (d :: [a] -> GHC.Types.Constraint) (xs :: [a]). (c x, d xs, Plutarch.Repr.SOP.MyAll @a c d xs) => Plutarch.Repr.SOP.MyAll @a c d ((':) @a x xs)
+instance forall (ys :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} ys, Plutarch.Repr.SOP.PSOPStructConstraint ys) => Plutarch.Repr.SOP.SOPRestConstraint ys
+instance forall (y :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). (Data.SOP.Constraint.AllZip @GHC.Types.Type @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.SOP.ToAsHaskell (Plutarch.Repr.Internal.RecAsHaskell y) y, Data.SOP.Constraint.All @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Internal.Lift.PLiftable y) => Plutarch.Repr.SOP.SOPEntryConstraints y
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (hstruct :: [GHC.Types.Type]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, (hstruct :: [GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.RecAsHaskell struct :: [GHC.Types.Type]), Data.SOP.Constraint.AllZip @GHC.Types.Type @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.SOP.ToAsHaskell hstruct struct, Data.SOP.Constraint.All @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Internal.Lift.PLiftable struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.SOP.PSOPRec struct)
+instance forall a (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). ((a :: GHC.Types.Type) GHC.Types.~ (Plutarch.Internal.Lift.AsHaskell b :: GHC.Types.Type), Plutarch.Internal.Lift.PLiftable b) => Plutarch.Repr.SOP.ToAsHaskell a b
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, Plutarch.Repr.SOP.PSOPStructConstraint struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.PSOPStruct struct)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct, Plutarch.Repr.SOP.PSOPStructConstraint struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.DeriveAsSOPStruct a)
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Data.SOP.Constraint.SListI @{[Plutarch.Internal.Term.S -> GHC.Types.Type]} struct, forall (r :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Repr.SOP.PSOPStructConstraint' struct r) => Plutarch.Repr.SOP.PSOPStructConstraint struct
@@ -1708,6 +1719,16 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct' :: [G
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.PSOPRec struct)
 instance forall (struct :: [Plutarch.Internal.Term.PType]). Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Internal.Eq.PEq struct => Plutarch.Internal.Eq.PEq (Plutarch.Repr.SOP.PSOPRec struct)
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.SOP.PSOPStruct struct), Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Internal.Eq.PEq struct) => Plutarch.Internal.Eq.PEq (Plutarch.Repr.SOP.PSOPStruct struct)
+
+module Plutarch.Repr.Derive
+
+-- | @since WIP
+newtype DerivePLiftableAsRepr (wrapper :: S -> Type) (h :: Type) (s :: S)
+DerivePLiftableAsRepr :: wrapper s -> DerivePLiftableAsRepr (wrapper :: S -> Type) (h :: Type) (s :: S)
+instance forall (wrapper :: Plutarch.Internal.Term.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Derive.DerivePLiftableAsRepr wrapper h)
+instance forall (wrapper :: Plutarch.Internal.Term.S -> GHC.Types.Type) h (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Repr.Derive.DerivePLiftableAsRepr wrapper h s)
+instance forall (wrapper :: Plutarch.Internal.Term.S -> GHC.Types.Type) h (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Repr.Derive.DerivePLiftableAsRepr wrapper h s)
+instance forall (wrapper :: Plutarch.Internal.Term.PType) h (struct' :: [[GHC.Types.Type]]) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) (hstruct :: [[GHC.Types.Type]]). (Plutarch.Internal.Lift.PLiftable (Plutarch.Internal.PlutusType.PInner wrapper), Generics.SOP.Universe.Generic (wrapper (GHC.Types.Any @Plutarch.Internal.Term.S)), Generics.SOP.Universe.Generic h, (hstruct :: [[GHC.Types.Type]]) GHC.Types.~ (Generics.SOP.Universe.Code h :: [[GHC.Types.Type]]), (struct' :: [[GHC.Types.Type]]) GHC.Types.~ (Generics.SOP.Universe.Code (wrapper (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[GHC.Types.Type]]), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct' struct' :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), (hstruct :: [[GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.StructAsHaskell struct :: [[GHC.Types.Type]]), (Plutarch.Internal.Lift.AsHaskell (Plutarch.Internal.PlutusType.PInner wrapper) :: GHC.Types.Type) GHC.Types.~ (Data.SOP.NS.SOP @GHC.Types.Type Data.SOP.BasicFunctors.I hstruct :: GHC.Types.Type)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Derive.DerivePLiftableAsRepr wrapper h)
 
 module Plutarch.Maybe
 
@@ -1833,6 +1854,7 @@ instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.ByteString.PByte
 instance Plutarch.Internal.Ord.POrd Plutarch.Builtin.Unit.PUnit
 
 module Plutarch.Internal.IsData
+class (PInnermostIsData' msg a (PInnermost a), PInnermost a ~ PData) => PInnermostIsData msg a
 
 -- | Laws: - If <tt>PSubtype PData a</tt>, then <tt>pdataImpl a</tt> must
 --   be <a>pupcast</a>. - pdataImpl . pupcast . pfromDataImpl ≡ id -
@@ -1852,7 +1874,7 @@ prememberData :: forall (p :: (S -> Type) -> S -> Type) (s :: S). PVariant p => 
 pforgetData' :: forall a (p :: (S -> Type) -> S -> Type) (s :: S). PCovariant p => Proxy p -> Term s (p (PAsData a)) -> Term s (p PData)
 
 -- | Like <a>prememberData</a> but generalised.
-prememberData' :: forall a (p :: (S -> Type) -> S -> Type) (s :: S). (PSubtype PData a, PVariant p) => Proxy p -> Term s (p a) -> Term s (p (PAsData a))
+prememberData' :: forall a (p :: (S -> Type) -> S -> Type) (s :: S). (PInnermostIsData 'Nothing a, PSubtype PData a, PVariant p) => Proxy p -> Term s (p a) -> Term s (p (PAsData a))
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Data.PData
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Bool.PBool
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinPair (Plutarch.Builtin.Data.PAsData a) (Plutarch.Builtin.Data.PAsData b))
@@ -1861,7 +1883,8 @@ instance Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinPair Pl
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Integer.PInteger
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.ByteString.PByteString
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Unit.PUnit
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.Subtype.PSubtype Plutarch.Builtin.Data.PData a => Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinList a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.IsData.PInnermostIsData ('GHC.Maybe.Just @GHC.Types.Symbol "PBuiltinList only implements PIsData when inner most type of its elements are PData") a, Plutarch.Internal.Subtype.PSubtype Plutarch.Builtin.Data.PData a) => Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinList a)
+instance forall (msg :: GHC.Maybe.Maybe GHC.Types.Symbol) (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.IsData.PInnermostIsData' @{Plutarch.Internal.Term.PType} msg a (Plutarch.Internal.PlutusType.PInnermost a), (Plutarch.Internal.PlutusType.PInnermost a :: (Plutarch.Internal.Term.S -> GHC.Types.Type)) GHC.Types.~ (Plutarch.Builtin.Data.PData :: (Plutarch.Internal.Term.S -> GHC.Types.Type))) => Plutarch.Internal.IsData.PInnermostIsData msg a
 
 module Plutarch.Internal.Numeric
 
@@ -3242,7 +3265,6 @@ instance forall k1 k2 (x :: [k1]). ((x :: [k1]) GHC.Types.~ ('[] @k1 :: [k1])) =
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Repr.Tag.PTag struct s)
 
 module Plutarch.Repr.Data
-class (PInnerMostIsData' a (PInnerMost a), PInnerMost a ~ PData) => PInnerMostIsData a
 
 newtype PDataStruct (struct :: [[S -> Type]]) (s :: S)
 PDataStruct :: PStruct struct s -> PDataStruct (struct :: [[S -> Type]]) (s :: S)
@@ -3259,16 +3281,17 @@ DeriveAsDataRec :: a s -> DeriveAsDataRec (a :: S -> Type) s
 newtype DeriveAsDataStruct (a :: S -> Type) s
 DeriveAsDataStruct :: a s -> DeriveAsDataStruct (a :: S -> Type) s
 [$sel:unDeriveAsDataStruct:DeriveAsDataStruct] :: DeriveAsDataStruct (a :: S -> Type) s -> a s
-type PInnerMost a = PInnerMost' (PInner a) a
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnerMostIsData struct, Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataStruct a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct' :: [GHC.Types.Type]) (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), ((':) @[GHC.Types.Type] struct' ('[] @[GHC.Types.Type]) :: [[GHC.Types.Type]]) GHC.Types.~ (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[GHC.Types.Type]]), (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermRec struct' :: [Plutarch.Internal.Term.S -> GHC.Types.Type]), Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnerMostIsData struct, Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a ((':) @[Plutarch.Internal.Term.S -> GHC.Types.Type] struct ('[] @[Plutarch.Internal.Term.S -> GHC.Types.Type])), Plutarch.Repr.Internal.RecTypePrettyError @{GHC.Types.Type} (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)))) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataRec a)
-instance forall (struct :: [Plutarch.Internal.Term.PType]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnerMostIsData struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataRec struct)
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (hstruct :: [GHC.Types.Type]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, Data.SOP.Constraint.All @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.Data.EachDataLiftable struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, (hstruct :: [GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.RecAsHaskell struct :: [GHC.Types.Type]), Data.SOP.Constraint.AllZip @GHC.Types.Type @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.Data.ToAsHaskell hstruct struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Data.PDataRec struct)
+instance forall a (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). ((a :: GHC.Types.Type) GHC.Types.~ (Plutarch.Internal.Lift.AsHaskell b :: GHC.Types.Type), Plutarch.Internal.Lift.PLiftable b, (Plutarch.Internal.Lift.PlutusRepr b :: GHC.Types.Type) GHC.Types.~ (PlutusCore.Data.Data :: GHC.Types.Type)) => Plutarch.Repr.Data.ToAsHaskell a b
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, (Plutarch.Internal.Lift.PlutusRepr a :: GHC.Types.Type) GHC.Types.~ (PlutusCore.Data.Data :: GHC.Types.Type)) => Plutarch.Repr.Data.EachDataLiftable a
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataStruct a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct' :: [GHC.Types.Type]) (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), ((':) @[GHC.Types.Type] struct' ('[] @[GHC.Types.Type]) :: [[GHC.Types.Type]]) GHC.Types.~ (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[GHC.Types.Type]]), (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermRec struct' :: [Plutarch.Internal.Term.S -> GHC.Types.Type]), Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a ((':) @[Plutarch.Internal.Term.S -> GHC.Types.Type] struct ('[] @[Plutarch.Internal.Term.S -> GHC.Types.Type])), Plutarch.Repr.Internal.RecTypePrettyError @{GHC.Types.Type} (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)))) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataRec a)
+instance forall (struct :: [Plutarch.Internal.Term.PType]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataRec struct)
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.Eq.PEq (Plutarch.Repr.Data.PDataRec struct)
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.IsData.PIsData (Plutarch.Repr.Data.PDataRec struct)
-instance forall (struct :: [[Plutarch.Internal.Term.PType]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnerMostIsData struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataStruct struct)
+instance forall (struct :: [[Plutarch.Internal.Term.PType]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnermostIsDataDataRepr struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataStruct struct)
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). Plutarch.Internal.Eq.PEq (Plutarch.Repr.Data.PDataStruct struct)
 instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). Plutarch.Internal.IsData.PIsData (Plutarch.Repr.Data.PDataStruct struct)
-instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Repr.Data.PInnerMostIsData' @{Plutarch.Internal.Term.PType} a (Plutarch.Repr.Data.PInnerMost a), (Plutarch.Repr.Data.PInnerMost a :: (Plutarch.Internal.Term.S -> GHC.Types.Type)) GHC.Types.~ (Plutarch.Builtin.Data.PData :: (Plutarch.Internal.Term.S -> GHC.Types.Type))) => Plutarch.Repr.Data.PInnerMostIsData a
 
 module Plutarch.Builtin.Crypto
 

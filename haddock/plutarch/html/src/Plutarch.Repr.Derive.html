@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE UndecidableInstances #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Repr.Derive</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier">DerivePLiftableAsRepr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier">DerivePLiftableAsRepr</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Exts.html"><span class="hs-identifier">GHC.Exts</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Any"><span class="hs-identifier">Any</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Code</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html"><span class="hs-identifier">Plutarch.Internal.Lift</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#AsHaskell"><span class="hs-identifier">AsHaskell</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#LiftError"><span class="hs-identifier">LiftError</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PLiftable"><span class="hs-identifier">PLiftable</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PlutusRepr"><span class="hs-identifier">PlutusRepr</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#haskToRepr"><span class="hs-identifier">haskToRepr</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#plutToRepr"><span class="hs-identifier">plutToRepr</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#punsafeCoercePLifted"><span class="hs-identifier">punsafeCoercePLifted</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#reprToHask"><span class="hs-identifier">reprToHask</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#reprToPlut"><span class="hs-identifier">reprToPlut</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html"><span class="hs-identifier">Plutarch.Internal.PlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DeriveFakePlutusType"><span class="hs-identifier">DeriveFakePlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DeriveFakePlutusType"><span class="hs-identifier">DeriveFakePlutusType</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier">PInner</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier">PlutusType</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html"><span class="hs-identifier">Plutarch.Internal.Term</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Repr.Internal.html"><span class="hs-identifier">Plutarch.Repr.Internal</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Internal.html#StructAsHaskell"><span class="hs-identifier">StructAsHaskell</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Repr.Internal.html#UnTermStruct%27"><span class="hs-identifier">UnTermStruct'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">newtype</span><span> </span><span id="DerivePLiftableAsRepr"><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier hs-var">DerivePLiftableAsRepr</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631146"><span class="annot"><a href="#local-6989586621679631146"><span class="hs-identifier hs-type">wrapper</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631147"><span class="annot"><a href="#local-6989586621679631147"><span class="hs-identifier hs-type">h</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631148"><span class="annot"><a href="#local-6989586621679631148"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="DerivePLiftableAsRepr"><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier hs-var">DerivePLiftableAsRepr</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679631146"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631148"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631150"><span id="local-6989586621679631152"><span class="annot"><span class="annottext">(forall x.
+ DerivePLiftableAsRepr wrapper h s
+ -&gt; Rep (DerivePLiftableAsRepr wrapper h s) x)
+-&gt; (forall x.
+    Rep (DerivePLiftableAsRepr wrapper h s) x
+    -&gt; DerivePLiftableAsRepr wrapper h s)
+-&gt; Generic (DerivePLiftableAsRepr wrapper h s)
+forall x.
+Rep (DerivePLiftableAsRepr wrapper h s) x
+-&gt; DerivePLiftableAsRepr wrapper h s
+forall x.
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (wrapper :: S -&gt; Type) h (s :: S) x.
+Rep (DerivePLiftableAsRepr wrapper h s) x
+-&gt; DerivePLiftableAsRepr wrapper h s
+forall (wrapper :: S -&gt; Type) h (s :: S) x.
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s) x
+$cfrom :: forall (wrapper :: S -&gt; Type) h (s :: S) x.
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s) x
+from :: forall x.
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s) x
+$cto :: forall (wrapper :: S -&gt; Type) h (s :: S) x.
+Rep (DerivePLiftableAsRepr wrapper h s) x
+-&gt; DerivePLiftableAsRepr wrapper h s
+to :: forall x.
+Rep (DerivePLiftableAsRepr wrapper h s) x
+-&gt; DerivePLiftableAsRepr wrapper h s
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631159"><span id="local-6989586621679631168"><span class="annot"><span class="annottext">All
+  @[Type] (SListI @Type) (Code (DerivePLiftableAsRepr wrapper h s))
+All
+  @[Type]
+  (SListI @Type)
+  (Code (DerivePLiftableAsRepr wrapper h s)) =&gt;
+(DerivePLiftableAsRepr wrapper h s
+ -&gt; Rep (DerivePLiftableAsRepr wrapper h s))
+-&gt; (Rep (DerivePLiftableAsRepr wrapper h s)
+    -&gt; DerivePLiftableAsRepr wrapper h s)
+-&gt; Generic (DerivePLiftableAsRepr wrapper h s)
+Rep (DerivePLiftableAsRepr wrapper h s)
+-&gt; DerivePLiftableAsRepr wrapper h s
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s)
+forall a.
+All @[Type] (SListI @Type) (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (wrapper :: S -&gt; Type) h (s :: S).
+All
+  @[Type] (SListI @Type) (Code (DerivePLiftableAsRepr wrapper h s))
+forall (wrapper :: S -&gt; Type) h (s :: S).
+Rep (DerivePLiftableAsRepr wrapper h s)
+-&gt; DerivePLiftableAsRepr wrapper h s
+forall (wrapper :: S -&gt; Type) h (s :: S).
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s)
+$cfrom :: forall (wrapper :: S -&gt; Type) h (s :: S).
+DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s)
+from :: DerivePLiftableAsRepr wrapper h s
+-&gt; Rep (DerivePLiftableAsRepr wrapper h s)
+$cto :: forall (wrapper :: S -&gt; Type) h (s :: S).
+Rep (DerivePLiftableAsRepr wrapper h s)
+-&gt; DerivePLiftableAsRepr wrapper h s
+to :: Rep (DerivePLiftableAsRepr wrapper h s)
+-&gt; DerivePLiftableAsRepr wrapper h s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631198"><span id="local-6989586621679631204"><span class="annot"><span class="annottext">(forall (s :: S).
+ DerivePLiftableAsRepr wrapper h s
+ -&gt; Term s (PInner (DerivePLiftableAsRepr wrapper h)))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner (DerivePLiftableAsRepr wrapper h))
+    -&gt; (DerivePLiftableAsRepr wrapper h s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType (DerivePLiftableAsRepr wrapper h)
+forall (s :: S).
+DerivePLiftableAsRepr wrapper h s
+-&gt; Term s (PInner (DerivePLiftableAsRepr wrapper h))
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner (DerivePLiftableAsRepr wrapper h))
+-&gt; (DerivePLiftableAsRepr wrapper h s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+forall (wrapper :: S -&gt; Type) h (s :: S).
+DerivePLiftableAsRepr wrapper h s
+-&gt; Term s (PInner (DerivePLiftableAsRepr wrapper h))
+forall (wrapper :: S -&gt; Type) h (s :: S) (b :: S -&gt; Type).
+Term s (PInner (DerivePLiftableAsRepr wrapper h))
+-&gt; (DerivePLiftableAsRepr wrapper h s -&gt; Term s b) -&gt; Term s b
+$cpcon' :: forall (wrapper :: S -&gt; Type) h (s :: S).
+DerivePLiftableAsRepr wrapper h s
+-&gt; Term s (PInner (DerivePLiftableAsRepr wrapper h))
+pcon' :: forall (s :: S).
+DerivePLiftableAsRepr wrapper h s
+-&gt; Term s (PInner (DerivePLiftableAsRepr wrapper h))
+$cpmatch' :: forall (wrapper :: S -&gt; Type) h (s :: S) (b :: S -&gt; Type).
+Term s (PInner (DerivePLiftableAsRepr wrapper h))
+-&gt; (DerivePLiftableAsRepr wrapper h s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner (DerivePLiftableAsRepr wrapper h))
+-&gt; (DerivePLiftableAsRepr wrapper h s -&gt; Term s b) -&gt; Term s b
+</span><a href="Plutarch.Internal.PlutusType.html#PlutusType"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></a></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#DeriveFakePlutusType"><span class="hs-identifier hs-type">DeriveFakePlutusType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier hs-type">DerivePLiftableAsRepr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631146"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631147"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="annot"><span class="hs-comment">-- | @since WIP</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679631122"><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span></span><span> </span><span id="local-6989586621679631123"><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631125"><span class="annot"><a href="#local-6989586621679631125"><span class="hs-identifier hs-type">struct'</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631126"><span class="annot"><a href="#local-6989586621679631126"><span class="hs-identifier hs-type">struct</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679631124"><span class="annot"><a href="#local-6989586621679631124"><span class="hs-identifier hs-type">hstruct</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PLiftable"><span class="hs-identifier hs-type">PLiftable</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SOP.Generic</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Any"><span class="hs-identifier hs-type">Any</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SOP.Generic</span></span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679631124"><span class="hs-identifier hs-type">hstruct</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Code</span></span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679631125"><span class="hs-identifier hs-type">struct'</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Code</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Any"><span class="hs-identifier hs-type">Any</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679631126"><span class="hs-identifier hs-type">struct</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.Repr.Internal.html#UnTermStruct%27"><span class="hs-identifier hs-type">UnTermStruct'</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631125"><span class="hs-identifier hs-type">struct'</span></a></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679631124"><span class="hs-identifier hs-type">hstruct</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="Plutarch.Repr.Internal.html#StructAsHaskell"><span class="hs-identifier hs-type">StructAsHaskell</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631126"><span class="hs-identifier hs-type">struct</span></a></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#AsHaskell"><span class="hs-identifier hs-type">AsHaskell</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SOP</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SOP.I</span></span><span> </span><span class="annot"><a href="#local-6989586621679631124"><span class="hs-identifier hs-type">hstruct</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-44"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PLiftable"><span class="hs-identifier hs-type">PLiftable</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier hs-type">DerivePLiftableAsRepr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><a href="Plutarch.Internal.Lift.html#AsHaskell"><span class="hs-identifier hs-var">AsHaskell</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier hs-type">DerivePLiftableAsRepr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><a href="Plutarch.Internal.Lift.html#PlutusRepr"><span class="hs-identifier hs-var">PlutusRepr</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Repr.Derive.html#DerivePLiftableAsRepr"><span class="hs-identifier hs-type">DerivePLiftableAsRepr</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PlutusRepr"><span class="hs-identifier hs-type">PlutusRepr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#haskToRepr"><span class="hs-identifier hs-type">haskToRepr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PlutusRepr"><span class="hs-identifier hs-type">PlutusRepr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679631231"><span class="annot"><span class="annottext">haskToRepr :: h -&gt; PlutusRepr (PInner wrapper)
+</span><a href="Plutarch.Internal.Lift.html#haskToRepr"><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></a></span></span><span> </span><span id="local-6989586621679631232"><span class="annot"><span class="annottext">h
+</span><a href="#local-6989586621679631232"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type). PLiftable a =&gt; AsHaskell a -&gt; PlutusRepr a
+</span><a href="Plutarch.Internal.Lift.html#haskToRepr"><span class="hs-identifier hs-var">haskToRepr</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(AsHaskell (PInner wrapper) -&gt; PlutusRepr (PInner wrapper))
+-&gt; AsHaskell (PInner wrapper) -&gt; PlutusRepr (PInner wrapper)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">h -&gt; Rep h
+forall a. Generic a =&gt; a -&gt; Rep a
+</span><span class="hs-identifier hs-var">SOP.from</span></span><span> </span><span class="annot"><span class="annottext">h
+</span><a href="#local-6989586621679631232"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-50"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Lift.html#reprToHask"><span class="hs-identifier hs-type">reprToHask</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#PlutusRepr"><span class="hs-identifier hs-type">PlutusRepr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Lift.html#LiftError"><span class="hs-identifier hs-type">LiftError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631123"><span class="hs-identifier hs-type">h</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span id="local-6989586621679631238"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr (PInner wrapper) -&gt; Either LiftError h
+</span><a href="Plutarch.Internal.Lift.html#reprToHask"><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToHask</span></a></span></span><span> </span><span id="local-6989586621679631239"><span class="annot"><span class="annottext">PlutusRepr (PInner wrapper)
+</span><a href="#local-6989586621679631239"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Rep h -&gt; h
+forall a. Generic a =&gt; Rep a -&gt; a
+</span><span class="hs-identifier hs-var">SOP.to</span></span><span> </span><span class="annot"><span class="annottext">(Rep h -&gt; h) -&gt; Either LiftError (Rep h) -&gt; Either LiftError h
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type).
+PLiftable a =&gt;
+PlutusRepr a -&gt; Either LiftError (AsHaskell a)
+</span><a href="Plutarch.Internal.Lift.html#reprToHask"><span class="hs-identifier hs-var">reprToHask</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">PlutusRepr (PInner wrapper)
+</span><a href="#local-6989586621679631239"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621679631243"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S).
+PlutusRepr (DerivePLiftableAsRepr wrapper h)
+-&gt; PLifted s (DerivePLiftableAsRepr wrapper h)
+</span><a href="Plutarch.Internal.Lift.html#reprToPlut"><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToPlut</span></a></span></span><span> </span><span id="local-6989586621679631244"><span class="annot"><span class="annottext">PlutusRepr (DerivePLiftableAsRepr wrapper h)
+</span><a href="#local-6989586621679631244"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PLifted s (PInner wrapper)
+-&gt; PLifted s (DerivePLiftableAsRepr wrapper h)
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+PLifted s a -&gt; PLifted s b
+</span><a href="Plutarch.Internal.Lift.html#punsafeCoercePLifted"><span class="hs-identifier hs-var">punsafeCoercePLifted</span></a></span><span> </span><span class="annot"><span class="annottext">(PLifted s (PInner wrapper)
+ -&gt; PLifted s (DerivePLiftableAsRepr wrapper h))
+-&gt; PLifted s (PInner wrapper)
+-&gt; PLifted s (DerivePLiftableAsRepr wrapper h)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
+PLiftable a =&gt;
+PlutusRepr a -&gt; PLifted s a
+</span><a href="Plutarch.Internal.Lift.html#reprToPlut"><span class="hs-identifier hs-var">reprToPlut</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">PlutusRepr (PInner wrapper)
+PlutusRepr (DerivePLiftableAsRepr wrapper h)
+</span><a href="#local-6989586621679631244"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-53"></span><span>  </span><span id="local-6989586621679631246"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s (DerivePLiftableAsRepr wrapper h))
+-&gt; Either LiftError (PlutusRepr (DerivePLiftableAsRepr wrapper h))
+</span><a href="Plutarch.Internal.Lift.html#plutToRepr"><span class="hs-identifier hs-var hs-var hs-var hs-var">plutToRepr</span></a></span></span><span> </span><span id="local-6989586621679631247"><span class="annot"><span class="annottext">forall (s :: S). PLifted s (DerivePLiftableAsRepr wrapper h)
+</span><a href="#local-6989586621679631247"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type).
+PLiftable a =&gt;
+(forall (s :: S). PLifted s a) -&gt; Either LiftError (PlutusRepr a)
+</span><a href="Plutarch.Internal.Lift.html#plutToRepr"><span class="hs-identifier hs-var">plutToRepr</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PlutusType.html#PInner"><span class="hs-identifier hs-type">PInner</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679631122"><span class="hs-identifier hs-type">wrapper</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((forall (s :: S). PLifted s (PInner wrapper))
+ -&gt; Either LiftError (PlutusRepr (PInner wrapper)))
+-&gt; (forall (s :: S). PLifted s (PInner wrapper))
+-&gt; Either LiftError (PlutusRepr (PInner wrapper))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PLifted s (DerivePLiftableAsRepr wrapper h)
+-&gt; PLifted s (PInner wrapper)
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+PLifted s a -&gt; PLifted s b
+</span><a href="Plutarch.Internal.Lift.html#punsafeCoercePLifted"><span class="hs-identifier hs-var">punsafeCoercePLifted</span></a></span><span> </span><span class="annot"><span class="annottext">PLifted s (DerivePLiftableAsRepr wrapper h)
+forall (s :: S). PLifted s (DerivePLiftableAsRepr wrapper h)
+</span><a href="#local-6989586621679631247"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-54"></span></pre></body></html>
