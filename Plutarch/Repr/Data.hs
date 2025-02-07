@@ -184,7 +184,7 @@ data PBobData (a :: S -> Type) (s :: S)
   deriving PlutusType via (DeriveAsDataStruct (PBobData a))
 
 pcon $ PBobData (pdata 10) (pdata pfalse) -- Constr 0 [#10, #false]
-pcon $ PBobData "hello" -- Constr 1 [#"hello"]
+pcon $ PRobData "hello" -- Constr 1 [#"hello"]
 @@
 
  @since 1.10.0
