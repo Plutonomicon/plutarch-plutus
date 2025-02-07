@@ -22,7 +22,25 @@ import Plutarch.Internal.PlutusType (DeriveFakePlutusType (DeriveFakePlutusType)
 import Plutarch.Internal.Term (S)
 import Plutarch.Repr.Internal (StructAsHaskell, UnTermStruct')
 
--- | @since WIP
+{- |
+This is @PLiftable@ derivation helper for user-defined datatypes like Data/SOP encoded types.
+Please consult example below.
+
+@@
+data PBobData (a :: S -> Type) (s :: S)
+  = PBobData (Term s (PAsData a)) (Term s (PAsData PBool))
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving PlutusType via (DeriveAsDataRec (PBobData a)) -- SOP encoding works as well.
+
+deriving via
+  DerivePLiftableAsRepr (PBobData a) (Bob (AsHaskell a))
+  instance
+    PLiftable (PAsData a) => PLiftable (PBobData a)
+@@
+
+ @since WIP
+-}
 newtype DerivePLiftableAsRepr (wrapper :: S -> Type) (h :: Type) (s :: S)
   = DerivePLiftableAsRepr (wrapper s)
   deriving stock (Generic)
