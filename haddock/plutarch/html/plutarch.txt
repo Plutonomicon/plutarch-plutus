@@ -1696,10 +1696,10 @@ DeriveAsSOPStruct :: a s -> DeriveAsSOPStruct (a :: S -> Type) s
 
 [$sel:unDeriveAsSOPStruct:DeriveAsSOPStruct] :: DeriveAsSOPStruct (a :: S -> Type) s -> a s
 
--- | <tt>via</tt>-derivation helper for SoP encoding, currently behaves
+-- | <tt>via</tt>-derivation helper for SOP encoding, currently behaves
 --   exactly like <a>DeriveAsSOPStruct</a> but can be used only on types
 --   with a single constructor. It is separate to leave a room for future
---   optimizations
+--   optimizations.
 newtype DeriveAsSOPRec (a :: S -> Type) s
 DeriveAsSOPRec :: a s -> DeriveAsSOPRec (a :: S -> Type) s
 
@@ -1722,7 +1722,18 @@ instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Plu
 
 module Plutarch.Repr.Derive
 
--- | @since WIP
+-- | This is <tt>PLiftable</tt> derivation helper for user-defined
+--   datatypes like Data/SOP encoded types. Please consult example below.
+--   
+--   @@ data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s
+--   (PAsData a)) (Term s (PAsData PBool)) deriving stock (Generic)
+--   deriving anyclass (SOP.Generic) deriving PlutusType via
+--   (DeriveAsDataRec (PBobData a)) -- SOP encoding works as well.
+--   
+--   deriving via DerivePLiftableAsRepr (PBobData a) (Bob (AsHaskell a))
+--   instance PLiftable (PAsData a) =&gt; PLiftable (PBobData a) @@
+--   
+--   @since WIP
 newtype DerivePLiftableAsRepr (wrapper :: S -> Type) (h :: Type) (s :: S)
 DerivePLiftableAsRepr :: wrapper s -> DerivePLiftableAsRepr (wrapper :: S -> Type) (h :: Type) (s :: S)
 instance forall (wrapper :: Plutarch.Internal.Term.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Derive.DerivePLiftableAsRepr wrapper h)
@@ -3274,10 +3285,69 @@ newtype PDataRec (struct :: [S -> Type]) (s :: S)
 PDataRec :: PRec struct s -> PDataRec (struct :: [S -> Type]) (s :: S)
 [$sel:unPDataRec:PDataRec] :: PDataRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
 
+-- | <tt>DeriveAsDataRec</tt> derives <tt>PlutusType</tt> instances for
+--   given type as builtin list of Data. Unlike <tt>PDataAsDataStruct</tt>
+--   above, this will encode data as <tt>List</tt>. Similarly, only types
+--   with its innermost representation <tt>PData</tt> is allowed for its
+--   fields.
+--   
+--   One major difference is that <tt>DeriveAsDataRec</tt> only allows
+--   single constructor as it does not encode the constructor index. When
+--   attempted to use this strategy to a type with more than one
+--   constructor will result in type error with detailed explanation of the
+--   issue.
+--   
+--   <tt>PInner</tt> of defined type will be <tt>PDataRec (struct :: [S
+--   -&gt; Type])</tt> where <tt>struct</tt> is product type of its
+--   structure. <tt>PInner</tt> of <tt>PDataRec struct</tt> is
+--   <tt>PBuiltinList PData</tt>.
+--   
+--   It is almost always better to use <tt>DeriveAsDataRec</tt> over
+--   <tt>DeriveAsDataStruct</tt> when data type only have one constructor
+--   as it is more efficient to work with on-chain. However,
+--   Plith(previously PlutusTx), by default, derives every datatype to use
+--   <tt>Constr</tt>. So, if a Plutarch type needs to remain compatible
+--   with type defined in Plith, one needs to use
+--   <tt>DeriveAsDataStruct</tt>. This is why many single-constructor types
+--   are derived using <tt>DeriveAsDataStruct</tt> on plutarch-ledger-api.
+--   
+--   Consult example below for defining custom data-encoded datatype: @@
+--   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
+--   a)) (Term s (PAsData PBool)) deriving stock (Generic) deriving
+--   anyclass (SOP.Generic) deriving PlutusType via (DeriveAsDataRec
+--   (PBobData a))
+--   
+--   pcon $ PBobData (pdata 10) (pdata pfalse) -- [#10, #false] @@
 newtype DeriveAsDataRec (a :: S -> Type) s
 DeriveAsDataRec :: a s -> DeriveAsDataRec (a :: S -> Type) s
 [$sel:unDeriveAsDataRec:DeriveAsDataRec] :: DeriveAsDataRec (a :: S -> Type) s -> a s
 
+-- | <tt>DeriveAsDataStruct</tt> derives <tt>PlutusType</tt> instances for
+--   the given type as Data structure, namely, using <tt>Constr</tt>
+--   constructor of the <tt>Data</tt> type. Each constructor of the given
+--   type will have matching constructor index in the order of its
+--   definition.
+--   
+--   Also, it is important to note that each fields can only contain term
+--   that has innermost representation of Data. Hence, <tt>PInteger</tt> is
+--   not allowed but <tt>PAsData PInteger</tt> is allowed. Failure to
+--   follow this requirement will result in type error with detailed
+--   explanation of the issue.
+--   
+--   <tt>PInner</tt> of defined type will be <tt>PDataStruct (struct :: [[S
+--   -&gt; Type]])</tt> where <tt>struct</tt> is SOP type of its structure.
+--   Since <tt>PInner</tt> of <tt>PDataStruct</tt> is <tt>PData</tt>,
+--   multiple data encoded structure can be nested without being wrapped in
+--   <tt>PAsData</tt>.
+--   
+--   Consult example below for defining custom data-encoded datatype: @@
+--   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
+--   a)) (Term s (PAsData PBool)) | PRobData (Term s (PAsData PByteString))
+--   deriving stock (Generic) deriving anyclass (SOP.Generic) deriving
+--   PlutusType via (DeriveAsDataStruct (PBobData a))
+--   
+--   pcon $ PBobData (pdata 10) (pdata pfalse) -- Constr 0 [#10, #false]
+--   pcon $ PRobData "hello" -- Constr 1 [#"hello"] @@
 newtype DeriveAsDataStruct (a :: S -> Type) s
 DeriveAsDataStruct :: a s -> DeriveAsDataStruct (a :: S -> Type) s
 [$sel:unDeriveAsDataStruct:DeriveAsDataStruct] :: DeriveAsDataStruct (a :: S -> Type) s -> a s
