@@ -111,7 +111,34 @@ instance PIsData (PDataRec struct)
 -- | @since 1.10.0
 instance PIsData (PDataStruct struct)
 
--- | @since 1.10.0
+{- |
+@DeriveAsDataRec@ derives @PlutusType@ instances for given type as builtin list of Data. Unlike @PDataAsDataStruct@ above, this will
+encode data as @List@. Similarly, only types with its innermost representation @PData@ is allowed for its fields.
+
+One major difference is that @DeriveAsDataRec@ only allows single constructor as it does not encode the constructor index. When
+attempted to use this strategy to a type with more than one constructor will result in type error with detailed explanation of the issue.
+
+@PInner@ of defined type will be @PDataRec (struct :: [S -> Type])@ where @struct@ is product type of its structure. @PInner@ of @PDataRec struct@
+is @PBuiltinList PData@.
+
+It is almost always better to use @DeriveAsDataRec@ over @DeriveAsDataStruct@ when data type only have one constructor as it is more efficient
+to work with on-chain. However, Plith(previously PlutusTx), by default, derives every datatype to use @Constr@. So, if a Plutarch type needs to remain
+compatible with type defined in Plith, one needs to use @DeriveAsDataStruct@. This is why many single-constructor types are derived using
+@DeriveAsDataStruct@ on plutarch-ledger-api.
+
+Consult example below for defining custom data-encoded datatype:
+@@
+data PBobData (a :: S -> Type) (s :: S)
+  = PBobData (Term s (PAsData a)) (Term s (PAsData PBool))
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving PlutusType via (DeriveAsDataRec (PBobData a))
+
+pcon $ PBobData (pdata 10) (pdata pfalse) -- [#10, #false]
+@@
+
+ @since 1.10.0
+-}
 newtype DeriveAsDataRec (a :: S -> Type) s = DeriveAsDataRec {unDeriveAsDataRec :: a s}
 
 -- | @since 1.10.0
@@ -136,7 +163,32 @@ instance
   pmatch' x f =
     pmatch x (f . DeriveAsDataRec . SOP.to . SOP.hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPDataRec)
 
--- | @since 1.10.0
+{- |
+@DeriveAsDataStruct@ derives @PlutusType@ instances for the given type as Data structure, namely, using @Constr@ constructor
+of the @Data@ type. Each constructor of the given type will have matching constructor index in the order of its definition.
+
+Also, it is important to note that each fields can only contain term that has innermost representation of Data. Hence,
+@PInteger@ is not allowed but @PAsData PInteger@ is allowed. Failure to follow this requirement will result in type error
+with detailed explanation of the issue.
+
+@PInner@ of defined type will be @PDataStruct (struct :: [[S -> Type]])@ where @struct@ is SOP type of its structure. Since @PInner@ of
+@PDataStruct@ is @PData@, multiple data encoded structure can be nested without being wrapped in @PAsData@.
+
+Consult example below for defining custom data-encoded datatype:
+@@
+data PBobData (a :: S -> Type) (s :: S)
+  = PBobData (Term s (PAsData a)) (Term s (PAsData PBool))
+  | PRobData (Term s (PAsData PByteString))
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving PlutusType via (DeriveAsDataStruct (PBobData a))
+
+pcon $ PBobData (pdata 10) (pdata pfalse) -- Constr 0 [#10, #false]
+pcon $ PRobData "hello" -- Constr 1 [#"hello"]
+@@
+
+ @since 1.10.0
+-}
 newtype DeriveAsDataStruct (a :: S -> Type) s = DeriveAsDataStruct {unDeriveAsDataStruct :: a s}
 
 -- | @since 1.10.0
