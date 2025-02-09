@@ -90,7 +90,6 @@ library
     Plutarch.DataRepr.Internal.FromData
     Plutarch.DataRepr.Internal.HList
     Plutarch.DataRepr.Internal.HList.Utils
-    Plutarch.Demo
     Plutarch.Either
     Plutarch.Enum
     Plutarch.Evaluate

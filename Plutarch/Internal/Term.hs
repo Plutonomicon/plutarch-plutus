@@ -794,7 +794,7 @@ compile' t =
           (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def))
           body
           defs
-   in snd $ simplifier wrapped
+   in simplifier wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
