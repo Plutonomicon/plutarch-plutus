@@ -14,6 +14,7 @@ import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value ()
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusLedgerApi.V3 qualified as PLA
+import PlutusLedgerApi.V3.MintValue qualified as PLA
 import PlutusLedgerApi.V3.Orphans.Value (MintValue, getMintValue)
 import PlutusLedgerApi.V3.Orphans.Value qualified as Value
 import PlutusTx.AssocMap qualified as AssocMap
@@ -876,14 +877,14 @@ instance Arbitrary PLA.TxInfo where
     pps <- arbitrary
     currT <- arbitrary
     tDonation <- arbitrary
-    pure . PLA.TxInfo ins routs outs fee mint cert wdrl valid sigs reds dats tid votes pps currT $ tDonation
+    pure . PLA.TxInfo ins routs outs fee (PLA.UnsafeMintValue $ PLA.getValue mint) cert wdrl valid sigs reds dats tid votes pps currT $ tDonation
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxInfo ins routs outs fee mint cert wdrl valid sigs reds dats tid votes pps currT tDonation) = do
     NonEmpty ins' <- shrink (NonEmpty ins)
     routs' <- shrink routs
     NonEmpty outs' <- shrink (NonEmpty outs)
     fee' <- shrink fee
-    (Value.MintValue mint') <- shrink (Value.MintValue mint)
+    (Value.MintValue mint') <- shrink (Value.MintValue $ PLA.Value $ PLA.mintValueToMap mint)
     cert' <- shrink cert
     wdrl' <- shrink wdrl
     valid' <- shrink valid
@@ -895,7 +896,7 @@ instance Arbitrary PLA.TxInfo where
     pps' <- shrink pps
     currT' <- shrink currT
     tDonation' <- shrink tDonation
-    pure . PLA.TxInfo ins' routs' outs' fee' mint' cert' wdrl' valid' sigs' reds' dats' tid' votes' pps' currT' $ tDonation'
+    pure . PLA.TxInfo ins' routs' outs' fee' (PLA.UnsafeMintValue $ PLA.getValue mint') cert' wdrl' valid' sigs' reds' dats' tid' votes' pps' currT' $ tDonation'
 
 -- TODO: CoArbitrary, Function
 
