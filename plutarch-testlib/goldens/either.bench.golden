@@ -1,5 +1,5 @@
-eq.true.left {"exBudgetCPU":356433,"exBudgetMemory":2001,"scriptSizeBytes":39}
-eq.true.right {"exBudgetCPU":356433,"exBudgetMemory":2001,"scriptSizeBytes":39}
-eq.false.left-right {"exBudgetCPU":240100,"exBudgetMemory":1600,"scriptSizeBytes":39}
-eq.false.left-left {"exBudgetCPU":356433,"exBudgetMemory":2001,"scriptSizeBytes":39}
-eq.false.right-right {"exBudgetCPU":356433,"exBudgetMemory":2001,"scriptSizeBytes":39}
+eq.true.left {"exBudgetCPU":308433,"exBudgetMemory":1701,"scriptSizeBytes":37}
+eq.true.right {"exBudgetCPU":308433,"exBudgetMemory":1701,"scriptSizeBytes":37}
+eq.false.left-right {"exBudgetCPU":192100,"exBudgetMemory":1300,"scriptSizeBytes":37}
+eq.false.left-left {"exBudgetCPU":308433,"exBudgetMemory":1701,"scriptSizeBytes":37}
+eq.false.right-right {"exBudgetCPU":308433,"exBudgetMemory":1701,"scriptSizeBytes":37}

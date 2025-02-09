@@ -77,6 +77,7 @@ import Flat.Run qualified as F
 import GHC.Stack (HasCallStack, callStack, prettyCallStack)
 import GHC.Word (Word64)
 import Plutarch.Internal.Evaluate (evalScript, uplcVersion)
+import Plutarch.Internal.Simplifier (simplifier)
 import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
@@ -793,7 +794,7 @@ compile' t =
           (\b (lvl, def) -> UPLC.Apply () (UPLC.LamAbs () (DeBruijn . Index $ 0) b) (rawTermToUPLC map' lvl def))
           body
           defs
-   in wrapped
+   in snd $ simplifier wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script

@@ -90,6 +90,7 @@ library
     Plutarch.DataRepr.Internal.FromData
     Plutarch.DataRepr.Internal.HList
     Plutarch.DataRepr.Internal.HList.Utils
+    Plutarch.Demo
     Plutarch.Either
     Plutarch.Enum
     Plutarch.Evaluate
@@ -111,6 +112,7 @@ library
     Plutarch.Internal.ScottEncoding
     Plutarch.Internal.Semigroup
     Plutarch.Internal.Show
+    Plutarch.Internal.Simplifier
     Plutarch.Internal.Subtype
     Plutarch.Internal.Term
     Plutarch.Internal.TermCont

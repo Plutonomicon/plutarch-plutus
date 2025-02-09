@@ -1,76 +1,60 @@
 eq.true program
   1.0.0
-  ((\!0 ->
-      (\!0 !0 ->
-         case
-           !2
-           [ (\!0 !0 ->
-                case
-                  !3
-                  [ (\!0 !0 ->
-                       force
-                         ((\!0 !0 ->
-                             case
-                               (constr 0 [!2, !1, (delay False)])
-                               [(force ifThenElse)])
-                            (equalsInteger !4 !2)
-                            (delay (equalsString !3 !1)))) ]) ])
-        (constr 0 [42, !1])
-        (constr 0 [42, !1]))
-     "Hello")
+  (case
+     (constr 0 [42, "Hello"])
+     [ (\!0 !0 ->
+          case
+            (constr 0 [42, "Hello"])
+            [ (\!0 !0 ->
+                 force
+                   (case
+                      (constr 0
+                         [ (equalsInteger !4 !2)
+                         , (delay (equalsString !3 !1))
+                         , (delay False) ])
+                      [(force ifThenElse)])) ]) ])
 eq.false.fst program
   1.0.0
-  ((\!0 ->
-      (\!0 !0 ->
-         case
-           !2
-           [ (\!0 !0 ->
-                case
-                  !3
-                  [ (\!0 !0 ->
-                       force
-                         ((\!0 !0 ->
-                             case
-                               (constr 0 [!2, !1, (delay False)])
-                               [(force ifThenElse)])
-                            (equalsInteger !4 !2)
-                            (delay (equalsString !3 !1)))) ]) ])
-        (constr 0 [42, !1])
-        (constr 0 [24, !1]))
-     "Hello")
+  (case
+     (constr 0 [42, "Hello"])
+     [ (\!0 !0 ->
+          case
+            (constr 0 [24, "Hello"])
+            [ (\!0 !0 ->
+                 force
+                   (case
+                      (constr 0
+                         [ (equalsInteger !4 !2)
+                         , (delay (equalsString !3 !1))
+                         , (delay False) ])
+                      [(force ifThenElse)])) ]) ])
 eq.false.snd program
   1.0.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 !0 ->
-             case
-               !3
-               [ (\!0 !0 ->
-                    force
-                      ((\!0 !0 ->
-                          case
-                            (constr 0 [!2, !1, (delay False)])
-                            [(force ifThenElse)])
-                         (equalsInteger !4 !2)
-                         (delay (equalsString !3 !1)))) ]) ])
+  (case
      (constr 0 [42, "Hello"])
-     (constr 0 [42, "World"]))
+     [ (\!0 !0 ->
+          case
+            (constr 0 [42, "World"])
+            [ (\!0 !0 ->
+                 force
+                   (case
+                      (constr 0
+                         [ (equalsInteger !4 !2)
+                         , (delay (equalsString !3 !1))
+                         , (delay False) ])
+                      [(force ifThenElse)])) ]) ])
 eq.false.both program
   1.0.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 !0 ->
-             case
-               !3
-               [ (\!0 !0 ->
-                    force
-                      ((\!0 !0 ->
-                          case
-                            (constr 0 [!2, !1, (delay False)])
-                            [(force ifThenElse)])
-                         (equalsInteger !4 !2)
-                         (delay (equalsString !3 !1)))) ]) ])
+  (case
      (constr 0 [42, "Hello"])
-     (constr 0 [24, "World"]))
+     [ (\!0 !0 ->
+          case
+            (constr 0 [24, "World"])
+            [ (\!0 !0 ->
+                 force
+                   (case
+                      (constr 0
+                         [ (equalsInteger !4 !2)
+                         , (delay (equalsString !3 !1))
+                         , (delay False) ])
+                      [(force ifThenElse)])) ]) ])

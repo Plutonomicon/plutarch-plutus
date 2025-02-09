@@ -1,14 +1,14 @@
 constants.always {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":34}
-contains.in interval {"exBudgetCPU":27097689,"exBudgetMemory":91671,"scriptSizeBytes":677}
-contains.out interval {"exBudgetCPU":22041152,"exBudgetMemory":75992,"scriptSizeBytes":677}
-contains.always {"exBudgetCPU":23315328,"exBudgetMemory":77066,"scriptSizeBytes":678}
-member.[b,c], a < b {"exBudgetCPU":21578639,"exBudgetMemory":73628,"scriptSizeBytes":679}
-member.[b,c], a = b {"exBudgetCPU":26683176,"exBudgetMemory":89607,"scriptSizeBytes":678}
-member.[b,c], a > b, a < c {"exBudgetCPU":26635176,"exBudgetMemory":89307,"scriptSizeBytes":679}
-member.[b,c], a = c {"exBudgetCPU":26683176,"exBudgetMemory":89607,"scriptSizeBytes":678}
-member.[b,c], a > c {"exBudgetCPU":26635176,"exBudgetMemory":89307,"scriptSizeBytes":679}
-hull.hull 3 5 contains 3 5 {"exBudgetCPU":37551641,"exBudgetMemory":126515,"scriptSizeBytes":847}
-hull.2 not member of hull 3 5 {"exBudgetCPU":32272591,"exBudgetMemory":109972,"scriptSizeBytes":826}
-hull.6 not member of hull 3 5 {"exBudgetCPU":37329128,"exBudgetMemory":125651,"scriptSizeBytes":826}
-intersection.intersection [2,4] [3,5] contains [3,4] {"exBudgetCPU":38092667,"exBudgetMemory":128843,"scriptSizeBytes":847}
-intersection.intersection [3,5] [2,4] contains [3,4] {"exBudgetCPU":43571113,"exBudgetMemory":147099,"scriptSizeBytes":847}
+contains.in interval {"exBudgetCPU":26185689,"exBudgetMemory":85971,"scriptSizeBytes":601}
+contains.out interval {"exBudgetCPU":21225152,"exBudgetMemory":70892,"scriptSizeBytes":601}
+contains.always {"exBudgetCPU":20706410,"exBudgetMemory":67846,"scriptSizeBytes":597}
+member.[b,c], a < b {"exBudgetCPU":20858639,"exBudgetMemory":69128,"scriptSizeBytes":605}
+member.[b,c], a = b {"exBudgetCPU":25819176,"exBudgetMemory":84207,"scriptSizeBytes":605}
+member.[b,c], a > b, a < c {"exBudgetCPU":25819176,"exBudgetMemory":84207,"scriptSizeBytes":605}
+member.[b,c], a = c {"exBudgetCPU":25819176,"exBudgetMemory":84207,"scriptSizeBytes":605}
+member.[b,c], a > c {"exBudgetCPU":25819176,"exBudgetMemory":84207,"scriptSizeBytes":605}
+hull.hull 3 5 contains 3 5 {"exBudgetCPU":36399641,"exBudgetMemory":119315,"scriptSizeBytes":773}
+hull.2 not member of hull 3 5 {"exBudgetCPU":31264591,"exBudgetMemory":103672,"scriptSizeBytes":745}
+hull.6 not member of hull 3 5 {"exBudgetCPU":36225128,"exBudgetMemory":118751,"scriptSizeBytes":745}
+intersection.intersection [2,4] [3,5] contains [3,4] {"exBudgetCPU":36892667,"exBudgetMemory":121343,"scriptSizeBytes":769}
+intersection.intersection [3,5] [2,4] contains [3,4] {"exBudgetCPU":42179113,"exBudgetMemory":138399,"scriptSizeBytes":769}

@@ -1,4 +1,4 @@
-eq.true.nothing {"exBudgetCPU":176100,"exBudgetMemory":1200,"scriptSizeBytes":29}
-eq.true.just {"exBudgetCPU":356433,"exBudgetMemory":2001,"scriptSizeBytes":34}
-eq.false.nothing-just {"exBudgetCPU":208100,"exBudgetMemory":1400,"scriptSizeBytes":31}
-eq.false.just-just {"exBudgetCPU":356433,"exBudgetMemory":2001,"scriptSizeBytes":34}
+eq.true.nothing {"exBudgetCPU":128100,"exBudgetMemory":900,"scriptSizeBytes":26}
+eq.true.just {"exBudgetCPU":308433,"exBudgetMemory":1701,"scriptSizeBytes":31}
+eq.false.nothing-just {"exBudgetCPU":160100,"exBudgetMemory":1100,"scriptSizeBytes":29}
+eq.false.just-just {"exBudgetCPU":308433,"exBudgetMemory":1701,"scriptSizeBytes":31}

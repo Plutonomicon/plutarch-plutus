@@ -1,5 +1,5 @@
-eq {"exBudgetCPU":310882,"exBudgetMemory":901,"scriptSizeBytes":18}
-semigroup.laws.id.1 {"exBudgetCPU":555753,"exBudgetMemory":1308,"scriptSizeBytes":24}
-semigroup.laws.id.2 {"exBudgetCPU":555753,"exBudgetMemory":1308,"scriptSizeBytes":23}
+eq {"exBudgetCPU":262882,"exBudgetMemory":601,"scriptSizeBytes":21}
+semigroup.laws.id.1 {"exBudgetCPU":507753,"exBudgetMemory":1008,"scriptSizeBytes":28}
+semigroup.laws.id.2 {"exBudgetCPU":507753,"exBudgetMemory":1008,"scriptSizeBytes":27}
 semigroup.concat {"exBudgetCPU":869406,"exBudgetMemory":1011,"scriptSizeBytes":35}
-semigroup.mempty {"exBudgetCPU":129100,"exBudgetMemory":901,"scriptSizeBytes":14}
+semigroup.mempty {"exBudgetCPU":81100,"exBudgetMemory":601,"scriptSizeBytes":13}
