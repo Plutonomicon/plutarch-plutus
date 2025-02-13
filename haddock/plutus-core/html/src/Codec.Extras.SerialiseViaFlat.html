@@ -19,11 +19,11 @@
 </span><span id="line-19"></span><span class="annot"><span class="hs-comment">{- | Newtype to provide 'Serialise' instances for types with a 'Flat' instance
   that just encodes the flat-serialized value as a CBOR bytestring
 -}</span></span><span>
-</span><span id="line-22"></span><span class="hs-keyword">newtype</span><span> </span><span id="SerialiseViaFlat"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-var">SerialiseViaFlat</span></a></span></span><span> </span><span id="local-6989586621681681624"><span class="annot"><a href="#local-6989586621681681624"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SerialiseViaFlat"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-var">SerialiseViaFlat</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="unSerialiseViaFlat"><span class="annot"><span class="annottext">forall a. SerialiseViaFlat a -&gt; a
-</span><a href="Codec.Extras.SerialiseViaFlat.html#unSerialiseViaFlat"><span class="hs-identifier hs-var hs-var">unSerialiseViaFlat</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621681681624"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">newtype</span><span> </span><span id="SerialiseViaFlat"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-var">SerialiseViaFlat</span></a></span></span><span> </span><span id="local-6989586621681735326"><span class="annot"><a href="#local-6989586621681735326"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SerialiseViaFlat"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-var">SerialiseViaFlat</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="unSerialiseViaFlat"><span class="annot"><span class="annottext">forall a. SerialiseViaFlat a -&gt; a
+</span><a href="Codec.Extras.SerialiseViaFlat.html#unSerialiseViaFlat"><span class="hs-identifier hs-var hs-var">unSerialiseViaFlat</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621681735326"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span>
 </span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681681635"><span id="local-6989586621681681708"><span id="local-6989586621681681712"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flat.Flat</span></span><span> </span><span class="annot"><a href="#local-6989586621681681635"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-type">SerialiseViaFlat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681681635"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-25"></span><span>  </span><span id="local-6989586621681681718"><span class="annot"><span class="annottext">encode :: SerialiseViaFlat a -&gt; Encoding
+</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681735337"><span id="local-6989586621681735410"><span id="local-6989586621681735414"><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Flat.Flat</span></span><span> </span><span class="annot"><a href="#local-6989586621681735337"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-type">SerialiseViaFlat</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681735337"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>  </span><span id="local-6989586621681735420"><span class="annot"><span class="annottext">encode :: SerialiseViaFlat a -&gt; Encoding
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">encode</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Encoding)
@@ -39,7 +39,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">SerialiseViaFlat a -&gt; a
 forall a. SerialiseViaFlat a -&gt; a
 </span><a href="Codec.Extras.SerialiseViaFlat.html#unSerialiseViaFlat"><span class="hs-identifier hs-var">unSerialiseViaFlat</span></a></span><span>
-</span><span id="line-26"></span><span>  </span><span id="local-6989586621681681724"><span class="annot"><span class="annottext">decode :: forall s. Decoder s (SerialiseViaFlat a)
+</span><span id="line-26"></span><span>  </span><span id="local-6989586621681735426"><span class="annot"><span class="annottext">decode :: forall s. Decoder s (SerialiseViaFlat a)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">decode</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; SerialiseViaFlat a
 forall a. a -&gt; SerialiseViaFlat a
 </span><a href="Codec.Extras.SerialiseViaFlat.html#SerialiseViaFlat"><span class="hs-identifier hs-var">SerialiseViaFlat</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; SerialiseViaFlat a)
@@ -51,12 +51,12 @@ forall a s. Get a -&gt; Decoder s a
 forall a. Flat a =&gt; Get a
 </span><span class="hs-identifier hs-var">Flat.decode</span></span><span>
 </span><span id="line-27"></span><span>
-</span><span id="line-28"></span><span id="local-6989586621681681647"><span id="local-6989586621681681648"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#decodeViaFlatWith"><span class="hs-identifier hs-type">decodeViaFlatWith</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flat.Get</span></span><span> </span><span class="annot"><a href="#local-6989586621681681647"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CBOR.Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621681681648"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681681647"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-28"></span><span id="local-6989586621681735349"><span id="local-6989586621681735350"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#decodeViaFlatWith"><span class="hs-identifier hs-type">decodeViaFlatWith</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flat.Get</span></span><span> </span><span class="annot"><a href="#local-6989586621681735349"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CBOR.Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621681735350"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681735349"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
 </span><span id="line-29"></span><span id="decodeViaFlatWith"><span class="annot"><span class="annottext">decodeViaFlatWith :: forall a s. Get a -&gt; Decoder s a
-</span><a href="Codec.Extras.SerialiseViaFlat.html#decodeViaFlatWith"><span class="hs-identifier hs-var hs-var">decodeViaFlatWith</span></a></span></span><span> </span><span id="local-6989586621681681736"><span class="annot"><span class="annottext">Get a
-</span><a href="#local-6989586621681681736"><span class="hs-identifier hs-var">decoder</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-30"></span><span>  </span><span id="local-6989586621681681737"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621681681737"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s ByteString
+</span><a href="Codec.Extras.SerialiseViaFlat.html#decodeViaFlatWith"><span class="hs-identifier hs-var hs-var">decodeViaFlatWith</span></a></span></span><span> </span><span id="local-6989586621681735438"><span class="annot"><span class="annottext">Get a
+</span><a href="#local-6989586621681735438"><span class="hs-identifier hs-var">decoder</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-30"></span><span>  </span><span id="local-6989586621681735439"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621681735439"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s ByteString
 forall s. Decoder s ByteString
 </span><span class="hs-identifier hs-var">CBOR.decodeBytes</span></span><span>
 </span><span id="line-31"></span><span>  </span><span class="hs-comment">-- lift any flat's failures to be cborg failures (MonadFail)</span><span>
@@ -79,8 +79,8 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Get a -&gt; ByteString -&gt; Either DecodeException a
 forall b a. AsByteString b =&gt; Get a -&gt; b -&gt; Decoded a
 </span><span class="hs-identifier hs-var">Flat.unflatWith</span></span><span> </span><span class="annot"><span class="annottext">Get a
-</span><a href="#local-6989586621681681736"><span class="hs-identifier hs-var">decoder</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621681681737"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621681735438"><span class="hs-identifier hs-var">decoder</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621681735439"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-33"></span><span>
 </span><span id="line-34"></span><span class="annot"><span class="hs-comment">{- | The errors returned by `cborg` are plain strings (untyped). With this
 function we try to map onto datatypes, those cborg error messages that we are
@@ -92,23 +92,23 @@ see `PlutusLedgerApi.Common.SerialisedScript.scriptCBORDecoder`.
 -}</span></span><span>
 </span><span id="line-42"></span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#readDeserialiseFailureInfo"><span class="hs-identifier hs-type">readDeserialiseFailureInfo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CBOR.DeserialiseFailure</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureInfo"><span class="hs-identifier hs-type">DeserialiseFailureInfo</span></a></span><span>
 </span><span id="line-43"></span><span id="readDeserialiseFailureInfo"><span class="annot"><span class="annottext">readDeserialiseFailureInfo :: DeserialiseFailure -&gt; DeserialiseFailureInfo
-</span><a href="Codec.Extras.SerialiseViaFlat.html#readDeserialiseFailureInfo"><span class="hs-identifier hs-var hs-var">readDeserialiseFailureInfo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CBOR.DeserialiseFailure</span></span><span> </span><span id="local-6989586621681681742"><span class="annot"><span class="annottext">ByteOffset
-</span><a href="#local-6989586621681681742"><span class="hs-identifier hs-var">byteOffset</span></a></span></span><span> </span><span id="local-6989586621681681743"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681681743"><span class="hs-identifier hs-var">reason</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Codec.Extras.SerialiseViaFlat.html#readDeserialiseFailureInfo"><span class="hs-identifier hs-var hs-var">readDeserialiseFailureInfo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CBOR.DeserialiseFailure</span></span><span> </span><span id="local-6989586621681735444"><span class="annot"><span class="annottext">ByteOffset
+</span><a href="#local-6989586621681735444"><span class="hs-identifier hs-var">byteOffset</span></a></span></span><span> </span><span id="local-6989586621681735445"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621681735445"><span class="hs-identifier hs-var">reason</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-44"></span><span>  </span><span class="annot"><span class="annottext">ByteOffset -&gt; DeserialiseFailureReason -&gt; DeserialiseFailureInfo
 </span><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureInfo"><span class="hs-identifier hs-var">DeserialiseFailureInfo</span></a></span><span> </span><span class="annot"><span class="annottext">ByteOffset
-</span><a href="#local-6989586621681681742"><span class="hs-identifier hs-var">byteOffset</span></a></span><span> </span><span class="annot"><span class="annottext">(DeserialiseFailureReason -&gt; DeserialiseFailureInfo)
+</span><a href="#local-6989586621681735444"><span class="hs-identifier hs-var">byteOffset</span></a></span><span> </span><span class="annot"><span class="annottext">(DeserialiseFailureReason -&gt; DeserialiseFailureInfo)
 -&gt; DeserialiseFailureReason -&gt; DeserialiseFailureInfo
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; DeserialiseFailureReason
-</span><a href="#local-6989586621681681745"><span class="hs-identifier hs-var">interpretReason</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681681743"><span class="hs-identifier hs-var">reason</span></a></span><span>
+</span><a href="#local-6989586621681735447"><span class="hs-identifier hs-var">interpretReason</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621681735445"><span class="hs-identifier hs-var">reason</span></a></span><span>
 </span><span id="line-45"></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-comment">-- Note that this is subject to change if `cborg` dependency changes.</span><span>
 </span><span id="line-47"></span><span>  </span><span class="hs-comment">-- Currently: cborg-0.2.10.0</span><span>
-</span><span id="line-48"></span><span>  </span><span class="annot"><a href="#local-6989586621681681745"><span class="hs-identifier hs-type">interpretReason</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureReason"><span class="hs-identifier hs-type">DeserialiseFailureReason</span></a></span><span>
-</span><span id="line-49"></span><span>  </span><span id="local-6989586621681681745"><span class="annot"><span class="annottext">interpretReason :: String -&gt; DeserialiseFailureReason
-</span><a href="#local-6989586621681681745"><span class="hs-identifier hs-var hs-var">interpretReason</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-48"></span><span>  </span><span class="annot"><a href="#local-6989586621681735447"><span class="hs-identifier hs-type">interpretReason</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureReason"><span class="hs-identifier hs-type">DeserialiseFailureReason</span></a></span><span>
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621681735447"><span class="annot"><span class="annottext">interpretReason :: String -&gt; DeserialiseFailureReason
+</span><a href="#local-6989586621681735447"><span class="hs-identifier hs-var hs-var">interpretReason</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-50"></span><span>    </span><span class="hs-comment">-- Relevant Sources:</span><span>
 </span><span id="line-51"></span><span>    </span><span class="hs-comment">-- &lt;https://github.com/well-typed/cborg/blob/cborg-0.2.10.0/cborg/src/Codec/CBOR/Read.hs#L226&gt;</span><span>
 </span><span id="line-52"></span><span>    </span><span class="hs-comment">-- &lt;https://github.com/well-typed/cborg/blob/cborg-0.2.10.0/cborg/src/Codec/CBOR/Read.hs#L1424&gt;</span><span>
@@ -121,10 +121,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;expected bytes&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DeserialiseFailureReason
 </span><a href="Codec.Extras.SerialiseViaFlat.html#ExpectedBytes"><span class="hs-identifier hs-var">ExpectedBytes</span></a></span><span>
-</span><span id="line-58"></span><span>    </span><span id="local-6989586621681681748"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681681748"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; DeserialiseFailureReason
+</span><span id="line-58"></span><span>    </span><span id="local-6989586621681735450"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621681735450"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; DeserialiseFailureReason
 </span><a href="Codec.Extras.SerialiseViaFlat.html#OtherReason"><span class="hs-identifier hs-var">OtherReason</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681681748"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><a href="#local-6989586621681735450"><span class="hs-identifier hs-var">msg</span></a></span><span>
 </span><span id="line-59"></span><span>
 </span><span id="line-60"></span><span class="annot"><span class="hs-comment">{- | Similar to `CBOR.DeserialiseFailure`, with the difference that plain
 string reason messages are turned into the datatype: `DeserialiseFailureReason`.
@@ -135,7 +135,7 @@ string reason messages are turned into the datatype: `DeserialiseFailureReason`.
 </span><span id="line-65"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="dfReason"><span class="annot"><span class="annottext">DeserialiseFailureInfo -&gt; DeserialiseFailureReason
 </span><a href="Codec.Extras.SerialiseViaFlat.html#dfReason"><span class="hs-identifier hs-var hs-var">dfReason</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureReason"><span class="hs-identifier hs-type">DeserialiseFailureReason</span></a></span><span>
 </span><span id="line-66"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-67"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681681753"><span id="local-6989586621681681759"><span class="annot"><span class="annottext">DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681735455"><span id="local-6989586621681735461"><span class="annot"><span class="annottext">DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool
 (DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool)
 -&gt; (DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool)
 -&gt; Eq DeserialiseFailureInfo
@@ -144,7 +144,7 @@ $c== :: DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool
 == :: DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool
 $c/= :: DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool
 /= :: DeserialiseFailureInfo -&gt; DeserialiseFailureInfo -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681681764"><span id="local-6989586621681681772"><span id="local-6989586621681681776"><span class="annot"><span class="annottext">Int -&gt; DeserialiseFailureInfo -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681735466"><span id="local-6989586621681735474"><span id="local-6989586621681735478"><span class="annot"><span class="annottext">Int -&gt; DeserialiseFailureInfo -&gt; ShowS
 [DeserialiseFailureInfo] -&gt; ShowS
 DeserialiseFailureInfo -&gt; String
 (Int -&gt; DeserialiseFailureInfo -&gt; ShowS)
@@ -161,11 +161,11 @@ $cshowList :: [DeserialiseFailureInfo] -&gt; ShowS
 showList :: [DeserialiseFailureInfo] -&gt; ShowS
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681681781"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureInfo"><span class="hs-identifier hs-type">DeserialiseFailureInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-70"></span><span>  </span><span id="local-6989586621681681792"><span class="annot"><span class="annottext">pretty :: forall ann. DeserialiseFailureInfo -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureInfo"><span class="hs-identifier hs-type">DeserialiseFailureInfo</span></a></span><span> </span><span id="local-6989586621681681793"><span class="annot"><span class="annottext">ByteOffset
-</span><a href="#local-6989586621681681793"><span class="hs-identifier hs-var">offset</span></a></span></span><span> </span><span id="local-6989586621681681794"><span class="annot"><span class="annottext">DeserialiseFailureReason
-</span><a href="#local-6989586621681681794"><span class="hs-identifier hs-var">reason</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681735483"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureInfo"><span class="hs-identifier hs-type">DeserialiseFailureInfo</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621681735494"><span class="annot"><span class="annottext">pretty :: forall ann. DeserialiseFailureInfo -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureInfo"><span class="hs-identifier hs-type">DeserialiseFailureInfo</span></a></span><span> </span><span id="local-6989586621681735495"><span class="annot"><span class="annottext">ByteOffset
+</span><a href="#local-6989586621681735495"><span class="hs-identifier hs-var">offset</span></a></span></span><span> </span><span id="local-6989586621681735496"><span class="annot"><span class="annottext">DeserialiseFailureReason
+</span><a href="#local-6989586621681735496"><span class="hs-identifier hs-var">reason</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-71"></span><span>    </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;CBOR deserialisation failed at the offset&quot;</span></span><span>
 </span><span id="line-72"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -174,7 +174,7 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. ByteOffset -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ByteOffset
-</span><a href="#local-6989586621681681793"><span class="hs-identifier hs-var">offset</span></a></span><span>
+</span><a href="#local-6989586621681735495"><span class="hs-identifier hs-var">offset</span></a></span><span>
 </span><span id="line-73"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -185,7 +185,7 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. DeserialiseFailureReason -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">DeserialiseFailureReason
-</span><a href="#local-6989586621681681794"><span class="hs-identifier hs-var">reason</span></a></span><span>
+</span><a href="#local-6989586621681735496"><span class="hs-identifier hs-var">reason</span></a></span><span>
 </span><span id="line-75"></span><span>
 </span><span id="line-76"></span><span class="annot"><span class="hs-comment">-- | The reason of the cbor failure as a datatype, not as a plain string.</span></span><span>
 </span><span id="line-77"></span><span class="hs-keyword">data</span><span> </span><span id="DeserialiseFailureReason"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureReason"><span class="hs-identifier hs-var">DeserialiseFailureReason</span></a></span></span><span>
@@ -196,7 +196,7 @@ forall ann. DeserialiseFailureReason -&gt; Doc ann
 </span><span id="line-82"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="hs-comment">-- | This is either a cbor failure that we (plutus) are not aware of,</span><span>
 </span><span id="line-83"></span><span>    </span><span class="hs-comment">-- or an underlying flat failure. We use whatever message `cborg` or flat returns.</span><span>
 </span><span id="line-84"></span><span>    </span><span id="OtherReason"><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#OtherReason"><span class="hs-identifier hs-var">OtherReason</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#String"><span class="hs-identifier hs-type">String</span></a></span><span>
-</span><span id="line-85"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681681796"><span id="local-6989586621681681799"><span class="annot"><span class="annottext">DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool
+</span><span id="line-85"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681735498"><span id="local-6989586621681735501"><span class="annot"><span class="annottext">DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool
 (DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool)
 -&gt; (DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool)
 -&gt; Eq DeserialiseFailureReason
@@ -205,7 +205,7 @@ $c== :: DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool
 == :: DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool
 $c/= :: DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool
 /= :: DeserialiseFailureReason -&gt; DeserialiseFailureReason -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681681802"><span id="local-6989586621681681808"><span id="local-6989586621681681811"><span class="annot"><span class="annottext">Int -&gt; DeserialiseFailureReason -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681735504"><span id="local-6989586621681735510"><span id="local-6989586621681735513"><span class="annot"><span class="annottext">Int -&gt; DeserialiseFailureReason -&gt; ShowS
 [DeserialiseFailureReason] -&gt; ShowS
 DeserialiseFailureReason -&gt; String
 (Int -&gt; DeserialiseFailureReason -&gt; ShowS)
@@ -222,8 +222,8 @@ $cshowList :: [DeserialiseFailureReason] -&gt; ShowS
 showList :: [DeserialiseFailureReason] -&gt; ShowS
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span><span>
-</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681681816"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureReason"><span class="hs-identifier hs-type">DeserialiseFailureReason</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621681681824"><span class="annot"><span class="annottext">pretty :: forall ann. DeserialiseFailureReason -&gt; Doc ann
+</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681735518"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#DeserialiseFailureReason"><span class="hs-identifier hs-type">DeserialiseFailureReason</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621681735526"><span class="annot"><span class="annottext">pretty :: forall ann. DeserialiseFailureReason -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-89"></span><span>    </span><span class="annot"><span class="annottext">DeserialiseFailureReason
 </span><a href="Codec.Extras.SerialiseViaFlat.html#EndOfInput"><span class="hs-identifier hs-var">EndOfInput</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -231,10 +231,10 @@ showList :: [DeserialiseFailureReason] -&gt; ShowS
 </span><span id="line-90"></span><span>    </span><span class="annot"><span class="annottext">DeserialiseFailureReason
 </span><a href="Codec.Extras.SerialiseViaFlat.html#ExpectedBytes"><span class="hs-identifier hs-var">ExpectedBytes</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;the bytes inside the input are malformed.&quot;</span></span><span>
-</span><span id="line-91"></span><span>    </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#OtherReason"><span class="hs-identifier hs-type">OtherReason</span></a></span><span> </span><span id="local-6989586621681681825"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681681825"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Doc ann
+</span><span id="line-91"></span><span>    </span><span class="annot"><a href="Codec.Extras.SerialiseViaFlat.html#OtherReason"><span class="hs-identifier hs-type">OtherReason</span></a></span><span> </span><span id="local-6989586621681735527"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621681735527"><span class="hs-identifier hs-var">msg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Doc ann
 forall ann. String -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621681681825"><span class="hs-identifier hs-var">msg</span></a></span><span>
+</span><a href="#local-6989586621681735527"><span class="hs-identifier hs-var">msg</span></a></span><span>
 </span><span id="line-92"></span></pre></body></html>

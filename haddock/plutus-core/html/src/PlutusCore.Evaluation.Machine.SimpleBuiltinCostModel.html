@@ -41,8 +41,8 @@ Text -&gt; Text -&gt; Text -&gt; Text
 </span><span id="line-35"></span><span>
 </span><span id="line-36"></span><span class="annot"><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#toSimpleBuiltinCostModel"><span class="hs-identifier hs-type">toSimpleBuiltinCostModel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#BuiltinCostKeyMap"><span class="hs-identifier hs-type">BuiltinCostKeyMap</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#BuiltinCostMap"><span class="hs-identifier hs-type">BuiltinCostMap</span></a></span><span>
 </span><span id="line-37"></span><span id="toSimpleBuiltinCostModel"><span class="annot"><span class="annottext">toSimpleBuiltinCostModel :: BuiltinCostKeyMap -&gt; BuiltinCostMap
-</span><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#toSimpleBuiltinCostModel"><span class="hs-identifier hs-var hs-var">toSimpleBuiltinCostModel</span></a></span></span><span> </span><span id="local-6989586621681685492"><span class="annot"><span class="annottext">BuiltinCostKeyMap
-</span><a href="#local-6989586621681685492"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Key, CpuAndMemoryModel) -&gt; (Text, CpuAndMemoryModel))
+</span><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#toSimpleBuiltinCostModel"><span class="hs-identifier hs-var hs-var">toSimpleBuiltinCostModel</span></a></span></span><span> </span><span id="local-6989586621681739194"><span class="annot"><span class="annottext">BuiltinCostKeyMap
+</span><a href="#local-6989586621681739194"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Key, CpuAndMemoryModel) -&gt; (Text, CpuAndMemoryModel))
 -&gt; [(Key, CpuAndMemoryModel)] -&gt; BuiltinCostMap
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Key -&gt; Text)
@@ -58,7 +58,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-identifier hs-var">toText</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">BuiltinCostKeyMap -&gt; [(Key, CpuAndMemoryModel)]
 forall v. KeyMap v -&gt; [(Key, v)]
 </span><span class="hs-identifier hs-var">KeyMap.toList</span></span><span> </span><span class="annot"><span class="annottext">BuiltinCostKeyMap
-</span><a href="#local-6989586621681685492"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681739194"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span>
 </span><span id="line-39"></span><span class="annot"><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#defaultSimpleBuiltinCostModel"><span class="hs-identifier hs-type">defaultSimpleBuiltinCostModel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.SimpleBuiltinCostModel.html#BuiltinCostMap"><span class="hs-identifier hs-type">BuiltinCostMap</span></a></span><span>
 </span><span id="line-40"></span><span id="defaultSimpleBuiltinCostModel"><span class="annot"><span class="annottext">defaultSimpleBuiltinCostModel :: BuiltinCostMap
