@@ -7,7 +7,7 @@ module Plutarch.Docs.PreferStaticallyBuilding (viacon, viaconstant) where
 
 import Plutarch.Prelude
 import Plutarch.LedgerApi.V3 (PScriptPurpose (PMinting), PCurrencySymbol (PCurrencySymbol))
-import PlutusLedgerApi.V3 (ScriptPurpose (Minting))
+import PlutusLedgerApi.V3 (ScriptPurpose (Minting), CurrencySymbol(CurrencySymbol))
 
 ```
 
@@ -24,7 +24,7 @@ Here's an example, let's say you want to build a `PScriptPurpose` - `PMinting "f
 
 ```haskell
 viaconstant :: Term s PScriptPurpose
-viaconstant = pconstant (Minting "f1e301")
+viaconstant = pconstant (Minting (CurrencySymbol "f1e301"))
 -- (or)
 
 viacon :: Term s PScriptPurpose
