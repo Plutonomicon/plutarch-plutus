@@ -55,7 +55,19 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
-import Plutarch.Internal.Term (S, Term, phoistAcyclic, plet, pplaceholder, punsafeCoerce, (#), (#$))
+import Plutarch.Internal.Term (
+  InternalConfig (..),
+  S,
+  Term,
+  pgetInternalConfig,
+  phoistAcyclic,
+  plet,
+  pplaceholder,
+  punsafeCoerce,
+  pwithInternalConfig,
+  (#),
+  (#$),
+ )
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
@@ -270,7 +282,7 @@ pmatchDataRec ::
   Term s (PDataRec struct) ->
   (PRec struct s -> Term s b) ->
   Term s b
-pmatchDataRec (punsafeCoerce -> x) f = unTermCont $ do
+pmatchDataRec (punsafeCoerce -> x) f = pgetInternalConfig $ \cfg -> unTermCont $ do
   let
     placeholderBuilder :: forall y ys. PHB s struct ys -> PHB s struct (y ': ys)
     placeholderBuilder (PHB rest) = PHB $ \idx g ->
@@ -279,14 +291,19 @@ pmatchDataRec (punsafeCoerce -> x) f = unTermCont $ do
     placeholder :: (PRec struct s, Integer)
     placeholder = (unPHB $ SOP.para_SList (PHB $ \idx g -> (g (PRec Nil), idx - 1)) placeholderBuilder) 0 id
 
+    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f (fst placeholder)
+
   usedFields <-
-    catMaybes
-      <$> traverse
-        ( \idx -> do
-            found <- pfindPlaceholder idx (f $ fst placeholder)
-            pure $ if found then Just idx else Nothing
-        )
-        ([0 .. (snd placeholder)] :: [Integer])
+    if internalConfig'dataRecPMatchOptimization cfg
+      then
+        catMaybes
+          <$> traverse
+            ( \idx -> do
+                found <- pfindPlaceholder idx placeholderApplied
+                pure $ if found then Just idx else Nothing
+            )
+            [0 .. (snd placeholder)]
+      else pure [0 .. (snd placeholder)]
 
   let
     -- Technically, we don't need @running@ here since we are pretty sure there's nothing using field
