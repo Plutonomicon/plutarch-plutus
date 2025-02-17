@@ -11,11 +11,9 @@ module Plutarch.Repr.Tag (
 
 import Data.Proxy (Proxy (Proxy))
 
--- parts have been commented. They will have to be restored after PLiftalbe rework
--- import Data.Coerce (coerce)
+import Data.Coerce (coerce)
 import Data.Kind (Type)
-
--- import GHC.Exts (Any)
+import GHC.Exts (Any)
 import GHC.Generics qualified as GHC
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
 import GHC.TypeLits (type (+))
@@ -31,8 +29,13 @@ import Generics.SOP (
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Integer (PInteger)
 
--- import Plutarch.Builtin.Opaque (POpaque, popaque)
-import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Builtin.Opaque (popaque)
+import Plutarch.Internal.Lift (
+  LiftError (OtherLiftError),
+  PLiftable (AsHaskell, PlutusRepr, haskToRepr, plutToRepr, reprToHask, reprToPlut),
+  PLifted (PLifted),
+  pconstant,
+ )
 import Plutarch.Internal.PlutusType (
   PContravariant',
   PCovariant',
@@ -143,32 +146,34 @@ newtype TagMatchHandler s b struct = TagMatchHandler
   { unTagMatchHandler :: Integer -> (SOP I struct -> Term s b) -> NP (K (Integer, Term s b)) struct
   }
 
--- instance
---   ( PlutusType (DeriveAsTag a)
---   , SOP.Generic (a Any)
---   , TagTypeConstraints Any a struct
---   ) =>
---   PLiftable (DeriveAsTag a)
---   where
---   type AsHaskell (DeriveAsTag a) = a Any
---   type PlutusRepr (DeriveAsTag a) = Integer
---   toPlutarchRepr = toInteger . hindex . from
---   toPlutarch = PLifted . popaque . pconstant @PInteger . toPlutarchRepr @(DeriveAsTag a)
---   fromPlutarchRepr idx =
---     let
---       go :: IsEmpty x => TagLiftHelper r xs -> TagLiftHelper r (x ': xs)
---       go (TagLiftHelper rest) =
---         TagLiftHelper $ \n f ->
---           if idx == n
---             then f $ SOP $ Z Nil
---             else rest (n + 1) \(SOP s) -> f $ SOP $ S s
+instance
+  ( PlutusType (DeriveAsTag a)
+  , SOP.Generic (a Any)
+  , TagTypeConstraints Any a struct
+  ) =>
+  PLiftable (DeriveAsTag a)
+  where
+  type AsHaskell (DeriveAsTag a) = a Any
+  type PlutusRepr (DeriveAsTag a) = Integer
 
---       helper :: TagLiftHelper (Maybe (a Any)) (Code (a Any))
---       helper = cpara_SList (Proxy @IsEmpty) (TagLiftHelper \_ _ -> Nothing) go
---      in
---       unTagLiftHelper helper 0 (Just <$> to)
---   fromPlutarch t = do
---     idx <- fromPlutarch @PInteger $ coerce t
---     case fromPlutarchRepr @(DeriveAsTag a) idx of
---       Nothing -> Left TagTypeInvalidIndex
---       Just x -> pure x
+  haskToRepr = toInteger . SOP.hindex . SOP.from
+
+  reprToHask idx =
+    let
+      go :: IsEmpty x => TagLiftHelper r xs -> TagLiftHelper r (x ': xs)
+      go (TagLiftHelper rest) =
+        TagLiftHelper $ \n f ->
+          if idx == n
+            then f $ SOP $ Z Nil
+            else rest (n + 1) \(SOP s) -> f $ SOP $ S s
+
+      helper :: TagLiftHelper (Maybe (a Any)) (Code (a Any))
+      helper = SOP.cpara_SList (Proxy @IsEmpty) (TagLiftHelper \_ _ -> Nothing) go
+     in
+      maybe (Left (OtherLiftError "Invalid index")) Right $ unTagLiftHelper helper 0 (Just <$> SOP.to)
+
+  -- NOTE: Do we need index boudns checking in these two?
+
+  reprToPlut idx = PLifted $ popaque $ pconstant @PInteger idx
+
+  plutToRepr p = plutToRepr @PInteger $ coerce p
