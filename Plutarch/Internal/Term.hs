@@ -37,17 +37,20 @@ module Plutarch.Internal.Term (
   PType,
   pthrow,
   Config (NoTracing, Tracing),
+  InternalConfig (..),
   TracingMode (..),
   LogLevel (..),
   tracingMode,
   logLevel,
   pgetConfig,
+  pgetInternalConfig,
+  pwithInternalConfig,
   TermMonad (..),
   (#),
   (#$),
 ) where
 
-import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
+import Control.Monad.Reader (ReaderT (ReaderT), ask, local, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -402,7 +405,16 @@ pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
 
 {-# COMPLETE NoTracing, Tracing #-}
 
-newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
+-- These are settings we need internally
+newtype InternalConfig = InternalConfig
+  { internalConfig'dataRecPMatchOptimization :: Bool
+  }
+  deriving stock (Show, Eq)
+
+defaultInternalConfig :: InternalConfig
+defaultInternalConfig = InternalConfig True
+
+newtype TermMonad m = TermMonad {runTermMonad :: ReaderT (InternalConfig, Config) (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)
 
 type role Term nominal nominal
@@ -637,7 +649,18 @@ pplaceholder x = Term \_ -> pure $ mkTermRes $ RPlaceHolder x
 pgetConfig :: (Config -> Term s a) -> Term s a
 pgetConfig f = Term \lvl -> TermMonad $ do
   config <- ask
-  runTermMonad $ asRawTerm (f config) lvl
+  runTermMonad $ asRawTerm (f $ snd config) lvl
+
+pgetInternalConfig :: (InternalConfig -> Term s a) -> Term s a
+pgetInternalConfig f = Term \lvl -> TermMonad $ do
+  config <- ask
+  runTermMonad $ asRawTerm (f $ fst config) lvl
+
+pwithInternalConfig :: InternalConfig -> Term s a -> Term s a
+pwithInternalConfig cfg t = Term \lvl -> TermMonad $ do
+  local (\(_, c) -> (cfg, c)) $
+    runTermMonad $
+      asRawTerm t lvl
 
 {- |
   Unsafely coerce the type-tag of a Term.
@@ -796,7 +819,7 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (defaultInternalConfig, config)
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -809,7 +832,7 @@ compileOptimized ::
   Either Text Script
 compileOptimized t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> do
-    configured <- t' NoTracing
+    configured <- t' (defaultInternalConfig, NoTracing)
     let compiled = compile' configured
     case go compiled of
       Left err -> Left . Text.pack . show $ err
@@ -868,7 +891,7 @@ optimizeTerm (Term raw) = Term $ \w64 ->
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
-hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
+hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) (defaultInternalConfig, config)
 
 {- |
   High precedence infixl synonym of 'papp', to be used like
