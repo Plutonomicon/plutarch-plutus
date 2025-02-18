@@ -1,5 +1,5 @@
 normal program
-  1.0.0
+  1.1.0
   (constr 0
      [ 3
      , (constr 0
@@ -18,7 +18,7 @@ normal program
                                         [ 10
                                         , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])
 do program
-  1.0.0
+  1.1.0
   (constr 0
      [ 3
      , (constr 0
@@ -37,7 +37,7 @@ do program
                                         [ 10
                                         , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])
 cont program
-  1.0.0
+  1.1.0
   (constr 0
      [ 3
      , (constr 0
@@ -56,7 +56,7 @@ cont program
                                         [ 10
                                         , (constr 1 []) ]) ]) ]) ]) ]) ]) ]) ])
 termcont program
-  1.0.0
+  1.1.0
   (constr 0
      [ 3
      , (constr 0
