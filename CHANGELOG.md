@@ -1,5 +1,16 @@
 # Revision history for plutarch
 
+# 1.10.1 -- 17-02-2025
+
+## Added
+
+* PLiftable instance deriving strategy for Data records and structs
+
+## Fixed
+
+* UPLC version is fixed to have `1.1.0`
+* Optimization of Nested DataRecord no longer takes absurd amount of time
+
 # 1.10.0 -- 29-01-2025
 
 ## Added
