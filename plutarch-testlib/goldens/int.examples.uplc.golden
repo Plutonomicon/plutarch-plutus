@@ -1,14 +1,14 @@
-add1 program 1.0.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
-add1Hoisted program 1.0.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
+add1 program 1.1.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
+add1Hoisted program 1.1.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
 example1 program
-  1.0.0
+  1.1.0
   ((\!0 -> addInteger (!1 12 32) (!1 5 4))
      (\!0 !0 -> addInteger (addInteger !2 !1) 1))
 example2 program
-  1.0.0
+  1.1.0
   (\!0 -> case !1 [(\!0 -> addInteger !1 1), (\!0 -> subtractInteger !1 1)])
 fib.lam program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
         (\!0 !0 ->
@@ -31,7 +31,7 @@ fib.lam program
                 [!3])))
      (force ifThenElse))
 fib.app.9 program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
         (\!0 !0 ->
@@ -54,4 +54,4 @@ fib.app.9 program
                 [!3]))
         9)
      (force ifThenElse))
-uglyDouble program 1.0.0 (\!0 -> addInteger !1 !1)
+uglyDouble program 1.1.0 (\!0 -> addInteger !1 !1)

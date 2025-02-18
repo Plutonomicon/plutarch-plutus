@@ -1,5 +1,5 @@
 iterateN.lam program
-  1.0.0
+  1.1.0
   ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
      (\!0 !0 !0 !0 ->
         force
@@ -13,7 +13,7 @@ iterateN.lam program
                         [!4])) ])
              [(force ifThenElse)])))
 iterateN.app.succ program
-  1.0.0
+  1.1.0
   (case
      (constr 0
         [ (\!0 !0 !0 !0 ->
@@ -32,7 +32,7 @@ iterateN.app.succ program
         , 0 ])
      [(\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))])
 iterateN.app.double program
-  1.0.0
+  1.1.0
   (case
      (constr 0
         [ (\!0 !0 !0 !0 ->
