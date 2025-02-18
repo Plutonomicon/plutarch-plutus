@@ -1,5 +1,5 @@
 eq.true.nothing program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -8,7 +8,7 @@ eq.true.nothing program
      (constr 1 [])
      (constr 1 []))
 eq.true.just program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -17,7 +17,7 @@ eq.true.just program
      (constr 0 [42])
      (constr 0 [42]))
 eq.false.nothing-just program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -26,7 +26,7 @@ eq.false.nothing-just program
      (constr 1 [])
      (constr 0 [42]))
 eq.false.just-just program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2

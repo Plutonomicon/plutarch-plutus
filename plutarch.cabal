@@ -1,12 +1,12 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.10.0
+version:            1.10.1
 author:
   Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>, Philip DiSarro <philipdisarro@gmail.com>
 
 license:            MIT
 extra-source-files: README.md
-tested-with:        GHC ==9.6.4
+tested-with:        GHC ==9.6.6
 
 common c
   default-language:   GHC2021
@@ -132,6 +132,7 @@ library
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Repr.Data
+    Plutarch.Repr.Derive
     Plutarch.Repr.Internal
     Plutarch.Repr.Newtype
     Plutarch.Repr.Scott
@@ -155,7 +156,7 @@ library
     , generics-sop
     , lens
     , mtl
-    , plutus-core        >=1.36.0.0
+    , plutus-core        >=1.40.0.0 && <1.41
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter

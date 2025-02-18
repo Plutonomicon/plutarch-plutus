@@ -37,18 +37,20 @@ module Plutarch.Internal.Term (
   PType,
   pthrow,
   Config (NoTracing, Tracing),
+  InternalConfig (..),
   TracingMode (..),
   LogLevel (..),
   tracingMode,
   logLevel,
   pgetConfig,
+  pgetInternalConfig,
+  pwithInternalConfig,
   TermMonad (..),
   (#),
   (#$),
 ) where
 
-import Control.Monad.Reader (ReaderT (ReaderT), ask, runReaderT)
-import Control.Monad.State.Strict (evalStateT)
+import Control.Monad.Reader (ReaderT (ReaderT), ask, local, runReaderT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -80,7 +82,6 @@ import Plutarch.Internal.Evaluate (evalScript, uplcVersion)
 import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
-import PlutusCore.Compiler.Types (initUPLCSimplifierTrace)
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
@@ -404,7 +405,16 @@ pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
 
 {-# COMPLETE NoTracing, Tracing #-}
 
-newtype TermMonad m = TermMonad {runTermMonad :: ReaderT Config (Either Text) m}
+-- These are settings we need internally
+newtype InternalConfig = InternalConfig
+  { internalConfig'dataRecPMatchOptimization :: Bool
+  }
+  deriving stock (Show, Eq)
+
+defaultInternalConfig :: InternalConfig
+defaultInternalConfig = InternalConfig True
+
+newtype TermMonad m = TermMonad {runTermMonad :: ReaderT (InternalConfig, Config) (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)
 
 type role Term nominal nominal
@@ -639,7 +649,18 @@ pplaceholder x = Term \_ -> pure $ mkTermRes $ RPlaceHolder x
 pgetConfig :: (Config -> Term s a) -> Term s a
 pgetConfig f = Term \lvl -> TermMonad $ do
   config <- ask
-  runTermMonad $ asRawTerm (f config) lvl
+  runTermMonad $ asRawTerm (f $ snd config) lvl
+
+pgetInternalConfig :: (InternalConfig -> Term s a) -> Term s a
+pgetInternalConfig f = Term \lvl -> TermMonad $ do
+  config <- ask
+  runTermMonad $ asRawTerm (f $ fst config) lvl
+
+pwithInternalConfig :: InternalConfig -> Term s a -> Term s a
+pwithInternalConfig cfg t = Term \lvl -> TermMonad $ do
+  local (\(_, c) -> (cfg, c)) $
+    runTermMonad $
+      asRawTerm t lvl
 
 {- |
   Unsafely coerce the type-tag of a Term.
@@ -798,7 +819,7 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' config
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (defaultInternalConfig, config)
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -811,7 +832,7 @@ compileOptimized ::
   Either Text Script
 compileOptimized t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> do
-    configured <- t' NoTracing
+    configured <- t' (defaultInternalConfig, NoTracing)
     let compiled = compile' configured
     case go compiled of
       Left err -> Left . Text.pack . show $ err
@@ -820,7 +841,7 @@ compileOptimized t = case asClosedRawTerm t of
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
+    go compiled = PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
       simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
       debruijnd <- UPLC.deBruijnTerm simplified
@@ -863,14 +884,14 @@ optimizeTerm (Term raw) = Term $ \w64 ->
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
+    go compiled = PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
       simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
       debruijnd <- UPLC.deBruijnTerm simplified
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 hashTerm :: Config -> ClosedTerm a -> Either Text Dig
-hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) config
+hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) (defaultInternalConfig, config)
 
 {- |
   High precedence infixl synonym of 'papp', to be used like

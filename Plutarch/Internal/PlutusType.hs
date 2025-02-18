@@ -5,6 +5,7 @@
 
 module Plutarch.Internal.PlutusType (
   PlutusType,
+  PInnermost,
   PlutusTypeStratConstraint,
   PCon,
   PMatch,
@@ -88,6 +89,12 @@ import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (
 import Plutarch.Internal.Term (PType, S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Witness (witness)
 import PlutusCore qualified as PLC
+
+type family PInnermost' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
+  PInnermost' a a = a
+  PInnermost' a _b = PInnermost' (PInner a) a
+
+type PInnermost a = PInnermost' (PInner a) a
 
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: PType -> Constraint

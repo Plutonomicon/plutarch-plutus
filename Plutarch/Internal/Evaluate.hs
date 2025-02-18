@@ -23,7 +23,7 @@ import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
 
 uplcVersion :: Version
-uplcVersion = Version 1 0 0
+uplcVersion = Version 1 1 0
 
 -- | Evaluate a script with a big budget, returning the trace log and term result.
 evalScript :: Script -> (Either EvalError Script, ExBudget, [Text])

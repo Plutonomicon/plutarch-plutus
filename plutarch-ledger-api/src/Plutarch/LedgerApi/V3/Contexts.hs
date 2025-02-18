@@ -655,7 +655,7 @@ data PTxInfo (s :: S) = PTxInfo
   , ptxInfo'id :: Term s (PAsData PTxId) -- hash of the pending transaction
   , ptxInfo'votes :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PVoter (AssocMap.PMap 'AssocMap.Unsorted PGovernanceActionId PVote)))
   , ptxInfo'proposalProcedures :: Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
-  , ptxInfo'currentTreasuryAmount :: Term s (PAsData (PMaybeData Value.PLovelace))
+  , ptxInfo'currentTreasuryAmount :: Term s (PMaybeData Value.PLovelace)
   , ptxInfo'treasuryDonation :: Term s (PMaybeData Value.PLovelace)
   }
   deriving stock
