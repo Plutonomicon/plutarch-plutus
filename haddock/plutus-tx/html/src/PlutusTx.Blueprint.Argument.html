@@ -18,7 +18,7 @@
 </span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Schema.html"><span class="hs-identifier">PlutusTx.Blueprint.Schema</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Schema.html#Schema"><span class="hs-identifier">Schema</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-19"></span><span>
 </span><span id="line-20"></span><span class="annot"><span class="hs-comment">-- | Blueprint that defines a validator's runtime argument: datum or redeemer.</span></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">data</span><span> </span><span id="ArgumentBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-var">ArgumentBlueprint</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679956935"><span class="annot"><a href="#local-6989586621679956935"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MkArgumentBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#MkArgumentBlueprint"><span class="hs-identifier hs-var">MkArgumentBlueprint</span></a></span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">data</span><span> </span><span id="ArgumentBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-var">ArgumentBlueprint</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679938021"><span class="annot"><a href="#local-6989586621679938021"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MkArgumentBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#MkArgumentBlueprint"><span class="hs-identifier hs-var">MkArgumentBlueprint</span></a></span></span><span>
 </span><span id="line-22"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="argumentTitle"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ArgumentBlueprint referencedTypes -&gt; Maybe Text
 </span><a href="PlutusTx.Blueprint.Argument.html#argumentTitle"><span class="hs-identifier hs-var hs-var">argumentTitle</span></a></span></span><span>       </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>
@@ -33,10 +33,10 @@ ArgumentBlueprint referencedTypes -&gt; Set Purpose
 </span><span id="line-27"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ A possibly empty set of purposes for the redeemer or datum.</span></span><span>
 </span><span id="line-28"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="argumentSchema"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ArgumentBlueprint referencedTypes -&gt; Schema referencedTypes
-</span><a href="PlutusTx.Blueprint.Argument.html#argumentSchema"><span class="hs-identifier hs-var hs-var">argumentSchema</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Schema.html#Schema"><span class="hs-identifier hs-type">Schema</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679956935"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span>
+</span><a href="PlutusTx.Blueprint.Argument.html#argumentSchema"><span class="hs-identifier hs-var hs-var">argumentSchema</span></a></span></span><span>      </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Schema.html#Schema"><span class="hs-identifier hs-type">Schema</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679938021"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span>
 </span><span id="line-29"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ A Plutus Data Schema.</span></span><span>
 </span><span id="line-30"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-31"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679956992"><span id="local-6989586621679957005"><span id="local-6989586621679957009"><span class="annot"><span class="annottext">Int -&gt; ArgumentBlueprint referencedTypes -&gt; ShowS
+</span><span id="line-31"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679938078"><span id="local-6989586621679938091"><span id="local-6989586621679938095"><span class="annot"><span class="annottext">Int -&gt; ArgumentBlueprint referencedTypes -&gt; ShowS
 [ArgumentBlueprint referencedTypes] -&gt; ShowS
 ArgumentBlueprint referencedTypes -&gt; String
 (Int -&gt; ArgumentBlueprint referencedTypes -&gt; ShowS)
@@ -60,7 +60,7 @@ show :: ArgumentBlueprint referencedTypes -&gt; String
 $cshowList :: forall (referencedTypes :: [*]).
 [ArgumentBlueprint referencedTypes] -&gt; ShowS
 showList :: [ArgumentBlueprint referencedTypes] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679957015"><span id="local-6989586621679957026"><span class="annot"><span class="annottext">ArgumentBlueprint referencedTypes
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679938101"><span id="local-6989586621679938112"><span class="annot"><span class="annottext">ArgumentBlueprint referencedTypes
 -&gt; ArgumentBlueprint referencedTypes -&gt; Bool
 (ArgumentBlueprint referencedTypes
  -&gt; ArgumentBlueprint referencedTypes -&gt; Bool)
@@ -81,7 +81,7 @@ ArgumentBlueprint referencedTypes
 -&gt; ArgumentBlueprint referencedTypes -&gt; Bool
 /= :: ArgumentBlueprint referencedTypes
 -&gt; ArgumentBlueprint referencedTypes -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679957035"><span id="local-6989586621679957046"><span id="local-6989586621679957054"><span id="local-6989586621679957058"><span id="local-6989586621679957061"><span id="local-6989586621679957064"><span id="local-6989586621679957067"><span class="annot"><span class="annottext">Eq (ArgumentBlueprint referencedTypes)
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679938121"><span id="local-6989586621679938132"><span id="local-6989586621679938140"><span id="local-6989586621679938144"><span id="local-6989586621679938147"><span id="local-6989586621679938150"><span id="local-6989586621679938153"><span class="annot"><span class="annottext">Eq (ArgumentBlueprint referencedTypes)
 Eq (ArgumentBlueprint referencedTypes) =&gt;
 (ArgumentBlueprint referencedTypes
  -&gt; ArgumentBlueprint referencedTypes -&gt; Ordering)
@@ -170,9 +170,9 @@ min :: ArgumentBlueprint referencedTypes
 -&gt; ArgumentBlueprint referencedTypes
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679956969"><span id="local-6989586621679957074"><span id="local-6989586621679957078"><span id="local-6989586621679957081"><span id="local-6989586621679957084"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-type">ArgumentBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679956969"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-34"></span><span>  </span><span id="local-6989586621679957101"><span class="annot"><span class="annottext">toJSON :: ArgumentBlueprint referencedTypes -&gt; Value
-</span><a href="#local-6989586621679957101"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#MkArgumentBlueprint"><span class="hs-identifier hs-type">MkArgumentBlueprint</span></a></span><span class="hs-special">{</span><span id="local-6989586621679957103"><span id="local-6989586621679957104"><span id="local-6989586621679957105"><span id="local-6989586621679957106"><span class="annot"><span class="annottext">Maybe Text
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679938055"><span id="local-6989586621679938160"><span id="local-6989586621679938164"><span id="local-6989586621679938167"><span id="local-6989586621679938170"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-type">ArgumentBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679938055"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621679938187"><span class="annot"><span class="annottext">toJSON :: ArgumentBlueprint referencedTypes -&gt; Value
+</span><a href="#local-6989586621679938187"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#MkArgumentBlueprint"><span class="hs-identifier hs-type">MkArgumentBlueprint</span></a></span><span class="hs-special">{</span><span id="local-6989586621679938189"><span id="local-6989586621679938190"><span id="local-6989586621679938191"><span id="local-6989586621679938192"><span class="annot"><span class="annottext">Maybe Text
 Set Purpose
 Schema referencedTypes
 argumentTitle :: forall (referencedTypes :: [*]).
@@ -196,21 +196,21 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. ToJSON a =&gt; Key -&gt; a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#requiredField"><span class="hs-identifier hs-var">requiredField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;schema&quot;</span></span><span> </span><span class="annot"><span class="annottext">Schema referencedTypes
-</span><a href="#local-6989586621679957106"><span class="hs-identifier hs-var">argumentSchema</span></a></span><span>
+</span><a href="#local-6989586621679938192"><span class="hs-identifier hs-var">argumentSchema</span></a></span><span>
 </span><span id="line-37"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Maybe Text -&gt; Object -&gt; Object
 forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#optionalField"><span class="hs-identifier hs-var">optionalField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;title&quot;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679957103"><span class="hs-identifier hs-var">argumentTitle</span></a></span><span>
+</span><a href="#local-6989586621679938189"><span class="hs-identifier hs-var">argumentTitle</span></a></span><span>
 </span><span id="line-38"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Maybe Text -&gt; Object -&gt; Object
 forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#optionalField"><span class="hs-identifier hs-var">optionalField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;description&quot;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621679957104"><span class="hs-identifier hs-var">argumentDescription</span></a></span><span>
+</span><a href="#local-6989586621679938190"><span class="hs-identifier hs-var">argumentDescription</span></a></span><span>
 </span><span id="line-39"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Maybe Value -&gt; Object -&gt; Object
@@ -219,5 +219,5 @@ forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><span class="hs-string">&quot;purpose&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set Purpose -&gt; Maybe Value
 forall a. ToJSON a =&gt; Set a -&gt; Maybe Value
 </span><a href="PlutusTx.Blueprint.Parameter.html#oneOfASet"><span class="hs-identifier hs-var">oneOfASet</span></a></span><span> </span><span class="annot"><span class="annottext">Set Purpose
-</span><a href="#local-6989586621679957105"><span class="hs-identifier hs-var">argumentPurpose</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679938191"><span class="hs-identifier hs-var">argumentPurpose</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-40"></span></pre></body></html>

@@ -32,7 +32,7 @@
 </span><span id="line-27"></span><span>  </span><span class="hs-comment">-- ^ A license under which the specification</span><span>
 </span><span id="line-28"></span><span>  </span><span class="hs-comment">-- and contract code is distributed</span><span>
 </span><span id="line-29"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-30"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679953471"><span id="local-6989586621679953483"><span id="local-6989586621679953487"><span class="annot"><span class="annottext">Int -&gt; Preamble -&gt; ShowS
+</span><span id="line-30"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679934557"><span id="local-6989586621679934569"><span id="local-6989586621679934573"><span class="annot"><span class="annottext">Int -&gt; Preamble -&gt; ShowS
 [Preamble] -&gt; ShowS
 Preamble -&gt; String
 (Int -&gt; Preamble -&gt; ShowS)
@@ -45,7 +45,7 @@ $cshow :: Preamble -&gt; String
 show :: Preamble -&gt; String
 $cshowList :: [Preamble] -&gt; ShowS
 showList :: [Preamble] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679953491"><span id="local-6989586621679953493"><span class="annot"><span class="annottext">(forall x. Preamble -&gt; Rep Preamble x)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679934577"><span id="local-6989586621679934579"><span class="annot"><span class="annottext">(forall x. Preamble -&gt; Rep Preamble x)
 -&gt; (forall x. Rep Preamble x -&gt; Preamble) -&gt; Generic Preamble
 forall x. Rep Preamble x -&gt; Preamble
 forall x. Preamble -&gt; Rep Preamble x
@@ -57,5 +57,5 @@ $cto :: forall x. Rep Preamble x -&gt; Preamble
 to :: forall x. Rep Preamble x -&gt; Preamble
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-31"></span><span>
-</span><span id="line-32"></span><span class="hs-special">$</span><span id="local-6989586621679953497"><span id="local-6989586621679953527"><span id="local-6989586621679953548"><span id="local-6989586621679953552"><span id="local-6989586621679953555"><span class="hs-special">(</span><span class="hs-identifier">deriveToJSON</span><span> </span><span class="hs-identifier">defaultOptions</span><span class="hs-special">{</span><span class="hs-identifier">fieldLabelModifier</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">stripPrefix</span><span> </span><span class="hs-string">&quot;preamble&quot;</span><span class="hs-special">}</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Preamble</span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-32"></span><span class="hs-special">$</span><span id="local-6989586621679934583"><span id="local-6989586621679934613"><span id="local-6989586621679934634"><span id="local-6989586621679934638"><span id="local-6989586621679934641"><span class="hs-special">(</span><span class="hs-identifier">deriveToJSON</span><span> </span><span class="hs-identifier">defaultOptions</span><span class="hs-special">{</span><span class="hs-identifier">fieldLabelModifier</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">stripPrefix</span><span> </span><span class="hs-string">&quot;preamble&quot;</span><span class="hs-special">}</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Preamble</span><span class="hs-special">)</span></span></span></span></span></span><span>
 </span><span id="line-33"></span></pre></body></html>

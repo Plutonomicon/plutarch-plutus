@@ -59,22 +59,22 @@ inlining).
 </span><span id="line-59"></span><span class="hs-comment">--</span><span>
 </span><span id="line-60"></span><span class="hs-comment">-- This function is very expensive, so its result needs to be cached if it's going to be used</span><span>
 </span><span id="line-61"></span><span class="hs-comment">-- multiple times.</span><span>
-</span><span id="line-62"></span><span id="local-6989586621681869458"><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-type">mkMachineParametersFor</span></a></span><span>
-</span><span id="line-63"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681869458"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-62"></span><span id="local-6989586621681812970"><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-type">mkMachineParametersFor</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelApplyError"><span class="hs-identifier hs-type">CostModelApplyError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681812970"><span class="hs-identifier hs-type">m</span></a></span><span>
 </span><span id="line-64"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusCore.Builtin.Meaning.html#BuiltinSemanticsVariant"><span class="hs-identifier hs-type">BuiltinSemanticsVariant</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Builtins.html#DefaultFun"><span class="hs-identifier hs-type">DefaultFun</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-65"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#CostModelParams"><span class="hs-identifier hs-type">CostModelParams</span></a></span><span>
-</span><span id="line-66"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681869458"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Builtin.Meaning.html#BuiltinSemanticsVariant"><span class="hs-identifier hs-type">BuiltinSemanticsVariant</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Builtins.html#DefaultFun"><span class="hs-identifier hs-type">DefaultFun</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#DefaultMachineParameters"><span class="hs-identifier hs-type">DefaultMachineParameters</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span><span>
+</span><span id="line-66"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681812970"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Builtin.Meaning.html#BuiltinSemanticsVariant"><span class="hs-identifier hs-type">BuiltinSemanticsVariant</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Builtins.html#DefaultFun"><span class="hs-identifier hs-type">DefaultFun</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#DefaultMachineParameters"><span class="hs-identifier hs-type">DefaultMachineParameters</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span><span>
 </span><span id="line-67"></span><span id="mkMachineParametersFor"><span class="annot"><span class="annottext">mkMachineParametersFor :: forall (m :: * -&gt; *).
 MonadError CostModelApplyError m =&gt;
 [BuiltinSemanticsVariant DefaultFun]
 -&gt; CostModelParams
 -&gt; m [(BuiltinSemanticsVariant DefaultFun,
        DefaultMachineParameters)]
-</span><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-var hs-var">mkMachineParametersFor</span></a></span></span><span> </span><span id="local-6989586621681869675"><span class="annot"><span class="annottext">[BuiltinSemanticsVariant DefaultFun]
-</span><a href="#local-6989586621681869675"><span class="hs-identifier hs-var">semVars</span></a></span></span><span> </span><span id="local-6989586621681869676"><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681869676"><span class="hs-identifier hs-var">newCMP</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-68"></span><span>    </span><span id="local-6989586621681869677"><span class="annot"><span class="annottext">[(BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters)]
-</span><a href="#local-6989586621681869677"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[BuiltinSemanticsVariant DefaultFun]
+</span><a href="PlutusCore.Evaluation.Machine.MachineParameters.Default.html#mkMachineParametersFor"><span class="hs-identifier hs-var hs-var">mkMachineParametersFor</span></a></span></span><span> </span><span id="local-6989586621681813187"><span class="annot"><span class="annottext">[BuiltinSemanticsVariant DefaultFun]
+</span><a href="#local-6989586621681813187"><span class="hs-identifier hs-var">semVars</span></a></span></span><span> </span><span id="local-6989586621681813188"><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681813188"><span class="hs-identifier hs-var">newCMP</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-68"></span><span>    </span><span id="local-6989586621681813189"><span class="annot"><span class="annottext">[(BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters)]
+</span><a href="#local-6989586621681813189"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[BuiltinSemanticsVariant DefaultFun]
 -&gt; (BuiltinSemanticsVariant DefaultFun
     -&gt; m (BuiltinSemanticsVariant DefaultFun,
           DefaultMachineParameters))
@@ -84,7 +84,7 @@ forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Traversable t, Applicative f) =&gt;
 t a -&gt; (a -&gt; f b) -&gt; f (t b)
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#for"><span class="hs-identifier hs-var">for</span></a></span><span> </span><span class="annot"><span class="annottext">[BuiltinSemanticsVariant DefaultFun]
-</span><a href="#local-6989586621681869675"><span class="hs-identifier hs-var">semVars</span></a></span><span> </span><span class="annot"><span class="annottext">((BuiltinSemanticsVariant DefaultFun
+</span><a href="#local-6989586621681813187"><span class="hs-identifier hs-var">semVars</span></a></span><span> </span><span class="annot"><span class="annottext">((BuiltinSemanticsVariant DefaultFun
   -&gt; m (BuiltinSemanticsVariant DefaultFun,
         DefaultMachineParameters))
  -&gt; m [(BuiltinSemanticsVariant DefaultFun,
@@ -95,11 +95,11 @@ t a -&gt; (a -&gt; f b) -&gt; f (t b)
 -&gt; m [(BuiltinSemanticsVariant DefaultFun,
        DefaultMachineParameters)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681869679"><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681869679"><span class="hs-identifier hs-var">semVar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681813191"><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
+</span><a href="#local-6989586621681813191"><span class="hs-identifier hs-var">semVar</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-69"></span><span>        </span><span class="hs-comment">-- See Note [Inlining meanings of builtins].</span><span>
 </span><span id="line-70"></span><span>        </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681869679"><span class="hs-identifier hs-var">semVar</span></a></span><span> </span><span class="annot"><span class="annottext">(DefaultMachineParameters
+</span><a href="#local-6989586621681813191"><span class="hs-identifier hs-var">semVar</span></a></span><span> </span><span class="annot"><span class="annottext">(DefaultMachineParameters
  -&gt; (BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters))
 -&gt; (CostModel CekMachineCosts BuiltinCostModel
     -&gt; DefaultMachineParameters)
@@ -123,7 +123,7 @@ BuiltinSemanticsVariant fun
 -&gt; CostModel machinecosts builtincosts
 -&gt; MachineParameters machinecosts fun val
 </span><a href="PlutusCore.Evaluation.Machine.MachineParameters.html#mkMachineParameters"><span class="hs-identifier hs-var">mkMachineParameters</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681869679"><span class="hs-identifier hs-var">semVar</span></a></span><span> </span><span class="annot"><span class="annottext">(CostModel CekMachineCosts BuiltinCostModel
+</span><a href="#local-6989586621681813191"><span class="hs-identifier hs-var">semVar</span></a></span><span> </span><span class="annot"><span class="annottext">(CostModel CekMachineCosts BuiltinCostModel
  -&gt; (BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters))
 -&gt; m (CostModel CekMachineCosts BuiltinCostModel)
 -&gt; m (BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters)
@@ -141,8 +141,8 @@ CostModel evaluatorcosts builtincosts
 </span><a href="PlutusCore.Evaluation.Machine.CostModelInterface.html#applyCostModelParams"><span class="hs-identifier hs-var">applyCostModelParams</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
 -&gt; CostModel CekMachineCosts BuiltinCostModel
 </span><a href="PlutusCore.Evaluation.Machine.ExBudgetingDefaults.html#cekCostModelForVariant"><span class="hs-identifier hs-var">cekCostModelForVariant</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681869679"><span class="hs-identifier hs-var">semVar</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
-</span><a href="#local-6989586621681869676"><span class="hs-identifier hs-var">newCMP</span></a></span><span>
+</span><a href="#local-6989586621681813191"><span class="hs-identifier hs-var">semVar</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CostModelParams
+</span><a href="#local-6989586621681813188"><span class="hs-identifier hs-var">newCMP</span></a></span><span>
 </span><span id="line-72"></span><span>    </span><span class="hs-comment">-- Force all thunks to pay the cost of creating machine parameters upfront. Doing it here saves</span><span>
 </span><span id="line-73"></span><span>    </span><span class="hs-comment">-- us from doing that in every single benchmark runner.</span><span>
 </span><span id="line-74"></span><span>    </span><span class="annot"><span class="annottext">[(BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters)]
@@ -161,7 +161,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; [(BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters)]
 forall a. NFData a =&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#force"><span class="hs-identifier hs-var">force</span></a></span><span> </span><span class="annot"><span class="annottext">[(BuiltinSemanticsVariant DefaultFun, DefaultMachineParameters)]
-</span><a href="#local-6989586621681869677"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><a href="#local-6989586621681813189"><span class="hs-identifier hs-var">res</span></a></span><span>
 </span><span id="line-75"></span><span class="hs-comment">-- Not marking this function with @INLINE@, since at this point everything we wanted to be inlined</span><span>
 </span><span id="line-76"></span><span class="hs-comment">-- is inlined and there's zero reason to duplicate thousands and thousands of lines of Core down</span><span>
 </span><span id="line-77"></span><span class="hs-comment">-- the line.</span><span>

@@ -24,21 +24,21 @@ forall a. String -&gt; BuiltinResult a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Control.Monad.Fail.html#fail"><span class="hs-identifier hs-var">fail</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Cannot divide by zero&quot;</span></span><span>
-</span><span id="line-19"></span><span class="annot"><a href="PlutusCore.Crypto.ExpMod.html#expMod"><span class="hs-identifier hs-var">expMod</span></a></span><span> </span><span id="local-6989586621681823807"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681823807"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621681823808"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681823808"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621681823809"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681823809"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-19"></span><span class="annot"><a href="PlutusCore.Crypto.ExpMod.html#expMod"><span class="hs-identifier hs-var">expMod</span></a></span><span> </span><span id="local-6989586621681769361"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681769361"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621681769362"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681769362"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621681769363"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681769363"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-20"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Natural -&gt; (# Natural | () #)
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#integerPowMod%23"><span class="hs-identifier hs-var">integerPowMod#</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681823807"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681823808"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681823809"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-21"></span><span>        </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621681823811"><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681823811"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">#)</span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; BuiltinResult Natural
+</span><a href="#local-6989586621681769361"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681769362"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681769363"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-21"></span><span>        </span><span class="hs-special">(#</span><span> </span><span id="local-6989586621681769365"><span class="annot"><span class="annottext">Natural
+</span><a href="#local-6989586621681769365"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">#)</span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Natural -&gt; BuiltinResult Natural
 forall a. a -&gt; BuiltinResult a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Natural
-</span><a href="#local-6989586621681823811"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621681769365"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-22"></span><span>        </span><span class="hs-special">(#</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-special">#)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; BuiltinResult Natural
 forall a. String -&gt; BuiltinResult a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a

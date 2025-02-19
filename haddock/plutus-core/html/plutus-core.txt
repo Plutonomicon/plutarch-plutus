@@ -6,7 +6,7 @@
 --   
 --   Pretty-printer, parser, and typechecker for Plutus Core.
 @package plutus-core
-@version 1.40.0.0
+@version 1.36.0.0
 
 module Codec.Extras.FlatViaSerialise
 
@@ -443,19 +443,6 @@ type BuiltinCostMap = [(Text, CpuAndMemoryModel)]
 type BuiltinCostKeyMap = KeyMap CpuAndMemoryModel
 toSimpleBuiltinCostModel :: BuiltinCostKeyMap -> BuiltinCostMap
 defaultSimpleBuiltinCostModel :: BuiltinCostMap
-
-module PlutusCore.StdLib.Data.MatchOption
-
--- | Allows one to choose which way of doing pattern matching on built-in
---   types to use: either via <tt>ChooseList</tt>-like builtins or via
---   <tt>CaseList</tt>-like ones.
-data MatchOption
-UseChoose :: MatchOption
-UseCase :: MatchOption
-instance GHC.Enum.Enum PlutusCore.StdLib.Data.MatchOption.MatchOption
-instance GHC.Enum.Bounded PlutusCore.StdLib.Data.MatchOption.MatchOption
-instance GHC.Classes.Eq PlutusCore.StdLib.Data.MatchOption.MatchOption
-instance GHC.Show.Show PlutusCore.StdLib.Data.MatchOption.MatchOption
 
 module PlutusPrelude
 
@@ -1486,14 +1473,6 @@ unsafeFromRight :: Show e => Either e a -> a
 --   
 --   TODO: remove when we switch to mtl&gt;=2.3
 tryError :: MonadError e m => m a -> m (Either e a)
-
--- | Pair each element of the given list with all the other elements.
---   
---   <pre>
---   &gt;&gt;&gt; addTheRest "abcd"
---   [('a',"bcd"),('b',"acd"),('c',"abd"),('d',"abc")]
---   </pre>
-addTheRest :: [a] -> [(a, [a])]
 modifyError :: MonadError e' m => (e -> e') -> ExceptT e m a -> m a
 lowerInitialChar :: String -> String
 instance GHC.Classes.Eq a => GHC.Classes.Eq (PlutusPrelude.ShowPretty a)
@@ -2102,7 +2081,7 @@ type Scoping t = (EstablishScoping t, CollectScopeInfo t)
 --   the original binder with the annotated sort and its value, but also
 --   decorate the reassembled binder with one out-of-scope variable and one
 --   in-scope one.
-establishScopingBinder :: (Reference name value, ToScopedName name, EstablishScoping sort, EstablishScoping value) => (NameAnn -> name -> sort NameAnn -> value NameAnn -> value NameAnn) -> name -> sort ann -> value ann -> Quote (value NameAnn)
+establishScopingBinder :: (Reference name value, ToScopedName name, Scoping sort, Scoping value) => (NameAnn -> name -> sort NameAnn -> value NameAnn -> value NameAnn) -> name -> sort ann -> value ann -> Quote (value NameAnn)
 
 -- | Every kind of error thrown by the scope checking machinery at
 --   different stages.
@@ -2188,13 +2167,10 @@ checkScopeInfo :: BindingRemoval -> ScopeInfo -> Either ScopeError ()
 
 -- | The type of errors that the scope checking machinery returns.
 data ScopeCheckError t
-ScopeCheckError :: !t NameAnn -> !t NameAnn -> !t NameAnn -> !ScopeError -> ScopeCheckError t
+ScopeCheckError :: !t NameAnn -> !t NameAnn -> !ScopeError -> ScopeCheckError t
 
--- | What got fed to the scoping check pass before preparation.
+-- | What got fed to the scoping check pass.
 [_input] :: ScopeCheckError t -> !t NameAnn
-
--- | What got fed to the scoping check pass after preparation.
-[_prepared] :: ScopeCheckError t -> !t NameAnn
 
 -- | What got out of it.
 [_output] :: ScopeCheckError t -> !t NameAnn
@@ -2210,13 +2186,9 @@ checkRespectsScoping :: Scoping t => BindingRemoval -> (t NameAnn -> t NameAnn) 
 instance GHC.Classes.Ord PlutusCore.Check.Scoping.ScopedName
 instance GHC.Classes.Eq PlutusCore.Check.Scoping.ScopedName
 instance GHC.Show.Show PlutusCore.Check.Scoping.ScopedName
-instance GHC.Classes.Eq PlutusCore.Check.Scoping.Stays
 instance GHC.Show.Show PlutusCore.Check.Scoping.Stays
-instance GHC.Classes.Eq PlutusCore.Check.Scoping.Disappears
 instance GHC.Show.Show PlutusCore.Check.Scoping.Disappears
-instance GHC.Classes.Eq PlutusCore.Check.Scoping.NameAction
 instance GHC.Show.Show PlutusCore.Check.Scoping.NameAction
-instance GHC.Classes.Eq PlutusCore.Check.Scoping.NameAnn
 instance GHC.Show.Show PlutusCore.Check.Scoping.NameAnn
 instance GHC.Classes.Ord PlutusCore.Check.Scoping.ScopeEntry
 instance GHC.Classes.Eq PlutusCore.Check.Scoping.ScopeEntry
@@ -2227,11 +2199,9 @@ instance GHC.Show.Show PlutusCore.Check.Scoping.BindingRemoval
 instance GHC.Show.Show PlutusCore.Check.Scoping.ScopeError
 instance GHC.Show.Show (t PlutusCore.Check.Scoping.NameAnn) => GHC.Show.Show (PlutusCore.Check.Scoping.ScopeCheckError t)
 instance Text.PrettyBy.Internal.PrettyBy config (t PlutusCore.Check.Scoping.NameAnn) => Text.PrettyBy.Internal.PrettyBy config (PlutusCore.Check.Scoping.ScopeCheckError t)
-instance PlutusCore.Check.Scoping.CollectScopeInfo Data.Proxy.Proxy
 instance GHC.Base.Semigroup PlutusCore.Check.Scoping.ScopeErrorOrInfo
 instance GHC.Base.Monoid PlutusCore.Check.Scoping.ScopeErrorOrInfo
 instance Prettyprinter.Internal.Pretty PlutusCore.Check.Scoping.ScopeError
-instance PlutusCore.Check.Scoping.EstablishScoping Data.Proxy.Proxy
 instance PlutusCore.Check.Scoping.Reference n t => PlutusCore.Check.Scoping.Reference [n] t
 instance PlutusCore.Check.Scoping.Reference n t => PlutusCore.Check.Scoping.Reference (GHC.Base.NonEmpty n) t
 instance PlutusCore.Check.Scoping.ToScopedName PlutusCore.Name.Unique.TyName
@@ -2739,9 +2709,9 @@ prettyReadable :: PrettyReadable a => a -> Doc ann
 -- | Pretty-print something with the <tt>PrettyConfigReadableSimple</tt>
 --   config.
 prettyReadableSimple :: PrettyReadable a => a -> Doc ann
-pcrConfigName :: forall configName_a1kBc configName_a1kFM. Lens (PrettyConfigReadable configName_a1kBc) (PrettyConfigReadable configName_a1kFM) configName_a1kBc configName_a1kFM
-pcrRenderContext :: forall configName_a1kBc. Lens' (PrettyConfigReadable configName_a1kBc) RenderContext
-pcrShowKinds :: forall configName_a1kBc. Lens' (PrettyConfigReadable configName_a1kBc) ShowKinds
+pcrConfigName :: forall configName_a1jAQ configName_a1jFq. Lens (PrettyConfigReadable configName_a1jAQ) (PrettyConfigReadable configName_a1jFq) configName_a1jAQ configName_a1jFq
+pcrRenderContext :: forall configName_a1jAQ. Lens' (PrettyConfigReadable configName_a1jAQ) RenderContext
+pcrShowKinds :: forall configName_a1jAQ. Lens' (PrettyConfigReadable configName_a1jAQ) ShowKinds
 
 -- | The "readably pretty-printable" constraint.
 type PrettyReadableBy configName = PrettyBy (PrettyConfigReadable configName)
@@ -2946,10 +2916,10 @@ module PlutusCore.Evaluation.Error
 data EvaluationError structural operational
 StructuralEvaluationError :: !structural -> EvaluationError structural operational
 OperationalEvaluationError :: !operational -> EvaluationError structural operational
-class AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 | r_a1xHc -> structural_a1xx6 operational_a1xx7
-_EvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc (EvaluationError structural_a1xx6 operational_a1xx7)
-_StructuralEvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc structural_a1xx6
-_OperationalEvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc operational_a1xx7
+class AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw | r_a1wHB -> structural_a1wxv operational_a1wxw
+_EvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB (EvaluationError structural_a1wxv operational_a1wxw)
+_StructuralEvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB structural_a1wxv
+_OperationalEvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB operational_a1wxw
 instance PlutusCore.Evaluation.Error.AsEvaluationError (PlutusCore.Evaluation.Error.EvaluationError structural operational) structural operational
 instance PlutusCore.Evaluation.Result.AsEvaluationFailure operational => PlutusCore.Evaluation.Result.AsEvaluationFailure (PlutusCore.Evaluation.Error.EvaluationError structural operational)
 instance Data.Bifunctor.Bifunctor PlutusCore.Evaluation.Error.EvaluationError
@@ -3060,9 +3030,9 @@ module PlutusCore.Evaluation.Machine.Exception
 newtype UnliftingError
 MkUnliftingError :: Text -> UnliftingError
 [unUnliftingError] :: UnliftingError -> Text
-class AsUnliftingError r_a1zlU
-_UnliftingError :: AsUnliftingError r_a1zlU => Prism' r_a1zlU UnliftingError
-_MkUnliftingError :: AsUnliftingError r_a1zlU => Prism' r_a1zlU Text
+class AsUnliftingError r_a1ymj
+_UnliftingError :: AsUnliftingError r_a1ymj => Prism' r_a1ymj UnliftingError
+_MkUnliftingError :: AsUnliftingError r_a1ymj => Prism' r_a1ymj Text
 
 -- | The type of errors that <tt>readKnown</tt> and <tt>makeKnown</tt> can
 --   return.
@@ -3096,17 +3066,17 @@ BuiltinTermArgumentExpectedMachineError :: MachineError fun
 UnexpectedBuiltinTermArgumentMachineError :: MachineError fun
 NonConstrScrutinized :: MachineError fun
 MissingCaseBranch :: Word64 -> MachineError fun
-class AsMachineError r_a1HjO fun_a1H3f | r_a1HjO -> fun_a1H3f
-_MachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO (MachineError fun_a1H3f)
-_NonPolymorphicInstantiationMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_NonWrapUnwrappedMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_NonFunctionalApplicationMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_OpenTermEvaluatedMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_UnliftingMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO UnliftingError
-_BuiltinTermArgumentExpectedMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_UnexpectedBuiltinTermArgumentMachineError :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_NonConstrScrutinized :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO ()
-_MissingCaseBranch :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO Word64
+class AsMachineError r_a1Gkd fun_a1G3E | r_a1Gkd -> fun_a1G3E
+_MachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd (MachineError fun_a1G3E)
+_NonPolymorphicInstantiationMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_NonWrapUnwrappedMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_NonFunctionalApplicationMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_OpenTermEvaluatedMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_UnliftingMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd UnliftingError
+_BuiltinTermArgumentExpectedMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_UnexpectedBuiltinTermArgumentMachineError :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_NonConstrScrutinized :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd ()
+_MissingCaseBranch :: AsMachineError r_a1Gkd fun_a1G3E => Prism' r_a1Gkd Word64
 
 -- | The type of errors that can occur during evaluation. There are two
 --   kinds of errors:
@@ -3138,10 +3108,10 @@ _MissingCaseBranch :: AsMachineError r_a1HjO fun_a1H3f => Prism' r_a1HjO Word64
 data EvaluationError structural operational
 StructuralEvaluationError :: !structural -> EvaluationError structural operational
 OperationalEvaluationError :: !operational -> EvaluationError structural operational
-class AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 | r_a1xHc -> structural_a1xx6 operational_a1xx7
-_EvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc (EvaluationError structural_a1xx6 operational_a1xx7)
-_StructuralEvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc structural_a1xx6
-_OperationalEvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc operational_a1xx7
+class AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw | r_a1wHB -> structural_a1wxv operational_a1wxw
+_EvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB (EvaluationError structural_a1wxv operational_a1wxw)
+_StructuralEvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB structural_a1wxv
+_OperationalEvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB operational_a1wxw
 
 -- | An error and (optionally) what caused it.
 data ErrorWithCause err cause
@@ -3228,10 +3198,10 @@ NamedTyDeBruijn :: NamedDeBruijn -> NamedTyDeBruijn
 data FreeVariableError
 FreeUnique :: !Unique -> FreeVariableError
 FreeIndex :: !Index -> FreeVariableError
-class AsFreeVariableError r_a1LDj
-_FreeVariableError :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj FreeVariableError
-_FreeUnique :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Unique
-_FreeIndex :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Index
+class AsFreeVariableError r_a1KDI
+_FreeVariableError :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI FreeVariableError
+_FreeUnique :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Unique
+_FreeIndex :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Index
 
 -- | An absolute level in the program.
 newtype Level
@@ -3775,7 +3745,7 @@ runCostingFunFiveArguments :: (ExMemoryUsage a1, ExMemoryUsage a2, ExMemoryUsage
 runCostingFunSixArguments :: (ExMemoryUsage a1, ExMemoryUsage a2, ExMemoryUsage a3, ExMemoryUsage a4, ExMemoryUsage a5, ExMemoryUsage a6) => CostingFun ModelSixArguments -> a1 -> a2 -> a3 -> a4 -> a5 -> a6 -> ExBudgetStream
 class Eq a => Hashable a
 instance Control.DeepSeq.NFData model => Control.DeepSeq.NFData (PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun model)
-instance Data.Default.Internal.Default model => Data.Default.Internal.Default (PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun model)
+instance Data.Default.Class.Default model => Data.Default.Class.Default (PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun model)
 instance Language.Haskell.TH.Syntax.Lift model => Language.Haskell.TH.Syntax.Lift (PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun model)
 instance GHC.Generics.Generic (PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun model)
 instance GHC.Classes.Eq model => GHC.Classes.Eq (PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun model)
@@ -3916,17 +3886,17 @@ instance Language.Haskell.TH.Syntax.Lift PlutusCore.Evaluation.Machine.CostingFu
 instance GHC.Generics.Generic PlutusCore.Evaluation.Machine.CostingFun.Core.ModelSixArguments
 instance GHC.Classes.Eq PlutusCore.Evaluation.Machine.CostingFun.Core.ModelSixArguments
 instance GHC.Show.Show PlutusCore.Evaluation.Machine.CostingFun.Core.ModelSixArguments
-instance Data.Default.Internal.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelSixArguments
+instance Data.Default.Class.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelSixArguments
 instance PlutusCore.Evaluation.Machine.CostingFun.Core.UnimplementedCostingFun PlutusCore.Evaluation.Machine.CostingFun.Core.ModelSixArguments
-instance Data.Default.Internal.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelFiveArguments
+instance Data.Default.Class.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelFiveArguments
 instance PlutusCore.Evaluation.Machine.CostingFun.Core.UnimplementedCostingFun PlutusCore.Evaluation.Machine.CostingFun.Core.ModelFiveArguments
-instance Data.Default.Internal.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelFourArguments
+instance Data.Default.Class.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelFourArguments
 instance PlutusCore.Evaluation.Machine.CostingFun.Core.UnimplementedCostingFun PlutusCore.Evaluation.Machine.CostingFun.Core.ModelFourArguments
-instance Data.Default.Internal.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelThreeArguments
+instance Data.Default.Class.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelThreeArguments
 instance PlutusCore.Evaluation.Machine.CostingFun.Core.UnimplementedCostingFun PlutusCore.Evaluation.Machine.CostingFun.Core.ModelThreeArguments
-instance Data.Default.Internal.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelTwoArguments
+instance Data.Default.Class.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelTwoArguments
 instance PlutusCore.Evaluation.Machine.CostingFun.Core.UnimplementedCostingFun PlutusCore.Evaluation.Machine.CostingFun.Core.ModelTwoArguments
-instance Data.Default.Internal.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelOneArgument
+instance Data.Default.Class.Default PlutusCore.Evaluation.Machine.CostingFun.Core.ModelOneArgument
 instance PlutusCore.Evaluation.Machine.CostingFun.Core.UnimplementedCostingFun PlutusCore.Evaluation.Machine.CostingFun.Core.ModelOneArgument
 instance (ab GHC.Types.~ (a -> b), PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage a, PlutusCore.Evaluation.Machine.CostingFun.Core.OnMemoryUsages c b) => PlutusCore.Evaluation.Machine.CostingFun.Core.OnMemoryUsages (PlutusCore.Evaluation.Machine.CostStream.CostStream -> c) ab
 instance (ab GHC.Types.~ PlutusCore.Evaluation.Machine.ExBudgetStream.ExBudgetStream) => PlutusCore.Evaluation.Machine.CostingFun.Core.OnMemoryUsages PlutusCore.Evaluation.Machine.ExBudgetStream.ExBudgetStream ab
@@ -4290,7 +4260,7 @@ instance Data.Aeson.Types.ToJSON.ToJSON (PlutusCore.Evaluation.Machine.BuiltinCo
 instance Data.Aeson.Types.FromJSON.FromJSON (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase PlutusCore.Evaluation.Machine.CostingFun.Core.CostingFun)
 instance Data.Aeson.Types.ToJSON.ToJSON (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase PlutusCore.Evaluation.Machine.BuiltinCostModel.MCostingFun)
 instance PlutusCore.Evaluation.Machine.BuiltinCostModel.AllArgumentModels Control.DeepSeq.NFData f => Control.DeepSeq.NFData (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase f)
-instance PlutusCore.Evaluation.Machine.BuiltinCostModel.AllArgumentModels Data.Default.Internal.Default f => Data.Default.Internal.Default (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase f)
+instance PlutusCore.Evaluation.Machine.BuiltinCostModel.AllArgumentModels Data.Default.Class.Default f => Data.Default.Class.Default (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase f)
 instance PlutusCore.Evaluation.Machine.BuiltinCostModel.AllArgumentModels Language.Haskell.TH.Syntax.Lift f => Language.Haskell.TH.Syntax.Lift (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase f)
 instance PlutusCore.Evaluation.Machine.BuiltinCostModel.AllArgumentModels GHC.Show.Show f => GHC.Show.Show (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase f)
 instance PlutusCore.Evaluation.Machine.BuiltinCostModel.AllArgumentModels GHC.Classes.Eq f => GHC.Classes.Eq (PlutusCore.Evaluation.Machine.BuiltinCostModel.BuiltinCostModelBase f)
@@ -4358,10 +4328,10 @@ NamedTyDeBruijn :: NamedDeBruijn -> NamedTyDeBruijn
 data FreeVariableError
 FreeUnique :: !Unique -> FreeVariableError
 FreeIndex :: !Index -> FreeVariableError
-class AsFreeVariableError r_a1LDj
-_FreeVariableError :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj FreeVariableError
-_FreeUnique :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Unique
-_FreeIndex :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Index
+class AsFreeVariableError r_a1KDI
+_FreeVariableError :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI FreeVariableError
+_FreeUnique :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Unique
+_FreeIndex :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Index
 unNameDeBruijn :: NamedDeBruijn -> DeBruijn
 unNameTyDeBruijn :: NamedTyDeBruijn -> TyDeBruijn
 fakeNameDeBruijn :: DeBruijn -> NamedDeBruijn
@@ -4642,18 +4612,18 @@ typeAnn :: Type tyname uni ann -> ann
 
 -- | Map a function over the set of built-in functions.
 mapFun :: (fun -> fun') -> Term tyname name uni fun ann -> Term tyname name uni fun' ann
-tyVarDeclAnn :: forall tyname_a7e0z ann_a7e0A. Lens' (TyVarDecl tyname_a7e0z ann_a7e0A) ann_a7e0A
-tyVarDeclName :: forall tyname_a7e0z ann_a7e0A tyname_a7eeC. Lens (TyVarDecl tyname_a7e0z ann_a7e0A) (TyVarDecl tyname_a7eeC ann_a7e0A) tyname_a7e0z tyname_a7eeC
-tyVarDeclKind :: forall tyname_a7e0z ann_a7e0A. Lens' (TyVarDecl tyname_a7e0z ann_a7e0A) (Kind ann_a7e0A)
-varDeclAnn :: forall tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3. Lens' (VarDecl tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3) ann_a7ef3
-varDeclName :: forall tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3 name_a7ep7. Lens (VarDecl tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3) (VarDecl tyname_a7ef0 name_a7ep7 uni_a7ef2 ann_a7ef3) name_a7ef1 name_a7ep7
-varDeclType :: forall tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3 tyname_a7ep8 uni_a7ep9. Lens (VarDecl tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3) (VarDecl tyname_a7ep8 name_a7ef1 uni_a7ep9 ann_a7ef3) (Type tyname_a7ef0 uni_a7ef2 ann_a7ef3) (Type tyname_a7ep8 uni_a7ep9 ann_a7ef3)
-tyDeclAnn :: forall tyname_a7epx uni_a7epy ann_a7epz. Lens' (TyDecl tyname_a7epx uni_a7epy ann_a7epz) ann_a7epz
-tyDeclType :: forall tyname_a7epx uni_a7epy ann_a7epz tyname_a7ezY uni_a7ezZ. Lens (TyDecl tyname_a7epx uni_a7epy ann_a7epz) (TyDecl tyname_a7ezY uni_a7ezZ ann_a7epz) (Type tyname_a7epx uni_a7epy ann_a7epz) (Type tyname_a7ezY uni_a7ezZ ann_a7epz)
-tyDeclKind :: forall tyname_a7epx uni_a7epy ann_a7epz. Lens' (TyDecl tyname_a7epx uni_a7epy ann_a7epz) (Kind ann_a7epz)
-progAnn :: forall tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo. Lens' (Program tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) ann_a7bVo
-progVer :: forall tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo. Lens' (Program tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) Version
-progTerm :: forall tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo tyname_a7e06 name_a7e07 uni_a7e08 fun_a7e09. Lens (Program tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) (Program tyname_a7e06 name_a7e07 uni_a7e08 fun_a7e09 ann_a7bVo) (Term tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) (Term tyname_a7e06 name_a7e07 uni_a7e08 fun_a7e09 ann_a7bVo)
+tyVarDeclAnn :: forall tyname_a7d1z ann_a7d1A. Lens' (TyVarDecl tyname_a7d1z ann_a7d1A) ann_a7d1A
+tyVarDeclName :: forall tyname_a7d1z ann_a7d1A tyname_a7dfC. Lens (TyVarDecl tyname_a7d1z ann_a7d1A) (TyVarDecl tyname_a7dfC ann_a7d1A) tyname_a7d1z tyname_a7dfC
+tyVarDeclKind :: forall tyname_a7d1z ann_a7d1A. Lens' (TyVarDecl tyname_a7d1z ann_a7d1A) (Kind ann_a7d1A)
+varDeclAnn :: forall tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3. Lens' (VarDecl tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3) ann_a7dg3
+varDeclName :: forall tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3 name_a7dq7. Lens (VarDecl tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3) (VarDecl tyname_a7dg0 name_a7dq7 uni_a7dg2 ann_a7dg3) name_a7dg1 name_a7dq7
+varDeclType :: forall tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3 tyname_a7dq8 uni_a7dq9. Lens (VarDecl tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3) (VarDecl tyname_a7dq8 name_a7dg1 uni_a7dq9 ann_a7dg3) (Type tyname_a7dg0 uni_a7dg2 ann_a7dg3) (Type tyname_a7dq8 uni_a7dq9 ann_a7dg3)
+tyDeclAnn :: forall tyname_a7dqx uni_a7dqy ann_a7dqz. Lens' (TyDecl tyname_a7dqx uni_a7dqy ann_a7dqz) ann_a7dqz
+tyDeclType :: forall tyname_a7dqx uni_a7dqy ann_a7dqz tyname_a7dAY uni_a7dAZ. Lens (TyDecl tyname_a7dqx uni_a7dqy ann_a7dqz) (TyDecl tyname_a7dAY uni_a7dAZ ann_a7dqz) (Type tyname_a7dqx uni_a7dqy ann_a7dqz) (Type tyname_a7dAY uni_a7dAZ ann_a7dqz)
+tyDeclKind :: forall tyname_a7dqx uni_a7dqy ann_a7dqz. Lens' (TyDecl tyname_a7dqx uni_a7dqy ann_a7dqz) (Kind ann_a7dqz)
+progAnn :: forall tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo. Lens' (Program tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) ann_a7aWo
+progVer :: forall tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo. Lens' (Program tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) Version
+progTerm :: forall tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo tyname_a7d16 name_a7d17 uni_a7d18 fun_a7d19. Lens (Program tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) (Program tyname_a7d16 name_a7d17 uni_a7d18 fun_a7d19 ann_a7aWo) (Term tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) (Term tyname_a7d16 name_a7d17 uni_a7d18 fun_a7d19 ann_a7aWo)
 
 module PlutusCore.Subst
 
@@ -5010,27 +4980,27 @@ data ParserError
 BuiltinTypeNotAStar :: !Text -> !SourcePos -> ParserError
 UnknownBuiltinFunction :: !Text -> !SourcePos -> ![Text] -> ParserError
 InvalidBuiltinConstant :: !Text -> !Text -> !SourcePos -> ParserError
-class AsParserErrorBundle r_a7VJo
-_ParserErrorBundle :: AsParserErrorBundle r_a7VJo => Prism' r_a7VJo ParserErrorBundle
-_ParseErrorB :: AsParserErrorBundle r_a7VJo => Prism' r_a7VJo (ParseErrorBundle Text ParserError)
+class AsParserErrorBundle r_a7Uyo
+_ParserErrorBundle :: AsParserErrorBundle r_a7Uyo => Prism' r_a7Uyo ParserErrorBundle
+_ParseErrorB :: AsParserErrorBundle r_a7Uyo => Prism' r_a7Uyo (ParseErrorBundle Text ParserError)
 data ParserErrorBundle
 ParseErrorB :: !ParseErrorBundle Text ParserError -> ParserErrorBundle
 data NormCheckError tyname name uni fun ann
 BadType :: !ann -> !Type tyname uni ann -> !Text -> NormCheckError tyname name uni fun ann
 BadTerm :: !ann -> !Term tyname name uni fun ann -> !Text -> NormCheckError tyname name uni fun ann
-class AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX | r_a7VRI -> tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX
-_NormCheckError :: AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX => Prism' r_a7VRI (NormCheckError tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX)
-_BadType :: AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX => Prism' r_a7VRI (ann_a7TnX, Type tyname_a7TnT uni_a7TnV ann_a7TnX, Text)
-_BadTerm :: AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX => Prism' r_a7VRI (ann_a7TnX, Term tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX, Text)
+class AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX | r_a7UGI -> tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX
+_NormCheckError :: AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX => Prism' r_a7UGI (NormCheckError tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX)
+_BadType :: AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX => Prism' r_a7UGI (ann_a7ScX, Type tyname_a7ScT uni_a7ScV ann_a7ScX, Text)
+_BadTerm :: AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX => Prism' r_a7UGI (ann_a7ScX, Term tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX, Text)
 data UniqueError ann
 MultiplyDefined :: !Unique -> !ann -> !ann -> UniqueError ann
 IncoherentUsage :: !Unique -> !ann -> !ann -> UniqueError ann
 FreeVariable :: !Unique -> !ann -> UniqueError ann
-class AsUniqueError r_a7VLM ann_a7TnY | r_a7VLM -> ann_a7TnY
-_UniqueError :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (UniqueError ann_a7TnY)
-_MultiplyDefined :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_IncoherentUsage :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_FreeVariable :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY)
+class AsUniqueError r_a7UAM ann_a7ScY | r_a7UAM -> ann_a7ScY
+_UniqueError :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (UniqueError ann_a7ScY)
+_MultiplyDefined :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_IncoherentUsage :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_FreeVariable :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY)
 
 -- | This is needed for nice kind/type checking error messages. In some
 --   cases the type checker knows the exact type that an expression has to
@@ -5055,38 +5025,38 @@ NameMismatch :: !ann -> !Name -> !Name -> TypeError term uni fun ann
 FreeTypeVariableE :: !ann -> !TyName -> TypeError term uni fun ann
 FreeVariableE :: !ann -> !Name -> TypeError term uni fun ann
 UnknownBuiltinFunctionE :: !ann -> !fun -> TypeError term uni fun ann
-class AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR | r_a7VY6 -> term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR
-_TypeError :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (TypeError term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR)
-_KindMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, Type TyName uni_a7TnP (), ExpectedShapeOr (Kind ()), Kind ())
-_TypeMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, term_a7TnO, ExpectedShapeOr (Type TyName uni_a7TnP ()), Normalized (Type TyName uni_a7TnP ()))
-_TyNameMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, TyName, TyName)
-_NameMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, Name, Name)
-_FreeTypeVariableE :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, TyName)
-_FreeVariableE :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, Name)
-_UnknownBuiltinFunctionE :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, fun_a7TnQ)
+class AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR | r_a7UN6 -> term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR
+_TypeError :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (TypeError term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR)
+_KindMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, Type TyName uni_a7ScP (), ExpectedShapeOr (Kind ()), Kind ())
+_TypeMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, term_a7ScO, ExpectedShapeOr (Type TyName uni_a7ScP ()), Normalized (Type TyName uni_a7ScP ()))
+_TyNameMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, TyName, TyName)
+_NameMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, Name, Name)
+_FreeTypeVariableE :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, TyName)
+_FreeVariableE :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, Name)
+_UnknownBuiltinFunctionE :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, fun_a7ScQ)
 
 -- | We cannot do a correct translation to or from de Bruijn indices if the
 --   program is not well-scoped. So we throw an error in such a case.
 data FreeVariableError
 FreeUnique :: !Unique -> FreeVariableError
 FreeIndex :: !Index -> FreeVariableError
-class AsFreeVariableError r_a1LDj
-_FreeVariableError :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj FreeVariableError
-_FreeUnique :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Unique
-_FreeIndex :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Index
+class AsFreeVariableError r_a1KDI
+_FreeVariableError :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI FreeVariableError
+_FreeUnique :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Unique
+_FreeIndex :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Index
 data Error uni fun ann
 ParseErrorE :: !ParserErrorBundle -> Error uni fun ann
 UniqueCoherencyErrorE :: !UniqueError ann -> Error uni fun ann
 TypeErrorE :: !TypeError (Term TyName Name uni fun ()) uni fun ann -> Error uni fun ann
 NormCheckErrorE :: !NormCheckError TyName Name uni fun ann -> Error uni fun ann
 FreeVariableErrorE :: !FreeVariableError -> Error uni fun ann
-class AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN | r_a7Web -> uni_a7TnL fun_a7TnM ann_a7TnN
-_Error :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (Error uni_a7TnL fun_a7TnM ann_a7TnN)
-_ParseErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web ParserErrorBundle
-_UniqueCoherencyErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (UniqueError ann_a7TnN)
-_TypeErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (TypeError (Term TyName Name uni_a7TnL fun_a7TnM ()) uni_a7TnL fun_a7TnM ann_a7TnN)
-_NormCheckErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (NormCheckError TyName Name uni_a7TnL fun_a7TnM ann_a7TnN)
-_FreeVariableErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web FreeVariableError
+class AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN | r_a7V3b -> uni_a7ScL fun_a7ScM ann_a7ScN
+_Error :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (Error uni_a7ScL fun_a7ScM ann_a7ScN)
+_ParseErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b ParserErrorBundle
+_UniqueCoherencyErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (UniqueError ann_a7ScN)
+_TypeErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (TypeError (Term TyName Name uni_a7ScL fun_a7ScM ()) uni_a7ScL fun_a7ScM ann_a7ScN)
+_NormCheckErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (NormCheckError TyName Name uni_a7ScL fun_a7ScM ann_a7ScN)
+_FreeVariableErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b FreeVariableError
 
 -- | Lifts an <a>Either</a> into an error context where we can embed the
 --   <a>Left</a> value into the error.
@@ -5192,11 +5162,11 @@ data UniqueError ann
 MultiplyDefined :: !Unique -> !ann -> !ann -> UniqueError ann
 IncoherentUsage :: !Unique -> !ann -> !ann -> UniqueError ann
 FreeVariable :: !Unique -> !ann -> UniqueError ann
-class AsUniqueError r_a7VLM ann_a7TnY | r_a7VLM -> ann_a7TnY
-_UniqueError :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (UniqueError ann_a7TnY)
-_MultiplyDefined :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_IncoherentUsage :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_FreeVariable :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY)
+class AsUniqueError r_a7UAM ann_a7ScY | r_a7UAM -> ann_a7ScY
+_UniqueError :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (UniqueError ann_a7ScY)
+_MultiplyDefined :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_IncoherentUsage :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_FreeVariable :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY)
 
 module PlutusCore.Builtin.Elaborate
 
@@ -5206,8 +5176,8 @@ module PlutusCore.Builtin.Elaborate
 --   <a>HandleHole</a> can specialize multiple variables, <tt>j</tt> can be
 --   equal to <tt>i + n</tt> for any <tt>n</tt> (including <tt>0</tt>).
 type ElaborateFromTo uni i j val a = HandleHole uni i j val (TypeHole a)
-instance forall a (i :: GHC.TypeNats.Nat) (j :: GHC.TypeNats.Nat) (x :: a) (uni :: * -> *) (k :: GHC.TypeNats.Nat) val. (PlutusCore.Builtin.Elaborate.TrySpecializeAsUnappliedVar i j PlutusCore.Builtin.KnownTypeAst.RepHole 'GHC.Maybe.Nothing x, PlutusCore.Builtin.Elaborate.HandleHoles uni j k val PlutusCore.Builtin.KnownTypeAst.RepHole x) => PlutusCore.Builtin.Elaborate.HandleHole uni i k val (PlutusCore.Builtin.KnownTypeAst.RepHole x)
-instance (PlutusCore.Builtin.Elaborate.TrySpecializeAsUnappliedVar i j PlutusCore.Builtin.KnownTypeAst.TypeHole ('GHC.Maybe.Just (PlutusCore.Builtin.Polymorphism.Opaque val)) a, PlutusCore.Builtin.Elaborate.HandleHoles uni j k val PlutusCore.Builtin.KnownTypeAst.TypeHole a) => PlutusCore.Builtin.Elaborate.HandleHole uni i k val (PlutusCore.Builtin.KnownTypeAst.TypeHole a)
+instance forall a (i :: GHC.TypeNats.Nat) (j :: GHC.TypeNats.Nat) (x :: a) (uni :: * -> *) (k :: GHC.TypeNats.Nat) val. (PlutusCore.Builtin.Elaborate.TrySpecializeAsUnappliedVar i j PlutusCore.Builtin.KnownTypeAst.RepHole 'GHC.Maybe.Nothing x, PlutusCore.Builtin.Elaborate.HandleHoles uni j k val x) => PlutusCore.Builtin.Elaborate.HandleHole uni i k val (PlutusCore.Builtin.KnownTypeAst.RepHole x)
+instance (PlutusCore.Builtin.Elaborate.TrySpecializeAsUnappliedVar i j PlutusCore.Builtin.KnownTypeAst.TypeHole ('GHC.Maybe.Just (PlutusCore.Builtin.Polymorphism.Opaque val)) a, PlutusCore.Builtin.Elaborate.HandleHoles uni j k val a) => PlutusCore.Builtin.Elaborate.HandleHole uni i k val (PlutusCore.Builtin.KnownTypeAst.TypeHole a)
 instance (i GHC.Types.~ j) => PlutusCore.Builtin.Elaborate.HandleHolesGo uni i j val '[]
 instance (PlutusCore.Builtin.Elaborate.HandleHole uni i j val hole, PlutusCore.Builtin.Elaborate.HandleHolesGo uni j k val holes) => PlutusCore.Builtin.Elaborate.HandleHolesGo uni i k val (hole : holes)
 instance forall a k1 (i :: GHC.TypeNats.Nat) (j :: GHC.TypeNats.Nat) (hole :: * -> *) (f :: a -> k1) (k2 :: GHC.TypeNats.Nat) (mw :: GHC.Maybe.Maybe (k1 -> k1)) (x :: a). (PlutusCore.Builtin.Elaborate.TrySpecializeHeadAsVar i j hole f, PlutusCore.Builtin.Elaborate.TrySpecializeAsVar j k2 mw (f x)) => PlutusCore.Builtin.Elaborate.TrySpecializeAsUnappliedVar i k2 hole mw (f x)
@@ -5266,22 +5236,21 @@ class (uni `Everywhere` ImplementedKnownTypeAst uni, uni `Everywhere` Implemente
 --   Applying or type-instantiating a builtin peels off the corresponding
 --   constructor from its <a>BuiltinRuntime</a>.
 --   
---   <a>BuiltinCostedResult</a> contains the cost (an
---   <a>ExBudgetStream</a>) and the result (a <tt>BuiltinResult (HeadSpine
---   val)</tt>) of the builtin application. The cost is stored strictly,
---   since the evaluator is going to look at it and the result is stored
---   lazily, since it's not supposed to be forced before accounting for the
---   cost of the application. If the cost exceeds the available budget, the
---   evaluator discards the result of the builtin application without ever
---   forcing it and terminates with evaluation failure. Allowing the user
---   to compute something that they don't have the budget for would be a
---   major bug.
+--   <a>BuiltinCostedResult</a> contains the cost (an <tt>ExBudget</tt>)
+--   and the result (a <tt>BuiltinResult val</tt>) of the builtin
+--   application. The cost is stored strictly, since the evaluator is going
+--   to look at it and the result is stored lazily, since it's not supposed
+--   to be forced before accounting for the cost of the application. If the
+--   cost exceeds the available budget, the evaluator discards the result
+--   of the builtin application without ever forcing it and terminates with
+--   evaluation failure. Allowing the user to compute something that they
+--   don't have the budget for would be a major bug.
 --   
 --   Evaluators that ignore the entire concept of costing (e.g. the CK
 --   machine) may of course force the result of the builtin application
 --   unconditionally.
 data BuiltinRuntime val
-BuiltinCostedResult :: ExBudgetStream -> ~BuiltinResult (HeadSpine val) -> BuiltinRuntime val
+BuiltinCostedResult :: ExBudgetStream -> ~BuiltinResult val -> BuiltinRuntime val
 BuiltinExpectArgument :: (val -> BuiltinRuntime val) -> BuiltinRuntime val
 BuiltinExpectForce :: BuiltinRuntime val -> BuiltinRuntime val
 
@@ -5336,10 +5305,10 @@ lookupBuiltin :: fun -> BuiltinsRuntime fun val -> BuiltinRuntime val
 data EvaluationError structural operational
 StructuralEvaluationError :: !structural -> EvaluationError structural operational
 OperationalEvaluationError :: !operational -> EvaluationError structural operational
-class AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 | r_a1xHc -> structural_a1xx6 operational_a1xx7
-_EvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc (EvaluationError structural_a1xx6 operational_a1xx7)
-_StructuralEvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc structural_a1xx6
-_OperationalEvaluationError :: AsEvaluationError r_a1xHc structural_a1xx6 operational_a1xx7 => Prism' r_a1xHc operational_a1xx7
+class AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw | r_a1wHB -> structural_a1wxv operational_a1wxw
+_EvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB (EvaluationError structural_a1wxv operational_a1wxw)
+_StructuralEvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB structural_a1wxv
+_OperationalEvaluationError :: AsEvaluationError r_a1wHB structural_a1wxv operational_a1wxw => Prism' r_a1wHB operational_a1wxw
 
 -- | The error message part of an <a>UnliftingEvaluationError</a>.
 newtype UnliftingError
@@ -5381,21 +5350,21 @@ data BuiltinResult a
 BuiltinSuccess :: a -> BuiltinResult a
 BuiltinSuccessWithLogs :: DList Text -> a -> BuiltinResult a
 BuiltinFailure :: DList Text -> BuiltinError -> BuiltinResult a
-class AsUnliftingEvaluationError r_a1zlY
-_UnliftingEvaluationError :: AsUnliftingEvaluationError r_a1zlY => Prism' r_a1zlY UnliftingEvaluationError
-_MkUnliftingEvaluationError :: AsUnliftingEvaluationError r_a1zlY => Prism' r_a1zlY (EvaluationError UnliftingError UnliftingError)
-class AsUnliftingError r_a1zlU
-_UnliftingError :: AsUnliftingError r_a1zlU => Prism' r_a1zlU UnliftingError
-_MkUnliftingError :: AsUnliftingError r_a1zlU => Prism' r_a1zlU Text
-class AsBuiltinError r_a1zm2
-_BuiltinError :: AsBuiltinError r_a1zm2 => Prism' r_a1zm2 BuiltinError
-_BuiltinUnliftingEvaluationError :: AsBuiltinError r_a1zm2 => Prism' r_a1zm2 UnliftingEvaluationError
-_BuiltinEvaluationFailure :: AsBuiltinError r_a1zm2 => Prism' r_a1zm2 ()
-class AsBuiltinResult r_a1zma a_a1z2D | r_a1zma -> a_a1z2D
-_BuiltinResult :: AsBuiltinResult r_a1zma a_a1z2D => Prism' r_a1zma (BuiltinResult a_a1z2D)
-_BuiltinSuccess :: AsBuiltinResult r_a1zma a_a1z2D => Prism' r_a1zma a_a1z2D
-_BuiltinSuccessWithLogs :: AsBuiltinResult r_a1zma a_a1z2D => Prism' r_a1zma (DList Text, a_a1z2D)
-_BuiltinFailure :: AsBuiltinResult r_a1zma a_a1z2D => Prism' r_a1zma (DList Text, BuiltinError)
+class AsUnliftingEvaluationError r_a1ymn
+_UnliftingEvaluationError :: AsUnliftingEvaluationError r_a1ymn => Prism' r_a1ymn UnliftingEvaluationError
+_MkUnliftingEvaluationError :: AsUnliftingEvaluationError r_a1ymn => Prism' r_a1ymn (EvaluationError UnliftingError UnliftingError)
+class AsUnliftingError r_a1ymj
+_UnliftingError :: AsUnliftingError r_a1ymj => Prism' r_a1ymj UnliftingError
+_MkUnliftingError :: AsUnliftingError r_a1ymj => Prism' r_a1ymj Text
+class AsBuiltinError r_a1ymr
+_BuiltinError :: AsBuiltinError r_a1ymr => Prism' r_a1ymr BuiltinError
+_BuiltinUnliftingEvaluationError :: AsBuiltinError r_a1ymr => Prism' r_a1ymr UnliftingEvaluationError
+_BuiltinEvaluationFailure :: AsBuiltinError r_a1ymr => Prism' r_a1ymr ()
+class AsBuiltinResult r_a1ymz a_a1y32 | r_a1ymz -> a_a1y32
+_BuiltinResult :: AsBuiltinResult r_a1ymz a_a1y32 => Prism' r_a1ymz (BuiltinResult a_a1y32)
+_BuiltinSuccess :: AsBuiltinResult r_a1ymz a_a1y32 => Prism' r_a1ymz a_a1y32
+_BuiltinSuccessWithLogs :: AsBuiltinResult r_a1ymz a_a1y32 => Prism' r_a1ymz (DList Text, a_a1y32)
+_BuiltinFailure :: AsBuiltinResult r_a1ymz a_a1y32 => Prism' r_a1ymz (DList Text, BuiltinError)
 
 -- | Construct a prism focusing on the <tt>*EvaluationFailure</tt> part of
 --   <tt>err</tt> by taking that <tt>*EvaluationFailure</tt> and
@@ -5459,17 +5428,6 @@ data family TyForallRep (name :: TyNameRep kind) (a :: Type) :: Type
 -- | For annotating an uninstantiated built-in type, so that it gets
 --   handled by the right instance or type family.
 data family BuiltinHead x
-
--- | <tt>LastArg x y</tt> is the same thing as <tt>y</tt> in the signature
---   of the denotation of a built-in functions and this type is only used
---   for referencing <tt>x</tt> before <tt>y</tt>, so that the elaboration
---   machinery generates <tt>x</tt> before <tt>y</tt> in the <tt>all</tt>
---   part of the Plutus signature of the builtin. This is a very hacky and
---   indirect way of specifying the ordering of type variables in a Plutus
---   signature, in future we'll do it explicitly by introducing a
---   <tt>Forall</tt> binder for use in type signatures of denotations of
---   builtins.
-data family LastArg x y
 
 -- | Take an iterated application of a built-in type and elaborate every
 --   function application inside of it to <a>TyAppRep</a> and annotate the
@@ -5651,16 +5609,6 @@ data Hole
 -- | A hole in the Rep context.
 data family RepHole x
 
--- | A hole in the Type context.
-data family TypeHole a
-
--- | Turn a hole in the <tt>GHC.Type -&gt; GHC.Type</tt> form into one of
---   the <a>Hole</a> form. This only changes the kind of the given
---   argument. This is a way of encoding <tt>forall a. a -&gt; Hole</tt> at
---   the kind level, which we don't attempt to use, because GHC apparently
---   hates polymorphism at the kind level and chokes upon encountering it.
-type family RunHole hole
-
 -- | Specifies that the given type is a built-in one and its values can be
 --   embedded into a <a>Term</a>.
 type HasTermLevel uni = Includes uni
@@ -5675,6 +5623,9 @@ type HasTypeAndTermLevel uni x = (uni `HasTypeLevel` x, uni `HasTermLevel` x)
 -- | Convert a Haskell representation of a possibly 0-ary application of a
 --   built-in type to arbitrary types implementing <a>KnownTypeAst</a>.
 mkTyBuiltin :: forall a (x :: a) uni ann tyname. uni `HasTypeLevel` x => ann -> Type tyname uni ann
+
+-- | A hole in the Type context.
+data family TypeHole a
 
 -- | A constraint for "<tt>a</tt> is a <a>KnownTypeAst</a> by means of
 --   being included in <tt>uni</tt>".
@@ -5699,19 +5650,14 @@ class KnownTypeAst tyname uni x where {
     --   in <tt>(a, b)</tt> it's the two arguments (<tt>a</tt> and <tt>b</tt>)
     --   and the same applies to <tt>a -&gt; b</tt> (to mention a type that is
     --   not built-in).
-    --   
-    --   Takes a <tt>hole</tt> in the <tt>GHC.Type -&gt; GHC.Type</tt> form (a
-    --   convention originally adopted in the elaborator, perhaps not a very
-    --   helpful one), which can be turned into an actual <a>Hole</a> via
-    --   <a>RunHole</a>.
-    type ToHoles uni (hole :: Type -> Type) x :: [Hole];
+    type ToHoles uni x :: [Hole];
     
     -- | Collect all unique variables (a variable consists of a textual name, a
     --   unique and a kind) in an accumulator and return the accumulator once a
     --   leaf is reached.
     type ToBinds uni (acc :: [Some TyNameRep]) x :: [Some TyNameRep];
     type IsBuiltin uni x = IsBuiltin uni (ElaborateBuiltin uni x);
-    type ToHoles uni hole x = ToHoles uni hole (ElaborateBuiltin uni x);
+    type ToHoles uni x = ToHoles uni (ElaborateBuiltin uni x);
     type ToBinds uni acc x = ToBinds uni acc (ElaborateBuiltin uni x);
 }
 
@@ -5776,36 +5722,15 @@ BuiltinFailure :: DList Text -> BuiltinError -> BuiltinResult a
 
 -- | The monad that <a>readKnown</a> runs in.
 type ReadKnownM = Either BuiltinError
-
--- | A non-empty spine. Isomorphic to <a>NonEmpty</a>, except is strict and
---   is defined as a single recursive data type.
-data Spine a
-SpineLast :: a -> Spine a
-SpineCons :: a -> Spine a -> Spine a
-
--- | The head-spine form of an iterated application. Provides O(1) access
---   to the head of the application. Isomorphic to <tt>NonEmpty</tt>,
---   except is strict and the no-spine case is made a separate constructor
---   for performance reasons (it only takes a single pattern match to
---   access the head when there's no spine this way, while otherwise we'd
---   also need to match on the spine to ensure that it's empty -- and the
---   no-spine case is by far the most common one, hence we want to optimize
---   it).
---   
---   Used in built-in functions returning function applications such as
---   <tt>CaseList</tt>.
-data HeadSpine a
-HeadOnly :: a -> HeadSpine a
-HeadSpine :: a -> Spine a -> HeadSpine a
 class uni ~ UniOf val => MakeKnownIn uni val a
 
 -- | Convert a Haskell value to the corresponding PLC value. The inverse of
 --   <a>readKnown</a>.
-makeKnown :: MakeKnownIn uni val a => a -> BuiltinResult (HeadSpine val)
+makeKnown :: MakeKnownIn uni val a => a -> BuiltinResult val
 
 -- | Convert a Haskell value to the corresponding PLC value. The inverse of
 --   <a>readKnown</a>.
-makeKnown :: (MakeKnownIn uni val a, KnownBuiltinType val a) => a -> BuiltinResult (HeadSpine val)
+makeKnown :: (MakeKnownIn uni val a, KnownBuiltinType val a) => a -> BuiltinResult val
 
 -- | Convert a constant embedded into a PLC term to the corresponding
 --   Haskell value.
@@ -5824,7 +5749,7 @@ type ReadKnown val = ReadKnownIn (UniOf val) val
 
 -- | Same as <a>makeKnown</a>, but allows for neither emitting nor storing
 --   the cause of a failure.
-makeKnownOrFail :: MakeKnownIn uni val a => a -> EvaluationResult (HeadSpine val)
+makeKnownOrFail :: MakeKnownIn uni val a => a -> EvaluationResult val
 
 -- | Same as <a>readKnown</a>, but the cause of a potential failure is the
 --   provided term itself.
@@ -6084,9 +6009,6 @@ mkIterKindArrow :: ann -> [Kind ann] -> Kind ann -> Kind ann
 --   fresh bound <a>Var</a>iable and a function `Term -&gt; Term`,
 --   expecting an "in-Term" to form a let-expression.
 mkFreshTermLet :: (MonadQuote m, TermLike t tyname Name uni fun, Monoid a) => Type tyname uni a -> t a -> m (t a, t a -> t a)
-
--- | <a>apply</a> the head of the application to the arguments iteratively.
-headSpineToTerm :: TermLike term tyname name uni fun => HeadSpine (term ()) -> term ()
 instance GHC.Generics.Generic (PlutusCore.MkPlc.Def var val)
 instance (GHC.Classes.Ord var, GHC.Classes.Ord val) => GHC.Classes.Ord (PlutusCore.MkPlc.Def var val)
 instance (GHC.Classes.Eq var, GHC.Classes.Eq val) => GHC.Classes.Eq (PlutusCore.MkPlc.Def var val)
@@ -6513,8 +6435,8 @@ data CostModel machinecosts builtincosts
 CostModel :: machinecosts -> builtincosts -> CostModel machinecosts builtincosts
 [_machineCostModel] :: CostModel machinecosts builtincosts -> machinecosts
 [_builtinCostModel] :: CostModel machinecosts builtincosts -> builtincosts
-machineCostModel :: forall machinecosts_a8uA7 builtincosts_a8uA8 machinecosts_a8uDa. Lens (CostModel machinecosts_a8uA7 builtincosts_a8uA8) (CostModel machinecosts_a8uDa builtincosts_a8uA8) machinecosts_a8uA7 machinecosts_a8uDa
-builtinCostModel :: forall machinecosts_a8uA7 builtincosts_a8uA8 builtincosts_a8uD9. Lens (CostModel machinecosts_a8uA7 builtincosts_a8uA8) (CostModel machinecosts_a8uA7 builtincosts_a8uD9) builtincosts_a8uA8 builtincosts_a8uD9
+machineCostModel :: forall machinecosts_a8ppT builtincosts_a8ppU machinecosts_a8psW. Lens (CostModel machinecosts_a8ppT builtincosts_a8ppU) (CostModel machinecosts_a8psW builtincosts_a8ppU) machinecosts_a8ppT machinecosts_a8psW
+builtinCostModel :: forall machinecosts_a8ppT builtincosts_a8ppU builtincosts_a8psV. Lens (CostModel machinecosts_a8ppT builtincosts_a8ppU) (CostModel machinecosts_a8ppT builtincosts_a8psV) builtincosts_a8ppU builtincosts_a8psV
 
 -- | At execution time we need a <a>BuiltinsRuntime</a> object which
 --   includes both the cost model for builtins and their denotations. This
@@ -6576,7 +6498,6 @@ instance GHC.Generics.Generic PlutusCore.Evaluation.Machine.Ck.CkUserError
 instance GHC.Classes.Eq PlutusCore.Evaluation.Machine.Ck.CkUserError
 instance GHC.Show.Show PlutusCore.Evaluation.Machine.Ck.CkUserError
 instance (Data.GADT.Internal.GShow uni, Universe.Core.Everywhere uni GHC.Show.Show, GHC.Show.Show fun, Universe.Core.Closed uni) => GHC.Show.Show (PlutusCore.Evaluation.Machine.Ck.CkValue uni fun)
-instance (Data.GADT.Internal.GShow uni, Universe.Core.Closed uni, Universe.Core.Everywhere uni GHC.Show.Show, GHC.Show.Show fun) => GHC.Show.Show (PlutusCore.Evaluation.Machine.Ck.Frame uni fun)
 instance PlutusCore.Evaluation.Result.AsEvaluationFailure PlutusCore.Evaluation.Machine.Ck.CkUserError
 instance PlutusCore.Builtin.Result.AsUnliftingError PlutusCore.Evaluation.Machine.Ck.CkUserError
 instance Prettyprinter.Internal.Pretty PlutusCore.Evaluation.Machine.Ck.CkUserError
@@ -6587,9 +6508,6 @@ instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage (PlutusCore.E
 
 module PlutusCore.Crypto.ExpMod
 expMod :: Integer -> Integer -> Natural -> BuiltinResult Natural
-
-module PlutusCore.Compiler.Types
-type Compiling m uni fun name a = (ToBuiltinMeaning uni fun, MonadQuote m, HasUnique name TermUnique, Ord name, Typeable name, Hashable fun)
 
 
 -- | Implementations for CIP-121, CIP-122 and CIP-123. Grouped because they
@@ -6721,13 +6639,11 @@ Trace :: DefaultFun
 FstPair :: DefaultFun
 SndPair :: DefaultFun
 ChooseList :: DefaultFun
-CaseList :: DefaultFun
 MkCons :: DefaultFun
 HeadList :: DefaultFun
 TailList :: DefaultFun
 NullList :: DefaultFun
 ChooseData :: DefaultFun
-CaseData :: DefaultFun
 ConstrData :: DefaultFun
 MapData :: DefaultFun
 ListData :: DefaultFun
@@ -6789,10 +6705,6 @@ nonZeroSecondArg :: (Integer -> Integer -> Integer) -> Integer -> Integer -> Bui
 --   <a>pure</a> in the <a>Right</a> case.
 eitherToBuiltinResult :: Show e => Either e r -> BuiltinResult r
 
--- | Take a function and a list of arguments and apply the former to the
---   latter.
-headSpine :: Opaque val asToB -> [val] -> Opaque (HeadSpine val) b
-
 -- | Using 7 bits to encode builtin tags.
 builtinTagWidth :: NumBits
 encodeBuiltin :: Word8 -> Encoding
@@ -6818,7 +6730,7 @@ instance GHC.Classes.Eq (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant Plut
 instance Prettyprinter.Internal.Pretty PlutusCore.Default.Builtins.DefaultFun
 instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage PlutusCore.Default.Builtins.DefaultFun
 instance (uni GHC.Types.~ PlutusCore.Default.Universe.DefaultUni) => PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni PlutusCore.Default.Builtins.DefaultFun
-instance Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Default.Builtins.DefaultFun)
+instance Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Default.Builtins.DefaultFun)
 instance Prettyprinter.Internal.Pretty (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Default.Builtins.DefaultFun)
 instance Flat.Class.Flat PlutusCore.Default.Builtins.DefaultFun
 
@@ -7197,30 +7109,9 @@ module PlutusCore.StdLib.Data.List
 -- | <tt>[]</tt> as a built-in PLC type.
 list :: uni `HasTypeLevel` [] => Type tyname uni ()
 
--- | Allows one to choose which way of doing pattern matching on built-in
---   types to use: either via <tt>ChooseList</tt>-like builtins or via
---   <tt>CaseList</tt>-like ones.
-data MatchOption
-UseChoose :: MatchOption
-UseCase :: MatchOption
-
--- | Pattern matching on built-in lists. <tt>matchList {a} xs</tt> on
+-- | Pattern matching on built-in lists. <tt>caseList {a} xs</tt> on
 --   built-in lists is equivalent to <tt>unwrap xs</tt> on lists defined in
 --   PLC itself (hence why we bind <tt>r</tt> after <tt>xs</tt>).
---   
---   Either
---   
---   <pre>
---   /\(a :: *) -&gt; \(xs : list a) -&gt; /\(r :: *) -&gt; (z : r) (f : a -&gt; list a -&gt; r) -&gt;
---       matchList
---           {a}
---           {r}
---           z
---           f
---           xs
---   </pre>
---   
---   or
 --   
 --   <pre>
 --   /\(a :: *) -&gt; \(xs : list a) -&gt; /\(r :: *) -&gt; (z : r) (f : a -&gt; list a -&gt; r) -&gt;
@@ -7232,36 +7123,34 @@ UseCase :: MatchOption
 --           (\(u : ()) -&gt; f (head {a} xs) (tail {a} xs))
 --           ()
 --   </pre>
---   
---   depending on the <a>MatchOption</a> argument.
-matchList :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
+caseList :: TermLike term TyName Name DefaultUni DefaultFun => term ()
 
 -- | <tt>foldr</tt> over built-in lists.
 --   
 --   <pre>
 --   /\(a :: *) (r :: *) -&gt; \(f : a -&gt; r -&gt; r) (z : r) -&gt;
 --       fix {list a} {r} \(rec : list a -&gt; r) (xs : list a) -&gt;
---           matchList {a} xs {r} z \(x : a) (xs' : list a) -&gt; f x (rec xs')
+--           caseList {a} xs {r} z \(x : a) (xs' : list a) -&gt; f x (rec xs')
 --   </pre>
-foldrList :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
+foldrList :: TermLike term TyName Name DefaultUni DefaultFun => term ()
 
 -- | 'foldl'' as a PLC term.
 --   
 --   <pre>
 --   /\(a :: *) (r :: *) -&gt; \(f : r -&gt; a -&gt; r) -&gt;
 --       fix {r} {list a -&gt; r} \(rec : r -&gt; list a -&gt; r) (z : r) (xs : list a) -&gt;
---           matchList {a} xs {r} z \(x : a) (xs' : list a) -&gt; rec (f z x) xs'
+--           caseList {a} xs {r} z \(x : a) (xs' : list a) -&gt; rec (f z x) xs'
 --   </pre>
-foldList :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
-sum :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
-sumr :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
+foldList :: TermLike term TyName Name DefaultUni DefaultFun => term ()
+sum :: TermLike term TyName Name DefaultUni DefaultFun => term ()
+sumr :: TermLike term TyName Name DefaultUni DefaultFun => term ()
 
 -- | <a>product</a> as a PLC term.
 --   
 --   <pre>
 --   foldList {integer} {integer} multiplyInteger 1
 --   </pre>
-product :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
+product :: TermLike term TyName Name DefaultUni DefaultFun => term ()
 
 
 -- | Built-in <tt>pair</tt> and related functions.
@@ -7271,28 +7160,6 @@ module PlutusCore.StdLib.Data.Data
 dataTy :: uni `HasTypeLevel` Data => Type tyname uni ()
 
 -- | Pattern matching over <a>Data</a> inside PLC.
---   
---   Either
---   
---   <pre>
---   \(d : data) -&gt;
---       /\(r :: *) -&gt;
---        \(fConstr : integer -&gt; list data -&gt; r)
---         (fMap : list (pair data data) -&gt; r)
---         (fList : list data -&gt; r)
---         (fI : integer -&gt; r)
---         (fB : bytestring -&gt; r) -&gt;
---             matchData
---                 {r}
---                 fConstr
---                 fMap
---                 fList
---                 fI
---                 fB
---                 d
---   </pre>
---   
---   Or
 --   
 --   <pre>
 --   \(d : data) -&gt;
@@ -7312,9 +7179,7 @@ dataTy :: uni `HasTypeLevel` Data => Type tyname uni ()
 --                 (\(u : unit) -&gt; fB (unBB d))
 --                 unitval
 --   </pre>
---   
---   depending on the <a>MatchOption</a> argument.
-matchData :: TermLike term TyName Name DefaultUni DefaultFun => MatchOption -> term ()
+caseData :: TermLike term TyName Name DefaultUni DefaultFun => term ()
 
 
 -- | This module exports everything from the stdlib via a data type which
@@ -7579,17 +7444,6 @@ data family TyForallRep (name :: TyNameRep kind) (a :: Type) :: Type
 --   handled by the right instance or type family.
 data family BuiltinHead x
 
--- | <tt>LastArg x y</tt> is the same thing as <tt>y</tt> in the signature
---   of the denotation of a built-in functions and this type is only used
---   for referencing <tt>x</tt> before <tt>y</tt>, so that the elaboration
---   machinery generates <tt>x</tt> before <tt>y</tt> in the <tt>all</tt>
---   part of the Plutus signature of the builtin. This is a very hacky and
---   indirect way of specifying the ordering of type variables in a Plutus
---   signature, in future we'll do it explicitly by introducing a
---   <tt>Forall</tt> binder for use in type signatures of denotations of
---   builtins.
-data family LastArg x y
-
 -- | Take an iterated application of a built-in type and elaborate every
 --   function application inside of it to <a>TyAppRep</a> and annotate the
 --   head with <a>BuiltinHead</a>.
@@ -7835,9 +7689,9 @@ DetectNameMismatches :: HandleNameMismatches
 
 -- | Ignore it.
 IgnoreNameMismatches :: HandleNameMismatches
-class HasKindCheckConfig c_a9Tav
-kindCheckConfig :: HasKindCheckConfig c_a9Tav => Lens' c_a9Tav KindCheckConfig
-kccHandleNameMismatches :: HasKindCheckConfig c_a9Tav => Lens' c_a9Tav HandleNameMismatches
+class HasKindCheckConfig c_a9I41
+kindCheckConfig :: HasKindCheckConfig c_a9I41 => Lens' c_a9I41 KindCheckConfig
+kccHandleNameMismatches :: HasKindCheckConfig c_a9I41 => Lens' c_a9I41 HandleNameMismatches
 
 -- | We want <a>HasKindCheckConfig</a> to be a superclass of
 --   <a>HasTypeCheckConfig</a> for being able to seamlessly call the kind
@@ -7886,16 +7740,16 @@ runTypeCheckM :: cfg -> TypeCheckT uni fun cfg m a -> m a
 -- | Extend the context of a <tt>TypeCheckM</tt> computation with a kinded
 --   variable.
 withTyVar :: TyName -> Kind () -> TypeCheckT uni fun cfg m a -> TypeCheckT uni fun cfg m a
-tceTyVarKinds :: forall uni_a9TaN fun_a9TaO cfg_a9TaP fun_a9Tiq. Lens (TypeCheckEnv uni_a9TaN fun_a9TaO cfg_a9TaP) (TypeCheckEnv uni_a9TaN fun_a9Tiq cfg_a9TaP) TyVarKinds TyVarKinds
+tceTyVarKinds :: forall uni_a9I4j fun_a9I4k cfg_a9I4l fun_a9IbW. Lens (TypeCheckEnv uni_a9I4j fun_a9I4k cfg_a9I4l) (TypeCheckEnv uni_a9I4j fun_a9IbW cfg_a9I4l) TyVarKinds TyVarKinds
 
 -- | Look up the type of a built-in function.
 lookupBuiltinM :: (MonadTypeCheck err term uni fun ann m, HasTypeCheckConfig cfg uni fun) => ann -> fun -> TypeCheckT uni fun cfg m (Normalized (Type TyName uni ()))
-tceTypeCheckConfig :: forall uni_a9TaN fun_a9TaO cfg_a9TaP fun_a9Tir cfg_a9Tis. Lens (TypeCheckEnv uni_a9TaN fun_a9TaO cfg_a9TaP) (TypeCheckEnv uni_a9TaN fun_a9Tir cfg_a9Tis) cfg_a9TaP cfg_a9Tis
+tceTypeCheckConfig :: forall uni_a9I4j fun_a9I4k cfg_a9I4l fun_a9IbX cfg_a9IbY. Lens (TypeCheckEnv uni_a9I4j fun_a9I4k cfg_a9I4l) (TypeCheckEnv uni_a9I4j fun_a9IbX cfg_a9IbY) cfg_a9I4l cfg_a9IbY
 
 -- | Extend the context of a <tt>TypeCheckM</tt> computation with a typed
 --   variable.
 withVar :: Name -> Normalized (Type TyName uni ()) -> TypeCheckT uni fun cfg m a -> TypeCheckT uni fun cfg m a
-tceVarTypes :: forall uni_a9TaN fun_a9TaO cfg_a9TaP uni_a9Tit fun_a9Tiu. Lens (TypeCheckEnv uni_a9TaN fun_a9TaO cfg_a9TaP) (TypeCheckEnv uni_a9Tit fun_a9Tiu cfg_a9TaP) (VarTypes uni_a9TaN) (VarTypes uni_a9Tit)
+tceVarTypes :: forall uni_a9I4j fun_a9I4k cfg_a9I4l uni_a9IbZ fun_a9Ic0. Lens (TypeCheckEnv uni_a9I4j fun_a9I4k cfg_a9I4l) (TypeCheckEnv uni_a9IbZ fun_a9Ic0 cfg_a9I4l) (VarTypes uni_a9I4j) (VarTypes uni_a9IbZ)
 
 -- | Look up a type variable in the current context.
 lookupTyVarM :: (MonadKindCheck err term uni fun ann m, HasKindCheckConfig cfg) => ann -> TyName -> TypeCheckT uni fun cfg m (Kind ())
@@ -8299,13 +8153,11 @@ Trace :: DefaultFun
 FstPair :: DefaultFun
 SndPair :: DefaultFun
 ChooseList :: DefaultFun
-CaseList :: DefaultFun
 MkCons :: DefaultFun
 HeadList :: DefaultFun
 TailList :: DefaultFun
 NullList :: DefaultFun
 ChooseData :: DefaultFun
-CaseData :: DefaultFun
 ConstrData :: DefaultFun
 MapData :: DefaultFun
 ListData :: DefaultFun
@@ -8539,18 +8391,18 @@ Normalized :: a -> Normalized a
 latestVersion :: Version
 termAnn :: Term tyname name uni fun ann -> ann
 typeAnn :: Type tyname uni ann -> ann
-tyVarDeclAnn :: forall tyname_a7e0z ann_a7e0A. Lens' (TyVarDecl tyname_a7e0z ann_a7e0A) ann_a7e0A
-tyVarDeclName :: forall tyname_a7e0z ann_a7e0A tyname_a7eeC. Lens (TyVarDecl tyname_a7e0z ann_a7e0A) (TyVarDecl tyname_a7eeC ann_a7e0A) tyname_a7e0z tyname_a7eeC
-tyVarDeclKind :: forall tyname_a7e0z ann_a7e0A. Lens' (TyVarDecl tyname_a7e0z ann_a7e0A) (Kind ann_a7e0A)
-varDeclAnn :: forall tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3. Lens' (VarDecl tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3) ann_a7ef3
-varDeclName :: forall tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3 name_a7ep7. Lens (VarDecl tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3) (VarDecl tyname_a7ef0 name_a7ep7 uni_a7ef2 ann_a7ef3) name_a7ef1 name_a7ep7
-varDeclType :: forall tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3 tyname_a7ep8 uni_a7ep9. Lens (VarDecl tyname_a7ef0 name_a7ef1 uni_a7ef2 ann_a7ef3) (VarDecl tyname_a7ep8 name_a7ef1 uni_a7ep9 ann_a7ef3) (Type tyname_a7ef0 uni_a7ef2 ann_a7ef3) (Type tyname_a7ep8 uni_a7ep9 ann_a7ef3)
-tyDeclAnn :: forall tyname_a7epx uni_a7epy ann_a7epz. Lens' (TyDecl tyname_a7epx uni_a7epy ann_a7epz) ann_a7epz
-tyDeclType :: forall tyname_a7epx uni_a7epy ann_a7epz tyname_a7ezY uni_a7ezZ. Lens (TyDecl tyname_a7epx uni_a7epy ann_a7epz) (TyDecl tyname_a7ezY uni_a7ezZ ann_a7epz) (Type tyname_a7epx uni_a7epy ann_a7epz) (Type tyname_a7ezY uni_a7ezZ ann_a7epz)
-tyDeclKind :: forall tyname_a7epx uni_a7epy ann_a7epz. Lens' (TyDecl tyname_a7epx uni_a7epy ann_a7epz) (Kind ann_a7epz)
-progAnn :: forall tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo. Lens' (Program tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) ann_a7bVo
-progVer :: forall tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo. Lens' (Program tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) Version
-progTerm :: forall tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo tyname_a7e06 name_a7e07 uni_a7e08 fun_a7e09. Lens (Program tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) (Program tyname_a7e06 name_a7e07 uni_a7e08 fun_a7e09 ann_a7bVo) (Term tyname_a7bVk name_a7bVl uni_a7bVm fun_a7bVn ann_a7bVo) (Term tyname_a7e06 name_a7e07 uni_a7e08 fun_a7e09 ann_a7bVo)
+tyVarDeclAnn :: forall tyname_a7d1z ann_a7d1A. Lens' (TyVarDecl tyname_a7d1z ann_a7d1A) ann_a7d1A
+tyVarDeclName :: forall tyname_a7d1z ann_a7d1A tyname_a7dfC. Lens (TyVarDecl tyname_a7d1z ann_a7d1A) (TyVarDecl tyname_a7dfC ann_a7d1A) tyname_a7d1z tyname_a7dfC
+tyVarDeclKind :: forall tyname_a7d1z ann_a7d1A. Lens' (TyVarDecl tyname_a7d1z ann_a7d1A) (Kind ann_a7d1A)
+varDeclAnn :: forall tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3. Lens' (VarDecl tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3) ann_a7dg3
+varDeclName :: forall tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3 name_a7dq7. Lens (VarDecl tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3) (VarDecl tyname_a7dg0 name_a7dq7 uni_a7dg2 ann_a7dg3) name_a7dg1 name_a7dq7
+varDeclType :: forall tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3 tyname_a7dq8 uni_a7dq9. Lens (VarDecl tyname_a7dg0 name_a7dg1 uni_a7dg2 ann_a7dg3) (VarDecl tyname_a7dq8 name_a7dg1 uni_a7dq9 ann_a7dg3) (Type tyname_a7dg0 uni_a7dg2 ann_a7dg3) (Type tyname_a7dq8 uni_a7dq9 ann_a7dg3)
+tyDeclAnn :: forall tyname_a7dqx uni_a7dqy ann_a7dqz. Lens' (TyDecl tyname_a7dqx uni_a7dqy ann_a7dqz) ann_a7dqz
+tyDeclType :: forall tyname_a7dqx uni_a7dqy ann_a7dqz tyname_a7dAY uni_a7dAZ. Lens (TyDecl tyname_a7dqx uni_a7dqy ann_a7dqz) (TyDecl tyname_a7dAY uni_a7dAZ ann_a7dqz) (Type tyname_a7dqx uni_a7dqy ann_a7dqz) (Type tyname_a7dAY uni_a7dAZ ann_a7dqz)
+tyDeclKind :: forall tyname_a7dqx uni_a7dqy ann_a7dqz. Lens' (TyDecl tyname_a7dqx uni_a7dqy ann_a7dqz) (Kind ann_a7dqz)
+progAnn :: forall tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo. Lens' (Program tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) ann_a7aWo
+progVer :: forall tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo. Lens' (Program tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) Version
+progTerm :: forall tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo tyname_a7d16 name_a7d17 uni_a7d18 fun_a7d19. Lens (Program tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) (Program tyname_a7d16 name_a7d17 uni_a7d18 fun_a7d19 ann_a7aWo) (Term tyname_a7aWk name_a7aWl uni_a7aWm fun_a7aWn ann_a7aWo) (Term tyname_a7d16 name_a7d17 uni_a7d18 fun_a7d19 ann_a7aWo)
 
 -- | Map a function over the set of built-in functions.
 mapFun :: (fun -> fun') -> Term tyname name uni fun ann -> Term tyname name uni fun' ann
@@ -8603,15 +8455,15 @@ normalizeTypesIn :: (HasUnique tyname TypeUnique, HasUnique name TermUnique, Mon
 
 -- | Normalize every <a>Kind</a> in a <a>Program</a>.
 normalizeTypesInProgram :: (HasUnique tyname TypeUnique, HasUnique name TermUnique, MonadNormalizeType uni m) => Program tyname name uni fun ann -> m (Program tyname name uni fun ann)
-class AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR | r_a7VY6 -> term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR
-_TypeError :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (TypeError term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR)
-_KindMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, Type TyName uni_a7TnP (), ExpectedShapeOr (Kind ()), Kind ())
-_TypeMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, term_a7TnO, ExpectedShapeOr (Type TyName uni_a7TnP ()), Normalized (Type TyName uni_a7TnP ()))
-_TyNameMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, TyName, TyName)
-_NameMismatch :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, Name, Name)
-_FreeTypeVariableE :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, TyName)
-_FreeVariableE :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, Name)
-_UnknownBuiltinFunctionE :: AsTypeError r_a7VY6 term_a7TnO uni_a7TnP fun_a7TnQ ann_a7TnR => Prism' r_a7VY6 (ann_a7TnR, fun_a7TnQ)
+class AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR | r_a7UN6 -> term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR
+_TypeError :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (TypeError term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR)
+_KindMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, Type TyName uni_a7ScP (), ExpectedShapeOr (Kind ()), Kind ())
+_TypeMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, term_a7ScO, ExpectedShapeOr (Type TyName uni_a7ScP ()), Normalized (Type TyName uni_a7ScP ()))
+_TyNameMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, TyName, TyName)
+_NameMismatch :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, Name, Name)
+_FreeTypeVariableE :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, TyName)
+_FreeVariableE :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, Name)
+_UnknownBuiltinFunctionE :: AsTypeError r_a7UN6 term_a7ScO uni_a7ScP fun_a7ScQ ann_a7ScR => Prism' r_a7UN6 (ann_a7ScR, fun_a7ScQ)
 data TypeError term uni fun ann
 data Error uni fun ann
 ParseErrorE :: !ParserErrorBundle -> Error uni fun ann
@@ -8619,39 +8471,39 @@ UniqueCoherencyErrorE :: !UniqueError ann -> Error uni fun ann
 TypeErrorE :: !TypeError (Term TyName Name uni fun ()) uni fun ann -> Error uni fun ann
 NormCheckErrorE :: !NormCheckError TyName Name uni fun ann -> Error uni fun ann
 FreeVariableErrorE :: !FreeVariableError -> Error uni fun ann
-class AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN | r_a7Web -> uni_a7TnL fun_a7TnM ann_a7TnN
-_Error :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (Error uni_a7TnL fun_a7TnM ann_a7TnN)
-_ParseErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web ParserErrorBundle
-_UniqueCoherencyErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (UniqueError ann_a7TnN)
-_TypeErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (TypeError (Term TyName Name uni_a7TnL fun_a7TnM ()) uni_a7TnL fun_a7TnM ann_a7TnN)
-_NormCheckErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web (NormCheckError TyName Name uni_a7TnL fun_a7TnM ann_a7TnN)
-_FreeVariableErrorE :: AsError r_a7Web uni_a7TnL fun_a7TnM ann_a7TnN => Prism' r_a7Web FreeVariableError
+class AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN | r_a7V3b -> uni_a7ScL fun_a7ScM ann_a7ScN
+_Error :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (Error uni_a7ScL fun_a7ScM ann_a7ScN)
+_ParseErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b ParserErrorBundle
+_UniqueCoherencyErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (UniqueError ann_a7ScN)
+_TypeErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (TypeError (Term TyName Name uni_a7ScL fun_a7ScM ()) uni_a7ScL fun_a7ScM ann_a7ScN)
+_NormCheckErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b (NormCheckError TyName Name uni_a7ScL fun_a7ScM ann_a7ScN)
+_FreeVariableErrorE :: AsError r_a7V3b uni_a7ScL fun_a7ScM ann_a7ScN => Prism' r_a7V3b FreeVariableError
 data NormCheckError tyname name uni fun ann
 BadType :: !ann -> !Type tyname uni ann -> !Text -> NormCheckError tyname name uni fun ann
 BadTerm :: !ann -> !Term tyname name uni fun ann -> !Text -> NormCheckError tyname name uni fun ann
-class AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX | r_a7VRI -> tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX
-_NormCheckError :: AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX => Prism' r_a7VRI (NormCheckError tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX)
-_BadType :: AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX => Prism' r_a7VRI (ann_a7TnX, Type tyname_a7TnT uni_a7TnV ann_a7TnX, Text)
-_BadTerm :: AsNormCheckError r_a7VRI tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX => Prism' r_a7VRI (ann_a7TnX, Term tyname_a7TnT name_a7TnU uni_a7TnV fun_a7TnW ann_a7TnX, Text)
+class AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX | r_a7UGI -> tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX
+_NormCheckError :: AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX => Prism' r_a7UGI (NormCheckError tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX)
+_BadType :: AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX => Prism' r_a7UGI (ann_a7ScX, Type tyname_a7ScT uni_a7ScV ann_a7ScX, Text)
+_BadTerm :: AsNormCheckError r_a7UGI tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX => Prism' r_a7UGI (ann_a7ScX, Term tyname_a7ScT name_a7ScU uni_a7ScV fun_a7ScW ann_a7ScX, Text)
 data UniqueError ann
 MultiplyDefined :: !Unique -> !ann -> !ann -> UniqueError ann
 IncoherentUsage :: !Unique -> !ann -> !ann -> UniqueError ann
 FreeVariable :: !Unique -> !ann -> UniqueError ann
-class AsUniqueError r_a7VLM ann_a7TnY | r_a7VLM -> ann_a7TnY
-_UniqueError :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (UniqueError ann_a7TnY)
-_MultiplyDefined :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_IncoherentUsage :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_FreeVariable :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY)
+class AsUniqueError r_a7UAM ann_a7ScY | r_a7UAM -> ann_a7ScY
+_UniqueError :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (UniqueError ann_a7ScY)
+_MultiplyDefined :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_IncoherentUsage :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_FreeVariable :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY)
 
 -- | We cannot do a correct translation to or from de Bruijn indices if the
 --   program is not well-scoped. So we throw an error in such a case.
 data FreeVariableError
 FreeUnique :: !Unique -> FreeVariableError
 FreeIndex :: !Index -> FreeVariableError
-class AsFreeVariableError r_a1LDj
-_FreeVariableError :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj FreeVariableError
-_FreeUnique :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Unique
-_FreeIndex :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Index
+class AsFreeVariableError r_a1KDI
+_FreeVariableError :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI FreeVariableError
+_FreeUnique :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Unique
+_FreeIndex :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Index
 
 -- | A non-transformer version of <a>QuoteT</a>.
 type Quote = QuoteT Identity
@@ -8796,12 +8648,12 @@ instance (tyname GHC.Types.~ PlutusCore.Name.Unique.TyName, PlutusCore.Builtin.K
 instance forall kind (name :: PlutusCore.Builtin.Polymorphism.TyNameRep kind) (text :: GHC.Types.Symbol) (uniq :: GHC.TypeNats.Nat) tyname (uni :: * -> *) a. (name GHC.Types.~ 'PlutusCore.Builtin.Polymorphism.TyNameRep text uniq, GHC.TypeLits.KnownSymbol text, GHC.TypeNats.KnownNat uniq, PlutusCore.Builtin.KnownKind.KnownKind kind, PlutusCore.Builtin.KnownTypeAst.KnownTypeAst tyname uni a) => PlutusCore.Builtin.KnownTypeAst.KnownTypeAst tyname uni (PlutusCore.Examples.Builtins.MetaForall name a)
 instance forall k term a (name :: k). PlutusCore.Builtin.KnownType.MakeKnownIn PlutusCore.Default.Universe.DefaultUni term a => PlutusCore.Builtin.KnownType.MakeKnownIn PlutusCore.Default.Universe.DefaultUni term (PlutusCore.Examples.Builtins.MetaForall name a)
 instance Prettyprinter.Internal.Pretty PlutusCore.Examples.Builtins.ExtensionFun
-instance Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Examples.Builtins.ExtensionFun)
+instance Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Examples.Builtins.ExtensionFun)
 instance (GHC.Enum.Bounded a, GHC.Enum.Bounded b) => GHC.Enum.Bounded (Data.Either.Either a b)
 instance (GHC.Classes.Eq a, GHC.Classes.Eq b, GHC.Enum.Bounded a, GHC.Enum.Bounded b, GHC.Enum.Enum a, GHC.Enum.Enum b) => GHC.Enum.Enum (Data.Either.Either a b)
 instance (GHC.Enum.Bounded a, GHC.Enum.Bounded b, GHC.Ix.Ix a, GHC.Ix.Ix b) => GHC.Ix.Ix (Data.Either.Either a b)
-instance (PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni fun1, PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni fun2, Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun1), Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun2)) => PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni (Data.Either.Either fun1 fun2)
-instance (Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun1), Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun2)) => Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant (Data.Either.Either fun1 fun2))
+instance (PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni fun1, PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni fun2, Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun1), Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun2)) => PlutusCore.Builtin.Meaning.ToBuiltinMeaning uni (Data.Either.Either fun1 fun2)
+instance (Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun1), Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant fun2)) => Data.Default.Class.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant (Data.Either.Either fun1 fun2))
 instance (tyname GHC.Types.~ PlutusCore.Name.Unique.TyName) => PlutusCore.Builtin.KnownTypeAst.KnownTypeAst tyname PlutusCore.Default.Universe.DefaultUni GHC.Base.Void
 instance (PlutusCore.Core.Type.UniOf term GHC.Types.~ PlutusCore.Default.Universe.DefaultUni) => PlutusCore.Builtin.KnownType.MakeKnownIn PlutusCore.Default.Universe.DefaultUni term GHC.Base.Void
 instance (PlutusCore.Core.Type.UniOf term GHC.Types.~ PlutusCore.Default.Universe.DefaultUni) => PlutusCore.Builtin.KnownType.ReadKnownIn PlutusCore.Default.Universe.DefaultUni term GHC.Base.Void
@@ -8821,9 +8673,9 @@ module PlutusCore.Examples.Data.List
 -- | Monomorphic <tt>map</tt> over built-in lists.
 --   
 --   /(a :: *) -&gt; (f : a -&gt; a) -&gt; fix {list a} {list a} (rec :
---   list a -&gt; list a) (xs : list a) -&gt; matchList {a} xs {list a} xs
+--   list a -&gt; list a) (xs : list a) -&gt; caseList {a} xs {list a} xs
 --   (x : a) (xs' : list a) -&gt; cons {a} (f x) (rec xs')
-omapList :: MatchOption -> Term TyName Name DefaultUni (Either DefaultFun ExtensionFun) ()
+omapList :: Term TyName Name DefaultUni (Either DefaultFun ExtensionFun) ()
 
 module PlutusCore.Examples.Data.Data
 
@@ -8847,7 +8699,7 @@ module PlutusCore.Examples.Data.Data
 --        (fI : integer -&gt; r)
 --        (fB : bytestring -&gt; r) -&gt;
 --            fix {data} {r} \(rec : data -&gt; r) (d : data) -&gt;
---                matchData
+--                caseData
 --                    d
 --                    {r}
 --                    (\(i : integer) (ds : list data) -&gt; fConstr i (omapList {data} rec ds)
@@ -8857,7 +8709,7 @@ module PlutusCore.Examples.Data.Data
 --                    fI
 --                    fB
 --   </pre>
-ofoldrData :: MatchOption -> Term TyName Name DefaultUni (Either DefaultFun ExtensionFun) ()
+ofoldrData :: Term TyName Name DefaultUni (Either DefaultFun ExtensionFun) ()
 
 -- | Just a random <a>Data</a> object.
 exampleData :: Term tyname Name DefaultUni (Either DefaultFun ExtensionFun) ()
@@ -9000,9 +8852,9 @@ Program :: ann -> Version -> Term name uni fun ann -> Program name uni fun ann
 [_progAnn] :: Program name uni fun ann -> ann
 [_progVer] :: Program name uni fun ann -> Version
 [_progTerm] :: Program name uni fun ann -> Term name uni fun ann
-progAnn :: forall name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj. Lens' (Program name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj) ann_aa6hj
-progVer :: forall name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj. Lens' (Program name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj) Version
-progTerm :: forall name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj name_aa73W uni_aa73X fun_aa73Y. Lens (Program name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj) (Program name_aa73W uni_aa73X fun_aa73Y ann_aa6hj) (Term name_aa6hg uni_aa6hh fun_aa6hi ann_aa6hj) (Term name_aa73W uni_aa73X fun_aa73Y ann_aa6hj)
+progAnn :: forall name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj. Lens' (Program name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj) ann_a9Vbj
+progVer :: forall name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj. Lens' (Program name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj) Version
+progTerm :: forall name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj name_a9VXW uni_a9VXX fun_a9VXY. Lens (Program name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj) (Program name_a9VXW uni_a9VXX fun_a9VXY ann_a9Vbj) (Term name_a9Vbg uni_a9Vbh fun_a9Vbi ann_a9Vbj) (Term name_a9VXW uni_a9VXX fun_a9VXY ann_a9Vbj)
 bindFunM :: Monad m => (ann -> fun -> m (Term name uni fun' ann)) -> Term name uni fun ann -> m (Term name uni fun' ann)
 bindFun :: (ann -> fun -> Term name uni fun' ann) -> Term name uni fun ann -> Term name uni fun' ann
 mapFun :: (ann -> fun -> fun') -> Term name uni fun ann -> Term name uni fun' ann
@@ -9015,8 +8867,8 @@ data UVarDecl name ann
 UVarDecl :: ann -> name -> UVarDecl name ann
 [_uvarDeclAnn] :: UVarDecl name ann -> ann
 [_uvarDeclName] :: UVarDecl name ann -> name
-uvarDeclName :: forall name_aa74l ann_aa74m name_aa7lb. Lens (UVarDecl name_aa74l ann_aa74m) (UVarDecl name_aa7lb ann_aa74m) name_aa74l name_aa7lb
-uvarDeclAnn :: forall name_aa74l ann_aa74m ann_aa7la. Lens (UVarDecl name_aa74l ann_aa74m) (UVarDecl name_aa74l ann_aa7la) ann_aa74m ann_aa7la
+uvarDeclName :: forall name_a9VYl ann_a9VYm name_a9Wfb. Lens (UVarDecl name_a9VYl ann_a9VYm) (UVarDecl name_a9Wfb ann_a9VYm) name_a9VYl name_a9Wfb
+uvarDeclAnn :: forall name_a9VYl ann_a9VYm ann_a9Wfa. Lens (UVarDecl name_a9VYl ann_a9VYm) (UVarDecl name_a9VYl ann_a9Wfa) ann_a9VYm ann_a9Wfa
 instance GHC.Generics.Generic (UntypedPlutusCore.Core.Type.UVarDecl name ann)
 instance (GHC.Show.Show ann, GHC.Show.Show name) => GHC.Show.Show (UntypedPlutusCore.Core.Type.UVarDecl name ann)
 instance GHC.Base.Functor (UntypedPlutusCore.Core.Type.UVarDecl name)
@@ -9061,13 +8913,6 @@ termSubtermsDeep :: Fold (Term name uni fun ann) (Term name uni fun ann)
 -- | Get all the transitive child <a>Unique</a>s of the given <a>Term</a>.
 termUniquesDeep :: HasUniques (Term name uni fun ann) => Fold (Term name uni fun ann) Unique
 
-module UntypedPlutusCore.Core.Instance.Scoping
-instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.Reference PlutusCore.Name.Unique.Name (UntypedPlutusCore.Core.Type.Term name uni fun)
-instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.EstablishScoping (UntypedPlutusCore.Core.Type.Term name uni fun)
-instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.EstablishScoping (UntypedPlutusCore.Core.Type.Program name uni fun)
-instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.CollectScopeInfo (UntypedPlutusCore.Core.Type.Term name uni fun)
-instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.CollectScopeInfo (UntypedPlutusCore.Core.Type.Program name uni fun)
-
 module UntypedPlutusCore.Core
 
 -- | Using 4 bits to encode term tags.
@@ -9108,11 +8953,11 @@ data UniqueError ann
 MultiplyDefined :: !Unique -> !ann -> !ann -> UniqueError ann
 IncoherentUsage :: !Unique -> !ann -> !ann -> UniqueError ann
 FreeVariable :: !Unique -> !ann -> UniqueError ann
-class AsUniqueError r_a7VLM ann_a7TnY | r_a7VLM -> ann_a7TnY
-_UniqueError :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (UniqueError ann_a7TnY)
-_MultiplyDefined :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_IncoherentUsage :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY, ann_a7TnY)
-_FreeVariable :: AsUniqueError r_a7VLM ann_a7TnY => Prism' r_a7VLM (Unique, ann_a7TnY)
+class AsUniqueError r_a7UAM ann_a7ScY | r_a7UAM -> ann_a7ScY
+_UniqueError :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (UniqueError ann_a7ScY)
+_MultiplyDefined :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_IncoherentUsage :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY, ann_a7ScY)
+_FreeVariable :: AsUniqueError r_a7UAM ann_a7ScY => Prism' r_a7UAM (Unique, ann_a7ScY)
 
 module PlutusCore.Compiler.Erase
 
@@ -9124,6 +8969,13 @@ module PlutusCore.Compiler.Erase
 --   <a>eraseTerm</a> for (Named-)DeBruijn terms.
 eraseTerm :: HasUnique name TermUnique => Term tyname name uni fun ann -> Term name uni fun ann
 eraseProgram :: HasUnique name TermUnique => Program tyname name uni fun ann -> Program name uni fun ann
+
+module PlutusCore.Compiler.Types
+newtype UPLCSimplifierTrace name uni fun a
+UPLCSimplifierTrace :: [Term name uni fun a] -> UPLCSimplifierTrace name uni fun a
+[uplcSimplifierTrace] :: UPLCSimplifierTrace name uni fun a -> [Term name uni fun a]
+initUPLCSimplifierTrace :: UPLCSimplifierTrace name uni fun a
+type Compiling m uni fun name a = (ToBuiltinMeaning uni fun, MonadQuote m, HasUnique name TermUnique, Ord name, Typeable name, Hashable fun)
 
 module UntypedPlutusCore.Core.Zip
 
@@ -9205,10 +9057,10 @@ data FakeNamedDeBruijn
 data FreeVariableError
 FreeUnique :: !Unique -> FreeVariableError
 FreeIndex :: !Index -> FreeVariableError
-class AsFreeVariableError r_a1LDj
-_FreeVariableError :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj FreeVariableError
-_FreeUnique :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Unique
-_FreeIndex :: AsFreeVariableError r_a1LDj => Prism' r_a1LDj Index
+class AsFreeVariableError r_a1KDI
+_FreeVariableError :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI FreeVariableError
+_FreeUnique :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Unique
+_FreeIndex :: AsFreeVariableError r_a1KDI => Prism' r_a1KDI Index
 
 -- | Convert a <a>Term</a> with <a>Name</a>s into a <a>Term</a> with
 --   <a>DeBruijn</a>s. Will throw an error if a free variable is
@@ -9384,26 +9236,11 @@ writeCounter :: forall m n. PrimMonad m => StepCounter n (PrimState m) -> Int ->
 -- | Modify the value of a counter. Returns the modified value.
 modifyCounter :: PrimMonad m => Int -> (Word8 -> Word8) -> StepCounter n (PrimState m) -> m Word8
 
--- | The type of natural numbers in Peano form.
-data Peano
-Z :: Peano
-S :: Peano -> Peano
-type family NatToPeano n
-class Applicative f => UpwardsM f n
-
--- | <tt>upwardsM i k</tt> means <tt>k i *&gt; k (i + 1) *&gt; ... *&gt; k
---   (i + n - 1)</tt>. We use this function in order to statically unroll a
---   loop in <a>itraverseCounter_</a> through instance resolution. This
---   makes <tt>validation</tt> benchmarks a couple of percent faster.
-upwardsM :: UpwardsM f n => Int -> (Int -> f ()) -> f ()
+-- | Traverse the counters with an effectful function.
+itraverseCounter_ :: forall n m. (KnownNat n, PrimMonad m) => (Int -> Word8 -> m ()) -> StepCounter n (PrimState m) -> m ()
 
 -- | Traverse the counters with an effectful function.
-itraverseCounter_ :: forall n m. (UpwardsM m (NatToPeano n), PrimMonad m) => (Int -> Word8 -> m ()) -> StepCounter n (PrimState m) -> m ()
-
--- | Traverse the counters with an effectful function.
-iforCounter_ :: (UpwardsM m (NatToPeano n), PrimMonad m) => StepCounter n (PrimState m) -> (Int -> Word8 -> m ()) -> m ()
-instance GHC.Base.Applicative f => UntypedPlutusCore.Evaluation.Machine.Cek.StepCounter.UpwardsM f 'UntypedPlutusCore.Evaluation.Machine.Cek.StepCounter.Z
-instance UntypedPlutusCore.Evaluation.Machine.Cek.StepCounter.UpwardsM f n => UntypedPlutusCore.Evaluation.Machine.Cek.StepCounter.UpwardsM f ('UntypedPlutusCore.Evaluation.Machine.Cek.StepCounter.S n)
+iforCounter_ :: (KnownNat n, PrimMonad m) => StepCounter n (PrimState m) -> (Int -> Word8 -> m ()) -> m ()
 
 
 -- | The CEK machine.
@@ -9616,10 +9453,6 @@ type GivenCekSpender uni fun s = (?cekBudgetSpender :: (CekBudgetSpender uni fun
 -- | A set of <a>Word8</a> counters that is used in the CEK machine to
 --   count steps.
 data StepCounter (n :: Nat) s
-
--- | The number of step counters that we need, should be the same as the
---   number of constructors of <a>StepKind</a>.
-type NumberOfStepCounters = CountConstructorsEnum (Rep StepKind)
 
 -- | The total number of counters that we need, one extra for the total
 --   counter. See Note [Structure of the step counter]
@@ -10148,10 +9981,6 @@ type GivenCekSpender uni fun s = (?cekBudgetSpender :: (CekBudgetSpender uni fun
 --   count steps.
 data StepCounter (n :: Nat) s
 
--- | The number of step counters that we need, should be the same as the
---   number of constructors of <a>StepKind</a>.
-type NumberOfStepCounters = CountConstructorsEnum (Rep StepKind)
-
 -- | The total number of counters that we need, one extra for the total
 --   counter. See Note [Structure of the step counter]
 type CounterSize = NumberOfStepCounters + 1
@@ -10438,18 +10267,6 @@ class Eq a => Hashable a
 --   things with built-in types and functions in them.
 type ThrowableBuiltins uni fun = (PrettyUni uni, Pretty fun, Typeable uni, Typeable fun)
 
-module UntypedPlutusCore.Mark
-
--- | Marks all the <a>Unique</a>s in a term as used, so they will not be
---   generated in future. Useful if you have a term which was not generated
---   in <a>Quote</a>.
-markNonFreshTerm :: (HasUniques (Term name uni fun ann), MonadQuote m) => Term name uni fun ann -> m ()
-
--- | Marks all the <a>Unique</a>s in a program as used, so they will not be
---   generated in future. Useful if you have a program which was not
---   generated in <a>Quote</a>.
-markNonFreshProgram :: (HasUnique name TermUnique, MonadQuote m) => Program name uni fun ann -> m ()
-
 module UntypedPlutusCore.MkUPlc
 
 -- | An untyped "variable declaration", i.e. a name for a variable.
@@ -10457,8 +10274,8 @@ data UVarDecl name ann
 UVarDecl :: ann -> name -> UVarDecl name ann
 [_uvarDeclAnn] :: UVarDecl name ann -> ann
 [_uvarDeclName] :: UVarDecl name ann -> name
-uvarDeclName :: forall name_aa74l ann_aa74m name_aa7lb. Lens (UVarDecl name_aa74l ann_aa74m) (UVarDecl name_aa7lb ann_aa74m) name_aa74l name_aa7lb
-uvarDeclAnn :: forall name_aa74l ann_aa74m ann_aa7la. Lens (UVarDecl name_aa74l ann_aa74m) (UVarDecl name_aa74l ann_aa7la) ann_aa74m ann_aa7la
+uvarDeclName :: forall name_a9VYl ann_a9VYm name_a9Wfb. Lens (UVarDecl name_a9VYl ann_a9VYm) (UVarDecl name_a9Wfb ann_a9VYm) name_a9VYl name_a9Wfb
+uvarDeclAnn :: forall name_a9VYl ann_a9VYm ann_a9Wfa. Lens (UVarDecl name_a9VYl ann_a9VYm) (UVarDecl name_a9VYl ann_a9Wfa) ann_a9VYm ann_a9Wfa
 
 -- | Make a <a>Var</a> referencing the given <tt>VarDecl</tt>.
 mkVar :: ann -> UVarDecl name ann -> Term name uni fun ann
@@ -10530,17 +10347,6 @@ instance Prettyprinter.Internal.Pretty UntypedPlutusCore.Purity.WorkFreedom
 instance Prettyprinter.Internal.Pretty UntypedPlutusCore.Purity.Purity
 
 
--- | The internal module of the renamer that defines the actual algorithms,
---   but not the user-facing API.
-module UntypedPlutusCore.Rename.Internal
-
--- | Rename a <a>Term</a> in the <tt>RenameM</tt> monad.
-renameTermM :: (MonadRename m, HasUniques (Term name uni fun ann)) => Term name uni fun ann -> m (Term name uni fun ann)
-
--- | Rename a <a>Program</a> in the <tt>RenameM</tt> monad.
-renameProgramM :: (MonadRename m, HasUniques (Program name uni fun ann)) => Program name uni fun ann -> m (Program name uni fun ann)
-
-
 -- | The user-facing API of the untyped renamer. See PlutusCore.Rename for
 --   details.
 module UntypedPlutusCore.Rename
@@ -10588,8 +10394,8 @@ data CompilationOpts name fun a
 CompilationOpts :: SimplifyOpts name a -> BuiltinSemanticsVariant fun -> CompilationOpts name fun a
 [_coSimplifyOpts] :: CompilationOpts name fun a -> SimplifyOpts name a
 [_coBuiltinSemanticsVariant] :: CompilationOpts name fun a -> BuiltinSemanticsVariant fun
-coSimplifyOpts :: forall name_abdhX fun_abdhY a_abdhZ name_abdiQ a_abdiR. Lens (CompilationOpts name_abdhX fun_abdhY a_abdhZ) (CompilationOpts name_abdiQ fun_abdhY a_abdiR) (SimplifyOpts name_abdhX a_abdhZ) (SimplifyOpts name_abdiQ a_abdiR)
-coBuiltinSemanticsVariant :: forall name_abdhX fun_abdhY a_abdhZ fun_abdiP. Lens (CompilationOpts name_abdhX fun_abdhY a_abdhZ) (CompilationOpts name_abdhX fun_abdiP a_abdhZ) (BuiltinSemanticsVariant fun_abdhY) (BuiltinSemanticsVariant fun_abdiP)
+coSimplifyOpts :: forall name_ab0OP fun_ab0OQ a_ab0OR name_ab0PI a_ab0PJ. Lens (CompilationOpts name_ab0OP fun_ab0OQ a_ab0OR) (CompilationOpts name_ab0PI fun_ab0OQ a_ab0PJ) (SimplifyOpts name_ab0OP a_ab0OR) (SimplifyOpts name_ab0PI a_ab0PJ)
+coBuiltinSemanticsVariant :: forall name_ab0OP fun_ab0OQ a_ab0OR fun_ab0PH. Lens (CompilationOpts name_ab0OP fun_ab0OQ a_ab0OR) (CompilationOpts name_ab0OP fun_ab0PH a_ab0OR) (BuiltinSemanticsVariant fun_ab0OQ) (BuiltinSemanticsVariant fun_ab0PH)
 defaultCompilationOpts :: Default (BuiltinSemanticsVariant fun) => CompilationOpts name fun a
 
 module UntypedPlutusCore.Size
@@ -10606,154 +10412,6 @@ programSize :: Program name uni fun ann -> Size
 -- | Compute the size of the serialized form of a value.
 serialisedSize :: Flat a => a -> Integer
 
-module UntypedPlutusCore.Transform.Simplifier
-newtype SimplifierT name uni fun ann m a
-SimplifierT :: StateT (SimplifierTrace name uni fun ann) m a -> SimplifierT name uni fun ann m a
-[getSimplifierT] :: SimplifierT name uni fun ann m a -> StateT (SimplifierTrace name uni fun ann) m a
-newtype SimplifierTrace name uni fun a
-SimplifierTrace :: [Simplification name uni fun a] -> SimplifierTrace name uni fun a
-[simplifierTrace] :: SimplifierTrace name uni fun a -> [Simplification name uni fun a]
-data SimplifierStage
-FloatDelay :: SimplifierStage
-ForceDelay :: SimplifierStage
-CaseOfCase :: SimplifierStage
-CaseReduce :: SimplifierStage
-Inline :: SimplifierStage
-CSE :: SimplifierStage
-data Simplification name uni fun a
-Simplification :: Term name uni fun a -> SimplifierStage -> Term name uni fun a -> Simplification name uni fun a
-[beforeAST] :: Simplification name uni fun a -> Term name uni fun a
-[stage] :: Simplification name uni fun a -> SimplifierStage
-[afterAST] :: Simplification name uni fun a -> Term name uni fun a
-runSimplifierT :: SimplifierT name uni fun ann m a -> m (a, SimplifierTrace name uni fun ann)
-evalSimplifierT :: Monad m => SimplifierT name uni fun ann m a -> m a
-execSimplifierT :: Monad m => SimplifierT name uni fun ann m a -> m (SimplifierTrace name uni fun ann)
-type Simplifier name uni fun ann = SimplifierT name uni fun ann Identity
-runSimplifier :: Simplifier name uni fun ann a -> (a, SimplifierTrace name uni fun ann)
-evalSimplifier :: Simplifier name uni fun ann a -> a
-execSimplifier :: Simplifier name uni fun ann a -> SimplifierTrace name uni fun ann
-initSimplifierTrace :: SimplifierTrace name uni fun a
-recordSimplification :: Monad m => Term name uni fun a -> SimplifierStage -> Term name uni fun a -> SimplifierT name uni fun a m ()
-instance Control.Monad.Trans.Class.MonadTrans (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann)
-instance GHC.Base.Monad m => GHC.Base.Monad (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance GHC.Base.Monad m => GHC.Base.Applicative (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance GHC.Base.Functor m => GHC.Base.Functor (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance PlutusCore.Quote.MonadQuote m => PlutusCore.Quote.MonadQuote (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-
-
--- | An inlining pass.
---   
---   This pass is essentially a copy of the PIR inliner, and should be KEPT
---   IN SYNC with it. It's hard to do this with true abstraction, so we
---   just have to keep two copies reasonably similar.
---   
---   However, there are some differences. In the interests of making it
---   easier to keep things in sync, these are explicitly listed in Note
---   [Differences from PIR inliner]. If you add another difference, please
---   note it there! Obviously fewer differences is better.
---   
---   See Note [The problem of inlining destructors] for why this pass
---   exists.
-module UntypedPlutusCore.Transform.Inline
-
--- | Inline simple bindings. Relies on global uniqueness, and preserves it.
---   See Note [Inlining and global uniqueness]
-inline :: forall name uni fun m a. ExternalConstraints name uni fun m => Bool -> InlineHints name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
-newtype InlineHints name a
-InlineHints :: (a -> name -> Bool) -> InlineHints name a
-[shouldInline] :: InlineHints name a -> a -> name -> Bool
-instance GHC.Base.Semigroup (UntypedPlutusCore.Transform.Inline.S name uni fun a)
-instance GHC.Base.Monoid (UntypedPlutusCore.Transform.Inline.S name uni fun a)
-instance GHC.Base.Monoid (UntypedPlutusCore.Transform.Inline.TermEnv name uni fun a)
-instance GHC.Base.Semigroup (UntypedPlutusCore.Transform.Inline.TermEnv name uni fun a)
-instance GHC.Base.Monoid (UntypedPlutusCore.Transform.Inline.Subst name uni fun a)
-instance GHC.Base.Semigroup (UntypedPlutusCore.Transform.Inline.Subst name uni fun a)
-instance GHC.Generics.Generic (UntypedPlutusCore.Transform.Inline.Subst name uni fun a)
-
-module UntypedPlutusCore.Transform.ForceDelay
-
--- | Traverses the term, for each node applying the optimisation detailed
---   above. For implementation details see <a>optimisationProcedure</a>.
-forceDelay :: Monad m => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
-
-
--- | The Float Delay optimization floats <a>Delay</a> from arguments into
---   function bodies, if possible. It turns <tt>(n -&gt; ...Force n...Force
---   n...) (Delay arg)</tt> into <tt>(n -&gt; ...Force (Delay n)...Force
---   (Delay n)...) arg</tt>.
---   
---   The above transformation is performed if:
---   
---   <ul>
---   <li>All occurrences of <tt>arg</tt> are under <tt>Force</tt>.</li>
---   <li><tt>arg</tt> is essentially work-free.</li>
---   </ul>
---   
---   This achieves a similar effect to Plutonomy's "Split Delay"
---   optimization. The difference is that Split Delay simply splits the
---   <tt>Delay</tt> argument into multiple arguments, turning the above
---   example into <tt>(m -&gt; (n -&gt; ...Force n...Force n...) (Delay m))
---   arg</tt>, and then relies on other optimizations to simplify it
---   further. Specifically, once the inliner inlines <tt>Delay m</tt>, it
---   will be identical to the result of Float Delay.
---   
---   The advantages of Float Delay are:
---   
---   <ul>
---   <li>It doesn't rely on the inliner. In this example, Split Delay
---   relies on the inliner to inline <tt>Delay m</tt>, but there's no
---   guarantee that the inliner will do so, because inlining it may
---   increase the program size.</li>
---   </ul>
---   
---   We can potentially modify the inliner such that it is aware of Float
---   Delay and Force-Delay Cancel, and makes inlining decisions with these
---   other optimizations in mind. The problem is that, not only does this
---   makes the inlining heuristics much more complex, but it could easily
---   lead to code duplication. Other optimizations often need to do some
---   calculation in order to make certain optimization decisions (e.g., in
---   this case, we want to check whether all occurrences of <tt>arg</tt>
---   are under <tt>Force</tt>), and if we rely on the inliner to inline the
---   <tt>Delay</tt>, then the same check would need to be performed by the
---   inliner.
---   
---   <ul>
---   <li>Because Force Delay requires that all occurrences of <tt>arg</tt>
---   are under <tt>Force</tt>, it guarantees to not increase the size or
---   the cost of the program. This is not the case with Split Delay: in
---   this example, if the occurrences of <tt>n</tt> are not under
---   <tt>Force</tt>, then Split Delay may increase the size of the program,
---   regardless of whether or not <tt>Delay m</tt> is inlined. If <tt>Delay
---   m</tt> is not inlined, then it will also increase the cost of the
---   program, due to the additional application.</li>
---   </ul>
---   
---   The alternative approach that always floats the <tt>Delay</tt>
---   regardless of whether or not all occurences of <tt>arg</tt> are under
---   <tt>Force</tt> was implemented and tested, and it is strictly worse
---   than Float Delay on our current test suite (specifically, Split Delay
---   causes one test case to have a slightly bigger program, and everything
---   else is equal).
---   
---   Why is this optimization performed on UPLC, not PIR?
---   
---   <ol>
---   <li>Not only are the types and let-bindings in PIR not useful for this
---   optimization, they can also get in the way. For example, we cannot
---   transform <tt>let f = /a. ...a... in ...{f t1}...{f t2}...</tt> into
---   <tt>ket f = ...a... in ...f...f...</tt>.</li>
---   <li>This optimization mainly interacts with ForceDelayCancel and the
---   inliner, and both are part of the UPLC simplifier.</li>
---   </ol>
-module UntypedPlutusCore.Transform.FloatDelay
-floatDelay :: (MonadQuote m, Rename (Term name uni fun a), HasUnique name TermUnique) => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
-
-module UntypedPlutusCore.Transform.Cse
-cse :: (MonadQuote m, Hashable (Term Name uni fun ()), Rename (Term Name uni fun ann), ToBuiltinMeaning uni fun) => BuiltinSemanticsVariant fun -> Term Name uni fun ann -> SimplifierT Name uni fun ann m (Term Name uni fun ann)
-
-module UntypedPlutusCore.Transform.CaseReduce
-caseReduce :: Monad m => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
-
 
 -- | A special case of case-of-case optimisation: transforms
 --   
@@ -10764,12 +10422,12 @@ caseReduce :: Monad m => Term name uni fun a -> SimplifierT name uni fun a m (Te
 --   into
 --   
 --   <pre>
---   force ifThenElse b (delay (case (constr t) alts)) (delay (case (constr f) alts))
+--   force ifThenElse b (case (constr t) alts) (case (constr f) alts)
 --   </pre>
 --   
 --   This is always an improvement.
 module UntypedPlutusCore.Transform.CaseOfCase
-caseOfCase :: fun ~ DefaultFun => Monad m => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+caseOfCase :: fun ~ DefaultFun => Term name uni fun a -> Term name uni fun a
 
 module UntypedPlutusCore
 
@@ -10800,15 +10458,14 @@ SimplifyOpts :: Int -> Int -> Bool -> InlineHints name a -> Bool -> SimplifyOpts
 [_soConservativeOpts] :: SimplifyOpts name a -> Bool
 [_soInlineHints] :: SimplifyOpts name a -> InlineHints name a
 [_soInlineConstants] :: SimplifyOpts name a -> Bool
-soMaxSimplifierIterations :: forall name_abcA5 a_abcA6. Lens' (SimplifyOpts name_abcA5 a_abcA6) Int
-soMaxCseIterations :: forall name_abcA5 a_abcA6. Lens' (SimplifyOpts name_abcA5 a_abcA6) Int
-soInlineHints :: forall name_abcA5 a_abcA6 name_abcCU a_abcCV. Lens (SimplifyOpts name_abcA5 a_abcA6) (SimplifyOpts name_abcCU a_abcCV) (InlineHints name_abcA5 a_abcA6) (InlineHints name_abcCU a_abcCV)
-soConservativeOpts :: forall name_abcA5 a_abcA6. Lens' (SimplifyOpts name_abcA5 a_abcA6) Bool
-soInlineConstants :: forall name_abcA5 a_abcA6. Lens' (SimplifyOpts name_abcA5 a_abcA6) Bool
+soMaxSimplifierIterations :: forall name_ab06X a_ab06Y. Lens' (SimplifyOpts name_ab06X a_ab06Y) Int
+soMaxCseIterations :: forall name_ab06X a_ab06Y. Lens' (SimplifyOpts name_ab06X a_ab06Y) Int
+soInlineHints :: forall name_ab06X a_ab06Y name_ab09M a_ab09N. Lens (SimplifyOpts name_ab06X a_ab06Y) (SimplifyOpts name_ab09M a_ab09N) (InlineHints name_ab06X a_ab06Y) (InlineHints name_ab09M a_ab09N)
+soConservativeOpts :: forall name_ab06X a_ab06Y. Lens' (SimplifyOpts name_ab06X a_ab06Y) Bool
+soInlineConstants :: forall name_ab06X a_ab06Y. Lens' (SimplifyOpts name_ab06X a_ab06Y) Bool
 defaultSimplifyOpts :: SimplifyOpts name a
-simplifyTerm :: forall name uni fun m a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> m (Term name uni fun a)
-simplifyProgram :: forall name uni fun m a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a)
-simplifyProgramWithTrace :: forall name uni fun m a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a, SimplifierTrace name uni fun a)
+simplifyTerm :: forall name uni fun m a. (Compiling m uni fun name a, MonadState (UPLCSimplifierTrace name uni fun a) m) => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> m (Term name uni fun a)
+simplifyProgram :: forall name uni fun m a. (Compiling m uni fun name a, MonadState (UPLCSimplifierTrace name uni fun a) m) => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a)
 newtype InlineHints name a
 InlineHints :: (a -> name -> Bool) -> InlineHints name a
 [shouldInline] :: InlineHints name a -> a -> name -> Bool
@@ -10872,7 +10529,9 @@ data DefaultFun
 module PlutusCore.Compiler
 
 -- | Compile a PLC term to UPLC, and optimize it.
-compileTerm :: (Compiling m uni fun name a, MonadReader (CompilationOpts name fun a) m) => Term tyname name uni fun a -> m (Term name uni fun a)
+compileTerm :: (Compiling m uni fun name a, MonadReader (CompilationOpts name fun a) m, MonadState (UPLCSimplifierTrace name uni fun a) m) => Term tyname name uni fun a -> m (Term name uni fun a)
 
 -- | Compile a PLC program to UPLC, and optimize it.
-compileProgram :: (Compiling m uni fun name a, MonadReader (CompilationOpts name fun a) m) => Program tyname name uni fun a -> m (Program name uni fun a)
+compileProgram :: (Compiling m uni fun name a, MonadReader (CompilationOpts name fun a) m, MonadState (UPLCSimplifierTrace name uni fun a) m) => Program tyname name uni fun a -> m (Program name uni fun a)
+runCompile :: CompilationOpts name fun a -> Compile m name uni fun a b -> m (b, UPLCSimplifierTrace name uni fun a)
+evalCompile :: Functor m => CompilationOpts name fun a -> Compile m name uni fun a b -> m b

@@ -6,7 +6,7 @@
 --   
 --   Libraries for Plutus Tx and its prelude
 @package plutus-tx
-@version 1.40.0.0
+@version 1.36.0.0
 
 module Data.Aeson.Extra
 
@@ -617,7 +617,6 @@ null :: BuiltinList a -> BuiltinBool
 head :: BuiltinList a -> a
 tail :: BuiltinList a -> BuiltinList a
 chooseList :: BuiltinList a -> b -> b -> b
-caseList' :: forall a r. r -> (a -> BuiltinList a -> r) -> BuiltinList a -> r
 mkNilData :: BuiltinUnit -> BuiltinList BuiltinData
 mkNilPairData :: BuiltinUnit -> BuiltinList (BuiltinPair BuiltinData BuiltinData)
 mkCons :: a -> BuiltinList a -> BuiltinList a
@@ -644,7 +643,6 @@ builtinDataToData :: BuiltinData -> Data
 -- | Convert a <a>Data</a> into a <a>BuiltinData</a>. Only works off-chain.
 dataToBuiltinData :: Data -> BuiltinData
 chooseData :: forall a. BuiltinData -> a -> a -> a -> a -> a -> a
-caseData' :: (Integer -> BuiltinList BuiltinData -> r) -> (BuiltinList (BuiltinPair BuiltinData BuiltinData) -> r) -> (BuiltinList BuiltinData -> r) -> (Integer -> r) -> (BuiltinByteString -> r) -> BuiltinData -> r
 mkConstr :: BuiltinInteger -> BuiltinList BuiltinData -> BuiltinData
 mkMap :: BuiltinList (BuiltinPair BuiltinData BuiltinData) -> BuiltinData
 mkList :: BuiltinList BuiltinData -> BuiltinData
@@ -747,14 +745,6 @@ instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.Internal.BuiltinByteStr
 module PlutusTx.Builtins.HasOpaque
 stringToBuiltinByteString :: String -> BuiltinByteString
 stringToBuiltinString :: String -> BuiltinString
-newtype BuiltinByteStringUtf8
-BuiltinByteStringUtf8 :: BuiltinByteString -> BuiltinByteStringUtf8
-[unBuiltinByteStringUtf8] :: BuiltinByteStringUtf8 -> BuiltinByteString
-stringToBuiltinByteStringUtf8 :: String -> BuiltinByteString
-newtype BuiltinByteStringHex
-BuiltinByteStringHex :: BuiltinByteString -> BuiltinByteStringHex
-[unBuiltinByteStringHex] :: BuiltinByteStringHex -> BuiltinByteString
-stringToBuiltinByteStringHex :: String -> BuiltinByteString
 
 -- | A class for converting values of transparent Haskell-defined built-in
 --   types (such as <tt>()</tt>, <a>Bool</a>, '[]' etc) to their opaque
@@ -780,28 +770,6 @@ fromOpaque :: (HasFromOpaque arep a, a ~ arep) => arep -> a
 mkNilOpaque :: BuiltinList a
 class MkNil arep
 mkNil :: MkNil arep => BuiltinList arep
-instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance Data.ByteArray.Types.ByteArray PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance Data.ByteArray.Types.ByteArrayAccess PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance Control.DeepSeq.NFData PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance Codec.Serialise.Class.Serialise PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance Data.Hashable.Class.Hashable PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance GHC.Base.Monoid PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance GHC.Base.Semigroup PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance GHC.Show.Show PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance GHC.Classes.Ord PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance GHC.Classes.Eq PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
-instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance Data.ByteArray.Types.ByteArray PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance Data.ByteArray.Types.ByteArrayAccess PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance Control.DeepSeq.NFData PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance Codec.Serialise.Class.Serialise PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance Data.Hashable.Class.Hashable PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance GHC.Base.Monoid PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance GHC.Base.Semigroup PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance GHC.Show.Show PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance GHC.Classes.Ord PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance GHC.Classes.Eq PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
 instance PlutusTx.Builtins.HasOpaque.MkNil PlutusTx.Builtins.Internal.BuiltinInteger
 instance PlutusTx.Builtins.HasOpaque.MkNil PlutusTx.Builtins.Internal.BuiltinBool
 instance PlutusTx.Builtins.HasOpaque.MkNil PlutusTx.Builtins.Internal.BuiltinData
@@ -828,8 +796,6 @@ instance PlutusTx.Builtins.HasOpaque.HasToOpaque PlutusTx.Builtins.Internal.Buil
 instance PlutusTx.Builtins.HasOpaque.HasToOpaque PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
 instance PlutusTx.Builtins.HasOpaque.HasToOpaque PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
 instance PlutusTx.Builtins.HasOpaque.HasToOpaque PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
-instance Data.String.IsString PlutusTx.Builtins.HasOpaque.BuiltinByteStringHex
-instance Data.String.IsString PlutusTx.Builtins.HasOpaque.BuiltinByteStringUtf8
 instance Data.String.IsString PlutusTx.Builtins.Internal.BuiltinByteString
 instance Data.String.IsString PlutusTx.Builtins.Internal.BuiltinString
 
@@ -1355,12 +1321,6 @@ verifySchnorrSecp256k1Signature :: BuiltinByteString -> BuiltinByteString -> Bui
 
 -- | Converts a ByteString to a String.
 decodeUtf8 :: BuiltinByteString -> BuiltinString
-newtype BuiltinByteStringHex
-BuiltinByteStringHex :: BuiltinByteString -> BuiltinByteStringHex
-[unBuiltinByteStringHex] :: BuiltinByteStringHex -> BuiltinByteString
-newtype BuiltinByteStringUtf8
-BuiltinByteStringUtf8 :: BuiltinByteString -> BuiltinByteStringUtf8
-[unBuiltinByteStringUtf8] :: BuiltinByteStringUtf8 -> BuiltinByteString
 
 -- | Arbitrary precision integers. In contrast with fixed-size integral
 --   types such as <a>Int</a>, the <a>Integer</a> type represents the
@@ -1445,13 +1405,15 @@ data BuiltinData
 --   <a>BuiltinData</a>, selects one depending on which corresponds to the
 --   actual constructor of the given value.
 chooseData :: forall a. BuiltinData -> a -> a -> a -> a -> a -> a
-caseData' :: (Integer -> BuiltinList BuiltinData -> r) -> (BuiltinList (BuiltinPair BuiltinData BuiltinData) -> r) -> (BuiltinList BuiltinData -> r) -> (Integer -> r) -> (BuiltinByteString -> r) -> BuiltinData -> r
-caseData :: (Integer -> [BuiltinData] -> r) -> ([(BuiltinData, BuiltinData)] -> r) -> ([BuiltinData] -> r) -> (Integer -> r) -> (BuiltinByteString -> r) -> BuiltinData -> r
 
 -- | Given a <a>BuiltinData</a> value and matching functions for the five
 --   constructors, applies the appropriate matcher to the arguments of the
 --   constructor and returns the result.
 matchData :: BuiltinData -> (Integer -> [BuiltinData] -> r) -> ([(BuiltinData, BuiltinData)] -> r) -> ([BuiltinData] -> r) -> (Integer -> r) -> (BuiltinByteString -> r) -> r
+
+-- | Given a <a>BuiltinData</a> value and matching functions for the five
+--   constructors, applies the appropriate matcher to the arguments of the
+--   constructor and returns the result.
 matchData' :: BuiltinData -> (Integer -> BuiltinList BuiltinData -> r) -> (BuiltinList (BuiltinPair BuiltinData BuiltinData) -> r) -> (BuiltinList BuiltinData -> r) -> (Integer -> r) -> (BuiltinByteString -> r) -> r
 
 -- | Check if two <a>BuiltinData</a>s are equal.
@@ -1527,9 +1489,9 @@ mkNil :: MkNil arep => BuiltinList arep
 --   subset of built-in types).
 mkNilOpaque :: BuiltinList a
 null :: forall a. BuiltinList a -> Bool
-caseList' :: forall a r. r -> (a -> BuiltinList a -> r) -> BuiltinList a -> r
-caseList :: forall a r. (() -> r) -> (a -> BuiltinList a -> r) -> BuiltinList a -> r
 matchList :: forall a r. BuiltinList a -> (() -> r) -> (a -> BuiltinList a -> r) -> r
+
+-- | Like <a>matchList</a> but evaluates <tt>nilCase</tt> strictly.
 matchList' :: forall a r. BuiltinList a -> r -> (a -> BuiltinList a -> r) -> r
 headMaybe :: BuiltinList a -> Maybe a
 head :: BuiltinList a -> a
@@ -3293,9 +3255,6 @@ emptyByteString :: BuiltinByteString
 
 -- | Converts a ByteString to a String.
 decodeUtf8 :: BuiltinByteString -> BuiltinString
-newtype BuiltinByteStringUtf8
-BuiltinByteStringUtf8 :: BuiltinByteString -> BuiltinByteStringUtf8
-[unBuiltinByteStringUtf8] :: BuiltinByteStringUtf8 -> BuiltinByteString
 
 -- | Perform logical AND on two <a>BuiltinByteString</a> arguments, as
 --   described in <a>CIP-122</a>.
@@ -3707,40 +3666,6 @@ instance PlutusTx.Show.TH.Show PlutusTx.Builtins.Internal.BuiltinData
 instance PlutusTx.Show.TH.Show GHC.Types.Bool
 instance PlutusTx.Show.TH.Show ()
 instance PlutusTx.Show.TH.Show a => PlutusTx.Show.TH.Show [a]
-
-module PlutusTx.Data.List
-
--- | A list type backed directly by <tt>Data</tt>. It is meant to be used
---   whenever fast encoding<i>decoding to</i>from <tt>Data</tt> is needed.
-newtype List a
-List :: BuiltinList BuiltinData -> List a
-append :: List a -> List a -> List a
-find :: UnsafeFromData a => (a -> Bool) -> List a -> Maybe a
-findIndices :: UnsafeFromData a => (a -> Bool) -> List a -> List Integer
-filter :: (UnsafeFromData a, ToData a) => (a -> Bool) -> List a -> List a
-mapMaybe :: (UnsafeFromData a, ToData b) => (a -> Maybe b) -> List a -> List b
-any :: UnsafeFromData a => (a -> Bool) -> List a -> Bool
-foldMap :: (UnsafeFromData a, Monoid m) => (a -> m) -> List a -> m
-map :: (UnsafeFromData a, ToData b) => (a -> b) -> List a -> List b
-length :: List a -> Integer
-
--- | Plutus Tx version of <a>mconcat</a>.
-mconcat :: (Monoid a, UnsafeFromData a) => List a -> a
-fromSOP :: ToData a => [a] -> List a
-toSOP :: UnsafeFromData a => List a -> [a]
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusTx.Data.List.List
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni (PlutusTx.Data.List.List a)
-instance GHC.Classes.Eq (PlutusTx.Data.List.List a)
-instance GHC.Show.Show (PlutusTx.Data.List.List a)
-instance PlutusTx.Eq.Eq (PlutusTx.Data.List.List a)
-instance PlutusTx.IsData.Class.ToData (PlutusTx.Data.List.List a)
-instance PlutusTx.IsData.Class.FromData (PlutusTx.Data.List.List a)
-instance PlutusTx.IsData.Class.UnsafeFromData (PlutusTx.Data.List.List a)
-instance (PlutusTx.IsData.Class.UnsafeFromData a, Prettyprinter.Internal.Pretty a) => Prettyprinter.Internal.Pretty (PlutusTx.Data.List.List a)
-instance PlutusTx.Semigroup.Semigroup (PlutusTx.Data.List.List a)
-instance PlutusTx.Monoid.Monoid (PlutusTx.Data.List.List a)
-instance GHC.Base.Semigroup (PlutusTx.Data.List.List a)
-instance GHC.Base.Monoid (PlutusTx.Data.List.List a)
 
 module PlutusTx.Data.AssocMap
 
