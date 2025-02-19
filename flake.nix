@@ -58,7 +58,8 @@
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
             compiler-nix-name = "ghc966";
-            index-state = "2025-02-08T01:45:27Z";
+            # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
+            index-state = "2024-10-09T22:38:57Z";
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };

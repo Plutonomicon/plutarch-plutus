@@ -51,6 +51,7 @@ module Plutarch.Internal.Term (
 ) where
 
 import Control.Monad.Reader (ReaderT (ReaderT), ask, local, runReaderT)
+import Control.Monad.State.Strict (evalStateT)
 import Crypto.Hash (Context, Digest, hashFinalize, hashInit, hashUpdate)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Crypto.Hash.IO (HashAlgorithm)
@@ -82,6 +83,7 @@ import Plutarch.Internal.Evaluate (evalScript, uplcVersion)
 import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
+import PlutusCore.Compiler.Types (initUPLCSimplifierTrace)
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
@@ -841,7 +843,7 @@ compileOptimized t = case asClosedRawTerm t of
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = PLC.runQuoteT $ do
+    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
       simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
       debruijnd <- UPLC.deBruijnTerm simplified
@@ -884,7 +886,7 @@ optimizeTerm (Term raw) = Term $ \w64 ->
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either (PLC.Error UPLC.DefaultUni UPLC.DefaultFun ()) (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = PLC.runQuoteT $ do
+    go compiled = flip evalStateT initUPLCSimplifierTrace . PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
       simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
       debruijnd <- UPLC.deBruijnTerm simplified
