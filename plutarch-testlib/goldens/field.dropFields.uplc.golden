@@ -1,5 +1,5 @@
 lam program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 !0 ->
          (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
@@ -7,7 +7,7 @@ lam program
         (force headList))
      (force tailList))
 app program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 ->
          (\!0 -> addInteger (unIData (!2 !1)) (unIData (!2 (!3 !1))))

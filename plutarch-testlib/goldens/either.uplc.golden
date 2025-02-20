@@ -1,5 +1,5 @@
 eq.true.left program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -8,7 +8,7 @@ eq.true.left program
      (constr 0 [42])
      (constr 0 [42]))
 eq.true.right program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -17,7 +17,7 @@ eq.true.right program
      (constr 1 [42])
      (constr 1 [42]))
 eq.false.left-right program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -26,7 +26,7 @@ eq.false.left-right program
      (constr 0 [42])
      (constr 1 [42]))
 eq.false.left-left program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -35,7 +35,7 @@ eq.false.left-left program
      (constr 0 [24])
      (constr 0 [42]))
 eq.false.right-right program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2

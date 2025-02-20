@@ -1,5 +1,5 @@
 eq.true program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 !0 ->
          case
@@ -19,7 +19,7 @@ eq.true program
         (constr 0 [42, !1]))
      "Hello")
 eq.false.fst program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 !0 ->
          case
@@ -39,7 +39,7 @@ eq.false.fst program
         (constr 0 [24, !1]))
      "Hello")
 eq.false.snd program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2
@@ -57,7 +57,7 @@ eq.false.snd program
      (constr 0 [42, "Hello"])
      (constr 0 [42, "World"]))
 eq.false.both program
-  1.0.0
+  1.1.0
   ((\!0 !0 ->
       case
         !2

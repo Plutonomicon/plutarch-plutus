@@ -1,5 +1,5 @@
 lam.tripSum program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 !0 ->
          (\!0 ->
@@ -12,11 +12,11 @@ lam.tripSum program
         (force headList))
      (force tailList))
 lam.getY program
-  1.0.0
+  1.1.0
   (\!0 ->
      force headList (force tailList (force (force sndPair) (unConstrData !1))))
 lam.tripYZ program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 !0 ->
          (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
@@ -24,7 +24,7 @@ lam.tripYZ program
         (force headList))
      (force tailList))
 tripSum.A program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 ->
          (\!0 ->
@@ -43,7 +43,7 @@ tripSum.A program
         (force tailList))
      (force mkCons))
 tripSum.B program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 ->
          (\!0 ->
@@ -60,7 +60,7 @@ tripSum.B program
         (force tailList))
      (force mkCons))
 tripSum.C program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 ->
          (\!0 ->
@@ -77,7 +77,7 @@ tripSum.C program
         (force tailList))
      (force mkCons))
 tripYZ=tripZY program
-  1.0.0
+  1.1.0
   ((\!0 ->
       (\!0 !0 ->
          (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
