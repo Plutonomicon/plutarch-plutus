@@ -37,6 +37,15 @@
         hash = "sha256-cCW7LMXm4Iv541E1Djn4uawbDKKfo9TbcFtc1g083Os=";
       };
     };
+    "1.10.1" = {
+      timestamp = "2024-01-29T00:00:00Z";
+      src = pkgs.fetchFromGitHub {
+        owner = "plutonomicon";
+        repo = "plutarch-plutus";
+        rev = "705375118dc363c6a1b4c2372887a967a7298476";
+        hash = "sha256-WSESLdKZttm2EBNv5SY6sZXT+ks87rY3y0gatf1m3Lo=";
+      };
+    };
 
     # Unstable
     "0" = {
