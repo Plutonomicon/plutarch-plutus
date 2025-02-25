@@ -1,5 +1,11 @@
 # Revision history for plutarch
 
+# UNRELEASED
+
+## Changed
+
+* `plutus-core` version bound to `>=1.40.0.0 && <1.41`
+
 # 1.10.1 -- 17-02-2025
 
 ## Added
