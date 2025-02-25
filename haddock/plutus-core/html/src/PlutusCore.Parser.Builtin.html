@@ -31,9 +31,9 @@ forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Map.Strict.Internal.html#fromList"><span class="hs-identifier hs-var">Map.fromList</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">DefaultFun -&gt; Text
 forall str a. (Pretty a, Render str) =&gt; a -&gt; str
 </span><span class="hs-identifier hs-var">display</span></span><span> </span><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621681786580"><span class="hs-identifier hs-var">fn</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621681786580"><span class="hs-identifier hs-var">fn</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621681786580"><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621681786580"><span class="hs-identifier hs-var">fn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621681842734"><span class="hs-identifier hs-var">fn</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621681842734"><span class="hs-identifier hs-var">fn</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621681842734"><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621681842734"><span class="hs-identifier hs-var">fn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">DefaultFun
 forall a. Bounded a =&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Enum.html#minBound"><span class="hs-identifier hs-var">minBound</span></a></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="annot"><span class="annottext">DefaultFun
 forall a. Bounded a =&gt; a
@@ -48,8 +48,8 @@ forall a. Parser a -&gt; Parser a
 -&gt; Parser DefaultFun -&gt; Parser DefaultFun
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-33"></span><span>  </span><span id="local-6989586621681786585"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681786585"><span class="hs-identifier hs-var">txt</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Maybe [Char]
+</span><span id="line-33"></span><span>  </span><span id="local-6989586621681842739"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681842739"><span class="hs-identifier hs-var">txt</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Maybe [Char]
 -&gt; (Token Text -&gt; Bool)
 -&gt; ParsecT
      ParserError
@@ -68,12 +68,12 @@ Token Text -&gt; Bool
 </span><span id="line-34"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Map Text DefaultFun -&gt; Maybe DefaultFun
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Map.Internal.html#lookup"><span class="hs-identifier hs-var">Map.lookup</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681786585"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text DefaultFun
+</span><a href="#local-6989586621681842739"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text DefaultFun
 </span><a href="PlutusCore.Parser.Builtin.html#cachedBuiltin"><span class="hs-identifier hs-var">cachedBuiltin</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-35"></span><span>    </span><span class="annot"><span class="annottext">Maybe DefaultFun
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-36"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681786590"><span class="annot"><span class="annottext">lBuiltin :: [Text]
-</span><a href="#local-6989586621681786590"><span class="hs-identifier hs-var hs-var">lBuiltin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Text, DefaultFun) -&gt; Text) -&gt; [(Text, DefaultFun)] -&gt; [Text]
+</span><span id="line-36"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681842744"><span class="annot"><span class="annottext">lBuiltin :: [Text]
+</span><a href="#local-6989586621681842744"><span class="hs-identifier hs-var hs-var">lBuiltin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Text, DefaultFun) -&gt; Text) -&gt; [(Text, DefaultFun)] -&gt; [Text]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">(Text, DefaultFun) -&gt; Text
@@ -84,8 +84,8 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall k a. Map k a -&gt; [(k, a)]
 </span><a href="../../../ghc-9.6.6/html/libraries/containers-0.6.7/src/Data.Map.Internal.html#toList"><span class="hs-identifier hs-var">Map.toList</span></a></span><span> </span><span class="annot"><span class="annottext">Map Text DefaultFun
 </span><a href="PlutusCore.Parser.Builtin.html#cachedBuiltin"><span class="hs-identifier hs-var">cachedBuiltin</span></a></span><span>
-</span><span id="line-37"></span><span>      </span><span id="local-6989586621681786593"><span class="annot"><span class="annottext">SourcePos
-</span><a href="#local-6989586621681786593"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT
+</span><span id="line-37"></span><span>      </span><span id="local-6989586621681842747"><span class="annot"><span class="annottext">SourcePos
+</span><a href="#local-6989586621681842747"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT
   ParserError
   Text
   (StateT ParserState (ReaderT (Maybe Version) Quote))
@@ -101,11 +101,11 @@ forall e s (m :: * -&gt; *) a. MonadParsec e s m =&gt; e -&gt; m a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; SourcePos -&gt; [Text] -&gt; ParserError
 </span><a href="PlutusCore.Error.html#UnknownBuiltinFunction"><span class="hs-identifier hs-var">UnknownBuiltinFunction</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681786585"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="annottext">SourcePos
-</span><a href="#local-6989586621681786593"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621681786590"><span class="hs-identifier hs-var">lBuiltin</span></a></span><span>
-</span><span id="line-39"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621681786594"><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621681786594"><span class="hs-identifier hs-var">builtin</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Parser DefaultFun
+</span><a href="#local-6989586621681842739"><span class="hs-identifier hs-var">txt</span></a></span><span> </span><span class="annot"><span class="annottext">SourcePos
+</span><a href="#local-6989586621681842747"><span class="hs-identifier hs-var">pos</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621681842744"><span class="hs-identifier hs-var">lBuiltin</span></a></span><span>
+</span><span id="line-39"></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621681842748"><span class="annot"><span class="annottext">DefaultFun
+</span><a href="#local-6989586621681842748"><span class="hs-identifier hs-var">builtin</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Parser DefaultFun
 forall a.
 a
 -&gt; ParsecT
@@ -115,7 +115,7 @@ a
      a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
-</span><a href="#local-6989586621681786594"><span class="hs-identifier hs-var">builtin</span></a></span><span>
+</span><a href="#local-6989586621681842748"><span class="hs-identifier hs-var">builtin</span></a></span><span>
 </span><span id="line-40"></span><span>
 </span><span id="line-41"></span><span class="annot"><span class="hs-comment">-- | Parser for integer constants.</span></span><span>
 </span><span id="line-42"></span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conInteger"><span class="hs-identifier hs-type">conInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
@@ -146,8 +146,8 @@ m a
 </span><span id="line-46"></span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#hexByte"><span class="hs-identifier hs-type">hexByte</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
 </span><span id="line-47"></span><span id="hexByte"><span class="annot"><span class="annottext">hexByte :: Parser Word8
 </span><a href="PlutusCore.Parser.Builtin.html#hexByte"><span class="hs-identifier hs-var hs-var">hexByte</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-48"></span><span>  </span><span id="local-6989586621681786600"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621681786600"><span class="hs-identifier hs-var">high</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621681842754"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621681842754"><span class="hs-identifier hs-var">high</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT
   ParserError
   Text
   (StateT ParserState (ReaderT (Maybe Version) Quote))
@@ -161,8 +161,8 @@ forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">hexDigitChar</span></span><span>
-</span><span id="line-49"></span><span>  </span><span id="local-6989586621681786601"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621681786601"><span class="hs-identifier hs-var">low</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621681842755"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621681842755"><span class="hs-identifier hs-var">low</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT
   ParserError
   Text
   (StateT ParserState (ReaderT (Maybe Version) Quote))
@@ -191,14 +191,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Int
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.Read.html#hexDigitToInt"><span class="hs-identifier hs-var">hexDigitToInt</span></a></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621681786600"><span class="hs-identifier hs-var">high</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621681842754"><span class="hs-identifier hs-var">high</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#%2A"><span class="hs-operator hs-var">*</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">16</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
 </span><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.Read.html#hexDigitToInt"><span class="hs-identifier hs-var">hexDigitToInt</span></a></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621681786601"><span class="hs-identifier hs-var">low</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681842755"><span class="hs-identifier hs-var">low</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span>
 </span><span id="line-52"></span><span class="annot"><span class="hs-comment">-- | Parser for bytestring constants. They start with &quot;#&quot;.</span></span><span>
 </span><span id="line-53"></span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conBS"><span class="hs-identifier hs-type">conBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
@@ -636,10 +636,10 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
 </span><span id="line-76"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-77"></span><span>
 </span><span id="line-78"></span><span class="annot"><span class="hs-comment">-- | Parser for lists.</span></span><span>
-</span><span id="line-79"></span><span id="local-6989586621681786366"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conList"><span class="hs-identifier hs-type">conList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681786366"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621681786366"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-79"></span><span id="local-6989586621681842520"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conList"><span class="hs-identifier hs-type">conList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681842520"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621681842520"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-80"></span><span id="conList"><span class="annot"><span class="annottext">conList :: forall a. DefaultUni (Esc a) -&gt; Parser [a]
-</span><a href="PlutusCore.Parser.Builtin.html#conList"><span class="hs-identifier hs-var hs-var">conList</span></a></span></span><span> </span><span id="local-6989586621681786619"><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786619"><span class="hs-identifier hs-var">uniA</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser [a] -&gt; Parser [a]
+</span><a href="PlutusCore.Parser.Builtin.html#conList"><span class="hs-identifier hs-var hs-var">conList</span></a></span></span><span> </span><span id="local-6989586621681842773"><span class="annot"><span class="annottext">DefaultUni (Esc a)
+</span><a href="#local-6989586621681842773"><span class="hs-identifier hs-var">uniA</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser [a] -&gt; Parser [a]
 forall a. Parser a -&gt; Parser a
 </span><a href="PlutusCore.Parser.ParserCommon.html#trailingWhitespace"><span class="hs-identifier hs-var">trailingWhitespace</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser [a] -&gt; Parser [a])
 -&gt; (Parser [a] -&gt; Parser [a]) -&gt; Parser [a] -&gt; Parser [a]
@@ -653,7 +653,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
 </span><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-var">constantOf</span></a></span><span> </span><span class="annot"><span class="annottext">ExpectParens
 </span><a href="PlutusCore.Parser.Builtin.html#ExpectParensNo"><span class="hs-identifier hs-var">ExpectParensNo</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786619"><span class="hs-identifier hs-var">uniA</span></a></span><span> </span><span class="annot"><span class="annottext">Parser a
+</span><a href="#local-6989586621681842773"><span class="hs-identifier hs-var">uniA</span></a></span><span> </span><span class="annot"><span class="annottext">Parser a
 -&gt; ParsecT
      ParserError
      Text
@@ -671,12 +671,12 @@ forall (m :: * -&gt; *) a end. MonadPlus m =&gt; m a -&gt; m end -&gt; m [a]
 </span><span class="hs-string">&quot;,&quot;</span></span><span>
 </span><span id="line-82"></span><span>
 </span><span id="line-83"></span><span class="annot"><span class="hs-comment">-- | Parser for pairs.</span></span><span>
-</span><span id="line-84"></span><span id="local-6989586621681786371"><span id="local-6989586621681786372"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conPair"><span class="hs-identifier hs-type">conPair</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681786371"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681786372"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621681786371"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621681786372"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-84"></span><span id="local-6989586621681842525"><span id="local-6989586621681842526"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conPair"><span class="hs-identifier hs-type">conPair</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681842525"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681842526"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621681842525"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621681842526"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-85"></span><span id="conPair"><span class="annot"><span class="annottext">conPair :: forall a b.
 DefaultUni (Esc a) -&gt; DefaultUni (Esc b) -&gt; Parser (a, b)
-</span><a href="PlutusCore.Parser.Builtin.html#conPair"><span class="hs-identifier hs-var hs-var">conPair</span></a></span></span><span> </span><span id="local-6989586621681786631"><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786631"><span class="hs-identifier hs-var">uniA</span></a></span></span><span> </span><span id="local-6989586621681786632"><span class="annot"><span class="annottext">DefaultUni (Esc b)
-</span><a href="#local-6989586621681786632"><span class="hs-identifier hs-var">uniB</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser (a, b) -&gt; Parser (a, b)
+</span><a href="PlutusCore.Parser.Builtin.html#conPair"><span class="hs-identifier hs-var hs-var">conPair</span></a></span></span><span> </span><span id="local-6989586621681842785"><span class="annot"><span class="annottext">DefaultUni (Esc a)
+</span><a href="#local-6989586621681842785"><span class="hs-identifier hs-var">uniA</span></a></span></span><span> </span><span id="local-6989586621681842786"><span class="annot"><span class="annottext">DefaultUni (Esc b)
+</span><a href="#local-6989586621681842786"><span class="hs-identifier hs-var">uniB</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser (a, b) -&gt; Parser (a, b)
 forall a. Parser a -&gt; Parser a
 </span><a href="PlutusCore.Parser.ParserCommon.html#trailingWhitespace"><span class="hs-identifier hs-var">trailingWhitespace</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser (a, b) -&gt; Parser (a, b))
 -&gt; (Parser (a, b) -&gt; Parser (a, b))
@@ -688,12 +688,12 @@ forall a. Parser a -&gt; Parser a
 </span><a href="PlutusCore.Parser.ParserCommon.html#inParens"><span class="hs-identifier hs-var">inParens</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser (a, b) -&gt; Parser (a, b)) -&gt; Parser (a, b) -&gt; Parser (a, b)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-86"></span><span>  </span><span id="local-6989586621681786634"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681786634"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
+</span><span id="line-86"></span><span>  </span><span id="local-6989586621681842788"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621681842788"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
 forall a. ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
 </span><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-var">constantOf</span></a></span><span> </span><span class="annot"><span class="annottext">ExpectParens
 </span><a href="PlutusCore.Parser.Builtin.html#ExpectParensNo"><span class="hs-identifier hs-var">ExpectParensNo</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786631"><span class="hs-identifier hs-var">uniA</span></a></span><span>
+</span><a href="#local-6989586621681842785"><span class="hs-identifier hs-var">uniA</span></a></span><span>
 </span><span id="line-87"></span><span>  </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Text
 -&gt; ParsecT
@@ -703,12 +703,12 @@ forall a. ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
      Text
 </span><a href="PlutusCore.Parser.ParserCommon.html#symbol"><span class="hs-identifier hs-var">symbol</span></a></span><span> </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;,&quot;</span></span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621681786635"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621681786635"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ExpectParens -&gt; DefaultUni (Esc b) -&gt; Parser b
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621681842789"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621681842789"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ExpectParens -&gt; DefaultUni (Esc b) -&gt; Parser b
 forall a. ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
 </span><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-var">constantOf</span></a></span><span> </span><span class="annot"><span class="annottext">ExpectParens
 </span><a href="PlutusCore.Parser.Builtin.html#ExpectParensNo"><span class="hs-identifier hs-var">ExpectParensNo</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc b)
-</span><a href="#local-6989586621681786632"><span class="hs-identifier hs-var">uniB</span></a></span><span>
+</span><a href="#local-6989586621681842786"><span class="hs-identifier hs-var">uniB</span></a></span><span>
 </span><span id="line-89"></span><span>  </span><span class="annot"><span class="annottext">(a, b) -&gt; Parser (a, b)
 forall a.
 a
@@ -719,8 +719,8 @@ a
      a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621681786634"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621681786635"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681842788"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621681842789"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-90"></span><span>
 </span><span id="line-91"></span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conDataNoParens"><span class="hs-identifier hs-type">conDataNoParens</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span><span>
 </span><span id="line-92"></span><span id="conDataNoParens"><span class="annot"><span class="annottext">conDataNoParens :: Parser Data
@@ -1102,14 +1102,14 @@ forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
 </span><span id="line-110"></span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conBLS12_381_G1_Element"><span class="hs-identifier hs-type">conBLS12_381_G1_Element</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Crypto.BLS12_381.G1.html#Element"><span class="hs-identifier hs-type">BLS12_381.G1.Element</span></a></span><span>
 </span><span id="line-111"></span><span id="conBLS12_381_G1_Element"><span class="annot"><span class="annottext">conBLS12_381_G1_Element :: Parser Element
 </span><a href="PlutusCore.Parser.Builtin.html#conBLS12_381_G1_Element"><span class="hs-identifier hs-var hs-var">conBLS12_381_G1_Element</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-112"></span><span>    </span><span id="local-6989586621681786648"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621681786648"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser ByteString
+</span><span id="line-112"></span><span>    </span><span id="local-6989586621681842802"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621681842802"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser ByteString
 </span><a href="PlutusCore.Parser.Builtin.html#con0xBS"><span class="hs-identifier hs-var">con0xBS</span></a></span><span>
 </span><span id="line-113"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either BLSTError Element
 </span><a href="PlutusCore.Crypto.BLS12_381.G1.html#uncompress"><span class="hs-identifier hs-var">BLS12_381.G1.uncompress</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621681786648"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-114"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621681786650"><span class="annot"><span class="annottext">BLSTError
-</span><a href="#local-6989586621681786650"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Parser Element
+</span><a href="#local-6989586621681842802"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-114"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621681842804"><span class="annot"><span class="annottext">BLSTError
+</span><a href="#local-6989586621681842804"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Parser Element
 forall a.
 [Char]
 -&gt; ParsecT
@@ -1126,9 +1126,9 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">BLSTError -&gt; [Char]
 forall a. Show a =&gt; a -&gt; [Char]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">BLSTError
-</span><a href="#local-6989586621681786650"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-115"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621681786652"><span class="annot"><span class="annottext">Element
-</span><a href="#local-6989586621681786652"><span class="hs-identifier hs-var">e</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Element -&gt; Parser Element
+</span><a href="#local-6989586621681842804"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-115"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621681842806"><span class="annot"><span class="annottext">Element
+</span><a href="#local-6989586621681842806"><span class="hs-identifier hs-var">e</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Element -&gt; Parser Element
 forall a.
 a
 -&gt; ParsecT
@@ -1138,19 +1138,19 @@ a
      a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Element
-</span><a href="#local-6989586621681786652"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621681842806"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-116"></span><span>
 </span><span id="line-117"></span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#conBLS12_381_G2_Element"><span class="hs-identifier hs-type">conBLS12_381_G2_Element</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Crypto.BLS12_381.G2.html#Element"><span class="hs-identifier hs-type">BLS12_381.G2.Element</span></a></span><span>
 </span><span id="line-118"></span><span id="conBLS12_381_G2_Element"><span class="annot"><span class="annottext">conBLS12_381_G2_Element :: Parser Element
 </span><a href="PlutusCore.Parser.Builtin.html#conBLS12_381_G2_Element"><span class="hs-identifier hs-var hs-var">conBLS12_381_G2_Element</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-119"></span><span>    </span><span id="local-6989586621681786654"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621681786654"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser ByteString
+</span><span id="line-119"></span><span>    </span><span id="local-6989586621681842808"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621681842808"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser ByteString
 </span><a href="PlutusCore.Parser.Builtin.html#con0xBS"><span class="hs-identifier hs-var">con0xBS</span></a></span><span>
 </span><span id="line-120"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either BLSTError Element
 </span><a href="PlutusCore.Crypto.BLS12_381.G2.html#uncompress"><span class="hs-identifier hs-var">BLS12_381.G2.uncompress</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621681786654"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-121"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621681786656"><span class="annot"><span class="annottext">BLSTError
-</span><a href="#local-6989586621681786656"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Parser Element
+</span><a href="#local-6989586621681842808"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-121"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621681842810"><span class="annot"><span class="annottext">BLSTError
+</span><a href="#local-6989586621681842810"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Parser Element
 forall a.
 [Char]
 -&gt; ParsecT
@@ -1167,9 +1167,9 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">BLSTError -&gt; [Char]
 forall a. Show a =&gt; a -&gt; [Char]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">BLSTError
-</span><a href="#local-6989586621681786656"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-122"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621681786657"><span class="annot"><span class="annottext">Element
-</span><a href="#local-6989586621681786657"><span class="hs-identifier hs-var">e</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Element -&gt; Parser Element
+</span><a href="#local-6989586621681842810"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-122"></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621681842811"><span class="annot"><span class="annottext">Element
+</span><a href="#local-6989586621681842811"><span class="hs-identifier hs-var">e</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Element -&gt; Parser Element
 forall a.
 a
 -&gt; ParsecT
@@ -1179,15 +1179,15 @@ a
      a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Element
-</span><a href="#local-6989586621681786657"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621681842811"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-123"></span><span>
 </span><span id="line-124"></span><span class="annot"><span class="hs-comment">-- | Parser for constants of the given type.</span></span><span>
-</span><span id="line-125"></span><span id="local-6989586621681786370"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-type">constantOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#ExpectParens"><span class="hs-identifier hs-type">ExpectParens</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681786370"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681786370"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-125"></span><span id="local-6989586621681842524"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-type">constantOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Parser.Builtin.html#ExpectParens"><span class="hs-identifier hs-type">ExpectParens</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUni"><span class="hs-identifier hs-type">DefaultUni</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Esc"><span class="hs-identifier hs-type">Esc</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681842524"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Parser.ParserCommon.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681842524"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-126"></span><span id="constantOf"><span class="annot"><span class="annottext">constantOf :: forall a. ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
-</span><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-var hs-var">constantOf</span></a></span></span><span> </span><span id="local-6989586621681786658"><span class="annot"><span class="annottext">ExpectParens
-</span><a href="#local-6989586621681786658"><span class="hs-identifier hs-var">expectParens</span></a></span></span><span> </span><span id="local-6989586621681786659"><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786659"><span class="hs-identifier hs-var">uni</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786659"><span class="hs-identifier hs-var">uni</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-var hs-var">constantOf</span></a></span></span><span> </span><span id="local-6989586621681842812"><span class="annot"><span class="annottext">ExpectParens
+</span><a href="#local-6989586621681842812"><span class="hs-identifier hs-var">expectParens</span></a></span></span><span> </span><span id="local-6989586621681842813"><span class="annot"><span class="annottext">DefaultUni (Esc a)
+</span><a href="#local-6989586621681842813"><span class="hs-identifier hs-var">uni</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
+</span><a href="#local-6989586621681842813"><span class="hs-identifier hs-var">uni</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-127"></span><span>    </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
 </span><a href="PlutusCore.Default.Universe.html#DefaultUniInteger"><span class="hs-identifier hs-var">DefaultUniInteger</span></a></span><span>                                                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Parser a
 Parser Integer
@@ -1217,25 +1217,25 @@ ParsecT
 Parser Bool
 </span><a href="PlutusCore.Parser.Builtin.html#conBool"><span class="hs-identifier hs-var">conBool</span></a></span><span>
 </span><span id="line-132"></span><span>    </span><span class="annot"><span class="annottext">DefaultUni (Esc f)
-</span><a href="PlutusCore.Default.Universe.html#DefaultUniProtoList"><span class="hs-identifier hs-var">DefaultUniProtoList</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span id="local-6989586621681786687"><span class="annot"><span class="annottext">DefaultUni (Esc a1)
-</span><a href="#local-6989586621681786687"><span class="hs-identifier hs-var">uniA</span></a></span></span><span>                        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1) -&gt; Parser [a1]
+</span><a href="PlutusCore.Default.Universe.html#DefaultUniProtoList"><span class="hs-identifier hs-var">DefaultUniProtoList</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span id="local-6989586621681842841"><span class="annot"><span class="annottext">DefaultUni (Esc a1)
+</span><a href="#local-6989586621681842841"><span class="hs-identifier hs-var">uniA</span></a></span></span><span>                        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1) -&gt; Parser [a1]
 forall a. DefaultUni (Esc a) -&gt; Parser [a]
 </span><a href="PlutusCore.Parser.Builtin.html#conList"><span class="hs-identifier hs-var">conList</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
 DefaultUni (Esc a1)
-</span><a href="#local-6989586621681786687"><span class="hs-identifier hs-var">uniA</span></a></span><span>
+</span><a href="#local-6989586621681842841"><span class="hs-identifier hs-var">uniA</span></a></span><span>
 </span><span id="line-133"></span><span>    </span><span class="annot"><span class="annottext">DefaultUni (Esc f)
-</span><a href="PlutusCore.Default.Universe.html#DefaultUniProtoPair"><span class="hs-identifier hs-var">DefaultUniProtoPair</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span id="local-6989586621681786711"><span class="annot"><span class="annottext">DefaultUni (Esc a1)
-</span><a href="#local-6989586621681786711"><span class="hs-identifier hs-var">uniA</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span id="local-6989586621681786712"><span class="annot"><span class="annottext">DefaultUni (Esc a1)
-</span><a href="#local-6989586621681786712"><span class="hs-identifier hs-var">uniB</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1) -&gt; DefaultUni (Esc a1) -&gt; Parser (a1, a1)
+</span><a href="PlutusCore.Default.Universe.html#DefaultUniProtoPair"><span class="hs-identifier hs-var">DefaultUniProtoPair</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span id="local-6989586621681842865"><span class="annot"><span class="annottext">DefaultUni (Esc a1)
+</span><a href="#local-6989586621681842865"><span class="hs-identifier hs-var">uniA</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span id="local-6989586621681842866"><span class="annot"><span class="annottext">DefaultUni (Esc a1)
+</span><a href="#local-6989586621681842866"><span class="hs-identifier hs-var">uniB</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1) -&gt; DefaultUni (Esc a1) -&gt; Parser (a1, a1)
 forall a b.
 DefaultUni (Esc a) -&gt; DefaultUni (Esc b) -&gt; Parser (a, b)
 </span><a href="PlutusCore.Parser.Builtin.html#conPair"><span class="hs-identifier hs-var">conPair</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
 DefaultUni (Esc a1)
-</span><a href="#local-6989586621681786711"><span class="hs-identifier hs-var">uniA</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
+</span><a href="#local-6989586621681842865"><span class="hs-identifier hs-var">uniA</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
 DefaultUni (Esc a1)
-</span><a href="#local-6989586621681786712"><span class="hs-identifier hs-var">uniB</span></a></span><span>
-</span><span id="line-134"></span><span>    </span><span id="local-6989586621681786724"><span class="annot"><span class="annottext">DefaultUni (Esc f)
-</span><a href="#local-6989586621681786724"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
+</span><a href="#local-6989586621681842866"><span class="hs-identifier hs-var">uniB</span></a></span><span>
+</span><span id="line-134"></span><span>    </span><span id="local-6989586621681842878"><span class="annot"><span class="annottext">DefaultUni (Esc f)
+</span><a href="#local-6989586621681842878"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="PlutusCore.Default.Universe.html#DefaultUniApply"><span class="hs-operator hs-type">`DefaultUniApply`</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a1)
 </span><span class="hs-identifier">_</span></span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc f) -&gt; Parser a
@@ -1243,11 +1243,11 @@ forall a b c d (f :: a -&gt; b -&gt; c -&gt; d) any.
 DefaultUni (Esc f) -&gt; any
 </span><a href="PlutusCore.Default.Universe.html#noMoreTypeFunctions"><span class="hs-identifier hs-var">noMoreTypeFunctions</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc f)
 DefaultUni (Esc f)
-</span><a href="#local-6989586621681786724"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><a href="#local-6989586621681842878"><span class="hs-identifier hs-var">f</span></a></span><span>
 </span><span id="line-135"></span><span>    </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
 </span><a href="PlutusCore.Default.Universe.html#DefaultUniData"><span class="hs-identifier hs-var">DefaultUniData</span></a></span><span>                                                    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ExpectParens -&gt; Parser Data
 </span><a href="PlutusCore.Parser.Builtin.html#conData"><span class="hs-identifier hs-var">conData</span></a></span><span> </span><span class="annot"><span class="annottext">ExpectParens
-</span><a href="#local-6989586621681786658"><span class="hs-identifier hs-var">expectParens</span></a></span><span>
+</span><a href="#local-6989586621681842812"><span class="hs-identifier hs-var">expectParens</span></a></span><span>
 </span><span id="line-136"></span><span>    </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
 </span><a href="PlutusCore.Default.Universe.html#DefaultUniBLS12_381_G1_Element"><span class="hs-identifier hs-var">DefaultUniBLS12_381_G1_Element</span></a></span><span>                                    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Parser a
 Parser Element
@@ -1275,8 +1275,8 @@ forall (m :: * -&gt; *) a. MonadFail m =&gt; [Char] -&gt; m a
 </span><span id="line-143"></span><span id="constant"><span class="annot"><span class="annottext">constant :: Parser (Some (ValueOf DefaultUni))
 </span><a href="PlutusCore.Parser.Builtin.html#constant"><span class="hs-identifier hs-var hs-var">constant</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-144"></span><span>  </span><span class="hs-comment">-- Parse the type tag.</span><span>
-</span><span id="line-145"></span><span>  </span><span class="annot"><a href="Universe.Core.html#SomeTypeIn"><span class="hs-identifier hs-type">SomeTypeIn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Kinded"><span class="hs-identifier hs-type">Kinded</span></a></span><span> </span><span id="local-6989586621681786756"><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786756"><span class="hs-identifier hs-var">uni</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser (SomeTypeIn (Kinded DefaultUni))
+</span><span id="line-145"></span><span>  </span><span class="annot"><a href="Universe.Core.html#SomeTypeIn"><span class="hs-identifier hs-type">SomeTypeIn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#Kinded"><span class="hs-identifier hs-type">Kinded</span></a></span><span> </span><span id="local-6989586621681842910"><span class="annot"><span class="annottext">DefaultUni (Esc a)
+</span><a href="#local-6989586621681842910"><span class="hs-identifier hs-var">uni</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parser (SomeTypeIn (Kinded DefaultUni))
 </span><a href="PlutusCore.Parser.Type.html#defaultUni"><span class="hs-identifier hs-var">defaultUni</span></a></span><span>
 </span><span id="line-146"></span><span>  </span><span class="hs-comment">-- Check it's of kind @*@, because a constant that we're about to parse can only be of type of</span><span>
 </span><span id="line-147"></span><span>  </span><span class="hs-comment">-- kind @*@.</span><span>
@@ -1308,13 +1308,13 @@ forall (uni :: * -&gt; *) a (x :: a).
 Typeable a =&gt;
 uni (Esc x) -&gt; Maybe (a :~: *)
 </span><a href="Universe.Core.html#checkStar"><span class="hs-identifier hs-var">checkStar</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
-</span><a href="#local-6989586621681786756"><span class="hs-identifier hs-var">uni</span></a></span><span>
+</span><a href="#local-6989586621681842910"><span class="hs-identifier hs-var">uni</span></a></span><span>
 </span><span id="line-149"></span><span>  </span><span class="hs-comment">-- Parse the constant of the type represented by the type tag.</span><span>
 </span><span id="line-150"></span><span>  </span><span class="annot"><span class="annottext">DefaultUni (Esc a) -&gt; a -&gt; Some (ValueOf DefaultUni)
 forall a (uni :: * -&gt; *). uni (Esc a) -&gt; a -&gt; Some (ValueOf uni)
 </span><a href="Universe.Core.html#someValueOf"><span class="hs-identifier hs-var">someValueOf</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
 DefaultUni (Esc a)
-</span><a href="#local-6989586621681786756"><span class="hs-identifier hs-var">uni</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Some (ValueOf DefaultUni))
+</span><a href="#local-6989586621681842910"><span class="hs-identifier hs-var">uni</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Some (ValueOf DefaultUni))
 -&gt; ParsecT
      ParserError
      Text
@@ -1333,7 +1333,7 @@ forall a. ExpectParens -&gt; DefaultUni (Esc a) -&gt; Parser a
 </span><a href="PlutusCore.Parser.Builtin.html#constantOf"><span class="hs-identifier hs-var">constantOf</span></a></span><span> </span><span class="annot"><span class="annottext">ExpectParens
 </span><a href="PlutusCore.Parser.Builtin.html#ExpectParensYes"><span class="hs-identifier hs-var">ExpectParensYes</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultUni (Esc a)
 DefaultUni (Esc a)
-</span><a href="#local-6989586621681786756"><span class="hs-identifier hs-var">uni</span></a></span><span>
+</span><a href="#local-6989586621681842910"><span class="hs-identifier hs-var">uni</span></a></span><span>
 </span><span id="line-151"></span><span>
 </span><span id="line-152"></span><span class="hs-keyword">data</span><span> </span><span id="ExpectParens"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#ExpectParens"><span class="hs-identifier hs-var">ExpectParens</span></a></span></span><span>
 </span><span id="line-153"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="ExpectParensYes"><span class="annot"><a href="PlutusCore.Parser.Builtin.html#ExpectParensYes"><span class="hs-identifier hs-var">ExpectParensYes</span></a></span></span><span>
