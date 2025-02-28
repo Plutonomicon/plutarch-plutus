@@ -104,6 +104,7 @@ library
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
+    Plutarch.Internal.Parser
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
     Plutarch.Internal.PrettyStack

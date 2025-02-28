@@ -87,6 +87,7 @@ import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
 import PlutusTx qualified as PTx
+import PlutusTx.Builtins.Internal (BuiltinByteString (BuiltinByteString))
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
 
@@ -442,17 +443,35 @@ deriving via
   instance
     PLiftable PBool
 
+-- This is a proxy instance for ToData and FromData, we have this for ByteString
+class WHY a where
+  whyToData :: a -> PTx.Data
+  whyFromData :: PTx.Data -> Maybe a
+
+instance {-# OVERLAPPING #-} WHY ByteString where
+  whyToData = PTx.toData . BuiltinByteString
+  whyFromData x = (\(BuiltinByteString x) -> x) <$> PTx.fromData x
+
+instance {-# OVERLAPPING #-} WHY [ByteString] where
+  whyToData = PTx.List . map whyToData
+  whyFromData (PTx.List li) = traverse whyFromData li
+  whyFromData _ = Nothing
+
+instance (PTx.ToData a, PTx.FromData a) => WHY a where
+  whyToData = PTx.toData
+  whyFromData = PTx.fromData
+
 -- | @since 1.10.0
 instance
-  (PTx.ToData (AsHaskell a), PTx.FromData (AsHaskell a), PIsData a) =>
+  (WHY (AsHaskell a), PIsData a) =>
   PLiftable (PAsData a)
   where
   type AsHaskell (PAsData a) = AsHaskell a
   type PlutusRepr (PAsData a) = PTx.Data
   {-# INLINEABLE haskToRepr #-}
-  haskToRepr = PTx.toData
+  haskToRepr = whyToData
   {-# INLINEABLE reprToHask #-}
-  reprToHask = maybe (Left CouldNotDecodeData) Right . PTx.fromData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . whyFromData
   {-# INLINEABLE reprToPlut #-}
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
