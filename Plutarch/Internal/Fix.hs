@@ -23,7 +23,8 @@ import Plutarch.Internal.Term
   Further examples can be found in examples/Recursion.hs
 -}
 pfix :: Term s (((a :--> b) :--> a :--> b) :--> a :--> b)
-pfix = phoistAcyclic $
+pfix =
+  -- phoistAcyclic $
   punsafeCoerce $
     plam' $ \f ->
       plam' (\(x :: Term s POpaque) -> f # plam' (\(v :: Term s POpaque) -> punsafeCoerce x # x # v))
