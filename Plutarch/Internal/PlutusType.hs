@@ -77,7 +77,7 @@ import {-# SOURCE #-} Plutarch.Internal.Lift (
   getPLifted,
   unsafeHaskToUni,
  )
-import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
+import Plutarch.Internal.Quantification (PForall (PForall))
 import Plutarch.Internal.Term (PType, S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import PlutusCore qualified as PLC
 
@@ -141,16 +141,6 @@ instance PlutusType (PForall f) where
   type PInner (PForall f) = PForall f
   pcon' (PForall x) = punsafeCoerce x
   pmatch' x f = f (PForall $ punsafeCoerce x)
-
-instance PlutusType (PSome f) where
-  type PInner (PSome f) = PSome f
-  pcon' (PSome x) = punsafeCoerce x
-  pmatch' x f = f (PSome $ punsafeCoerce x)
-
-instance PlutusType (PFix f) where
-  type PInner (PFix f) = f (PFix f)
-  pcon' (PFix x) = x
-  pmatch' x f = f (PFix x)
 
 --------------------------------------------------------------------------------
 
