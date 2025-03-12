@@ -4,11 +4,14 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where
 import Plutarch.Prelude
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Unsafe (punsafeCoerce)
 ```
 
@@ -115,24 +118,24 @@ Also - as parsing data costs computation resources, it is common to pass tagged 
 2. Manipulates given `S -> Type` on its internal representation (provided as type `PInner`), 
   rather than parsing/constructing the datatype back and forth.
 
-Examples on how to derive `PlutusType` to either Data or Scott encoding:
+Examples on how to derive `PlutusType` to either Data or SOP encoding:
 
 ```haskell
 data MyType (a :: S -> Type) (b :: S -> Type) (s :: S)
   = One (Term s a)
   | Two (Term s b)
-  deriving stock Generic
-  deriving anyclass PlutusType
-instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via (DeriveAsSOPStruct (MyType a b))
 
 -- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
 
 data MyTypeD (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
-  | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
-  deriving stock Generic
-  deriving anyclass PlutusType
-instance DerivePlutusType (MyTypeD a b) where type DPTStrat _ = PlutusTypeData
+  = OneD (Term s (PAsData a))
+  | TwoD (Term s (PAsData b))
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via (DeriveAsDataStruct (MyTypeD a b))
 
 -- Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
 -- Sum type as an Enum via PInteger:

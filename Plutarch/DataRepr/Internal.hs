@@ -17,7 +17,6 @@ module Plutarch.DataRepr.Internal (
   pindexDataRecord,
   pdropDataRecord,
   DualReprHandler (..),
-  PlutusTypeData,
 ) where
 
 import Data.Coerce (coerce)
@@ -53,6 +52,7 @@ import Generics.SOP (
   hmap,
   para_SList,
  )
+import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Data (
   PAsData,
@@ -76,22 +76,15 @@ import Plutarch.DataRepr.Internal.HList (
   type IndexList,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.Generic (PCode, PGeneric)
 import Plutarch.Internal.IsData (PIsData, pdata, pdataImpl, pforgetData, pfromData, pfromDataImpl)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
-import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  DerivePlutusType (DPTStrat),
-  DerivedPInner,
   PlutusType (PInner, pcon', pmatch'),
-  PlutusTypeStrat,
-  PlutusTypeStratConstraint,
-  derivedPCon,
-  derivedPMatch,
   pcon,
   pmatch,
  )
@@ -126,6 +119,7 @@ import Plutarch.Internal.TryFrom (
   pupcast,
  )
 import Plutarch.Reducible (NoReduce, Reduce)
+import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.Trace (ptraceInfoError)
 import Plutarch.Unsafe (punsafeCoerce)
 
@@ -207,9 +201,8 @@ instance
 -}
 newtype PDataRecordShowHelper as s = PDataRecordShowHelper (Term s (PDataRecord as))
   deriving stock (Generic)
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType (PDataRecordShowHelper as) where type DPTStrat _ = PlutusTypeNewtype
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via (DeriveNewtypePlutusType (PDataRecordShowHelper as))
 
 instance PShow (PDataRecordShowHelper '[]) where
   pshow' _ _ = "]"
@@ -416,8 +409,6 @@ pdropDataRecord n xs =
   punsafeCoerce $
     pdrop @PBuiltinList @PData (fromInteger $ natVal n) (punsafeCoerce xs)
 
-data PlutusTypeData
-
 class
   ( IsPDataSum (PCode a)
   , SListI (IsPDataSumDefs (PCode a))
@@ -430,12 +421,6 @@ instance
   , PGeneric a
   ) =>
   PlutusTypeDataConstraint a
-
-instance PlutusTypeStrat PlutusTypeData where
-  type PlutusTypeStratConstraint PlutusTypeData = PlutusTypeDataConstraint
-  type DerivedPInner PlutusTypeData a = PDataSum (IsPDataSumDefs (PCode a))
-  derivedPCon x = pcon $ toSum $ gpfrom x
-  derivedPMatch x f = pmatch x (f . gpto . fromSum)
 
 newtype DualReprHandler s out def = DualRepr (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out)
 

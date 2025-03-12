@@ -2,6 +2,14 @@
 
 # UNRELEASED
 
+## Removed
+
+- `DerivePlutusType` and everything related
+
+## Added
+
+- `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
+
 ## Changed
 
 * `plutus-core` version bound to `>=1.40.0.0 && <1.41`

@@ -100,7 +100,6 @@ library
     Plutarch.Internal.IsData
     Plutarch.Internal.Lift
     Plutarch.Internal.ListLike
-    Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
@@ -108,7 +107,6 @@ library
     Plutarch.Internal.PlutusType
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
-    Plutarch.Internal.ScottEncoding
     Plutarch.Internal.Semigroup
     Plutarch.Internal.Show
     Plutarch.Internal.Subtype

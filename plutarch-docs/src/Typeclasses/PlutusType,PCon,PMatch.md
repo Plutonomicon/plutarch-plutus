@@ -5,12 +5,11 @@
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
+module Plutarch.Docs.PlutusTypePConAndPMatch (PMyTypeData(..)) where
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Prelude
-import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 ```
 
 </p>
@@ -54,24 +53,6 @@ This is quite useful when working with `newtype`s. Notice how `PCurrencySymbol`,
 `PInner` is also `PByteString`. To be able to use functions that operate on `PByteString`s with your `PCurrencySymbol`, you can simply take
 out the `PByteString` using `pto`!
 
-## Implementing `PlutusType` for your own types (Scott Encoding)
-
-If you want to represent your data type with [Scott encoding](./../Concepts/DataAndScottEncoding.md#scott-encoding) (and therefore
-don't need to make it `Data` encoded), you should simply derive it generically:
-
-```haskell
-data PMyType (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = POne (Term s a)
-  | PTwo (Term s b)
-  deriving stock (Generic)
-  deriving anyclass PlutusType
-
-instance DerivePlutusType (PMyType a b) where type DPTStrat _ = PlutusTypeScott
-```
-
-> NOTE: you can derive PlutusType for all types you defined a `DerivePlutusType` instance for. The strategy it uses is determined by the
-> type that you put after `DPTStrat _ =`, in this case Scottencoding
-
 ## Implementing `PlutusType` for your own types (`Data` Encoding)
 
 If your type is supposed to be represented using [`Data` encoding](./../Concepts/DataAndScottEncoding.md#data-encoding) instead,
@@ -79,12 +60,11 @@ you can derive `PlutusType` via `PlutusTypeData`:
 
 ```haskell
 data PMyTypeData (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = POneD (Term s (PDataRecord '[ "_0" ':= a ]))
-  | PTwoD (Term s (PDataRecord '[ "_0" ':= b ]))
-  deriving stock Generic
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData
+  = POneD (Term s (PAsData a))
+  | PTwoD (Term s (PAsData b))
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via (DeriveAsDataStruct (PMyTypeData a b))
 ```
 
 ## Implementing `PlutusType` for your own types (SoP Encoding)

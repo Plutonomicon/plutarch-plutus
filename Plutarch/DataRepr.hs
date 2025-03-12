@@ -10,7 +10,6 @@ module Plutarch.DataRepr (
   I.PLabeledType ((:=)),
   I.pindexDataRecord,
   I.pdropDataRecord,
-  I.PlutusTypeData,
 
   -- * Fields
   F.PDataFields (ptoFields, type PFields),

@@ -6,7 +6,6 @@
 module Plutarch.Internal.PlutusType (
   PlutusType,
   PInnermost,
-  PlutusTypeStratConstraint,
   PCon,
   PMatch,
   pcon',
@@ -14,12 +13,6 @@ module Plutarch.Internal.PlutusType (
   pmatch,
   pcon,
   PInner,
-  PlutusTypeStrat,
-  DerivePlutusType,
-  DPTStrat,
-  DerivedPInner,
-  derivedPCon,
-  derivedPMatch,
   PVariant,
   PCovariant,
   PContravariant,
@@ -61,7 +54,6 @@ import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit (PUnit), punit)
 
 import Data.Kind (Constraint, Type)
-import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (
@@ -74,7 +66,7 @@ import Generics.SOP (
  )
 import Generics.SOP qualified as SOP
 import Generics.SOP.Constraint (Head)
-import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
+import Plutarch.Internal.Generic (PCode, PGeneric)
 import {-# SOURCE #-} Plutarch.Internal.IsData (
   PIsData,
   pdata,
@@ -87,7 +79,6 @@ import {-# SOURCE #-} Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (PType, S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
-import Plutarch.Internal.Witness (witness)
 import PlutusCore qualified as PLC
 
 type family PInnermost' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
@@ -96,26 +87,8 @@ type family PInnermost' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
 
 type PInnermost a = PInnermost' (PInner a) a
 
-class PlutusTypeStrat (strategy :: Type) where
-  type PlutusTypeStratConstraint strategy :: PType -> Constraint
-  type DerivedPInner strategy (a :: PType) :: PType
-  derivedPCon :: forall a s. (DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
-  derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
-
-class
-  ( PInner a ~ DerivedPInner (DPTStrat a) a
-  , PlutusTypeStrat (DPTStrat a)
-  , PlutusTypeStratConstraint (DPTStrat a) a
-  , PlutusType a
-  ) =>
-  DerivePlutusType (a :: PType)
-  where
-  type DPTStrat a :: Type
-  type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
-
 class PlutusType (a :: PType) where
   type PInner a :: PType
-  type PInner a = DerivedPInner (DPTStrat a) a
   type PCovariant' a :: Constraint
   type PCovariant' a = All2 PCovariant'' (PCode a)
   type PContravariant' a :: Constraint
@@ -123,13 +96,7 @@ class PlutusType (a :: PType) where
   type PVariant' a :: Constraint
   type PVariant' a = All2 PVariant'' (PCode a)
   pcon' :: forall s. a s -> Term s (PInner a)
-  default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
-  pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
-
   pmatch' :: forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
-  -- FIXME buggy GHC, needs AllowAmbiguousTypes
-  default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
-  pmatch' = derivedPMatch
 
 {-# DEPRECATED PCon "Use PlutusType" #-}
 type PCon = PlutusType
@@ -187,18 +154,8 @@ instance PlutusType (PFix f) where
 
 --------------------------------------------------------------------------------
 
-data PlutusTypeNewtype
-
 class (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
 instance (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
-
-instance PlutusTypeStrat PlutusTypeNewtype where
-  type PlutusTypeStratConstraint PlutusTypeNewtype = Helper
-  type DerivedPInner PlutusTypeNewtype a = GetPNewtype a
-  derivedPCon x = case gpfrom x of
-    SOP.SOP (SOP.Z (x SOP.:* SOP.Nil)) -> x
-    SOP.SOP (SOP.S x) -> case x of {}
-  derivedPMatch x f = f (gpto $ SOP.SOP $ SOP.Z $ x SOP.:* SOP.Nil)
 
 type family GetPNewtype' (a :: [[PType]]) :: PType where
   GetPNewtype' '[ '[a]] = a

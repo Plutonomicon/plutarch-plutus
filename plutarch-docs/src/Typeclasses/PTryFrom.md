@@ -3,10 +3,13 @@
 <p>
 
 ```haskell
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances, UndecidableInstances #-}
+
 module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
+
 import Plutarch.Prelude
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 ```
 
 </p>
@@ -40,20 +43,19 @@ via `PlutusTypeData` as `PTryFrom` also has a generic `default` implementation.
 ```haskell
 -- your datatype
 data PAB (s :: S)
-  = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
-  | PB (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString]))
+  = PA (Term s (PAsData PInteger)) (Term s (PAsData PByteString))
+  | PB (Term s (PAsData (PBuiltinList (PAsData PInteger)))) (Term s (PAsData PByteString))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData)
+  deriving anyclass (SOP.Generic, PIsData)
+  deriving (PlutusType) via (DeriveAsDataStruct PAB)
 
--- getting the generic `Data` representation for your type
-instance DerivePlutusType PAB where type DPTStrat _ = PlutusTypeData
 -- getting a generic `PTryFrom` instance that recovers your type 
 -- from an opaque `PData`
 instance PTryFrom PData (PAsData PAB)
 
 -- a valid AB
 sampleAB :: Term s (PAsData PAB)
-sampleAB = pdata $ pcon $ PA (pdcons @"_0" # pdata (pconstant 4) #$ pdcons # pdata (pconstant "foo") # pdnil)
+sampleAB = pdata $ pcon $ PA (pconstant 4) (pdata (pconstant "foo"))
 
 -- we forget the structure of our `sampleAB`
 sampleABdata :: Term s PData

@@ -4,11 +4,12 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
-{-# LANGUAGE StandaloneDeriving, FlexibleInstances #-}
+{-# LANGUAGE StandaloneDeriving, FlexibleInstances, UndecidableInstances #-}
 
 module Plutarch.Docs.DerivingForNewtype (PPubKeyHash'(..), PPubKeyHash(..)) where
 import Plutarch.Prelude
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 ```
 
 </p>
@@ -28,9 +29,8 @@ You ideally want to just have this `newtype` be represented as a `PByteString` u
 ```haskell
 newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PShow)
-instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype
-
+  deriving anyclass (SOP.Generic, PIsData, PEq, POrd, PShow)
+  deriving (PlutusType) via (DeriveNewtypePlutusType PPubKeyHash)
 ```
 
 > Note: It's important to note that the content of a `newtype` _that aims to be a Plutarch type_ (i.e. can be represented as a Plutarch term), must also be a Plutarch term.
