@@ -5,7 +5,7 @@
 ```haskell
 {-# LANGUAGE FlexibleInstances, UndecidableInstances #-}
 
-module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
+module Plutarch.Docs.PTryFrom (recoverListFromPData, recoverListPartially, recoverAB) where 
 
 import Plutarch.Prelude
 import GHC.Generics (Generic)
@@ -91,31 +91,6 @@ An important note is, that `PTryFrom` carries a type `PTryFromExcess` which safe
 `PData (PAsData PSomething)` instances this most times 
 carries a `PSomething`, i.e. the type that has been proven equality for but without `PAsData` wrapper. In cases where this type is not useful, 
 the excess type is just an empty `HRec`.
-
-In case of the recovered type being a record or anything that contains a record, the excess type is more interesting: 
-It contains an `HRec`, that has all the fields that have been recoverd and all *their* excess stored. If you recover a `PAsData (PDataRecord xs)` from `PData`, there is another field under the accessor `"unwrapped"` that contains the unwrapped record, which representation wise is just a `PBuiltinList
-PData`, of course. 
-
-Generally, when recovering a `PDataRecord`, the procedure is as follows
-
-```haskell
-untrustedRecord :: Term s PData
-untrustedRecord =
-  let r :: Term s (PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])]))
-      r = pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil
-   in pforgetData r
-
--- obviously, `untrustedRecord` would be what we get from our untrusted party
-
-theField :: Term s PInteger
-theField = unTermCont $ do
-  (_, exc) <- tcont (ptryFrom @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
-  pure $ snd (snd $ snd (snd exc)._0)._1
-```
-
-Because the record excess stores the field already in its unwrapped form, you don't have to `pfromData` it again. 
-
-If you don't use `OverloadedRecordDot`, there is an equivalent function `getField` (from `GHC.Records`) that does the same and works with type applications. 
 
 ## Recovering only partially
 

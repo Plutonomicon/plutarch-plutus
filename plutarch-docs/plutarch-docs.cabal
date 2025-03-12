@@ -84,7 +84,6 @@ executable plutarch-docs
     Plutarch.Docs.PBuiltinPair
     Plutarch.Docs.PByteString
     Plutarch.Docs.PData
-    Plutarch.Docs.PDataSumAndRecord
     Plutarch.Docs.PEqAndPOrd
     Plutarch.Docs.PInteger
     Plutarch.Docs.PList

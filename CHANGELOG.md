@@ -5,6 +5,7 @@
 ## Removed
 
 - `DerivePlutusType` and everything related
+- `Plutarch.DataRepr`
 
 ## Added
 

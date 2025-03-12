@@ -74,16 +74,6 @@ module Plutarch.Prelude (
   -- * Unit
   PUnit (..),
 
-  -- * DataRepr
-  PDataFields,
-  PDataRecord,
-  PDataSum,
-  PLabeledType ((:=)),
-  pdcons,
-  pdnil,
-  pfield,
-  pletFields,
-
   -- * Either
   PEither (..),
 
@@ -233,7 +223,6 @@ module Plutarch.Prelude (
   pguardC,
   pguardC',
   pletC,
-  pletFieldsC,
   pmatchC,
   ptraceC,
   ptryFromC,
@@ -279,7 +268,6 @@ import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Opaque
 import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
-import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Enum
 import Plutarch.Internal.Eq
