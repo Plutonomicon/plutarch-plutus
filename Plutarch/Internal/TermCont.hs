@@ -7,9 +7,11 @@ module Plutarch.Internal.TermCont (
   unTermCont,
   tcont,
   pfindPlaceholder,
+  pfindAllPlaceholders,
 ) where
 
 import Data.Kind (Type)
+import Data.List (nub)
 import Data.String (fromString)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -94,3 +96,25 @@ pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
     findPlaceholder RError = False
 
   asRawTerm (f . findPlaceholder . getTerm $ y) i
+
+-- | Finds all placeholder ids and returns it
+pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
+pfindAllPlaceholders x = TermCont $ \f -> Term $ \i -> do
+  y <- asRawTerm x i
+
+  let
+    findPlaceholder (RLamAbs _ x) = findPlaceholder x
+    findPlaceholder (RApply x xs) = findPlaceholder x <> foldMap findPlaceholder xs
+    findPlaceholder (RForce x) = findPlaceholder x
+    findPlaceholder (RDelay x) = findPlaceholder x
+    findPlaceholder (RHoisted (HoistedTerm _ x)) = findPlaceholder x
+    findPlaceholder (RPlaceHolder idx) = [idx]
+    findPlaceholder (RConstr _ xs) = foldMap findPlaceholder xs
+    findPlaceholder (RCase x xs) = findPlaceholder x <> foldMap findPlaceholder xs
+    findPlaceholder (RVar _) = []
+    findPlaceholder (RConstant _) = []
+    findPlaceholder (RBuiltin _) = []
+    findPlaceholder (RCompiled _) = []
+    findPlaceholder RError = []
+
+  asRawTerm (f . nub . findPlaceholder . getTerm $ y) i
