@@ -20,7 +20,7 @@ module Plutarch.List (
   pmatchListUnsafe,
 ) where
 
-import Control.Arrow (second)
+import Data.Bifunctor (bimap)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
@@ -323,7 +323,7 @@ pmatchList' n usedFields xs f = unTermCont $ do
       ([(Term s a, Term s (li a))] -> Term s r) ->
       Term s r
     mkMatches idx running lastBind@(lastBindIdx, lastBindT) cps
-      | idx > n = cps []
+      | idx > n = cps [] -- >= is not correct, we want to compute one more for the "rest" part.
       | idx `elem` usedFields =
           let
             isLastBind = all (<= idx) usedFields
@@ -346,7 +346,7 @@ pmatchList' n usedFields xs f = unTermCont $ do
             \rest ->
               cps $ (phead # running, running) : rest
 
-  pure $ mkMatches 0 xs (0, xs) (uncurry f . second last . unzip)
+  pure $ mkMatches 0 xs (0, xs) (uncurry f . bimap (take $ fromInteger n) last . unzip)
 
 type family Length xs where
   Length '[] = 0
