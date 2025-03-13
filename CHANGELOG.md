@@ -11,6 +11,7 @@
 ## Added
 
 * PLiftable instance deriving strategy for Data records and structs
+* `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
 
 ## Fixed
 
