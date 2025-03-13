@@ -253,13 +253,14 @@ pmatchListN ::
   Term s b
 pmatchListN n xs f = pgetInternalConfig $ \cfg -> unTermCont $ do
   let
+    -- placeholders are from 0 to n - 1, n is the "rest" part
     placeholders = pplaceholder <$> [0 .. (n - 1)]
-    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f placeholders (pplaceholder -1)
+    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f placeholders (pplaceholder n)
 
   usedFields <-
     if internalConfig'dataRecPMatchOptimization cfg
       then pfindAllPlaceholders placeholderApplied
-      else pure [0 .. (n - 1)]
+      else pure [0 .. n]
 
   pure $ pmatchList' n usedFields xs f
 
@@ -335,14 +336,10 @@ pmatchList' n usedFields xs f = unTermCont $ do
               | isLastBind || dropAmount <= 3 = dropToCurrent' lastBindT
               | otherwise = phoistAcyclic (plam dropToCurrent') # lastBindT
 
-            bindIfNeeded =
-              -- If the current term is last bind and we don't need the "rest" part, we don't have to plet it.
-              if not $ isLastBind && (-1 `elem` usedFields)
-                then (\a h -> h a)
-                else plet
+            bindIfNeeded = if isLastBind then (\a h -> h a) else plet
            in
             bindIfNeeded currentTerm $ \newBind ->
-              mkMatches (idx + 1) (ptail # running) lastBind $ \rest ->
+              mkMatches (idx + 1) (ptail # running) (idx, newBind) $ \rest ->
                 cps $ (phead # newBind, newBind) : rest
       | otherwise =
           mkMatches (idx + 1) (ptail # running) lastBind $
