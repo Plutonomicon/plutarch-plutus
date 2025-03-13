@@ -24,7 +24,7 @@ import Control.Arrow (second)
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
-import GHC.TypeLits
+import GHC.TypeLits (KnownNat, natVal, type (+), type (-))
 import Generics.SOP (NP (..))
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, ptrue, (#&&))
