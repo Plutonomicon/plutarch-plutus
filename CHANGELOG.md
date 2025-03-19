@@ -2,6 +2,10 @@
 
 # UNRELEASED
 
+## Added
+
+* `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
+
 ## Changed
 
 * `plutus-core` version bound to `>=1.40.0.0 && <1.41`
