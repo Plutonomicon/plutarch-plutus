@@ -1,13 +1,14 @@
 module Plutarch.Test.Suite.Plutarch.List (tests, integerList) where
 
 import Data.List (find)
+import Generics.SOP (NP (..))
 import Plutarch.Internal.ListLike (pconvertLists, pfoldl')
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
-import Plutarch.List (pcheckSorted, preverse)
+import Plutarch.List (pcheckSorted, pmatchList, preverse)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent)
-import Plutarch.Test.Unit (testEvalEqual)
+import Plutarch.Test.Unit (testEvalEqual, testEvalFail)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
 
@@ -91,6 +92,29 @@ tests =
                     PTrue -> perror
                     PFalse -> plet (phead # numList) $ \_x -> ptail # numList
             ]
+        , goldenGroup
+            "pmatchList"
+            [ goldenEval "match-nothing" $
+                pmatchList
+                  @0
+                  (integerList [1 .. 10])
+                  (\Nil rest -> rest)
+            , goldenEval "rest-unused" $
+                pmatchList
+                  @5
+                  (integerList [1 .. 10])
+                  (\(_ :* a :* _ :* b :* _) _rest -> a + b)
+            , goldenEval "rest-used" $
+                pmatchList
+                  @5
+                  (integerList [1 .. 10])
+                  (\(a :* _ :* b :* _ :* _) rest -> a + b + (phead # rest))
+            , goldenEval "use-only-rest(drop N)" $
+                pmatchList
+                  @5
+                  (integerList [1 .. 10])
+                  (\(_ :* _ :* _ :* _ :* _) rest -> rest)
+            ]
         ]
     , testGroup
         "Unit tests"
@@ -127,6 +151,60 @@ tests =
                 "two items in the wrong order are not sorted"
                 (pcheckSorted # pconstant @(PBuiltinList PInteger) ([2, 1] :: [Integer]))
                 (pcon PFalse)
+            ]
+        , testGroup
+            "pmatchList"
+            [ testEvalEqual
+                "add first five and first element of rest"
+                ( pmatchList
+                    @5
+                    (integerList [1 .. 10])
+                    ( \(a :* b :* c :* d :* e :* Nil) rest ->
+                        a + b + c + d + e + (phead # rest)
+                    )
+                )
+                (pconstant 21)
+            , testEvalEqual
+                "match first five, but add matched and first of rest"
+                ( pmatchList
+                    @5
+                    (integerList [1 .. 10])
+                    ( \(a :* _ :* _ :* _ :* _ :* Nil) rest ->
+                        a + (phead # rest)
+                    )
+                )
+                (pconstant 7)
+            , testEvalEqual
+                "match no element"
+                ( pmatchList
+                    @0
+                    (integerList [1 .. 10])
+                    (\Nil rest -> phead # rest #== 1)
+                )
+                (pconstant True)
+            , testEvalEqual
+                "match no element"
+                ( pmatchList
+                    @0
+                    (integerList [1 .. 10])
+                    (\Nil rest -> phead # rest #== 1)
+                )
+                (pconstant True)
+            , testEvalFail
+                "match on more elements than given"
+                ( pmatchList
+                    @3
+                    (integerList [1 .. 2])
+                    (\(_ :* _ :* a :* Nil) _rest -> a)
+                )
+            , testEvalEqual
+                "if all elements are matched, rest is null"
+                ( pmatchList
+                    @3
+                    (integerList [1 .. 3])
+                    (\(_ :* _ :* _ :* Nil) rest -> pnull # rest)
+                )
+                (pconstant True)
             ]
         ]
     , testGroup
