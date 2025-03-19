@@ -23,36 +23,7 @@ x1+x2.pmatch program 1.1.0 3
 uncons.ChooseList program 1.1.0 [2,3,4,5]
 uncons.head-and-tail program 1.1.0 [2,3,4,5]
 uncons.head-and-tail-and-null program 1.1.0 [2,3,4,5]
-pmatchList.match-nothing program
-  1.1.0
-  (constr 0
-     [ 1
-     , (constr 0
-          [ 2
-          , (constr 0
-               [ 3
-               , (constr 0
-                    [ 4
-                    , (constr 0
-                         [ 5
-                         , (constr 0
-                              [ 6
-                              , (constr 0
-                                   [ 7
-                                   , (constr 0
-                                        [ 8
-                                        , (constr 0
-                                             [ 9
-                                             , (constr 0
-                                                  [ 10
-                                                  , (constr 1
-                                                       [  ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+pmatchList.match-nothing program 1.1.0 [1,2,3,4,5,6,7,8,9,10]
 pmatchList.rest-unused program 1.1.0 6
 pmatchList.rest-used program 1.1.0 10
-pmatchList.use-only-rest(drop N) program
-  1.1.0
-  (constr 0
-     [ 6
-     , (constr 0
-          [ 7
-          , (constr 0 [8, (constr 0 [9, (constr 0 [10, (constr 1 [])])])]) ]) ])
+pmatchList.use-only-rest(drop N) program 1.1.0 [6,7,8,9,10]

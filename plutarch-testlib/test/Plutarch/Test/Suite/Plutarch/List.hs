@@ -92,27 +92,28 @@ tests =
                     PTrue -> perror
                     PFalse -> plet (phead # numList) $ \_x -> ptail # numList
             ]
-        , goldenGroup
+        , -- Used BuiltinList here because it generates less bloat golden
+          goldenGroup
             "pmatchList"
             [ goldenEval "match-nothing" $
                 pmatchList
                   @0
-                  (integerList [1 .. 10])
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
                   (\Nil rest -> rest)
             , goldenEval "rest-unused" $
                 pmatchList
                   @5
-                  (integerList [1 .. 10])
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
                   (\(_ :* a :* _ :* b :* _) _rest -> a + b)
             , goldenEval "rest-used" $
                 pmatchList
                   @5
-                  (integerList [1 .. 10])
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
                   (\(a :* _ :* b :* _ :* _) rest -> a + b + (phead # rest))
             , goldenEval "use-only-rest(drop N)" $
                 pmatchList
                   @5
-                  (integerList [1 .. 10])
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
                   (\(_ :* _ :* _ :* _ :* _) rest -> rest)
             ]
         ]
