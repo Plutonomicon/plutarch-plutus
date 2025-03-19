@@ -684,6 +684,9 @@ tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 -- | Given a term, and an integer tag, this function checks if the term
 --   holds and <tt>PPlaceholder</tt> with the given integer tag.
 pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
+
+-- | Finds all placeholder ids and returns it
+pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
 instance forall (r :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). GHC.Base.Functor (Plutarch.Internal.TermCont.TermCont @r s)
 instance forall (r :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). GHC.Base.Applicative (Plutarch.Internal.TermCont.TermCont @r s)
 instance forall (r :: Plutarch.Internal.Term.PType) (s :: Plutarch.Internal.Term.S). GHC.Base.Monad (Plutarch.Internal.TermCont.TermCont @r s)
@@ -2598,9 +2601,42 @@ pelemAt' :: PIsListLike l a => Term s (PInteger :--> (l a :--> a))
 
 -- | <i> O(min(n, m)) </i>. Check if two lists are equal.
 plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> (list a :--> PBool))
+
+-- | Match first N elements from the list. It's is better to use
+--   <tt>pmatchList</tt> if number of elements that needs to be match does
+--   not need to be dynamically determined. It is important to understand
+--   each element given in Haskell list is "computation" to get nth
+--   element. If those need to be referenced multiple times, it needs to be
+--   pletted to prevent duplication of computation.
+--   
+--   @since WIP
+pmatchListN :: forall b li a s. PIsListLike li a => Integer -> Term s (li a) -> ([Term s a] -> Term s (li a) -> Term s b) -> Term s b
+
+-- | Same functionality to <tt>pmatchListN</tt> but each matched value will
+--   be given in <tt>NP</tt> for better typing. Same performance
+--   implications as <tt>pmatchListN</tt>.
+--   
+--   @since WIP
+pmatchList :: forall n r li a s. (PIsListLike li a, KnownNat (Length (Replicate n a)), UnsafeConstrNP (Replicate n a)) => Term s (li a) -> (NP (Term s) (Replicate n a) -> Term s (li a) -> Term s r) -> Term s r
+
+-- | Same as <tt>pmatchList</tt> but allows matching each element to
+--   arbitrary type. Essentially, this is <tt>pmatchList</tt> combined with
+--   <tt>punsafeCoerce</tt>; therefore, this is unsafe and will require
+--   careful attention when using this.
+--   
+--   This function is especially helpful when matching on <tt>PBuiltinList
+--   (PData)</tt> when user knows the type of each elements. If first two
+--   elements are Data Integers, one can use <tt>pmatchListUnsafe
+--   </tt>'[PAsData PInteger, PAsData PInteger] li@ and have everything
+--   already coerced when it's being matched.
+--   
+--   @since WIP
+pmatchListUnsafe :: forall (struct :: [S -> Type]) r li a s. (PIsListLike li a, KnownNat (Length struct), UnsafeConstrNP struct) => Term s (li a) -> (NP (Term s) struct -> Term s (li a) -> Term s r) -> Term s r
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.List.PList a s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.List.PList a s)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.List.PList a)
+instance forall (xs :: [Plutarch.Internal.Term.PType]) (x :: Plutarch.Internal.Term.PType). Plutarch.List.UnsafeConstrNP xs => Plutarch.List.UnsafeConstrNP ((':) @Plutarch.Internal.Term.PType x xs)
+instance Plutarch.List.UnsafeConstrNP ('[] @Plutarch.Internal.Term.PType)
 instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Show.PShow a => Plutarch.Internal.Show.PShow (Plutarch.List.PList a)
 instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.Eq.PEq a => Plutarch.Internal.Eq.PEq (Plutarch.List.PList a)
 instance Plutarch.Internal.ListLike.PListLike Plutarch.List.PList
@@ -3204,6 +3240,9 @@ tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 -- | Given a term, and an integer tag, this function checks if the term
 --   holds and <tt>PPlaceholder</tt> with the given integer tag.
 pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
+
+-- | Finds all placeholder ids and returns it
+pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
 
 -- | Like <a>plet</a> but works in a <a>TermCont</a> monad
 pletC :: Term s a -> TermCont s (Term s a)
