@@ -792,3 +792,26 @@ uncons.head-and-tail-and-null program
               [(force ifThenElse)]))
         (force nullList !1))
      [1,2,3,4,5])
+pmatchList.match-nothing program 1.1.0 [1,2,3,4,5,6,7,8,9,10]
+pmatchList.rest-unused program
+  1.1.0
+  ((\!0 ->
+      (\!0 ->
+         (\!0 -> addInteger (!2 !1) (!2 (!3 (!3 !1))))
+           (!2 [1,2,3,4,5,6,7,8,9,10]))
+        (force headList))
+     (force tailList))
+pmatchList.rest-used program
+  1.1.0
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               addInteger (addInteger (!2 !4) (!2 !1)) (!2 (!3 (!3 (!3 !1)))))
+              (!2 (!2 !3)))
+           (force headList))
+        (force tailList))
+     [1,2,3,4,5,6,7,8,9,10])
+pmatchList.use-only-rest(drop N) program
+  1.1.0
+  ((\!0 -> !1 (!1 (!1 (!1 (!1 [1,2,3,4,5,6,7,8,9,10]))))) (force tailList))

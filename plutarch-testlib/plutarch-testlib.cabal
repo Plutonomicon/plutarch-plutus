@@ -137,6 +137,7 @@ test-suite tests
   build-depends:
     , base16-bytestring
     , bytestring
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
