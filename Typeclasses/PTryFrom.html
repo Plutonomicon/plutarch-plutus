@@ -155,10 +155,13 @@
                         <details>
 <summary> imports </summary>
 <p>
-<pre><code class="language-haskell">{-# LANGUAGE FlexibleInstances #-}
-module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
+<pre><code class="language-haskell">{-# LANGUAGE FlexibleInstances, UndecidableInstances #-}
+
+module Plutarch.Docs.PTryFrom (recoverListFromPData, recoverListPartially, recoverAB) where 
+
 import Plutarch.Prelude
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 </code></pre>
 </p>
 </details>
@@ -181,20 +184,19 @@ recoverListFromPData = unTermCont . fmap fst . tcont . ptryFrom @(PAsData (PBuil
 via <code>PlutusTypeData</code> as <code>PTryFrom</code> also has a generic <code>default</code> implementation.</p>
 <pre><code class="language-haskell">-- your datatype
 data PAB (s :: S)
-  = PA (Term s (PDataRecord '["_0" ':= PInteger, "_1" ':= PByteString]))
-  | PB (Term s (PDataRecord '["_0" ':= PBuiltinList (PAsData PInteger), "_1" ':= PByteString]))
+  = PA (Term s (PAsData PInteger)) (Term s (PAsData PByteString))
+  | PB (Term s (PAsData (PBuiltinList (PAsData PInteger)))) (Term s (PAsData PByteString))
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData)
+  deriving anyclass (SOP.Generic, PIsData)
+  deriving (PlutusType) via (DeriveAsDataStruct PAB)
 
--- getting the generic `Data` representation for your type
-instance DerivePlutusType PAB where type DPTStrat _ = PlutusTypeData
 -- getting a generic `PTryFrom` instance that recovers your type 
 -- from an opaque `PData`
 instance PTryFrom PData (PAsData PAB)
 
 -- a valid AB
 sampleAB :: Term s (PAsData PAB)
-sampleAB = pdata $ pcon $ PA (pdcons @"_0" # pdata (pconstant 4) #$ pdcons # pdata (pconstant "foo") # pdnil)
+sampleAB = pdata $ pcon $ PA (pconstant 4) (pdata (pconstant "foo"))
 
 -- we forget the structure of our `sampleAB`
 sampleABdata :: Term s PData
@@ -233,24 +235,6 @@ element of the resulting Tuple must always be wrapped in <code>PAsData</code> if
 <code>PData (PAsData PSomething)</code> instances this most times
 carries a <code>PSomething</code>, i.e. the type that has been proven equality for but without <code>PAsData</code> wrapper. In cases where this type is not useful,
 the excess type is just an empty <code>HRec</code>.</p>
-<p>In case of the recovered type being a record or anything that contains a record, the excess type is more interesting:
-It contains an <code>HRec</code>, that has all the fields that have been recoverd and all <em>their</em> excess stored. If you recover a <code>PAsData (PDataRecord xs)</code> from <code>PData</code>, there is another field under the accessor <code>"unwrapped"</code> that contains the unwrapped record, which representation wise is just a <code>PBuiltinList PData</code>, of course.</p>
-<p>Generally, when recovering a <code>PDataRecord</code>, the procedure is as follows</p>
-<pre><code class="language-haskell">untrustedRecord :: Term s PData
-untrustedRecord =
-  let r :: Term s (PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])]))
-      r = pdata $ pdcons # (pdata $ pdcons # pdata (pconstant 42) # pdnil) # pdnil
-   in pforgetData r
-
--- obviously, `untrustedRecord` would be what we get from our untrusted party
-
-theField :: Term s PInteger
-theField = unTermCont $ do
-  (_, exc) &lt;- tcont (ptryFrom @(PAsData (PDataRecord '["_0" ':= (PDataRecord '["_1" ':= PInteger])])) untrustedRecord)
-  pure $ snd (snd $ snd (snd exc)._0)._1
-</code></pre>
-<p>Because the record excess stores the field already in its unwrapped form, you don't have to <code>pfromData</code> it again.</p>
-<p>If you don't use <code>OverloadedRecordDot</code>, there is an equivalent function <code>getField</code> (from <code>GHC.Records</code>) that does the same and works with type applications.</p>
 <h2 id="recovering-only-partially"><a class="header" href="#recovering-only-partially">Recovering only partially</a></h2>
 <p>In case we don't want to verify the whole structure but rather part of it (this can be a reasonable decision to lower the fees), we can just leave the part
 of the data that is not to be verified a <code>PData</code> which serves as the base case:</p>

@@ -157,12 +157,11 @@
 <p>
 <pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# LANGUAGE UndecidableInstances #-}
-module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
+module Plutarch.Docs.PlutusTypePConAndPMatch (PMyTypeData(..)) where
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Prelude
-import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 </code></pre>
 </p>
 </details>
@@ -198,31 +197,15 @@ just an alias for <code>PlutusType</code> and you'll get a deprecation warning i
 <p>This is quite useful when working with <code>newtype</code>s. Notice how <code>PCurrencySymbol</code>, for example, is simply a newtype to a <code>PByteString</code>. Its
 <code>PInner</code> is also <code>PByteString</code>. To be able to use functions that operate on <code>PByteString</code>s with your <code>PCurrencySymbol</code>, you can simply take
 out the <code>PByteString</code> using <code>pto</code>!</p>
-<h2 id="implementing-plutustype-for-your-own-types-scott-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-scott-encoding">Implementing <code>PlutusType</code> for your own types (Scott Encoding)</a></h2>
-<p>If you want to represent your data type with <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding</a> (and therefore
-don't need to make it <code>Data</code> encoded), you should simply derive it generically:</p>
-<pre><code class="language-haskell">data PMyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
-  = POne (Term s a)
-  | PTwo (Term s b)
-  deriving stock (Generic)
-  deriving anyclass PlutusType
-
-instance DerivePlutusType (PMyType a b) where type DPTStrat _ = PlutusTypeScott
-</code></pre>
-<blockquote>
-<p>NOTE: you can derive PlutusType for all types you defined a <code>DerivePlutusType</code> instance for. The strategy it uses is determined by the
-type that you put after <code>DPTStrat _ =</code>, in this case Scottencoding</p>
-</blockquote>
 <h2 id="implementing-plutustype-for-your-own-types-data-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-data-encoding">Implementing <code>PlutusType</code> for your own types (<code>Data</code> Encoding)</a></h2>
 <p>If your type is supposed to be represented using <a href="./../Concepts/DataAndScottEncoding.html#data-encoding"><code>Data</code> encoding</a> instead,
 you can derive <code>PlutusType</code> via <code>PlutusTypeData</code>:</p>
 <pre><code class="language-haskell">data PMyTypeData (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
-  = POneD (Term s (PDataRecord '[ "_0" ':= a ]))
-  | PTwoD (Term s (PDataRecord '[ "_0" ':= b ]))
-  deriving stock Generic
-  deriving anyclass (PlutusType)
-
-instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData
+  = POneD (Term s (PAsData a))
+  | PTwoD (Term s (PAsData b))
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via (DeriveAsDataStruct (PMyTypeData a b))
 </code></pre>
 <h2 id="implementing-plutustype-for-your-own-types-sop-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-sop-encoding">Implementing <code>PlutusType</code> for your own types (SoP Encoding)</a></h2>
 <p>Mechanism is the same as in Scott encoding case but using <code>DeriveAsSOPStruct</code> instead.</p>

@@ -155,10 +155,14 @@
                         <details>
 <summary> imports </summary>
 <p>
-<pre><code class="language-haskell">module Plutarch.Docs.DerivingGenerics (PMyType (..)) where
+<pre><code class="language-haskell">{-# LANGUAGE UndecidableInstances #-}
+
+module Plutarch.Docs.DerivingGenerics (PMyType (..)) where
+
 import Plutarch.Prelude
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 </code></pre>
 </p>
 </details>
@@ -167,14 +171,14 @@ import GHC.Generics (Generic)
 <pre><code class="language-haskell">data PMyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
   = POne (Term s a)
   | PTwo (Term s b)
-  deriving stock Generic
-  deriving anyclass PlutusType
-instance DerivePlutusType (PMyType a b) where type DPTStrat _ = PlutusTypeScott
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via (DeriveAsSOPStruct (PMyType a b))
 </code></pre>
 <blockquote>
 <p>Note: This requires the <code>generics-sop</code> package.</p>
 </blockquote>
-<p>This will use a <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding representation</a> for <code>MyType</code>, which is typically what you want.
+<p>This will use a <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">SOP encoding representation</a> for <code>MyType</code>, which is typically what you want.
 If you want to use <a href="./../Concepts/DataAndScottEncoding.html">data encoding representation</a> instead in your <code>PlutusType</code> instance - you should derive it
 using <code>PlutusTypeData</code>. Check out: <a href="./../Typeclasses/PIsDataReprAndPDataFields.html#implementing-pisdatarepr-and-friends">implementing <code>PIsDataRepr</code> and friends</a></p>
 <p>Currently, generic deriving supports the following typeclasses:</p>

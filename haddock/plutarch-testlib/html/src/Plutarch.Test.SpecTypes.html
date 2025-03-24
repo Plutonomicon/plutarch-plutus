@@ -6,17 +6,18 @@
 </span><span id="line-6"></span><span>
 </span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
-</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span> </span><span class="hs-keyword">qualified</span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">pretty</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(&lt;+&gt;)</span></span><span class="hs-special">)</span><span>
-</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Tasty.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">)</span><span>
-</span><span id="line-13"></span><span>
-</span><span id="line-14"></span><span class="annot"><span class="hs-comment">{- | Tuple of three elements of the same type
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span> </span><span class="hs-keyword">qualified</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">pretty</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(&lt;+&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.Tasty.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="annot"><span class="hs-comment">{- | Tuple of three elements of the same type
 
 @since 1.0.0
 -}</span></span><span>
-</span><span id="line-18"></span><span class="hs-keyword">data</span><span> </span><span id="Triplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-var">Triplet</span></a></span></span><span> </span><span id="local-6989586621679235484"><span class="annot"><a href="#local-6989586621679235484"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Triplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-var">Triplet</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679235484"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235484"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235484"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235540"><span id="local-6989586621679235547"><span id="local-6989586621679235551"><span class="annot"><span class="annottext">Int -&gt; Triplet a -&gt; ShowS
+</span><span id="line-19"></span><span class="hs-keyword">data</span><span> </span><span id="Triplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-var">Triplet</span></a></span></span><span> </span><span id="local-6989586621679235177"><span class="annot"><a href="#local-6989586621679235177"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Triplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-var">Triplet</span></a></span></span><span> </span><span class="annot"><a href="#local-6989586621679235177"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235177"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235177"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235233"><span id="local-6989586621679235240"><span id="local-6989586621679235244"><span class="annot"><span class="annottext">Int -&gt; Triplet a -&gt; ShowS
 [Triplet a] -&gt; ShowS
 Triplet a -&gt; String
 (Int -&gt; Triplet a -&gt; ShowS)
@@ -34,7 +35,7 @@ $cshow :: forall a. Show a =&gt; Triplet a -&gt; String
 show :: Triplet a -&gt; String
 $cshowList :: forall a. Show a =&gt; [Triplet a] -&gt; ShowS
 showList :: [Triplet a] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235556"><span id="local-6989586621679235561"><span class="annot"><span class="annottext">Triplet a -&gt; Triplet a -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235249"><span id="local-6989586621679235254"><span class="annot"><span class="annottext">Triplet a -&gt; Triplet a -&gt; Bool
 (Triplet a -&gt; Triplet a -&gt; Bool)
 -&gt; (Triplet a -&gt; Triplet a -&gt; Bool) -&gt; Eq (Triplet a)
 forall a. Eq a =&gt; Triplet a -&gt; Triplet a -&gt; Bool
@@ -43,7 +44,7 @@ $c== :: forall a. Eq a =&gt; Triplet a -&gt; Triplet a -&gt; Bool
 == :: Triplet a -&gt; Triplet a -&gt; Bool
 $c/= :: forall a. Eq a =&gt; Triplet a -&gt; Triplet a -&gt; Bool
 /= :: Triplet a -&gt; Triplet a -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235570"><span id="local-6989586621679235575"><span id="local-6989586621679235580"><span id="local-6989586621679235584"><span id="local-6989586621679235587"><span id="local-6989586621679235590"><span id="local-6989586621679235593"><span class="annot"><span class="annottext">Eq (Triplet a)
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235263"><span id="local-6989586621679235268"><span id="local-6989586621679235273"><span id="local-6989586621679235277"><span id="local-6989586621679235280"><span id="local-6989586621679235283"><span id="local-6989586621679235286"><span class="annot"><span class="annottext">Eq (Triplet a)
 Eq (Triplet a) =&gt;
 (Triplet a -&gt; Triplet a -&gt; Ordering)
 -&gt; (Triplet a -&gt; Triplet a -&gt; Bool)
@@ -85,50 +86,47 @@ max :: Triplet a -&gt; Triplet a -&gt; Triplet a
 $cmin :: forall a. Ord a =&gt; Triplet a -&gt; Triplet a -&gt; Triplet a
 min :: Triplet a -&gt; Triplet a -&gt; Triplet a
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679235371"><span id="local-6989586621679235600"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621679235371"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235371"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-22"></span><span>  </span><span id="local-6989586621679235607"><span class="annot"><span class="annottext">pretty :: forall ann. Triplet a -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span id="local-6989586621679235608"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679235608"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679235609"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679235609"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679235610"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679235610"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ann
+</span><span id="line-21"></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679235044"><span id="local-6989586621679235293"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621679235044"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235044"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-23"></span><span>  </span><span id="local-6989586621679235300"><span class="annot"><span class="annottext">pretty :: forall ann. Triplet a -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span id="local-6989586621679235301"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679235301"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679235302"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679235302"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span id="local-6989586621679235303"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679235303"><span class="hs-identifier hs-var">z</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ann
 forall ann. a -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679235608"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621679235301"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ann
 forall ann. a -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679235609"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621679235302"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Doc ann
 forall ann. a -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679235610"><span class="hs-identifier hs-var">z</span></a></span><span>
-</span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="annot"><span class="hs-comment">{- |
+</span><a href="#local-6989586621679235303"><span class="hs-identifier hs-var">z</span></a></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="annot"><span class="hs-comment">{- |
   We can defined a data-type using PDataRecord, with labeled fields.
-
-  With an appropriate instance of 'PIsDataRepr', we can automatically
-  derive 'PDataFields'.
 
 @since 1.0.0
 -}</span></span><span>
-</span><span id="line-32"></span><span class="hs-keyword">newtype</span><span> </span><span id="PTriplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-var">PTriplet</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235611"><span class="annot"><a href="#local-6989586621679235611"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235612"><span class="annot"><a href="#local-6989586621679235612"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span>
-</span><span id="line-33"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PTriplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-var">PTriplet</span></a></span></span><span>
-</span><span id="line-34"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span>
-</span><span id="line-35"></span><span>          </span><span class="annot"><a href="#local-6989586621679235612"><span class="hs-identifier hs-type">s</span></a></span><span>
-</span><span id="line-36"></span><span>          </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PDataRecord</span></span><span>
-</span><span id="line-37"></span><span>              </span><span class="hs-special">'</span><span class="hs-special">[</span><span> </span><span class="annot"><span class="hs-string">&quot;x&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="#local-6989586621679235611"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-38"></span><span>               </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;y&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="#local-6989586621679235611"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-39"></span><span>               </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;z&quot;</span></span><span> </span><span class="hs-special">'</span><span class="hs-operator">:=</span><span> </span><span class="annot"><a href="#local-6989586621679235611"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-40"></span><span>               </span><span class="hs-special">]</span><span>
-</span><span id="line-41"></span><span>          </span><span class="hs-special">)</span><span>
-</span><span id="line-42"></span><span>      </span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235615"><span id="local-6989586621679235617"><span class="annot"><span class="annottext">(forall x. PTriplet a s -&gt; Rep (PTriplet a s) x)
+</span><span id="line-30"></span><span class="hs-keyword">data</span><span> </span><span id="PTriplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-var">PTriplet</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235048"><span class="annot"><a href="#local-6989586621679235048"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235049"><span class="annot"><a href="#local-6989586621679235049"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PTriplet"><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-var">PTriplet</span></a></span></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="%24sel%3Aptriplet%27a%3APTriplet"><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
+PTriplet a s -&gt; Term s (PAsData a)
+</span><a href="Plutarch.Test.SpecTypes.html#%24sel%3Aptriplet%27a%3APTriplet"><span class="hs-identifier hs-var hs-var">ptriplet'a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679235049"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="#local-6989586621679235048"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="%24sel%3Aptriplet%27b%3APTriplet"><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
+PTriplet a s -&gt; Term s (PAsData a)
+</span><a href="Plutarch.Test.SpecTypes.html#%24sel%3Aptriplet%27b%3APTriplet"><span class="hs-identifier hs-var hs-var">ptriplet'b</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679235049"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="#local-6989586621679235048"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="%24sel%3Aptriplet%27c%3APTriplet"><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
+PTriplet a s -&gt; Term s (PAsData a)
+</span><a href="Plutarch.Test.SpecTypes.html#%24sel%3Aptriplet%27c%3APTriplet"><span class="hs-identifier hs-var hs-var">ptriplet'c</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679235049"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="#local-6989586621679235048"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235309"><span id="local-6989586621679235311"><span class="annot"><span class="annottext">(forall x. PTriplet a s -&gt; Rep (PTriplet a s) x)
 -&gt; (forall x. Rep (PTriplet a s) x -&gt; PTriplet a s)
 -&gt; Generic (PTriplet a s)
 forall x. Rep (PTriplet a s) x -&gt; PTriplet a s
@@ -146,7 +144,63 @@ $cto :: forall (a :: S -&gt; Type) (s :: S) x.
 Rep (PTriplet a s) x -&gt; PTriplet a s
 to :: forall x. Rep (PTriplet a s) x -&gt; PTriplet a s
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235621"><span id="local-6989586621679235627"><span class="annot"><span class="annottext">(forall (s :: S). PTriplet a s -&gt; Term s (PInner (PTriplet a)))
+</span><span id="line-36"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235318"><span id="local-6989586621679235327"><span class="annot"><span class="annottext">All @[Type] (SListI @Type) (Code (PTriplet a s))
+All @[Type] (SListI @Type) (Code (PTriplet a s)) =&gt;
+(PTriplet a s -&gt; Rep (PTriplet a s))
+-&gt; (Rep (PTriplet a s) -&gt; PTriplet a s) -&gt; Generic (PTriplet a s)
+Rep (PTriplet a s) -&gt; PTriplet a s
+PTriplet a s -&gt; Rep (PTriplet a s)
+forall a.
+All @[Type] (SListI @Type) (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (a :: S -&gt; Type) (s :: S).
+All @[Type] (SListI @Type) (Code (PTriplet a s))
+forall (a :: S -&gt; Type) (s :: S).
+Rep (PTriplet a s) -&gt; PTriplet a s
+forall (a :: S -&gt; Type) (s :: S).
+PTriplet a s -&gt; Rep (PTriplet a s)
+$cfrom :: forall (a :: S -&gt; Type) (s :: S).
+PTriplet a s -&gt; Rep (PTriplet a s)
+from :: PTriplet a s -&gt; Rep (PTriplet a s)
+$cto :: forall (a :: S -&gt; Type) (s :: S).
+Rep (PTriplet a s) -&gt; PTriplet a s
+to :: Rep (PTriplet a s) -&gt; PTriplet a s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235369"><span id="local-6989586621679235375"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a))
+-&gt; (forall (s :: S). Term s (PTriplet a) -&gt; Term s PData)
+-&gt; PIsData (PTriplet a)
+forall (s :: S).
+Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
+forall (s :: S). Term s (PTriplet a) -&gt; Term s PData
+forall (a :: S -&gt; Type).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+forall (a :: S -&gt; Type) (s :: S).
+Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
+forall (a :: S -&gt; Type) (s :: S).
+Term s (PTriplet a) -&gt; Term s PData
+$cpfromDataImpl :: forall (a :: S -&gt; Type) (s :: S).
+Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
+pfromDataImpl :: forall (s :: S).
+Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
+$cpdataImpl :: forall (a :: S -&gt; Type) (s :: S).
+Term s (PTriplet a) -&gt; Term s PData
+pdataImpl :: forall (s :: S). Term s (PTriplet a) -&gt; Term s PData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235382"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool)
+-&gt; PEq (PTriplet a)
+forall (s :: S).
+Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
+forall (t :: S -&gt; Type).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+forall (a :: S -&gt; Type) (s :: S).
+Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
+$c#== :: forall (a :: S -&gt; Type) (s :: S).
+Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
+#== :: forall (s :: S).
+Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679235401"><span id="local-6989586621679235412"><span class="annot"><span class="annottext">(forall (s :: S). PTriplet a s -&gt; Term s (PInner (PTriplet a)))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner (PTriplet a))
     -&gt; (PTriplet a s -&gt; Term s b) -&gt; Term s b)
@@ -174,113 +228,13 @@ Term s (PInner (PTriplet a))
 pmatch' :: forall (s :: S) (b :: S -&gt; Type).
 Term s (PInner (PTriplet a))
 -&gt; (PTriplet a s -&gt; Term s b) -&gt; Term s b
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235632"><span id="local-6989586621679235638"><span class="annot"><span class="annottext">(forall (s :: S).
- Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a))
--&gt; (forall (s :: S). Term s (PTriplet a) -&gt; Term s PData)
--&gt; PIsData (PTriplet a)
-forall (s :: S).
-Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
-forall (s :: S). Term s (PTriplet a) -&gt; Term s PData
-forall (a :: S -&gt; Type).
-(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
--&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
-forall (a :: S -&gt; Type) (s :: S).
-Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
-forall (a :: S -&gt; Type) (s :: S).
-Term s (PTriplet a) -&gt; Term s PData
-$cpfromDataImpl :: forall (a :: S -&gt; Type) (s :: S).
-Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
-pfromDataImpl :: forall (s :: S).
-Term s (PAsData (PTriplet a)) -&gt; Term s (PTriplet a)
-$cpdataImpl :: forall (a :: S -&gt; Type) (s :: S).
-Term s (PTriplet a) -&gt; Term s PData
-pdataImpl :: forall (s :: S). Term s (PTriplet a) -&gt; Term s PData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235645"><span class="annot"><span class="annottext">(forall (s :: S).
- Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool)
--&gt; PEq (PTriplet a)
-forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-forall (t :: S -&gt; Type).
-(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
-forall (a :: S -&gt; Type) (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-$c#== :: forall (a :: S -&gt; Type) (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-#== :: forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235667"><span id="local-6989586621679235673"><span id="local-6989586621679235678"><span id="local-6989586621679235681"><span class="annot"><span class="annottext">PEq (PTriplet a)
-PEq (PTriplet a) =&gt;
-(forall (s :: S).
- Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool)
--&gt; (forall (s :: S).
-    Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool)
--&gt; (forall (s :: S).
-    Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a))
--&gt; (forall (s :: S).
-    Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a))
--&gt; POrd (PTriplet a)
-forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a)
-forall (t :: S -&gt; Type).
-PEq t =&gt;
-(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
--&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
--&gt; POrd t
-forall (a :: S -&gt; Type). (POrd a, PIsData a) =&gt; PEq (PTriplet a)
-forall (a :: S -&gt; Type) (s :: S).
-(POrd a, PIsData a) =&gt;
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-forall (a :: S -&gt; Type) (s :: S).
-(POrd a, PIsData a) =&gt;
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a)
-$c#&lt;= :: forall (a :: S -&gt; Type) (s :: S).
-(POrd a, PIsData a) =&gt;
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-#&lt;= :: forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-$c#&lt; :: forall (a :: S -&gt; Type) (s :: S).
-(POrd a, PIsData a) =&gt;
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-#&lt; :: forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s PBool
-$cpmax :: forall (a :: S -&gt; Type) (s :: S).
-(POrd a, PIsData a) =&gt;
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a)
-pmax :: forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a)
-$cpmin :: forall (a :: S -&gt; Type) (s :: S).
-(POrd a, PIsData a) =&gt;
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a)
-pmin :: forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PTriplet a) -&gt; Term s (PTriplet a)
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679235708"><span class="annot"><span class="annottext">(forall (s :: S).
- Term s (PTriplet a) -&gt; Term s (PDataRecord (PFields (PTriplet a))))
--&gt; PDataFields (PTriplet a)
-forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PDataRecord (PFields (PTriplet a)))
-forall (a :: S -&gt; Type).
-(forall (s :: S). Term s a -&gt; Term s (PDataRecord (PFields a)))
--&gt; PDataFields a
-forall (a :: S -&gt; Type) (s :: S).
-Term s (PTriplet a) -&gt; Term s (PDataRecord (PFields (PTriplet a)))
-$cptoFields :: forall (a :: S -&gt; Type) (s :: S).
-Term s (PTriplet a) -&gt; Term s (PDataRecord (PFields (PTriplet a)))
-ptoFields :: forall (s :: S).
-Term s (PTriplet a) -&gt; Term s (PDataRecord (PFields (PTriplet a)))
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PDataFields</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>
-</span><span id="line-46"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-47"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679235392"><span class="annot"><span class="hs-identifier hs-type">DerivePlutusType</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-type">PTriplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235392"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span> </span><span class="hs-keyword">type</span><span> </span><span id="DPTStrat"><span class="annot"><span class="hs-identifier hs-var">DPTStrat</span></span></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTypeData</span></span><span>
-</span><span id="line-48"></span><span>
-</span><span id="line-49"></span><span id="local-6989586621679235484"><span id="local-6989586621679235744"><span id="local-6989586621679235752"><span id="local-6989586621679235756"><span class="hs-identifier">PlutusTx.makeIsDataIndexed</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Triplet</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">Triplet</span><span class="hs-special">,</span><span> </span><span class="hs-number">0</span><span class="hs-special">)</span><span class="hs-special">]</span></span></span></span></span><span>
-</span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-52"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679235509"><span id="local-6989586621679235810"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679235509"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235509"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-53"></span><span>  </span><span id="local-6989586621679235822"><span class="annot"><span class="annottext">arbitrary :: Gen (Triplet a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveAsDataStruct</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-type">PTriplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235048"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span id="local-6989586621679235177"><span id="local-6989586621679235459"><span id="local-6989586621679235467"><span id="local-6989586621679235471"><span class="hs-identifier">PlutusTx.makeIsDataIndexed</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Triplet</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">Triplet</span><span class="hs-special">,</span><span> </span><span class="hs-number">0</span><span class="hs-special">)</span><span class="hs-special">]</span></span></span></span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679235202"><span id="local-6989586621679235525"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679235202"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235202"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-43"></span><span>  </span><span id="local-6989586621679235537"><span class="annot"><span class="annottext">arbitrary :: Gen (Triplet a)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a -&gt; Triplet a
 forall a. a -&gt; a -&gt; a -&gt; Triplet a
 </span><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-var">Triplet</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; a -&gt; Triplet a) -&gt; Gen a -&gt; Gen (a -&gt; a -&gt; Triplet a)
@@ -302,10 +256,10 @@ f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Gen a
 forall a. Arbitrary a =&gt; Gen a
 </span><span class="hs-identifier hs-var">arbitrary</span></span><span>
-</span><span id="line-54"></span><span>
-</span><span id="line-55"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-56"></span><span id="local-6989586621679235829"><span id="local-6989586621679235839"><span id="local-6989586621679235848"><span id="local-6989586621679235857"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
-</span><span id="line-57"></span><span>  </span><span id="local-6989586621679235533"><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-type">PTriplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235533"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679235533"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span><span>
-</span><span id="line-58"></span><span>  </span><span class="hs-keyword">instance</span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.ToData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679235533"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.FromData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679235533"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-type">PTriplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235533"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
-</span><span id="line-60"></span></pre></body></html>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
+</span><span id="line-46"></span><span id="local-6989586621679235544"><span id="local-6989586621679235554"><span id="local-6989586621679235563"><span id="local-6989586621679235572"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679235226"><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-type">PTriplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235226"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#Triplet"><span class="hs-identifier hs-type">Triplet</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679235226"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span></span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.ToData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679235226"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.FromData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AsHaskell</span></span><span> </span><span class="annot"><a href="#local-6989586621679235226"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Test.SpecTypes.html#PTriplet"><span class="hs-identifier hs-type">PTriplet</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679235226"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-50"></span></pre></body></html>

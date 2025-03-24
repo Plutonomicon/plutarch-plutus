@@ -155,8 +155,13 @@
                         <details>
 <summary> imports </summary>
 <p>
-<pre><code class="language-haskell">module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where
+<pre><code class="language-haskell">{-# LANGUAGE UndecidableInstances #-}
+
+module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where
+
+import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude
 </code></pre>
 </p>
@@ -180,30 +185,24 @@ class PEq =&gt; POrd t where
 <pre><code class="language-hs">pif (1 #&lt; 7) "indeed" "what"
 </code></pre>
 <p>evaluates to <code>"indeed"</code> - of type <code>Term s PString</code>.</p>
-<p>For scott encoded types, you can easily derive <code>PEq</code> via generic deriving:</p>
+<p>For SOP encoded types, you can easily derive <code>PEq</code> via generic deriving:</p>
 <pre><code class="language-haskell">data PMaybe' a s
   = PNothing'
   | PJust' (Term s a)
-  deriving stock Generic
-  deriving anyclass (PlutusType, PEq)
-instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PEq)
+  deriving (PlutusType) via (DeriveAsSOPStruct (PMaybe' a))
 </code></pre>
-<p>For data encoded types, you can derive <code>PEq</code> and <code>POrd</code> via their data representation:</p>
-<pre><code class="language-haskell">newtype PTriplet a s
+<p>For data encoded types, you can derive <code>PEq</code> via their data representation:</p>
+<pre><code class="language-haskell">data PTriplet (a :: S -&gt; Type) (s :: S)
   = PTriplet
-      ( Term
-          s
-          ( PDataRecord
-              '[ "x" ':= a
-               , "y" ':= a
-               , "z" ':= a
-               ]
-          )
-      )
-  deriving stock Generic
-  deriving anyclass (PlutusType, PEq)
-
-instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
+      { ptriplet'a :: Term s (PAsData a)
+      , ptriplet'b :: Term s (PAsData a)
+      , ptriplet'c :: Term s (PAsData a)
+      }
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PIsData, PEq)
+  deriving (PlutusType) via (DeriveAsDataStruct (PTriplet a))
 </code></pre>
 <blockquote>
 <p>Aside: <code>PEq</code> derivation for data encoded types uses "Data equality". It simply ensures the structure (as represented through <a href="../Concepts/DataAndScottEncoding.html#data-encoding">data encoding</a>) of both values are <em>exactly</em> the same. It does not take into account any custom <code>PEq</code> instances for the individual fields within.</p>

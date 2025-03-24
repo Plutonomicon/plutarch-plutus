@@ -5,28 +5,6 @@
 @package plutarch
 @version 1.10.1
 
-module Plutarch.DataRepr.Internal.HList.Utils
-newtype Labeled sym a
-Labeled :: a -> Labeled sym a
-[$sel:unLabeled:Labeled] :: Labeled sym a -> a
-
--- | GADT proof-witness of HList membership, usable as an index
-data Elem (a :: k) (as :: [k])
-[Here] :: Elem a (a ': as)
-[There] :: Elem a as -> Elem a (b ': as)
-
--- | Indexing type-level lists
-type family IndexList (n :: Nat) (l :: [k]) :: k
-
--- | Indexing list of labeled pairs by label
-type family IndexLabel name as
-
--- | Return the single item from a singleton list
-type family SingleItem (as :: [k]) :: k
-
--- | Drop first n fields of a list
-type family Drop (n :: Nat) (as :: [k]) :: [k]
-
 module Plutarch.Internal.PrettyStack
 prettyStack :: Text -> CallStack -> Text
 
@@ -369,10 +347,6 @@ type family Snd ab
 module Plutarch.Internal.Quantification
 newtype PForall (b :: a -> PType) s
 PForall :: (forall (x :: a). Term s (b x)) -> PForall (b :: a -> PType) s
-data PSome (b :: a -> PType) s
-PSome :: Term s (b x) -> PSome (b :: a -> PType) s
-newtype PFix f s
-PFix :: Term s (f (PFix f)) -> PFix f s
 
 module Plutarch.Internal.Generic
 
@@ -820,7 +794,6 @@ instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.
 module Plutarch.Internal.PlutusType
 class PlutusType (a :: PType)
 type PInnermost a = PInnermost' (PInner a) a
-type PlutusTypeStratConstraint strategy :: PType -> Constraint
 
 -- | <i>Deprecated: Use PlutusType</i>
 type PCon = PlutusType
@@ -836,12 +809,6 @@ pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
 -- | Construct a Plutarch Term via a Haskell datatype
 pcon :: PlutusType a => a s -> Term s a
 type PInner a :: PType
-class PlutusTypeStrat (strategy :: Type)
-class (PInner a ~ DerivedPInner (DPTStrat a) a, PlutusTypeStrat (DPTStrat a), PlutusTypeStratConstraint (DPTStrat a) a, PlutusType a) => DerivePlutusType (a :: PType)
-type DPTStrat a :: Type
-type DerivedPInner strategy (a :: PType) :: PType
-derivedPCon :: forall a s. (PlutusTypeStrat strategy, DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
-derivedPMatch :: forall a s b. (PlutusTypeStrat strategy, DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
 class (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
 class (forall t. PCovariant'' t => PCovariant'' (a t)) => PCovariant a
 class (forall t. PCovariant'' t => PContravariant'' (a t)) => PContravariant a
@@ -879,7 +846,6 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Inte
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S) (pt :: Plutarch.Internal.Term.PType). (Generics.SOP.Universe.Generic (a s), (Generics.SOP.Universe.Code (a s) :: [[GHC.Types.Type]]) GHC.Types.~ ((':) @[GHC.Types.Type] ((':) @GHC.Types.Type (Plutarch.Internal.Term.Term s pt) ('[] @GHC.Types.Type)) ('[] @[GHC.Types.Type]) :: [[GHC.Types.Type]])) => Plutarch.Internal.PlutusType.H s a pt
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (pt :: Plutarch.Internal.Term.S -> GHC.Types.Type). ((pt :: (Plutarch.Internal.Term.S -> GHC.Types.Type)) GHC.Types.~ (Plutarch.Internal.PlutusType.UnTermSingle (Data.SOP.Constraint.Head @GHC.Types.Type (Data.SOP.Constraint.Head @[GHC.Types.Type] (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S))))) :: (Plutarch.Internal.Term.S -> GHC.Types.Type)), forall (s :: Plutarch.Internal.Term.S). Plutarch.Internal.PlutusType.H s a pt) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.PlutusType.DeriveNewtypePlutusType a)
 instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Generic.PGeneric a, (Plutarch.Internal.Generic.PCode a :: [[Plutarch.Internal.Term.PType]]) GHC.Types.~ ((':) @[Plutarch.Internal.Term.PType] ((':) @Plutarch.Internal.Term.PType (Plutarch.Internal.PlutusType.GetPNewtype a) ('[] @Plutarch.Internal.Term.PType)) ('[] @[Plutarch.Internal.Term.PType]) :: [[Plutarch.Internal.Term.PType]])) => Plutarch.Internal.PlutusType.Helper a
-instance Plutarch.Internal.PlutusType.PlutusTypeStrat Plutarch.Internal.PlutusType.PlutusTypeNewtype
 instance forall (a :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). (forall (t :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PVariant'' t => Plutarch.Internal.PlutusType.PVariant'' (a t)) => Plutarch.Internal.PlutusType.PVariant a
 instance forall (a :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). (forall (t :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PCovariant'' t => Plutarch.Internal.PlutusType.PContravariant'' (a t)) => Plutarch.Internal.PlutusType.PContravariant a
 instance forall (a :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). (forall (t :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PCovariant'' t => Plutarch.Internal.PlutusType.PCovariant'' (a t)) => Plutarch.Internal.PlutusType.PCovariant a
@@ -888,8 +854,6 @@ instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusTyp
 instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PVariant' a => Plutarch.Internal.PlutusType.PVariant'' a
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PlutusType (a Plutarch.Internal.Term.:--> b)
 instance forall a (f :: a -> Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Quantification.PForall @a f)
-instance forall a (f :: a -> Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Quantification.PSome @a f)
-instance forall (f :: Plutarch.Internal.Term.PType -> Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.Quantification.PFix f)
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Opaque.POpaque
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Bool.PBool
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Data.PData
@@ -917,15 +881,6 @@ pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 pupcastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PCovariant p) => Proxy p -> Term s (p b) -> Term s (p a)
 pdowncastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PContravariant p) => Proxy p -> Term s (p a) -> Term s (p b)
 
-module Plutarch.Internal.ScottEncoding
-data PlutusTypeScott
-newtype PScottEncoded a r s
-PScottEncoded :: Term s (ScottFn (ScottList a r) r) -> PScottEncoded a r s
-instance forall (a :: Plutarch.Internal.Term.PType). (forall (r :: Plutarch.Internal.Term.PType). Plutarch.Internal.ScottEncoding.SListIScottList a r, Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.PType} (Plutarch.Internal.Generic.PCode a), Plutarch.Internal.Generic.PGeneric a) => Plutarch.Internal.ScottEncoding.PlutusTypeScottConstraint a
-instance Plutarch.Internal.PlutusType.PlutusTypeStrat Plutarch.Internal.ScottEncoding.PlutusTypeScott
-instance forall (a :: Plutarch.Internal.Term.PType) (r :: Plutarch.Internal.Term.PType). Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.PType} (Plutarch.Internal.ScottEncoding.ScottList (Plutarch.Internal.Generic.PCode a) r) => Plutarch.Internal.ScottEncoding.SListIScottList a r
-instance forall (a :: [[Plutarch.Internal.Term.PType]]) (r :: Plutarch.Internal.Term.PType). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Internal.ScottEncoding.PScottEncoded a r)
-
 module Plutarch.Internal.Other
 
 -- | Prettyprint a Term via the PLC pretty printer
@@ -944,11 +899,6 @@ printScript :: Script -> String
 
 -- | Safely coerce from a Term to it's <a>PInner</a> representation.
 pto :: Term s a -> Term s (PInner a)
-
-module Plutarch.Internal.Newtype
-data PlutusTypeNewtype
-instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.Internal.Generic.PGeneric a, (Plutarch.Internal.Generic.PCode a :: [[Plutarch.Internal.Term.PType]]) GHC.Types.~ ((':) @[Plutarch.Internal.Term.PType] ((':) @Plutarch.Internal.Term.PType (Plutarch.Internal.Newtype.GetPNewtype a) ('[] @Plutarch.Internal.Term.PType)) ('[] @[Plutarch.Internal.Term.PType]) :: [[Plutarch.Internal.Term.PType]])) => Plutarch.Internal.Newtype.Helper a
-instance Plutarch.Internal.PlutusType.PlutusTypeStrat Plutarch.Internal.Newtype.PlutusTypeNewtype
 
 module Plutarch.Internal.ListLike
 
@@ -2354,6 +2304,184 @@ ptraceIfTrue :: forall (s :: S). Term s PString -> Term s PBool -> Term s PBool
 -- | <i>Deprecated: Use ptraceInfoIfFalse</i>
 ptraceIfFalse :: forall (s :: S). Term s PString -> Term s PBool -> Term s PBool
 
+module Plutarch.TermCont
+hashOpenTerm :: Term s a -> TermCont s Dig
+newtype TermCont :: forall (r :: PType). S -> Type -> Type
+[TermCont] :: forall r s a. ((a -> Term s r) -> Term s r) -> TermCont @r s a
+($sel:runTermCont:TermCont) :: TermCont @r s a -> (a -> Term s r) -> Term s r
+unTermCont :: TermCont @a s (Term s a) -> Term s a
+tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
+
+-- | Given a term, and an integer tag, this function checks if the term
+--   holds and <tt>PPlaceholder</tt> with the given integer tag.
+pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
+
+-- | Finds all placeholder ids and returns it
+pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
+
+-- | Like <a>plet</a> but works in a <a>TermCont</a> monad
+pletC :: Term s a -> TermCont s (Term s a)
+
+-- | Like <a>pmatch</a> but works in a <a>TermCont</a> monad
+pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
+
+-- | Like <tt>ptrace</tt> but works in a <a>TermCont</a> monad.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   foo :: Term s PUnit
+--   foo = unTermCont $ do
+--     ptraceC "returning unit!"
+--     pure $ pconstant ()
+--   </pre>
+ptraceC :: Term s PString -> TermCont s ()
+
+-- | Trace a message and raise error if <tt>cond</tt> is false. Otherwise,
+--   continue.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   onlyAllow42 :: Term s (PInteger :--&gt; PUnit)
+--   onlyAllow42 = plam $ i -&gt; unTermCont $ do
+--     pguardC "expected 42" $ i #== 42
+--     pure $ pconstant ()
+--   </pre>
+pguardC :: Term s PString -> Term s PBool -> TermCont s ()
+
+-- | Stop computation and return given term if <tt>cond</tt> is false.
+--   Otherwise, continue.
+--   
+--   <h3>Example ===</h3>
+--   
+--   <pre>
+--   is42 :: Term s (PInteger :--&gt; PBool)
+--   is42 = plam $ i -&gt; unTermCont $ do
+--     pguardC' (pconstant False) $ i #== 42
+--     pure $ pconstant True
+--   </pre>
+pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
+
+-- | <a>TermCont</a> producing version of <a>ptryFrom</a>.
+ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
+
+-- | Escape with a particular value on expecting <a>PJust</a>. For use in
+--   monadic context.
+pexpectJustC :: forall (a :: S -> Type) (r :: S -> Type) (s :: S). Term s r -> Term s (PMaybe a) -> TermCont @r s (Term s a)
+
+module Plutarch.Repr.Tag
+
+newtype PTag (struct :: [S -> Type]) (s :: S)
+PTag :: Term s PInteger -> PTag (struct :: [S -> Type]) (s :: S)
+
+[$sel:unPTag:PTag] :: PTag (struct :: [S -> Type]) (s :: S) -> Term s PInteger
+
+newtype DeriveAsTag (a :: S -> Type) s
+DeriveAsTag :: a s -> DeriveAsTag (a :: S -> Type) s
+
+[$sel:unDeriveAsTag:DeriveAsTag] :: DeriveAsTag (a :: S -> Type) s -> a s
+
+newtype TagLiftHelper r struct
+TagLiftHelper :: (Integer -> (SOP I struct -> r) -> r) -> TagLiftHelper r struct
+
+[$sel:unTagLiftHelper:TagLiftHelper] :: TagLiftHelper r struct -> Integer -> (SOP I struct -> r) -> r
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Repr.Tag.PTag struct s)
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.PTag struct)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveAsTag a)
+instance forall k (a :: k -> GHC.Types.Type) (s :: k) (struct :: [[GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a s), Plutarch.Repr.Tag.TagTypePrettyError (Generics.SOP.Universe.Code (a s)), (Generics.SOP.Universe.Code (a s) :: [[GHC.Types.Type]]) GHC.Types.~ (struct :: [[GHC.Types.Type]]), Data.SOP.Constraint.All @[GHC.Types.Type] (Plutarch.Repr.Tag.IsEmpty @GHC.Types.Type) struct) => Plutarch.Repr.Tag.TagTypeConstraints @{k} s a struct
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveAsTag a), Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} (GHC.Types.Any @Plutarch.Internal.Term.S) a struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Tag.DeriveAsTag a)
+instance forall k1 k2 (x :: [k1]). ((x :: [k1]) GHC.Types.~ ('[] @k1 :: [k1])) => Plutarch.Repr.Tag.IsEmpty @k2 ('[] @k2)
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Repr.Tag.PTag struct s)
+
+module Plutarch.Repr.Data
+
+newtype PDataStruct (struct :: [[S -> Type]]) (s :: S)
+PDataStruct :: PStruct struct s -> PDataStruct (struct :: [[S -> Type]]) (s :: S)
+[$sel:unPDataStruct:PDataStruct] :: PDataStruct (struct :: [[S -> Type]]) (s :: S) -> PStruct struct s
+
+newtype PDataRec (struct :: [S -> Type]) (s :: S)
+PDataRec :: PRec struct s -> PDataRec (struct :: [S -> Type]) (s :: S)
+[$sel:unPDataRec:PDataRec] :: PDataRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
+
+-- | <tt>DeriveAsDataRec</tt> derives <tt>PlutusType</tt> instances for
+--   given type as builtin list of Data. Unlike <tt>PDataAsDataStruct</tt>
+--   above, this will encode data as <tt>List</tt>. Similarly, only types
+--   with its innermost representation <tt>PData</tt> is allowed for its
+--   fields.
+--   
+--   One major difference is that <tt>DeriveAsDataRec</tt> only allows
+--   single constructor as it does not encode the constructor index. When
+--   attempted to use this strategy to a type with more than one
+--   constructor will result in type error with detailed explanation of the
+--   issue.
+--   
+--   <tt>PInner</tt> of defined type will be <tt>PDataRec (struct :: [S
+--   -&gt; Type])</tt> where <tt>struct</tt> is product type of its
+--   structure. <tt>PInner</tt> of <tt>PDataRec struct</tt> is
+--   <tt>PBuiltinList PData</tt>.
+--   
+--   It is almost always better to use <tt>DeriveAsDataRec</tt> over
+--   <tt>DeriveAsDataStruct</tt> when data type only have one constructor
+--   as it is more efficient to work with on-chain. However,
+--   Plith(previously PlutusTx), by default, derives every datatype to use
+--   <tt>Constr</tt>. So, if a Plutarch type needs to remain compatible
+--   with type defined in Plith, one needs to use
+--   <tt>DeriveAsDataStruct</tt>. This is why many single-constructor types
+--   are derived using <tt>DeriveAsDataStruct</tt> on plutarch-ledger-api.
+--   
+--   Consult example below for defining custom data-encoded datatype: @@
+--   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
+--   a)) (Term s (PAsData PBool)) deriving stock (Generic) deriving
+--   anyclass (SOP.Generic) deriving PlutusType via (DeriveAsDataRec
+--   (PBobData a))
+--   
+--   pcon $ PBobData (pdata 10) (pdata pfalse) -- [#10, #false] @@
+newtype DeriveAsDataRec (a :: S -> Type) s
+DeriveAsDataRec :: a s -> DeriveAsDataRec (a :: S -> Type) s
+[$sel:unDeriveAsDataRec:DeriveAsDataRec] :: DeriveAsDataRec (a :: S -> Type) s -> a s
+
+-- | <tt>DeriveAsDataStruct</tt> derives <tt>PlutusType</tt> instances for
+--   the given type as Data structure, namely, using <tt>Constr</tt>
+--   constructor of the <tt>Data</tt> type. Each constructor of the given
+--   type will have matching constructor index in the order of its
+--   definition.
+--   
+--   Also, it is important to note that each fields can only contain term
+--   that has innermost representation of Data. Hence, <tt>PInteger</tt> is
+--   not allowed but <tt>PAsData PInteger</tt> is allowed. Failure to
+--   follow this requirement will result in type error with detailed
+--   explanation of the issue.
+--   
+--   <tt>PInner</tt> of defined type will be <tt>PDataStruct (struct :: [[S
+--   -&gt; Type]])</tt> where <tt>struct</tt> is SOP type of its structure.
+--   Since <tt>PInner</tt> of <tt>PDataStruct</tt> is <tt>PData</tt>,
+--   multiple data encoded structure can be nested without being wrapped in
+--   <tt>PAsData</tt>.
+--   
+--   Consult example below for defining custom data-encoded datatype: @@
+--   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
+--   a)) (Term s (PAsData PBool)) | PRobData (Term s (PAsData PByteString))
+--   deriving stock (Generic) deriving anyclass (SOP.Generic) deriving
+--   PlutusType via (DeriveAsDataStruct (PBobData a))
+--   
+--   pcon $ PBobData (pdata 10) (pdata pfalse) -- Constr 0 [#10, #false]
+--   pcon $ PRobData "hello" -- Constr 1 [#"hello"] @@
+newtype DeriveAsDataStruct (a :: S -> Type) s
+DeriveAsDataStruct :: a s -> DeriveAsDataStruct (a :: S -> Type) s
+[$sel:unDeriveAsDataStruct:DeriveAsDataStruct] :: DeriveAsDataStruct (a :: S -> Type) s -> a s
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (hstruct :: [GHC.Types.Type]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, Data.SOP.Constraint.All @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.Data.EachDataLiftable struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, (hstruct :: [GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.RecAsHaskell struct :: [GHC.Types.Type]), Data.SOP.Constraint.AllZip @GHC.Types.Type @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.Data.ToAsHaskell hstruct struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Data.PDataRec struct)
+instance forall a (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). ((a :: GHC.Types.Type) GHC.Types.~ (Plutarch.Internal.Lift.AsHaskell b :: GHC.Types.Type), Plutarch.Internal.Lift.PLiftable b, (Plutarch.Internal.Lift.PlutusRepr b :: GHC.Types.Type) GHC.Types.~ (PlutusCore.Data.Data :: GHC.Types.Type)) => Plutarch.Repr.Data.ToAsHaskell a b
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, (Plutarch.Internal.Lift.PlutusRepr a :: GHC.Types.Type) GHC.Types.~ (PlutusCore.Data.Data :: GHC.Types.Type)) => Plutarch.Repr.Data.EachDataLiftable a
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataStruct a)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct' :: [GHC.Types.Type]) (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), ((':) @[GHC.Types.Type] struct' ('[] @[GHC.Types.Type]) :: [[GHC.Types.Type]]) GHC.Types.~ (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[GHC.Types.Type]]), (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermRec struct' :: [Plutarch.Internal.Term.S -> GHC.Types.Type]), Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a ((':) @[Plutarch.Internal.Term.S -> GHC.Types.Type] struct ('[] @[Plutarch.Internal.Term.S -> GHC.Types.Type])), Plutarch.Repr.Internal.RecTypePrettyError @{GHC.Types.Type} (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)))) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataRec a)
+instance forall (struct :: [Plutarch.Internal.Term.PType]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataRec struct)
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.Eq.PEq (Plutarch.Repr.Data.PDataRec struct)
+instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.IsData.PIsData (Plutarch.Repr.Data.PDataRec struct)
+instance forall (struct :: [[Plutarch.Internal.Term.PType]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnermostIsDataDataRepr struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataStruct struct)
+instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). Plutarch.Internal.Eq.PEq (Plutarch.Repr.Data.PDataStruct struct)
+instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). Plutarch.Internal.IsData.PIsData (Plutarch.Repr.Data.PDataStruct struct)
+
 module Plutarch.Monadic
 
 -- | Bind function used within do syntax.
@@ -2769,105 +2897,6 @@ instance forall (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.BitString.PBitString s)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.BitString.PBitString
 
-module Plutarch.DataRepr.Internal.FromData
-
--- | removes the PAsData if the hole requires it but leaves it there if it
---   doesn't
---   
---   <pre>
---   &gt;&gt;&gt; :t pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) PInteger)
---   pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) PInteger)
---   :: forall (s :: S). Term s (PInteger @{S})
---   </pre>
---   
---   <pre>
---   &gt;&gt;&gt; :t pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) (PAsData PInteger))
---   pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) (PAsData PInteger))
---   :: forall (s :: S). Term s (PAsData (PInteger @{S}))
---   </pre>
-class PFromDataable (a :: PType) (b :: PType) | b -> a, a -> b
-pmaybeFromAsData :: PFromDataable a b => Term s (PAsData a) -> Term s b
-instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.DataRepr.Internal.FromData.PFromDataable a (Plutarch.Builtin.Data.PAsData a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.IsData.PIsData a, (b :: (Plutarch.Internal.Term.S -> GHC.Types.Type)) GHC.Types.~ (a :: (Plutarch.Internal.Term.S -> GHC.Types.Type))) => Plutarch.DataRepr.Internal.FromData.PFromDataable a b
-
-module Plutarch.DataRepr.Internal.HList
-data HRec as
-[HNil] :: HRec '[]
-[HCons] :: Labeled name a -> HRec as -> HRec ('(name, a) ': as)
-newtype HRecGeneric as
-HRecGeneric :: HRec as -> HRecGeneric as
-newtype Labeled sym a
-Labeled :: a -> Labeled sym a
-[$sel:unLabeled:Labeled] :: Labeled sym a -> a
-
--- | Index a <a>HRec</a> with a field in a provided list of data fields.
---   Implicitly unwraps `PAsData a` to <tt>a</tt> when necessary.
---   
---   <pre>
---   &gt;&gt;&gt; xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
---   
---   &gt;&gt;&gt; hrecField @"y" @["x", "y", "z"] xs
---   
---   &gt;&gt;&gt; 2
---   </pre>
-
--- | <i>Deprecated: please use getField from GHC.Records</i>
-hrecField :: forall name c as a b s. (ElemOf name a as, Term s (PAsData b) ~ a, PFromDataable b c) => HRec as -> Term s c
-
--- | Index a HList with a field in a provided list of fields.
---   
---   <pre>
---   &gt;&gt;&gt; xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
---   
---   &gt;&gt;&gt; hrecField @"y" @["x", "y", "z"] xs
---   
---   &gt;&gt;&gt; 2
---   </pre>
-hrecField' :: forall name a as. ElemOf name a as => HRec as -> a
-
--- | Indexing type-level lists
-type family IndexList (n :: Nat) (l :: [k]) :: k
-
--- | Indexing list of labeled pairs by label
-type family IndexLabel name as
-
--- | Return the single item from a singleton list
-type family SingleItem (as :: [k]) :: k
-
--- | Drop first n fields of a list
-type family Drop (n :: Nat) (as :: [k]) :: [k]
-
--- | GADT proof-witness of HList membership, usable as an index
-data Elem (a :: k) (as :: [k])
-[Here] :: Elem a (a ': as)
-[There] :: Elem a as -> Elem a (b ': as)
-
--- | Construct an <a>Elem</a> via Nat.
---   
---   This class could instead be a more direct version of
---   <tt>indexHList</tt>, but perhaps the <a>Elem</a> encoding will be
---   useful.
-class IndexLabel name as ~ a => ElemOf name a as | as name -> a
-
--- | Construct the <a>Elem</a> corresponding to a Nat index.
---   
---   Example:
---   
---   <pre>
---   &gt;&gt;&gt; natElem @_ @0
---   Here
---   </pre>
---   
---   <pre>
---   &gt;&gt;&gt; natElem @_ @3
---   There (There (There Here))
---   </pre>
-elemOf :: ElemOf name a as => Elem '(name, a) as
-instance forall (name :: GHC.Types.Symbol) a (as :: [(GHC.Types.Symbol, GHC.Types.Type)]). ((Plutarch.DataRepr.Internal.HList.Utils.IndexLabel name as :: GHC.Types.Type) GHC.Types.~ (a :: GHC.Types.Type), Plutarch.DataRepr.Internal.HList.ElemOf name a as) => GHC.Records.HasField @{GHC.Types.Symbol} name (Plutarch.DataRepr.Internal.HList.HRecGeneric as) a
-instance forall (name :: GHC.Types.Symbol) a (as :: [(GHC.Types.Symbol, GHC.Types.Type)]). Plutarch.DataRepr.Internal.HList.ElemOf name a ((':) @(GHC.Types.Symbol, GHC.Types.Type) '(name, a) as)
-instance forall (name :: GHC.Types.Symbol) (b :: (GHC.Types.Symbol, GHC.Types.Type)) (as :: [(GHC.Types.Symbol, GHC.Types.Type)]) a. ((Plutarch.DataRepr.Internal.HList.Utils.IndexLabel name ((':) @(GHC.Types.Symbol, GHC.Types.Type) b as) :: GHC.Types.Type) GHC.Types.~ (a :: GHC.Types.Type), Plutarch.DataRepr.Internal.HList.ElemOf name a as) => Plutarch.DataRepr.Internal.HList.ElemOf name a ((':) @(GHC.Types.Symbol, GHC.Types.Type) b as)
-instance forall (name :: GHC.Types.Symbol) (c :: Plutarch.Internal.Term.PType) (as :: [(GHC.Types.Symbol, GHC.Types.Type)]) a (b :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). ((Plutarch.DataRepr.Internal.HList.Utils.IndexLabel name as :: GHC.Types.Type) GHC.Types.~ (a :: GHC.Types.Type), Plutarch.DataRepr.Internal.HList.ElemOf name a as, (Plutarch.Internal.Term.Term s (Plutarch.Builtin.Data.PAsData b) :: GHC.Types.Type) GHC.Types.~ (a :: GHC.Types.Type), Plutarch.DataRepr.Internal.FromData.PFromDataable b c) => GHC.Records.HasField @{GHC.Types.Symbol} name (Plutarch.DataRepr.Internal.HList.HRec as) (Plutarch.Internal.Term.Term s c)
-
 module Plutarch.Either
 
 -- | SOP-encoded <a>Either</a>.
@@ -2924,491 +2953,6 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a, Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData b) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Either.PEitherData a b)
 instance forall (a :: Plutarch.Internal.Term.PType) (b :: Plutarch.Internal.Term.PType). (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a, Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData b) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.Either.PEitherData a b))
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Plutarch.Internal.Lift.PLiftable b) => Plutarch.Internal.Lift.PLiftable (Plutarch.Either.PEither a b)
-
-module Plutarch.DataRepr.Internal
-
--- | A sum of <a>PDataRecord</a>s. The underlying representation is the
---   <tt>Constr</tt> constructor, where the integer is the index of the
---   variant and the list is the record.
-newtype PDataSum defs s
-PDataSum :: NS (Compose (Term s) PDataRecord) defs -> PDataSum defs s
-
--- | If there is only a single variant, then we can safely extract it.
-punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
-
--- | Try getting the nth variant. Errs if it's another variant.
-ptryIndexDataSum :: KnownNat n => Proxy n -> Term s (PDataSum (def ': defs) :--> PDataRecord (IndexList n (def ': defs)))
-
--- | Cons a field to a data record.
---   
---   You can specify the label to associate with the field using type
---   applications-
---   
---   <pre>
---   foo :: Term s (PDataRecord '[ "fooField" ':= PByteString ])
---   foo = pdcons @"fooField" # pdata (phexByteStr "ab") # pdnil
---   </pre>
-pdcons :: forall label a l s. Term s (PAsData a :--> (PDataRecord l :--> PDataRecord ((label ':= a) ': l)))
-
--- | An empty <a>PDataRecord</a>.
-pdnil :: Term s (PDataRecord '[])
-data DataReprHandlers (out :: S -> Type) (defs :: [[PLabeledType]]) (s :: S)
-[DRHNil] :: DataReprHandlers out '[] s
-[DRHCons] :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def ': defs) s
-
--- | A "record" of `exists a. PAsData a`. The underlying representation is
---   `PBuiltinList PData`.
-data PDataRecord (as :: [PLabeledType]) (s :: S)
-[PDCons] :: forall name_x x xs s. PUnLabel name_x ~ x => Term s (PAsData x) -> Term s (PDataRecord xs) -> PDataRecord (name_x ': xs) s
-[PDNil] :: PDataRecord '[] s
-data PLabeledType
-(:=) :: Symbol -> (S -> Type) -> PLabeledType
-type family PLabelIndex (name :: Symbol) (as :: [PLabeledType]) :: Nat
-type family PUnLabel (a :: PLabeledType) :: S -> Type
-type family PLookupLabel name as
-
--- | Safely index a <a>PDataRecord</a>.
-pindexDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
-
--- | Safely drop the first n items of a <a>PDataRecord</a>.
-pdropDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
-newtype DualReprHandler s out def
-DualRepr :: (Term s (PDataRecord def) -> Term s (PDataRecord def) -> Term s out) -> DualReprHandler s out def
-data PlutusTypeData
-instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Internal.PlutusType.PlutusType (Plutarch.DataRepr.Internal.PDataRecordShowHelper as)
-instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.DataRepr.Internal.PDataRecordShowHelper as s)
-instance forall (as :: [(GHC.Types.Symbol, Plutarch.Internal.Term.S -> GHC.Types.Type)]) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.DataRepr.Internal.HRecP as s)
-instance forall k1 k2 (f :: k2 -> k1 -> GHC.Types.Type) (a :: k1) (b :: k2). GHC.Generics.Generic (Plutarch.DataRepr.Internal.Flip @{k2} @{k1} f a b)
-instance forall (b :: Plutarch.Internal.Subtype.PSubtypeRelation) (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.DataRepr.Internal.ExcessForField b a s)
-instance forall k (a :: k -> GHC.Types.Type) (b :: k -> GHC.Types.Type) (s :: k). GHC.Generics.Generic (Plutarch.DataRepr.Internal.Helper @{k} a b s)
-instance forall (n :: GHC.TypeNats.Nat) (x :: [Plutarch.DataRepr.Internal.PLabeledType]) (xs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). (Plutarch.Internal.TryFrom.PTryFrom (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord x), Plutarch.DataRepr.Internal.SumValidation (n GHC.TypeNats.+ 1) xs, GHC.TypeNats.KnownNat n) => Plutarch.DataRepr.Internal.SumValidation n ((':) @[Plutarch.DataRepr.Internal.PLabeledType] x xs)
-instance forall (n :: GHC.TypeNats.Nat). Plutarch.DataRepr.Internal.SumValidation n ('[] @[Plutarch.DataRepr.Internal.PLabeledType])
-instance forall (ys :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.DataRepr.Internal.SumValidation 0 ys => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.DataRepr.Internal.PDataSum ys)
-instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]) (ase :: [(GHC.Types.Symbol, Plutarch.Internal.Term.S -> GHC.Types.Type)]). (Plutarch.Internal.TryFrom.PTryFrom (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord as), (Plutarch.Internal.TryFrom.PTryFromExcess (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord as) :: Plutarch.Internal.Term.PType) GHC.Types.~ (Plutarch.DataRepr.Internal.HRecP ase :: Plutarch.Internal.Term.PType)) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.DataRepr.Internal.PDataRecord as))
-instance forall (pty :: Plutarch.Internal.Term.PType) (as :: [Plutarch.DataRepr.Internal.PLabeledType]) (ase :: [(GHC.Types.Symbol, Plutarch.Internal.Term.S -> GHC.Types.Type)]) (name :: GHC.Types.Symbol). (Plutarch.DataRepr.Internal.Helper2 (Plutarch.Internal.Subtype.PSubtype' Plutarch.Builtin.Data.PData pty) pty, Plutarch.Internal.TryFrom.PTryFrom (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord as), (Plutarch.Internal.TryFrom.PTryFromExcess (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord as) :: Plutarch.Internal.Term.PType) GHC.Types.~ (Plutarch.DataRepr.Internal.HRecP ase :: Plutarch.Internal.Term.PType)) => Plutarch.Internal.TryFrom.PTryFrom (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (name 'Plutarch.DataRepr.Internal.:= pty) as))
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData a) => Plutarch.DataRepr.Internal.Helper2 'Plutarch.Internal.Subtype.PNoSubtypeRelation a
-instance forall (a :: Plutarch.Internal.Term.PType). Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a => Plutarch.DataRepr.Internal.Helper2 'Plutarch.Internal.Subtype.PSubtypeRelation a
-instance Plutarch.Internal.TryFrom.PTryFrom (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData) (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
-instance forall (a :: Plutarch.Internal.Term.PType). (Plutarch.DataRepr.Internal.IsPDataSum (Plutarch.Internal.Generic.PCode a), Data.SOP.Constraint.SListI @{[Plutarch.DataRepr.Internal.PLabeledType]} (Plutarch.DataRepr.Internal.IsPDataSumDefs (Plutarch.Internal.Generic.PCode a)), Plutarch.Internal.Generic.PGeneric a) => Plutarch.DataRepr.Internal.PlutusTypeDataConstraint a
-instance Plutarch.Internal.PlutusType.PlutusTypeStrat Plutarch.DataRepr.Internal.PlutusTypeData
-instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Data.SOP.Constraint.SListI @{[Plutarch.DataRepr.Internal.PLabeledType]} defs => Plutarch.Internal.PlutusType.PlutusType (Plutarch.DataRepr.Internal.PDataSum defs)
-instance Plutarch.DataRepr.Internal.IsPDataSum ('[] @[Plutarch.Internal.Term.S -> GHC.Types.Type])
-instance forall (xs :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) (l :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.DataRepr.Internal.IsPDataSum xs => Plutarch.DataRepr.Internal.IsPDataSum ((':) @[Plutarch.Internal.Term.S -> GHC.Types.Type] ((':) @(Plutarch.Internal.Term.S -> GHC.Types.Type) (Plutarch.DataRepr.Internal.PDataRecord l) ('[] @(Plutarch.Internal.Term.S -> GHC.Types.Type))) xs)
-instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). (Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Top @{[Plutarch.DataRepr.Internal.PLabeledType]}) defs, Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Compose @{Plutarch.Internal.Term.PType} @{[Plutarch.DataRepr.Internal.PLabeledType]} Plutarch.Internal.Show.PShow Plutarch.DataRepr.Internal.PDataRecord) defs) => Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataSum defs)
-instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.Internal.IsData.PIsData (Plutarch.DataRepr.Internal.PDataSum defs)
-instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.Internal.Eq.PEq (Plutarch.DataRepr.Internal.PDataSum defs)
-instance forall (defs :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Data.SOP.Constraint.All @[Plutarch.DataRepr.Internal.PLabeledType] (Data.SOP.Constraint.Compose @{Plutarch.Internal.Term.PType} @{[Plutarch.DataRepr.Internal.PLabeledType]} Plutarch.Internal.Ord.POrd Plutarch.DataRepr.Internal.PDataRecord) defs => Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataSum defs)
-instance forall (ys :: [[Plutarch.DataRepr.Internal.PLabeledType]]). Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.DataRepr.Internal.PDataSum ys) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.DataRepr.Internal.PDataSum ys))
-instance forall (l :: [Plutarch.DataRepr.Internal.PLabeledType]). Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} l => Plutarch.Internal.PlutusType.PlutusType (Plutarch.DataRepr.Internal.PDataRecord l)
-instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (label :: GHC.Types.Symbol) (x :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Data.SOP.Constraint.All @Plutarch.DataRepr.Internal.PLabeledType (Data.SOP.Constraint.Top @{Plutarch.DataRepr.Internal.PLabeledType}) xs, GHC.TypeLits.KnownSymbol label, Plutarch.Internal.IsData.PIsData x, Plutarch.Internal.Show.PShow x, Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper xs)) => Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) xs))
-instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Internal.PlutusType.DerivePlutusType (Plutarch.DataRepr.Internal.PDataRecordShowHelper as)
-instance Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper ('[] @Plutarch.DataRepr.Internal.PLabeledType))
-instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (label :: GHC.Types.Symbol) (x :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Data.SOP.Constraint.All @Plutarch.DataRepr.Internal.PLabeledType (Data.SOP.Constraint.Top @{Plutarch.DataRepr.Internal.PLabeledType}) xs, GHC.TypeLits.KnownSymbol label, Plutarch.Internal.IsData.PIsData x, Plutarch.Internal.Show.PShow x, Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper xs)) => Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataRecordShowHelper ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) xs))
-instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Internal.Eq.PEq (Plutarch.DataRepr.Internal.PDataRecord xs)
-instance Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
-instance Plutarch.Internal.Show.PShow (Plutarch.DataRepr.Internal.PDataRecord ('[] @Plutarch.DataRepr.Internal.PLabeledType))
-instance forall (x :: Plutarch.Internal.Term.PType) (label :: GHC.Types.Symbol). (Plutarch.Internal.Ord.POrd x, Plutarch.Internal.IsData.PIsData x) => Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ('[] @Plutarch.DataRepr.Internal.PLabeledType)))
-instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]) (x :: Plutarch.Internal.Term.PType) (x' :: Plutarch.DataRepr.Internal.PLabeledType) (label :: GHC.Types.Symbol). (Data.SOP.Constraint.SListI @{Plutarch.DataRepr.Internal.PLabeledType} xs, Plutarch.Internal.Ord.POrd x, Plutarch.Internal.IsData.PIsData x, Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs))) => Plutarch.Internal.Ord.POrd (Plutarch.DataRepr.Internal.PDataRecord ((':) @Plutarch.DataRepr.Internal.PLabeledType (label 'Plutarch.DataRepr.Internal.:= x) ((':) @Plutarch.DataRepr.Internal.PLabeledType x' xs)))
-instance forall (xs :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.Internal.IsData.PIsData (Plutarch.DataRepr.Internal.PDataRecord xs)
-
-module Plutarch.DataRepr.Internal.Field
-
--- | Class allowing <tt>letFields</tt> to work for a PType, usually via
---   <tt>PIsDataRepr</tt>, but is derived for some other types for
---   convenience.
-class PDataFields (a :: S -> Type) where {
-    
-    -- | Fields in HRec bound by <tt>letFields</tt>
-    type PFields a :: [PLabeledType];
-    type PFields a = Helper (PInner a);
-}
-
--- | Convert a Term to a <tt>PDataList</tt>
-ptoFields :: PDataFields a => Term s a -> Term s (PDataRecord (PFields a))
-
--- | Convert a Term to a <tt>PDataList</tt>
-ptoFields :: (PDataFields a, PDataFields (PInner a), PFields (PInner a) ~ PFields a) => Term s a -> Term s (PDataRecord (PFields a))
-
--- | Bind a HRec of named fields containing all the specified fields.
-pletFields :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> (HRecOf a fs s -> Term s b) -> Term s b
-
--- | Get a single field from a Term.
---   
---   <ul>
---   <li>NB*: If you access more than one field from the same value you
---   should use <a>pletFields</a> instead, which will generate the bindings
---   more efficiently.</li>
---   </ul>
-pfield :: forall name b p s a as n. (PDataFields p, as ~ PFields p, n ~ PLabelIndex name as, KnownNat n, a ~ PUnLabel (IndexList n as), PFromDataable a b) => Term s (p :--> b)
-class BindFields (ps :: [PLabeledType]) (bs :: [ToBind])
-
--- | Bind all the fields in a <tt>PDataList</tt> term to a corresponding
---   HList of Terms.
---   
---   A continuation is returned to enable sharing of the generated
---   bound-variables.
-bindFields :: BindFields ps bs => Proxy bs -> Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
-
--- | Map <a>BindField</a> over <tt>[PLabeledType]</tt>, with <tt>Skips</tt>
---   removed at tail
-type family Bindings (ps :: [PLabeledType]) (fs :: [Symbol]) :: [ToBind]
-
--- | Get the <a>Term</a> representations to be bound based on the result of
---   <a>Bindings</a>.
-type family BoundTerms ps bs s
-
--- | Drop first n fields of a list
-type family Drop (n :: Nat) (as :: [k]) :: [k]
-
--- | The <a>HRec</a> yielded by 'pletFields @fs t'.
-type HRecOf t fs s = HRec (BoundTerms (PFields t) (Bindings (PFields t) fs) s)
-
--- | Constrain an <a>HRec</a> to contain the specified fields from the
---   given Plutarch type.
---   
---   <h3>Example ===</h3>
---   
---   <pre>
---   import qualified GHC.Generics as GHC
---   import Generics.SOP
---   
---   import Plutarch.Prelude
---   import Plutarch.DataRepr
---   
---   newtype PFooType s = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
---     deriving stock (GHC.Generic)
---     deriving anyclass (Generic)
---     deriving anyclass (PIsDataRepr)
---     deriving
---       (PlutusType, PIsData, PDataFields, PEq)
---       via PIsDataReprInstances PFooType
---   
---   foo :: PMemberFields PFooType '["scnd", "frst"] s as =&gt; HRec as -&gt; Term s PInteger
---   foo h = pif (getField <tt>"scnd" h) (getField </tt>"frst" h) 0
---   </pre>
-type family PMemberFields t fs s as
-
--- | Single field version of <a>PMemberFields</a>.
-type family PMemberField t name s as
-data HRec as
-[HNil] :: HRec '[]
-[HCons] :: Labeled name a -> HRec as -> HRec ('(name, a) ': as)
-newtype Labeled sym a
-Labeled :: a -> Labeled sym a
-[$sel:unLabeled:Labeled] :: Labeled sym a -> a
-
--- | Index a <a>HRec</a> with a field in a provided list of data fields.
---   Implicitly unwraps `PAsData a` to <tt>a</tt> when necessary.
---   
---   <pre>
---   &gt;&gt;&gt; xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
---   
---   &gt;&gt;&gt; hrecField @"y" @["x", "y", "z"] xs
---   
---   &gt;&gt;&gt; 2
---   </pre>
-
--- | <i>Deprecated: please use getField from GHC.Records</i>
-hrecField :: forall name c as a b s. (ElemOf name a as, Term s (PAsData b) ~ a, PFromDataable b c) => HRec as -> Term s c
-instance forall (l :: GHC.Types.Symbol) (p :: Plutarch.Internal.Term.S -> GHC.Types.Type) (ps :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType (l 'Plutarch.DataRepr.Internal.:= p) ps) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Bind ('[] @Plutarch.DataRepr.Internal.Field.ToBind))
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (l :: GHC.Types.Symbol) (p :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType (l 'Plutarch.DataRepr.Internal.:= p) ps) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Bind bs)
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ps) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs)
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType) (p2 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ((':) @Plutarch.DataRepr.Internal.PLabeledType p2 ps)) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs))
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType) (p2 :: Plutarch.DataRepr.Internal.PLabeledType) (p3 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ((':) @Plutarch.DataRepr.Internal.PLabeledType p2 ((':) @Plutarch.DataRepr.Internal.PLabeledType p3 ps))) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs)))
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType) (p2 :: Plutarch.DataRepr.Internal.PLabeledType) (p3 :: Plutarch.DataRepr.Internal.PLabeledType) (p4 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ((':) @Plutarch.DataRepr.Internal.PLabeledType p2 ((':) @Plutarch.DataRepr.Internal.PLabeledType p3 ((':) @Plutarch.DataRepr.Internal.PLabeledType p4 ps)))) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs))))
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType) (p2 :: Plutarch.DataRepr.Internal.PLabeledType) (p3 :: Plutarch.DataRepr.Internal.PLabeledType) (p4 :: Plutarch.DataRepr.Internal.PLabeledType) (p5 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ((':) @Plutarch.DataRepr.Internal.PLabeledType p2 ((':) @Plutarch.DataRepr.Internal.PLabeledType p3 ((':) @Plutarch.DataRepr.Internal.PLabeledType p4 ((':) @Plutarch.DataRepr.Internal.PLabeledType p5 ps))))) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs)))))
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType) (p2 :: Plutarch.DataRepr.Internal.PLabeledType) (p3 :: Plutarch.DataRepr.Internal.PLabeledType) (p4 :: Plutarch.DataRepr.Internal.PLabeledType) (p5 :: Plutarch.DataRepr.Internal.PLabeledType) (p6 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ((':) @Plutarch.DataRepr.Internal.PLabeledType p2 ((':) @Plutarch.DataRepr.Internal.PLabeledType p3 ((':) @Plutarch.DataRepr.Internal.PLabeledType p4 ((':) @Plutarch.DataRepr.Internal.PLabeledType p5 ((':) @Plutarch.DataRepr.Internal.PLabeledType p6 ps)))))) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs))))))
-instance forall (ps :: [Plutarch.DataRepr.Internal.PLabeledType]) (bs :: [Plutarch.DataRepr.Internal.Field.ToBind]) (p1 :: Plutarch.DataRepr.Internal.PLabeledType) (p2 :: Plutarch.DataRepr.Internal.PLabeledType) (p3 :: Plutarch.DataRepr.Internal.PLabeledType) (p4 :: Plutarch.DataRepr.Internal.PLabeledType) (p5 :: Plutarch.DataRepr.Internal.PLabeledType) (p6 :: Plutarch.DataRepr.Internal.PLabeledType) (p7 :: Plutarch.DataRepr.Internal.PLabeledType). Plutarch.DataRepr.Internal.Field.BindFields ps bs => Plutarch.DataRepr.Internal.Field.BindFields ((':) @Plutarch.DataRepr.Internal.PLabeledType p1 ((':) @Plutarch.DataRepr.Internal.PLabeledType p2 ((':) @Plutarch.DataRepr.Internal.PLabeledType p3 ((':) @Plutarch.DataRepr.Internal.PLabeledType p4 ((':) @Plutarch.DataRepr.Internal.PLabeledType p5 ((':) @Plutarch.DataRepr.Internal.PLabeledType p6 ((':) @Plutarch.DataRepr.Internal.PLabeledType p7 ps))))))) ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip ((':) @Plutarch.DataRepr.Internal.Field.ToBind 'Plutarch.DataRepr.Internal.Field.Skip bs)))))))
-instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.DataRepr.Internal.PDataRecord as)
-instance forall (as :: [Plutarch.DataRepr.Internal.PLabeledType]). Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.DataRepr.Internal.PDataSum ((':) @[Plutarch.DataRepr.Internal.PLabeledType] as ('[] @[Plutarch.DataRepr.Internal.PLabeledType])))
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.IsData.PIsData a, Plutarch.DataRepr.Internal.Field.PDataFields a) => Plutarch.DataRepr.Internal.Field.PDataFields (Plutarch.Builtin.Data.PAsData a)
-
-module Plutarch.DataRepr
-
--- | A sum of <a>PDataRecord</a>s. The underlying representation is the
---   <tt>Constr</tt> constructor, where the integer is the index of the
---   variant and the list is the record.
-newtype PDataSum defs s
-PDataSum :: NS (Compose (Term s) PDataRecord) defs -> PDataSum defs s
-
--- | If there is only a single variant, then we can safely extract it.
-punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
-
--- | Try getting the nth variant. Errs if it's another variant.
-ptryIndexDataSum :: KnownNat n => Proxy n -> Term s (PDataSum (def ': defs) :--> PDataRecord (IndexList n (def ': defs)))
-data DataReprHandlers (out :: S -> Type) (defs :: [[PLabeledType]]) (s :: S)
-[DRHNil] :: DataReprHandlers out '[] s
-[DRHCons] :: (Term s (PDataRecord def) -> Term s out) -> DataReprHandlers out defs s -> DataReprHandlers out (def ': defs) s
-
--- | A "record" of `exists a. PAsData a`. The underlying representation is
---   `PBuiltinList PData`.
-data PDataRecord (as :: [PLabeledType]) (s :: S)
-[PDCons] :: forall name_x x xs s. PUnLabel name_x ~ x => Term s (PAsData x) -> Term s (PDataRecord xs) -> PDataRecord (name_x ': xs) s
-[PDNil] :: PDataRecord '[] s
-
--- | Cons a field to a data record.
---   
---   You can specify the label to associate with the field using type
---   applications-
---   
---   <pre>
---   foo :: Term s (PDataRecord '[ "fooField" ':= PByteString ])
---   foo = pdcons @"fooField" # pdata (phexByteStr "ab") # pdnil
---   </pre>
-pdcons :: forall label a l s. Term s (PAsData a :--> (PDataRecord l :--> PDataRecord ((label ':= a) ': l)))
-
--- | An empty <a>PDataRecord</a>.
-pdnil :: Term s (PDataRecord '[])
-data PLabeledType
-(:=) :: Symbol -> (S -> Type) -> PLabeledType
-
--- | Safely index a <a>PDataRecord</a>.
-pindexDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
-
--- | Safely drop the first n items of a <a>PDataRecord</a>.
-pdropDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord xs) -> Term s (PDataRecord (Drop n xs))
-data PlutusTypeData
-
--- | Class allowing <tt>letFields</tt> to work for a PType, usually via
---   <tt>PIsDataRepr</tt>, but is derived for some other types for
---   convenience.
-class PDataFields (a :: S -> Type) where {
-    
-    -- | Fields in HRec bound by <tt>letFields</tt>
-    type PFields a :: [PLabeledType];
-    type PFields a = Helper (PInner a);
-}
-
--- | Convert a Term to a <tt>PDataList</tt>
-ptoFields :: PDataFields a => Term s a -> Term s (PDataRecord (PFields a))
-
--- | Convert a Term to a <tt>PDataList</tt>
-ptoFields :: (PDataFields a, PDataFields (PInner a), PFields (PInner a) ~ PFields a) => Term s a -> Term s (PDataRecord (PFields a))
-
--- | Bind a HRec of named fields containing all the specified fields.
-pletFields :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> (HRecOf a fs s -> Term s b) -> Term s b
-
--- | Get a single field from a Term.
---   
---   <ul>
---   <li>NB*: If you access more than one field from the same value you
---   should use <a>pletFields</a> instead, which will generate the bindings
---   more efficiently.</li>
---   </ul>
-pfield :: forall name b p s a as n. (PDataFields p, as ~ PFields p, n ~ PLabelIndex name as, KnownNat n, a ~ PUnLabel (IndexList n as), PFromDataable a b) => Term s (p :--> b)
-data HRec as
-
--- | The <a>HRec</a> yielded by 'pletFields @fs t'.
-type HRecOf t fs s = HRec (BoundTerms (PFields t) (Bindings (PFields t) fs) s)
-
--- | Constrain an <a>HRec</a> to contain the specified fields from the
---   given Plutarch type.
---   
---   <h3>Example ===</h3>
---   
---   <pre>
---   import qualified GHC.Generics as GHC
---   import Generics.SOP
---   
---   import Plutarch.Prelude
---   import Plutarch.DataRepr
---   
---   newtype PFooType s = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
---     deriving stock (GHC.Generic)
---     deriving anyclass (Generic)
---     deriving anyclass (PIsDataRepr)
---     deriving
---       (PlutusType, PIsData, PDataFields, PEq)
---       via PIsDataReprInstances PFooType
---   
---   foo :: PMemberFields PFooType '["scnd", "frst"] s as =&gt; HRec as -&gt; Term s PInteger
---   foo h = pif (getField <tt>"scnd" h) (getField </tt>"frst" h) 0
---   </pre>
-type family PMemberFields t fs s as
-
--- | Single field version of <a>PMemberFields</a>.
-type family PMemberField t name s as
-
-module Plutarch.TermCont
-hashOpenTerm :: Term s a -> TermCont s Dig
-newtype TermCont :: forall (r :: PType). S -> Type -> Type
-[TermCont] :: forall r s a. ((a -> Term s r) -> Term s r) -> TermCont @r s a
-($sel:runTermCont:TermCont) :: TermCont @r s a -> (a -> Term s r) -> Term s r
-unTermCont :: TermCont @a s (Term s a) -> Term s a
-tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
-
--- | Given a term, and an integer tag, this function checks if the term
---   holds and <tt>PPlaceholder</tt> with the given integer tag.
-pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
-
--- | Finds all placeholder ids and returns it
-pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
-
--- | Like <a>plet</a> but works in a <a>TermCont</a> monad
-pletC :: Term s a -> TermCont s (Term s a)
-
--- | Like <a>pmatch</a> but works in a <a>TermCont</a> monad
-pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
-
--- | Like <a>pletFields</a> but works in a <a>TermCont</a> monad.
-pletFieldsC :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> TermCont @b s (HRec (BoundTerms ps bs s))
-
--- | Like <tt>ptrace</tt> but works in a <a>TermCont</a> monad.
---   
---   <h3>Example ===</h3>
---   
---   <pre>
---   foo :: Term s PUnit
---   foo = unTermCont $ do
---     ptraceC "returning unit!"
---     pure $ pconstant ()
---   </pre>
-ptraceC :: Term s PString -> TermCont s ()
-
--- | Trace a message and raise error if <tt>cond</tt> is false. Otherwise,
---   continue.
---   
---   <h3>Example ===</h3>
---   
---   <pre>
---   onlyAllow42 :: Term s (PInteger :--&gt; PUnit)
---   onlyAllow42 = plam $ i -&gt; unTermCont $ do
---     pguardC "expected 42" $ i #== 42
---     pure $ pconstant ()
---   </pre>
-pguardC :: Term s PString -> Term s PBool -> TermCont s ()
-
--- | Stop computation and return given term if <tt>cond</tt> is false.
---   Otherwise, continue.
---   
---   <h3>Example ===</h3>
---   
---   <pre>
---   is42 :: Term s (PInteger :--&gt; PBool)
---   is42 = plam $ i -&gt; unTermCont $ do
---     pguardC' (pconstant False) $ i #== 42
---     pure $ pconstant True
---   </pre>
-pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
-
--- | <a>TermCont</a> producing version of <a>ptryFrom</a>.
-ptryFromC :: forall b r a s. PTryFrom a b => Term s a -> TermCont @r s (Term s b, Reduce (PTryFromExcess a b s))
-
--- | Escape with a particular value on expecting <a>PJust</a>. For use in
---   monadic context.
-pexpectJustC :: forall (a :: S -> Type) (r :: S -> Type) (s :: S). Term s r -> Term s (PMaybe a) -> TermCont @r s (Term s a)
-
-module Plutarch.Repr.Tag
-
-newtype PTag (struct :: [S -> Type]) (s :: S)
-PTag :: Term s PInteger -> PTag (struct :: [S -> Type]) (s :: S)
-
-[$sel:unPTag:PTag] :: PTag (struct :: [S -> Type]) (s :: S) -> Term s PInteger
-
-newtype DeriveAsTag (a :: S -> Type) s
-DeriveAsTag :: a s -> DeriveAsTag (a :: S -> Type) s
-
-[$sel:unDeriveAsTag:DeriveAsTag] :: DeriveAsTag (a :: S -> Type) s -> a s
-
-newtype TagLiftHelper r struct
-TagLiftHelper :: (Integer -> (SOP I struct -> r) -> r) -> TagLiftHelper r struct
-
-[$sel:unTagLiftHelper:TagLiftHelper] :: TagLiftHelper r struct -> Integer -> (SOP I struct -> r) -> r
-instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Repr.Tag.PTag struct s)
-instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.PTag struct)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveAsTag a)
-instance forall k (a :: k -> GHC.Types.Type) (s :: k) (struct :: [[GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a s), Plutarch.Repr.Tag.TagTypePrettyError (Generics.SOP.Universe.Code (a s)), (Generics.SOP.Universe.Code (a s) :: [[GHC.Types.Type]]) GHC.Types.~ (struct :: [[GHC.Types.Type]]), Data.SOP.Constraint.All @[GHC.Types.Type] (Plutarch.Repr.Tag.IsEmpty @GHC.Types.Type) struct) => Plutarch.Repr.Tag.TagTypeConstraints @{k} s a struct
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveAsTag a), Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} (GHC.Types.Any @Plutarch.Internal.Term.S) a struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Tag.DeriveAsTag a)
-instance forall k1 k2 (x :: [k1]). ((x :: [k1]) GHC.Types.~ ('[] @k1 :: [k1])) => Plutarch.Repr.Tag.IsEmpty @k2 ('[] @k2)
-instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Repr.Tag.PTag struct s)
-
-module Plutarch.Repr.Data
-
-newtype PDataStruct (struct :: [[S -> Type]]) (s :: S)
-PDataStruct :: PStruct struct s -> PDataStruct (struct :: [[S -> Type]]) (s :: S)
-[$sel:unPDataStruct:PDataStruct] :: PDataStruct (struct :: [[S -> Type]]) (s :: S) -> PStruct struct s
-
-newtype PDataRec (struct :: [S -> Type]) (s :: S)
-PDataRec :: PRec struct s -> PDataRec (struct :: [S -> Type]) (s :: S)
-[$sel:unPDataRec:PDataRec] :: PDataRec (struct :: [S -> Type]) (s :: S) -> PRec struct s
-
--- | <tt>DeriveAsDataRec</tt> derives <tt>PlutusType</tt> instances for
---   given type as builtin list of Data. Unlike <tt>PDataAsDataStruct</tt>
---   above, this will encode data as <tt>List</tt>. Similarly, only types
---   with its innermost representation <tt>PData</tt> is allowed for its
---   fields.
---   
---   One major difference is that <tt>DeriveAsDataRec</tt> only allows
---   single constructor as it does not encode the constructor index. When
---   attempted to use this strategy to a type with more than one
---   constructor will result in type error with detailed explanation of the
---   issue.
---   
---   <tt>PInner</tt> of defined type will be <tt>PDataRec (struct :: [S
---   -&gt; Type])</tt> where <tt>struct</tt> is product type of its
---   structure. <tt>PInner</tt> of <tt>PDataRec struct</tt> is
---   <tt>PBuiltinList PData</tt>.
---   
---   It is almost always better to use <tt>DeriveAsDataRec</tt> over
---   <tt>DeriveAsDataStruct</tt> when data type only have one constructor
---   as it is more efficient to work with on-chain. However,
---   Plith(previously PlutusTx), by default, derives every datatype to use
---   <tt>Constr</tt>. So, if a Plutarch type needs to remain compatible
---   with type defined in Plith, one needs to use
---   <tt>DeriveAsDataStruct</tt>. This is why many single-constructor types
---   are derived using <tt>DeriveAsDataStruct</tt> on plutarch-ledger-api.
---   
---   Consult example below for defining custom data-encoded datatype: @@
---   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
---   a)) (Term s (PAsData PBool)) deriving stock (Generic) deriving
---   anyclass (SOP.Generic) deriving PlutusType via (DeriveAsDataRec
---   (PBobData a))
---   
---   pcon $ PBobData (pdata 10) (pdata pfalse) -- [#10, #false] @@
-newtype DeriveAsDataRec (a :: S -> Type) s
-DeriveAsDataRec :: a s -> DeriveAsDataRec (a :: S -> Type) s
-[$sel:unDeriveAsDataRec:DeriveAsDataRec] :: DeriveAsDataRec (a :: S -> Type) s -> a s
-
--- | <tt>DeriveAsDataStruct</tt> derives <tt>PlutusType</tt> instances for
---   the given type as Data structure, namely, using <tt>Constr</tt>
---   constructor of the <tt>Data</tt> type. Each constructor of the given
---   type will have matching constructor index in the order of its
---   definition.
---   
---   Also, it is important to note that each fields can only contain term
---   that has innermost representation of Data. Hence, <tt>PInteger</tt> is
---   not allowed but <tt>PAsData PInteger</tt> is allowed. Failure to
---   follow this requirement will result in type error with detailed
---   explanation of the issue.
---   
---   <tt>PInner</tt> of defined type will be <tt>PDataStruct (struct :: [[S
---   -&gt; Type]])</tt> where <tt>struct</tt> is SOP type of its structure.
---   Since <tt>PInner</tt> of <tt>PDataStruct</tt> is <tt>PData</tt>,
---   multiple data encoded structure can be nested without being wrapped in
---   <tt>PAsData</tt>.
---   
---   Consult example below for defining custom data-encoded datatype: @@
---   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
---   a)) (Term s (PAsData PBool)) | PRobData (Term s (PAsData PByteString))
---   deriving stock (Generic) deriving anyclass (SOP.Generic) deriving
---   PlutusType via (DeriveAsDataStruct (PBobData a))
---   
---   pcon $ PBobData (pdata 10) (pdata pfalse) -- Constr 0 [#10, #false]
---   pcon $ PRobData "hello" -- Constr 1 [#"hello"] @@
-newtype DeriveAsDataStruct (a :: S -> Type) s
-DeriveAsDataStruct :: a s -> DeriveAsDataStruct (a :: S -> Type) s
-[$sel:unDeriveAsDataStruct:DeriveAsDataStruct] :: DeriveAsDataStruct (a :: S -> Type) s -> a s
-instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (hstruct :: [GHC.Types.Type]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, Data.SOP.Constraint.All @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.Data.EachDataLiftable struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, (hstruct :: [GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.RecAsHaskell struct :: [GHC.Types.Type]), Data.SOP.Constraint.AllZip @GHC.Types.Type @(Plutarch.Internal.Term.S -> GHC.Types.Type) Plutarch.Repr.Data.ToAsHaskell hstruct struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Data.PDataRec struct)
-instance forall a (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). ((a :: GHC.Types.Type) GHC.Types.~ (Plutarch.Internal.Lift.AsHaskell b :: GHC.Types.Type), Plutarch.Internal.Lift.PLiftable b, (Plutarch.Internal.Lift.PlutusRepr b :: GHC.Types.Type) GHC.Types.~ (PlutusCore.Data.Data :: GHC.Types.Type)) => Plutarch.Repr.Data.ToAsHaskell a b
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, (Plutarch.Internal.Lift.PlutusRepr a :: GHC.Types.Type) GHC.Types.~ (PlutusCore.Data.Data :: GHC.Types.Type)) => Plutarch.Repr.Data.EachDataLiftable a
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermStruct (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]), Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataStruct a)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct' :: [GHC.Types.Type]) (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). (Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), ((':) @[GHC.Types.Type] struct' ('[] @[GHC.Types.Type]) :: [[GHC.Types.Type]]) GHC.Types.~ (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)) :: [[GHC.Types.Type]]), (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) GHC.Types.~ (Plutarch.Repr.Internal.UnTermRec struct' :: [Plutarch.Internal.Term.S -> GHC.Types.Type]), Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct, Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.S -> GHC.Types.Type} struct, forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Internal.StructSameRepr @{[[Plutarch.Internal.Term.S -> GHC.Types.Type]]} s a ((':) @[Plutarch.Internal.Term.S -> GHC.Types.Type] struct ('[] @[Plutarch.Internal.Term.S -> GHC.Types.Type])), Plutarch.Repr.Internal.RecTypePrettyError @{GHC.Types.Type} (Generics.SOP.Universe.Code (a (GHC.Types.Any @Plutarch.Internal.Term.S)))) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.DeriveAsDataRec a)
-instance forall (struct :: [Plutarch.Internal.Term.PType]). (Data.SOP.Constraint.SListI @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All @Plutarch.Internal.Term.PType Plutarch.Repr.Data.PInnermostIsDataDataRepr struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataRec struct)
-instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.Eq.PEq (Plutarch.Repr.Data.PDataRec struct)
-instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.IsData.PIsData (Plutarch.Repr.Data.PDataRec struct)
-instance forall (struct :: [[Plutarch.Internal.Term.PType]]). (Data.SOP.Constraint.SListI2 @{Plutarch.Internal.Term.PType} struct, Data.SOP.Constraint.All2 @{Plutarch.Internal.Term.PType} Plutarch.Repr.Data.PInnermostIsDataDataRepr struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Data.PDataStruct struct)
-instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). Plutarch.Internal.Eq.PEq (Plutarch.Repr.Data.PDataStruct struct)
-instance forall (struct :: [[Plutarch.Internal.Term.S -> GHC.Types.Type]]). Plutarch.Internal.IsData.PIsData (Plutarch.Repr.Data.PDataStruct struct)
 
 module Plutarch.Builtin.Crypto
 
@@ -3658,49 +3202,6 @@ pdecodeUtf8 :: Term s (PByteString :--> PString)
 pencodeUtf8 :: Term s (PString :--> PByteString)
 data PUnit (s :: S)
 PUnit :: PUnit (s :: S)
-
--- | Class allowing <tt>letFields</tt> to work for a PType, usually via
---   <tt>PIsDataRepr</tt>, but is derived for some other types for
---   convenience.
-class PDataFields (a :: S -> Type)
-
--- | A "record" of `exists a. PAsData a`. The underlying representation is
---   `PBuiltinList PData`.
-data PDataRecord (as :: [PLabeledType]) (s :: S)
-
--- | A sum of <a>PDataRecord</a>s. The underlying representation is the
---   <tt>Constr</tt> constructor, where the integer is the index of the
---   variant and the list is the record.
-data PDataSum defs s
-data PLabeledType
-(:=) :: Symbol -> (S -> Type) -> PLabeledType
-data PlutusTypeData
-
--- | Cons a field to a data record.
---   
---   You can specify the label to associate with the field using type
---   applications-
---   
---   <pre>
---   foo :: Term s (PDataRecord '[ "fooField" ':= PByteString ])
---   foo = pdcons @"fooField" # pdata (phexByteStr "ab") # pdnil
---   </pre>
-pdcons :: forall label a l s. Term s (PAsData a :--> (PDataRecord l :--> PDataRecord ((label ':= a) ': l)))
-
--- | An empty <a>PDataRecord</a>.
-pdnil :: Term s (PDataRecord '[])
-
--- | Get a single field from a Term.
---   
---   <ul>
---   <li>NB*: If you access more than one field from the same value you
---   should use <a>pletFields</a> instead, which will generate the bindings
---   more efficiently.</li>
---   </ul>
-pfield :: forall name b p s a as n. (PDataFields p, as ~ PFields p, n ~ PLabelIndex name as, KnownNat n, a ~ PUnLabel (IndexList n as), PFromDataable a b) => Term s (p :--> b)
-
--- | Bind a HRec of named fields containing all the specified fields.
-pletFields :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> (HRecOf a fs s -> Term s b) -> Term s b
 
 -- | SOP-encoded <a>Either</a>.
 data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
@@ -4104,11 +3605,6 @@ pzipWith :: (PListLike list, PElemConstraint list a, PElemConstraint list b, PEl
 
 -- | Like <a>pzipWith</a> but with Haskell-level merge function.
 pzipWith' :: (PListLike list, PElemConstraint list a, PElemConstraint list b, PElemConstraint list c) => (Term s a -> Term s b -> Term s c) -> Term s (list a :--> (list b :--> list c))
-class (PInner a ~ DerivedPInner (DPTStrat a) a, PlutusTypeStrat (DPTStrat a), PlutusTypeStratConstraint (DPTStrat a) a, PlutusType a) => DerivePlutusType (a :: PType) where {
-    type DPTStrat a :: Type;
-    type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type "
-                                 ':<>: 'ShowType a);
-}
 
 -- | <i>Deprecated: Use PlutusType</i>
 type PCon = PlutusType
@@ -4117,7 +3613,6 @@ type PCon = PlutusType
 type PMatch = PlutusType
 class PlutusType (a :: PType) where {
     type PInner a :: PType;
-    type PInner a = DerivedPInner (DPTStrat a) a;
     type PCovariant' a = All2 PCovariant'' (PCode a);
     type PContravariant' a = All2 PContravariant'' (PCode a);
     type PVariant' a = All2 PVariant'' (PCode a);
@@ -4128,8 +3623,6 @@ pcon :: PlutusType a => a s -> Term s a
 
 -- | Pattern match over Plutarch Terms via a Haskell datatype
 pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
-data PlutusTypeNewtype
-data PlutusTypeScott
 
 newtype DeriveNewtypePlutusType (a :: S -> Type) s
 DeriveNewtypePlutusType :: a s -> DeriveNewtypePlutusType (a :: S -> Type) s
@@ -4143,6 +3636,84 @@ DeriveNewtypePlutusType :: a s -> DeriveNewtypePlutusType (a :: S -> Type) s
 --   See <tt>PLiftable</tt>
 newtype DeriveFakePlutusType (a :: S -> Type) (s :: S)
 DeriveFakePlutusType :: a s -> DeriveFakePlutusType (a :: S -> Type) (s :: S)
+
+-- | <tt>DeriveAsDataStruct</tt> derives <tt>PlutusType</tt> instances for
+--   the given type as Data structure, namely, using <tt>Constr</tt>
+--   constructor of the <tt>Data</tt> type. Each constructor of the given
+--   type will have matching constructor index in the order of its
+--   definition.
+--   
+--   Also, it is important to note that each fields can only contain term
+--   that has innermost representation of Data. Hence, <tt>PInteger</tt> is
+--   not allowed but <tt>PAsData PInteger</tt> is allowed. Failure to
+--   follow this requirement will result in type error with detailed
+--   explanation of the issue.
+--   
+--   <tt>PInner</tt> of defined type will be <tt>PDataStruct (struct :: [[S
+--   -&gt; Type]])</tt> where <tt>struct</tt> is SOP type of its structure.
+--   Since <tt>PInner</tt> of <tt>PDataStruct</tt> is <tt>PData</tt>,
+--   multiple data encoded structure can be nested without being wrapped in
+--   <tt>PAsData</tt>.
+--   
+--   Consult example below for defining custom data-encoded datatype: @@
+--   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
+--   a)) (Term s (PAsData PBool)) | PRobData (Term s (PAsData PByteString))
+--   deriving stock (Generic) deriving anyclass (SOP.Generic) deriving
+--   PlutusType via (DeriveAsDataStruct (PBobData a))
+--   
+--   pcon $ PBobData (pdata 10) (pdata pfalse) -- Constr 0 [#10, #false]
+--   pcon $ PRobData "hello" -- Constr 1 [#"hello"] @@
+newtype DeriveAsDataStruct (a :: S -> Type) s
+DeriveAsDataStruct :: a s -> DeriveAsDataStruct (a :: S -> Type) s
+
+-- | <tt>DeriveAsDataRec</tt> derives <tt>PlutusType</tt> instances for
+--   given type as builtin list of Data. Unlike <tt>PDataAsDataStruct</tt>
+--   above, this will encode data as <tt>List</tt>. Similarly, only types
+--   with its innermost representation <tt>PData</tt> is allowed for its
+--   fields.
+--   
+--   One major difference is that <tt>DeriveAsDataRec</tt> only allows
+--   single constructor as it does not encode the constructor index. When
+--   attempted to use this strategy to a type with more than one
+--   constructor will result in type error with detailed explanation of the
+--   issue.
+--   
+--   <tt>PInner</tt> of defined type will be <tt>PDataRec (struct :: [S
+--   -&gt; Type])</tt> where <tt>struct</tt> is product type of its
+--   structure. <tt>PInner</tt> of <tt>PDataRec struct</tt> is
+--   <tt>PBuiltinList PData</tt>.
+--   
+--   It is almost always better to use <tt>DeriveAsDataRec</tt> over
+--   <tt>DeriveAsDataStruct</tt> when data type only have one constructor
+--   as it is more efficient to work with on-chain. However,
+--   Plith(previously PlutusTx), by default, derives every datatype to use
+--   <tt>Constr</tt>. So, if a Plutarch type needs to remain compatible
+--   with type defined in Plith, one needs to use
+--   <tt>DeriveAsDataStruct</tt>. This is why many single-constructor types
+--   are derived using <tt>DeriveAsDataStruct</tt> on plutarch-ledger-api.
+--   
+--   Consult example below for defining custom data-encoded datatype: @@
+--   data PBobData (a :: S -&gt; Type) (s :: S) = PBobData (Term s (PAsData
+--   a)) (Term s (PAsData PBool)) deriving stock (Generic) deriving
+--   anyclass (SOP.Generic) deriving PlutusType via (DeriveAsDataRec
+--   (PBobData a))
+--   
+--   pcon $ PBobData (pdata 10) (pdata pfalse) -- [#10, #false] @@
+newtype DeriveAsDataRec (a :: S -> Type) s
+DeriveAsDataRec :: a s -> DeriveAsDataRec (a :: S -> Type) s
+
+-- | <tt>via</tt>-derivation helper to derive <a>PlutusType</a> instance
+--   using SoP encoding. If your type has only one constructor prefer using
+--   <a>DeriveAsSOPRec</a> instead.
+newtype DeriveAsSOPStruct (a :: S -> Type) s
+DeriveAsSOPStruct :: a s -> DeriveAsSOPStruct (a :: S -> Type) s
+
+-- | <tt>via</tt>-derivation helper for SOP encoding, currently behaves
+--   exactly like <a>DeriveAsSOPStruct</a> but can be used only on types
+--   with a single constructor. It is separate to leave a room for future
+--   optimizations.
+newtype DeriveAsSOPRec (a :: S -> Type) s
+DeriveAsSOPRec :: a s -> DeriveAsSOPRec (a :: S -> Type) s
 
 data Positive
 
@@ -4517,9 +4088,6 @@ pguardC' :: Term s a -> Term s PBool -> TermCont @a s ()
 
 -- | Like <a>plet</a> but works in a <a>TermCont</a> monad
 pletC :: Term s a -> TermCont s (Term s a)
-
--- | Like <a>pletFields</a> but works in a <a>TermCont</a> monad.
-pletFieldsC :: forall fs a s b ps bs. (PDataFields a, ps ~ PFields a, bs ~ Bindings ps fs, BindFields ps bs) => Term s a -> TermCont @b s (HRec (BoundTerms ps bs s))
 
 -- | Like <a>pmatch</a> but works in a <a>TermCont</a> monad
 pmatchC :: PlutusType a => Term s a -> TermCont s (a s)

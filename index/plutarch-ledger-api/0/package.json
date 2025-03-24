@@ -1,1 +1,1 @@
-{"signatures":[],"signed":{"_type":"Targets","expires":null,"targets":{"<repo>/package/plutarch-ledger-api-0.tar.gz":{"hashes":{"sha256":"fffb291b582632e5e879c26e1933d8d25f8310c37e4a3a7e822b6e7c2124d12c"},"length":26249}},"version":1}}
+{"signatures":[],"signed":{"_type":"Targets","expires":null,"targets":{"<repo>/package/plutarch-ledger-api-0.tar.gz":{"hashes":{"sha256":"8faa51830bcd3fe52a5aca815f6ada66163c0b0015e258216501252875f9f2bb"},"length":26223}},"version":1}}
