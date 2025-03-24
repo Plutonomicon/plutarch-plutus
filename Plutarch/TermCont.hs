@@ -10,7 +10,6 @@ module Plutarch.TermCont (
   TC.pfindAllPlaceholders,
   pletC,
   pmatchC,
-  pletFieldsC,
   ptraceC,
   pguardC,
   pguardC',
@@ -21,12 +20,6 @@ module Plutarch.TermCont (
 import Data.Kind (Type)
 import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.String (PString)
-import Plutarch.DataRepr (HRec, PDataFields, PFields, pletFields)
-import Plutarch.DataRepr.Internal.Field (
-  BindFields,
-  Bindings,
-  BoundTerms,
- )
 import Plutarch.Internal.PlutusType (PlutusType, pmatch)
 import Plutarch.Internal.Term (S, Term, plet)
 import Plutarch.Internal.TermCont (TermCont, tcont)
@@ -43,18 +36,6 @@ pletC = tcont . plet
 -- | Like `pmatch` but works in a `TermCont` monad
 pmatchC :: PlutusType a => Term s a -> TermCont s (a s)
 pmatchC = tcont . pmatch
-
--- | Like `pletFields` but works in a `TermCont` monad.
-pletFieldsC ::
-  forall fs a s b ps bs.
-  ( PDataFields a
-  , ps ~ PFields a
-  , bs ~ Bindings ps fs
-  , BindFields ps bs
-  ) =>
-  Term s a ->
-  TermCont @b s (HRec (BoundTerms ps bs s))
-pletFieldsC x = tcont $ pletFields @fs x
 
 {- | Like `ptrace` but works in a `TermCont` monad.
 

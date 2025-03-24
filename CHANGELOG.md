@@ -2,8 +2,14 @@
 
 # UNRELEASED
 
+## Removed
+
+- `DerivePlutusType` and everything related
+- `Plutarch.DataRepr`
+
 ## Added
 
+- `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
 * `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
 
 ## Changed

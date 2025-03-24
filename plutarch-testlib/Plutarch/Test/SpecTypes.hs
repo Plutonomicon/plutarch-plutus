@@ -6,6 +6,7 @@ module Plutarch.Test.SpecTypes (Triplet (..), PTriplet (..)) where
 
 import Data.Kind (Type)
 import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
 import Plutarch.Prelude
 import PlutusTx qualified
 import Prettyprinter (Pretty (pretty), (<+>))
@@ -24,27 +25,16 @@ instance Pretty a => Pretty (Triplet a) where
 {- |
   We can defined a data-type using PDataRecord, with labeled fields.
 
-  With an appropriate instance of 'PIsDataRepr', we can automatically
-  derive 'PDataFields'.
-
 @since 1.0.0
 -}
-newtype PTriplet (a :: S -> Type) (s :: S)
-  = PTriplet
-      ( Term
-          s
-          ( PDataRecord
-              '[ "x" ':= a
-               , "y" ':= a
-               , "z" ':= a
-               ]
-          )
-      )
+data PTriplet (a :: S -> Type) (s :: S) = PTriplet
+  { ptriplet'a :: Term s (PAsData a)
+  , ptriplet'b :: Term s (PAsData a)
+  , ptriplet'c :: Term s (PAsData a)
+  }
   deriving stock (Generic)
-  deriving anyclass (PlutusType, PIsData, PEq, POrd, PDataFields)
-
--- | @since 1.0.0
-instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
+  deriving anyclass (SOP.Generic, PIsData, PEq)
+  deriving (PlutusType) via (DeriveAsDataStruct (PTriplet a))
 
 PlutusTx.makeIsDataIndexed ''Triplet [('Triplet, 0)]
 

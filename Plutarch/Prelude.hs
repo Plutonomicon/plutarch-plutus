@@ -74,17 +74,6 @@ module Plutarch.Prelude (
   -- * Unit
   PUnit (..),
 
-  -- * DataRepr
-  PDataFields,
-  PDataRecord,
-  PDataSum,
-  PLabeledType ((:=)),
-  PlutusTypeData,
-  pdcons,
-  pdnil,
-  pfield,
-  pletFields,
-
   -- * Either
   PEither (..),
 
@@ -152,16 +141,17 @@ module Plutarch.Prelude (
   pzipWith',
 
   -- * PlutusType
-  DerivePlutusType (DPTStrat),
   PCon,
   PMatch,
   PlutusType (PInner),
   pcon,
   pmatch,
-  PlutusTypeNewtype,
-  PlutusTypeScott,
   DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   DeriveFakePlutusType (DeriveFakePlutusType),
+  DeriveAsDataStruct (DeriveAsDataStruct),
+  DeriveAsDataRec (DeriveAsDataRec),
+  DeriveAsSOPStruct (DeriveAsSOPStruct),
+  DeriveAsSOPRec (DeriveAsSOPRec),
 
   -- * Numeric
   Positive,
@@ -233,7 +223,6 @@ module Plutarch.Prelude (
   pguardC,
   pguardC',
   pletC,
-  pletFieldsC,
   pmatchC,
   ptraceC,
   ptryFromC,
@@ -279,7 +268,6 @@ import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Opaque
 import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
-import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Enum
 import Plutarch.Internal.Eq
@@ -287,14 +275,12 @@ import Plutarch.Internal.Fix
 import Plutarch.Internal.IsData
 import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike
-import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
 import Plutarch.Internal.Other
 import Plutarch.Internal.PLam
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Quantification
-import Plutarch.Internal.ScottEncoding
 import Plutarch.Internal.Semigroup
 import Plutarch.Internal.Show
 import Plutarch.Internal.Term
@@ -303,6 +289,8 @@ import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
+import Plutarch.Repr.Data
+import Plutarch.Repr.SOP
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unroll

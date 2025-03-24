@@ -4,7 +4,6 @@ import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Test.Suite.Plutarch.Bool qualified as Bool
 import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
 import Plutarch.Test.Suite.Plutarch.Either qualified as Either
-import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
 import Plutarch.Test.Suite.Plutarch.List qualified as List
 import Plutarch.Test.Suite.Plutarch.Maybe qualified as Maybe
@@ -42,7 +41,6 @@ main = do
         [ Bool.tests
         , ByteString.tests
         , Either.tests
-        , Field.tests
         , Integer.tests
         , List.tests
         , Maybe.tests

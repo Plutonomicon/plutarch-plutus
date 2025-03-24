@@ -2,12 +2,7 @@
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 
--- Commented codes were previously for testing POrd auto derivation
--- But we decided not to provide that because POrd can be misleading
--- on few instances
-
 import Data.Kind (Type)
-import GHC.Records (getField)
 import Plutarch.LedgerApi.V1 (
   PCredential (PPubKeyCredential, PScriptCredential),
   PMaybeData,
@@ -15,7 +10,7 @@ import Plutarch.LedgerApi.V1 (
 import Plutarch.Prelude
 import Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkHaskellOrdEquivalent, checkPOrdLaws)
-import Plutarch.Test.SpecTypes (PTriplet, Triplet (Triplet))
+import Plutarch.Test.SpecTypes (PTriplet (PTriplet), Triplet (Triplet))
 import PlutusLedgerApi.QuickCheck.Utils ()
 import PlutusLedgerApi.V1 (Credential (PubKeyCredential, ScriptCredential))
 import Test.Tasty (TestTree, testGroup)
@@ -35,8 +30,7 @@ tests =
                 ]
             , goldenGroup
                 "PTriplet"
-                [ goldenGroup "derived" (ltWith @(PTriplet PInteger) (#<) t1 t2)
-                , goldenGroup "pmatch" (ltWith ltTrip t1 t2)
+                [ goldenGroup "pmatch" (ltWith ltTrip t1 t2)
                 ]
             ]
         , plutarchGolden
@@ -48,8 +42,7 @@ tests =
                 ]
             , goldenGroup
                 "PTriplet"
-                [ goldenGroup "derived" (lteWith @(PTriplet PInteger) (#<=) t1 t2)
-                , goldenGroup "pmatch" (lteWith lteTrip t1 t2)
+                [ goldenGroup "pmatch" (lteWith lteTrip t1 t2)
                 ]
             ]
         ]
@@ -57,7 +50,6 @@ tests =
         "Haskell Equivalence"
         [ checkHaskellOrdEquivalent @PBool
         , checkHaskellOrdEquivalent @(PMaybeData PInteger)
-        , checkHaskellOrdEquivalent @(PTriplet PInteger)
         ]
     , testGroup
         "Laws"
@@ -128,11 +120,11 @@ t2 = Triplet 1 3 5
 -- manual 'pmatch' + manual field extraction impl.
 ltTrip :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
 ltTrip trip1 trip2 = unTermCont $ do
-  a <- tcont $ pletFields @'["x", "y", "z"] trip1
-  b <- tcont $ pletFields @'["x", "y", "z"] trip2
+  PTriplet x1 y1 z1 <- tcont $ pmatch trip1
+  PTriplet x2 y2 z2 <- tcont $ pmatch trip2
 
-  x <- tcont . plet . pfromData $ getField @"x" a
-  x' <- tcont . plet . pfromData $ getField @"x" b
+  x <- tcont . plet . pfromData $ x1
+  x' <- tcont . plet . pfromData $ x2
   pure $
     x
       #< x'
@@ -140,22 +132,19 @@ ltTrip trip1 trip2 = unTermCont $ do
               #== x'
               #&& unTermCont
                 ( do
-                    y <- tcont . plet . pfromData $ getField @"y" a
-                    y' <- tcont . plet . pfromData $ getField @"y" b
-                    pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #< pfromData (getField @"z" b))
+                    y <- tcont . plet . pfromData $ y1
+                    y' <- tcont . plet . pfromData $ y2
+                    pure $ y #< y' #|| (y #== y' #&& pfromData z1 #< pfromData z2)
                 )
           )
-
--- ltTrip' :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
--- ltTrip' = pmatchDataRecHelperTrip (#<)
 
 lteTrip :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
 lteTrip trip1 trip2 = unTermCont $ do
-  a <- tcont $ pletFields @'["x", "y", "z"] trip1
-  b <- tcont $ pletFields @'["x", "y", "z"] trip2
+  PTriplet x1 y1 z1 <- tcont $ pmatch trip1
+  PTriplet x2 y2 z2 <- tcont $ pmatch trip2
 
-  x <- tcont . plet . pfromData $ getField @"x" a
-  x' <- tcont . plet . pfromData $ getField @"x" b
+  x <- tcont . plet . pfromData $ x1
+  x' <- tcont . plet . pfromData $ x2
   pure $
     x
       #< x'
@@ -163,25 +152,11 @@ lteTrip trip1 trip2 = unTermCont $ do
               #== x'
               #&& unTermCont
                 ( do
-                    y <- tcont . plet . pfromData $ getField @"y" a
-                    y' <- tcont . plet . pfromData $ getField @"y" b
-                    pure $ y #< y' #|| (y #== y' #&& pfromData (getField @"z" a) #<= pfromData (getField @"z" b))
+                    y <- tcont . plet . pfromData $ y1
+                    y' <- tcont . plet . pfromData $ y2
+                    pure $ y #< y' #|| (y #== y' #&& pfromData z1 #<= pfromData z2)
                 )
           )
-
--- lteTrip' :: Term s (PTriplet PInteger) -> Term s (PTriplet PInteger) -> Term s PBool
--- lteTrip' = pmatchDataRecHelperTrip (#<=)
-
--- manual 'pmatch' + 'PDataRecord' Ord impl.
--- pmatchDataRecHelperTrip ::
---   (forall l. POrd (PDataRecord l) => Term s (PDataRecord l) -> Term s (PDataRecord l) -> Term s PBool) ->
---   Term s (PTriplet PInteger) ->
---   Term s (PTriplet PInteger) ->
---   Term s PBool
--- pmatchDataRecHelperTrip f trip1 trip2 = unTermCont $ do
---   PTriplet a <- tcont $ pmatch trip1
---   PTriplet b <- tcont $ pmatch trip2
---   pure $ a `f` b
 
 -- Ord utils
 
