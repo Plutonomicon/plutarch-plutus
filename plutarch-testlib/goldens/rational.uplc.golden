@@ -10,55 +10,47 @@ ops.+ program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 (\!0 !0 ->
-                                    case
-                                      !2
-                                      [ (\!0 !0 ->
-                                           case
-                                             !3
-                                             [ (\!0 !0 ->
-                                                  !10
-                                                    (addInteger
-                                                       (multiplyInteger !4 !1)
-                                                       (multiplyInteger !2 !3))
-                                                    (multiplyInteger
-                                                       !3
-                                                       !1)) ]) ])
-                                   (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
-                                   (!1 (constr 0 [1, 1]) (constr 0 [2, 1])))
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
-                                                   (multiplyInteger
-                                                      !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                              (\!0 !0 ->
+                                 case
+                                   !2
+                                   [ (\!0 !0 ->
+                                        case
+                                          !3
+                                          [ (\!0 !0 ->
+                                               !9
+                                                 (addInteger
+                                                    (multiplyInteger !4 !1)
+                                                    (multiplyInteger !2 !3))
+                                                 (multiplyInteger !3 !1)) ]) ])
+                                (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
+                                (!1 (constr 0 [1, 1]) (constr 0 [2, 1])))
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -119,55 +111,47 @@ ops.- program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 (\!0 !0 ->
-                                    case
-                                      !2
-                                      [ (\!0 !0 ->
-                                           case
-                                             !3
-                                             [ (\!0 !0 ->
-                                                  !10
-                                                    (subtractInteger
-                                                       (multiplyInteger !4 !1)
-                                                       (multiplyInteger !2 !3))
-                                                    (multiplyInteger
-                                                       !3
-                                                       !1)) ]) ])
-                                   (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
-                                   (!1 (constr 0 [1, 1]) (constr 0 [3, 1])))
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
-                                                   (multiplyInteger
-                                                      !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                              (\!0 !0 ->
+                                 case
+                                   !2
+                                   [ (\!0 !0 ->
+                                        case
+                                          !3
+                                          [ (\!0 !0 ->
+                                               !9
+                                                 (subtractInteger
+                                                    (multiplyInteger !4 !1)
+                                                    (multiplyInteger !2 !3))
+                                                 (multiplyInteger !3 !1)) ]) ])
+                                (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
+                                (!1 (constr 0 [1, 1]) (constr 0 [3, 1])))
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -229,45 +213,24 @@ ops.* program
                         (\!0 ->
                            (\!0 ->
                               (\!0 ->
-                                 (\!0 ->
-                                    (\!0 !0 ->
-                                       case
-                                         !2
-                                         [ (\!0 !0 ->
-                                              case
-                                                !3
-                                                [ (\!0 !0 ->
-                                                     !11
-                                                       (multiplyInteger !4 !2)
-                                                       (multiplyInteger
-                                                          !3
-                                                          !1)) ]) ])
-                                      (!1
-                                         (constr 0 [1, 1])
-                                         (!2
-                                            (constr 0 [3, 1])
-                                            (constr 0 [2, 1])))
-                                      (!1
-                                         (constr 0 [2, 1])
-                                         (!2
-                                            (constr 0 [5, 1])
-                                            (constr 0 [2, 1]))))
-                                   (\!0 !0 ->
-                                      case
-                                        !2
-                                        [ (\!0 !0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    !10
-                                                      (subtractInteger
-                                                         (multiplyInteger !4 !1)
-                                                         (multiplyInteger
-                                                            !2
-                                                            !3))
-                                                      (multiplyInteger
-                                                         !3
-                                                         !1)) ]) ]))
+                                 (\!0 !0 ->
+                                    case
+                                      !2
+                                      [ (\!0 !0 ->
+                                           case
+                                             !3
+                                             [ (\!0 !0 ->
+                                                  !10
+                                                    (multiplyInteger !4 !2)
+                                                    (multiplyInteger
+                                                       !3
+                                                       !1)) ]) ])
+                                   (!1
+                                      (constr 0 [1, 1])
+                                      (!2 (constr 0 [3, 1]) (constr 0 [2, 1])))
+                                   (!1
+                                      (constr 0 [2, 1])
+                                      (!2 (constr 0 [5, 1]) (constr 0 [2, 1]))))
                                 (\!0 !0 ->
                                    case
                                      !2
@@ -275,31 +238,40 @@ ops.* program
                                           case
                                             !3
                                             [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
+                                                 !9
+                                                   (subtractInteger
+                                                      (multiplyInteger !4 !1)
+                                                      (multiplyInteger !2 !3))
                                                    (multiplyInteger
                                                       !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                                                      !1)) ]) ]))
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -361,36 +333,17 @@ ops.harmonic-sum program
                         (\!0 ->
                            (\!0 ->
                               (\!0 ->
-                                 (\!0 ->
-                                    !1
+                                 !1
+                                   (!1
                                       (!1
-                                         (!1
-                                            (!2
-                                               (constr 0 [1, 1])
-                                               (constr 0 [2, 1]))
-                                            (!2
-                                               (constr 0 [1, 1])
-                                               (constr 0 [3, 1])))
                                          (!2
                                             (constr 0 [1, 1])
-                                            (constr 0 [4, 1])))
-                                      (!2 (constr 0 [1, 1]) (constr 0 [5, 1])))
-                                   (\!0 !0 ->
-                                      case
-                                        !2
-                                        [ (\!0 !0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    !10
-                                                      (addInteger
-                                                         (multiplyInteger !4 !1)
-                                                         (multiplyInteger
-                                                            !2
-                                                            !3))
-                                                      (multiplyInteger
-                                                         !3
-                                                         !1)) ]) ]))
+                                            (constr 0 [2, 1]))
+                                         (!2
+                                            (constr 0 [1, 1])
+                                            (constr 0 [3, 1])))
+                                      (!2 (constr 0 [1, 1]) (constr 0 [4, 1])))
+                                   (!2 (constr 0 [1, 1]) (constr 0 [5, 1])))
                                 (\!0 !0 ->
                                    case
                                      !2
@@ -398,31 +351,40 @@ ops.harmonic-sum program
                                           case
                                             !3
                                             [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
+                                                 !9
+                                                   (addInteger
+                                                      (multiplyInteger !4 !1)
+                                                      (multiplyInteger !2 !3))
                                                    (multiplyInteger
                                                       !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                                                      !1)) ]) ]))
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -484,38 +446,25 @@ ops.multi-product program
                         (\!0 ->
                            (\!0 ->
                               (\!0 ->
-                                 (\!0 ->
-                                    !2
-                                      (!1
-                                         (!2
-                                            (!1
-                                               (!2
-                                                  (!1
-                                                     (!2
-                                                        (!1
-                                                           (!2
-                                                              (constr 0 [1, 1])
-                                                              (constr 0 [2, 1]))
+                                 !2
+                                   (!1
+                                      (!2
+                                         (!1
+                                            (!2
+                                               (!1
+                                                  (!2
+                                                     (!1
+                                                        (!2
+                                                           (constr 0 [1, 1])
                                                            (constr 0 [2, 1]))
-                                                        (constr 0 [3, 1]))
+                                                        (constr 0 [2, 1]))
                                                      (constr 0 [3, 1]))
-                                                  (constr 0 [4, 1]))
+                                                  (constr 0 [3, 1]))
                                                (constr 0 [4, 1]))
-                                            (constr 0 [5, 1]))
+                                            (constr 0 [4, 1]))
                                          (constr 0 [5, 1]))
-                                      (constr 0 [6, 1]))
-                                   (\!0 !0 ->
-                                      case
-                                        !2
-                                        [ (\!0 !0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    !10
-                                                      (multiplyInteger !4 !2)
-                                                      (multiplyInteger
-                                                         !3
-                                                         !1)) ]) ]))
+                                      (constr 0 [5, 1]))
+                                   (constr 0 [6, 1]))
                                 (\!0 !0 ->
                                    case
                                      !2
@@ -523,31 +472,38 @@ ops.multi-product program
                                           case
                                             !3
                                             [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
+                                                 !9
+                                                   (multiplyInteger !4 !2)
                                                    (multiplyInteger
                                                       !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                                                      !1)) ]) ]))
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -825,53 +781,45 @@ compare program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 (\!0 !0 ->
-                                    case
-                                      !2
-                                      [ (\!0 !0 ->
-                                           case
-                                             !3
-                                             [ (\!0 !0 ->
-                                                  lessThanInteger
-                                                    (multiplyInteger !1 !4)
-                                                    (multiplyInteger
-                                                       !2
-                                                       !3)) ]) ])
-                                   (!1 (constr 0 [2, 1]) (constr 0 [9, 1]))
-                                   (!1 (constr 0 [3, 1]) (constr 0 [10, 1])))
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
-                                                   (multiplyInteger
-                                                      !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                              (\!0 !0 ->
+                                 case
+                                   !2
+                                   [ (\!0 !0 ->
+                                        case
+                                          !3
+                                          [ (\!0 !0 ->
+                                               lessThanInteger
+                                                 (multiplyInteger !1 !4)
+                                                 (multiplyInteger !2 !3)) ]) ])
+                                (!1 (constr 0 [2, 1]) (constr 0 [9, 1]))
+                                (!1 (constr 0 [3, 1]) (constr 0 [10, 1])))
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -1956,90 +1904,83 @@ properFraction.-1/2 program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 case
-                                   ((\!0 ->
-                                       (\!0 ->
-                                          (\!0 -> constr 0 [!2, !1])
-                                            ((\!0 ->
-                                                case
-                                                  !3
-                                                  [ (\!0 !0 ->
-                                                       case
-                                                         !3
-                                                         [ (\!0 !0 ->
-                                                              !11
-                                                                (subtractInteger
-                                                                   (multiplyInteger
-                                                                      !4
-                                                                      !1)
-                                                                   (multiplyInteger
-                                                                      !2
-                                                                      !3))
-                                                                (multiplyInteger
-                                                                   !3
-                                                                   !1)) ]) ])
-                                               (constr 0 [!1, 1])))
-                                         (case !1 [quotientInteger]))
-                                      (!1 (constr 0 [-1, 1]) (constr 0 [2, 1])))
-                                   [ (\!0 !0 ->
-                                        force
-                                          ((\!0 !0 ->
-                                              case
-                                                (constr 0
-                                                   [!2, !1, (delay False)])
-                                                [!13])
-                                             (equalsInteger !2 0)
-                                             (delay
-                                                ((\!0 ->
+                              case
+                                ((\!0 ->
+                                    (\!0 ->
+                                       (\!0 -> constr 0 [!2, !1])
+                                         ((\!0 ->
+                                             case
+                                               !3
+                                               [ (\!0 !0 ->
                                                     case
-                                                      !2
-                                                      [ (\!0 !0 ->
-                                                           case
-                                                             !3
-                                                             [ (\!0 !0 ->
-                                                                  equalsInteger
-                                                                    (multiplyInteger
-                                                                       !1
-                                                                       !4)
-                                                                    (multiplyInteger
-                                                                       !2
-                                                                       !3)) ]) ])
-                                                   (!3
-                                                      (constr 0 [-1, 1])
-                                                      (constr 0 [2, 1])))))) ])
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
-                                                   (multiplyInteger
                                                       !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                                                      [ (\!0 !0 ->
+                                                           !10
+                                                             (subtractInteger
+                                                                (multiplyInteger
+                                                                   !4
+                                                                   !1)
+                                                                (multiplyInteger
+                                                                   !2
+                                                                   !3))
+                                                             (multiplyInteger
+                                                                !3
+                                                                !1)) ]) ])
+                                            (constr 0 [!1, 1])))
+                                      (case !1 [quotientInteger]))
+                                   (!1 (constr 0 [-1, 1]) (constr 0 [2, 1])))
+                                [ (\!0 !0 ->
+                                     force
+                                       ((\!0 !0 ->
+                                           case
+                                             (constr 0 [!2, !1, (delay False)])
+                                             [!12])
+                                          (equalsInteger !2 0)
+                                          (delay
+                                             ((\!0 ->
+                                                 case
+                                                   !2
+                                                   [ (\!0 !0 ->
+                                                        case
+                                                          !3
+                                                          [ (\!0 !0 ->
+                                                               equalsInteger
+                                                                 (multiplyInteger
+                                                                    !1
+                                                                    !4)
+                                                                 (multiplyInteger
+                                                                    !2
+                                                                    !3)) ]) ])
+                                                (!3
+                                                   (constr 0 [-1, 1])
+                                                   (constr 0 [2, 1])))))) ])
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -2100,90 +2041,83 @@ properFraction.-3/2 program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 case
-                                   ((\!0 ->
-                                       (\!0 ->
-                                          (\!0 -> constr 0 [!2, !1])
-                                            ((\!0 ->
-                                                case
-                                                  !3
-                                                  [ (\!0 !0 ->
-                                                       case
-                                                         !3
-                                                         [ (\!0 !0 ->
-                                                              !11
-                                                                (subtractInteger
-                                                                   (multiplyInteger
-                                                                      !4
-                                                                      !1)
-                                                                   (multiplyInteger
-                                                                      !2
-                                                                      !3))
-                                                                (multiplyInteger
-                                                                   !3
-                                                                   !1)) ]) ])
-                                               (constr 0 [!1, 1])))
-                                         (case !1 [quotientInteger]))
-                                      (!1 (constr 0 [-3, 1]) (constr 0 [2, 1])))
-                                   [ (\!0 !0 ->
-                                        force
-                                          ((\!0 !0 ->
-                                              case
-                                                (constr 0
-                                                   [!2, !1, (delay False)])
-                                                [!13])
-                                             (equalsInteger !2 -1)
-                                             (delay
-                                                ((\!0 ->
+                              case
+                                ((\!0 ->
+                                    (\!0 ->
+                                       (\!0 -> constr 0 [!2, !1])
+                                         ((\!0 ->
+                                             case
+                                               !3
+                                               [ (\!0 !0 ->
                                                     case
-                                                      !2
-                                                      [ (\!0 !0 ->
-                                                           case
-                                                             !3
-                                                             [ (\!0 !0 ->
-                                                                  equalsInteger
-                                                                    (multiplyInteger
-                                                                       !1
-                                                                       !4)
-                                                                    (multiplyInteger
-                                                                       !2
-                                                                       !3)) ]) ])
-                                                   (!3
-                                                      (constr 0 [-1, 1])
-                                                      (constr 0 [2, 1])))))) ])
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
-                                                   (multiplyInteger
                                                       !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                                                      [ (\!0 !0 ->
+                                                           !10
+                                                             (subtractInteger
+                                                                (multiplyInteger
+                                                                   !4
+                                                                   !1)
+                                                                (multiplyInteger
+                                                                   !2
+                                                                   !3))
+                                                             (multiplyInteger
+                                                                !3
+                                                                !1)) ]) ])
+                                            (constr 0 [!1, 1])))
+                                      (case !1 [quotientInteger]))
+                                   (!1 (constr 0 [-3, 1]) (constr 0 [2, 1])))
+                                [ (\!0 !0 ->
+                                     force
+                                       ((\!0 !0 ->
+                                           case
+                                             (constr 0 [!2, !1, (delay False)])
+                                             [!12])
+                                          (equalsInteger !2 -1)
+                                          (delay
+                                             ((\!0 ->
+                                                 case
+                                                   !2
+                                                   [ (\!0 !0 ->
+                                                        case
+                                                          !3
+                                                          [ (\!0 !0 ->
+                                                               equalsInteger
+                                                                 (multiplyInteger
+                                                                    !1
+                                                                    !4)
+                                                                 (multiplyInteger
+                                                                    !2
+                                                                    !3)) ]) ])
+                                                (!3
+                                                   (constr 0 [-1, 1])
+                                                   (constr 0 [2, 1])))))) ])
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force
@@ -2244,90 +2178,83 @@ properFraction.-4/3 program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 case
-                                   ((\!0 ->
-                                       (\!0 ->
-                                          (\!0 -> constr 0 [!2, !1])
-                                            ((\!0 ->
-                                                case
-                                                  !3
-                                                  [ (\!0 !0 ->
-                                                       case
-                                                         !3
-                                                         [ (\!0 !0 ->
-                                                              !11
-                                                                (subtractInteger
-                                                                   (multiplyInteger
-                                                                      !4
-                                                                      !1)
-                                                                   (multiplyInteger
-                                                                      !2
-                                                                      !3))
-                                                                (multiplyInteger
-                                                                   !3
-                                                                   !1)) ]) ])
-                                               (constr 0 [!1, 1])))
-                                         (case !1 [quotientInteger]))
-                                      (!1 (constr 0 [-4, 1]) (constr 0 [3, 1])))
-                                   [ (\!0 !0 ->
-                                        force
-                                          ((\!0 !0 ->
-                                              case
-                                                (constr 0
-                                                   [!2, !1, (delay False)])
-                                                [!13])
-                                             (equalsInteger !2 -1)
-                                             (delay
-                                                ((\!0 ->
+                              case
+                                ((\!0 ->
+                                    (\!0 ->
+                                       (\!0 -> constr 0 [!2, !1])
+                                         ((\!0 ->
+                                             case
+                                               !3
+                                               [ (\!0 !0 ->
                                                     case
-                                                      !2
-                                                      [ (\!0 !0 ->
-                                                           case
-                                                             !3
-                                                             [ (\!0 !0 ->
-                                                                  equalsInteger
-                                                                    (multiplyInteger
-                                                                       !1
-                                                                       !4)
-                                                                    (multiplyInteger
-                                                                       !2
-                                                                       !3)) ]) ])
-                                                   (!3
-                                                      (constr 0 [-1, 1])
-                                                      (constr 0 [3, 1])))))) ])
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 (\!0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !1
-                                                                 0)
-                                                            , (delay
-                                                                 (force
-                                                                    (!8
-                                                                       !9
-                                                                       (delay
-                                                                          error))))
-                                                            , (delay
-                                                                 (!10
-                                                                    (multiplyInteger
-                                                                       !5
-                                                                       !2)
-                                                                    !1)) ])
-                                                         [!15]))
-                                                   (multiplyInteger
                                                       !3
-                                                      !2)) ]) ]))
-                             (force trace))
-                          "Cannot divide by zero")
+                                                      [ (\!0 !0 ->
+                                                           !10
+                                                             (subtractInteger
+                                                                (multiplyInteger
+                                                                   !4
+                                                                   !1)
+                                                                (multiplyInteger
+                                                                   !2
+                                                                   !3))
+                                                             (multiplyInteger
+                                                                !3
+                                                                !1)) ]) ])
+                                            (constr 0 [!1, 1])))
+                                      (case !1 [quotientInteger]))
+                                   (!1 (constr 0 [-4, 1]) (constr 0 [3, 1])))
+                                [ (\!0 !0 ->
+                                     force
+                                       ((\!0 !0 ->
+                                           case
+                                             (constr 0 [!2, !1, (delay False)])
+                                             [!12])
+                                          (equalsInteger !2 -1)
+                                          (delay
+                                             ((\!0 ->
+                                                 case
+                                                   !2
+                                                   [ (\!0 !0 ->
+                                                        case
+                                                          !3
+                                                          [ (\!0 !0 ->
+                                                               equalsInteger
+                                                                 (multiplyInteger
+                                                                    !1
+                                                                    !4)
+                                                                 (multiplyInteger
+                                                                    !2
+                                                                    !3)) ]) ])
+                                                (!3
+                                                   (constr 0 [-1, 1])
+                                                   (constr 0 [3, 1])))))) ])
+                             (\!0 !0 ->
+                                case
+                                  !2
+                                  [ (\!0 !0 ->
+                                       case
+                                         !3
+                                         [ (\!0 !0 ->
+                                              (\!0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !1 0)
+                                                         , (delay
+                                                              (force
+                                                                 (!8
+                                                                    "Cannot divide by zero"
+                                                                    (delay
+                                                                       error))))
+                                                         , (delay
+                                                              (!9
+                                                                 (multiplyInteger
+                                                                    !5
+                                                                    !2)
+                                                                 !1)) ])
+                                                      [!14]))
+                                                (multiplyInteger !3 !2)) ]) ]))
+                          (force trace))
                        (\!0 !0 ->
                           (\!0 ->
                              force

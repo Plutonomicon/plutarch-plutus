@@ -339,7 +339,7 @@ instance Semigroup Config where
 
 -- | @since WIP
 instance Monoid Config where
-  mempty = Config mempty mempty
+  mempty = Config mempty (Last $ Just 20)
 
 -- | @since 1.6.0
 instance Pretty Config where

@@ -16,6 +16,8 @@
 ## Changed
 
 * `plutus-core` version bound to `>=1.40.0.0 && <1.41`
+* Now, default for constant hoisting is 20 bytes. This means any constant larger than 20 bytes in UPLC flat will get hoisted.
+  This can be changed via compilation config.
 
 # 1.10.1 -- 17-02-2025
 
