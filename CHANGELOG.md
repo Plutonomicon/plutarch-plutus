@@ -9,8 +9,9 @@
 
 ## Added
 
-- `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
+* `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
 * `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
+* Added `ConstantHoist` option to the compilation option to allow configuring how threshold for constant to be hoisted.
 
 ## Changed
 
