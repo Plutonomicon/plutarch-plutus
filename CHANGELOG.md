@@ -1,5 +1,6 @@
 # Revision history for plutarch
 
+<<<<<<< HEAD
 # UNRELEASED
 
 ## Removed
@@ -15,6 +16,9 @@
 ## Changed
 
 * `plutus-core` version bound to `>=1.40.0.0 && <1.41`
+=======
+# Unreleased
+>>>>>>> d6bff18ad (Update CHANGELOG.md)
 
 ## Fixed
 
