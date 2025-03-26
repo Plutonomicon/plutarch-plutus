@@ -36,7 +36,7 @@ module Plutarch.Internal.Term (
   S (SI),
   PType,
   pthrow,
-  Config (NoTracing, Tracing, ConstantHoist),
+  Config (NoTracing, Tracing, ConstantHoistThreshold, ConstantHoistNever),
   InternalConfig (..),
   TracingMode (..),
   LogLevel (..),
@@ -62,11 +62,13 @@ import Data.Aeson (
   withObject,
   withText,
   (.:),
+  (.:?),
   (.=),
  )
 import Data.ByteString qualified as BS
 import Data.ByteString.Short qualified as SBS
 import Data.Default (def)
+import Data.Functor ((<&>))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
@@ -324,7 +326,7 @@ we want to trace, and if so, under what log level and mode.
 -}
 data Config = Config
   { trace'config :: Last (LogLevel, TracingMode)
-  , constHoist'config :: Last Integer
+  , constantHoist'config :: Last Integer
   }
   deriving stock
     ( -- | @since 1.6.0
@@ -339,7 +341,7 @@ instance Semigroup Config where
 
 -- | @since WIP
 instance Monoid Config where
-  mempty = Config mempty (Last $ Just 20)
+  mempty = Config mempty mempty
 
 -- | @since 1.6.0
 instance Pretty Config where
@@ -353,28 +355,43 @@ instance ToJSON Config where
   -- its fields (when present).
   {-# INLINEABLE toJSON #-}
   toJSON =
-    object . \case
-      NoTracing -> ["tag" .= (0 :: Int)]
-      Tracing ll tm ->
-        [ "tag" .= (1 :: Int)
-        , "logLevel" .= ll
-        , "tracingMode" .= tm
-        ]
+    object . \cfg@(Config _ (Last constantHoist)) ->
+      case cfg of
+        NoTracing ->
+          [ "tag" .= (0 :: Int)
+          , "constantHoistThreshold" .= constantHoist
+          ]
+        Tracing ll tm ->
+          [ "tag" .= (1 :: Int)
+          , "logLevel" .= ll
+          , "tracingMode" .= tm
+          , "constantHoistThreshold" .= constantHoist
+          ]
   {-# INLINEABLE toEncoding #-}
   toEncoding =
-    pairs . \case
-      NoTracing -> "tag" .= (0 :: Int)
-      Tracing ll tm ->
-        ("tag" .= (1 :: Int))
-          <> ("logLevel" .= ll)
-          <> ("tracingMode" .= tm)
+    pairs . \cfg@(Config _ (Last constantHoist)) ->
+      case cfg of
+        NoTracing ->
+          ("tag" .= (0 :: Int))
+            <> ("constantHoistThreshold" .= constantHoist)
+        Tracing ll tm ->
+          ("tag" .= (1 :: Int))
+            <> ("logLevel" .= ll)
+            <> ("tracingMode" .= tm)
+            <> ("constantHoistThreshold" .= constantHoist)
 
 -- | @since 1.6.0
 instance FromJSON Config where
-  parseJSON = withObject "Config" $ \v ->
+  parseJSON = withObject "Config" $ \v -> do
+    choist <-
+      v .:? "constantHoistThreshold"
+        <&> \case
+          Nothing -> mempty
+          Just choist' -> ConstantHoistThreshold choist'
+
     v .: "tag" >>= \(tag :: Int) -> case tag of
-      0 -> return NoTracing
-      1 -> Tracing <$> v .: "logLevel" <*> v .: "tracingMode"
+      0 -> pure $ choist <> NoTracing
+      1 -> (choist <>) <$> (Tracing <$> v .: "logLevel" <*> v .: "tracingMode")
       _ -> fail "Invalid tag"
 
 {- | If the config indicates that we want to trace, get its mode.
@@ -413,10 +430,19 @@ pattern Tracing ll tm <- Config (Last (Just (ll, tm))) _
 
 @since WIP
 -}
-pattern ConstantHoist :: Maybe Integer -> Config
-pattern ConstantHoist ch <- Config _ (Last ch)
+pattern ConstantHoistNever :: Config
+pattern ConstantHoistNever <- Config _ (Last (Just (-1)))
   where
-    ConstantHoist ch = Config (Last Nothing) (Last ch)
+    ConstantHoistNever = Config (Last Nothing) (Last $ Just -1)
+
+{- | Pattern for matching constant hoist configuration
+
+@since WIP
+-}
+pattern ConstantHoistThreshold :: Integer -> Config
+pattern ConstantHoistThreshold ch <- Config _ (Last (Just ch))
+  where
+    ConstantHoistThreshold ch = Config (Last Nothing) (Last $ Just ch)
 
 {-# COMPLETE NoTracing, Tracing #-}
 
@@ -777,25 +803,20 @@ rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . I
 
 -- Not sure why this match isn't sufficient to cover all pattern.
 smallEnoughToInline :: Config -> RawTerm -> Bool
-smallEnoughToInline (ConstantHoist ch) = \case
+smallEnoughToInline (Config _ (Last ch)) = \case
   -- These are always good to line, it is cheaper than variable reference.
   RConstant (Some (ValueOf PLC.DefaultUniBool _)) -> True
   RConstant (Some (ValueOf PLC.DefaultUniUnit _)) -> True
   RConstant (Some (ValueOf PLC.DefaultUniInteger n)) | n < 256 -> True
   RConstant c ->
     case ch of
-      -- Always inline if we don't want to hoist any constant
-      Nothing -> True
-      Just maxSize -> getConstantSize c < maxSize
+      -- Sensible default to inline anything smaller than 20 bytes
+      Nothing -> getConstantSize c < 20
+      Just inlineThreshold -> (inlineThreshold < 0) || (getConstantSize c < inlineThreshold)
   _ -> False
   where
     getConstantSize c =
       toInteger $ SBS.length $ serialiseUPLC $ UPLC.Program () uplcVersion (UPLC.Constant () c)
-smallEnoughToInline _ = \case
-  RConstant (Some (ValueOf PLC.DefaultUniBool _)) -> True
-  RConstant (Some (ValueOf PLC.DefaultUniUnit _)) -> True
-  RConstant (Some (ValueOf PLC.DefaultUniInteger n)) | n < 256 -> True
-  _ -> False
 
 -- The logic is mostly for hoisting
 compile' :: Config -> TermResult -> UTerm
