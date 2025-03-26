@@ -145,12 +145,12 @@ import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
-{- | Hash a script, appending the Plutus V2 prefix.
+{- | Hash a script, appending the Plutus V3 prefix.
 
 @since 2.0.0
 -}
 scriptHash :: Script -> Plutus.ScriptHash
-scriptHash = hashScriptWithPrefix "\x02"
+scriptHash = hashScriptWithPrefix "\x03"
 
 -- | @since 2.0.0
 newtype PubKey = PubKey

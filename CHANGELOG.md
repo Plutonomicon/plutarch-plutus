@@ -4,17 +4,21 @@
 
 ## Removed
 
-- `DerivePlutusType` and everything related
-- `Plutarch.DataRepr`
+* `DerivePlutusType` and everything related
+* `Plutarch.DataRepr`
 
 ## Added
 
-- `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
+* `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
 * `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
 
 ## Changed
 
 * `plutus-core` version bound to `>=1.40.0.0 && <1.41`
+
+## Fixed
+
+* V3 scriptHash function now prepends the correct version prefix to the script hash
 
 # 1.10.1 -- 17-02-2025
 
