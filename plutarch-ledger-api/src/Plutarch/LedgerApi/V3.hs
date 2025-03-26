@@ -147,7 +147,7 @@ import PlutusTx.Prelude qualified as PlutusTx
 
 {- | Hash a script, appending the Plutus V3 prefix.
 
-@since 2.0.0
+@since WIP
 -}
 scriptHash :: Script -> Plutus.ScriptHash
 scriptHash = hashScriptWithPrefix "\x03"
