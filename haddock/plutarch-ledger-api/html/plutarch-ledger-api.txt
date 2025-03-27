@@ -768,7 +768,9 @@ PRedeemerHash :: Term s PByteString -> PRedeemerHash (s :: S)
 newtype PScriptHash (s :: S)
 PScriptHash :: Term s PByteString -> PScriptHash (s :: S)
 
--- | Hash a script, appending the Plutus V2 prefix.
+-- | Hash a script, appending the Plutus V3 prefix.
+--   
+--   @since WIP
 scriptHash :: Script -> ScriptHash
 
 datumHash :: Datum -> DatumHash

@@ -145,15 +145,15 @@ Plutarch prelude. These should be imported qualified.
 </span><span id="line-145"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V3</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
 </span><span id="line-146"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Prelude</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
 </span><span id="line-147"></span><span>
-</span><span id="line-148"></span><span class="annot"><span class="hs-comment">{- | Hash a script, appending the Plutus V2 prefix.
+</span><span id="line-148"></span><span class="annot"><span class="hs-comment">{- | Hash a script, appending the Plutus V3 prefix.
 
-@since 2.0.0
+@since WIP
 -}</span></span><span>
 </span><span id="line-152"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#scriptHash"><span class="hs-identifier hs-type">scriptHash</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptHash</span></span><span>
 </span><span id="line-153"></span><span id="scriptHash"><span class="annot"><span class="annottext">scriptHash :: Script -&gt; ScriptHash
 </span><a href="Plutarch.LedgerApi.V3.html#scriptHash"><span class="hs-identifier hs-var hs-var">scriptHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Script -&gt; ScriptHash
 </span><a href="Plutarch.LedgerApi.V3.html#hashScriptWithPrefix"><span class="hs-identifier hs-var">hashScriptWithPrefix</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><span class="hs-string">&quot;\x02&quot;</span></span><span>
+</span><span class="hs-string">&quot;\x03&quot;</span></span><span>
 </span><span id="line-154"></span><span>
 </span><span id="line-155"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
 </span><span id="line-156"></span><span class="hs-keyword">newtype</span><span> </span><span id="PubKey"><span class="annot"><a href="Plutarch.LedgerApi.V3.html#PubKey"><span class="hs-identifier hs-var">PubKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PubKey"><span class="annot"><a href="Plutarch.LedgerApi.V3.html#PubKey"><span class="hs-identifier hs-var">PubKey</span></a></span></span><span>
