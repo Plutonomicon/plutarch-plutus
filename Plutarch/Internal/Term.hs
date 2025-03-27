@@ -36,7 +36,7 @@ module Plutarch.Internal.Term (
   S (SI),
   PType,
   pthrow,
-  Config (NoTracing, Tracing),
+  Config (NoTracing, Tracing, ConstantHoistThreshold, ConstantHoistNever),
   InternalConfig (..),
   TracingMode (..),
   LogLevel (..),
@@ -62,10 +62,13 @@ import Data.Aeson (
   withObject,
   withText,
   (.:),
+  (.:?),
   (.=),
  )
 import Data.ByteString qualified as BS
+import Data.ByteString.Short qualified as SBS
 import Data.Default (def)
+import Data.Functor ((<&>))
 import Data.Kind (Type)
 import Data.List (foldl', groupBy, sortOn)
 import Data.Map.Lazy qualified as M
@@ -83,6 +86,7 @@ import Plutarch.Script (Script (Script))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
+import PlutusLedgerApi.Common (serialiseUPLC)
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
 
@@ -320,14 +324,10 @@ we want to trace, and if so, under what log level and mode.
 
 @since 1.6.0
 -}
-newtype Config = Config (Last (LogLevel, TracingMode))
-  deriving
-    ( -- | @since 1.6.0
-      Semigroup
-    , -- | @since 1.6.0
-      Monoid
-    )
-    via (Last (LogLevel, TracingMode))
+data Config = Config
+  { trace'config :: Last (LogLevel, TracingMode)
+  , constantHoist'config :: Last Integer
+  }
   deriving stock
     ( -- | @since 1.6.0
       Eq
@@ -335,9 +335,17 @@ newtype Config = Config (Last (LogLevel, TracingMode))
       Show
     )
 
+-- | @since WIP
+instance Semigroup Config where
+  (Config a b) <> (Config a' b') = Config (a <> a') (b <> b')
+
+-- | @since WIP
+instance Monoid Config where
+  mempty = Config mempty mempty
+
 -- | @since 1.6.0
 instance Pretty Config where
-  pretty (Config (Last x)) = case x of
+  pretty (Config (Last x) _) = case x of
     Nothing -> "NoTracing"
     Just (ll, tm) -> "Tracing" <+> pretty ll <+> pretty tm
 
@@ -347,28 +355,43 @@ instance ToJSON Config where
   -- its fields (when present).
   {-# INLINEABLE toJSON #-}
   toJSON =
-    object . \case
-      NoTracing -> ["tag" .= (0 :: Int)]
-      Tracing ll tm ->
-        [ "tag" .= (1 :: Int)
-        , "logLevel" .= ll
-        , "tracingMode" .= tm
-        ]
+    object . \cfg@(Config _ (Last constantHoist)) ->
+      case cfg of
+        NoTracing ->
+          [ "tag" .= (0 :: Int)
+          , "constantHoistThreshold" .= constantHoist
+          ]
+        Tracing ll tm ->
+          [ "tag" .= (1 :: Int)
+          , "logLevel" .= ll
+          , "tracingMode" .= tm
+          , "constantHoistThreshold" .= constantHoist
+          ]
   {-# INLINEABLE toEncoding #-}
   toEncoding =
-    pairs . \case
-      NoTracing -> "tag" .= (0 :: Int)
-      Tracing ll tm ->
-        ("tag" .= (1 :: Int))
-          <> ("logLevel" .= ll)
-          <> ("tracingMode" .= tm)
+    pairs . \cfg@(Config _ (Last constantHoist)) ->
+      case cfg of
+        NoTracing ->
+          ("tag" .= (0 :: Int))
+            <> ("constantHoistThreshold" .= constantHoist)
+        Tracing ll tm ->
+          ("tag" .= (1 :: Int))
+            <> ("logLevel" .= ll)
+            <> ("tracingMode" .= tm)
+            <> ("constantHoistThreshold" .= constantHoist)
 
 -- | @since 1.6.0
 instance FromJSON Config where
-  parseJSON = withObject "Config" $ \v ->
+  parseJSON = withObject "Config" $ \v -> do
+    choist <-
+      v .:? "constantHoistThreshold"
+        <&> \case
+          Nothing -> mempty
+          Just choist' -> ConstantHoistThreshold choist'
+
     v .: "tag" >>= \(tag :: Int) -> case tag of
-      0 -> return NoTracing
-      1 -> Tracing <$> v .: "logLevel" <*> v .: "tracingMode"
+      0 -> pure $ choist <> NoTracing
+      1 -> (choist <>) <$> (Tracing <$> v .: "logLevel" <*> v .: "tracingMode")
       _ -> fail "Invalid tag"
 
 {- | If the config indicates that we want to trace, get its mode.
@@ -376,32 +399,50 @@ instance FromJSON Config where
 @since 1.6.0
 -}
 tracingMode :: Config -> Maybe TracingMode
-tracingMode (Config (Last x)) = snd <$> x
+tracingMode (Config (Last x) _) = snd <$> x
 
 {- | If the config indicates that we want to trace, get its log level.
 
 @since 1.6.0
 -}
 logLevel :: Config -> Maybe LogLevel
-logLevel (Config (Last x)) = fst <$> x
+logLevel (Config (Last x) _) = fst <$> x
 
 {- | Pattern for the config that does no tracing (also the default).
 
 @since 1.6.0
 -}
 pattern NoTracing :: Config
-pattern NoTracing <- Config (Last Nothing)
+pattern NoTracing <- Config (Last Nothing) _
   where
-    NoTracing = Config (Last Nothing)
+    NoTracing = Config (Last Nothing) (Last Nothing)
 
 {- | Pattern for a tracing config, with both its log level and mode.
 
 @since 1.6.0
 -}
 pattern Tracing :: LogLevel -> TracingMode -> Config
-pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
+pattern Tracing ll tm <- Config (Last (Just (ll, tm))) _
   where
-    Tracing ll tm = Config (Last (Just (ll, tm)))
+    Tracing ll tm = Config (Last (Just (ll, tm))) (Last Nothing)
+
+{- | Pattern for matching constant hoist configuration
+
+@since WIP
+-}
+pattern ConstantHoistNever :: Config
+pattern ConstantHoistNever <- Config _ (Last (Just (-1)))
+  where
+    ConstantHoistNever = Config (Last Nothing) (Last $ Just -1)
+
+{- | Pattern for matching constant hoist configuration
+
+@since WIP
+-}
+pattern ConstantHoistThreshold :: Integer -> Config
+pattern ConstantHoistThreshold ch <- Config _ (Last (Just ch))
+  where
+    ConstantHoistThreshold ch = Config (Last Nothing) (Last $ Just ch)
 
 {-# COMPLETE NoTracing, Tracing #-}
 
@@ -688,11 +729,11 @@ asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
-phoistAcyclic t = Term \_ ->
+phoistAcyclic t = pgetConfig $ \cfg -> Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
     t'@(getTerm -> RBuiltin _) -> pure t'
-    t' -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' t' of
+    t' -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' cfg t' of
       (Right _, _, _) ->
         let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
          in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
@@ -760,16 +801,26 @@ rawTermToUPLC m l (RCase x xs) = UPLC.Case () (rawTermToUPLC m l x) $ V.fromList
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 
-smallEnoughToInline :: RawTerm -> Bool
-smallEnoughToInline = \case
+-- Not sure why this match isn't sufficient to cover all pattern.
+smallEnoughToInline :: Config -> RawTerm -> Bool
+smallEnoughToInline (Config _ (Last ch)) = \case
+  -- These are always good to line, it is cheaper than variable reference.
   RConstant (Some (ValueOf PLC.DefaultUniBool _)) -> True
   RConstant (Some (ValueOf PLC.DefaultUniUnit _)) -> True
   RConstant (Some (ValueOf PLC.DefaultUniInteger n)) | n < 256 -> True
+  RConstant c ->
+    case ch of
+      -- Sensible default to inline anything smaller than 20 bytes
+      Nothing -> getConstantSize c < 20
+      Just inlineThreshold -> (inlineThreshold < 0) || (getConstantSize c < inlineThreshold)
   _ -> False
+  where
+    getConstantSize c =
+      toInteger $ SBS.length $ serialiseUPLC $ UPLC.Program () uplcVersion (UPLC.Constant () c)
 
 -- The logic is mostly for hoisting
-compile' :: TermResult -> UTerm
-compile' t =
+compile' :: Config -> TermResult -> UTerm
+compile' cfg t =
   let t' = getTerm t
       deps = getDeps t
 
@@ -793,7 +844,7 @@ compile' t =
         S.fromList
           . fmap (\(HoistedTerm hash _) -> hash)
           . (head <$>)
-          . filter (\terms -> length terms == 1 || smallEnoughToInline (hoistedTermRaw $ head terms))
+          . filter (\terms -> length terms == 1 || smallEnoughToInline cfg (hoistedTermRaw $ head terms))
           . groupBy (\(HoistedTerm x _) (HoistedTerm y _) -> x == y)
           . sortOn (\(HoistedTerm hash _) -> hash)
           $ deps
@@ -819,7 +870,7 @@ compile' t =
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: Config -> ClosedTerm a -> Either Text Script
 compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (defaultInternalConfig, config)
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' config <$> t' (defaultInternalConfig, config)
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -833,7 +884,7 @@ compileOptimized ::
 compileOptimized t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> do
     configured <- t' (defaultInternalConfig, NoTracing)
-    let compiled = compile' configured
+    let compiled = compile' mempty configured
     case go compiled of
       Left err -> Left . Text.pack . show $ err
       Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
@@ -872,11 +923,11 @@ optimizeTerm ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
   (forall (s :: S). Term s a)
-optimizeTerm (Term raw) = Term $ \w64 ->
+optimizeTerm (Term raw) = pgetConfig $ \cfg -> Term $ \w64 ->
   let TermMonad (ReaderT comp) = raw w64
    in TermMonad $ ReaderT $ \conf -> do
         res <- comp conf
-        let compiled = compile' res
+        let compiled = compile' cfg res
         case go compiled of
           Left err -> Left . Text.pack . show $ err
           Right simplified -> pure . TermResult (RCompiled simplified) $ []

@@ -1,43 +1,39 @@
 eq.true program
   1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         case
-           !2
-           [ (\!0 !0 ->
-                case
-                  !3
-                  [ (\!0 !0 ->
-                       force
-                         ((\!0 !0 ->
-                             case
-                               (constr 0 [!2, !1, (delay False)])
-                               [(force ifThenElse)])
-                            (equalsInteger !4 !2)
-                            (delay (equalsString !3 !1)))) ]) ])
-        (constr 0 [42, !1])
-        (constr 0 [42, !1]))
-     "Hello")
+  ((\!0 !0 ->
+      case
+        !2
+        [ (\!0 !0 ->
+             case
+               !3
+               [ (\!0 !0 ->
+                    force
+                      ((\!0 !0 ->
+                          case
+                            (constr 0 [!2, !1, (delay False)])
+                            [(force ifThenElse)])
+                         (equalsInteger !4 !2)
+                         (delay (equalsString !3 !1)))) ]) ])
+     (constr 0 [42, "Hello"])
+     (constr 0 [42, "Hello"]))
 eq.false.fst program
   1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         case
-           !2
-           [ (\!0 !0 ->
-                case
-                  !3
-                  [ (\!0 !0 ->
-                       force
-                         ((\!0 !0 ->
-                             case
-                               (constr 0 [!2, !1, (delay False)])
-                               [(force ifThenElse)])
-                            (equalsInteger !4 !2)
-                            (delay (equalsString !3 !1)))) ]) ])
-        (constr 0 [42, !1])
-        (constr 0 [24, !1]))
-     "Hello")
+  ((\!0 !0 ->
+      case
+        !2
+        [ (\!0 !0 ->
+             case
+               !3
+               [ (\!0 !0 ->
+                    force
+                      ((\!0 !0 ->
+                          case
+                            (constr 0 [!2, !1, (delay False)])
+                            [(force ifThenElse)])
+                         (equalsInteger !4 !2)
+                         (delay (equalsString !3 !1)))) ]) ])
+     (constr 0 [42, "Hello"])
+     (constr 0 [24, "Hello"]))
 eq.false.snd program
   1.1.0
   ((\!0 !0 ->
