@@ -179,7 +179,7 @@ compile :: Config -> ClosedTerm a -> Either Text Script
 -- | As <a>compile</a>, but performs UPLC optimizations. Furthermore, this
 --   will always elide tracing (as if with <a>NoTracing</a>).
 compileOptimized :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Either Text Script
-compile' :: TermResult -> UTerm
+compile' :: Config -> TermResult -> UTerm
 
 -- | Given a closed <a>Term</a>, run the UPLC optimizer on it.
 --   
@@ -246,6 +246,16 @@ pattern NoTracing :: Config
 
 -- | Pattern for a tracing config, with both its log level and mode.
 pattern Tracing :: LogLevel -> TracingMode -> Config
+
+-- | Pattern for matching constant hoist configuration
+--   
+--   @since WIP
+pattern ConstantHoistThreshold :: Integer -> Config
+
+-- | Pattern for matching constant hoist configuration
+--   
+--   @since WIP
+pattern ConstantHoistNever :: Config
 newtype InternalConfig
 InternalConfig :: Bool -> InternalConfig
 [$sel:internalConfig'dataRecPMatchOptimization:InternalConfig] :: InternalConfig -> Bool
@@ -300,13 +310,13 @@ instance GHC.Show.Show Plutarch.Internal.Term.LogLevel
 instance GHC.Classes.Eq Plutarch.Internal.Term.LogLevel
 instance GHC.Show.Show Plutarch.Internal.Term.Config
 instance GHC.Classes.Eq Plutarch.Internal.Term.Config
-instance GHC.Base.Monoid Plutarch.Internal.Term.Config
-instance GHC.Base.Semigroup Plutarch.Internal.Term.Config
 instance GHC.Classes.Eq Plutarch.Internal.Term.InternalConfig
 instance GHC.Show.Show Plutarch.Internal.Term.InternalConfig
 instance GHC.Base.Monad Plutarch.Internal.Term.TermMonad
 instance GHC.Base.Applicative Plutarch.Internal.Term.TermMonad
 instance GHC.Base.Functor Plutarch.Internal.Term.TermMonad
+instance GHC.Base.Semigroup Plutarch.Internal.Term.Config
+instance GHC.Base.Monoid Plutarch.Internal.Term.Config
 instance Prettyprinter.Internal.Pretty Plutarch.Internal.Term.Config
 instance Data.Aeson.Types.ToJSON.ToJSON Plutarch.Internal.Term.Config
 instance Data.Aeson.Types.FromJSON.FromJSON Plutarch.Internal.Term.Config
