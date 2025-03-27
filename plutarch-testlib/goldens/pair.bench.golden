@@ -1,4 +1,4 @@
-eq.true {"exBudgetCPU":1136452,"exBudgetMemory":4503,"scriptSizeBytes":59}
-eq.false.fst {"exBudgetCPU":768482,"exBudgetMemory":4102,"scriptSizeBytes":59}
+eq.true {"exBudgetCPU":1088452,"exBudgetMemory":4203,"scriptSizeBytes":64}
+eq.false.fst {"exBudgetCPU":720482,"exBudgetMemory":3802,"scriptSizeBytes":64}
 eq.false.snd {"exBudgetCPU":1088452,"exBudgetMemory":4203,"scriptSizeBytes":64}
 eq.false.both {"exBudgetCPU":720482,"exBudgetMemory":3802,"scriptSizeBytes":64}

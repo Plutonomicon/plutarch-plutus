@@ -121,63 +121,62 @@ pconcat.identity program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 force
-                                   ((\!0 !0 ->
-                                       case
-                                         (constr 0 [!2, !1, (delay False)])
-                                         [!4])
+                              force
+                                ((\!0 !0 ->
+                                    case
+                                      (constr 0 [!2, !1, (delay False)])
+                                      [!4])
+                                   (!1
+                                      (!3
+                                         (!4 [1,2,3,4,5,6,7,8,9,10])
+                                         (constr 1 []))
+                                      (!3
+                                         (constr 1 [])
+                                         (!4 [1,2,3,4,5,6,7,8,9,10])))
+                                   (delay
                                       (!1
-                                         (!3 (!4 !10) (constr 1 []))
-                                         (!3 (constr 1 []) (!4 !10)))
-                                      (delay
-                                         (!1
-                                            (!3 (constr 1 []) (!4 !10))
-                                            (!4 !10)))))
-                                (!4
-                                   (\!0 !0 !0 ->
-                                      case
-                                        !2
-                                        [ (\!0 !0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    force
-                                                      (case
-                                                         (constr 0
-                                                            [ (equalsInteger
-                                                                 !4
-                                                                 !2)
-                                                            , (delay (!7 !3 !1))
-                                                            , (delay False) ])
-                                                         [!8]))
-                                               , False ])
-                                        , (case
-                                             !1
-                                             [(\!0 !0 -> False), True]) ])))
-                             (force ifThenElse))
-                          (\!0 !0 ->
-                             !4
-                               (\!0 !0 ->
-                                  case !1 [(\!0 !0 -> !10 !2 (!4 !1)), !3])
-                               !2))
-                       (!1
-                          (\!0 !0 ->
-                             force
-                               (case
-                                  (constr 0
-                                     [ !1
-                                     , (delay (constr 1 []))
-                                     , (delay (!5 (!6 !1) (!2 (!7 !1)))) ])
-                                  [!4]))))
-                    (\!0 ->
-                       (\!0 -> !2 (\!0 -> !2 !2 !1))
-                         (\!0 -> !2 (\!0 -> !2 !2 !1))))
-                 (force (force chooseList)))
-              (\!0 !0 -> constr 0 [!2, !1]))
-           (force headList))
-        (force tailList))
-     [1,2,3,4,5,6,7,8,9,10])
+                                         (!3
+                                            (constr 1 [])
+                                            (!4 [1,2,3,4,5,6,7,8,9,10]))
+                                         (!4 [1,2,3,4,5,6,7,8,9,10])))))
+                             (!4
+                                (\!0 !0 !0 ->
+                                   case
+                                     !2
+                                     [ (\!0 !0 ->
+                                          case
+                                            !3
+                                            [ (\!0 !0 ->
+                                                 force
+                                                   (case
+                                                      (constr 0
+                                                         [ (equalsInteger !4 !2)
+                                                         , (delay (!7 !3 !1))
+                                                         , (delay False) ])
+                                                      [!8]))
+                                            , False ])
+                                     , (case !1 [(\!0 !0 -> False), True]) ])))
+                          (force ifThenElse))
+                       (\!0 !0 ->
+                          !4
+                            (\!0 !0 -> case !1 [(\!0 !0 -> !10 !2 (!4 !1)), !3])
+                            !2))
+                    (!1
+                       (\!0 !0 ->
+                          force
+                            (case
+                               (constr 0
+                                  [ !1
+                                  , (delay (constr 1 []))
+                                  , (delay (!5 (!6 !1) (!2 (!7 !1)))) ])
+                               [!4]))))
+                 (\!0 ->
+                    (\!0 -> !2 (\!0 -> !2 !2 !1))
+                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+              (force (force chooseList)))
+           (\!0 !0 -> constr 0 [!2, !1]))
+        (force headList))
+     (force tailList))
 pmap.eg program
   1.1.0
   ((\!0 ->
@@ -388,43 +387,41 @@ pzipWith.double program
             (\!0 ->
                (\!0 ->
                   (\!0 ->
-                     (\!0 ->
-                        !3
-                          (\!0 !0 !0 ->
-                             case
-                               !2
-                               [ (\!0 !0 ->
-                                    case
-                                      !3
-                                      [ (\!0 !0 ->
-                                           force
-                                             (case
-                                                (constr 0
-                                                   [ (equalsInteger !4 !2)
-                                                   , (delay (!7 !3 !1))
-                                                   , (delay False) ])
-                                                [(force ifThenElse)]))
-                                      , False ])
-                               , (case !1 [(\!0 !0 -> False), True]) ])
-                          (case
-                             (constr 0
-                                [ (\!0 !0 !0 ->
-                                     case
-                                       !2
-                                       [ (\!0 !0 ->
-                                            case
-                                              !3
-                                              [ (\!0 !0 ->
-                                                   !12
-                                                     (addInteger !4 !2)
-                                                     (!7 !3 !1))
-                                              , (constr 1 []) ])
-                                       , (constr 1 []) ])
-                                , (!2 !1)
-                                , (!2 !1) ])
-                             [!3])
-                          (!2 [2,4,6,8,10,12,14,16,18,20]))
-                       [1,2,3,4,5,6,7,8,9,10])
+                     !2
+                       (\!0 !0 !0 ->
+                          case
+                            !2
+                            [ (\!0 !0 ->
+                                 case
+                                   !3
+                                   [ (\!0 !0 ->
+                                        force
+                                          (case
+                                             (constr 0
+                                                [ (equalsInteger !4 !2)
+                                                , (delay (!7 !3 !1))
+                                                , (delay False) ])
+                                             [(force ifThenElse)]))
+                                   , False ])
+                            , (case !1 [(\!0 !0 -> False), True]) ])
+                       (case
+                          (constr 0
+                             [ (\!0 !0 !0 ->
+                                  case
+                                    !2
+                                    [ (\!0 !0 ->
+                                         case
+                                           !3
+                                           [ (\!0 !0 ->
+                                                !11
+                                                  (addInteger !4 !2)
+                                                  (!7 !3 !1))
+                                           , (constr 1 []) ])
+                                    , (constr 1 []) ])
+                             , (!1 [1,2,3,4,5,6,7,8,9,10])
+                             , (!1 [1,2,3,4,5,6,7,8,9,10]) ])
+                          [!2])
+                       (!1 [2,4,6,8,10,12,14,16,18,20]))
                     (!1
                        (\!0 !0 ->
                           force
@@ -741,57 +738,52 @@ find.find_(==5)_[1..4] program
      (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
 x1+x2.builtin program
   1.1.0
-  ((\!0 ->
-      (\!0 -> addInteger (!1 (force tailList !2)) (!1 !2)) (force headList))
-     [1,2,3,4,5])
+  ((\!0 -> addInteger (!1 (force tailList [1,2,3,4,5])) (!1 [1,2,3,4,5]))
+     (force headList))
 x1+x2.pmatch program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            force
-              (case
-                 (constr 0
-                    [ !3
-                    , (delay error)
-                    , (delay
-                         ((\!0 ->
-                             force
-                               (case
-                                  (constr 0
-                                     [ !1
-                                     , (delay error)
-                                     , (delay (addInteger (!3 !4) (!3 !1))) ])
-                                  [!2]))
-                            (force tailList !3))) ])
-                 [!1]))
-           (force (force chooseList)))
-        (force headList))
-     [1,2,3,4,5])
-uncons.ChooseList program
-  1.1.0
-  ((\!0 ->
-      force
-        (case
-           (constr 0 [!1, (delay error), (delay (force tailList !1))])
-           [(force (force chooseList))]))
-     [1,2,3,4,5])
-uncons.head-and-tail program
-  1.1.0
-  ((\!0 -> (\!0 -> force tailList !2) (force headList !1)) [1,2,3,4,5])
-uncons.head-and-tail-and-null program
   1.1.0
   ((\!0 ->
       (\!0 ->
          force
            (case
               (constr 0
-                 [ !1
+                 [ [1,2,3,4,5]
                  , (delay error)
-                 , (delay ((\!0 -> force tailList !3) (force headList !2))) ])
-              [(force ifThenElse)]))
-        (force nullList !1))
-     [1,2,3,4,5])
+                 , (delay
+                      ((\!0 ->
+                          force
+                            (case
+                               (constr 0
+                                  [ !1
+                                  , (delay error)
+                                  , (delay
+                                       (addInteger (!3 [1,2,3,4,5]) (!3 !1))) ])
+                               [!2]))
+                         (force tailList [1,2,3,4,5]))) ])
+              [!1]))
+        (force (force chooseList)))
+     (force headList))
+uncons.ChooseList program
+  1.1.0
+  (force
+     (case
+        (constr 0
+           [[1,2,3,4,5], (delay error), (delay (force tailList [1,2,3,4,5]))])
+        [(force (force chooseList))]))
+uncons.head-and-tail program 1.1.0 ((\!0 -> force tailList [1,2,3,4,5]) (force headList [1,2,3,4,5]))
+uncons.head-and-tail-and-null program
+  1.1.0
+  ((\!0 ->
+      force
+        (case
+           (constr 0
+              [ !1
+              , (delay error)
+              , (delay
+                   ((\!0 -> force tailList [1,2,3,4,5])
+                      (force headList [1,2,3,4,5]))) ])
+           [(force ifThenElse)]))
+     (force nullList [1,2,3,4,5]))
 pmatchList.match-nothing program 1.1.0 [1,2,3,4,5,6,7,8,9,10]
 pmatchList.rest-unused program
   1.1.0
@@ -806,12 +798,12 @@ pmatchList.rest-used program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               addInteger (addInteger (!2 !4) (!2 !1)) (!2 (!3 (!3 (!3 !1)))))
-              (!2 (!2 !3)))
-           (force headList))
-        (force tailList))
-     [1,2,3,4,5,6,7,8,9,10])
+            addInteger
+              (addInteger (!2 [1,2,3,4,5,6,7,8,9,10]) (!2 !1))
+              (!2 (!3 (!3 (!3 !1)))))
+           (!2 (!2 [1,2,3,4,5,6,7,8,9,10])))
+        (force headList))
+     (force tailList))
 pmatchList.use-only-rest(drop N) program
   1.1.0
   ((\!0 -> !1 (!1 (!1 (!1 (!1 [1,2,3,4,5,6,7,8,9,10]))))) (force tailList))

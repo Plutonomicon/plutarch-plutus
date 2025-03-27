@@ -9,12 +9,15 @@
 
 ## Added
 
-- `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
+* `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
 * `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
+* Added `ConstantHoist` option to the compilation option to allow configuring how threshold for constant to be hoisted.
 
 ## Changed
 
 * `plutus-core` version bound to `>=1.40.0.0 && <1.41`
+* Now, default for constant hoisting is 20 bytes. This means any constant larger than 20 bytes in UPLC flat will get hoisted.
+  This can be changed via compilation config.
 
 # 1.10.1 -- 17-02-2025
 
