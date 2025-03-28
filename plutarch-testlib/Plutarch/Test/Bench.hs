@@ -362,7 +362,7 @@ newtype FailIfMoreMem = FailIfMoreMem Double
 instance IsOption FailIfMoreMem where
   defaultValue = FailIfMoreMem (1.0 / 0.0)
   parseValue = fmap FailIfMoreMem . parsePositivePercents
-  optionName = Tagged "fail-if-more-cpu"
+  optionName = Tagged "fail-if-more-mem"
   optionHelp = Tagged "If a benchmark uses unacceptably more MEM than baseline (see --baseline), it will be reported as failed."
 
 -- | @since 1.0.0
