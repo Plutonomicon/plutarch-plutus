@@ -7,6 +7,7 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
 import Plutarch.Maybe (pmapMaybe)
+import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
 import Plutarch.Test.Bench (
   BenchConfig (NonOptimizing, Optimizing),
@@ -28,6 +29,7 @@ main =
       , testGroup "Exponentiation" expBenches
       , testGroup "Tracing" tracingBenches
       , testGroup "Unroll" unrollBenches
+      , testGroup "Empty List" emptyListBenches
       ]
 
 -- Suites
@@ -87,6 +89,25 @@ maybeBenches =
             bench "PMaybe vs PMaybeData" (pmapMaybe # pfib # pconstant @(PMaybe PInteger) (Just n))
         ]
   ]
+
+-- | Bench fastest way to fail if a list is not empty
+emptyListBenches :: [TestTree]
+emptyListBenches =
+  -- Pretend that the list is not known compile-time (no constant folding anyway)
+  let lst = pconstant @(PBuiltinList PInteger) []
+   in [ bench "lst == []" (pif (lst #== pconstant []) (pconstant @PUnit ()) perror)
+      , bcompare "$(NF-1) == \"Empty List\" && $NF == \"lst == []\"" $
+          bench "plength lst == 0" (pif (plength # lst #== 0) (pconstant @PUnit ()) perror)
+      , bcompare "$(NF-1) == \"Empty List\" && $NF == \"lst == []\"" $
+          bench "pnull lst" (pif (pnull # lst) (pconstant @PUnit ()) perror)
+      , bcompare "$(NF-1) == \"Empty List\" && $NF == \"lst == []\"" $
+          bench
+            "pmatch"
+            ( P.do
+                PNil <- pmatch lst
+                pconstant @PUnit ()
+            )
+      ]
 
 -- Helpers
 
