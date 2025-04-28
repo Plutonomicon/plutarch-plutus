@@ -1,5 +1,11 @@
 # Revision history for plutarch
 
+# 1.11.0 -- 29-04-2025
+
+## Changed
+
+* Bump Plutus dependencies
+
 # 1.10.1 -- 17-02-2025
 
 ## Added

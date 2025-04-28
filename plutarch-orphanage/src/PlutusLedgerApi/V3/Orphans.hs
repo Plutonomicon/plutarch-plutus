@@ -14,8 +14,8 @@ import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value ()
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusLedgerApi.V3 qualified as PLA
-import PlutusLedgerApi.V3.Orphans.Value (MintValue, getMintValue)
-import PlutusLedgerApi.V3.Orphans.Value qualified as Value
+import PlutusLedgerApi.V3.MintValue qualified as PLAMintValue
+import PlutusLedgerApi.V3.Orphans.Value (MintValue (MintValue), getMintValue)
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
@@ -856,6 +856,33 @@ instance Arbitrary PLA.TxInInfo where
 -- TODO: CoArbitrary, Function
 -- TODO: invariants
 
+-- | @since 1.2.0
+instance Arbitrary PLA.MintValue where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = do
+    mv <- getMintValue <$> arbitrary
+    pure . PLAMintValue.UnsafeMintValue . PLA.getValue $ mv
+  {-# INLINEABLE shrink #-}
+  shrink (PLAMintValue.UnsafeMintValue mv) =
+    PLAMintValue.UnsafeMintValue <$> do
+      mv' <- getMintValue <$> shrink (MintValue . PLA.Value $ mv)
+      pure . PLA.getValue $ mv'
+
+-- | @since 1.2.0
+instance CoArbitrary PLA.MintValue where
+  {-# INLINEABLE coarbitrary #-}
+  coarbitrary (PLAMintValue.UnsafeMintValue mv) = coarbitrary . MintValue . PLA.Value $ mv
+
+-- | @since 1.2.0
+instance Function PLA.MintValue where
+  {-# INLINEABLE function #-}
+  function = functionMap intoOurMV outOfOurMV
+    where
+      intoOurMV :: PLA.MintValue -> MintValue
+      intoOurMV (PLAMintValue.UnsafeMintValue mv) = MintValue . PLA.Value $ mv
+      outOfOurMV :: MintValue -> PLA.MintValue
+      outOfOurMV (MintValue v) = PLAMintValue.UnsafeMintValue . PLA.getValue $ v
+
 -- | @since 1.0.1
 instance Arbitrary PLA.TxInfo where
   {-# INLINEABLE arbitrary #-}
@@ -864,7 +891,7 @@ instance Arbitrary PLA.TxInfo where
     routs <- arbitrary
     outs <- getNonEmpty <$> arbitrary
     fee <- arbitrary
-    mint <- Value.getMintValue <$> arbitrary
+    mint <- arbitrary
     cert <- arbitrary
     wdrl <- arbitrary
     valid <- arbitrary
@@ -883,7 +910,7 @@ instance Arbitrary PLA.TxInfo where
     routs' <- shrink routs
     NonEmpty outs' <- shrink (NonEmpty outs)
     fee' <- shrink fee
-    (Value.MintValue mint') <- shrink (Value.MintValue mint)
+    mint' <- shrink mint
     cert' <- shrink cert
     wdrl' <- shrink wdrl
     valid' <- shrink valid
