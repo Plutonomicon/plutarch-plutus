@@ -16,10 +16,10 @@
 </span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
 </span><span id="line-17"></span><span>
 </span><span id="line-18"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-19"></span><span class="hs-keyword">newtype</span><span> </span><span id="PPosixTime"><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-var">PPosixTime</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679322960"><span class="annot"><a href="#local-6989586621679322960"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPosixTime"><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-var">PPosixTime</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679322960"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">newtype</span><span> </span><span id="PPosixTime"><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-var">PPosixTime</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679324153"><span class="annot"><a href="#local-6989586621679324153"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPosixTime"><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-var">PPosixTime</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679324153"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-21"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-22"></span><span>      </span><span id="local-6989586621679323021"><span id="local-6989586621679323023"><span class="annot"><span class="annottext">(forall x. PPosixTime s -&gt; Rep (PPosixTime s) x)
+</span><span id="line-22"></span><span>      </span><span id="local-6989586621679324214"><span id="local-6989586621679324216"><span class="annot"><span class="annottext">(forall x. PPosixTime s -&gt; Rep (PPosixTime s) x)
 -&gt; (forall x. Rep (PPosixTime s) x -&gt; PPosixTime s)
 -&gt; Generic (PPosixTime s)
 forall x. Rep (PPosixTime s) x -&gt; PPosixTime s
@@ -36,7 +36,7 @@ to :: forall x. Rep (PPosixTime s) x -&gt; PPosixTime s
 </span><span id="line-23"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-24"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
 </span><span id="line-25"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-26"></span><span>      </span><span id="local-6989586621679323030"><span id="local-6989586621679323039"><span class="annot"><span class="annottext">All SListI (Code (PPosixTime s))
+</span><span id="line-26"></span><span>      </span><span id="local-6989586621679324223"><span id="local-6989586621679324232"><span class="annot"><span class="annottext">All SListI (Code (PPosixTime s))
 All SListI (Code (PPosixTime s)) =&gt;
 (PPosixTime s -&gt; Rep (PPosixTime s))
 -&gt; (Rep (PPosixTime s) -&gt; PPosixTime s) -&gt; Generic (PPosixTime s)
@@ -54,7 +54,7 @@ $cto :: forall (s :: S). Rep (PPosixTime s) -&gt; PPosixTime s
 to :: Rep (PPosixTime s) -&gt; PPosixTime s
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
 </span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-28"></span><span>      </span><span id="local-6989586621679323069"><span id="local-6989586621679323075"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PPosixTime) -&gt; Term s PPosixTime)
+</span><span id="line-28"></span><span>      </span><span id="local-6989586621679324262"><span id="local-6989586621679324268"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PPosixTime) -&gt; Term s PPosixTime)
 -&gt; (forall (s :: S). Term s PPosixTime -&gt; Term s PData)
 -&gt; PIsData PPosixTime
 forall (s :: S). Term s (PAsData PPosixTime) -&gt; Term s PPosixTime
@@ -68,7 +68,7 @@ $cpdataImpl :: forall (s :: S). Term s PPosixTime -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PPosixTime -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
 </span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-30"></span><span>      </span><span id="local-6989586621679323082"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-30"></span><span>      </span><span id="local-6989586621679324275"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PBool)
 -&gt; PEq PPosixTime
 forall (s :: S).
@@ -81,7 +81,7 @@ Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PBool
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
 </span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-32"></span><span>      </span><span id="local-6989586621679323101"><span id="local-6989586621679323107"><span id="local-6989586621679323112"><span id="local-6989586621679323115"><span class="annot"><span class="annottext">PEq PPosixTime
+</span><span id="line-32"></span><span>      </span><span id="local-6989586621679324294"><span id="local-6989586621679324300"><span id="local-6989586621679324305"><span id="local-6989586621679324308"><span class="annot"><span class="annottext">PEq PPosixTime
 PEq PPosixTime =&gt;
 (forall (s :: S).
  Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PBool)
@@ -121,7 +121,7 @@ pmin :: forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-34"></span><span>      </span><span id="local-6989586621679323120"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PPosixTime -&gt; Term s PString)
+</span><span id="line-34"></span><span>      </span><span id="local-6989586621679324313"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PPosixTime -&gt; Term s PString)
 -&gt; PShow PPosixTime
 forall (s :: S). Bool -&gt; Term s PPosixTime -&gt; Term s PString
 forall (t :: S -&gt; Type).
@@ -132,7 +132,7 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PPosixTime -&gt; Term s PString
 </span><span id="line-35"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-36"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-38"></span><span>      </span><span id="local-6989586621679323135"><span id="local-6989586621679323143"><span class="annot"><span class="annottext">(forall (s :: S). PPosixTime s -&gt; Term s (PInner PPosixTime))
+</span><span id="line-38"></span><span>      </span><span id="local-6989586621679324328"><span id="local-6989586621679324336"><span class="annot"><span class="annottext">(forall (s :: S). PPosixTime s -&gt; Term s (PInner PPosixTime))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner PPosixTime)
     -&gt; (PPosixTime s -&gt; Term s b) -&gt; Term s b)
@@ -161,7 +161,7 @@ Term s (PInner PPosixTime)
 </span><span id="line-42"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PCountable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-44"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">psuccessor</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-45"></span><span>  </span><span id="local-6989586621679323161"><span class="annot"><span class="annottext">psuccessor :: forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime)
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679324354"><span class="annot"><span class="annottext">psuccessor :: forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">psuccessor</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime))
 -&gt; Term s (PPosixTime :--&gt; PPosixTime)
 forall (a :: S -&gt; Type) (s :: S).
@@ -180,9 +180,9 @@ forall a (b :: S -&gt; Type) (s :: S) (c :: S -&gt; Type).
 forall (c :: S -&gt; Type).
 HasCallStack =&gt;
 (Term s c -&gt; Term s PPosixTime) -&gt; Term s (c :--&gt; PPosixTime)
-</span><span class="hs-identifier hs-var">plam</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679323173"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323173"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323173"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
+</span><span class="hs-identifier hs-var">plam</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679324366"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324366"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324366"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S).
@@ -197,7 +197,7 @@ PMultiplicativeMonoid a =&gt;
 Term s a
 </span><span class="hs-identifier hs-var">pone</span></span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">psuccessorN</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-47"></span><span>  </span><span id="local-6989586621679323179"><span class="annot"><span class="annottext">psuccessorN :: forall (s :: S).
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679324372"><span class="annot"><span class="annottext">psuccessorN :: forall (s :: S).
 Term s (PPositive :--&gt; (PPosixTime :--&gt; PPosixTime))
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">psuccessorN</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PPositive :--&gt; (PPosixTime :--&gt; PPosixTime)))
@@ -226,11 +226,11 @@ HasCallStack =&gt;
 -&gt; (Term s PPositive -&gt; Term s PPosixTime -&gt; Term s PPosixTime)
 -&gt; Term s (PPositive :--&gt; (PPosixTime :--&gt; PPosixTime))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679323189"><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679323189"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679323190"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323190"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-48"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679323191"><span class="annot"><span class="annottext">p' :: Term s PPosixTime
-</span><a href="#local-6989586621679323191"><span class="hs-identifier hs-var hs-var">p'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PPosixTime s -&gt; Term s PPosixTime
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679324382"><span class="annot"><span class="annottext">Term s PPositive
+</span><a href="#local-6989586621679324382"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679324383"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324383"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679324384"><span class="annot"><span class="annottext">p' :: Term s PPosixTime
+</span><a href="#local-6989586621679324384"><span class="hs-identifier hs-var hs-var">p'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PPosixTime s -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
 </span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PPosixTime s -&gt; Term s PPosixTime)
 -&gt; (Term s PPositive -&gt; PPosixTime s)
@@ -251,21 +251,21 @@ forall (s :: S) (a :: S -&gt; Type). Term s a -&gt; Term s (PInner a)
 -&gt; Term s PPositive -&gt; Term s PPosixTime
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679323189"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><a href="#local-6989586621679324382"><span class="hs-identifier hs-var">p</span></a></span><span>
 </span><span id="line-49"></span><span>     </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323191"><span class="hs-identifier hs-var">p'</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
+</span><a href="#local-6989586621679324384"><span class="hs-identifier hs-var">p'</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S).
 PAdditiveSemigroup a =&gt;
 Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-operator hs-var">#+</span></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323190"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><a href="#local-6989586621679324383"><span class="hs-identifier hs-var">t</span></a></span><span>
 </span><span id="line-50"></span><span>
 </span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-52"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PEnumerable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-53"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">ppredecessor</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-54"></span><span>  </span><span id="local-6989586621679323204"><span class="annot"><span class="annottext">ppredecessor :: forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime)
+</span><span id="line-54"></span><span>  </span><span id="local-6989586621679324397"><span class="annot"><span class="annottext">ppredecessor :: forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">ppredecessor</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime))
 -&gt; Term s (PPosixTime :--&gt; PPosixTime)
 forall (a :: S -&gt; Type) (s :: S).
@@ -284,9 +284,9 @@ forall a (b :: S -&gt; Type) (s :: S) (c :: S -&gt; Type).
 forall (c :: S -&gt; Type).
 HasCallStack =&gt;
 (Term s c -&gt; Term s PPosixTime) -&gt; Term s (c :--&gt; PPosixTime)
-</span><span class="hs-identifier hs-var">plam</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679323212"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323212"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323212"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
+</span><span class="hs-identifier hs-var">plam</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679324405"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324405"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324405"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S).
@@ -301,7 +301,7 @@ PMultiplicativeMonoid a =&gt;
 Term s a
 </span><span class="hs-identifier hs-var">pone</span></span><span class="hs-special">)</span><span>
 </span><span id="line-55"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">ppredecessorN</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-56"></span><span>  </span><span id="local-6989586621679323217"><span class="annot"><span class="annottext">ppredecessorN :: forall (s :: S).
+</span><span id="line-56"></span><span>  </span><span id="local-6989586621679324410"><span class="annot"><span class="annottext">ppredecessorN :: forall (s :: S).
 Term s (PPositive :--&gt; (PPosixTime :--&gt; PPosixTime))
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">ppredecessorN</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PPositive :--&gt; (PPosixTime :--&gt; PPosixTime)))
@@ -330,11 +330,11 @@ HasCallStack =&gt;
 -&gt; (Term s PPositive -&gt; Term s PPosixTime -&gt; Term s PPosixTime)
 -&gt; Term s (PPositive :--&gt; (PPosixTime :--&gt; PPosixTime))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679323226"><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679323226"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679323227"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323227"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679323228"><span class="annot"><span class="annottext">p' :: Term s PPosixTime
-</span><a href="#local-6989586621679323228"><span class="hs-identifier hs-var hs-var">p'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PPosixTime s -&gt; Term s PPosixTime
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679324419"><span class="annot"><span class="annottext">Term s PPositive
+</span><a href="#local-6989586621679324419"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679324420"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324420"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-57"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679324421"><span class="annot"><span class="annottext">p' :: Term s PPosixTime
+</span><a href="#local-6989586621679324421"><span class="hs-identifier hs-var hs-var">p'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PPosixTime s -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
 </span><span class="hs-identifier hs-var">pcon</span></span><span> </span><span class="annot"><span class="annottext">(PPosixTime s -&gt; Term s PPosixTime)
 -&gt; (Term s PPositive -&gt; PPosixTime s)
@@ -355,30 +355,30 @@ forall (s :: S) (a :: S -&gt; Type). Term s a -&gt; Term s (PInner a)
 -&gt; Term s PPositive -&gt; Term s PPosixTime
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679323226"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><a href="#local-6989586621679324419"><span class="hs-identifier hs-var">p</span></a></span><span>
 </span><span id="line-58"></span><span>     </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323227"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
+</span><a href="#local-6989586621679324420"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S).
 PAdditiveGroup a =&gt;
 Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-operator hs-var">#-</span></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323228"><span class="hs-identifier hs-var">p'</span></a></span><span>
+</span><a href="#local-6989586621679324421"><span class="hs-identifier hs-var">p'</span></a></span><span>
 </span><span id="line-59"></span><span>
 </span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PAdditiveSemigroup</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-62"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#+</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-63"></span><span>  </span><span id="local-6989586621679323234"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323234"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621679323235"><span class="annot"><span class="annottext">#+ :: forall (s :: S).
+</span><span id="line-63"></span><span>  </span><span id="local-6989586621679324427"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324427"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621679324428"><span class="annot"><span class="annottext">#+ :: forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">#+</span></span></span><span> </span><span id="local-6989586621679323236"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323236"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">#+</span></span></span><span> </span><span id="local-6989586621679324429"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324429"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
 forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var">pposixTime</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323234"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
+</span><a href="#local-6989586621679324427"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (s :: S).
 Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (a :: S -&gt; Type) (s :: S).
@@ -387,18 +387,18 @@ Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-operator hs-var">#+</span></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323236"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679324429"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-64"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">pscalePositive</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-65"></span><span>  </span><span id="local-6989586621679323240"><span class="annot"><span class="annottext">pscalePositive :: forall (s :: S).
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679324433"><span class="annot"><span class="annottext">pscalePositive :: forall (s :: S).
 Term s PPosixTime -&gt; Term s PPositive -&gt; Term s PPosixTime
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pscalePositive</span></span></span><span> </span><span id="local-6989586621679323241"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323241"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679323242"><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679323242"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pscalePositive</span></span></span><span> </span><span id="local-6989586621679324434"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324434"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679324435"><span class="annot"><span class="annottext">Term s PPositive
+</span><a href="#local-6989586621679324435"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
 forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var">pposixTime</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323241"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
+</span><a href="#local-6989586621679324434"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (s :: S).
 Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (a :: S -&gt; Type) (s :: S).
@@ -407,12 +407,12 @@ Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-operator hs-var">#*</span></span><span> </span><span class="annot"><span class="annottext">Term s PPositive -&gt; Term s (PInner PPositive)
 forall (s :: S) (a :: S -&gt; Type). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PPositive
-</span><a href="#local-6989586621679323242"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679324435"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-66"></span><span>
 </span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
 </span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PAdditiveMonoid</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-69"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">pzero</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-70"></span><span>  </span><span id="local-6989586621679323253"><span class="annot"><span class="annottext">pzero :: forall (s :: S). Term s PPosixTime
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621679324446"><span class="annot"><span class="annottext">pzero :: forall (s :: S). Term s PPosixTime
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pzero</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
 forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var">pposixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger
@@ -420,16 +420,16 @@ forall (s :: S). Term s PInteger
 forall (a :: S -&gt; Type) (s :: S). PAdditiveMonoid a =&gt; Term s a
 </span><span class="hs-identifier hs-var">pzero</span></span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">pscaleNatural</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-72"></span><span>  </span><span id="local-6989586621679323256"><span class="annot"><span class="annottext">pscaleNatural :: forall (s :: S).
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679324449"><span class="annot"><span class="annottext">pscaleNatural :: forall (s :: S).
 Term s PPosixTime -&gt; Term s PNatural -&gt; Term s PPosixTime
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pscaleNatural</span></span></span><span> </span><span id="local-6989586621679323257"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323257"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679323258"><span class="annot"><span class="annottext">Term s PNatural
-</span><a href="#local-6989586621679323258"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pscaleNatural</span></span></span><span> </span><span id="local-6989586621679324450"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324450"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621679324451"><span class="annot"><span class="annottext">Term s PNatural
+</span><a href="#local-6989586621679324451"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
 forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var">pposixTime</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323257"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
+</span><a href="#local-6989586621679324450"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (s :: S).
 Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (a :: S -&gt; Type) (s :: S).
@@ -438,12 +438,12 @@ Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-operator hs-var">#*</span></span><span> </span><span class="annot"><span class="annottext">Term s PNatural -&gt; Term s (PInner PNatural)
 forall (s :: S) (a :: S -&gt; Type). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PNatural
-</span><a href="#local-6989586621679323258"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679324451"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-73"></span><span>
 </span><span id="line-74"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679323264"><span class="annot"><span class="hs-identifier hs-type">PAdditiveGroup</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679324457"><span class="annot"><span class="hs-identifier hs-type">PAdditiveGroup</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-76"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">pnegate</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-77"></span><span>  </span><span id="local-6989586621679323270"><span class="annot"><span class="annottext">pnegate :: forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime)
+</span><span id="line-77"></span><span>  </span><span id="local-6989586621679324463"><span class="annot"><span class="annottext">pnegate :: forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pnegate</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). Term s (PPosixTime :--&gt; PPosixTime))
 -&gt; Term s (PPosixTime :--&gt; PPosixTime)
 forall (a :: S -&gt; Type) (s :: S).
@@ -467,8 +467,8 @@ HasCallStack =&gt;
 -&gt; (Term s PPosixTime -&gt; Term s PPosixTime)
 -&gt; Term s (PPosixTime :--&gt; PPosixTime)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679323277"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323277"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679324470"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324470"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
 forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var">pposixTime</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PInteger :--&gt; PInteger)
 forall (s :: S). Term s (PInteger :--&gt; PInteger)
@@ -482,18 +482,18 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323277"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679324470"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-78"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#-</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-79"></span><span>  </span><span id="local-6989586621679323280"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323280"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621679323281"><span class="annot"><span class="annottext">#- :: forall (s :: S).
+</span><span id="line-79"></span><span>  </span><span id="local-6989586621679324473"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324473"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621679324474"><span class="annot"><span class="annottext">#- :: forall (s :: S).
 Term s PPosixTime -&gt; Term s PPosixTime -&gt; Term s PPosixTime
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">#-</span></span></span><span> </span><span id="local-6989586621679323282"><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323282"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">#-</span></span></span><span> </span><span id="local-6989586621679324475"><span class="annot"><span class="annottext">Term s PPosixTime
+</span><a href="#local-6989586621679324475"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PPosixTime
 forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var">pposixTime</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323280"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
+</span><a href="#local-6989586621679324473"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (s :: S).
 Term s PInteger -&gt; Term s PInteger -&gt; Term s PInteger
 forall (a :: S -&gt; Type) (s :: S).
@@ -502,10 +502,10 @@ Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-operator hs-var">#-</span></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var">unPPosixTime</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime
-</span><a href="#local-6989586621679323282"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679324475"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-80"></span><span>
 </span><span id="line-81"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-82"></span><span id="local-6989586621679323286"><span id="local-6989586621679323295"><span id="local-6989586621679323303"><span id="local-6989586621679323311"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-82"></span><span id="local-6989586621679324479"><span id="local-6989586621679324488"><span id="local-6989586621679324496"><span id="local-6989586621679324504"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
 </span><span id="line-83"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.POSIXTime</span></span><span>
 </span><span id="line-84"></span><span>  </span><span class="hs-keyword">instance</span><span>
 </span><span id="line-85"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span></span></span></span></span><span>
@@ -515,7 +515,7 @@ but a lot shorter.
 
 @since 3.3.0
 -}</span></span><span>
-</span><span id="line-92"></span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-type">pposixTime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679322945"><span class="annot"><a href="#local-6989586621679322945"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679322945"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679322945"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span>
+</span><span id="line-92"></span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-type">pposixTime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679324138"><span class="annot"><a href="#local-6989586621679324138"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679324138"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679324138"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span>
 </span><span id="line-93"></span><span id="pposixTime"><span class="annot"><span class="annottext">pposixTime :: forall (s :: S). Term s PInteger -&gt; Term s PPosixTime
 </span><a href="Plutarch.LedgerApi.V1.Time.html#pposixTime"><span class="hs-identifier hs-var hs-var">pposixTime</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PPosixTime s -&gt; Term s PPosixTime
 forall (a :: S -&gt; Type) (s :: S). PlutusType a =&gt; a s -&gt; Term s a
@@ -533,7 +533,7 @@ lot shorter. Also unwraps the @Data@ encoding.
 
 @since 3.3.0
 -}</span></span><span>
-</span><span id="line-100"></span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-type">unPPosixTime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679322976"><span class="annot"><a href="#local-6989586621679322976"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679322976"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679322976"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span>
+</span><span id="line-100"></span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-type">unPPosixTime</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679324169"><span class="annot"><a href="#local-6989586621679324169"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679324169"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Time.html#PPosixTime"><span class="hs-identifier hs-type">PPosixTime</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679324169"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span>
 </span><span id="line-101"></span><span id="unPPosixTime"><span class="annot"><span class="annottext">unPPosixTime :: forall (s :: S). Term s PPosixTime -&gt; Term s PInteger
 </span><a href="Plutarch.LedgerApi.V1.Time.html#unPPosixTime"><span class="hs-identifier hs-var hs-var">unPPosixTime</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PPosixTime -&gt; Term s PInteger
 Term s PPosixTime -&gt; Term s (PInner PPosixTime)

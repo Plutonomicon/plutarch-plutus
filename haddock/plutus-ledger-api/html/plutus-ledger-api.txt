@@ -6,7 +6,7 @@
 --   
 --   Interface to the Plutus scripting support for the Cardano ledger.
 @package plutus-ledger-api
-@version 1.40.0.0
+@version 1.45.0.0
 
 
 -- | This module contains the code for handling the various kinds of
@@ -531,24 +531,24 @@ module PlutusLedgerApi.V1.Data.Interval
 --   in order to handle non-inclusive endpoints. For this reason, it may
 --   not be safe to use <a>Interval</a>s with non-inclusive endpoints on
 --   types whose <a>Enum</a> instances have partial methods.
-data Interval a_aGv4
-pattern Interval :: forall a_aGv4. (ToData a_aGv4, UnsafeFromData a_aGv4) => LowerBound a_aGv4 -> UpperBound a_aGv4 -> Interval a_aGv4
+data Interval a_aGfW
+pattern Interval :: forall a_aGfW. (ToData a_aGfW, UnsafeFromData a_aGfW) => LowerBound a_aGfW -> UpperBound a_aGfW -> Interval a_aGfW
 ivFrom :: (ToData a, UnsafeFromData a) => Interval a -> LowerBound a
 ivTo :: (ToData a, UnsafeFromData a) => Interval a -> UpperBound a
 
 -- | The upper bound of an interval.
-data UpperBound a_aGdB
-pattern UpperBound :: forall a_aGdB. (ToData a_aGdB, UnsafeFromData a_aGdB) => Extended a_aGdB -> Closure -> UpperBound a_aGdB
+data UpperBound a_aFYP
+pattern UpperBound :: forall a_aFYP. (ToData a_aFYP, UnsafeFromData a_aFYP) => Extended a_aFYP -> Closure -> UpperBound a_aFYP
 
 -- | The lower bound of an interval.
-data LowerBound a_aGmb
-pattern LowerBound :: forall a_aGmb. (ToData a_aGmb, UnsafeFromData a_aGmb) => Extended a_aGmb -> Closure -> LowerBound a_aGmb
+data LowerBound a_aG7f
+pattern LowerBound :: forall a_aG7f. (ToData a_aG7f, UnsafeFromData a_aG7f) => Extended a_aG7f -> Closure -> LowerBound a_aG7f
 
 -- | A set extended with a positive and negative infinity.
-data Extended a_aG2O
-pattern NegInf :: forall a_aG2O. Extended a_aG2O
-pattern Finite :: forall a_aG2O. (ToData a_aG2O, UnsafeFromData a_aG2O) => a_aG2O -> Extended a_aG2O
-pattern PosInf :: forall a_aG2O. Extended a_aG2O
+data Extended a_aFNV
+pattern NegInf :: forall a_aFNV. Extended a_aFNV
+pattern Finite :: forall a_aFNV. (ToData a_aFNV, UnsafeFromData a_aFNV) => a_aFNV -> Extended a_aFNV
+pattern PosInf :: forall a_aFNV. Extended a_aFNV
 
 -- | Whether a bound is inclusive or not.
 type Closure = Bool
@@ -2492,6 +2492,287 @@ instance Codec.Serialise.Class.Serialise PlutusLedgerApi.V1.Scripts.Redeemer
 instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Scripts.Datum referencedTypes
 instance Codec.Serialise.Class.Serialise PlutusLedgerApi.V1.Scripts.Datum
 
+
+-- | Functions for working with <a>Value</a>.
+module PlutusLedgerApi.V1.Data.Value
+
+-- | ByteString representing the currency, hashed with <i>BLAKE2b-224</i>.
+--   It is empty for <tt>Ada</tt>, 28 bytes for <tt>MintingPolicyHash</tt>.
+--   Forms an <a>AssetClass</a> along with <a>TokenName</a>. A <a>Value</a>
+--   is a map from <a>CurrencySymbol</a>'s to a map from <a>TokenName</a>
+--   to an <a>Integer</a>.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>. -- editorconfig-checker-disable-file
+newtype CurrencySymbol
+CurrencySymbol :: BuiltinByteString -> CurrencySymbol
+[unCurrencySymbol] :: CurrencySymbol -> BuiltinByteString
+
+-- | Creates <a>CurrencySymbol</a> from raw <tt>ByteString</tt>.
+currencySymbol :: ByteString -> CurrencySymbol
+
+-- | The <a>CurrencySymbol</a> of the <tt>Ada</tt> currency.
+adaSymbol :: CurrencySymbol
+
+-- | ByteString of a name of a token. Shown as UTF-8 string when possible.
+--   Should be no longer than 32 bytes, empty for Ada. Forms an
+--   <a>AssetClass</a> along with a <a>CurrencySymbol</a>.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>. -- editorconfig-checker-disable-file
+newtype TokenName
+TokenName :: BuiltinByteString -> TokenName
+[unTokenName] :: TokenName -> BuiltinByteString
+
+-- | Creates <a>TokenName</a> from raw <a>ByteString</a>.
+tokenName :: ByteString -> TokenName
+
+-- | Turn a TokenName to a hex-encoded <tt>String</tt>
+--   
+--   Compared to <tt>show</tt> , it will not surround the string with
+--   double-quotes.
+toString :: TokenName -> String
+
+-- | The <a>TokenName</a> of the <tt>Ada</tt> currency.
+adaToken :: TokenName
+
+-- | An asset class, identified by a <a>CurrencySymbol</a> and a
+--   <a>TokenName</a>.
+newtype AssetClass
+AssetClass :: (CurrencySymbol, TokenName) -> AssetClass
+[unAssetClass] :: AssetClass -> (CurrencySymbol, TokenName)
+
+-- | The curried version of <a>AssetClass</a> constructor
+assetClass :: CurrencySymbol -> TokenName -> AssetClass
+
+-- | A <a>Value</a> containing the given amount of the asset class.
+assetClassValue :: AssetClass -> Integer -> Value
+
+-- | Get the quantity of the given <a>AssetClass</a> class in the
+--   <a>Value</a>.
+assetClassValueOf :: Value -> AssetClass -> Integer
+
+-- | The <a>Value</a> type represents a collection of amounts of different
+--   currencies. We can think of <a>Value</a> as a vector space whose
+--   dimensions are currencies.
+--   
+--   Operations on currencies are usually implemented <i>pointwise</i>.
+--   That is, we apply the operation to the quantities for each currency in
+--   turn. So when we add two <a>Value</a>s the resulting <a>Value</a> has,
+--   for each currency, the sum of the quantities of <i>that particular</i>
+--   currency in the argument <a>Value</a>. The effect of this is that the
+--   currencies in the <a>Value</a> are "independent", and are operated on
+--   separately.
+--   
+--   Whenever we need to get the quantity of a currency in a <a>Value</a>
+--   where there is no explicit quantity of that currency in the
+--   <a>Value</a>, then the quantity is taken to be zero.
+--   
+--   There is no 'Ord Value' instance since <a>Value</a> is only a partial
+--   order, so <a>compare</a> can't do the right thing in some cases.
+newtype Value
+Value :: Map CurrencySymbol (Map TokenName Integer) -> Value
+[getValue] :: Value -> Map CurrencySymbol (Map TokenName Integer)
+
+-- | Make a <a>Value</a> containing only the given quantity of the given
+--   currency.
+singleton :: CurrencySymbol -> TokenName -> Integer -> Value
+
+-- | Get the quantity of the given currency in the <a>Value</a>. Assumes
+--   that the underlying map doesn't contain duplicate keys.
+valueOf :: Value -> CurrencySymbol -> TokenName -> Integer
+
+-- | Apply a continuation function to the token quantities of the given
+--   currency symbol in the value or return a default value if the currency
+--   symbol is not present in the value.
+withCurrencySymbol :: CurrencySymbol -> Value -> a -> (Map TokenName Integer -> a) -> a
+
+-- | Get the total value of the currency symbol in the <a>Value</a> map.
+--   Assumes that the underlying map doesn't contain duplicate keys.
+--   
+--   Note that each token of the currency symbol may have a value that is
+--   positive, zero or negative.
+currencySymbolValueOf :: Value -> CurrencySymbol -> Integer
+
+-- | A <a>Value</a> containing the given quantity of Lovelace.
+lovelaceValue :: Lovelace -> Value
+
+-- | Get the quantity of Lovelace in the <a>Value</a>.
+lovelaceValueOf :: Value -> Lovelace
+scale :: Module s v => s -> v -> v
+
+-- | The list of <a>CurrencySymbol</a>s of a <a>Value</a>.
+symbols :: Value -> List CurrencySymbol
+
+-- | Check whether one <a>Value</a> is greater than or equal to another.
+--   See <a>Value</a> for an explanation of how operations on <a>Value</a>s
+--   work.
+geq :: Value -> Value -> Bool
+
+-- | Check whether one <a>Value</a> is strictly greater than another. This
+--   is *not* a pointwise operation. <tt>gt l r</tt> means <tt>geq l r
+--   &amp;&amp; not (eq l r)</tt>.
+gt :: Value -> Value -> Bool
+
+-- | Check whether one <a>Value</a> is less than or equal to another. See
+--   <a>Value</a> for an explanation of how operations on <a>Value</a>s
+--   work.
+leq :: Value -> Value -> Bool
+
+-- | Check whether one <a>Value</a> is strictly less than another. This is
+--   *not* a pointwise operation. <tt>lt l r</tt> means <tt>leq l r
+--   &amp;&amp; not (eq l r)</tt>.
+lt :: Value -> Value -> Bool
+
+-- | Check whether a <a>Value</a> is zero.
+isZero :: Value -> Bool
+
+-- | Split a <a>Value</a> into its positive and negative parts. The first
+--   element of the tuple contains the negative parts of the <a>Value</a>,
+--   the second element contains the positive parts.
+--   
+--   <pre>
+--   negate (fst (split a)) <tt>plus</tt> (snd (split a)) == a
+--   </pre>
+split :: Value -> (Value, Value)
+
+-- | Combine two <a>Value</a> maps with the argument function. Assumes the
+--   well-definedness of the two maps.
+unionWith :: (Integer -> Integer -> Integer) -> Value -> Value -> Value
+
+-- | Convert a <a>Value</a> to a simple list, keeping only the non-zero
+--   amounts. Note that the result isn't sorted, meaning <tt>v1 == v2</tt>
+--   doesn't generally imply <tt>flattenValue v1 == flattenValue v2</tt>.
+--   Also assumes that there are no duplicate keys in the <a>Value</a>
+--   <a>Map</a>.
+flattenValue :: Value -> [(CurrencySymbol, TokenName, Integer)]
+newtype Lovelace
+Lovelace :: Integer -> Lovelace
+[getLovelace] :: Lovelace -> Integer
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance Data.Data.Data PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance Data.String.IsString PlutusLedgerApi.V1.Data.Value.CurrencySymbol
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.TokenName
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.TokenName
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.TokenName
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.TokenName
+instance Data.Data.Data PlutusLedgerApi.V1.Data.Value.TokenName
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.TokenName
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.AssetClass
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.AssetClass
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.AssetClass
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.AssetClass
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.AssetClass
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.AssetClass
+instance Data.Data.Data PlutusLedgerApi.V1.Data.Value.AssetClass
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.AssetClass
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.Value
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.Value
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Show.TH.Show PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveGroup PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveMonoid PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveSemigroup PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Enum.Enum PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Real.Real PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Num.Num PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.Lovelace
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.Lovelace
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.Lovelace
+instance PlutusTx.Numeric.AdditiveSemigroup PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Numeric.AdditiveMonoid PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Numeric.AdditiveGroup PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.Value referencedTypes
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.Value
+instance GHC.Base.Semigroup PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Semigroup.Semigroup PlutusLedgerApi.V1.Data.Value.Value
+instance GHC.Base.Monoid PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Monoid.Monoid PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Monoid.Group PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Numeric.Module GHC.Num.Integer.Integer PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Lattice.JoinSemiLattice PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Lattice.MeetSemiLattice PlutusLedgerApi.V1.Data.Value.Value
+instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.AssetClass referencedTypes
+instance Data.String.IsString PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.TokenName referencedTypes
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.TokenName
+instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.CurrencySymbol referencedTypes
+
+module PlutusLedgerApi.V3.Data.MintValue
+
+-- | A <a>MintValue</a> represents assets that are minted and burned in a
+--   transaction.
+newtype MintValue
+UnsafeMintValue :: Map CurrencySymbol (Map TokenName Integer) -> MintValue
+emptyMintValue :: MintValue
+mintValueToMap :: MintValue -> Map CurrencySymbol (Map TokenName Integer)
+
+-- | Get the <a>Value</a> minted by the <a>MintValue</a>.
+mintValueMinted :: MintValue -> Value
+
+-- | Get the <a>Value</a> burned by the <a>MintValue</a>. All the negative
+--   quantities in the <a>MintValue</a> become positive in the resulting
+--   <a>Value</a>.
+mintValueBurned :: MintValue -> Value
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance GHC.Show.Show PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance GHC.Generics.Generic PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance GHC.Classes.Eq PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V3.Data.MintValue.MintValue
+instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V3.Data.MintValue.MintValue referencedTypes
+
 module PlutusLedgerApi.V1.Crypto
 
 -- | The hash of a public key. This is frequently used to identify the
@@ -2650,6 +2931,509 @@ instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Address.Address
 instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Address.Address
 instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Address.Address
 instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Address.Address
+
+module PlutusLedgerApi.V1.Data.Tx
+
+-- | A transaction ID, i.e. the hash of a transaction. Hashed with
+--   BLAKE2b-256. 32 byte.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>. -- editorconfig-checker-disable-file
+newtype TxId
+TxId :: BuiltinByteString -> TxId
+[getTxId] :: TxId -> BuiltinByteString
+
+-- | A tag indicating the type of script that we are pointing to.
+--   
+--   See also <a>ScriptPurpose</a>
+data ScriptTag
+Spend :: ScriptTag
+Mint :: ScriptTag
+Cert :: ScriptTag
+Reward :: ScriptTag
+
+-- | A redeemer pointer is a pair of a script type tag (<a>ScriptTag</a>)
+--   <tt>t</tt> and an index <tt>i</tt>, picking out the i-th script of
+--   type <tt>t</tt> in the transaction.
+data RedeemerPtr
+RedeemerPtr :: ScriptTag -> Integer -> RedeemerPtr
+
+-- | Redeemers is a <a>Map</a> of redeemer pointer (<a>RedeemerPtr</a>) and
+--   its <a>Redeemer</a>.
+type Redeemers = Map RedeemerPtr Redeemer
+
+-- | A transaction output, consisting of a target address (<a>Address</a>),
+--   a value (<a>Value</a>), and optionally a datum hash
+--   (<a>DatumHash</a>).
+data TxOut
+pattern TxOut :: Address -> Value -> Maybe DatumHash -> TxOut
+txOutAddress :: TxOut -> Address
+txOutValue :: TxOut -> Value
+txOutDatumHash :: TxOut -> Maybe DatumHash
+
+-- | A reference to a transaction output. This is a pair of a transaction
+--   ID (<a>TxId</a>), and an index indicating which of the outputs of that
+--   transaction we are referring to.
+data TxOutRef
+pattern TxOutRef :: TxId -> Integer -> TxOutRef
+txOutRefId :: TxOutRef -> TxId
+txOutRefIdx :: TxOutRef -> Integer
+
+-- | Whether the output is a pay-to-pubkey output.
+isPubKeyOut :: TxOut -> Bool
+
+-- | Whether the output is a pay-to-script output.
+isPayToScriptOut :: TxOut -> Bool
+
+-- | The address of a transaction output.
+outAddress :: Lens' TxOut Address
+
+-- | The value of a transaction output. | TODO: Compute address again
+outValue :: Lens' TxOut Value
+
+-- | The public key attached to a <a>TxOut</a>, if there is one.
+txOutPubKey :: TxOut -> Maybe PubKeyHash
+
+-- | The datum attached to a <a>TxOut</a>, if there is one.
+txOutDatum :: TxOut -> Maybe DatumHash
+
+-- | Create a transaction output locked by a public key.
+pubKeyHashTxOut :: Value -> PubKeyHash -> TxOut
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOut
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOut
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Tx.TxOut
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Tx.TxOut
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Tx.TxOut
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.TxOut
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.TxOut
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.TxOut
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Tx.TxOut
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Tx.TxOut
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Tx.TxOutRef
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.ScriptTag
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.ScriptTag
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.ScriptTag
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.ScriptTag
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.ScriptTag
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Tx.TxId
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Tx.TxId
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Tx.TxId
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxId
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxId
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Tx.TxId
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.TxId
+instance Data.String.IsString PlutusLedgerApi.V1.Data.Tx.TxId
+instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Tx.TxId
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Tx.TxId
+instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.TxId
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.TxId
+instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.TxId
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.TxId
+
+module PlutusLedgerApi.V2.Data.Tx
+
+-- | A transaction ID, i.e. the hash of a transaction. Hashed with
+--   BLAKE2b-256. 32 byte.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>. -- editorconfig-checker-disable-file
+newtype TxId
+TxId :: BuiltinByteString -> TxId
+[getTxId] :: TxId -> BuiltinByteString
+
+-- | A tag indicating the type of script that we are pointing to.
+--   
+--   See also <a>ScriptPurpose</a>
+data ScriptTag
+Spend :: ScriptTag
+Mint :: ScriptTag
+Cert :: ScriptTag
+Reward :: ScriptTag
+
+-- | A redeemer pointer is a pair of a script type tag (<a>ScriptTag</a>)
+--   <tt>t</tt> and an index <tt>i</tt>, picking out the i-th script of
+--   type <tt>t</tt> in the transaction.
+data RedeemerPtr
+RedeemerPtr :: ScriptTag -> Integer -> RedeemerPtr
+
+-- | Redeemers is a <a>Map</a> of redeemer pointer (<a>RedeemerPtr</a>) and
+--   its <a>Redeemer</a>.
+type Redeemers = Map RedeemerPtr Redeemer
+
+-- | A transaction output, consisting of a target address, a value,
+--   optionally a datum/datum hash, and optionally a reference script.
+data TxOut
+pattern TxOut :: Address -> Value -> OutputDatum -> Maybe ScriptHash -> TxOut
+txOutAddress :: TxOut -> Address
+txOutValue :: TxOut -> Value
+txOutDatum :: TxOut -> OutputDatum
+txOutReferenceScript :: TxOut -> Maybe ScriptHash
+
+-- | A reference to a transaction output. This is a pair of a transaction
+--   ID (<a>TxId</a>), and an index indicating which of the outputs of that
+--   transaction we are referring to.
+data TxOutRef
+pattern TxOutRef :: TxId -> Integer -> TxOutRef
+txOutRefId :: TxOutRef -> TxId
+txOutRefIdx :: TxOutRef -> Integer
+
+-- | The datum attached to an output: either nothing; a datum hash; or the
+--   datum itself (an "inline datum").
+data OutputDatum
+pattern NoOutputDatum :: OutputDatum
+pattern OutputDatumHash :: DatumHash -> OutputDatum
+pattern OutputDatum :: Datum -> OutputDatum
+
+-- | Whether the output is a pay-to-pubkey output.
+isPubKeyOut :: TxOut -> Bool
+
+-- | Whether the output is a pay-to-script output.
+isPayToScriptOut :: TxOut -> Bool
+
+-- | The address of a transaction output.
+outAddress :: Lens' TxOut Address
+
+-- | The value of a transaction output. | TODO: Compute address again
+outValue :: Lens' TxOut Value
+
+-- | The public key attached to a <a>TxOut</a>, if there is one.
+txOutPubKey :: TxOut -> Maybe PubKeyHash
+
+-- | The datum attached to a <a>TxOut</a>.
+outDatum :: Lens' TxOut OutputDatum
+
+-- | The reference script attached to a <a>TxOut</a>.
+outReferenceScript :: Lens' TxOut (Maybe ScriptHash)
+
+-- | Create a transaction output locked by a public key.
+pubKeyHashTxOut :: Value -> PubKeyHash -> TxOut
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.TxOut
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.TxOut
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Tx.TxOut
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Tx.TxOut
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Tx.TxOut
+instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Tx.TxOut
+instance GHC.Classes.Eq PlutusLedgerApi.V2.Data.Tx.TxOut
+instance GHC.Show.Show PlutusLedgerApi.V2.Data.Tx.TxOut
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Tx.TxOut
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V2.Data.Tx.TxOut
+instance Control.DeepSeq.NFData PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance GHC.Classes.Eq PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance GHC.Show.Show PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V2.Data.Tx.OutputDatum
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Tx.OutputDatum
+
+module PlutusLedgerApi.V1.Data.Contexts
+
+-- | A pending transaction. This is the view as seen by validator scripts,
+--   so some details are stripped out.
+data TxInfo
+pattern TxInfo :: List TxInInfo -> List TxOut -> Value -> Value -> List DCert -> List (StakingCredential, Integer) -> POSIXTimeRange -> List PubKeyHash -> List (DatumHash, Datum) -> TxId -> TxInfo
+txInfoInputs :: TxInfo -> List TxInInfo
+txInfoOutputs :: TxInfo -> List TxOut
+txInfoFee :: TxInfo -> Value
+txInfoMint :: TxInfo -> Value
+txInfoDCert :: TxInfo -> List DCert
+txInfoWdrl :: TxInfo -> List (StakingCredential, Integer)
+txInfoValidRange :: TxInfo -> POSIXTimeRange
+txInfoSignatories :: TxInfo -> List PubKeyHash
+txInfoData :: TxInfo -> List (DatumHash, Datum)
+txInfoId :: TxInfo -> TxId
+
+-- | The context that the currently-executing script can access.
+data ScriptContext
+pattern ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
+scriptContextTxInfo :: ScriptContext -> TxInfo
+scriptContextPurpose :: ScriptContext -> ScriptPurpose
+
+-- | Purpose of the script that is currently running
+data ScriptPurpose
+pattern Minting :: CurrencySymbol -> ScriptPurpose
+pattern Spending :: TxOutRef -> ScriptPurpose
+pattern Rewarding :: StakingCredential -> ScriptPurpose
+pattern Certifying :: DCert -> ScriptPurpose
+
+-- | A transaction ID, i.e. the hash of a transaction. Hashed with
+--   BLAKE2b-256. 32 byte.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>. -- editorconfig-checker-disable-file
+newtype TxId
+TxId :: BuiltinByteString -> TxId
+[getTxId] :: TxId -> BuiltinByteString
+
+-- | A transaction output, consisting of a target address (<a>Address</a>),
+--   a value (<a>Value</a>), and optionally a datum hash
+--   (<a>DatumHash</a>).
+data TxOut
+pattern TxOut :: Address -> Value -> Maybe DatumHash -> TxOut
+txOutAddress :: TxOut -> Address
+txOutValue :: TxOut -> Value
+txOutDatumHash :: TxOut -> Maybe DatumHash
+
+-- | A reference to a transaction output. This is a pair of a transaction
+--   ID (<a>TxId</a>), and an index indicating which of the outputs of that
+--   transaction we are referring to.
+data TxOutRef
+pattern TxOutRef :: TxId -> Integer -> TxOutRef
+txOutRefId :: TxOutRef -> TxId
+txOutRefIdx :: TxOutRef -> Integer
+
+-- | An input of a pending transaction.
+data TxInInfo
+pattern TxInInfo :: TxOutRef -> TxOut -> TxInInfo
+txInInfoOutRef :: TxInInfo -> TxOutRef
+txInInfoResolved :: TxInInfo -> TxOut
+
+-- | Find the input currently being validated.
+findOwnInput :: ScriptContext -> Maybe TxInInfo
+
+-- | Find the data corresponding to a data hash, if there is one
+findDatum :: DatumHash -> TxInfo -> Maybe Datum
+
+-- | Find the hash of a datum, if it is part of the pending transaction's
+--   hashes
+findDatumHash :: Datum -> TxInfo -> Maybe DatumHash
+
+-- | Given a UTXO reference and a transaction (<a>TxInfo</a>), resolve it
+--   to one of the transaction's inputs (<a>TxInInfo</a>).
+findTxInByTxOutRef :: TxOutRef -> TxInfo -> Maybe TxInInfo
+
+-- | Finds all the outputs that pay to the same script address that we are
+--   currently spending from, if any.
+findContinuingOutputs :: ScriptContext -> List Integer
+
+-- | Get all the outputs that pay to the same script address we are
+--   currently spending from, if any.
+getContinuingOutputs :: ScriptContext -> List TxOut
+
+-- | Get the values paid to a public key address by a pending transaction.
+pubKeyOutputsAt :: PubKeyHash -> TxInfo -> List Value
+
+-- | Get the total value paid to a public key address by a pending
+--   transaction.
+valuePaidTo :: TxInfo -> PubKeyHash -> Value
+
+-- | Check if the pending transaction spends a specific transaction output
+--   (identified by the hash of a transaction and an index into that
+--   transactions' outputs)
+spendsOutput :: TxInfo -> TxId -> Integer -> Bool
+
+-- | Check if a transaction was signed by the given public key.
+txSignedBy :: TxInfo -> PubKeyHash -> Bool
+
+-- | Get the total value of inputs spent by this transaction.
+valueSpent :: TxInfo -> Value
+
+-- | Get the total value of outputs produced by this transaction.
+valueProduced :: TxInfo -> Value
+
+-- | The <a>CurrencySymbol</a> of the current validator script.
+ownCurrencySymbol :: ScriptContext -> CurrencySymbol
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.ScriptContext
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.TxInfo
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.TxInInfo
+
+module PlutusLedgerApi.V2.Data.Contexts
+
+-- | A pending transaction. This is the view as seen by validator scripts,
+--   so some details are stripped out.
+data TxInfo
+pattern TxInfo :: List TxInInfo -> List TxInInfo -> List TxOut -> Value -> Value -> List DCert -> Map StakingCredential Integer -> POSIXTimeRange -> List PubKeyHash -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> TxInfo
+txInfoInputs :: TxInfo -> List TxInInfo
+txInfoReferenceInputs :: TxInfo -> List TxInInfo
+txInfoOutputs :: TxInfo -> List TxOut
+txInfoFee :: TxInfo -> Value
+txInfoMint :: TxInfo -> Value
+txInfoDCert :: TxInfo -> List DCert
+txInfoWdrl :: TxInfo -> Map StakingCredential Integer
+txInfoValidRange :: TxInfo -> POSIXTimeRange
+txInfoSignatories :: TxInfo -> List PubKeyHash
+txInfoRedeemers :: TxInfo -> Map ScriptPurpose Redeemer
+txInfoData :: TxInfo -> Map DatumHash Datum
+txInfoId :: TxInfo -> TxId
+
+-- | The context that the currently-executing script can access.
+data ScriptContext
+pattern ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
+scriptContextTxInfo :: ScriptContext -> TxInfo
+scriptContextPurpose :: ScriptContext -> ScriptPurpose
+
+-- | Purpose of the script that is currently running
+data ScriptPurpose
+pattern Minting :: CurrencySymbol -> ScriptPurpose
+pattern Spending :: TxOutRef -> ScriptPurpose
+pattern Rewarding :: StakingCredential -> ScriptPurpose
+pattern Certifying :: DCert -> ScriptPurpose
+
+-- | A transaction ID, i.e. the hash of a transaction. Hashed with
+--   BLAKE2b-256. 32 byte.
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+--   You may want to add checks for its invariants. See the <a>Shelley
+--   ledger specification</a>. -- editorconfig-checker-disable-file
+newtype TxId
+TxId :: BuiltinByteString -> TxId
+[getTxId] :: TxId -> BuiltinByteString
+
+-- | A transaction output, consisting of a target address, a value,
+--   optionally a datum/datum hash, and optionally a reference script.
+data TxOut
+pattern TxOut :: Address -> Value -> OutputDatum -> Maybe ScriptHash -> TxOut
+txOutAddress :: TxOut -> Address
+txOutValue :: TxOut -> Value
+txOutDatum :: TxOut -> OutputDatum
+txOutReferenceScript :: TxOut -> Maybe ScriptHash
+
+-- | A reference to a transaction output. This is a pair of a transaction
+--   ID (<a>TxId</a>), and an index indicating which of the outputs of that
+--   transaction we are referring to.
+data TxOutRef
+pattern TxOutRef :: TxId -> Integer -> TxOutRef
+txOutRefId :: TxOutRef -> TxId
+txOutRefIdx :: TxOutRef -> Integer
+
+-- | An input of a pending transaction.
+data TxInInfo
+pattern TxInInfo :: TxOutRef -> TxOut -> TxInInfo
+txInInfoOutRef :: TxInInfo -> TxOutRef
+txInInfoResolved :: TxInInfo -> TxOut
+
+-- | Find the input currently being validated.
+findOwnInput :: ScriptContext -> Maybe TxInInfo
+
+-- | Find the data corresponding to a data hash, if there is one
+findDatum :: DatumHash -> TxInfo -> Maybe Datum
+
+-- | Find the hash of a datum, if it is part of the pending transaction's
+--   hashes
+findDatumHash :: Datum -> TxInfo -> Maybe DatumHash
+
+-- | Given a UTXO reference and a transaction (<a>TxInfo</a>), resolve it
+--   to one of the transaction's inputs (<a>TxInInfo</a>). Note: this only
+--   searches the true transaction inputs and not the referenced
+--   transaction inputs.
+findTxInByTxOutRef :: TxOutRef -> TxInfo -> Maybe TxInInfo
+
+-- | Find the indices of all the outputs that pay to the same script
+--   address we are currently spending from, if any.
+findContinuingOutputs :: ScriptContext -> List Integer
+
+-- | Get all the outputs that pay to the same script address we are
+--   currently spending from, if any.
+getContinuingOutputs :: ScriptContext -> List TxOut
+
+-- | Get the values paid to a public key address by a pending transaction.
+pubKeyOutputsAt :: PubKeyHash -> TxInfo -> List Value
+
+-- | Get the total value paid to a public key address by a pending
+--   transaction.
+valuePaidTo :: TxInfo -> PubKeyHash -> Value
+
+-- | Check if the pending transaction spends a specific transaction output
+--   (identified by the hash of a transaction and an index into that
+--   transactions' outputs)
+spendsOutput :: TxInfo -> TxId -> Integer -> Bool
+
+-- | Check if a transaction was signed by the given public key.
+txSignedBy :: TxInfo -> PubKeyHash -> Bool
+
+-- | Get the total value of inputs spent by this transaction.
+valueSpent :: TxInfo -> Value
+
+-- | Get the total value of outputs produced by this transaction.
+valueProduced :: TxInfo -> Value
+
+-- | The <a>CurrencySymbol</a> of the current validator script.
+ownCurrencySymbol :: ScriptContext -> CurrencySymbol
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance GHC.Show.Show PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Contexts.ScriptContext
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance GHC.Show.Show PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Contexts.TxInfo
+instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance PlutusTx.Eq.Eq PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance GHC.Classes.Eq PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance GHC.Show.Show PlutusLedgerApi.V2.Data.Contexts.TxInInfo
+instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Contexts.TxInInfo
 
 
 -- | Address and staking address credentials for outputs.
@@ -3814,12 +4598,12 @@ InvalidReturnValue :: EvaluationError
 --   with protocol versions</li>
 --   </ol>
 data EvaluationContext
-class AsScriptDecodeError r_atWl
-_ScriptDecodeError :: AsScriptDecodeError r_atWl => Prism' r_atWl ScriptDecodeError
-_CBORDeserialiseError :: AsScriptDecodeError r_atWl => Prism' r_atWl DeserialiseFailureInfo
-_RemainderError :: AsScriptDecodeError r_atWl => Prism' r_atWl ByteString
-_LedgerLanguageNotAvailableError :: AsScriptDecodeError r_atWl => Prism' r_atWl (PlutusLedgerLanguage, MajorProtocolVersion, MajorProtocolVersion)
-_PlutusCoreLanguageNotAvailableError :: AsScriptDecodeError r_atWl => Prism' r_atWl (Version, PlutusLedgerLanguage, MajorProtocolVersion)
+class AsScriptDecodeError r_attb
+_ScriptDecodeError :: AsScriptDecodeError r_attb => Prism' r_attb ScriptDecodeError
+_CBORDeserialiseError :: AsScriptDecodeError r_attb => Prism' r_attb DeserialiseFailureInfo
+_RemainderError :: AsScriptDecodeError r_attb => Prism' r_attb ByteString
+_LedgerLanguageNotAvailableError :: AsScriptDecodeError r_attb => Prism' r_attb (PlutusLedgerLanguage, MajorProtocolVersion, MajorProtocolVersion)
+_PlutusCoreLanguageNotAvailableError :: AsScriptDecodeError r_attb => Prism' r_attb (Version, PlutusLedgerLanguage, MajorProtocolVersion)
 
 -- | The type of the executed script's accumulated log output: a list of
 --   <a>Text</a>.
@@ -6766,762 +7550,6 @@ PlutusCoreLanguageNotAvailableError :: !Version -> !PlutusLedgerLanguage -> !Maj
 [sdeThisPv] :: ScriptDecodeError -> !MajorProtocolVersion
 
 
--- | Functions for working with <a>Value</a>.
-module PlutusLedgerApi.V1.Data.Value
-
--- | ByteString representing the currency, hashed with <i>BLAKE2b-224</i>.
---   It is empty for <tt>Ada</tt>, 28 bytes for <tt>MintingPolicyHash</tt>.
---   Forms an <a>AssetClass</a> along with <a>TokenName</a>. A <a>Value</a>
---   is a map from <a>CurrencySymbol</a>'s to a map from <a>TokenName</a>
---   to an <a>Integer</a>.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>. -- editorconfig-checker-disable-file
-newtype CurrencySymbol
-CurrencySymbol :: BuiltinByteString -> CurrencySymbol
-[unCurrencySymbol] :: CurrencySymbol -> BuiltinByteString
-
--- | Creates <a>CurrencySymbol</a> from raw <tt>ByteString</tt>.
-currencySymbol :: ByteString -> CurrencySymbol
-
--- | The <a>CurrencySymbol</a> of the <tt>Ada</tt> currency.
-adaSymbol :: CurrencySymbol
-
--- | ByteString of a name of a token. Shown as UTF-8 string when possible.
---   Should be no longer than 32 bytes, empty for Ada. Forms an
---   <a>AssetClass</a> along with a <a>CurrencySymbol</a>.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>. -- editorconfig-checker-disable-file
-newtype TokenName
-TokenName :: BuiltinByteString -> TokenName
-[unTokenName] :: TokenName -> BuiltinByteString
-
--- | Creates <a>TokenName</a> from raw <a>ByteString</a>.
-tokenName :: ByteString -> TokenName
-
--- | Turn a TokenName to a hex-encoded <tt>String</tt>
---   
---   Compared to <tt>show</tt> , it will not surround the string with
---   double-quotes.
-toString :: TokenName -> String
-
--- | The <a>TokenName</a> of the <tt>Ada</tt> currency.
-adaToken :: TokenName
-
--- | An asset class, identified by a <a>CurrencySymbol</a> and a
---   <a>TokenName</a>.
-newtype AssetClass
-AssetClass :: (CurrencySymbol, TokenName) -> AssetClass
-[unAssetClass] :: AssetClass -> (CurrencySymbol, TokenName)
-
--- | The curried version of <a>AssetClass</a> constructor
-assetClass :: CurrencySymbol -> TokenName -> AssetClass
-
--- | A <a>Value</a> containing the given amount of the asset class.
-assetClassValue :: AssetClass -> Integer -> Value
-
--- | Get the quantity of the given <a>AssetClass</a> class in the
---   <a>Value</a>.
-assetClassValueOf :: Value -> AssetClass -> Integer
-
--- | The <a>Value</a> type represents a collection of amounts of different
---   currencies. We can think of <a>Value</a> as a vector space whose
---   dimensions are currencies.
---   
---   Operations on currencies are usually implemented <i>pointwise</i>.
---   That is, we apply the operation to the quantities for each currency in
---   turn. So when we add two <a>Value</a>s the resulting <a>Value</a> has,
---   for each currency, the sum of the quantities of <i>that particular</i>
---   currency in the argument <a>Value</a>. The effect of this is that the
---   currencies in the <a>Value</a> are "independent", and are operated on
---   separately.
---   
---   Whenever we need to get the quantity of a currency in a <a>Value</a>
---   where there is no explicit quantity of that currency in the
---   <a>Value</a>, then the quantity is taken to be zero.
---   
---   There is no 'Ord Value' instance since <a>Value</a> is only a partial
---   order, so <a>compare</a> can't do the right thing in some cases.
-newtype Value
-Value :: Map CurrencySymbol (Map TokenName Integer) -> Value
-[getValue] :: Value -> Map CurrencySymbol (Map TokenName Integer)
-
--- | Make a <a>Value</a> containing only the given quantity of the given
---   currency.
-singleton :: CurrencySymbol -> TokenName -> Integer -> Value
-
--- | Get the quantity of the given currency in the <a>Value</a>. Assumes
---   that the underlying map doesn't contain duplicate keys.
-valueOf :: Value -> CurrencySymbol -> TokenName -> Integer
-
--- | Apply a continuation function to the token quantities of the given
---   currency symbol in the value or return a default value if the currency
---   symbol is not present in the value.
-withCurrencySymbol :: CurrencySymbol -> Value -> a -> (Map TokenName Integer -> a) -> a
-
--- | Get the total value of the currency symbol in the <a>Value</a> map.
---   Assumes that the underlying map doesn't contain duplicate keys.
---   
---   Note that each token of the currency symbol may have a value that is
---   positive, zero or negative.
-currencySymbolValueOf :: Value -> CurrencySymbol -> Integer
-
--- | A <a>Value</a> containing the given quantity of Lovelace.
-lovelaceValue :: Lovelace -> Value
-
--- | Get the quantity of Lovelace in the <a>Value</a>.
-lovelaceValueOf :: Value -> Lovelace
-scale :: Module s v => s -> v -> v
-
--- | The list of <a>CurrencySymbol</a>s of a <a>Value</a>.
-symbols :: Value -> BuiltinList BuiltinData
-
--- | Check whether one <a>Value</a> is greater than or equal to another.
---   See <a>Value</a> for an explanation of how operations on <a>Value</a>s
---   work.
-geq :: Value -> Value -> Bool
-
--- | Check whether one <a>Value</a> is strictly greater than another. This
---   is *not* a pointwise operation. <tt>gt l r</tt> means <tt>geq l r
---   &amp;&amp; not (eq l r)</tt>.
-gt :: Value -> Value -> Bool
-
--- | Check whether one <a>Value</a> is less than or equal to another. See
---   <a>Value</a> for an explanation of how operations on <a>Value</a>s
---   work.
-leq :: Value -> Value -> Bool
-
--- | Check whether one <a>Value</a> is strictly less than another. This is
---   *not* a pointwise operation. <tt>lt l r</tt> means <tt>leq l r
---   &amp;&amp; not (eq l r)</tt>.
-lt :: Value -> Value -> Bool
-
--- | Check whether a <a>Value</a> is zero.
-isZero :: Value -> Bool
-
--- | Split a <a>Value</a> into its positive and negative parts. The first
---   element of the tuple contains the negative parts of the <a>Value</a>,
---   the second element contains the positive parts.
---   
---   <pre>
---   negate (fst (split a)) <tt>plus</tt> (snd (split a)) == a
---   </pre>
-split :: Value -> (Value, Value)
-
--- | Combine two <a>Value</a> maps with the argument function. Assumes the
---   well-definedness of the two maps.
-unionWith :: (Integer -> Integer -> Integer) -> Value -> Value -> Value
-
--- | Convert a <a>Value</a> to a simple list, keeping only the non-zero
---   amounts. Note that the result isn't sorted, meaning <tt>v1 == v2</tt>
---   doesn't generally imply <tt>flattenValue v1 == flattenValue v2</tt>.
---   Also assumes that there are no duplicate keys in the <a>Value</a>
---   <a>Map</a>.
-flattenValue :: Value -> [(CurrencySymbol, TokenName, Integer)]
-newtype Lovelace
-Lovelace :: Integer -> Lovelace
-[getLovelace] :: Lovelace -> Integer
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance Data.Data.Data PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance Data.String.IsString PlutusLedgerApi.V1.Data.Value.CurrencySymbol
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.TokenName
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.TokenName
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.TokenName
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.TokenName
-instance Data.Data.Data PlutusLedgerApi.V1.Data.Value.TokenName
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.TokenName
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.AssetClass
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.AssetClass
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.AssetClass
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.AssetClass
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.AssetClass
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.AssetClass
-instance Data.Data.Data PlutusLedgerApi.V1.Data.Value.AssetClass
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.AssetClass
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.Value
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.Value
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Show.TH.Show PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Numeric.AdditiveGroup PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Numeric.AdditiveMonoid PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Numeric.AdditiveSemigroup PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Enum.Enum PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Real.Real PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Num.Num PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.Lovelace
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Value.Lovelace
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Value.Lovelace
-instance PlutusTx.Numeric.AdditiveSemigroup PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Numeric.AdditiveMonoid PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Numeric.AdditiveGroup PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.Value referencedTypes
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Value.Value
-instance GHC.Base.Semigroup PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Semigroup.Semigroup PlutusLedgerApi.V1.Data.Value.Value
-instance GHC.Base.Monoid PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Monoid.Monoid PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Monoid.Group PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Numeric.Module GHC.Num.Integer.Integer PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Lattice.JoinSemiLattice PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Lattice.MeetSemiLattice PlutusLedgerApi.V1.Data.Value.Value
-instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.AssetClass referencedTypes
-instance Data.String.IsString PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.TokenName referencedTypes
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Value.TokenName
-instance PlutusTx.Blueprint.Class.HasBlueprintSchema PlutusLedgerApi.V1.Data.Value.CurrencySymbol referencedTypes
-
-module PlutusLedgerApi.V1.Data.Tx
-
--- | A transaction ID, i.e. the hash of a transaction. Hashed with
---   BLAKE2b-256. 32 byte.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>. -- editorconfig-checker-disable-file
-newtype TxId
-TxId :: BuiltinByteString -> TxId
-[getTxId] :: TxId -> BuiltinByteString
-
--- | A tag indicating the type of script that we are pointing to.
---   
---   See also <a>ScriptPurpose</a>
-data ScriptTag
-Spend :: ScriptTag
-Mint :: ScriptTag
-Cert :: ScriptTag
-Reward :: ScriptTag
-
--- | A redeemer pointer is a pair of a script type tag (<a>ScriptTag</a>)
---   <tt>t</tt> and an index <tt>i</tt>, picking out the i-th script of
---   type <tt>t</tt> in the transaction.
-data RedeemerPtr
-RedeemerPtr :: ScriptTag -> Integer -> RedeemerPtr
-
--- | Redeemers is a <a>Map</a> of redeemer pointer (<a>RedeemerPtr</a>) and
---   its <a>Redeemer</a>.
-type Redeemers = Map RedeemerPtr Redeemer
-
--- | A transaction output, consisting of a target address (<a>Address</a>),
---   a value (<a>Value</a>), and optionally a datum hash
---   (<a>DatumHash</a>).
-data TxOut
-pattern TxOut :: Address -> Value -> Maybe DatumHash -> TxOut
-txOutAddress :: TxOut -> Address
-txOutValue :: TxOut -> Value
-txOutDatumHash :: TxOut -> Maybe DatumHash
-
--- | A reference to a transaction output. This is a pair of a transaction
---   ID (<a>TxId</a>), and an index indicating which of the outputs of that
---   transaction we are referring to.
-data TxOutRef
-pattern TxOutRef :: TxId -> Integer -> TxOutRef
-txOutRefId :: TxOutRef -> TxId
-txOutRefIdx :: TxOutRef -> Integer
-
--- | Whether the output is a pay-to-pubkey output.
-isPubKeyOut :: TxOut -> Bool
-
--- | Whether the output is a pay-to-script output.
-isPayToScriptOut :: TxOut -> Bool
-
--- | The address of a transaction output.
-outAddress :: Lens' TxOut Address
-
--- | The value of a transaction output. | TODO: Compute address again
-outValue :: Lens' TxOut Value
-
--- | The public key attached to a <a>TxOut</a>, if there is one.
-txOutPubKey :: TxOut -> Maybe PubKeyHash
-
--- | The datum attached to a <a>TxOut</a>, if there is one.
-txOutDatum :: TxOut -> Maybe DatumHash
-
--- | Create a transaction output locked by a public key.
-pubKeyHashTxOut :: Value -> PubKeyHash -> TxOut
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOut
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxOut
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Tx.TxOut
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Tx.TxOut
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Tx.TxOut
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.TxOut
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.TxOut
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.TxOut
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Tx.TxOut
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Tx.TxOut
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Tx.TxOutRef
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.ScriptTag
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.ScriptTag
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.ScriptTag
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.ScriptTag
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.ScriptTag
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.RedeemerPtr
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Tx.TxId
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Tx.TxId
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Tx.TxId
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxId
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Tx.TxId
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Tx.TxId
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Tx.TxId
-instance Data.String.IsString PlutusLedgerApi.V1.Data.Tx.TxId
-instance PlutusTx.Ord.Ord PlutusLedgerApi.V1.Data.Tx.TxId
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Tx.TxId
-instance Control.DeepSeq.NFData PlutusLedgerApi.V1.Data.Tx.TxId
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Tx.TxId
-instance GHC.Classes.Ord PlutusLedgerApi.V1.Data.Tx.TxId
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Tx.TxId
-
-module PlutusLedgerApi.V2.Data.Tx
-
--- | A transaction ID, i.e. the hash of a transaction. Hashed with
---   BLAKE2b-256. 32 byte.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>. -- editorconfig-checker-disable-file
-newtype TxId
-TxId :: BuiltinByteString -> TxId
-[getTxId] :: TxId -> BuiltinByteString
-
--- | A tag indicating the type of script that we are pointing to.
---   
---   See also <a>ScriptPurpose</a>
-data ScriptTag
-Spend :: ScriptTag
-Mint :: ScriptTag
-Cert :: ScriptTag
-Reward :: ScriptTag
-
--- | A redeemer pointer is a pair of a script type tag (<a>ScriptTag</a>)
---   <tt>t</tt> and an index <tt>i</tt>, picking out the i-th script of
---   type <tt>t</tt> in the transaction.
-data RedeemerPtr
-RedeemerPtr :: ScriptTag -> Integer -> RedeemerPtr
-
--- | Redeemers is a <a>Map</a> of redeemer pointer (<a>RedeemerPtr</a>) and
---   its <a>Redeemer</a>.
-type Redeemers = Map RedeemerPtr Redeemer
-
--- | A transaction output, consisting of a target address, a value,
---   optionally a datum/datum hash, and optionally a reference script.
-data TxOut
-pattern TxOut :: Address -> Value -> OutputDatum -> Maybe ScriptHash -> TxOut
-txOutAddress :: TxOut -> Address
-txOutValue :: TxOut -> Value
-txOutDatum :: TxOut -> OutputDatum
-txOutReferenceScript :: TxOut -> Maybe ScriptHash
-
--- | A reference to a transaction output. This is a pair of a transaction
---   ID (<a>TxId</a>), and an index indicating which of the outputs of that
---   transaction we are referring to.
-data TxOutRef
-pattern TxOutRef :: TxId -> Integer -> TxOutRef
-txOutRefId :: TxOutRef -> TxId
-txOutRefIdx :: TxOutRef -> Integer
-
--- | The datum attached to an output: either nothing; a datum hash; or the
---   datum itself (an "inline datum").
-data OutputDatum
-pattern NoOutputDatum :: OutputDatum
-pattern OutputDatumHash :: DatumHash -> OutputDatum
-pattern OutputDatum :: Datum -> OutputDatum
-
--- | Whether the output is a pay-to-pubkey output.
-isPubKeyOut :: TxOut -> Bool
-
--- | Whether the output is a pay-to-script output.
-isPayToScriptOut :: TxOut -> Bool
-
--- | The address of a transaction output.
-outAddress :: Lens' TxOut Address
-
--- | The value of a transaction output. | TODO: Compute address again
-outValue :: Lens' TxOut Value
-
--- | The public key attached to a <a>TxOut</a>, if there is one.
-txOutPubKey :: TxOut -> Maybe PubKeyHash
-
--- | The datum attached to a <a>TxOut</a>.
-outDatum :: Lens' TxOut OutputDatum
-
--- | The reference script attached to a <a>TxOut</a>.
-outReferenceScript :: Lens' TxOut (Maybe ScriptHash)
-
--- | Create a transaction output locked by a public key.
-pubKeyHashTxOut :: Value -> PubKeyHash -> TxOut
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.TxOut
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.TxOut
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Tx.TxOut
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Tx.TxOut
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Tx.TxOut
-instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Tx.TxOut
-instance GHC.Classes.Eq PlutusLedgerApi.V2.Data.Tx.TxOut
-instance GHC.Show.Show PlutusLedgerApi.V2.Data.Tx.TxOut
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Tx.TxOut
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V2.Data.Tx.TxOut
-instance Control.DeepSeq.NFData PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance GHC.Classes.Eq PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance GHC.Show.Show PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V2.Data.Tx.OutputDatum
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Tx.OutputDatum
-
-module PlutusLedgerApi.V1.Data.Contexts
-
--- | A pending transaction. This is the view as seen by validator scripts,
---   so some details are stripped out.
-data TxInfo
-pattern TxInfo :: List TxInInfo -> List TxOut -> Value -> Value -> List DCert -> List (StakingCredential, Integer) -> POSIXTimeRange -> List PubKeyHash -> List (DatumHash, Datum) -> TxId -> TxInfo
-txInfoInputs :: TxInfo -> List TxInInfo
-txInfoOutputs :: TxInfo -> List TxOut
-txInfoFee :: TxInfo -> Value
-txInfoMint :: TxInfo -> Value
-txInfoDCert :: TxInfo -> List DCert
-txInfoWdrl :: TxInfo -> List (StakingCredential, Integer)
-txInfoValidRange :: TxInfo -> POSIXTimeRange
-txInfoSignatories :: TxInfo -> List PubKeyHash
-txInfoData :: TxInfo -> List (DatumHash, Datum)
-txInfoId :: TxInfo -> TxId
-
--- | The context that the currently-executing script can access.
-data ScriptContext
-pattern ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
-scriptContextTxInfo :: ScriptContext -> TxInfo
-scriptContextPurpose :: ScriptContext -> ScriptPurpose
-
--- | Purpose of the script that is currently running
-data ScriptPurpose
-pattern Minting :: CurrencySymbol -> ScriptPurpose
-pattern Spending :: TxOutRef -> ScriptPurpose
-pattern Rewarding :: StakingCredential -> ScriptPurpose
-pattern Certifying :: DCert -> ScriptPurpose
-
--- | A transaction ID, i.e. the hash of a transaction. Hashed with
---   BLAKE2b-256. 32 byte.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>. -- editorconfig-checker-disable-file
-newtype TxId
-TxId :: BuiltinByteString -> TxId
-[getTxId] :: TxId -> BuiltinByteString
-
--- | A transaction output, consisting of a target address (<a>Address</a>),
---   a value (<a>Value</a>), and optionally a datum hash
---   (<a>DatumHash</a>).
-data TxOut
-pattern TxOut :: Address -> Value -> Maybe DatumHash -> TxOut
-txOutAddress :: TxOut -> Address
-txOutValue :: TxOut -> Value
-txOutDatumHash :: TxOut -> Maybe DatumHash
-
--- | A reference to a transaction output. This is a pair of a transaction
---   ID (<a>TxId</a>), and an index indicating which of the outputs of that
---   transaction we are referring to.
-data TxOutRef
-pattern TxOutRef :: TxId -> Integer -> TxOutRef
-txOutRefId :: TxOutRef -> TxId
-txOutRefIdx :: TxOutRef -> Integer
-
--- | An input of a pending transaction.
-data TxInInfo
-pattern TxInInfo :: TxOutRef -> TxOut -> TxInInfo
-txInInfoOutRef :: TxInInfo -> TxOutRef
-txInInfoResolved :: TxInInfo -> TxOut
-
--- | Find the input currently being validated.
-findOwnInput :: ScriptContext -> Maybe TxInInfo
-
--- | Find the data corresponding to a data hash, if there is one
-findDatum :: DatumHash -> TxInfo -> Maybe Datum
-
--- | Find the hash of a datum, if it is part of the pending transaction's
---   hashes
-findDatumHash :: Datum -> TxInfo -> Maybe DatumHash
-
--- | Given a UTXO reference and a transaction (<a>TxInfo</a>), resolve it
---   to one of the transaction's inputs (<a>TxInInfo</a>).
-findTxInByTxOutRef :: TxOutRef -> TxInfo -> Maybe TxInInfo
-
--- | Finds all the outputs that pay to the same script address that we are
---   currently spending from, if any.
-findContinuingOutputs :: ScriptContext -> List Integer
-
--- | Get all the outputs that pay to the same script address we are
---   currently spending from, if any.
-getContinuingOutputs :: ScriptContext -> List TxOut
-
--- | Get the values paid to a public key address by a pending transaction.
-pubKeyOutputsAt :: PubKeyHash -> TxInfo -> List Value
-
--- | Get the total value paid to a public key address by a pending
---   transaction.
-valuePaidTo :: TxInfo -> PubKeyHash -> Value
-
--- | Check if the pending transaction spends a specific transaction output
---   (identified by the hash of a transaction and an index into that
---   transactions' outputs)
-spendsOutput :: TxInfo -> TxId -> Integer -> Bool
-
--- | Check if a transaction was signed by the given public key.
-txSignedBy :: TxInfo -> PubKeyHash -> Bool
-
--- | Get the total value of inputs spent by this transaction.
-valueSpent :: TxInfo -> Value
-
--- | Get the total value of outputs produced by this transaction.
-valueProduced :: TxInfo -> Value
-
--- | The <a>CurrencySymbol</a> of the current validator script.
-ownCurrencySymbol :: ScriptContext -> CurrencySymbol
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.ScriptContext
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.TxInfo
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.ScriptPurpose
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance GHC.Classes.Eq PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance GHC.Show.Show PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-instance GHC.Generics.Generic PlutusLedgerApi.V1.Data.Contexts.TxInInfo
-
-module PlutusLedgerApi.V2.Data.Contexts
-
--- | A pending transaction. This is the view as seen by validator scripts,
---   so some details are stripped out.
-data TxInfo
-pattern TxInfo :: List TxInInfo -> List TxInInfo -> List TxOut -> Value -> Value -> List DCert -> Map StakingCredential Integer -> POSIXTimeRange -> List PubKeyHash -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> TxInfo
-txInfoInputs :: TxInfo -> List TxInInfo
-txInfoReferenceInputs :: TxInfo -> List TxInInfo
-txInfoOutputs :: TxInfo -> List TxOut
-txInfoFee :: TxInfo -> Value
-txInfoMint :: TxInfo -> Value
-txInfoDCert :: TxInfo -> List DCert
-txInfoWdrl :: TxInfo -> Map StakingCredential Integer
-txInfoValidRange :: TxInfo -> POSIXTimeRange
-txInfoSignatories :: TxInfo -> List PubKeyHash
-txInfoRedeemers :: TxInfo -> Map ScriptPurpose Redeemer
-txInfoData :: TxInfo -> Map DatumHash Datum
-txInfoId :: TxInfo -> TxId
-
--- | The context that the currently-executing script can access.
-data ScriptContext
-pattern ScriptContext :: TxInfo -> ScriptPurpose -> ScriptContext
-scriptContextTxInfo :: ScriptContext -> TxInfo
-scriptContextPurpose :: ScriptContext -> ScriptPurpose
-
--- | Purpose of the script that is currently running
-data ScriptPurpose
-pattern Minting :: CurrencySymbol -> ScriptPurpose
-pattern Spending :: TxOutRef -> ScriptPurpose
-pattern Rewarding :: StakingCredential -> ScriptPurpose
-pattern Certifying :: DCert -> ScriptPurpose
-
--- | A transaction ID, i.e. the hash of a transaction. Hashed with
---   BLAKE2b-256. 32 byte.
---   
---   This is a simple type without any validation, <b>use with caution</b>.
---   You may want to add checks for its invariants. See the <a>Shelley
---   ledger specification</a>. -- editorconfig-checker-disable-file
-newtype TxId
-TxId :: BuiltinByteString -> TxId
-[getTxId] :: TxId -> BuiltinByteString
-
--- | A transaction output, consisting of a target address, a value,
---   optionally a datum/datum hash, and optionally a reference script.
-data TxOut
-pattern TxOut :: Address -> Value -> OutputDatum -> Maybe ScriptHash -> TxOut
-txOutAddress :: TxOut -> Address
-txOutValue :: TxOut -> Value
-txOutDatum :: TxOut -> OutputDatum
-txOutReferenceScript :: TxOut -> Maybe ScriptHash
-
--- | A reference to a transaction output. This is a pair of a transaction
---   ID (<a>TxId</a>), and an index indicating which of the outputs of that
---   transaction we are referring to.
-data TxOutRef
-pattern TxOutRef :: TxId -> Integer -> TxOutRef
-txOutRefId :: TxOutRef -> TxId
-txOutRefIdx :: TxOutRef -> Integer
-
--- | An input of a pending transaction.
-data TxInInfo
-pattern TxInInfo :: TxOutRef -> TxOut -> TxInInfo
-txInInfoOutRef :: TxInInfo -> TxOutRef
-txInInfoResolved :: TxInInfo -> TxOut
-
--- | Find the input currently being validated.
-findOwnInput :: ScriptContext -> Maybe TxInInfo
-
--- | Find the data corresponding to a data hash, if there is one
-findDatum :: DatumHash -> TxInfo -> Maybe Datum
-
--- | Find the hash of a datum, if it is part of the pending transaction's
---   hashes
-findDatumHash :: Datum -> TxInfo -> Maybe DatumHash
-
--- | Given a UTXO reference and a transaction (<a>TxInfo</a>), resolve it
---   to one of the transaction's inputs (<a>TxInInfo</a>). Note: this only
---   searches the true transaction inputs and not the referenced
---   transaction inputs.
-findTxInByTxOutRef :: TxOutRef -> TxInfo -> Maybe TxInInfo
-
--- | Find the indices of all the outputs that pay to the same script
---   address we are currently spending from, if any.
-findContinuingOutputs :: ScriptContext -> List Integer
-
--- | Get all the outputs that pay to the same script address we are
---   currently spending from, if any.
-getContinuingOutputs :: ScriptContext -> List TxOut
-
--- | Get the values paid to a public key address by a pending transaction.
-pubKeyOutputsAt :: PubKeyHash -> TxInfo -> List Value
-
--- | Get the total value paid to a public key address by a pending
---   transaction.
-valuePaidTo :: TxInfo -> PubKeyHash -> Value
-
--- | Check if the pending transaction spends a specific transaction output
---   (identified by the hash of a transaction and an index into that
---   transactions' outputs)
-spendsOutput :: TxInfo -> TxId -> Integer -> Bool
-
--- | Check if a transaction was signed by the given public key.
-txSignedBy :: TxInfo -> PubKeyHash -> Bool
-
--- | Get the total value of inputs spent by this transaction.
-valueSpent :: TxInfo -> Value
-
--- | Get the total value of outputs produced by this transaction.
-valueProduced :: TxInfo -> Value
-
--- | The <a>CurrencySymbol</a> of the current validator script.
-ownCurrencySymbol :: ScriptContext -> CurrencySymbol
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance GHC.Show.Show PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Contexts.ScriptContext
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance GHC.Show.Show PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Contexts.TxInfo
-instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance PlutusTx.Eq.Eq PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance Prettyprinter.Internal.Pretty PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance PlutusTx.IsData.Class.ToData PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance PlutusTx.IsData.Class.UnsafeFromData PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance PlutusTx.IsData.Class.FromData PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance GHC.Classes.Eq PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance GHC.Show.Show PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-instance GHC.Generics.Generic PlutusLedgerApi.V2.Data.Contexts.TxInInfo
-
-
 -- | The interface to Plutus V1 for the ledger.
 module PlutusLedgerApi.Data.V1
 
@@ -8062,27 +8090,27 @@ txInInfoResolved :: TxInInfo -> TxOut
 --   in order to handle non-inclusive endpoints. For this reason, it may
 --   not be safe to use <a>Interval</a>s with non-inclusive endpoints on
 --   types whose <a>Enum</a> instances have partial methods.
-data Interval a_aGv4
-pattern Interval :: forall a_aGv4. (ToData a_aGv4, UnsafeFromData a_aGv4) => LowerBound a_aGv4 -> UpperBound a_aGv4 -> Interval a_aGv4
+data Interval a_aGfW
+pattern Interval :: forall a_aGfW. (ToData a_aGfW, UnsafeFromData a_aGfW) => LowerBound a_aGfW -> UpperBound a_aGfW -> Interval a_aGfW
 ivFrom :: (ToData a, UnsafeFromData a) => Interval a -> LowerBound a
 ivTo :: (ToData a, UnsafeFromData a) => Interval a -> UpperBound a
 
 -- | A set extended with a positive and negative infinity.
-data Extended a_aG2O
-pattern NegInf :: forall a_aG2O. Extended a_aG2O
-pattern PosInf :: forall a_aG2O. Extended a_aG2O
-pattern Finite :: forall a_aG2O. (ToData a_aG2O, UnsafeFromData a_aG2O) => a_aG2O -> Extended a_aG2O
+data Extended a_aFNV
+pattern NegInf :: forall a_aFNV. Extended a_aFNV
+pattern PosInf :: forall a_aFNV. Extended a_aFNV
+pattern Finite :: forall a_aFNV. (ToData a_aFNV, UnsafeFromData a_aFNV) => a_aFNV -> Extended a_aFNV
 
 -- | Whether a bound is inclusive or not.
 type Closure = Bool
 
 -- | The upper bound of an interval.
-data UpperBound a_aGdB
-pattern UpperBound :: forall a_aGdB. (ToData a_aGdB, UnsafeFromData a_aGdB) => Extended a_aGdB -> Closure -> UpperBound a_aGdB
+data UpperBound a_aFYP
+pattern UpperBound :: forall a_aFYP. (ToData a_aFYP, UnsafeFromData a_aFYP) => Extended a_aFYP -> Closure -> UpperBound a_aFYP
 
 -- | The lower bound of an interval.
-data LowerBound a_aGmb
-pattern LowerBound :: forall a_aGmb. (ToData a_aGmb, UnsafeFromData a_aGmb) => Extended a_aGmb -> Closure -> LowerBound a_aGmb
+data LowerBound a_aG7f
+pattern LowerBound :: forall a_aG7f. (ToData a_aG7f, UnsafeFromData a_aG7f) => Extended a_aG7f -> Closure -> LowerBound a_aG7f
 
 -- | An <a>Interval</a> that covers every slot. In math. notation [-∞,+∞]
 always :: (ToData a, UnsafeFromData a) => Interval a
@@ -8791,27 +8819,27 @@ pattern OutputDatumHash :: DatumHash -> OutputDatum
 --   in order to handle non-inclusive endpoints. For this reason, it may
 --   not be safe to use <a>Interval</a>s with non-inclusive endpoints on
 --   types whose <a>Enum</a> instances have partial methods.
-data Interval a_aGv4
-pattern Interval :: forall a_aGv4. (ToData a_aGv4, UnsafeFromData a_aGv4) => LowerBound a_aGv4 -> UpperBound a_aGv4 -> Interval a_aGv4
+data Interval a_aGfW
+pattern Interval :: forall a_aGfW. (ToData a_aGfW, UnsafeFromData a_aGfW) => LowerBound a_aGfW -> UpperBound a_aGfW -> Interval a_aGfW
 ivFrom :: (ToData a, UnsafeFromData a) => Interval a -> LowerBound a
 ivTo :: (ToData a, UnsafeFromData a) => Interval a -> UpperBound a
 
 -- | A set extended with a positive and negative infinity.
-data Extended a_aG2O
-pattern NegInf :: forall a_aG2O. Extended a_aG2O
-pattern PosInf :: forall a_aG2O. Extended a_aG2O
-pattern Finite :: forall a_aG2O. (ToData a_aG2O, UnsafeFromData a_aG2O) => a_aG2O -> Extended a_aG2O
+data Extended a_aFNV
+pattern NegInf :: forall a_aFNV. Extended a_aFNV
+pattern PosInf :: forall a_aFNV. Extended a_aFNV
+pattern Finite :: forall a_aFNV. (ToData a_aFNV, UnsafeFromData a_aFNV) => a_aFNV -> Extended a_aFNV
 
 -- | Whether a bound is inclusive or not.
 type Closure = Bool
 
 -- | The upper bound of an interval.
-data UpperBound a_aGdB
-pattern UpperBound :: forall a_aGdB. (ToData a_aGdB, UnsafeFromData a_aGdB) => Extended a_aGdB -> Closure -> UpperBound a_aGdB
+data UpperBound a_aFYP
+pattern UpperBound :: forall a_aFYP. (ToData a_aFYP, UnsafeFromData a_aFYP) => Extended a_aFYP -> Closure -> UpperBound a_aFYP
 
 -- | The lower bound of an interval.
-data LowerBound a_aGmb
-pattern LowerBound :: forall a_aGmb. (ToData a_aGmb, UnsafeFromData a_aGmb) => Extended a_aGmb -> Closure -> LowerBound a_aGmb
+data LowerBound a_aG7f
+pattern LowerBound :: forall a_aG7f. (ToData a_aG7f, UnsafeFromData a_aG7f) => Extended a_aG7f -> Closure -> LowerBound a_aG7f
 
 -- | An <a>Interval</a> that covers every slot. In math. notation [-∞,+∞]
 always :: (ToData a, UnsafeFromData a) => Interval a
@@ -8840,7 +8868,12 @@ strictLowerBound :: (ToData a, UnsafeFromData a) => a -> LowerBound a
 --   includes all values that are (strictly) smaller than the input value.
 strictUpperBound :: (ToData a, UnsafeFromData a) => a -> UpperBound a
 data () => Map k a
-unsafeFromList :: (ToData k, ToData a) => [(k, a)] -> Map k a
+unsafeFromDataList :: List (a, k) -> Map k a
+unsafeFromBuiltinList :: BuiltinList (BuiltinPair BuiltinData BuiltinData) -> Map k a
+unsafeFromSOPList :: (ToData k, ToData a) => [(k, a)] -> Map k a
+safeFromSOPList :: (ToData k, ToData a) => [(k, a)] -> Map k a
+toSOPList :: (UnsafeFromData k, UnsafeFromData a) => Map k a -> [(k, a)]
+toBuiltinList :: Map k a -> BuiltinList (BuiltinPair BuiltinData BuiltinData)
 
 -- | Type representing the <i>BLAKE2b-224</i> hash of a script. 28 bytes.
 --   
@@ -9084,12 +9117,12 @@ txInInfoResolved :: TxInInfo -> TxOut
 
 -- | TxInfo for PlutusV3
 data TxInfo
-pattern TxInfo :: List TxInInfo -> List TxInInfo -> List TxOut -> Lovelace -> Value -> List TxCert -> Map Credential Lovelace -> POSIXTimeRange -> List PubKeyHash -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> Map Voter (Map GovernanceActionId Vote) -> List ProposalProcedure -> Maybe Lovelace -> Maybe Lovelace -> TxInfo
+pattern TxInfo :: List TxInInfo -> List TxInInfo -> List TxOut -> Lovelace -> MintValue -> List TxCert -> Map Credential Lovelace -> POSIXTimeRange -> List PubKeyHash -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> Map Voter (Map GovernanceActionId Vote) -> List ProposalProcedure -> Maybe Lovelace -> Maybe Lovelace -> TxInfo
 txInfoInputs :: TxInfo -> List TxInInfo
 txInfoReferenceInputs :: TxInfo -> List TxInInfo
 txInfoOutputs :: TxInfo -> List TxOut
 txInfoFee :: TxInfo -> Lovelace
-txInfoMint :: TxInfo -> Value
+txInfoMint :: TxInfo -> MintValue
 txInfoTxCerts :: TxInfo -> List TxCert
 txInfoWdrl :: TxInfo -> Map Credential Lovelace
 txInfoValidRange :: TxInfo -> POSIXTimeRange
@@ -10014,6 +10047,20 @@ newtype Lovelace
 Lovelace :: Integer -> Lovelace
 [getLovelace] :: Lovelace -> Integer
 
+-- | A <a>MintValue</a> represents assets that are minted and burned in a
+--   transaction.
+data MintValue
+emptyMintValue :: MintValue
+mintValueToMap :: MintValue -> Map CurrencySymbol (Map TokenName Integer)
+
+-- | Get the <a>Value</a> minted by the <a>MintValue</a>.
+mintValueMinted :: MintValue -> Value
+
+-- | Get the <a>Value</a> burned by the <a>MintValue</a>. All the negative
+--   quantities in the <a>MintValue</a> become positive in the resulting
+--   <a>Value</a>.
+mintValueBurned :: MintValue -> Value
+
 -- | POSIX time is measured as the number of <i>milliseconds</i> since
 --   1970-01-01T00:00:00Z. This is not the same as Haskell's
 --   <a>POSIXTime</a>
@@ -10054,12 +10101,12 @@ TxId :: BuiltinByteString -> TxId
 
 -- | TxInfo for PlutusV3
 data TxInfo
-pattern TxInfo :: List TxInInfo -> List TxInInfo -> List TxOut -> Lovelace -> Value -> List TxCert -> Map Credential Lovelace -> POSIXTimeRange -> List PubKeyHash -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> Map Voter (Map GovernanceActionId Vote) -> List ProposalProcedure -> Maybe Lovelace -> Maybe Lovelace -> TxInfo
+pattern TxInfo :: List TxInInfo -> List TxInInfo -> List TxOut -> Lovelace -> MintValue -> List TxCert -> Map Credential Lovelace -> POSIXTimeRange -> List PubKeyHash -> Map ScriptPurpose Redeemer -> Map DatumHash Datum -> TxId -> Map Voter (Map GovernanceActionId Vote) -> List ProposalProcedure -> Maybe Lovelace -> Maybe Lovelace -> TxInfo
 txInfoInputs :: TxInfo -> List TxInInfo
 txInfoReferenceInputs :: TxInfo -> List TxInInfo
 txInfoOutputs :: TxInfo -> List TxOut
 txInfoFee :: TxInfo -> Lovelace
-txInfoMint :: TxInfo -> Value
+txInfoMint :: TxInfo -> MintValue
 txInfoTxCerts :: TxInfo -> List TxCert
 txInfoWdrl :: TxInfo -> Map Credential Lovelace
 txInfoValidRange :: TxInfo -> POSIXTimeRange
@@ -10117,27 +10164,27 @@ pattern OutputDatumHash :: DatumHash -> OutputDatum
 --   in order to handle non-inclusive endpoints. For this reason, it may
 --   not be safe to use <a>Interval</a>s with non-inclusive endpoints on
 --   types whose <a>Enum</a> instances have partial methods.
-data Interval a_aGv4
-pattern Interval :: forall a_aGv4. (ToData a_aGv4, UnsafeFromData a_aGv4) => LowerBound a_aGv4 -> UpperBound a_aGv4 -> Interval a_aGv4
+data Interval a_aGfW
+pattern Interval :: forall a_aGfW. (ToData a_aGfW, UnsafeFromData a_aGfW) => LowerBound a_aGfW -> UpperBound a_aGfW -> Interval a_aGfW
 ivFrom :: (ToData a, UnsafeFromData a) => Interval a -> LowerBound a
 ivTo :: (ToData a, UnsafeFromData a) => Interval a -> UpperBound a
 
 -- | A set extended with a positive and negative infinity.
-data Extended a_aG2O
-pattern NegInf :: forall a_aG2O. Extended a_aG2O
-pattern PosInf :: forall a_aG2O. Extended a_aG2O
-pattern Finite :: forall a_aG2O. (ToData a_aG2O, UnsafeFromData a_aG2O) => a_aG2O -> Extended a_aG2O
+data Extended a_aFNV
+pattern NegInf :: forall a_aFNV. Extended a_aFNV
+pattern PosInf :: forall a_aFNV. Extended a_aFNV
+pattern Finite :: forall a_aFNV. (ToData a_aFNV, UnsafeFromData a_aFNV) => a_aFNV -> Extended a_aFNV
 
 -- | Whether a bound is inclusive or not.
 type Closure = Bool
 
 -- | The upper bound of an interval.
-data UpperBound a_aGdB
-pattern UpperBound :: forall a_aGdB. (ToData a_aGdB, UnsafeFromData a_aGdB) => Extended a_aGdB -> Closure -> UpperBound a_aGdB
+data UpperBound a_aFYP
+pattern UpperBound :: forall a_aFYP. (ToData a_aFYP, UnsafeFromData a_aFYP) => Extended a_aFYP -> Closure -> UpperBound a_aFYP
 
 -- | The lower bound of an interval.
-data LowerBound a_aGmb
-pattern LowerBound :: forall a_aGmb. (ToData a_aGmb, UnsafeFromData a_aGmb) => Extended a_aGmb -> Closure -> LowerBound a_aGmb
+data LowerBound a_aG7f
+pattern LowerBound :: forall a_aG7f. (ToData a_aG7f, UnsafeFromData a_aG7f) => Extended a_aG7f -> Closure -> LowerBound a_aG7f
 
 -- | An <a>Interval</a> that covers every slot. In math. notation [-∞,+∞]
 always :: (ToData a, UnsafeFromData a) => Interval a
@@ -10170,7 +10217,7 @@ ratio :: Integer -> Integer -> Maybe Rational
 fromGHC :: Rational -> Rational
 toGHC :: Rational -> Rational
 data () => Map k a
-unsafeFromList :: (ToData k, ToData a) => [(k, a)] -> Map k a
+unsafeFromSOPList :: (ToData k, ToData a) => [(k, a)] -> Map k a
 
 -- | Type representing the <i>BLAKE2b-224</i> hash of a script. 28 bytes.
 --   

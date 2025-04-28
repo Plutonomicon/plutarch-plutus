@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621681739250"><span id="local-6989586621681739251"></span></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusCore.StdLib.Data.MatchOption</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621681799249"><span id="local-6989586621681799250"></span></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusCore.StdLib.Data.MatchOption</span><span>
 </span><span id="line-2"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="PlutusCore.StdLib.Data.MatchOption.html#MatchOption"><span class="hs-identifier">MatchOption</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
 </span><span id="line-3"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-4"></span><span>
@@ -7,7 +7,7 @@
 </span><span id="line-7"></span><span class="hs-keyword">data</span><span> </span><span id="MatchOption"><span class="annot"><a href="PlutusCore.StdLib.Data.MatchOption.html#MatchOption"><span class="hs-identifier hs-var">MatchOption</span></a></span></span><span>
 </span><span id="line-8"></span><span>    </span><span class="hs-glyph">=</span><span> </span><span id="UseChoose"><span class="annot"><a href="PlutusCore.StdLib.Data.MatchOption.html#UseChoose"><span class="hs-identifier hs-var">UseChoose</span></a></span></span><span>
 </span><span id="line-9"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="UseCase"><span class="annot"><a href="PlutusCore.StdLib.Data.MatchOption.html#UseCase"><span class="hs-identifier hs-var">UseCase</span></a></span></span><span>
-</span><span id="line-10"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681739255"><span id="local-6989586621681739257"><span id="local-6989586621681739261"><span class="annot"><span class="annottext">Int -&gt; MatchOption -&gt; ShowS
+</span><span id="line-10"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681799254"><span id="local-6989586621681799256"><span id="local-6989586621681799260"><span class="annot"><span class="annottext">Int -&gt; MatchOption -&gt; ShowS
 [MatchOption] -&gt; ShowS
 MatchOption -&gt; String
 (Int -&gt; MatchOption -&gt; ShowS)
@@ -22,7 +22,7 @@ $cshow :: MatchOption -&gt; String
 show :: MatchOption -&gt; String
 $cshowList :: [MatchOption] -&gt; ShowS
 showList :: [MatchOption] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681739265"><span id="local-6989586621681739267"><span class="annot"><span class="annottext">MatchOption -&gt; MatchOption -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681799264"><span id="local-6989586621681799266"><span class="annot"><span class="annottext">MatchOption -&gt; MatchOption -&gt; Bool
 (MatchOption -&gt; MatchOption -&gt; Bool)
 -&gt; (MatchOption -&gt; MatchOption -&gt; Bool) -&gt; Eq MatchOption
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -30,14 +30,14 @@ $c== :: MatchOption -&gt; MatchOption -&gt; Bool
 == :: MatchOption -&gt; MatchOption -&gt; Bool
 $c/= :: MatchOption -&gt; MatchOption -&gt; Bool
 /= :: MatchOption -&gt; MatchOption -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681739272"><span id="local-6989586621681739274"><span class="annot"><span class="annottext">MatchOption
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681799271"><span id="local-6989586621681799273"><span class="annot"><span class="annottext">MatchOption
 MatchOption -&gt; MatchOption -&gt; Bounded MatchOption
 forall a. a -&gt; a -&gt; Bounded a
 $cminBound :: MatchOption
 minBound :: MatchOption
 $cmaxBound :: MatchOption
 maxBound :: MatchOption
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Enum.html#Bounded"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681739278"><span id="local-6989586621681739286"><span id="local-6989586621681739292"><span id="local-6989586621681739302"><span id="local-6989586621681739304"><span id="local-6989586621681739308"><span id="local-6989586621681739312"><span id="local-6989586621681739316"><span class="annot"><span class="annottext">Int -&gt; MatchOption
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Enum.html#Bounded"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681799277"><span id="local-6989586621681799285"><span id="local-6989586621681799291"><span id="local-6989586621681799301"><span id="local-6989586621681799303"><span id="local-6989586621681799307"><span id="local-6989586621681799311"><span id="local-6989586621681799315"><span class="annot"><span class="annottext">Int -&gt; MatchOption
 MatchOption -&gt; Int
 MatchOption -&gt; [MatchOption]
 MatchOption -&gt; MatchOption

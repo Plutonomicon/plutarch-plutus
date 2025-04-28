@@ -16,7 +16,7 @@
 </span><span id="line-16"></span><span>    </span><span id="LinearFunction"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearFunction"><span class="hs-identifier hs-var">LinearFunction</span></a></span></span><span> </span><span class="hs-special">{</span><span id="intercept_"><span class="annot"><span class="annottext">LinearFunction -&gt; Integer
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#intercept_"><span class="hs-identifier hs-var hs-var">intercept_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">,</span><span> </span><span id="slope_"><span class="annot"><span class="annottext">LinearFunction -&gt; Integer
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#slope_"><span class="hs-identifier hs-var hs-var">slope_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-17"></span><span>                   </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681737746"><span id="local-6989586621681737753"><span id="local-6989586621681737757"><span class="annot"><span class="annottext">Int -&gt; LinearFunction -&gt; ShowS
+</span><span id="line-17"></span><span>                   </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681797745"><span id="local-6989586621681797752"><span id="local-6989586621681797756"><span class="annot"><span class="annottext">Int -&gt; LinearFunction -&gt; ShowS
 [LinearFunction] -&gt; ShowS
 LinearFunction -&gt; String
 (Int -&gt; LinearFunction -&gt; ShowS)
@@ -31,7 +31,7 @@ $cshow :: LinearFunction -&gt; String
 show :: LinearFunction -&gt; String
 $cshowList :: [LinearFunction] -&gt; ShowS
 showList :: [LinearFunction] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681737761"><span id="local-6989586621681737770"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; LinearFunction -&gt; m Exp)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681797760"><span id="local-6989586621681797769"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; LinearFunction -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *).
     Quote m =&gt;
     LinearFunction -&gt; Code m LinearFunction)
@@ -53,9 +53,9 @@ Quote m =&gt;
 LinearFunction -&gt; Code m LinearFunction
 </span><a href="../../../ghc-9.6.6/html/libraries/template-haskell-2.20.0.0/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-18"></span><span>
-</span><span id="line-19"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681737781"><span id="local-6989586621681737785"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearFunction"><span class="hs-identifier hs-type">LinearFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-20"></span><span>    </span><span id="local-6989586621681737798"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser LinearFunction
-</span><a href="#local-6989586621681737798"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><span id="line-19"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681797780"><span id="local-6989586621681797784"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearFunction"><span class="hs-identifier hs-type">LinearFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-20"></span><span>    </span><span id="local-6989586621681797797"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser LinearFunction
+</span><a href="#local-6989586621681797797"><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; (Object -&gt; Parser LinearFunction)
 -&gt; Value
 -&gt; Parser LinearFunction
@@ -67,14 +67,14 @@ forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
 -&gt; Value
 -&gt; Parser LinearFunction
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681737801"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737801"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681797800"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681797800"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-21"></span><span>                </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; LinearFunction
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearFunction"><span class="hs-identifier hs-var">LinearFunction</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer -&gt; LinearFunction)
 -&gt; Parser Integer -&gt; Parser (Integer -&gt; LinearFunction)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737801"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797800"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;intercept&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; LinearFunction)
@@ -82,7 +82,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737801"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797800"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;slope&quot;</span></span><span>
@@ -92,7 +92,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#intercept%27_"><span class="hs-identifier hs-var hs-var">intercept'_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">,</span><span> </span><span id="slope1_"><span class="annot"><span class="annottext">TwoVariableLinearFunction -&gt; Integer
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#slope1_"><span class="hs-identifier hs-var hs-var">slope1_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">,</span><span> </span><span id="slope2_"><span class="annot"><span class="annottext">TwoVariableLinearFunction -&gt; Integer
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#slope2_"><span class="hs-identifier hs-var hs-var">slope2_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-25"></span><span>                               </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681737809"><span id="local-6989586621681737815"><span id="local-6989586621681737819"><span class="annot"><span class="annottext">Int -&gt; TwoVariableLinearFunction -&gt; ShowS
+</span><span id="line-25"></span><span>                               </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681797808"><span id="local-6989586621681797814"><span id="local-6989586621681797818"><span class="annot"><span class="annottext">Int -&gt; TwoVariableLinearFunction -&gt; ShowS
 [TwoVariableLinearFunction] -&gt; ShowS
 TwoVariableLinearFunction -&gt; String
 (Int -&gt; TwoVariableLinearFunction -&gt; ShowS)
@@ -107,7 +107,7 @@ $cshow :: TwoVariableLinearFunction -&gt; String
 show :: TwoVariableLinearFunction -&gt; String
 $cshowList :: [TwoVariableLinearFunction] -&gt; ShowS
 showList :: [TwoVariableLinearFunction] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681737822"><span id="local-6989586621681737832"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *).
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681797821"><span id="local-6989586621681797831"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *).
  Quote m =&gt;
  TwoVariableLinearFunction -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *).
@@ -131,8 +131,8 @@ Quote m =&gt;
 TwoVariableLinearFunction -&gt; Code m TwoVariableLinearFunction
 </span><a href="../../../ghc-9.6.6/html/libraries/template-haskell-2.20.0.0/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-26"></span><span>
-</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681737844"><span id="local-6989586621681737848"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#TwoVariableLinearFunction"><span class="hs-identifier hs-type">TwoVariableLinearFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>    </span><span id="local-6989586621681737859"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser TwoVariableLinearFunction
+</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681797843"><span id="local-6989586621681797847"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#TwoVariableLinearFunction"><span class="hs-identifier hs-type">TwoVariableLinearFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-28"></span><span>    </span><span id="local-6989586621681797858"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser TwoVariableLinearFunction
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; (Object -&gt; Parser TwoVariableLinearFunction)
 -&gt; Value
@@ -145,15 +145,15 @@ forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
 -&gt; Value
 -&gt; Parser TwoVariableLinearFunction
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681737860"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737860"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681797859"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681797859"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-29"></span><span>                </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; TwoVariableLinearFunction
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#TwoVariableLinearFunction"><span class="hs-identifier hs-var">TwoVariableLinearFunction</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer -&gt; Integer -&gt; TwoVariableLinearFunction)
 -&gt; Parser Integer
 -&gt; Parser (Integer -&gt; Integer -&gt; TwoVariableLinearFunction)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737860"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797859"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;intercept&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; Integer -&gt; TwoVariableLinearFunction)
@@ -161,7 +161,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737860"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797859"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;slope1&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; TwoVariableLinearFunction)
@@ -169,7 +169,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737860"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797859"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;slope2&quot;</span></span><span>
@@ -183,7 +183,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="coeff2_"><span class="annot"><span class="annottext">OneVariableQuadraticFunction -&gt; Integer
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#coeff2_"><span class="hs-identifier hs-var hs-var">coeff2_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-36"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-37"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681737866"><span id="local-6989586621681737872"><span id="local-6989586621681737876"><span class="annot"><span class="annottext">Int -&gt; OneVariableQuadraticFunction -&gt; ShowS
+</span><span id="line-37"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681797865"><span id="local-6989586621681797871"><span id="local-6989586621681797875"><span class="annot"><span class="annottext">Int -&gt; OneVariableQuadraticFunction -&gt; ShowS
 [OneVariableQuadraticFunction] -&gt; ShowS
 OneVariableQuadraticFunction -&gt; String
 (Int -&gt; OneVariableQuadraticFunction -&gt; ShowS)
@@ -198,7 +198,7 @@ $cshow :: OneVariableQuadraticFunction -&gt; String
 show :: OneVariableQuadraticFunction -&gt; String
 $cshowList :: [OneVariableQuadraticFunction] -&gt; ShowS
 showList :: [OneVariableQuadraticFunction] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681737879"><span id="local-6989586621681737889"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *).
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681797878"><span id="local-6989586621681797888"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *).
  Quote m =&gt;
  OneVariableQuadraticFunction -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *).
@@ -229,8 +229,8 @@ Quote m =&gt;
 OneVariableQuadraticFunction -&gt; Code m OneVariableQuadraticFunction
 </span><a href="../../../ghc-9.6.6/html/libraries/template-haskell-2.20.0.0/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681737901"><span id="local-6989586621681737905"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#OneVariableQuadraticFunction"><span class="hs-identifier hs-type">OneVariableQuadraticFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-40"></span><span>    </span><span id="local-6989586621681737916"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser OneVariableQuadraticFunction
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681797900"><span id="local-6989586621681797904"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#OneVariableQuadraticFunction"><span class="hs-identifier hs-type">OneVariableQuadraticFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>    </span><span id="local-6989586621681797915"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser OneVariableQuadraticFunction
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; (Object -&gt; Parser OneVariableQuadraticFunction)
 -&gt; Value
@@ -243,15 +243,15 @@ forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
 -&gt; Value
 -&gt; Parser OneVariableQuadraticFunction
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681737917"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737917"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681797916"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681797916"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-41"></span><span>                </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer -&gt; OneVariableQuadraticFunction
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#OneVariableQuadraticFunction"><span class="hs-identifier hs-var">OneVariableQuadraticFunction</span></a></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer -&gt; Integer -&gt; OneVariableQuadraticFunction)
 -&gt; Parser Integer
 -&gt; Parser (Integer -&gt; Integer -&gt; OneVariableQuadraticFunction)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737917"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797916"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c0&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; Integer -&gt; OneVariableQuadraticFunction)
@@ -260,7 +260,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737917"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797916"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c1&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; OneVariableQuadraticFunction)
@@ -268,7 +268,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681737917"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681797916"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c2&quot;</span></span><span>
@@ -290,7 +290,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="coeff02_"><span class="annot"><span class="annottext">TwoVariableQuadraticFunction -&gt; Integer
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#coeff02_"><span class="hs-identifier hs-var hs-var">coeff02_</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-52"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681737927"><span id="local-6989586621681737937"><span id="local-6989586621681737941"><span class="annot"><span class="annottext">Int -&gt; TwoVariableQuadraticFunction -&gt; ShowS
+</span><span id="line-53"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681797926"><span id="local-6989586621681797936"><span id="local-6989586621681797940"><span class="annot"><span class="annottext">Int -&gt; TwoVariableQuadraticFunction -&gt; ShowS
 [TwoVariableQuadraticFunction] -&gt; ShowS
 TwoVariableQuadraticFunction -&gt; String
 (Int -&gt; TwoVariableQuadraticFunction -&gt; ShowS)
@@ -305,7 +305,7 @@ $cshow :: TwoVariableQuadraticFunction -&gt; String
 show :: TwoVariableQuadraticFunction -&gt; String
 $cshowList :: [TwoVariableQuadraticFunction] -&gt; ShowS
 showList :: [TwoVariableQuadraticFunction] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681737944"><span id="local-6989586621681737962"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *).
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681797943"><span id="local-6989586621681797961"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *).
  Quote m =&gt;
  TwoVariableQuadraticFunction -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *).
@@ -336,8 +336,8 @@ Quote m =&gt;
 TwoVariableQuadraticFunction -&gt; Code m TwoVariableQuadraticFunction
 </span><a href="../../../ghc-9.6.6/html/libraries/template-haskell-2.20.0.0/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-54"></span><span>
-</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681737982"><span id="local-6989586621681737986"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#TwoVariableQuadraticFunction"><span class="hs-identifier hs-type">TwoVariableQuadraticFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-56"></span><span>    </span><span id="local-6989586621681738009"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser TwoVariableQuadraticFunction
+</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681797981"><span id="local-6989586621681797985"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#TwoVariableQuadraticFunction"><span class="hs-identifier hs-type">TwoVariableQuadraticFunction</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-56"></span><span>    </span><span id="local-6989586621681798008"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser TwoVariableQuadraticFunction
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; (Object -&gt; Parser TwoVariableQuadraticFunction)
 -&gt; Value
@@ -350,8 +350,8 @@ forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
 -&gt; Value
 -&gt; Parser TwoVariableQuadraticFunction
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681738010"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681798009"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-57"></span><span>                </span><span class="annot"><span class="annottext">Integer
 -&gt; Integer
 -&gt; Integer
@@ -379,7 +379,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
       -&gt; TwoVariableQuadraticFunction)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;minimum&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser
@@ -402,7 +402,7 @@ forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span>
 </span><span id="line-58"></span><span>                </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c00&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser
@@ -419,7 +419,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c10&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser
@@ -431,7 +431,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c01&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser
@@ -442,7 +442,7 @@ forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span>
 </span><span id="line-59"></span><span>                </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c20&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; Integer -&gt; TwoVariableQuadraticFunction)
@@ -451,7 +451,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c11&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; TwoVariableQuadraticFunction)
@@ -459,7 +459,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738010"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798009"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;c02&quot;</span></span><span>
@@ -491,7 +491,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span id="line-85"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="ConstAboveDiagonal"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstAboveDiagonal"><span class="hs-identifier hs-var">ConstAboveDiagonal</span></a></span></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span><span>
 </span><span id="line-86"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="ConstBelowDiagonal"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstBelowDiagonal"><span class="hs-identifier hs-var">ConstBelowDiagonal</span></a></span></span><span>    </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span><span>
 </span><span id="line-87"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="ConstOffDiagonal"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstOffDiagonal"><span class="hs-identifier hs-var">ConstOffDiagonal</span></a></span></span><span>      </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span><span>
-</span><span id="line-88"></span><span>      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681738030"><span id="local-6989586621681738073"><span id="local-6989586621681738076"><span class="annot"><span class="annottext">Int -&gt; Model -&gt; ShowS
+</span><span id="line-88"></span><span>      </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681798029"><span id="local-6989586621681798072"><span id="local-6989586621681798075"><span class="annot"><span class="annottext">Int -&gt; Model -&gt; ShowS
 [Model] -&gt; ShowS
 Model -&gt; String
 (Int -&gt; Model -&gt; ShowS)
@@ -504,7 +504,7 @@ $cshow :: Model -&gt; String
 show :: Model -&gt; String
 $cshowList :: [Model] -&gt; ShowS
 showList :: [Model] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681738079"><span id="local-6989586621681738145"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; Model -&gt; m Exp)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681798078"><span id="local-6989586621681798144"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; Model -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *). Quote m =&gt; Model -&gt; Code m Model)
 -&gt; Lift Model
 forall t.
@@ -529,8 +529,8 @@ liftTyped :: forall (m :: * -&gt; *). Quote m =&gt; Model -&gt; Code m Model
    nice to rationalise this a bit, but it may be too late to do that.
 -}</span><span>
 </span><span id="line-100"></span><span>
-</span><span id="line-101"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681738211"><span id="local-6989586621681738215"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-102"></span><span>    </span><span id="local-6989586621681738320"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Model
+</span><span id="line-101"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681798210"><span id="local-6989586621681798214"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-102"></span><span>    </span><span id="local-6989586621681798319"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Model
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-103"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; (Object -&gt; Parser Model) -&gt; Value -&gt; Parser Model
 forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
@@ -539,17 +539,17 @@ forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
 -&gt; (Object -&gt; Parser Model) -&gt; Value -&gt; Parser Model
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
-</span><span id="line-104"></span><span>           </span><span class="hs-glyph">\</span><span id="local-6989586621681738321"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738321"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-105"></span><span>             </span><span id="local-6989586621681738322"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681738322"><span class="hs-identifier hs-var">ty</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738321"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Text
+</span><span id="line-104"></span><span>           </span><span class="hs-glyph">\</span><span id="local-6989586621681798320"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798320"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-105"></span><span>             </span><span id="local-6989586621681798321"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621681798321"><span class="hs-identifier hs-var">ty</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/text-2.0.2/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798320"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Text
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;type&quot;</span></span><span>
-</span><span id="line-106"></span><span>             </span><span id="local-6989586621681738323"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738321"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Value
+</span><span id="line-106"></span><span>             </span><span id="local-6989586621681798322"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Value</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798320"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Value
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;arguments&quot;</span></span><span>
@@ -560,7 +560,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
                 We could do that once here and rely on laziness to save us in the
                 cases when we don't have an Object, but that looks a bit misleading. -}</span><span>
 </span><span id="line-113"></span><span>             </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681738322"><span class="hs-identifier hs-var">ty</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621681798321"><span class="hs-identifier hs-var">ty</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-114"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;constant_cost&quot;</span></span><span>               </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstantCost"><span class="hs-identifier hs-var">ConstantCost</span></a></span><span>          </span><span class="annot"><span class="annottext">(Integer -&gt; Model) -&gt; Parser Integer -&gt; Parser Model
@@ -568,7 +568,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser Integer
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-115"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;added_sizes&quot;</span></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#AddedSizes"><span class="hs-identifier hs-var">AddedSizes</span></a></span><span>            </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -576,7 +576,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-116"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;min_size&quot;</span></span><span>                    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#MinSize"><span class="hs-identifier hs-var">MinSize</span></a></span><span>               </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -584,7 +584,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-117"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;max_size&quot;</span></span><span>                    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#MaxSize"><span class="hs-identifier hs-var">MaxSize</span></a></span><span>               </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -592,7 +592,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-118"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;multiplied_sizes&quot;</span></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#MultipliedSizes"><span class="hs-identifier hs-var">MultipliedSizes</span></a></span><span>       </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -600,7 +600,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-119"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;linear_in_x&quot;</span></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearInX"><span class="hs-identifier hs-var">LinearInX</span></a></span><span>             </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -608,7 +608,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-120"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;linear_in_y&quot;</span></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearInY"><span class="hs-identifier hs-var">LinearInY</span></a></span><span>             </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -616,7 +616,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-121"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;linear_in_z&quot;</span></span><span>                 </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearInZ"><span class="hs-identifier hs-var">LinearInZ</span></a></span><span>             </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -624,7 +624,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-122"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;quadratic_in_y&quot;</span></span><span>              </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">OneVariableQuadraticFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#QuadraticInY"><span class="hs-identifier hs-var">QuadraticInY</span></a></span><span>          </span><span class="annot"><span class="annottext">(OneVariableQuadraticFunction -&gt; Model)
@@ -633,7 +633,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser OneVariableQuadraticFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-123"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;quadratic_in_z&quot;</span></span><span>              </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">OneVariableQuadraticFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#QuadraticInZ"><span class="hs-identifier hs-var">QuadraticInZ</span></a></span><span>          </span><span class="annot"><span class="annottext">(OneVariableQuadraticFunction -&gt; Model)
@@ -642,7 +642,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser OneVariableQuadraticFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-124"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;quadratic_in_x_and_y&quot;</span></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TwoVariableQuadraticFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#QuadraticInXAndY"><span class="hs-identifier hs-var">QuadraticInXAndY</span></a></span><span>      </span><span class="annot"><span class="annottext">(TwoVariableQuadraticFunction -&gt; Model)
@@ -651,7 +651,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser TwoVariableQuadraticFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-125"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;literal_in_y_or_linear_in_z&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LiteralInYOrLinearInZ"><span class="hs-identifier hs-var">LiteralInYOrLinearInZ</span></a></span><span> </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -659,7 +659,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-126"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;linear_in_max_yz&quot;</span></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearInMaxYZ"><span class="hs-identifier hs-var">LinearInMaxYZ</span></a></span><span>         </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; Parser LinearFunction -&gt; Parser Model
@@ -667,7 +667,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-127"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;linear_in_y_and_z&quot;</span></span><span>           </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TwoVariableLinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearInYAndZ"><span class="hs-identifier hs-var">LinearInYAndZ</span></a></span><span>         </span><span class="annot"><span class="annottext">(TwoVariableLinearFunction -&gt; Model)
@@ -676,7 +676,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser TwoVariableLinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-128"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;subtracted_sizes&quot;</span></span><span>            </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">LinearFunction -&gt; Integer -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#SubtractedSizes"><span class="hs-identifier hs-var">SubtractedSizes</span></a></span><span>       </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Integer -&gt; Model)
@@ -685,12 +685,12 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Parser LinearFunction
 forall a. FromJSON a =&gt; Value -&gt; Parser a
 </span><span class="hs-identifier hs-var">parseJSON</span></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; Model) -&gt; Parser Integer -&gt; Parser Model
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Integer -&gt; Model) -&gt; Parser Integer -&gt; Parser Model
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Value -&gt; Object
-</span><a href="#local-6989586621681738324"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><a href="#local-6989586621681798323"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;minimum&quot;</span></span><span>
@@ -699,51 +699,51 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall {a} {a} {b}.
 (FromJSON a, FromJSON a) =&gt;
 (a -&gt; a -&gt; b) -&gt; Value -&gt; Parser b
-</span><a href="#local-6989586621681738325"><span class="hs-identifier hs-var">modelWithConstant</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
+</span><a href="#local-6989586621681798324"><span class="hs-identifier hs-var">modelWithConstant</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstAboveDiagonal"><span class="hs-identifier hs-var">ConstAboveDiagonal</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-130"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;const_below_diagonal&quot;</span></span><span>        </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Model -&gt; Model) -&gt; Value -&gt; Parser Model
 forall {a} {a} {b}.
 (FromJSON a, FromJSON a) =&gt;
 (a -&gt; a -&gt; b) -&gt; Value -&gt; Parser b
-</span><a href="#local-6989586621681738325"><span class="hs-identifier hs-var">modelWithConstant</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
+</span><a href="#local-6989586621681798324"><span class="hs-identifier hs-var">modelWithConstant</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstBelowDiagonal"><span class="hs-identifier hs-var">ConstBelowDiagonal</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-131"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;const_off_diagonal&quot;</span></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Model -&gt; Model) -&gt; Value -&gt; Parser Model
 forall {a} {a} {b}.
 (FromJSON a, FromJSON a) =&gt;
 (a -&gt; a -&gt; b) -&gt; Value -&gt; Parser b
-</span><a href="#local-6989586621681738325"><span class="hs-identifier hs-var">modelWithConstant</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
+</span><a href="#local-6989586621681798324"><span class="hs-identifier hs-var">modelWithConstant</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstOffDiagonal"><span class="hs-identifier hs-var">ConstOffDiagonal</span></a></span><span>   </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-132"></span><span>               </span><span class="hs-comment">{- An adaptor to deal with the old &quot;linear_on_diagonal&quot; tag.  See Note [Backward
                   compatibility for costing functions].  We never want to convert back to JSON
                   here, so it's OK to forget that we originally got something tagged with
                  &quot;linear_on_diagonal&quot;. -}</span><span>
 </span><span id="line-136"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-string">&quot;linear_on_diagonal&quot;</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-137"></span><span>                 </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681738326"><span class="annot"><span class="annottext">o :: Object
-</span><a href="#local-6989586621681738326"><span class="hs-identifier hs-var hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Object
-</span><a href="#local-6989586621681738324"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738323"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><span id="line-137"></span><span>                 </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681798325"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621681798325"><span class="hs-identifier hs-var hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Object
+</span><a href="#local-6989586621681798323"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621681798322"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-138"></span><span>                 </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-139"></span><span>                   </span><span id="local-6989586621681738327"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681738327"><span class="hs-identifier hs-var">constant</span></a></span></span><span>   </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738326"><span class="hs-identifier hs-var">o</span></a></span><span>  </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><span id="line-139"></span><span>                   </span><span id="local-6989586621681798326"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681798326"><span class="hs-identifier hs-var">constant</span></a></span></span><span>   </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798325"><span class="hs-identifier hs-var">o</span></a></span><span>  </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;constant&quot;</span></span><span>
-</span><span id="line-140"></span><span>                   </span><span id="local-6989586621681738328"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681738328"><span class="hs-identifier hs-var">intercept</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738326"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><span id="line-140"></span><span>                   </span><span id="local-6989586621681798327"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681798327"><span class="hs-identifier hs-var">intercept</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798325"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;intercept&quot;</span></span><span>
-</span><span id="line-141"></span><span>                   </span><span id="local-6989586621681738329"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681738329"><span class="hs-identifier hs-var">slope</span></a></span></span><span>      </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738326"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
+</span><span id="line-141"></span><span>                   </span><span id="local-6989586621681798328"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681798328"><span class="hs-identifier hs-var">slope</span></a></span></span><span>      </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798325"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Integer
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;slope&quot;</span></span><span>
@@ -754,13 +754,13 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Model -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#ConstOffDiagonal"><span class="hs-identifier hs-var">ConstOffDiagonal</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681738327"><span class="hs-identifier hs-var">constant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
+</span><a href="#local-6989586621681798326"><span class="hs-identifier hs-var">constant</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">LinearFunction -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearInX"><span class="hs-identifier hs-var">LinearInX</span></a></span><span> </span><span class="annot"><span class="annottext">(LinearFunction -&gt; Model) -&gt; LinearFunction -&gt; Model
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; LinearFunction
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#LinearFunction"><span class="hs-identifier hs-var">LinearFunction</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681738328"><span class="hs-identifier hs-var">intercept</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681738329"><span class="hs-identifier hs-var">slope</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681798327"><span class="hs-identifier hs-var">intercept</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621681798328"><span class="hs-identifier hs-var">slope</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-143"></span><span>
 </span><span id="line-144"></span><span>               </span><span class="annot"><span class="annottext">Text
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Parser Model
@@ -773,48 +773,48 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621681738322"><span class="hs-identifier hs-var">ty</span></a></span><span>
+</span><a href="#local-6989586621681798321"><span class="hs-identifier hs-var">ty</span></a></span><span>
 </span><span id="line-145"></span><span>
-</span><span id="line-146"></span><span>               </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621681738324"><span class="annot"><span class="annottext">objOf :: Value -&gt; Object
-</span><a href="#local-6989586621681738324"><span class="hs-identifier hs-var hs-var">objOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621681738333"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738333"><span class="hs-identifier hs-var">o</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738333"><span class="hs-identifier hs-var">o</span></a></span><span>
-</span><span id="line-147"></span><span>                     </span><span class="annot"><a href="#local-6989586621681738324"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><span id="line-146"></span><span>               </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621681798323"><span class="annot"><span class="annottext">objOf :: Value -&gt; Object
+</span><a href="#local-6989586621681798323"><span class="hs-identifier hs-var hs-var">objOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Object</span></span><span> </span><span id="local-6989586621681798332"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798332"><span class="hs-identifier hs-var">o</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798332"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-147"></span><span>                     </span><span class="annot"><a href="#local-6989586621681798323"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
 </span><span class="hs-identifier">_</span></span><span>          </span><span class="hs-glyph">=</span><span>
 </span><span id="line-148"></span><span>                      </span><span class="annot"><span class="annottext">String -&gt; Object
 forall a. String -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Err.html#errorWithoutStackTrace"><span class="hs-identifier hs-var">errorWithoutStackTrace</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Failed to get Object while parsing \&quot;arguments\&quot;&quot;</span></span><span>
 </span><span id="line-149"></span><span>
-</span><span id="line-150"></span><span>                     </span><span id="local-6989586621681738325"><span class="annot"><span class="annottext">modelWithConstant :: (a -&gt; a -&gt; b) -&gt; Value -&gt; Parser b
-</span><a href="#local-6989586621681738325"><span class="hs-identifier hs-var hs-var">modelWithConstant</span></a></span></span><span> </span><span id="local-6989586621681738342"><span class="annot"><span class="annottext">a -&gt; a -&gt; b
-</span><a href="#local-6989586621681738342"><span class="hs-identifier hs-var">constr</span></a></span></span><span> </span><span id="local-6989586621681738343"><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738343"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; b
-</span><a href="#local-6989586621681738342"><span class="hs-identifier hs-var">constr</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; b) -&gt; Parser a -&gt; Parser (a -&gt; b)
+</span><span id="line-150"></span><span>                     </span><span id="local-6989586621681798324"><span class="annot"><span class="annottext">modelWithConstant :: (a -&gt; a -&gt; b) -&gt; Value -&gt; Parser b
+</span><a href="#local-6989586621681798324"><span class="hs-identifier hs-var hs-var">modelWithConstant</span></a></span></span><span> </span><span id="local-6989586621681798341"><span class="annot"><span class="annottext">a -&gt; a -&gt; b
+</span><a href="#local-6989586621681798341"><span class="hs-identifier hs-var">constr</span></a></span></span><span> </span><span id="local-6989586621681798342"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621681798342"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; b
+</span><a href="#local-6989586621681798341"><span class="hs-identifier hs-var">constr</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; b) -&gt; Parser a -&gt; Parser (a -&gt; b)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span>  </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738344"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser a
+</span><a href="#local-6989586621681798343"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser a
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;constant&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738344"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser a
+</span><a href="#local-6989586621681798343"><span class="hs-identifier hs-var">o</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser a
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;model&quot;</span></span><span>
-</span><span id="line-151"></span><span>                       </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621681738344"><span class="annot"><span class="annottext">o :: Object
-</span><a href="#local-6989586621681738344"><span class="hs-identifier hs-var hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Object
-</span><a href="#local-6989586621681738324"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
-</span><a href="#local-6989586621681738343"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-151"></span><span>                       </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621681798343"><span class="annot"><span class="annottext">o :: Object
+</span><a href="#local-6989586621681798343"><span class="hs-identifier hs-var hs-var">o</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Object
+</span><a href="#local-6989586621681798323"><span class="hs-identifier hs-var">objOf</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621681798342"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-152"></span><span>
 </span><span id="line-153"></span><span class="annot"><span class="hs-comment">{- | A CPU usage modelling function and a memory usage modelling function bundled
    together -}</span></span><span>
 </span><span id="line-155"></span><span class="hs-keyword">data</span><span> </span><span id="CpuAndMemoryModel"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#CpuAndMemoryModel"><span class="hs-identifier hs-var">CpuAndMemoryModel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CpuAndMemoryModel"><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#CpuAndMemoryModel"><span class="hs-identifier hs-var">CpuAndMemoryModel</span></a></span></span><span> </span><span class="hs-special">{</span><span id="cpuModel"><span class="annot"><span class="annottext">CpuAndMemoryModel -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#cpuModel"><span class="hs-identifier hs-var hs-var">cpuModel</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span><span class="hs-special">,</span><span> </span><span id="memoryModel"><span class="annot"><span class="annottext">CpuAndMemoryModel -&gt; Model
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#memoryModel"><span class="hs-identifier hs-var hs-var">memoryModel</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#Model"><span class="hs-identifier hs-type">Model</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-156"></span><span>              </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681738349"><span id="local-6989586621681738354"><span id="local-6989586621681738358"><span class="annot"><span class="annottext">Int -&gt; CpuAndMemoryModel -&gt; ShowS
+</span><span id="line-156"></span><span>              </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681798348"><span id="local-6989586621681798353"><span id="local-6989586621681798357"><span class="annot"><span class="annottext">Int -&gt; CpuAndMemoryModel -&gt; ShowS
 [CpuAndMemoryModel] -&gt; ShowS
 CpuAndMemoryModel -&gt; String
 (Int -&gt; CpuAndMemoryModel -&gt; ShowS)
@@ -829,7 +829,7 @@ $cshow :: CpuAndMemoryModel -&gt; String
 show :: CpuAndMemoryModel -&gt; String
 $cshowList :: [CpuAndMemoryModel] -&gt; ShowS
 showList :: [CpuAndMemoryModel] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681738361"><span id="local-6989586621681738369"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; CpuAndMemoryModel -&gt; m Exp)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681798360"><span id="local-6989586621681798368"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; CpuAndMemoryModel -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *).
     Quote m =&gt;
     CpuAndMemoryModel -&gt; Code m CpuAndMemoryModel)
@@ -851,8 +851,8 @@ Quote m =&gt;
 CpuAndMemoryModel -&gt; Code m CpuAndMemoryModel
 </span><a href="../../../ghc-9.6.6/html/libraries/template-haskell-2.20.0.0/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-157"></span><span>
-</span><span id="line-158"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681738379"><span id="local-6989586621681738383"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#CpuAndMemoryModel"><span class="hs-identifier hs-type">CpuAndMemoryModel</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-159"></span><span>    </span><span id="local-6989586621681738391"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser CpuAndMemoryModel
+</span><span id="line-158"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681798378"><span id="local-6989586621681798382"><span class="annot"><span class="hs-identifier hs-type">FromJSON</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#CpuAndMemoryModel"><span class="hs-identifier hs-type">CpuAndMemoryModel</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-159"></span><span>    </span><span id="local-6989586621681798390"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser CpuAndMemoryModel
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 -&gt; (Object -&gt; Parser CpuAndMemoryModel)
 -&gt; Value
@@ -865,14 +865,14 @@ forall a. String -&gt; (Object -&gt; Parser a) -&gt; Value -&gt; Parser a
 -&gt; Value
 -&gt; Parser CpuAndMemoryModel
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681738392"><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738392"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681798391"><span class="annot"><span class="annottext">Object
+</span><a href="#local-6989586621681798391"><span class="hs-identifier hs-var">obj</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-160"></span><span>                </span><span class="annot"><span class="annottext">Model -&gt; Model -&gt; CpuAndMemoryModel
 </span><a href="PlutusCore.Evaluation.Machine.CostingFun.SimpleJSON.html#CpuAndMemoryModel"><span class="hs-identifier hs-var">CpuAndMemoryModel</span></a></span><span> </span><span class="annot"><span class="annottext">(Model -&gt; Model -&gt; CpuAndMemoryModel)
 -&gt; Parser Model -&gt; Parser (Model -&gt; CpuAndMemoryModel)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738392"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Model
+</span><a href="#local-6989586621681798391"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Model
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;cpu&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Model -&gt; CpuAndMemoryModel)
@@ -880,7 +880,7 @@ forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 forall a b. Parser (a -&gt; b) -&gt; Parser a -&gt; Parser b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Object
-</span><a href="#local-6989586621681738392"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Model
+</span><a href="#local-6989586621681798391"><span class="hs-identifier hs-var">obj</span></a></span><span> </span><span class="annot"><span class="annottext">Object -&gt; Key -&gt; Parser Model
 forall a. FromJSON a =&gt; Object -&gt; Key -&gt; Parser a
 </span><span class="hs-operator hs-var">.:</span></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;memory&quot;</span></span><span>

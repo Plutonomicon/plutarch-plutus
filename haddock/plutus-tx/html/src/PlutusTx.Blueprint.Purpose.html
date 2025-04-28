@@ -16,7 +16,7 @@
   all must specify a purpose that indicates in which context they are used.
 -}</span></span><span>
 </span><span id="line-18"></span><span class="hs-keyword">data</span><span> </span><span id="Purpose"><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Purpose"><span class="hs-identifier hs-var">Purpose</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Spend"><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Spend"><span class="hs-identifier hs-var">Spend</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Mint"><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Mint"><span class="hs-identifier hs-var">Mint</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Withdraw"><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Withdraw"><span class="hs-identifier hs-var">Withdraw</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="Publish"><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Publish"><span class="hs-identifier hs-var">Publish</span></a></span></span><span>
-</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679953612"><span id="local-6989586621679953614"><span class="annot"><span class="annottext">Purpose -&gt; Purpose -&gt; Bool
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679983959"><span id="local-6989586621679983961"><span class="annot"><span class="annottext">Purpose -&gt; Purpose -&gt; Bool
 (Purpose -&gt; Purpose -&gt; Bool)
 -&gt; (Purpose -&gt; Purpose -&gt; Bool) -&gt; Eq Purpose
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -24,7 +24,7 @@ $c== :: Purpose -&gt; Purpose -&gt; Bool
 == :: Purpose -&gt; Purpose -&gt; Bool
 $c/= :: Purpose -&gt; Purpose -&gt; Bool
 /= :: Purpose -&gt; Purpose -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679953621"><span id="local-6989586621679953623"><span id="local-6989586621679953625"><span id="local-6989586621679953629"><span id="local-6989586621679953632"><span id="local-6989586621679953635"><span id="local-6989586621679953638"><span class="annot"><span class="annottext">Eq Purpose
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679983968"><span id="local-6989586621679983970"><span id="local-6989586621679983972"><span id="local-6989586621679983976"><span id="local-6989586621679983979"><span id="local-6989586621679983982"><span id="local-6989586621679983985"><span class="annot"><span class="annottext">Eq Purpose
 Eq Purpose =&gt;
 (Purpose -&gt; Purpose -&gt; Ordering)
 -&gt; (Purpose -&gt; Purpose -&gt; Bool)
@@ -61,7 +61,7 @@ $cmax :: Purpose -&gt; Purpose -&gt; Purpose
 max :: Purpose -&gt; Purpose -&gt; Purpose
 $cmin :: Purpose -&gt; Purpose -&gt; Purpose
 min :: Purpose -&gt; Purpose -&gt; Purpose
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679953642"><span id="local-6989586621679953644"><span id="local-6989586621679953648"><span class="annot"><span class="annottext">Int -&gt; Purpose -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679983989"><span id="local-6989586621679983991"><span id="local-6989586621679983995"><span class="annot"><span class="annottext">Int -&gt; Purpose -&gt; ShowS
 [Purpose] -&gt; ShowS
 Purpose -&gt; String
 (Int -&gt; Purpose -&gt; ShowS)
@@ -74,7 +74,7 @@ $cshow :: Purpose -&gt; String
 show :: Purpose -&gt; String
 $cshowList :: [Purpose] -&gt; ShowS
 showList :: [Purpose] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679953652"><span id="local-6989586621679953659"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; Purpose -&gt; m Exp)
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679983999"><span id="local-6989586621679984006"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; Purpose -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *). Quote m =&gt; Purpose -&gt; Code m Purpose)
 -&gt; Lift Purpose
 forall t.
@@ -88,9 +88,9 @@ $cliftTyped :: forall (m :: * -&gt; *). Quote m =&gt; Purpose -&gt; Code m Purpo
 liftTyped :: forall (m :: * -&gt; *). Quote m =&gt; Purpose -&gt; Code m Purpose
 </span><a href="../../../ghc-9.6.6/html/libraries/template-haskell-2.20.0.0/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679953669"><span id="local-6989586621679953673"><span id="local-6989586621679953676"><span id="local-6989586621679953679"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Purpose"><span class="hs-identifier hs-type">Purpose</span></a></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-22"></span><span>  </span><span id="local-6989586621679953682"><span class="annot"><span class="annottext">toJSON :: Purpose -&gt; Value
-</span><a href="#local-6989586621679953682"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value
+</span><span id="line-21"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679984016"><span id="local-6989586621679984020"><span id="local-6989586621679984023"><span id="local-6989586621679984026"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Purpose.html#Purpose"><span class="hs-identifier hs-type">Purpose</span></a></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>  </span><span id="local-6989586621679984029"><span class="annot"><span class="annottext">toJSON :: Purpose -&gt; Value
+</span><a href="#local-6989586621679984029"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Value
 </span><span class="hs-identifier hs-var">Json.String</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Value) -&gt; (Purpose -&gt; Text) -&gt; Purpose -&gt; Value
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Purpose -&gt; Text

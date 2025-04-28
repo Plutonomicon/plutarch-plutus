@@ -41,14 +41,14 @@ You may want to add checks for its invariants. See the Shelley ledger specificat
 -}</span></span><span>
 </span><span id="line-42"></span><span class="hs-keyword">newtype</span><span> </span><span id="TxId"><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxId"><span class="hs-identifier hs-var">TxId</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="TxId"><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxId"><span class="hs-identifier hs-var">TxId</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getTxId"><span class="annot"><span class="annottext">TxId -&gt; BuiltinByteString
 </span><a href="PlutusLedgerApi.V3.Tx.html#getTxId"><span class="hs-identifier hs-var hs-var">getTxId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span class="hs-special">}</span><span>
-</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681035905"><span id="local-6989586621681035909"><span class="annot"><span class="annottext">TxId -&gt; TxId -&gt; Bool
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681050955"><span id="local-6989586621681050959"><span class="annot"><span class="annottext">TxId -&gt; TxId -&gt; Bool
 (TxId -&gt; TxId -&gt; Bool) -&gt; (TxId -&gt; TxId -&gt; Bool) -&gt; Eq TxId
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: TxId -&gt; TxId -&gt; Bool
 == :: TxId -&gt; TxId -&gt; Bool
 $c/= :: TxId -&gt; TxId -&gt; Bool
 /= :: TxId -&gt; TxId -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681035916"><span id="local-6989586621681035920"><span id="local-6989586621681035923"><span id="local-6989586621681035927"><span id="local-6989586621681035930"><span id="local-6989586621681035933"><span id="local-6989586621681035936"><span class="annot"><span class="annottext">Eq TxId
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681050966"><span id="local-6989586621681050970"><span id="local-6989586621681050973"><span id="local-6989586621681050977"><span id="local-6989586621681050980"><span id="local-6989586621681050983"><span id="local-6989586621681050986"><span class="annot"><span class="annottext">Eq TxId
 Eq TxId =&gt;
 (TxId -&gt; TxId -&gt; Ordering)
 -&gt; (TxId -&gt; TxId -&gt; Bool)
@@ -85,7 +85,7 @@ $cmax :: TxId -&gt; TxId -&gt; TxId
 max :: TxId -&gt; TxId -&gt; TxId
 $cmin :: TxId -&gt; TxId -&gt; TxId
 min :: TxId -&gt; TxId -&gt; TxId
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681035940"><span id="local-6989586621681035942"><span class="annot"><span class="annottext">(forall x. TxId -&gt; Rep TxId x)
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681050990"><span id="local-6989586621681050992"><span class="annot"><span class="annottext">(forall x. TxId -&gt; Rep TxId x)
 -&gt; (forall x. Rep TxId x -&gt; TxId) -&gt; Generic TxId
 forall x. Rep TxId x -&gt; TxId
 forall x. TxId -&gt; Rep TxId x
@@ -96,23 +96,23 @@ from :: forall x. TxId -&gt; Rep TxId x
 $cto :: forall x. Rep TxId x -&gt; TxId
 to :: forall x. Rep TxId x -&gt; TxId
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681035946"><span class="annot"><span class="annottext">TxId -&gt; ()
+</span><span id="line-44"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681050996"><span class="annot"><span class="annottext">TxId -&gt; ()
 (TxId -&gt; ()) -&gt; NFData TxId
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: TxId -&gt; ()
 rnf :: TxId -&gt; ()
-</span><a href="../../../ghc-9.6.6/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681035961"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.6.6/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051011"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition TxId
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681035967"><span class="annot"><span class="annottext">TxId -&gt; TxId -&gt; Bool
+</span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681051017"><span class="annot"><span class="annottext">TxId -&gt; TxId -&gt; Bool
 (TxId -&gt; TxId -&gt; Bool) -&gt; Eq TxId
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: TxId -&gt; TxId -&gt; Bool
 == :: TxId -&gt; TxId -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681035976"><span id="local-6989586621681035981"><span id="local-6989586621681035985"><span id="local-6989586621681035989"><span id="local-6989586621681035993"><span id="local-6989586621681035997"><span id="local-6989586621681036001"><span class="annot"><span class="annottext">Eq TxId
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051026"><span id="local-6989586621681051031"><span id="local-6989586621681051035"><span id="local-6989586621681051039"><span id="local-6989586621681051043"><span id="local-6989586621681051047"><span id="local-6989586621681051051"><span class="annot"><span class="annottext">Eq TxId
 Eq TxId =&gt;
 (TxId -&gt; TxId -&gt; Ordering)
 -&gt; (TxId -&gt; TxId -&gt; Bool)
@@ -149,17 +149,17 @@ $cmax :: TxId -&gt; TxId -&gt; TxId
 max :: TxId -&gt; TxId -&gt; TxId
 $cmin :: TxId -&gt; TxId -&gt; TxId
 min :: TxId -&gt; TxId -&gt; TxId
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PlutusTx.Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036007"><span class="annot"><span class="annottext">TxId -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">PlutusTx.Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051057"><span class="annot"><span class="annottext">TxId -&gt; BuiltinData
 (TxId -&gt; BuiltinData) -&gt; ToData TxId
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: TxId -&gt; BuiltinData
 toBuiltinData :: TxId -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036014"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe TxId
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051064"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe TxId
 (BuiltinData -&gt; Maybe TxId) -&gt; FromData TxId
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe TxId
 fromBuiltinData :: BuiltinData -&gt; Maybe TxId
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036021"><span class="annot"><span class="annottext">BuiltinData -&gt; TxId
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051071"><span class="annot"><span class="annottext">BuiltinData -&gt; TxId
 (BuiltinData -&gt; TxId) -&gt; UnsafeFromData TxId
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; TxId
@@ -167,14 +167,14 @@ unsafeFromBuiltinData :: BuiltinData -&gt; TxId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-47"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | from hex encoding</span></span><span>
-</span><span id="line-48"></span><span>      </span><span id="local-6989586621681036028"><span class="annot"><span class="annottext">String -&gt; TxId
+</span><span id="line-48"></span><span>      </span><span id="local-6989586621681051078"><span class="annot"><span class="annottext">String -&gt; TxId
 (String -&gt; TxId) -&gt; IsString TxId
 forall a. (String -&gt; a) -&gt; IsString a
 $cfromString :: String -&gt; TxId
 fromString :: String -&gt; TxId
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.String.html#IsString"><span class="hs-identifier hs-var hs-var hs-var hs-var">IsString</span></a></span></span><span>
 </span><span id="line-49"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | using hex encoding</span></span><span>
-</span><span id="line-50"></span><span>      </span><span id="local-6989586621681036035"><span id="local-6989586621681036040"><span id="local-6989586621681036044"><span class="annot"><span class="annottext">Int -&gt; TxId -&gt; ShowS
+</span><span id="line-50"></span><span>      </span><span id="local-6989586621681051085"><span id="local-6989586621681051090"><span id="local-6989586621681051094"><span class="annot"><span class="annottext">Int -&gt; TxId -&gt; ShowS
 [TxId] -&gt; ShowS
 TxId -&gt; String
 (Int -&gt; TxId -&gt; ShowS)
@@ -189,7 +189,7 @@ $cshowList :: [TxId] -&gt; ShowS
 showList :: [TxId] -&gt; ShowS
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
 </span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | using hex encoding</span></span><span>
-</span><span id="line-52"></span><span>      </span><span id="local-6989586621681036050"><span id="local-6989586621681036055"><span class="annot"><span class="annottext">(forall ann. TxId -&gt; Doc ann)
+</span><span id="line-52"></span><span>      </span><span id="local-6989586621681051100"><span id="local-6989586621681051105"><span class="annot"><span class="annottext">(forall ann. TxId -&gt; Doc ann)
 -&gt; (forall ann. [TxId] -&gt; Doc ann) -&gt; Pretty TxId
 forall ann. [TxId] -&gt; Doc ann
 forall ann. TxId -&gt; Doc ann
@@ -204,9 +204,9 @@ prettyList :: forall ann. [TxId] -&gt; Doc ann
 </span><span id="line-53"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-54"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span>
 </span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681035604"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxId"><span class="hs-identifier hs-type">TxId</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681035604"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-57"></span><span>  </span><span id="local-6989586621681036068"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
-</span><a href="#local-6989586621681036068"><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681050654"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxId"><span class="hs-identifier hs-type">TxId</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681050654"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-57"></span><span>  </span><span id="local-6989586621681051118"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><a href="#local-6989586621681051118"><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">forall t (referencedTypes :: [*]).
 HasBlueprintSchema t referencedTypes =&gt;
 Schema referencedTypes
@@ -220,10 +220,10 @@ forall a b. a -&gt; (a -&gt; b) -&gt; b
 forall (referencedTypes :: [*]).
 (SchemaInfo -&gt; SchemaInfo)
 -&gt; Schema referencedTypes -&gt; Schema referencedTypes
-</span><span class="hs-identifier hs-var">withSchemaInfo</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681036070"><span class="annot"><span class="annottext">SchemaInfo
-</span><a href="#local-6989586621681036070"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-identifier hs-var">withSchemaInfo</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681051120"><span class="annot"><span class="annottext">SchemaInfo
+</span><a href="#local-6989586621681051120"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-60"></span><span>        </span><span class="annot"><span class="annottext">SchemaInfo
-</span><a href="#local-6989586621681036070"><span class="hs-identifier hs-var">info</span></a></span><span class="hs-special">{</span><span class="annot"><span class="hs-identifier hs-var">title</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;TxId&quot;</span></span><span class="hs-special">}</span><span>
+</span><a href="#local-6989586621681051120"><span class="hs-identifier hs-var">info</span></a></span><span class="hs-special">{</span><span class="annot"><span class="hs-identifier hs-var">title</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;TxId&quot;</span></span><span class="hs-special">}</span><span>
 </span><span id="line-61"></span><span>
 </span><span id="line-62"></span><span class="annot"><span class="hs-comment">{- | A reference to a transaction output. This is a
 pair of a transaction ID (`TxId`), and an index indicating which of the outputs
@@ -237,7 +237,7 @@ of that transaction we are referring to.
 </span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefIdx"><span class="hs-identifier hs-var hs-var">txOutRefIdx</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-70"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ Index into the referenced transaction's outputs</span></span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-72"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681036076"><span id="local-6989586621681036083"><span id="local-6989586621681036087"><span class="annot"><span class="annottext">Int -&gt; TxOutRef -&gt; ShowS
+</span><span id="line-72"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681051126"><span id="local-6989586621681051133"><span id="local-6989586621681051137"><span class="annot"><span class="annottext">Int -&gt; TxOutRef -&gt; ShowS
 [TxOutRef] -&gt; ShowS
 TxOutRef -&gt; String
 (Int -&gt; TxOutRef -&gt; ShowS)
@@ -250,7 +250,7 @@ $cshow :: TxOutRef -&gt; String
 show :: TxOutRef -&gt; String
 $cshowList :: [TxOutRef] -&gt; ShowS
 showList :: [TxOutRef] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036090"><span id="local-6989586621681036095"><span class="annot"><span class="annottext">TxOutRef -&gt; TxOutRef -&gt; Bool
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051140"><span id="local-6989586621681051145"><span class="annot"><span class="annottext">TxOutRef -&gt; TxOutRef -&gt; Bool
 (TxOutRef -&gt; TxOutRef -&gt; Bool)
 -&gt; (TxOutRef -&gt; TxOutRef -&gt; Bool) -&gt; Eq TxOutRef
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -258,7 +258,7 @@ $c== :: TxOutRef -&gt; TxOutRef -&gt; Bool
 == :: TxOutRef -&gt; TxOutRef -&gt; Bool
 $c/= :: TxOutRef -&gt; TxOutRef -&gt; Bool
 /= :: TxOutRef -&gt; TxOutRef -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036101"><span id="local-6989586621681036106"><span id="local-6989586621681036110"><span id="local-6989586621681036114"><span id="local-6989586621681036117"><span id="local-6989586621681036120"><span id="local-6989586621681036123"><span class="annot"><span class="annottext">Eq TxOutRef
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051151"><span id="local-6989586621681051156"><span id="local-6989586621681051160"><span id="local-6989586621681051164"><span id="local-6989586621681051167"><span id="local-6989586621681051170"><span id="local-6989586621681051173"><span class="annot"><span class="annottext">Eq TxOutRef
 Eq TxOutRef =&gt;
 (TxOutRef -&gt; TxOutRef -&gt; Ordering)
 -&gt; (TxOutRef -&gt; TxOutRef -&gt; Bool)
@@ -295,7 +295,7 @@ $cmax :: TxOutRef -&gt; TxOutRef -&gt; TxOutRef
 max :: TxOutRef -&gt; TxOutRef -&gt; TxOutRef
 $cmin :: TxOutRef -&gt; TxOutRef -&gt; TxOutRef
 min :: TxOutRef -&gt; TxOutRef -&gt; TxOutRef
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036126"><span id="local-6989586621681036128"><span class="annot"><span class="annottext">(forall x. TxOutRef -&gt; Rep TxOutRef x)
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051176"><span id="local-6989586621681051178"><span class="annot"><span class="annottext">(forall x. TxOutRef -&gt; Rep TxOutRef x)
 -&gt; (forall x. Rep TxOutRef x -&gt; TxOutRef) -&gt; Generic TxOutRef
 forall x. Rep TxOutRef x -&gt; TxOutRef
 forall x. TxOutRef -&gt; Rep TxOutRef x
@@ -306,31 +306,31 @@ from :: forall x. TxOutRef -&gt; Rep TxOutRef x
 $cto :: forall x. Rep TxOutRef x -&gt; TxOutRef
 to :: forall x. Rep TxOutRef x -&gt; TxOutRef
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-73"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681036131"><span class="annot"><span class="annottext">TxOutRef -&gt; ()
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681051181"><span class="annot"><span class="annottext">TxOutRef -&gt; ()
 (TxOutRef -&gt; ()) -&gt; NFData TxOutRef
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: TxOutRef -&gt; ()
 rnf :: TxOutRef -&gt; ()
-</span><a href="../../../ghc-9.6.6/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036148"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.6.6/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051198"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition TxOutRef
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681036154"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxOutRef"><span class="hs-identifier hs-type">TxOutRef</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-76"></span><span>  </span><span id="local-6989586621681036165"><span class="annot"><span class="annottext">pretty :: forall ann. TxOutRef -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxOutRef"><span class="hs-identifier hs-type">TxOutRef</span></a></span><span class="hs-special">{</span><span id="local-6989586621681036166"><span class="annot"><span class="annottext">TxId
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681051204"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxOutRef"><span class="hs-identifier hs-type">TxOutRef</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>  </span><span id="local-6989586621681051215"><span class="annot"><span class="annottext">pretty :: forall ann. TxOutRef -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxOutRef"><span class="hs-identifier hs-type">TxOutRef</span></a></span><span class="hs-special">{</span><span id="local-6989586621681051216"><span class="annot"><span class="annottext">TxId
 txOutRefId :: TxOutRef -&gt; TxId
 txOutRefId :: TxId
-</span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefId"><span class="hs-identifier hs-var hs-var">txOutRefId</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681036167"><span class="annot"><span class="annottext">Integer
+</span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefId"><span class="hs-identifier hs-var hs-var">txOutRefId</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681051217"><span class="annot"><span class="annottext">Integer
 txOutRefIdx :: TxOutRef -&gt; Integer
 txOutRefIdx :: Integer
 </span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefIdx"><span class="hs-identifier hs-var hs-var">txOutRefIdx</span></a></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TxId -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. TxId -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">TxId
-</span><a href="#local-6989586621681036166"><span class="hs-identifier hs-var">txOutRefId</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621681051216"><span class="hs-identifier hs-var">txOutRefId</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;!&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -339,34 +339,34 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 forall ann. Integer -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621681036167"><span class="hs-identifier hs-var">txOutRefIdx</span></a></span><span>
+</span><a href="#local-6989586621681051217"><span class="hs-identifier hs-var">txOutRefIdx</span></a></span><span>
 </span><span id="line-77"></span><span>
 </span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Eq</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V3.Tx.html#TxOutRef"><span class="hs-identifier hs-type">TxOutRef</span></a></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-79"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">==</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-80"></span><span>  </span><span id="local-6989586621681036174"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621681036174"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621681036175"><span class="annot"><span class="annottext">== :: TxOutRef -&gt; TxOutRef -&gt; Bool
-</span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span id="local-6989586621681036176"><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621681036176"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621681051224"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621681051224"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621681051225"><span class="annot"><span class="annottext">== :: TxOutRef -&gt; TxOutRef -&gt; Bool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span id="local-6989586621681051226"><span class="annot"><span class="annottext">TxOutRef
+</span><a href="#local-6989586621681051226"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-81"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxOutRef -&gt; TxId
 </span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefId"><span class="hs-identifier hs-var">txOutRefId</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621681036174"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">TxId -&gt; TxId -&gt; Bool
+</span><a href="#local-6989586621681051224"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">TxId -&gt; TxId -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">PlutusTx.==</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; TxId
 </span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefId"><span class="hs-identifier hs-var">txOutRefId</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621681036176"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681051226"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-82"></span><span>      </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">PlutusTx.&amp;&amp;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TxOutRef -&gt; Integer
 </span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefIdx"><span class="hs-identifier hs-var">txOutRefIdx</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621681036174"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621681051224"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">PlutusTx.==</span></span><span> </span><span class="annot"><span class="annottext">TxOutRef -&gt; Integer
 </span><a href="PlutusLedgerApi.V3.Tx.html#txOutRefIdx"><span class="hs-identifier hs-var">txOutRefIdx</span></a></span><span> </span><span class="annot"><span class="annottext">TxOutRef
-</span><a href="#local-6989586621681036176"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681051226"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-83"></span><span>
 </span><span id="line-84"></span><span class="hs-comment">----------------------------------------------------------------------------------------------------</span><span>
 </span><span id="line-85"></span><span class="hs-comment">-- TH Splices --------------------------------------------------------------------------------------</span><span>
 </span><span id="line-86"></span><span>
-</span><span id="line-87"></span><span class="hs-special">$</span><span id="local-6989586621681036179"><span id="local-6989586621681036181"><span class="hs-special">(</span><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">TxId</span><span class="hs-special">)</span></span></span><span>
-</span><span id="line-88"></span><span class="hs-special">$</span><span id="local-6989586621681035786"><span id="local-6989586621681036309"><span id="local-6989586621681036315"><span id="local-6989586621681036317"><span id="local-6989586621681036324"><span class="hs-special">(</span><span class="hs-identifier">makeIsDataSchemaIndexed</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">TxOutRef</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">TxOutRef</span><span class="hs-special">,</span><span> </span><span class="hs-number">0</span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span></span></span></span></span></span><span>
-</span><span id="line-89"></span><span class="hs-special">$</span><span id="local-6989586621681036374"><span id="local-6989586621681036376"><span class="hs-special">(</span><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">TxOutRef</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-87"></span><span class="hs-special">$</span><span id="local-6989586621681051229"><span id="local-6989586621681051231"><span class="hs-special">(</span><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">TxId</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-88"></span><span class="hs-special">$</span><span id="local-6989586621681050836"><span id="local-6989586621681051359"><span id="local-6989586621681051365"><span id="local-6989586621681051367"><span id="local-6989586621681051374"><span class="hs-special">(</span><span class="hs-identifier">makeIsDataSchemaIndexed</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">TxOutRef</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">TxOutRef</span><span class="hs-special">,</span><span> </span><span class="hs-number">0</span><span class="hs-special">)</span><span class="hs-special">]</span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-89"></span><span class="hs-special">$</span><span id="local-6989586621681051424"><span id="local-6989586621681051426"><span class="hs-special">(</span><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">TxOutRef</span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-90"></span></pre></body></html>

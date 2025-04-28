@@ -34,7 +34,7 @@
 </span><span id="line-34"></span><span class="hs-comment">-- This relies on careful understanding between us and the ledger as to what this means.</span><span>
 </span><span id="line-35"></span><span class="hs-keyword">newtype</span><span> </span><span id="MajorProtocolVersion"><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MajorProtocolVersion"><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="getMajorProtocolVersion"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; Int
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#getMajorProtocolVersion"><span class="hs-identifier hs-var hs-var">getMajorProtocolVersion</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-36"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681018958"><span id="local-6989586621681018963"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><span id="line-36"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681033982"><span id="local-6989586621681033987"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool)
 -&gt; (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool)
 -&gt; Eq MajorProtocolVersion
@@ -43,7 +43,7 @@ $c== :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 == :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 $c/= :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 /= :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681018971"><span id="local-6989586621681018976"><span id="local-6989586621681018980"><span id="local-6989586621681018984"><span id="local-6989586621681018988"><span id="local-6989586621681018992"><span id="local-6989586621681018996"><span class="annot"><span class="annottext">Eq MajorProtocolVersion
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681033995"><span id="local-6989586621681034000"><span id="local-6989586621681034004"><span id="local-6989586621681034008"><span id="local-6989586621681034012"><span id="local-6989586621681034016"><span id="local-6989586621681034020"><span class="annot"><span class="annottext">Eq MajorProtocolVersion
 Eq MajorProtocolVersion =&gt;
 (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Ordering)
 -&gt; (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool)
@@ -87,7 +87,7 @@ $cmin :: MajorProtocolVersion
 -&gt; MajorProtocolVersion -&gt; MajorProtocolVersion
 min :: MajorProtocolVersion
 -&gt; MajorProtocolVersion -&gt; MajorProtocolVersion
-</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681019001"><span id="local-6989586621681019006"><span id="local-6989586621681019010"><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion -&gt; ShowS
+</span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681034025"><span id="local-6989586621681034030"><span id="local-6989586621681034034"><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion -&gt; ShowS
 [MajorProtocolVersion] -&gt; ShowS
 MajorProtocolVersion -&gt; String
 (Int -&gt; MajorProtocolVersion -&gt; ShowS)
@@ -102,7 +102,7 @@ $cshow :: MajorProtocolVersion -&gt; String
 show :: MajorProtocolVersion -&gt; String
 $cshowList :: [MajorProtocolVersion] -&gt; ShowS
 showList :: [MajorProtocolVersion] -&gt; ShowS
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681019016"><span id="local-6989586621681019021"><span id="local-6989586621681019025"><span id="local-6989586621681019029"><span class="annot"><span class="annottext">[MajorProtocolVersion] -&gt; Encoding
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681034040"><span id="local-6989586621681034045"><span id="local-6989586621681034049"><span id="local-6989586621681034053"><span class="annot"><span class="annottext">[MajorProtocolVersion] -&gt; Encoding
 MajorProtocolVersion -&gt; Encoding
 (MajorProtocolVersion -&gt; Encoding)
 -&gt; (forall s. Decoder s MajorProtocolVersion)
@@ -126,7 +126,7 @@ encodeList :: [MajorProtocolVersion] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [MajorProtocolVersion]
 decodeList :: forall s. Decoder s [MajorProtocolVersion]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681019035"><span id="local-6989586621681019037"><span class="annot"><span class="annottext">(forall x. MajorProtocolVersion -&gt; Rep MajorProtocolVersion x)
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681034059"><span id="local-6989586621681034061"><span class="annot"><span class="annottext">(forall x. MajorProtocolVersion -&gt; Rep MajorProtocolVersion x)
 -&gt; (forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion)
 -&gt; Generic MajorProtocolVersion
 forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion
@@ -139,14 +139,14 @@ $cto :: forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion
 to :: forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681019042"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-40"></span><span>    </span><span id="local-6989586621681019048"><span class="annot"><span class="annottext">pretty :: forall ann. MajorProtocolVersion -&gt; Doc ann
-</span><a href="#local-6989586621681019048"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span> </span><span id="local-6989586621681019050"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681019050"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681034066"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>    </span><span id="local-6989586621681034072"><span class="annot"><span class="annottext">pretty :: forall ann. MajorProtocolVersion -&gt; Doc ann
+</span><a href="#local-6989586621681034072"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span> </span><span id="local-6989586621681034074"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621681034074"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681019050"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><a href="#local-6989586621681034074"><span class="hs-identifier hs-var">v</span></a></span><span>
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span class="annot"><span class="hs-comment">-- | Shelley era was introduced in protocol version 2.0</span></span><span>
 </span><span id="line-43"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#shelleyPV"><span class="hs-identifier hs-type">shelleyPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>

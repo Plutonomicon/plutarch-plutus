@@ -222,6 +222,9 @@ instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptP
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ScriptPurpose
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ScriptPurpose
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptInfo
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.MintValue.MintValue
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.MintValue.MintValue
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.MintValue.MintValue
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxInInfo
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxInfo
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptContext

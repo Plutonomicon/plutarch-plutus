@@ -42,9 +42,9 @@ This module is just a boring port of the typed version.
 </span><span id="line-42"></span><span>
 </span><span id="line-43"></span><span class="hs-comment">-- | Convert a 'Term' with 'Name's into a 'Term' with 'DeBruijn's.</span><span>
 </span><span id="line-44"></span><span class="hs-comment">-- Will throw an error if a free variable is encountered.</span><span>
-</span><span id="line-45"></span><span id="local-6989586621681859764"><span id="local-6989586621681859766"><span id="local-6989586621681859769"><span id="local-6989586621681859770"><span id="local-6989586621681859771"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTerm"><span class="hs-identifier hs-type">deBruijnTerm</span></a></span><span>
-</span><span id="line-46"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#AsFreeVariableError"><span class="hs-identifier hs-type">AsFreeVariableError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859764"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859764"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859766"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-47"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859769"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859770"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859771"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859766"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859769"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859770"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859771"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-45"></span><span id="local-6989586621681922296"><span id="local-6989586621681922298"><span id="local-6989586621681922301"><span id="local-6989586621681922302"><span id="local-6989586621681922303"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTerm"><span class="hs-identifier hs-type">deBruijnTerm</span></a></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#AsFreeVariableError"><span class="hs-identifier hs-type">AsFreeVariableError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922296"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922296"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922298"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922301"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922302"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922303"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922298"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922301"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922302"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922303"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
 </span><span id="line-48"></span><span id="deBruijnTerm"><span class="annot"><span class="annottext">deBruijnTerm :: forall e (m :: * -&gt; *) (uni :: * -&gt; *) fun ann.
 (AsFreeVariableError e, MonadError e m) =&gt;
 Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
@@ -62,9 +62,9 @@ Unique -&gt; m Index
 </span><span id="line-49"></span><span>
 </span><span id="line-50"></span><span class="hs-comment">-- | Convert a 'Term' with 'DeBruijn's into a 'Term' with 'Name's.</span><span>
 </span><span id="line-51"></span><span class="hs-comment">-- Will throw an error if a free variable is encountered.</span><span>
-</span><span id="line-52"></span><span id="local-6989586621681859794"><span id="local-6989586621681859796"><span id="local-6989586621681859797"><span id="local-6989586621681859798"><span id="local-6989586621681859799"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTerm"><span class="hs-identifier hs-type">unDeBruijnTerm</span></a></span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Quote.html#MonadQuote"><span class="hs-identifier hs-type">MonadQuote</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859794"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#AsFreeVariableError"><span class="hs-identifier hs-type">AsFreeVariableError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859796"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859796"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859794"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-54"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859797"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859798"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859799"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859794"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859797"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859798"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859799"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-52"></span><span id="local-6989586621681922326"><span id="local-6989586621681922328"><span id="local-6989586621681922329"><span id="local-6989586621681922330"><span id="local-6989586621681922331"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTerm"><span class="hs-identifier hs-type">unDeBruijnTerm</span></a></span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Quote.html#MonadQuote"><span class="hs-identifier hs-type">MonadQuote</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922326"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#AsFreeVariableError"><span class="hs-identifier hs-type">AsFreeVariableError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922328"><span class="hs-identifier hs-type">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922328"><span class="hs-identifier hs-type">e</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922326"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922329"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922330"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922331"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922326"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922329"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922330"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922331"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
 </span><span id="line-55"></span><span id="unDeBruijnTerm"><span class="annot"><span class="annottext">unDeBruijnTerm :: forall (m :: * -&gt; *) e (uni :: * -&gt; *) fun ann.
 (MonadQuote m, AsFreeVariableError e, MonadError e m) =&gt;
 Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
@@ -81,11 +81,11 @@ Index -&gt; m Unique
 </span><a href="PlutusCore.DeBruijn.Internal.html#freeIndexThrow"><span class="hs-identifier hs-var">freeIndexThrow</span></a></span><span>
 </span><span id="line-56"></span><span>
 </span><span id="line-57"></span><span class="annot"><span class="hs-comment">-- | Takes a &quot;handler&quot; function to execute when encountering free variables.</span></span><span>
-</span><span id="line-58"></span><span id="local-6989586621681859788"><span id="local-6989586621681859789"><span id="local-6989586621681859790"><span id="local-6989586621681859791"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWith"><span class="hs-identifier hs-type">deBruijnTermWith</span></a></span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#Monad"><span class="hs-identifier hs-type">Monad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859788"><span class="hs-identifier hs-type">m</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Reader.html#ReaderT"><span class="hs-identifier hs-type">ReaderT</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859788"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-61"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859789"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859790"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859791"><span class="hs-identifier hs-type">ann</span></a></span><span>
-</span><span id="line-62"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859788"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859789"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859790"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859791"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-58"></span><span id="local-6989586621681922320"><span id="local-6989586621681922321"><span id="local-6989586621681922322"><span id="local-6989586621681922323"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWith"><span class="hs-identifier hs-type">deBruijnTermWith</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#Monad"><span class="hs-identifier hs-type">Monad</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922320"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-60"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Reader.html#ReaderT"><span class="hs-identifier hs-type">ReaderT</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922320"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922321"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922322"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922323"><span class="hs-identifier hs-type">ann</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922320"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922321"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922322"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922323"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
 </span><span id="line-63"></span><span id="deBruijnTermWith"><span class="annot"><span class="annottext">deBruijnTermWith :: forall (m :: * -&gt; *) (uni :: * -&gt; *) fun ann.
 Monad m =&gt;
 (Unique -&gt; ReaderT LevelInfo m Index)
@@ -120,11 +120,11 @@ MonadReader LevelInfo m =&gt;
 </span><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWithM"><span class="hs-identifier hs-var">deBruijnTermWithM</span></a></span><span>
 </span><span id="line-64"></span><span>
 </span><span id="line-65"></span><span class="annot"><span class="hs-comment">-- | Takes a &quot;handler&quot; function to execute when encountering free variables.</span></span><span>
-</span><span id="line-66"></span><span id="local-6989586621681859805"><span id="local-6989586621681859806"><span id="local-6989586621681859807"><span id="local-6989586621681859808"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWith"><span class="hs-identifier hs-type">unDeBruijnTermWith</span></a></span><span>
-</span><span id="line-67"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Quote.html#MonadQuote"><span class="hs-identifier hs-type">MonadQuote</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859805"><span class="hs-identifier hs-type">m</span></a></span><span>
-</span><span id="line-68"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Reader.html#ReaderT"><span class="hs-identifier hs-type">ReaderT</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859805"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-69"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859806"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859807"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859808"><span class="hs-identifier hs-type">ann</span></a></span><span>
-</span><span id="line-70"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859805"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859806"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859807"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859808"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-66"></span><span id="local-6989586621681922337"><span id="local-6989586621681922338"><span id="local-6989586621681922339"><span id="local-6989586621681922340"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWith"><span class="hs-identifier hs-type">unDeBruijnTermWith</span></a></span><span>
+</span><span id="line-67"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Quote.html#MonadQuote"><span class="hs-identifier hs-type">MonadQuote</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922337"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/transformers-0.6.1.0/src/Control.Monad.Trans.Reader.html#ReaderT"><span class="hs-identifier hs-type">ReaderT</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922337"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922338"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922339"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922340"><span class="hs-identifier hs-type">ann</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922337"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922338"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922339"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922340"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
 </span><span id="line-71"></span><span id="unDeBruijnTermWith"><span class="annot"><span class="annottext">unDeBruijnTermWith :: forall (m :: * -&gt; *) (uni :: * -&gt; *) fun ann.
 MonadQuote m =&gt;
 (Index -&gt; ReaderT LevelInfo m Unique)
@@ -158,31 +158,31 @@ forall (m :: * -&gt; *) (uni :: * -&gt; *) fun ann.
 -&gt; Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
 </span><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWithM"><span class="hs-identifier hs-var">unDeBruijnTermWithM</span></a></span><span>
 </span><span id="line-72"></span><span>
-</span><span id="line-73"></span><span id="local-6989586621681859823"><span id="local-6989586621681859824"><span id="local-6989586621681859825"><span id="local-6989586621681859826"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWithM"><span class="hs-identifier hs-type">deBruijnTermWithM</span></a></span><span>
-</span><span id="line-74"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#MonadReader"><span class="hs-identifier hs-type">MonadReader</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859823"><span class="hs-identifier hs-type">m</span></a></span><span>
-</span><span id="line-75"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859823"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-76"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859824"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859825"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859826"><span class="hs-identifier hs-type">ann</span></a></span><span>
-</span><span id="line-77"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859823"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859824"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859825"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859826"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-73"></span><span id="local-6989586621681922355"><span id="local-6989586621681922356"><span id="local-6989586621681922357"><span id="local-6989586621681922358"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWithM"><span class="hs-identifier hs-type">deBruijnTermWithM</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#MonadReader"><span class="hs-identifier hs-type">MonadReader</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922355"><span class="hs-identifier hs-type">m</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922355"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922356"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922357"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922358"><span class="hs-identifier hs-type">ann</span></a></span><span>
+</span><span id="line-77"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922355"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922356"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922357"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922358"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
 </span><span id="line-78"></span><span id="deBruijnTermWithM"><span class="annot"><span class="annottext">deBruijnTermWithM :: forall (m :: * -&gt; *) (uni :: * -&gt; *) fun ann.
 MonadReader LevelInfo m =&gt;
 (Unique -&gt; m Index)
 -&gt; Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWithM"><span class="hs-identifier hs-var hs-var">deBruijnTermWithM</span></a></span></span><span> </span><span id="local-6989586621681859953"><span class="annot"><span class="annottext">Unique -&gt; m Index
-</span><a href="#local-6989586621681859953"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
+</span><a href="UntypedPlutusCore.DeBruijn.html#deBruijnTermWithM"><span class="hs-identifier hs-var hs-var">deBruijnTermWithM</span></a></span></span><span> </span><span id="local-6989586621681922485"><span class="annot"><span class="annottext">Unique -&gt; m Index
+</span><a href="#local-6989586621681922485"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
 forall {uni :: * -&gt; *} {fun} {ann}.
 Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span>
 </span><span id="line-79"></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-80"></span><span>   </span><span id="local-6989586621681859954"><span class="annot"><span class="annottext">go :: Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-80"></span><span>   </span><span id="local-6989586621681922486"><span class="annot"><span class="annottext">go :: Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-81"></span><span>       </span><span class="hs-comment">-- variable case</span><span>
-</span><span id="line-82"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621681859987"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681859987"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681859988"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681859988"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; NamedDeBruijn -&gt; Term NamedDeBruijn uni fun ann
+</span><span id="line-82"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621681922519"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922519"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922520"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681922520"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; NamedDeBruijn -&gt; Term NamedDeBruijn uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; name -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681859987"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(NamedDeBruijn -&gt; Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922519"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(NamedDeBruijn -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m NamedDeBruijn -&gt; m (Term NamedDeBruijn uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">(Unique -&gt; m Index) -&gt; Name -&gt; m NamedDeBruijn
@@ -190,33 +190,33 @@ forall (m :: * -&gt; *).
 MonadReader LevelInfo m =&gt;
 (Unique -&gt; m Index) -&gt; Name -&gt; m NamedDeBruijn
 </span><a href="PlutusCore.DeBruijn.Internal.html#nameToDeBruijn"><span class="hs-identifier hs-var">nameToDeBruijn</span></a></span><span> </span><span class="annot"><span class="annottext">Unique -&gt; m Index
-</span><a href="#local-6989586621681859953"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681859988"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621681922485"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681922520"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-83"></span><span>       </span><span class="hs-comment">-- binder cases</span><span>
-</span><span id="line-84"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621681859992"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681859992"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681859993"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681859993"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621681859994"><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681859994"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Name
+</span><span id="line-84"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621681922524"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922524"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922525"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681922525"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621681922526"><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922526"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Name
 -&gt; m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall (m :: * -&gt; *) name unique a.
 (MonadReader LevelInfo m, HasUnique name unique) =&gt;
 name -&gt; m a -&gt; m a
 </span><a href="PlutusCore.DeBruijn.Internal.html#declareUnique"><span class="hs-identifier hs-var">declareUnique</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681859993"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">(m (Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922525"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">(m (Term NamedDeBruijn uni fun ann)
  -&gt; m (Term NamedDeBruijn uni fun ann))
 -&gt; m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-85"></span><span>           </span><span id="local-6989586621681859996"><span class="annot"><span class="annottext">NamedDeBruijn
-</span><a href="#local-6989586621681859996"><span class="hs-identifier hs-var">n'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Unique -&gt; m Index) -&gt; Name -&gt; m NamedDeBruijn
+</span><span id="line-85"></span><span>           </span><span id="local-6989586621681922528"><span class="annot"><span class="annottext">NamedDeBruijn
+</span><a href="#local-6989586621681922528"><span class="hs-identifier hs-var">n'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Unique -&gt; m Index) -&gt; Name -&gt; m NamedDeBruijn
 forall (m :: * -&gt; *).
 MonadReader LevelInfo m =&gt;
 (Unique -&gt; m Index) -&gt; Name -&gt; m NamedDeBruijn
 </span><a href="PlutusCore.DeBruijn.Internal.html#nameToDeBruijn"><span class="hs-identifier hs-var">nameToDeBruijn</span></a></span><span> </span><span class="annot"><span class="annottext">Unique -&gt; m Index
-</span><a href="#local-6989586621681859953"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681859993"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621681922485"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681922525"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-86"></span><span>           </span><span class="annot"><span class="annottext">m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall (m :: * -&gt; *) a. MonadReader LevelInfo m =&gt; m a -&gt; m a
@@ -232,19 +232,19 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; name -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-var">LamAbs</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681859992"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">NamedDeBruijn
-</span><a href="#local-6989586621681859996"><span class="hs-identifier hs-var">n'</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922524"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">NamedDeBruijn
+</span><a href="#local-6989586621681922528"><span class="hs-identifier hs-var">n'</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681859994"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922526"><span class="hs-identifier hs-var">t</span></a></span><span>
 </span><span id="line-87"></span><span>       </span><span class="hs-comment">-- boring recursive cases</span><span>
-</span><span id="line-88"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span id="local-6989586621681859999"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681859999"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860000"><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860000"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621681860001"><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860001"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><span id="line-88"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span id="local-6989586621681922531"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922531"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922532"><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922532"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621681922533"><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922533"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Term NamedDeBruijn uni fun ann
 -&gt; Term NamedDeBruijn uni fun ann
 -&gt; Term NamedDeBruijn uni fun ann
@@ -254,7 +254,7 @@ ann
 -&gt; Term name uni fun ann
 -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-var">Apply</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681859999"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922531"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann
  -&gt; Term NamedDeBruijn uni fun ann
  -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
@@ -262,56 +262,56 @@ ann
       -&gt; Term NamedDeBruijn uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860000"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">m (Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922532"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">m (Term NamedDeBruijn uni fun ann
    -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall a b. m (a -&gt; b) -&gt; m a -&gt; m b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860001"><span class="hs-identifier hs-var">t2</span></a></span><span>
-</span><span id="line-89"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-type">Delay</span></a></span><span> </span><span id="local-6989586621681860003"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860003"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860004"><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860004"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922533"><span class="hs-identifier hs-var">t2</span></a></span><span>
+</span><span id="line-89"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-type">Delay</span></a></span><span> </span><span id="local-6989586621681922535"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922535"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922536"><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922536"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-var">Delay</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860003"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922535"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860004"><span class="hs-identifier hs-var">t</span></a></span><span>
-</span><span id="line-90"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-type">Force</span></a></span><span> </span><span id="local-6989586621681860006"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860006"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860007"><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860007"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922536"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-90"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-type">Force</span></a></span><span> </span><span id="local-6989586621681922538"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922538"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922539"><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922539"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-var">Force</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860006"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922538"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860007"><span class="hs-identifier hs-var">t</span></a></span><span>
-</span><span id="line-91"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621681860009"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860009"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860010"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621681860010"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681860011"><span class="annot"><span class="annottext">[Term Name uni fun ann]
-</span><a href="#local-6989586621681860011"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922539"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-91"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621681922541"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922541"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922542"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621681922542"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681922543"><span class="annot"><span class="annottext">[Term Name uni fun ann]
+</span><a href="#local-6989586621681922543"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Word64
 -&gt; [Term NamedDeBruijn uni fun ann]
 -&gt; Term NamedDeBruijn uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Word64 -&gt; [Term name uni fun ann] -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-var">Constr</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860009"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621681860010"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">([Term NamedDeBruijn uni fun ann]
+</span><a href="#local-6989586621681922541"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621681922542"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">([Term NamedDeBruijn uni fun ann]
  -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m [Term NamedDeBruijn uni fun ann]
 -&gt; m (Term NamedDeBruijn uni fun ann)
@@ -325,12 +325,12 @@ forall (f :: * -&gt; *) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; [a] -&gt; f [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Term Name uni fun ann]
-</span><a href="#local-6989586621681860011"><span class="hs-identifier hs-var">es</span></a></span><span>
-</span><span id="line-92"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621681860014"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860014"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860015"><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860015"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621681860016"><span class="annot"><span class="annottext">Vector (Term Name uni fun ann)
-</span><a href="#local-6989586621681860016"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Term Name uni fun ann]
+</span><a href="#local-6989586621681922543"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><span id="line-92"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621681922546"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922546"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922547"><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922547"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621681922548"><span class="annot"><span class="annottext">Vector (Term Name uni fun ann)
+</span><a href="#local-6989586621681922548"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Term NamedDeBruijn uni fun ann
 -&gt; Vector (Term NamedDeBruijn uni fun ann)
 -&gt; Term NamedDeBruijn uni fun ann
@@ -340,7 +340,7 @@ ann
 -&gt; Vector (Term name uni fun ann)
 -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-var">Case</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860014"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922546"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann
  -&gt; Vector (Term NamedDeBruijn uni fun ann)
  -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Term NamedDeBruijn uni fun ann)
@@ -348,8 +348,8 @@ ann
       -&gt; Term NamedDeBruijn uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
-</span><a href="#local-6989586621681860015"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">m (Vector (Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann
+</span><a href="#local-6989586621681922547"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">m (Vector (Term NamedDeBruijn uni fun ann)
    -&gt; Term NamedDeBruijn uni fun ann)
 -&gt; m (Vector (Term NamedDeBruijn uni fun ann))
 -&gt; m (Term NamedDeBruijn uni fun ann)
@@ -365,12 +365,12 @@ forall (f :: * -&gt; *) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; Vector a -&gt; f (Vector b)
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681859954"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term Name uni fun ann)
-</span><a href="#local-6989586621681860016"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><a href="#local-6989586621681922486"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term Name uni fun ann)
+</span><a href="#local-6989586621681922548"><span class="hs-identifier hs-var">cs</span></a></span><span>
 </span><span id="line-93"></span><span>       </span><span class="hs-comment">-- boring non-recursive cases</span><span>
-</span><span id="line-94"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span id="local-6989586621681860018"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860018"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860019"><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621681860019"><span class="hs-identifier hs-var">con</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><span id="line-94"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span id="local-6989586621681922550"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922550"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922551"><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621681922551"><span class="hs-identifier hs-var">con</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -383,11 +383,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Some (ValueOf uni) -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-var">Constant</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860018"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621681860019"><span class="hs-identifier hs-var">con</span></a></span><span>
-</span><span id="line-95"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span id="local-6989586621681860021"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860021"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860022"><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621681860022"><span class="hs-identifier hs-var">bn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922550"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621681922551"><span class="hs-identifier hs-var">con</span></a></span><span>
+</span><span id="line-95"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span id="local-6989586621681922553"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922553"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922554"><span class="annot"><span class="annottext">fun
+</span><a href="#local-6989586621681922554"><span class="hs-identifier hs-var">bn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -400,10 +400,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; fun -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-var">Builtin</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860021"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621681860022"><span class="hs-identifier hs-var">bn</span></a></span><span>
-</span><span id="line-96"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span id="local-6989586621681860024"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860024"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922553"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">fun
+</span><a href="#local-6989586621681922554"><span class="hs-identifier hs-var">bn</span></a></span><span>
+</span><span id="line-96"></span><span>       </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span id="local-6989586621681922556"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922556"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
 -&gt; m (Term NamedDeBruijn uni fun ann)
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -415,34 +415,34 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ann -&gt; Term NamedDeBruijn uni fun ann
 forall name (uni :: * -&gt; *) fun ann. ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-var">Error</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860024"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621681922556"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-97"></span><span>
 </span><span id="line-98"></span><span class="annot"><span class="hs-comment">-- | Takes a &quot;handler&quot; function to execute when encountering free variables.</span></span><span>
-</span><span id="line-99"></span><span id="local-6989586621681859834"><span id="local-6989586621681859835"><span id="local-6989586621681859836"><span id="local-6989586621681859837"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWithM"><span class="hs-identifier hs-type">unDeBruijnTermWithM</span></a></span><span>
-</span><span id="line-100"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#MonadReader"><span class="hs-identifier hs-type">MonadReader</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859834"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Quote.html#MonadQuote"><span class="hs-identifier hs-type">MonadQuote</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859834"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-101"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859834"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-102"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859835"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859836"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859837"><span class="hs-identifier hs-type">ann</span></a></span><span>
-</span><span id="line-103"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681859834"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859835"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859836"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681859837"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-99"></span><span id="local-6989586621681922366"><span id="local-6989586621681922367"><span id="local-6989586621681922368"><span id="local-6989586621681922369"><span class="annot"><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWithM"><span class="hs-identifier hs-type">unDeBruijnTermWithM</span></a></span><span>
+</span><span id="line-100"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/mtl-2.3.1/src/Control.Monad.Reader.Class.html#MonadReader"><span class="hs-identifier hs-type">MonadReader</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#LevelInfo"><span class="hs-identifier hs-type">LevelInfo</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922366"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Quote.html#MonadQuote"><span class="hs-identifier hs-type">MonadQuote</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922366"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-101"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#Index"><span class="hs-identifier hs-type">Index</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922366"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Unique"><span class="hs-identifier hs-type">Unique</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.DeBruijn.Internal.html#NamedDeBruijn"><span class="hs-identifier hs-type">NamedDeBruijn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922367"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922368"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922369"><span class="hs-identifier hs-type">ann</span></a></span><span>
+</span><span id="line-103"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681922366"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922367"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922368"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681922369"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
 </span><span id="line-104"></span><span id="unDeBruijnTermWithM"><span class="annot"><span class="annottext">unDeBruijnTermWithM :: forall (m :: * -&gt; *) (uni :: * -&gt; *) fun ann.
 (MonadReader LevelInfo m, MonadQuote m) =&gt;
 (Index -&gt; m Unique)
 -&gt; Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWithM"><span class="hs-identifier hs-var hs-var">unDeBruijnTermWithM</span></a></span></span><span> </span><span id="local-6989586621681860030"><span class="annot"><span class="annottext">Index -&gt; m Unique
-</span><a href="#local-6989586621681860030"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
+</span><a href="UntypedPlutusCore.DeBruijn.html#unDeBruijnTermWithM"><span class="hs-identifier hs-var hs-var">unDeBruijnTermWithM</span></a></span></span><span> </span><span id="local-6989586621681922562"><span class="annot"><span class="annottext">Index -&gt; m Unique
+</span><a href="#local-6989586621681922562"><span class="hs-identifier hs-var">h</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
 forall {uni :: * -&gt; *} {fun} {ann}.
 Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span>
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span>
 </span><span id="line-105"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-106"></span><span>    </span><span id="local-6989586621681860031"><span class="annot"><span class="annottext">go :: Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-106"></span><span>    </span><span id="local-6989586621681922563"><span class="annot"><span class="annottext">go :: Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-107"></span><span>        </span><span class="hs-comment">-- variable case</span><span>
-</span><span id="line-108"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621681860067"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860067"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860068"><span class="annot"><span class="annottext">NamedDeBruijn
-</span><a href="#local-6989586621681860068"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Name -&gt; Term Name uni fun ann
+</span><span id="line-108"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621681922599"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922599"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922600"><span class="annot"><span class="annottext">NamedDeBruijn
+</span><a href="#local-6989586621681922600"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Name -&gt; Term Name uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; name -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860067"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Name -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922599"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Name -&gt; Term Name uni fun ann)
 -&gt; m Name -&gt; m (Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">(Index -&gt; m Unique) -&gt; NamedDeBruijn -&gt; m Name
@@ -450,13 +450,13 @@ forall (m :: * -&gt; *).
 MonadReader LevelInfo m =&gt;
 (Index -&gt; m Unique) -&gt; NamedDeBruijn -&gt; m Name
 </span><a href="PlutusCore.DeBruijn.Internal.html#deBruijnToName"><span class="hs-identifier hs-var">deBruijnToName</span></a></span><span> </span><span class="annot"><span class="annottext">Index -&gt; m Unique
-</span><a href="#local-6989586621681860030"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">NamedDeBruijn
-</span><a href="#local-6989586621681860068"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621681922562"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">NamedDeBruijn
+</span><a href="#local-6989586621681922600"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-109"></span><span>        </span><span class="hs-comment">-- binder cases</span><span>
-</span><span id="line-110"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621681860070"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860070"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860071"><span class="annot"><span class="annottext">NamedDeBruijn
-</span><a href="#local-6989586621681860071"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621681860072"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860072"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-110"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621681922602"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922602"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922603"><span class="annot"><span class="annottext">NamedDeBruijn
+</span><a href="#local-6989586621681922603"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621681922604"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922604"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-111"></span><span>            </span><span class="hs-comment">-- See Note [DeBruijn indices of Binders]</span><span>
 </span><span id="line-112"></span><span>            </span><span class="annot"><span class="annottext">m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall (m :: * -&gt; *) a.
@@ -466,13 +466,13 @@ m a -&gt; m a
 -&gt; m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-113"></span><span>              </span><span id="local-6989586621681860074"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681860074"><span class="hs-identifier hs-var">n'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Index -&gt; m Unique) -&gt; NamedDeBruijn -&gt; m Name
+</span><span id="line-113"></span><span>              </span><span id="local-6989586621681922606"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681922606"><span class="hs-identifier hs-var">n'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Index -&gt; m Unique) -&gt; NamedDeBruijn -&gt; m Name
 forall (m :: * -&gt; *).
 MonadReader LevelInfo m =&gt;
 (Index -&gt; m Unique) -&gt; NamedDeBruijn -&gt; m Name
 </span><a href="PlutusCore.DeBruijn.Internal.html#deBruijnToName"><span class="hs-identifier hs-var">deBruijnToName</span></a></span><span> </span><span class="annot"><span class="annottext">Index -&gt; m Unique
-</span><a href="#local-6989586621681860030"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">(NamedDeBruijn -&gt; m Name) -&gt; NamedDeBruijn -&gt; m Name
+</span><a href="#local-6989586621681922562"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">(NamedDeBruijn -&gt; m Name) -&gt; NamedDeBruijn -&gt; m Name
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ASetter NamedDeBruijn NamedDeBruijn Index Index
 -&gt; Index -&gt; NamedDeBruijn -&gt; NamedDeBruijn
@@ -482,7 +482,7 @@ forall a. HasIndex a =&gt; Lens' a Index
 Lens' NamedDeBruijn Index
 </span><a href="PlutusCore.DeBruijn.Internal.html#index"><span class="hs-identifier hs-var">index</span></a></span><span> </span><span class="annot"><span class="annottext">Index
 </span><a href="PlutusCore.DeBruijn.Internal.html#deBruijnInitIndex"><span class="hs-identifier hs-var">deBruijnInitIndex</span></a></span><span> </span><span class="annot"><span class="annottext">NamedDeBruijn
-</span><a href="#local-6989586621681860071"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><a href="#local-6989586621681922603"><span class="hs-identifier hs-var">n</span></a></span><span>
 </span><span id="line-114"></span><span>              </span><span class="annot"><span class="annottext">m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall (m :: * -&gt; *) a. MonadReader LevelInfo m =&gt; m a -&gt; m a
 </span><a href="PlutusCore.DeBruijn.Internal.html#withScope"><span class="hs-identifier hs-var">withScope</span></a></span><span> </span><span class="annot"><span class="annottext">(m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann))
@@ -492,18 +492,18 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; name -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-var">LamAbs</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860070"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681860074"><span class="hs-identifier hs-var">n'</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922602"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681922606"><span class="hs-identifier hs-var">n'</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860072"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922604"><span class="hs-identifier hs-var">t</span></a></span><span>
 </span><span id="line-115"></span><span>        </span><span class="hs-comment">-- boring recursive cases</span><span>
-</span><span id="line-116"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span id="local-6989586621681860077"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860077"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860078"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860078"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621681860079"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860079"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><span id="line-116"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span id="local-6989586621681922609"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922609"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922610"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922610"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621681922611"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922611"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Term Name uni fun ann
 -&gt; Term Name uni fun ann
 -&gt; Term Name uni fun ann
@@ -513,53 +513,53 @@ ann
 -&gt; Term name uni fun ann
 -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-var">Apply</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860077"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann
+</span><a href="#local-6989586621681922609"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann
  -&gt; Term Name uni fun ann -&gt; Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann -&gt; Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860078"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">m (Term Name uni fun ann -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922610"><span class="hs-identifier hs-var">t1</span></a></span><span> </span><span class="annot"><span class="annottext">m (Term Name uni fun ann -&gt; Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall a b. m (a -&gt; b) -&gt; m a -&gt; m b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860079"><span class="hs-identifier hs-var">t2</span></a></span><span>
-</span><span id="line-117"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-type">Delay</span></a></span><span> </span><span id="local-6989586621681860080"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860080"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860081"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860081"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Term Name uni fun ann -&gt; Term Name uni fun ann
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922611"><span class="hs-identifier hs-var">t2</span></a></span><span>
+</span><span id="line-117"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-type">Delay</span></a></span><span> </span><span id="local-6989586621681922612"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922612"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922613"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922613"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Term Name uni fun ann -&gt; Term Name uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-var">Delay</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860080"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922612"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860081"><span class="hs-identifier hs-var">t</span></a></span><span>
-</span><span id="line-118"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-type">Force</span></a></span><span> </span><span id="local-6989586621681860082"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860082"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860083"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860083"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Term Name uni fun ann -&gt; Term Name uni fun ann
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922613"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-118"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-type">Force</span></a></span><span> </span><span id="local-6989586621681922614"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922614"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922615"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922615"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Term Name uni fun ann -&gt; Term Name uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-var">Force</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860082"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922614"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann) -&gt; m (Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860083"><span class="hs-identifier hs-var">t</span></a></span><span>
-</span><span id="line-119"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621681860084"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860084"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860085"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621681860085"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681860086"><span class="annot"><span class="annottext">[Term NamedDeBruijn uni fun ann]
-</span><a href="#local-6989586621681860086"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Word64 -&gt; [Term Name uni fun ann] -&gt; Term Name uni fun ann
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922615"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-119"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621681922616"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922616"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922617"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621681922617"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681922618"><span class="annot"><span class="annottext">[Term NamedDeBruijn uni fun ann]
+</span><a href="#local-6989586621681922618"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann -&gt; Word64 -&gt; [Term Name uni fun ann] -&gt; Term Name uni fun ann
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Word64 -&gt; [Term name uni fun ann] -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-var">Constr</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860084"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621681860085"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">([Term Name uni fun ann] -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922616"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621681922617"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">([Term Name uni fun ann] -&gt; Term Name uni fun ann)
 -&gt; m [Term Name uni fun ann] -&gt; m (Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">(Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann))
@@ -571,12 +571,12 @@ forall (f :: * -&gt; *) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; [a] -&gt; f [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Term NamedDeBruijn uni fun ann]
-</span><a href="#local-6989586621681860086"><span class="hs-identifier hs-var">es</span></a></span><span>
-</span><span id="line-120"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621681860087"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860087"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860088"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860088"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621681860089"><span class="annot"><span class="annottext">Vector (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681860089"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Term NamedDeBruijn uni fun ann]
+</span><a href="#local-6989586621681922618"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><span id="line-120"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621681922619"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922619"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922620"><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922620"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621681922621"><span class="annot"><span class="annottext">Vector (Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922621"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ann
 -&gt; Term Name uni fun ann
 -&gt; Vector (Term Name uni fun ann)
 -&gt; Term Name uni fun ann
@@ -586,14 +586,14 @@ ann
 -&gt; Vector (Term name uni fun ann)
 -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-var">Case</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860087"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann
+</span><a href="#local-6989586621681922619"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann
  -&gt; Vector (Term Name uni fun ann) -&gt; Term Name uni fun ann)
 -&gt; m (Term Name uni fun ann)
 -&gt; m (Vector (Term Name uni fun ann) -&gt; Term Name uni fun ann)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
-</span><a href="#local-6989586621681860088"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">m (Vector (Term Name uni fun ann) -&gt; Term Name uni fun ann)
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann
+</span><a href="#local-6989586621681922620"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">m (Vector (Term Name uni fun ann) -&gt; Term Name uni fun ann)
 -&gt; m (Vector (Term Name uni fun ann)) -&gt; m (Term Name uni fun ann)
 forall a b. m (a -&gt; b) -&gt; m a -&gt; m b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
@@ -607,12 +607,12 @@ forall (f :: * -&gt; *) a b.
 Applicative f =&gt;
 (a -&gt; f b) -&gt; Vector a -&gt; f (Vector b)
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Traversable.html#traverse"><span class="hs-identifier hs-var">traverse</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn uni fun ann -&gt; m (Term Name uni fun ann)
-</span><a href="#local-6989586621681860031"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term NamedDeBruijn uni fun ann)
-</span><a href="#local-6989586621681860089"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><a href="#local-6989586621681922563"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term NamedDeBruijn uni fun ann)
+</span><a href="#local-6989586621681922621"><span class="hs-identifier hs-var">cs</span></a></span><span>
 </span><span id="line-121"></span><span>        </span><span class="hs-comment">-- boring non-recursive cases</span><span>
-</span><span id="line-122"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span id="local-6989586621681860090"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860090"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860091"><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621681860091"><span class="hs-identifier hs-var">con</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term Name uni fun ann)
+</span><span id="line-122"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span id="local-6989586621681922622"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922622"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922623"><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621681922623"><span class="hs-identifier hs-var">con</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term Name uni fun ann)
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; m (Term Name uni fun ann))
@@ -622,11 +622,11 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Some (ValueOf uni) -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-var">Constant</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860090"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621681860091"><span class="hs-identifier hs-var">con</span></a></span><span>
-</span><span id="line-123"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span id="local-6989586621681860092"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860092"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681860093"><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621681860093"><span class="hs-identifier hs-var">bn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term Name uni fun ann)
+</span><a href="#local-6989586621681922622"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621681922623"><span class="hs-identifier hs-var">con</span></a></span><span>
+</span><span id="line-123"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span id="local-6989586621681922624"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922624"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681922625"><span class="annot"><span class="annottext">fun
+</span><a href="#local-6989586621681922625"><span class="hs-identifier hs-var">bn</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term Name uni fun ann)
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; m (Term Name uni fun ann))
@@ -636,10 +636,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; fun -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-var">Builtin</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860092"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621681860093"><span class="hs-identifier hs-var">bn</span></a></span><span>
-</span><span id="line-124"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span id="local-6989586621681860094"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860094"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term Name uni fun ann)
+</span><a href="#local-6989586621681922624"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">fun
+</span><a href="#local-6989586621681922625"><span class="hs-identifier hs-var">bn</span></a></span><span>
+</span><span id="line-124"></span><span>        </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span id="local-6989586621681922626"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621681922626"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term Name uni fun ann -&gt; m (Term Name uni fun ann)
 forall a. a -&gt; m a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Term Name uni fun ann -&gt; m (Term Name uni fun ann))
@@ -648,5 +648,5 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ann -&gt; Term Name uni fun ann
 forall name (uni :: * -&gt; *) fun ann. ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-var">Error</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621681860094"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621681922626"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-125"></span></pre></body></html>

@@ -17,32 +17,32 @@
 </span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Proxy.html"><span class="hs-identifier">Data.Proxy</span></a></span><span>
 </span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Vector</span></span><span>
 </span><span id="line-19"></span><span>
-</span><span id="line-20"></span><span id="local-6989586621681856317"><span id="local-6989586621681856318"><span id="local-6989586621681856319"><span id="local-6989586621681856320"><span class="annot"><a href="UntypedPlutusCore.Core.Instance.Scoping.html#firstBound"><span class="hs-identifier hs-type">firstBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856317"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856318"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856319"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856320"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621681856317"><span class="hs-identifier hs-type">name</span></a></span><span class="hs-special">]</span></span></span></span></span><span>
+</span><span id="line-20"></span><span id="local-6989586621681918798"><span id="local-6989586621681918799"><span id="local-6989586621681918800"><span id="local-6989586621681918801"><span class="annot"><a href="UntypedPlutusCore.Core.Instance.Scoping.html#firstBound"><span class="hs-identifier hs-type">firstBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918798"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918799"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918800"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918801"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621681918798"><span class="hs-identifier hs-type">name</span></a></span><span class="hs-special">]</span></span></span></span></span><span>
 </span><span id="line-21"></span><span id="firstBound"><span class="annot"><span class="annottext">firstBound :: forall name (uni :: * -&gt; *) fun ann.
 Term name uni fun ann -&gt; [name]
 </span><a href="UntypedPlutusCore.Core.Instance.Scoping.html#firstBound"><span class="hs-identifier hs-var hs-var">firstBound</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span class="annot"><span class="annottext">ann
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856446"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856446"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621681856447"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856447"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681918927"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681918927"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621681918928"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681918928"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856446"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">name -&gt; [name] -&gt; [name]
+</span><a href="#local-6989586621681918927"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">name -&gt; [name] -&gt; [name]
 forall a. a -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann -&gt; [name]
 forall name (uni :: * -&gt; *) fun ann.
 Term name uni fun ann -&gt; [name]
 </span><a href="UntypedPlutusCore.Core.Instance.Scoping.html#firstBound"><span class="hs-identifier hs-var">firstBound</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856447"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><a href="#local-6989586621681918928"><span class="hs-identifier hs-var">body</span></a></span><span>
 </span><span id="line-22"></span><span class="annot"><a href="UntypedPlutusCore.Core.Instance.Scoping.html#firstBound"><span class="hs-identifier hs-var">firstBound</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
 </span><span class="hs-identifier">_</span></span><span>                                </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681856337"><span id="local-6989586621681856338"><span id="local-6989586621681856339"><span class="annot"><a href="#local-6989586621681856337"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#Reference"><span class="hs-identifier hs-type">Reference</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856337"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856338"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856339"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-25"></span><span>    </span><span id="local-6989586621681856455"><span class="annot"><span class="annottext">referenceVia :: (forall name. ToScopedName name =&gt; name -&gt; NameAnn)
+</span><span id="line-24"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681918818"><span id="local-6989586621681918819"><span id="local-6989586621681918820"><span class="annot"><a href="#local-6989586621681918818"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#Reference"><span class="hs-identifier hs-type">Reference</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918818"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918819"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918820"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>    </span><span id="local-6989586621681918936"><span class="annot"><span class="annottext">referenceVia :: (forall name. ToScopedName name =&gt; name -&gt; NameAnn)
 -&gt; Name -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
-</span><a href="#local-6989586621681856455"><span class="hs-identifier hs-var hs-var hs-var hs-var">referenceVia</span></a></span></span><span> </span><span id="local-6989586621681856457"><span class="annot"><span class="annottext">forall name. ToScopedName name =&gt; name -&gt; NameAnn
-</span><a href="#local-6989586621681856457"><span class="hs-identifier hs-var">reg</span></a></span></span><span> </span><span id="local-6989586621681856458"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681856458"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621681856459"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856459"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn
+</span><a href="#local-6989586621681918936"><span class="hs-identifier hs-var hs-var hs-var hs-var">referenceVia</span></a></span></span><span> </span><span id="local-6989586621681918938"><span class="annot"><span class="annottext">forall name. ToScopedName name =&gt; name -&gt; NameAnn
+</span><a href="#local-6989586621681918938"><span class="hs-identifier hs-var">reg</span></a></span></span><span> </span><span id="local-6989586621681918939"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681918939"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621681918940"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681918940"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn
 -&gt; Term name uni fun NameAnn
 -&gt; Term name uni fun NameAnn
 -&gt; Term name uni fun NameAnn
@@ -53,7 +53,7 @@ ann
 -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-var">Apply</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#NotAName"><span class="hs-identifier hs-var">NotAName</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856459"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Term name uni fun NameAnn)
+</span><a href="#local-6989586621681918940"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Term name uni fun NameAnn)
 -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; name -&gt; Term name uni fun NameAnn
@@ -61,24 +61,24 @@ forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; name -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; NameAnn
 forall name. ToScopedName name =&gt; name -&gt; NameAnn
-</span><a href="#local-6989586621681856457"><span class="hs-identifier hs-var">reg</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681856458"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681918938"><span class="hs-identifier hs-var">reg</span></a></span><span> </span><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681918939"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">name
 Name
-</span><a href="#local-6989586621681856458"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621681918939"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-26"></span><span>
-</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681856356"><span id="local-6989586621681856357"><span id="local-6989586621681856358"><span class="annot"><a href="#local-6989586621681856356"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#EstablishScoping"><span class="hs-identifier hs-type">EstablishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856356"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856357"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856358"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>    </span><span id="local-6989586621681856521"><span class="annot"><span class="annottext">establishScoping :: forall ann.
+</span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681918837"><span id="local-6989586621681918838"><span id="local-6989586621681918839"><span class="annot"><a href="#local-6989586621681918837"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#EstablishScoping"><span class="hs-identifier hs-type">EstablishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918837"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918838"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918839"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-28"></span><span>    </span><span id="local-6989586621681919002"><span class="annot"><span class="annottext">establishScoping :: forall ann.
 Term name uni fun ann -&gt; Quote (Term name uni fun NameAnn)
-</span><a href="#local-6989586621681856521"><span class="hs-identifier hs-var hs-var hs-var hs-var">establishScoping</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856523"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856523"><span class="hs-identifier hs-var">nameDup</span></a></span></span><span> </span><span id="local-6989586621681856524"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856524"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-29"></span><span>        </span><span id="local-6989586621681856525"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681856525"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Name -&gt; QuoteT Identity Name
+</span><a href="#local-6989586621681919002"><span class="hs-identifier hs-var hs-var hs-var hs-var">establishScoping</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919004"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919004"><span class="hs-identifier hs-var">nameDup</span></a></span></span><span> </span><span id="local-6989586621681919005"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919005"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-29"></span><span>        </span><span id="local-6989586621681919006"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681919006"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Name -&gt; QuoteT Identity Name
 forall (m :: * -&gt; *). MonadQuote m =&gt; Name -&gt; m Name
 </span><a href="PlutusCore.Quote.html#freshenName"><span class="hs-identifier hs-var">freshenName</span></a></span><span> </span><span class="annot"><span class="annottext">name
 Name
-</span><a href="#local-6989586621681856523"><span class="hs-identifier hs-var">nameDup</span></a></span><span>
+</span><a href="#local-6989586621681919004"><span class="hs-identifier hs-var">nameDup</span></a></span><span>
 </span><span id="line-30"></span><span>        </span><span class="annot"><span class="annottext">(NameAnn
  -&gt; name
  -&gt; Proxy NameAnn
@@ -93,24 +93,24 @@ forall name (value :: * -&gt; *) (sort :: * -&gt; *) ann.
  EstablishScoping value) =&gt;
 (NameAnn -&gt; name -&gt; sort NameAnn -&gt; value NameAnn -&gt; value NameAnn)
 -&gt; name -&gt; sort ann -&gt; value ann -&gt; Quote (value NameAnn)
-</span><a href="PlutusCore.Check.Scoping.html#establishScopingBinder"><span class="hs-identifier hs-var">establishScopingBinder</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681856528"><span class="annot"><span class="annottext">NameAnn
-</span><a href="#local-6989586621681856528"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681856529"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856529"><span class="hs-identifier hs-var">name'</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy NameAnn
+</span><a href="PlutusCore.Check.Scoping.html#establishScopingBinder"><span class="hs-identifier hs-var">establishScopingBinder</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681919009"><span class="annot"><span class="annottext">NameAnn
+</span><a href="#local-6989586621681919009"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681919010"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919010"><span class="hs-identifier hs-var">name'</span></a></span></span><span> </span><span class="annot"><span class="annottext">Proxy NameAnn
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">NameAnn
 -&gt; name -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; name -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-var">LamAbs</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><a href="#local-6989586621681856528"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856529"><span class="hs-identifier hs-var">name'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919009"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919010"><span class="hs-identifier hs-var">name'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">name
 Name
-</span><a href="#local-6989586621681856525"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy ann
+</span><a href="#local-6989586621681919006"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">Proxy ann
 forall {k} (t :: k). Proxy t
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Proxy.html#Proxy"><span class="hs-identifier hs-var">Proxy</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856524"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><a href="#local-6989586621681919005"><span class="hs-identifier hs-var">body</span></a></span><span>
 </span><span id="line-31"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-type">Delay</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856532"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856532"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919013"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919013"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-var">Delay</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
@@ -125,11 +125,11 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856532"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><a href="#local-6989586621681919013"><span class="hs-identifier hs-var">body</span></a></span><span>
 </span><span id="line-32"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856534"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856534"><span class="hs-identifier hs-var">fun</span></a></span></span><span> </span><span id="local-6989586621681856535"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856535"><span class="hs-identifier hs-var">arg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919015"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919015"><span class="hs-identifier hs-var">fun</span></a></span></span><span> </span><span id="local-6989586621681919016"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919016"><span class="hs-identifier hs-var">arg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-33"></span><span>        </span><span class="annot"><span class="annottext">NameAnn
 -&gt; Term name uni fun NameAnn
 -&gt; Term name uni fun NameAnn
@@ -153,7 +153,7 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856534"><span class="hs-identifier hs-var">fun</span></a></span><span> </span><span class="annot"><span class="annottext">QuoteT
+</span><a href="#local-6989586621681919015"><span class="hs-identifier hs-var">fun</span></a></span><span> </span><span class="annot"><span class="annottext">QuoteT
   Identity (Term name uni fun NameAnn -&gt; Term name uni fun NameAnn)
 -&gt; Quote (Term name uni fun NameAnn)
 -&gt; Quote (Term name uni fun NameAnn)
@@ -167,7 +167,7 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856535"><span class="hs-identifier hs-var">arg</span></a></span><span>
+</span><a href="#local-6989586621681919016"><span class="hs-identifier hs-var">arg</span></a></span><span>
 </span><span id="line-34"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span class="annot"><span class="annottext">ann
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
 forall a. a -&gt; QuoteT Identity a
@@ -180,8 +180,8 @@ forall name (uni :: * -&gt; *) fun ann. ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-var">Error</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#NotAName"><span class="hs-identifier hs-var">NotAName</span></a></span><span>
 </span><span id="line-35"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-type">Force</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856538"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856538"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919019"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919019"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; Term name uni fun NameAnn -&gt; Term name uni fun NameAnn
 forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Term name uni fun ann -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-var">Force</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
@@ -196,16 +196,16 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856538"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621681919019"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-36"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856539"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856539"><span class="hs-identifier hs-var">nameDup</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-37"></span><span>        </span><span id="local-6989586621681856540"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681856540"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Name -&gt; QuoteT Identity Name
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919020"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919020"><span class="hs-identifier hs-var">nameDup</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-37"></span><span>        </span><span id="local-6989586621681919021"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621681919021"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Name -&gt; QuoteT Identity Name
 forall (m :: * -&gt; *). MonadQuote m =&gt; Name -&gt; m Name
 </span><a href="PlutusCore.Quote.html#freshenName"><span class="hs-identifier hs-var">freshenName</span></a></span><span> </span><span class="annot"><span class="annottext">name
 Name
-</span><a href="#local-6989586621681856539"><span class="hs-identifier hs-var">nameDup</span></a></span><span>
+</span><a href="#local-6989586621681919020"><span class="hs-identifier hs-var">nameDup</span></a></span><span>
 </span><span id="line-38"></span><span>        </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
 forall a. a -&gt; QuoteT Identity a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -218,12 +218,12 @@ ann -&gt; name -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-var">Var</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; NameAnn
 forall name. ToScopedName name =&gt; name -&gt; NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#registerFree"><span class="hs-identifier hs-var">registerFree</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621681856540"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919021"><span class="hs-identifier hs-var">name</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">name
 Name
-</span><a href="#local-6989586621681856540"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621681919021"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-39"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856543"><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621681856543"><span class="hs-identifier hs-var">con</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919024"><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621681919024"><span class="hs-identifier hs-var">con</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
 forall a. a -&gt; QuoteT Identity a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn))
@@ -234,10 +234,10 @@ forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Some (ValueOf uni) -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-var">Constant</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#NotAName"><span class="hs-identifier hs-var">NotAName</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621681856543"><span class="hs-identifier hs-var">con</span></a></span><span>
+</span><a href="#local-6989586621681919024"><span class="hs-identifier hs-var">con</span></a></span><span>
 </span><span id="line-40"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856545"><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621681856545"><span class="hs-identifier hs-var">bi</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919026"><span class="annot"><span class="annottext">fun
+</span><a href="#local-6989586621681919026"><span class="hs-identifier hs-var">bi</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
 forall a. a -&gt; QuoteT Identity a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn))
@@ -248,11 +248,11 @@ forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; fun -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-var">Builtin</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#NotAName"><span class="hs-identifier hs-var">NotAName</span></a></span><span> </span><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621681856545"><span class="hs-identifier hs-var">bi</span></a></span><span>
+</span><a href="#local-6989586621681919026"><span class="hs-identifier hs-var">bi</span></a></span><span>
 </span><span id="line-41"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856547"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621681856547"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681856548"><span class="annot"><span class="annottext">[Term name uni fun ann]
-</span><a href="#local-6989586621681856548"><span class="hs-identifier hs-var">es</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919028"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621681919028"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621681919029"><span class="annot"><span class="annottext">[Term name uni fun ann]
+</span><a href="#local-6989586621681919029"><span class="hs-identifier hs-var">es</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn
 -&gt; Word64
 -&gt; [Term name uni fun NameAnn]
 -&gt; Term name uni fun NameAnn
@@ -269,7 +269,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall a. a -&gt; QuoteT Identity a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621681856547"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">QuoteT
+</span><a href="#local-6989586621681919028"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">QuoteT
   Identity ([Term name uni fun NameAnn] -&gt; Term name uni fun NameAnn)
 -&gt; QuoteT Identity [Term name uni fun NameAnn]
 -&gt; Quote (Term name uni fun NameAnn)
@@ -292,13 +292,13 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">[Term name uni fun ann]
-</span><a href="#local-6989586621681856548"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><a href="#local-6989586621681919029"><span class="hs-identifier hs-var">es</span></a></span><span>
 </span><span id="line-42"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856551"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856551"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621681856552"><span class="annot"><span class="annottext">Vector (Term name uni fun ann)
-</span><a href="#local-6989586621681856552"><span class="hs-identifier hs-var">es</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-43"></span><span>        </span><span id="local-6989586621681856553"><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn)
-</span><a href="#local-6989586621681856553"><span class="hs-identifier hs-var">esScoped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Term name uni fun ann -&gt; Quote (Term name uni fun NameAnn))
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919032"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919032"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621681919033"><span class="annot"><span class="annottext">Vector (Term name uni fun ann)
+</span><a href="#local-6989586621681919033"><span class="hs-identifier hs-var">es</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-43"></span><span>        </span><span id="local-6989586621681919034"><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn)
+</span><a href="#local-6989586621681919034"><span class="hs-identifier hs-var">esScoped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Term name uni fun ann -&gt; Quote (Term name uni fun NameAnn))
 -&gt; Vector (Term name uni fun ann)
 -&gt; QuoteT Identity (Vector (Term name uni fun NameAnn))
 forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
@@ -314,10 +314,10 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term name uni fun ann)
-</span><a href="#local-6989586621681856552"><span class="hs-identifier hs-var">es</span></a></span><span>
-</span><span id="line-44"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681856554"><span class="annot"><span class="annottext">esScopedPoked :: [((Term name uni fun NameAnn, [name]),
+</span><a href="#local-6989586621681919033"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><span id="line-44"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621681919035"><span class="annot"><span class="annottext">esScopedPoked :: [((Term name uni fun NameAnn, [name]),
   [(Term name uni fun NameAnn, [name])])]
-</span><a href="#local-6989586621681856554"><span class="hs-identifier hs-var hs-var">esScopedPoked</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Term name uni fun NameAnn, [name])]
+</span><a href="#local-6989586621681919035"><span class="hs-identifier hs-var hs-var">esScopedPoked</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Term name uni fun NameAnn, [name])]
 -&gt; [((Term name uni fun NameAnn, [name]),
      [(Term name uni fun NameAnn, [name])])]
 forall a. [a] -&gt; [(a, [a])]
@@ -334,13 +334,13 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; [Term name uni fun NameAnn]
 -&gt; [(Term name uni fun NameAnn, [name])]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
-</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681856557"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856557"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856557"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; [name]
+</span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621681919038"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919038"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919038"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; [name]
 forall name (uni :: * -&gt; *) fun ann.
 Term name uni fun ann -&gt; [name]
 </span><a href="UntypedPlutusCore.Core.Instance.Scoping.html#firstBound"><span class="hs-identifier hs-var">firstBound</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856557"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Term name uni fun NameAnn]
+</span><a href="#local-6989586621681919038"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Term name uni fun NameAnn]
  -&gt; [((Term name uni fun NameAnn, [name]),
       [(Term name uni fun NameAnn, [name])])])
 -&gt; [Term name uni fun NameAnn]
@@ -350,9 +350,9 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn) -&gt; [Term name uni fun NameAnn]
 forall a. Vector a -&gt; [a]
 </span><span class="hs-identifier hs-var">Vector.toList</span></span><span> </span><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn)
-</span><a href="#local-6989586621681856553"><span class="hs-identifier hs-var">esScoped</span></a></span><span>
-</span><span id="line-45"></span><span>            </span><span id="local-6989586621681856559"><span class="annot"><span class="annottext">branchBounds :: [[name]]
-</span><a href="#local-6989586621681856559"><span class="hs-identifier hs-var hs-var">branchBounds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(((Term name uni fun NameAnn, [name]),
+</span><a href="#local-6989586621681919034"><span class="hs-identifier hs-var">esScoped</span></a></span><span>
+</span><span id="line-45"></span><span>            </span><span id="local-6989586621681919040"><span class="annot"><span class="annottext">branchBounds :: [[name]]
+</span><a href="#local-6989586621681919040"><span class="hs-identifier hs-var hs-var">branchBounds</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(((Term name uni fun NameAnn, [name]),
   [(Term name uni fun NameAnn, [name])])
  -&gt; [name])
 -&gt; [((Term name uni fun NameAnn, [name]),
@@ -375,12 +375,12 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. (a, b) -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#fst"><span class="hs-identifier hs-var">fst</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[((Term name uni fun NameAnn, [name]),
   [(Term name uni fun NameAnn, [name])])]
-</span><a href="#local-6989586621681856554"><span class="hs-identifier hs-var">esScopedPoked</span></a></span><span>
-</span><span id="line-46"></span><span>            </span><span id="local-6989586621681856565"><span class="annot"><span class="annottext">referenceInBranch :: ((t NameAnn, b), [(a, b)]) -&gt; t NameAnn
-</span><a href="#local-6989586621681856565"><span class="hs-identifier hs-var hs-var">referenceInBranch</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span id="local-6989586621681856566"><span class="annot"><span class="annottext">t NameAnn
-</span><a href="#local-6989586621681856566"><span class="hs-identifier hs-var">branch</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span id="local-6989586621681856567"><span class="annot"><span class="annottext">[(a, b)]
-</span><a href="#local-6989586621681856567"><span class="hs-identifier hs-var">others</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; t NameAnn -&gt; t NameAnn
+</span><a href="#local-6989586621681919035"><span class="hs-identifier hs-var">esScopedPoked</span></a></span><span>
+</span><span id="line-46"></span><span>            </span><span id="local-6989586621681919046"><span class="annot"><span class="annottext">referenceInBranch :: ((t NameAnn, b), [(a, b)]) -&gt; t NameAnn
+</span><a href="#local-6989586621681919046"><span class="hs-identifier hs-var hs-var">referenceInBranch</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span id="local-6989586621681919047"><span class="annot"><span class="annottext">t NameAnn
+</span><a href="#local-6989586621681919047"><span class="hs-identifier hs-var">branch</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span id="local-6989586621681919048"><span class="annot"><span class="annottext">[(a, b)]
+</span><a href="#local-6989586621681919048"><span class="hs-identifier hs-var">others</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[b] -&gt; t NameAnn -&gt; t NameAnn
 forall n (t :: * -&gt; *).
 Reference n t =&gt;
 n -&gt; t NameAnn -&gt; t NameAnn
@@ -389,17 +389,17 @@ forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#map"><span class="hs-identifier hs-var">map</span></a></span><span> </span><span class="annot"><span class="annottext">(a, b) -&gt; b
 forall a b. (a, b) -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Tuple.html#snd"><span class="hs-identifier hs-var">snd</span></a></span><span> </span><span class="annot"><span class="annottext">[(a, b)]
-</span><a href="#local-6989586621681856567"><span class="hs-identifier hs-var">others</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t NameAnn
-</span><a href="#local-6989586621681856566"><span class="hs-identifier hs-var">branch</span></a></span><span>
-</span><span id="line-47"></span><span>        </span><span id="local-6989586621681856569"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856569"><span class="hs-identifier hs-var">aScoped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann -&gt; Quote (Term name uni fun NameAnn)
+</span><a href="#local-6989586621681919048"><span class="hs-identifier hs-var">others</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">t NameAnn
+</span><a href="#local-6989586621681919047"><span class="hs-identifier hs-var">branch</span></a></span><span>
+</span><span id="line-47"></span><span>        </span><span id="local-6989586621681919050"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919050"><span class="hs-identifier hs-var">aScoped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann -&gt; Quote (Term name uni fun NameAnn)
 forall ann.
 Term name uni fun ann -&gt; Quote (Term name uni fun NameAnn)
 forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856551"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><a href="#local-6989586621681919032"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-48"></span><span>        </span><span class="hs-comment">-- For each of the branches reference (as out-of-scope) the variables bound in that branch</span><span>
 </span><span id="line-49"></span><span>        </span><span class="hs-comment">-- in all the other ones, as well as outside of the whole case-expression. This is to check</span><span>
 </span><span id="line-50"></span><span>        </span><span class="hs-comment">-- that none of the transformations leak variables outside of the branch they're bound in.</span><span>
@@ -416,7 +416,7 @@ forall n (t :: * -&gt; *).
 Reference n t =&gt;
 n -&gt; t NameAnn -&gt; t NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#referenceOutOfScope"><span class="hs-identifier hs-var">referenceOutOfScope</span></a></span><span> </span><span class="annot"><span class="annottext">[[name]]
-</span><a href="#local-6989586621681856559"><span class="hs-identifier hs-var">branchBounds</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn))
+</span><a href="#local-6989586621681919040"><span class="hs-identifier hs-var">branchBounds</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn))
 -&gt; Term name uni fun NameAnn -&gt; Quote (Term name uni fun NameAnn)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
@@ -431,7 +431,7 @@ ann
 -&gt; Term name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-var">Case</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#NotAName"><span class="hs-identifier hs-var">NotAName</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856569"><span class="hs-identifier hs-var">aScoped</span></a></span><span> </span><span class="annot"><span class="annottext">(Vector (Term name uni fun NameAnn) -&gt; Term name uni fun NameAnn)
+</span><a href="#local-6989586621681919050"><span class="hs-identifier hs-var">aScoped</span></a></span><span> </span><span class="annot"><span class="annottext">(Vector (Term name uni fun NameAnn) -&gt; Term name uni fun NameAnn)
 -&gt; ([Term name uni fun NameAnn]
     -&gt; Vector (Term name uni fun NameAnn))
 -&gt; [Term name uni fun NameAnn]
@@ -455,17 +455,17 @@ forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall {b} {t :: * -&gt; *} {b} {a}.
 Reference b t =&gt;
 ((t NameAnn, b), [(a, b)]) -&gt; t NameAnn
-</span><a href="#local-6989586621681856565"><span class="hs-identifier hs-var">referenceInBranch</span></a></span><span> </span><span class="annot"><span class="annottext">[((Term name uni fun NameAnn, [name]),
+</span><a href="#local-6989586621681919046"><span class="hs-identifier hs-var">referenceInBranch</span></a></span><span> </span><span class="annot"><span class="annottext">[((Term name uni fun NameAnn, [name]),
   [(Term name uni fun NameAnn, [name])])]
-</span><a href="#local-6989586621681856554"><span class="hs-identifier hs-var">esScopedPoked</span></a></span><span>
+</span><a href="#local-6989586621681919035"><span class="hs-identifier hs-var">esScopedPoked</span></a></span><span>
 </span><span id="line-53"></span><span>
-</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681856413"><span id="local-6989586621681856414"><span id="local-6989586621681856415"><span class="annot"><a href="#local-6989586621681856413"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#EstablishScoping"><span class="hs-identifier hs-type">EstablishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856413"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856414"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856415"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-55"></span><span>    </span><span id="local-6989586621681856580"><span class="annot"><span class="annottext">establishScoping :: forall ann.
+</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681918894"><span id="local-6989586621681918895"><span id="local-6989586621681918896"><span class="annot"><a href="#local-6989586621681918894"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#EstablishScoping"><span class="hs-identifier hs-type">EstablishScoping</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918894"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918895"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918896"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621681919061"><span class="annot"><span class="annottext">establishScoping :: forall ann.
 Program name uni fun ann -&gt; Quote (Program name uni fun NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var hs-var hs-var hs-var">establishScoping</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856582"><span class="annot"><span class="annottext">Version
-</span><a href="#local-6989586621681856582"><span class="hs-identifier hs-var">ver</span></a></span></span><span> </span><span id="local-6989586621681856583"><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856583"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919063"><span class="annot"><span class="annottext">Version
+</span><a href="#local-6989586621681919063"><span class="hs-identifier hs-var">ver</span></a></span></span><span> </span><span id="local-6989586621681919064"><span class="annot"><span class="annottext">Term name uni fun ann
+</span><a href="#local-6989586621681919064"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn
 -&gt; Version
 -&gt; Term name uni fun NameAnn
 -&gt; Program name uni fun NameAnn
@@ -473,7 +473,7 @@ forall name (uni :: * -&gt; *) fun ann.
 ann -&gt; Version -&gt; Term name uni fun ann -&gt; Program name uni fun ann
 </span><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-var">Program</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><a href="PlutusCore.Check.Scoping.html#NotAName"><span class="hs-identifier hs-var">NotAName</span></a></span><span> </span><span class="annot"><span class="annottext">Version
-</span><a href="#local-6989586621681856582"><span class="hs-identifier hs-var">ver</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Program name uni fun NameAnn)
+</span><a href="#local-6989586621681919063"><span class="hs-identifier hs-var">ver</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; Program name uni fun NameAnn)
 -&gt; QuoteT Identity (Term name uni fun NameAnn)
 -&gt; Quote (Program name uni fun NameAnn)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -486,72 +486,72 @@ forall (t :: * -&gt; *) ann.
 EstablishScoping t =&gt;
 t ann -&gt; Quote (t NameAnn)
 </span><a href="PlutusCore.Check.Scoping.html#establishScoping"><span class="hs-identifier hs-var">establishScoping</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun ann
-</span><a href="#local-6989586621681856583"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621681919064"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-56"></span><span>
-</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681856428"><span id="local-6989586621681856429"><span id="local-6989586621681856430"><span class="annot"><a href="#local-6989586621681856428"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#CollectScopeInfo"><span class="hs-identifier hs-type">CollectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856428"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856429"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856430"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-58"></span><span>    </span><span id="local-6989586621681856616"><span class="annot"><span class="annottext">collectScopeInfo :: Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
-</span><a href="#local-6989586621681856616"><span class="hs-identifier hs-var hs-var hs-var hs-var">collectScopeInfo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621681856618"><span class="annot"><span class="annottext">NameAnn
-</span><a href="#local-6989586621681856618"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681856619"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856619"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621681856620"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856620"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; name -&gt; ScopeErrorOrInfo
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681918909"><span id="local-6989586621681918910"><span id="local-6989586621681918911"><span class="annot"><a href="#local-6989586621681918909"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#CollectScopeInfo"><span class="hs-identifier hs-type">CollectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918909"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918910"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918911"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-58"></span><span>    </span><span id="local-6989586621681919097"><span class="annot"><span class="annottext">collectScopeInfo :: Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><a href="#local-6989586621681919097"><span class="hs-identifier hs-var hs-var hs-var hs-var">collectScopeInfo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621681919099"><span class="annot"><span class="annottext">NameAnn
+</span><a href="#local-6989586621681919099"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681919100"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919100"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span id="local-6989586621681919101"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919101"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; name -&gt; ScopeErrorOrInfo
 forall name.
 ToScopedName name =&gt;
 NameAnn -&gt; name -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#handleSname"><span class="hs-identifier hs-var">handleSname</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><a href="#local-6989586621681856618"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856619"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo -&gt; ScopeErrorOrInfo -&gt; ScopeErrorOrInfo
+</span><a href="#local-6989586621681919099"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919100"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo -&gt; ScopeErrorOrInfo -&gt; ScopeErrorOrInfo
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856620"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><a href="#local-6989586621681919101"><span class="hs-identifier hs-var">body</span></a></span><span>
 </span><span id="line-59"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Delay"><span class="hs-identifier hs-type">Delay</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856622"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856622"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919103"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919103"><span class="hs-identifier hs-var">body</span></a></span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856622"><span class="hs-identifier hs-var">body</span></a></span><span>
+</span><a href="#local-6989586621681919103"><span class="hs-identifier hs-var">body</span></a></span><span>
 </span><span id="line-60"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856623"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856623"><span class="hs-identifier hs-var">fun</span></a></span></span><span> </span><span id="local-6989586621681856624"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856624"><span class="hs-identifier hs-var">arg</span></a></span></span><span class="hs-special">)</span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919104"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919104"><span class="hs-identifier hs-var">fun</span></a></span></span><span> </span><span id="local-6989586621681919105"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919105"><span class="hs-identifier hs-var">arg</span></a></span></span><span class="hs-special">)</span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856623"><span class="hs-identifier hs-var">fun</span></a></span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo -&gt; ScopeErrorOrInfo -&gt; ScopeErrorOrInfo
+</span><a href="#local-6989586621681919104"><span class="hs-identifier hs-var">fun</span></a></span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo -&gt; ScopeErrorOrInfo -&gt; ScopeErrorOrInfo
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856624"><span class="hs-identifier hs-var">arg</span></a></span><span>
+</span><a href="#local-6989586621681919105"><span class="hs-identifier hs-var">arg</span></a></span><span>
 </span><span id="line-61"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span>              </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
 </span><span id="line-62"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Force"><span class="hs-identifier hs-type">Force</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856625"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856625"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919106"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919106"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856625"><span class="hs-identifier hs-var">term</span></a></span><span>
-</span><span id="line-63"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621681856626"><span class="annot"><span class="annottext">NameAnn
-</span><a href="#local-6989586621681856626"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681856627"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856627"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; name -&gt; ScopeErrorOrInfo
+</span><a href="#local-6989586621681919106"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621681919107"><span class="annot"><span class="annottext">NameAnn
+</span><a href="#local-6989586621681919107"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621681919108"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919108"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NameAnn -&gt; name -&gt; ScopeErrorOrInfo
 forall name.
 ToScopedName name =&gt;
 NameAnn -&gt; name -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#handleSname"><span class="hs-identifier hs-var">handleSname</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><a href="#local-6989586621681856626"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621681856627"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621681919107"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621681919108"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-64"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span>         </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo
@@ -564,8 +564,8 @@ forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
 </span><span id="line-66"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856628"><span class="annot"><span class="annottext">[Term name uni fun NameAnn]
-</span><a href="#local-6989586621681856628"><span class="hs-identifier hs-var">es</span></a></span></span><span class="hs-special">)</span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; ScopeErrorOrInfo)
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919109"><span class="annot"><span class="annottext">[Term name uni fun NameAnn]
+</span><a href="#local-6989586621681919109"><span class="hs-identifier hs-var">es</span></a></span></span><span class="hs-special">)</span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; ScopeErrorOrInfo)
 -&gt; [Term name uni fun NameAnn] -&gt; ScopeErrorOrInfo
 forall m a. Monoid m =&gt; (a -&gt; m) -&gt; [a] -&gt; m
 forall (t :: * -&gt; *) m a.
@@ -576,16 +576,16 @@ forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">[Term name uni fun NameAnn]
-</span><a href="#local-6989586621681856628"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><a href="#local-6989586621681919109"><span class="hs-identifier hs-var">es</span></a></span><span>
 </span><span id="line-67"></span><span>    </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856630"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856630"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621681856631"><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn)
-</span><a href="#local-6989586621681856631"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919111"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919111"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621681919112"><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn)
+</span><a href="#local-6989586621681919112"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span>        </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856630"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo -&gt; ScopeErrorOrInfo -&gt; ScopeErrorOrInfo
+</span><a href="#local-6989586621681919111"><span class="hs-identifier hs-var">arg</span></a></span><span> </span><span class="annot"><span class="annottext">ScopeErrorOrInfo -&gt; ScopeErrorOrInfo -&gt; ScopeErrorOrInfo
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">(Term name uni fun NameAnn -&gt; ScopeErrorOrInfo)
 -&gt; Vector (Term name uni fun NameAnn) -&gt; ScopeErrorOrInfo
@@ -598,17 +598,17 @@ forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Vector (Term name uni fun NameAnn)
-</span><a href="#local-6989586621681856631"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><a href="#local-6989586621681919112"><span class="hs-identifier hs-var">cs</span></a></span><span>
 </span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681856440"><span id="local-6989586621681856441"><span id="local-6989586621681856442"><span class="annot"><a href="#local-6989586621681856440"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#CollectScopeInfo"><span class="hs-identifier hs-type">CollectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856440"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856441"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681856442"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-70"></span><span>    </span><span id="local-6989586621681856639"><span class="annot"><span class="annottext">collectScopeInfo :: Program name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681918921"><span id="local-6989586621681918922"><span id="local-6989586621681918923"><span class="annot"><a href="#local-6989586621681918921"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#~"><span class="hs-operator hs-type">~</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Name.Unique.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Check.Scoping.html#CollectScopeInfo"><span class="hs-identifier hs-type">CollectScopeInfo</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918921"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918922"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681918923"><span class="hs-identifier hs-type">fun</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-70"></span><span>    </span><span id="local-6989586621681919120"><span class="annot"><span class="annottext">collectScopeInfo :: Program name uni fun NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var hs-var hs-var hs-var">collectScopeInfo</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="UntypedPlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">NameAnn
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Version
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681856640"><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856640"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621681919121"><span class="annot"><span class="annottext">Term name uni fun NameAnn
+</span><a href="#local-6989586621681919121"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn -&gt; ScopeErrorOrInfo
 forall (t :: * -&gt; *).
 CollectScopeInfo t =&gt;
 t NameAnn -&gt; ScopeErrorOrInfo
 </span><a href="PlutusCore.Check.Scoping.html#collectScopeInfo"><span class="hs-identifier hs-var">collectScopeInfo</span></a></span><span> </span><span class="annot"><span class="annottext">Term name uni fun NameAnn
-</span><a href="#local-6989586621681856640"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621681919121"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-71"></span></pre></body></html>

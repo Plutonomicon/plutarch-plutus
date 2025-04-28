@@ -6,7 +6,7 @@
 --   
 --   Libraries for Plutus Tx and its prelude
 @package plutus-tx
-@version 1.40.0.0
+@version 1.45.0.0
 
 module Data.Aeson.Extra
 
@@ -618,6 +618,7 @@ head :: BuiltinList a -> a
 tail :: BuiltinList a -> BuiltinList a
 chooseList :: BuiltinList a -> b -> b -> b
 caseList' :: forall a r. r -> (a -> BuiltinList a -> r) -> BuiltinList a -> r
+drop :: Integer -> BuiltinList a -> BuiltinList a
 mkNilData :: BuiltinUnit -> BuiltinList BuiltinData
 mkNilPairData :: BuiltinUnit -> BuiltinList (BuiltinPair BuiltinData BuiltinData)
 mkCons :: a -> BuiltinList a -> BuiltinList a
@@ -657,6 +658,11 @@ unsafeDataAsI :: BuiltinData -> BuiltinInteger
 unsafeDataAsB :: BuiltinData -> BuiltinByteString
 equalsData :: BuiltinData -> BuiltinData -> BuiltinBool
 serialiseData :: BuiltinData -> BuiltinByteString
+data BuiltinArray a
+BuiltinArray :: ~Vector a -> BuiltinArray a
+lengthOfArray :: BuiltinArray a -> BuiltinInteger
+listToArray :: BuiltinList a -> BuiltinArray a
+indexArray :: BuiltinArray a -> BuiltinInteger -> a
 data BuiltinBLS12_381_G1_Element
 BuiltinBLS12_381_G1_Element :: ~Element -> BuiltinBLS12_381_G1_Element
 bls12_381_G1_equals :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> BuiltinBool
@@ -706,6 +712,7 @@ instance (Data.Data.Data a, Data.Data.Data b) => Data.Data.Data (PlutusTx.Builti
 instance Data.Data.Data a => Data.Data.Data (PlutusTx.Builtins.Internal.BuiltinList a)
 instance GHC.Generics.Generic PlutusTx.Builtins.Internal.BuiltinData
 instance Data.Data.Data PlutusTx.Builtins.Internal.BuiltinData
+instance Data.Data.Data a => Data.Data.Data (PlutusTx.Builtins.Internal.BuiltinArray a)
 instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
 instance Control.DeepSeq.NFData PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
@@ -718,6 +725,9 @@ instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
 instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
 instance Control.DeepSeq.NFData PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
 instance Prettyprinter.Internal.Pretty PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
+instance GHC.Show.Show a => GHC.Show.Show (PlutusTx.Builtins.Internal.BuiltinArray a)
+instance GHC.Classes.Eq a => GHC.Classes.Eq (PlutusTx.Builtins.Internal.BuiltinArray a)
+instance GHC.Classes.Ord a => GHC.Classes.Ord (PlutusTx.Builtins.Internal.BuiltinArray a)
 instance GHC.Show.Show PlutusTx.Builtins.Internal.BuiltinData
 instance GHC.Classes.Eq PlutusTx.Builtins.Internal.BuiltinData
 instance GHC.Classes.Ord PlutusTx.Builtins.Internal.BuiltinData
@@ -856,6 +866,7 @@ instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin PlutusTx.Builtins.Internal.
 instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin PlutusTx.Builtins.Internal.BuiltinUnit
 instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin PlutusTx.Builtins.Internal.BuiltinBool
 instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin a => PlutusTx.Builtins.HasBuiltin.HasFromBuiltin (PlutusTx.Builtins.Internal.BuiltinList a)
+instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin a => PlutusTx.Builtins.HasBuiltin.HasFromBuiltin (PlutusTx.Builtins.Internal.BuiltinArray a)
 instance (PlutusTx.Builtins.HasBuiltin.HasFromBuiltin a, PlutusTx.Builtins.HasBuiltin.HasFromBuiltin b) => PlutusTx.Builtins.HasBuiltin.HasFromBuiltin (PlutusTx.Builtins.Internal.BuiltinPair a b)
 instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin PlutusTx.Builtins.Internal.BuiltinData
 instance PlutusTx.Builtins.HasBuiltin.HasFromBuiltin PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
@@ -867,6 +878,7 @@ instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin Data.Text.Internal.Text
 instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin ()
 instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin GHC.Types.Bool
 instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin a => PlutusTx.Builtins.HasBuiltin.HasToBuiltin [a]
+instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin a => PlutusTx.Builtins.HasBuiltin.HasToBuiltin (Data.Vector.Strict.Vector a)
 instance (PlutusTx.Builtins.HasBuiltin.HasToBuiltin a, PlutusTx.Builtins.HasBuiltin.HasToBuiltin b) => PlutusTx.Builtins.HasBuiltin.HasToBuiltin (a, b)
 instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin PlutusCore.Data.Data
 instance PlutusTx.Builtins.HasBuiltin.HasToBuiltin PlutusCore.Crypto.BLS12_381.G1.Element
@@ -918,6 +930,14 @@ instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition a => Plutus
 instance PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition a => PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition [a]
 instance (PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition a, PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition b) => PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition (a, b)
 instance (PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition a, PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition b, PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition c) => PlutusTx.Blueprint.Definition.Unroll.HasBlueprintDefinition (a, b, c)
+
+
+-- | Functions in this module are for internal compiler use only, and
+--   should not be used elsewhere.
+module PlutusTx.AsData.Internal
+wrapUnsafeDataAsConstr :: BuiltinData -> BuiltinPair BuiltinInteger (BuiltinList BuiltinData)
+wrapTail :: BuiltinList a -> BuiltinList a
+wrapUnsafeUncons :: BuiltinList a -> (a, BuiltinList a)
 
 module PlutusTx.Coverage
 data CoverageAnnotation
@@ -1173,6 +1193,9 @@ isRight :: Either a b -> Bool
 
 -- | Plutus Tx version of <a>either</a>
 either :: (a -> c) -> (b -> c) -> Either a b -> c
+
+module PlutusTx.Function
+fix :: forall a b. ((a -> b) -> a -> b) -> a -> b
 
 module PlutusTx.Functor
 
@@ -1534,6 +1557,7 @@ matchList' :: forall a r. BuiltinList a -> r -> (a -> BuiltinList a -> r) -> r
 headMaybe :: BuiltinList a -> Maybe a
 head :: BuiltinList a -> a
 tail :: BuiltinList a -> BuiltinList a
+drop :: Integer -> BuiltinList a -> BuiltinList a
 
 -- | Uncons a builtin list, failing if the list is empty, useful in
 --   patterns.
@@ -1542,6 +1566,11 @@ uncons :: BuiltinList a -> Maybe (a, BuiltinList a)
 -- | Uncons a builtin list, failing if the list is empty, useful in
 --   patterns.
 unsafeUncons :: BuiltinList a -> (a, BuiltinList a)
+data BuiltinArray a
+listToArray :: BuiltinList a -> BuiltinArray a
+sopListToArray :: (HasToOpaque a arep, MkNil arep) => [a] -> BuiltinArray arep
+lengthOfArray :: BuiltinArray a -> BuiltinInteger
+indexArray :: BuiltinArray a -> BuiltinInteger -> a
 
 -- | Emit the given string as a trace message before evaluating the
 --   argument.
@@ -1890,6 +1919,7 @@ instance PlutusCore.Core.Type.HasTermLevel uni Data.Text.Internal.Text => Plutus
 instance PlutusCore.Core.Type.HasTermLevel uni () => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinUnit
 instance PlutusCore.Core.Type.HasTermLevel uni GHC.Types.Bool => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinBool
 instance (PlutusTx.Builtins.HasBuiltin.HasFromBuiltin arep, PlutusCore.Core.Type.HasTermLevel uni [PlutusTx.Builtins.HasBuiltin.FromBuiltin arep]) => PlutusTx.Lift.Class.Lift uni (PlutusTx.Builtins.Internal.BuiltinList arep)
+instance (PlutusTx.Builtins.HasBuiltin.HasFromBuiltin arep, PlutusCore.Core.Type.HasTermLevel uni (Data.Vector.Strict.Vector (PlutusTx.Builtins.HasBuiltin.FromBuiltin arep))) => PlutusTx.Lift.Class.Lift uni (PlutusTx.Builtins.Internal.BuiltinArray arep)
 instance (PlutusTx.Builtins.HasBuiltin.HasFromBuiltin arep, PlutusTx.Builtins.HasBuiltin.HasFromBuiltin brep, PlutusCore.Core.Type.HasTermLevel uni (PlutusTx.Builtins.HasBuiltin.FromBuiltin arep, PlutusTx.Builtins.HasBuiltin.FromBuiltin brep)) => PlutusTx.Lift.Class.Lift uni (PlutusTx.Builtins.Internal.BuiltinPair arep brep)
 instance PlutusCore.Core.Type.HasTermLevel uni PlutusCore.Data.Data => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinData
 instance PlutusCore.Core.Type.HasTermLevel uni PlutusCore.Crypto.BLS12_381.G1.Element => PlutusTx.Lift.Class.Lift uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
@@ -1904,11 +1934,75 @@ instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni Data.Text.Internal.Tex
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni () => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinUnit
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni GHC.Types.Bool => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBool
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni [] => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinList
+instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni Data.Vector.Strict.Vector => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinArray
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni (,) => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinPair
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Data.Data => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinData
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Crypto.BLS12_381.G1.Element => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G1_Element
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Crypto.BLS12_381.G2.Element => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_G2_Element
 instance PlutusCore.Builtin.KnownTypeAst.HasTypeLevel uni PlutusCore.Crypto.BLS12_381.Pairing.MlResult => PlutusTx.Lift.Class.Typeable uni PlutusTx.Builtins.Internal.BuiltinBLS12_381_MlResult
+
+module PlutusTx.Optimize.Inline
+
+-- | Like <tt>GHC.Magic.Inline</tt>, this function can be used to perform
+--   callsite inlining.
+--   
+--   <tt>inline f</tt> or <tt>inline (f x1 ... xn)</tt> inlines <tt>f</tt>,
+--   as long as <tt>f</tt>'s unfolding is available, and <tt>f</tt> is not
+--   recursive.
+inline :: a -> a
+
+
+-- | Utilities for space-time tradeoff, such as recursion unrolling.
+module PlutusTx.Optimize.SpaceTime
+
+-- | Given <tt>n</tt>, and the step function for a recursive function, peel
+--   <tt>n</tt> layers off of the recursion.
+--   
+--   For example <tt>peel 3 (self -&gt; [[| case [] -&gt; 0; _ : ys -&gt; 1
+--   + self ys||])</tt> yields the equivalence of the following function:
+--   
+--   <pre>
+--   lengthPeeled :: [a] -&gt; a
+--   lengthPeeled xs =
+--     case xs of                     -- first recursion step
+--       []     -&gt; 0
+--       _ : ys -&gt; 1 +
+--         case ys of                 -- second recursion step
+--           []     -&gt; 0
+--           _ : zs -&gt; 1 +
+--             case zs of             -- third recursion step
+--               []     -&gt; 0
+--               _ : ws -&gt; 1 +
+--                 ( fix self qs -&gt;  -- rest of recursion steps in a tight loop
+--                     case qs of
+--                       []     -&gt; 0
+--                       _ : ts -&gt; 1 + self ts
+--                 ) ws
+--   </pre>
+peel :: forall a b. Int -> (SpliceQ (a -> b) -> SpliceQ (a -> b)) -> SpliceQ (a -> b)
+
+-- | Given <tt>n</tt>, and the step function for a recursive function,
+--   unroll recursion <tt>n</tt> layers at a time
+--   
+--   For example <tt>unroll 3 (self -&gt; [|| case [] -&gt; 0; _ : ys -&gt;
+--   1 + self ys ||])</tt> yields the equivalence of the following
+--   function:
+--   
+--   <pre>
+--   lengthUnrolled :: [a] -&gt; a
+--   lengthUnrolled =
+--     fix self xs -&gt;                   -- beginning of the recursion "loop"
+--       case xs of                      -- first recursion step
+--         []     -&gt; 0
+--         _ : ys -&gt; 1 +
+--           case ys of                  -- second recursion step
+--             []     -&gt; 0
+--             _ : zs -&gt; 1 +
+--               case zs of              -- third recursion step
+--                 []     -&gt; 0
+--                 _ : ws -&gt; 1 + self ws -- end of the "loop"
+--   </pre>
+unroll :: forall a b. Int -> (SpliceQ (a -> b) -> SpliceQ (a -> b)) -> SpliceQ (a -> b)
 
 module PlutusTx.These
 
@@ -2011,6 +2105,7 @@ uncons :: [a] -> Maybe (a, [a])
 
 -- | Test whether a list is empty.
 null :: [a] -> Bool
+length :: [a] -> Integer
 
 -- | Plutus Tx version of <a>map</a>.
 --   
@@ -2107,10 +2202,10 @@ concat :: [[a]] -> [a]
 concatMap :: (a -> [b]) -> [a] -> [b]
 
 -- | Plutus Tx version of <a>zip</a>.
-zip :: [a] -> [b] -> [(a, b)]
+zip :: forall a b. [a] -> [b] -> [(a, b)]
 
 -- | Plutus Tx version of <a>unzip</a>.
-unzip :: [(a, b)] -> ([a], [b])
+unzip :: forall a b. [(a, b)] -> ([a], [b])
 
 -- | Plutus Tx version of <a>(++)</a>.
 --   
@@ -2130,14 +2225,6 @@ infixr 5 ++
 (!!) :: forall a. [a] -> Integer -> a
 infixl 9 !!
 
--- | Index operator for builtin lists.
---   
---   <pre>
---   &gt;&gt;&gt; indexBuiltinList (toBuiltin [10, 11, 12]) 2
---   12
---   </pre>
-indexBuiltinList :: forall a. BuiltinList a -> Integer -> a
-
 -- | Plutus Tx version of <a>head</a>.
 head :: [a] -> a
 
@@ -2148,13 +2235,13 @@ last :: [a] -> a
 tail :: [a] -> [a]
 
 -- | Plutus Tx version of <a>take</a>.
-take :: Integer -> [a] -> [a]
+take :: forall a. Integer -> [a] -> [a]
 
 -- | Plutus Tx version of <a>drop</a>.
-drop :: Integer -> [a] -> [a]
+drop :: forall a. Integer -> [a] -> [a]
 
 -- | Plutus Tx version of <a>splitAt</a>.
-splitAt :: Integer -> [a] -> ([a], [a])
+splitAt :: forall a. Integer -> [a] -> ([a], [a])
 
 -- | Plutus Tx version of <a>nub</a>.
 nub :: Eq a => [a] -> [a]
@@ -2179,6 +2266,55 @@ sort :: Ord a => [a] -> [a]
 
 -- | Plutus Tx version of <a>sortBy</a>.
 sortBy :: (a -> a -> Ordering) -> [a] -> [a]
+elemBy :: forall a. (a -> a -> Bool) -> a -> [a] -> Bool
+
+module PlutusTx.Show.TH
+
+-- | Conversion of values to <a>BuiltinString</a>s. Unlike
+--   <tt>GHC.Show.Show</tt>, there is no <tt>showList</tt> method, because
+--   there is no <a>Show</a> instance for <a>String</a>.
+class Show a
+showsPrec :: Show a => Integer -> a -> ShowS
+show :: Show a => a -> BuiltinString
+
+-- | Currently the only way to concatenate <a>BuiltinString</a>s is
+--   <a>appendString</a>, whose cost is linear in the total length of the
+--   two strings. A naive concatenation of multiple <a>BuiltinString</a>s
+--   costs <tt>O(n^2)</tt> in the worst case, where <tt>n</tt> is the total
+--   length. By collecting the <a>BuiltinString</a>s in a list and
+--   concatenating them in the end, the cost can be reduced to
+--   <tt>O(n*logn)</tt>. If we add a <tt>concatStrings</tt> builtin
+--   function in the future, the cost can be further reduced to
+--   <tt>O(n)</tt>.
+--   
+--   Like <a>ShowS</a>, the purpose of the function type here is to turn
+--   list concatenation into function composition.
+type ShowS = [BuiltinString] -> [BuiltinString]
+showString :: BuiltinString -> ShowS
+showSpace :: ShowS
+showCommaSpace :: ShowS
+showParen :: Bool -> ShowS -> ShowS
+appPrec :: Integer
+appPrec1 :: Integer
+concatBuiltinStrings :: [BuiltinString] -> BuiltinString
+
+-- | Derive <a>Show</a> instance. Adapted from
+--   <tt>Text.Show.Deriving.deriveShow</tt>.
+deriveShow :: Name -> Q [Dec]
+
+-- | Derive <a>showsPrec</a> definition for each data constructor.
+deriveShowsPrec :: [ConstructorInfo] -> [Q Dec]
+deriveShowsPrecBody :: [ConstructorInfo] -> Q Exp
+
+-- | Derive <a>showsPrec</a> body for a single data constructor.
+deriveMatchForCon :: Name -> ConstructorInfo -> Q Match
+
+-- | Derive the <a>showsPrec</a> expression for showing a single
+--   constructor argument.
+deriveShowExpForArg :: Integer -> Name -> Q Exp
+
+-- | Add parens if it is an infix data constructor.
+parenInfixConName :: Name -> String
 
 module PlutusTx.Semigroup
 
@@ -2482,35 +2618,77 @@ instance GHC.Show.Show PlutusTx.Code.ImpossibleDeserialisationFailure
 
 module PlutusTx.Lift
 
--- | Get a Plutus Core term corresponding to the given value.
+-- | Get a Plutus Core term corresponding to the given value. Allows
+--   configuring PIR and UPLC optimization options.
+safeLiftWith :: forall a e uni fun m. (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => (CompilationOpts () -> CompilationOpts ()) -> (CompilationOpts Name fun (Provenance ()) -> CompilationOpts Name fun (Provenance ())) -> Version -> a -> m (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
+
+-- | Get a Plutus Core term corresponding to the given value, applying
+--   default PIR/UPLC optimizations.
 safeLift :: forall a e uni fun m. (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
 
--- | Get a Plutus Core program corresponding to the given value.
+-- | Like <a>safeLift</a> but does not apply PIR/UPLC optimizations. Use
+--   this option where lifting speed is more important than optimal code.
+safeLiftUnopt :: forall a e uni fun m. (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
+
+-- | Get a Plutus Core program corresponding to the given value, applying
+--   default PIR/UPLC optimizations.
 safeLiftProgram :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
+
+-- | Like <a>safeLiftProgram</a> but does not apply PIR/UPLC optimizations.
+--   Use this option where lifting speed is more important than optimal
+--   code.
+safeLiftProgramUnopt :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
 safeLiftCode :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (CompiledCodeIn uni fun a)
 
+-- | Like <a>safeLiftCode</a> but does not apply PIR/UPLC optimizations.
+--   Use this option where lifting speed is more important than optimal
+--   code.
+safeLiftCodeUnopt :: (Lift uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), GEq uni, AsTypeErrorExt e uni (Provenance ()), AsFreeVariableError e, AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> m (CompiledCodeIn uni fun a)
+
 -- | Get a Plutus Core term corresponding to the given value, throwing any
---   errors that occur as exceptions and ignoring fresh names.
+--   errors that occur as exceptions and ignoring fresh names. The default
+--   PIR/UPLC optimizations are applied.
 lift :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
+
+-- | Like <a>lift</a> but does not apply PIR/UPLC optimizations. Use this
+--   option where lifting speed is more important than optimal code.
+liftUnopt :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> (Term TyName Name uni fun (), Term NamedDeBruijn uni fun ())
 
 -- | Get a Plutus Core program corresponding to the given value, throwing
 --   any errors that occur as exceptions and ignoring fresh names.
 liftProgram :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
+
+-- | Like <a>liftProgram</a> but does not apply PIR/UPLC optimizations. Use
+--   this option where lifting speed is more important than optimal code.
+liftProgramUnopt :: (Lift uni a, ThrowableBuiltins uni fun, Typecheckable uni fun, GEq uni, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> (Program TyName Name uni fun (), Program NamedDeBruijn uni fun ())
 
 -- | Get a Plutus Core program in the default universe with the default
 --   version, corresponding to the given value, throwing any errors that
 --   occur as exceptions and ignoring fresh names.
 liftProgramDef :: Lift DefaultUni a => a -> (Program TyName Name DefaultUni DefaultFun (), Program NamedDeBruijn DefaultUni DefaultFun ())
 
+-- | Like <a>liftProgramDef</a> but does not apply PIR/UPLC optimizations.
+--   Use this option where lifting speed is more important than optimal
+--   code.
+liftProgramDefUnopt :: Lift DefaultUni a => a -> (Program TyName Name DefaultUni DefaultFun (), Program NamedDeBruijn DefaultUni DefaultFun ())
+
 -- | Get a Plutus Core program corresponding to the given value as a
 --   <a>CompiledCodeIn</a>, throwing any errors that occur as exceptions
 --   and ignoring fresh names.
 liftCode :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> CompiledCodeIn uni fun a
 
+-- | Like <a>liftCode</a> but does not apply PIR/UPLC optimizations. Use
+--   this option where lifting speed is more important than optimal code.
+liftCodeUnopt :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => Version -> a -> CompiledCodeIn uni fun a
+
 -- | Get a Plutus Core program with the default version, corresponding to
 --   the given value as a <a>CompiledCodeIn</a>, throwing any errors that
 --   occur as exceptions and ignoring fresh names.
 liftCodeDef :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => a -> CompiledCodeIn uni fun a
+
+-- | Like <a>liftCodeDef</a> but does not apply PIR/UPLC optimizations. Use
+--   this option where lifting speed is more important than optimal code.
+liftCodeDefUnopt :: (Lift uni a, GEq uni, ThrowableBuiltins uni fun, Typecheckable uni fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun), Hashable fun) => a -> CompiledCodeIn uni fun a
 
 -- | Check that PLC term has the given type.
 typeCheckAgainst :: forall e a uni fun m. (Typeable uni a, AsTypeError e (Term TyName Name uni fun ()) uni fun (Provenance ()), AsTypeErrorExt e uni (Provenance ()), AsError e uni fun (Provenance ()), MonadError e m, MonadQuote m, GEq uni, Typecheckable uni fun, PrettyUni uni, Pretty fun, Default (CostingPart uni fun), Default (BuiltinsInfo uni fun), Default (RewriteRules uni fun)) => Proxy a -> Program TyName Name uni fun () -> m ()
@@ -2611,54 +2789,6 @@ instance PlutusTx.Foldable.Foldable ((,) c)
 instance PlutusTx.Foldable.Foldable Data.Functor.Identity.Identity
 instance PlutusTx.Foldable.Foldable (Data.Functor.Const.Const c)
 
-module PlutusTx.Show.TH
-
--- | Conversion of values to <a>BuiltinString</a>s. Unlike
---   <tt>GHC.Show.Show</tt>, there is no <tt>showList</tt> method, because
---   there is no <a>Show</a> instance for <a>String</a>.
-class Show a
-showsPrec :: Show a => Integer -> a -> ShowS
-show :: Show a => a -> BuiltinString
-
--- | Currently the only way to concatenate <a>BuiltinString</a>s is
---   <a>appendString</a>, whose cost is linear in the total length of the
---   two strings. A naive concatenation of multiple <a>BuiltinString</a>s
---   costs <tt>O(n^2)</tt> in the worst case, where <tt>n</tt> is the total
---   length. By collecting the <a>BuiltinString</a>s in a list and
---   concatenating them in the end, the cost can be reduced to
---   <tt>O(n*logn)</tt>. If we add a <tt>concatStrings</tt> builtin
---   function in the future, the cost can be further reduced to
---   <tt>O(n)</tt>.
---   
---   Like <a>ShowS</a>, the purpose of the function type here is to turn
---   list concatenation into function composition.
-type ShowS = [BuiltinString] -> [BuiltinString]
-showString :: BuiltinString -> ShowS
-showSpace :: ShowS
-showCommaSpace :: ShowS
-showParen :: Bool -> ShowS -> ShowS
-appPrec :: Integer
-appPrec1 :: Integer
-concatBuiltinStrings :: [BuiltinString] -> BuiltinString
-
--- | Derive <a>Show</a> instance. Adapted from
---   <tt>Text.Show.Deriving.deriveShow</tt>.
-deriveShow :: Name -> Q [Dec]
-
--- | Derive <a>showsPrec</a> definition for each data constructor.
-deriveShowsPrec :: [ConstructorInfo] -> [Q Dec]
-deriveShowsPrecBody :: [ConstructorInfo] -> Q Exp
-
--- | Derive <a>showsPrec</a> body for a single data constructor.
-deriveMatchForCon :: Name -> ConstructorInfo -> Q Match
-
--- | Derive the <a>showsPrec</a> expression for showing a single
---   constructor argument.
-deriveShowExpForArg :: Integer -> Name -> Q Exp
-
--- | Add parens if it is an infix data constructor.
-parenInfixConName :: Name -> String
-
 module PlutusTx.IsData.Class
 
 -- | A typeclass for types that can be converted to and from
@@ -2752,9 +2882,16 @@ unstableMakeIsData :: Name -> Q [Dec]
 --   representation stable.
 makeIsDataIndexed :: Name -> [(Name, Int)] -> Q [Dec]
 mkConstrCreateExpr :: Integer -> [Name] -> ExpQ
-mkUnsafeConstrMatchPattern :: Integer -> [Name] -> PatQ
+mkUnsafeConstrMatchPattern :: AsDataProdType -> Integer -> [Name] -> PatQ
 mkConstrPartsMatchPattern :: Integer -> [Name] -> PatQ
-mkUnsafeConstrPartsMatchPattern :: Integer -> [Name] -> PatQ
+mkUnsafeConstrPartsMatchPattern :: AsDataProdType -> Integer -> [Name] -> PatQ
+
+-- | If generating pattern synonyms for a product type declared with
+--   <tt>asData</tt>, we can avoid the index match, as we know that the
+--   type only has one constructor.
+data AsDataProdType
+IsAsDataProdType :: AsDataProdType
+IsNotAsDataProdType :: AsDataProdType
 
 module PlutusTx.Ratio
 
@@ -2975,6 +3112,24 @@ instance PlutusTx.Enum.Enum ()
 instance PlutusTx.Enum.Enum GHC.Types.Bool
 instance PlutusTx.Enum.Enum GHC.Types.Ordering
 
+
+-- | Functions operating on <a>BuiltinList</a>.
+module PlutusTx.BuiltinList
+data BuiltinList a
+caseList :: forall a r. (() -> r) -> (a -> BuiltinList a -> r) -> BuiltinList a -> r
+caseList' :: forall a r. r -> (a -> BuiltinList a -> r) -> BuiltinList a -> r
+map :: forall a b. MkNil b => (a -> b) -> BuiltinList a -> BuiltinList b
+elem :: forall a. Eq a => a -> BuiltinList a -> Bool
+find :: forall a. (a -> Bool) -> BuiltinList a -> Maybe a
+any :: forall a. (a -> Bool) -> BuiltinList a -> Bool
+all :: forall a. (a -> Bool) -> BuiltinList a -> Bool
+
+-- | Get the element at a given index.
+--   
+--   This function is partial and takes linear time.
+(!!) :: forall a. BuiltinList a -> Integer -> a
+infixl 9 !!
+
 module PlutusTx.Traversable
 
 -- | Plutus Tx version of <a>Traversable</a>.
@@ -3116,153 +3271,6 @@ odd :: Integer -> Bool
 -- | FIXME
 expMod :: Integer -> Integer -> Integer -> Integer
 
--- | Plutus Tx version of <a>zipWith</a>.
-zipWith :: forall a b c. (a -> b -> c) -> [a] -> [b] -> [c]
-
--- | Plutus Tx version of <a>sortBy</a>.
-sortBy :: (a -> a -> Ordering) -> [a] -> [a]
-
--- | Plutus Tx version of <a>head</a>.
-head :: [a] -> a
-
--- | Plutus Tx version of <a>filter</a>.
---   
---   <pre>
---   &gt;&gt;&gt; filter (&gt; 1) [1, 2, 3, 4]
---   [2,3,4]
---   </pre>
-filter :: (a -> Bool) -> [a] -> [a]
-
--- | Plutus Tx version of <a>(++)</a>.
---   
---   <pre>
---   &gt;&gt;&gt; [0, 1, 2] ++ [1, 2, 3, 4]
---   [0,1,2,1,2,3,4]
---   </pre>
-(++) :: [a] -> [a] -> [a]
-infixr 5 ++
-
--- | Plutus Tx version of <a>zip</a>.
-zip :: [a] -> [b] -> [(a, b)]
-
--- | Plutus Tx version of <a>map</a>.
---   
---   <pre>
---   &gt;&gt;&gt; map (\i -&gt; i + 1) [1, 2, 3]
---   [2,3,4]
---   </pre>
-map :: forall a b. (a -> b) -> [a] -> [b]
-
--- | Plutus Tx version of <a>listToMaybe</a>.
-listToMaybe :: [a] -> Maybe a
-
--- | Plutus Tx version of <a>uncons</a>.
-uncons :: [a] -> Maybe (a, [a])
-
--- | Plutus Tx version of <a>tail</a>.
-tail :: [a] -> [a]
-
--- | Plutus Tx version of <a>last</a>.
-last :: [a] -> a
-
--- | Test whether a list is empty.
-null :: [a] -> Bool
-
--- | Plutus Tx version of <a>replicate</a>.
-replicate :: forall a. Integer -> a -> [a]
-
--- | Plutus Tx version of <a>dropWhile</a>.
-dropWhile :: forall a. (a -> Bool) -> [a] -> [a]
-
--- | Plutus Tx version of <a>take</a>.
-take :: Integer -> [a] -> [a]
-
--- | Plutus Tx version of <a>drop</a>.
-drop :: Integer -> [a] -> [a]
-
--- | Plutus Tx version of <a>splitAt</a>.
-splitAt :: Integer -> [a] -> ([a], [a])
-
--- | Plutus Tx version of <a>reverse</a>.
-reverse :: [a] -> [a]
-
--- | Returns the conjunction of a list of Bools.
-and :: [Bool] -> Bool
-
--- | Returns the disjunction of a list of Bools.
-or :: [Bool] -> Bool
-
--- | Determines whether any element of the structure satisfies the
---   predicate.
-any :: forall a. (a -> Bool) -> [a] -> Bool
-
--- | Determines whether all elements of the list satisfy the predicate.
-all :: forall a. (a -> Bool) -> [a] -> Bool
-
--- | Does the element occur in the list?
-elem :: Eq a => a -> [a] -> Bool
-
--- | The negation of <a>elem</a>.
-notElem :: Eq a => a -> [a] -> Bool
-
--- | Plutus Tx version of <a>(!!)</a>.
---   
---   <pre>
---   &gt;&gt;&gt; [10, 11, 12] !! 2
---   12
---   </pre>
-(!!) :: forall a. [a] -> Integer -> a
-infixl 9 !!
-
--- | Plutus Tx version of <a>unzip</a>.
-unzip :: [(a, b)] -> ([a], [b])
-
--- | Returns the leftmost element matching the predicate, or <a>Nothing</a>
---   if there's no such element.
-find :: forall a. (a -> Bool) -> [a] -> Maybe a
-
--- | Plutus Tx version of <a>findIndex</a>.
-findIndex :: (a -> Bool) -> [a] -> Maybe Integer
-
--- | Plutus Tx version of <a>findIndices</a>.
-findIndices :: (a -> Bool) -> [a] -> [Integer]
-
--- | Plutus Tx version of <a>nub</a>.
-nub :: Eq a => [a] -> [a]
-
--- | Plutus Tx version of <a>nubBy</a>.
-nubBy :: (a -> a -> Bool) -> [a] -> [a]
-
--- | Plutus Tx version of <a>partition</a>.
-partition :: (a -> Bool) -> [a] -> ([a], [a])
-
--- | Plutus Tx version of <a>sort</a>.
-sort :: Ord a => [a] -> [a]
-
--- | Return the element in the list, if there is precisely one.
-uniqueElement :: [a] -> Maybe a
-
--- | Cons each element of the first list to the second one in reverse order
---   (i.e. the last element of the first list is the head of the result).
---   
---   <pre>
---   revAppend xs ys === reverse xs ++ ys
---   </pre>
---   
---   <pre>
---   &gt;&gt;&gt; revAppend "abc" "de"
---   "cbade"
---   </pre>
-revAppend :: forall a. [a] -> [a] -> [a]
-
--- | Index operator for builtin lists.
---   
---   <pre>
---   &gt;&gt;&gt; indexBuiltinList (toBuiltin [10, 11, 12]) 2
---   12
---   </pre>
-indexBuiltinList :: forall a. BuiltinList a -> Integer -> a
-
 -- | An opaque type representing Plutus Core ByteStrings.
 data BuiltinByteString
 
@@ -3396,6 +3404,18 @@ readBit :: BuiltinByteString -> Integer -> Bool
 --   <li><a>Operation description</a></li>
 --   </ul>
 writeBits :: BuiltinByteString -> [Integer] -> Bool -> BuiltinByteString
+
+-- | Given a length (first argument) and a byte (second argument), produce
+--   a <a>BuiltinByteString</a> of that length, with that byte in every
+--   position. Will error if given a negative length, or a second argument
+--   that isn't a byte (less than 0, greater than 255).
+--   
+--   <h1>See also</h1>
+--   
+--   <ul>
+--   <li><a>Operation description</a></li>
+--   </ul>
+replicateByte :: Integer -> Integer -> BuiltinByteString
 
 -- | Shift a <a>BuiltinByteString</a>, as per <a>CIP-123</a>.
 shiftByteString :: BuiltinByteString -> Integer -> BuiltinByteString
@@ -3538,6 +3558,7 @@ fromInteger :: Integer -> Rational
 --   <tt>r</tt>. If <tt>r</tt> is equidistant between two values, the even
 --   value will be given.
 round :: Rational -> Integer
+data BuiltinBool
 
 -- | A type corresponding to the Plutus Core builtin equivalent of
 --   <a>Data</a>.
@@ -3553,6 +3574,31 @@ round :: Rational -> Integer
 --   <a>builtinDataToData</a> and <a>dataToBuiltinData</a>, but note that
 --   these will not work on-chain.
 data BuiltinData
+data BuiltinList a
+data BuiltinPair a b
+
+-- | A typeclass for types that can be converted to and from
+--   <a>BuiltinData</a>.
+class ToData (a :: Type)
+
+-- | Convert a value to <a>BuiltinData</a>.
+toBuiltinData :: ToData a => a -> BuiltinData
+class FromData (a :: Type)
+
+-- | Convert a value from <a>BuiltinData</a>, returning <a>Nothing</a> if
+--   this fails.
+fromBuiltinData :: FromData a => BuiltinData -> Maybe a
+class UnsafeFromData (a :: Type)
+
+-- | Convert a value from <a>BuiltinData</a>, calling <a>error</a> if this
+--   fails. This is typically much faster than <a>fromBuiltinData</a>.
+--   
+--   When implementing this function, make sure to call
+--   <a>unsafeFromBuiltinData</a> rather than <a>fromBuiltinData</a> when
+--   converting substructures!
+--   
+--   This is a simple type without any validation, <b>use with caution</b>.
+unsafeFromBuiltinData :: UnsafeFromData a => BuiltinData -> a
 data BuiltinBLS12_381_G1_Element
 bls12_381_G1_equals :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> Bool
 bls12_381_G1_add :: BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element -> BuiltinBLS12_381_G1_Element
@@ -3712,22 +3758,211 @@ module PlutusTx.Data.List
 
 -- | A list type backed directly by <tt>Data</tt>. It is meant to be used
 --   whenever fast encoding<i>decoding to</i>from <tt>Data</tt> is needed.
-newtype List a
-List :: BuiltinList BuiltinData -> List a
+data List a
+
+-- | Matching on the given <a>List</a>.
+caseList :: forall a r. UnsafeFromData a => (() -> r) -> (a -> List a -> r) -> List a -> r
+
+-- | Like <a>caseList</a>, except the nil case takes an <tt>r</tt>
+--   directly, which is evaluated strictly. If <tt>r</tt> is an error or
+--   expensive computation, consider using <a>caseList</a> instead.
+caseList' :: forall a r. UnsafeFromData a => r -> (a -> List a -> r) -> List a -> r
+null :: List a -> Bool
 append :: List a -> List a -> List a
+
+-- | Find the first element that satisfies a predicate. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
 find :: UnsafeFromData a => (a -> Bool) -> List a -> Maybe a
+
+-- | Find the indices of all elements that satisfy a predicate. Warning:
+--   this function can be very inefficient if the list contains elements
+--   that are expensive to decode from <a>BuiltinData</a>.
 findIndices :: UnsafeFromData a => (a -> Bool) -> List a -> List Integer
+
+-- | Filter a list using a predicate. Warning: this function can be very
+--   inefficient if the list contains elements that are expensive to decode
+--   from <a>BuiltinData</a>.
 filter :: (UnsafeFromData a, ToData a) => (a -> Bool) -> List a -> List a
+
+-- | Map a function over a list and discard the results that are
+--   <a>Nothing</a>. Warning: this function can be very inefficient if the
+--   list contains elements that are expensive to decode from
+--   <a>BuiltinData</a>, or if the result of applying <tt>f</tt> is
+--   expensive to encode to <a>BuiltinData</a>.
 mapMaybe :: (UnsafeFromData a, ToData b) => (a -> Maybe b) -> List a -> List b
+
+-- | Check if any element in the list satisfies a predicate. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
 any :: UnsafeFromData a => (a -> Bool) -> List a -> Bool
+
+-- | Check if all elements in the list satisfy a predicate. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
+all :: UnsafeFromData a => (a -> Bool) -> List a -> Bool
+
+-- | Fold a list using a monoid. Warning: this function can be very
+--   inefficient if the list contains elements that are expensive to decode
+--   from <a>BuiltinData</a>.
 foldMap :: (UnsafeFromData a, Monoid m) => (a -> m) -> List a -> m
+
+-- | Map a function over a list. Warning: this function can be very
+--   inefficient if the list contains elements that are expensive to decode
+--   from <a>BuiltinData</a>, or if the result of applying <tt>f</tt> is
+--   expensive to encode to <a>BuiltinData</a>.
 map :: (UnsafeFromData a, ToData b) => (a -> b) -> List a -> List b
+
+-- | Get the length of a list.
 length :: List a -> Integer
 
--- | Plutus Tx version of <a>mconcat</a>.
+-- | Concatenate a list of monoids. Warning: this function can be very
+--   inefficient if the list contains elements that are expensive to decode
+--   from <a>BuiltinData</a>.
 mconcat :: (Monoid a, UnsafeFromData a) => List a -> a
-fromSOP :: ToData a => [a] -> List a
-toSOP :: UnsafeFromData a => List a -> [a]
+
+-- | Prepend an element to the list.
+(<|) :: ToData a => a -> List a -> List a
+infixr 5 <|
+
+-- | Synonym for <a>&lt;|</a>.
+cons :: ToData a => a -> List a -> List a
+
+-- | Construct an empty list.
+nil :: List a
+
+-- | Create a list from a single element.
+singleton :: ToData a => a -> List a
+
+-- | Get the first element of a list and the rest of the list.
+uncons :: UnsafeFromData a => List a -> Maybe (a, List a)
+
+-- | Check if all elements in the list are <a>True</a>. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
+and :: List Bool -> Bool
+
+-- | Check if any element in the list is <a>True</a>. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
+or :: List Bool -> Bool
+
+-- | Check if an element is in the list. Note: this function can leverage
+--   the better performance of equality checks for <a>BuiltinData</a>.
+elem :: ToData a => a -> List a -> Bool
+
+-- | Check if an element is not in the list.
+notElem :: ToData a => a -> List a -> Bool
+
+-- | Fold a list from the right. Warning: this function can be very
+--   inefficient if the list contains elements that are expensive to decode
+--   from <a>BuiltinData</a>.
+foldr :: UnsafeFromData a => (a -> b -> b) -> b -> List a -> b
+
+-- | Fold a list from the left. Warning: this function can be very
+--   inefficient if the list contains elements that are expensive to decode
+--   from <a>BuiltinData</a>.
+foldl :: UnsafeFromData a => (b -> a -> b) -> b -> List a -> b
+
+-- | Flatten a list of lists into a single list.
+concat :: List (List a) -> List a
+
+-- | Map a function over a list and concatenate the results.
+concatMap :: UnsafeFromData a => (a -> List b) -> List a -> List b
+
+-- | Get the first element of a list if it is not empty.
+listToMaybe :: UnsafeFromData a => List a -> Maybe a
+
+-- | Get the element of a list if it has exactly one element.
+uniqueElement :: UnsafeFromData a => List a -> Maybe a
+
+-- | Get the element at a given index. Warning: this is a partial function
+--   and will fail if the index is negative or greater than the length of
+--   the list. Note: this function has the same precedence as (!!) from
+--   <a>List</a>.
+(!!) :: UnsafeFromData a => List a -> Integer -> a
+infixl 9 !!
+
+-- | Append two lists in reverse order.
+revAppend :: List a -> List a -> List a
+
+-- | Reverse a list.
+reverse :: List a -> List a
+
+-- | Replicate a value n times.
+replicate :: ToData a => Integer -> a -> List a
+
+-- | Find the index of the first element that satisfies a predicate.
+--   Warning: this function can be very inefficient if the list contains
+--   elements that are expensive to decode from <a>BuiltinData</a>.
+findIndex :: UnsafeFromData a => (a -> Bool) -> List a -> Maybe Integer
+
+-- | Split a list of pairs into a pair of lists.
+unzip :: forall a b. List (a, b) -> (List a, List b)
+
+-- | Zip two lists together using a function. Warning: this function can be
+--   very inefficient if the lists contain elements that are expensive to
+--   decode from <a>BuiltinData</a>, or if the result of applying
+--   <tt>f</tt> is expensive to encode to <a>BuiltinData</a>.
+zipWith :: (UnsafeFromData a, UnsafeFromData b, ToData c) => (a -> b -> c) -> List a -> List b -> List c
+
+-- | Return the head of a list. Warning: this is a partial function and
+--   will fail if the list is empty.
+head :: forall a. UnsafeFromData a => List a -> a
+
+-- | Return the last element of a list. Warning: this is a partial function
+--   and will fail if the list is empty.
+last :: forall a. UnsafeFromData a => List a -> a
+
+-- | Return the tail of a list. Warning: this is a partial function and
+--   will fail if the list is empty.
+tail :: forall a. List a -> List a
+
+-- | Take the first n elements from the list.
+take :: forall a. Integer -> List a -> List a
+
+-- | Drop the first n elements from the list.
+drop :: forall a. Integer -> List a -> List a
+
+-- | Drop elements from the list while the predicate holds. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
+dropWhile :: forall a. UnsafeFromData a => (a -> Bool) -> List a -> List a
+
+-- | Split a list at a given index.
+splitAt :: forall a. Integer -> List a -> (List a, List a)
+
+-- | Check if an element satisfying a binary predicate is in the list.
+--   Warning: this function can be very inefficient if the list contains
+--   elements that are expensive to decode from <a>BuiltinData</a>.
+elemBy :: UnsafeFromData a => (a -> a -> Bool) -> a -> List a -> Bool
+
+-- | Removes elements from the list that satisfy a binary predicate.
+--   Warning: this function can be very inefficient if the list contains
+--   elements that are expensive to decode from <a>BuiltinData</a>.
+nubBy :: forall a. UnsafeFromData a => (a -> a -> Bool) -> List a -> List a
+
+-- | Removes duplicate elements from the list. Warning: this function can
+--   be very inefficient if the list contains elements that are expensive
+--   to decode from <a>BuiltinData</a>.
+nub :: (Eq a, UnsafeFromData a) => List a -> List a
+
+-- | Partition a list into two lists based on a predicate. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
+partition :: UnsafeFromData a => (a -> Bool) -> List a -> (List a, List a)
+toBuiltinList :: List a -> BuiltinList BuiltinData
+fromBuiltinList :: BuiltinList BuiltinData -> List a
+
+-- | Convert a data-backed list to a sums of products list. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to decode from <a>BuiltinData</a>.
+toSOP :: forall a. UnsafeFromData a => List a -> [a]
+
+-- | Convert a sums of products list to a data-backed list. Warning: this
+--   function can be very inefficient if the list contains elements that
+--   are expensive to encode to <a>BuiltinData</a>.
+fromSOP :: forall a. ToData a => [a] -> List a
 instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusTx.Data.List.List
 instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni (PlutusTx.Data.List.List a)
 instance GHC.Classes.Eq (PlutusTx.Data.List.List a)
@@ -3741,6 +3976,28 @@ instance PlutusTx.Semigroup.Semigroup (PlutusTx.Data.List.List a)
 instance PlutusTx.Monoid.Monoid (PlutusTx.Data.List.List a)
 instance GHC.Base.Semigroup (PlutusTx.Data.List.List a)
 instance GHC.Base.Monoid (PlutusTx.Data.List.List a)
+
+module PlutusTx.Data.List.TH
+
+-- | Generate variables bound to the given indices of a
+--   <tt>BuiltinList</tt>.
+--   
+--   Sample Usage:
+--   
+--   <pre>
+--   f :: List Integer -&gt; Integer
+--   f list =
+--   $( destructList
+--        "s"
+--        (Set.fromList [1, 4, 5])
+--        'list
+--        [|s1 + s4 + s5|]
+--    )
+--   
+--   </pre>
+--   
+--   This computes the sum of list elements at indices 1, 4 and 5.
+destructList :: String -> Set Int -> Name -> ExpQ -> ExpQ
 
 module PlutusTx.Data.AssocMap
 
@@ -3801,28 +4058,41 @@ null :: forall k a. Map k a -> Bool
 
 -- | Convert the <a>Map</a> to a list of key-value pairs. This operation is
 --   O(n). See <a>toBuiltinList</a> for a more efficient alternative.
-toList :: (UnsafeFromData k, UnsafeFromData a) => Map k a -> [(k, a)]
+toSOPList :: (UnsafeFromData k, UnsafeFromData a) => Map k a -> [(k, a)]
 
 -- | Convert the <a>Map</a> to a <a>BuiltinList</a> of key-value pairs.
 --   This operation is O(1).
 toBuiltinList :: Map k a -> BuiltinList (BuiltinPair BuiltinData BuiltinData)
 
--- | Create an <a>Map</a> from a list of key-value pairs. In case of
---   duplicates, this function will keep only one entry (the one that
---   precedes). In other words, this function de-duplicates the input list.
-safeFromList :: forall k a. (ToData k, ToData a) => [(k, a)] -> Map k a
+-- | Create an <a>Map</a> from a sums of products list of key-value pairs.
+--   In case of duplicates, this function will keep only one entry (the one
+--   that precedes). In other words, this function de-duplicates the input
+--   list. Warning: this function is very slow. If you know that the input
+--   list does not contain duplicate keys, use one of the unsafe functions
+--   instead.
+safeFromSOPList :: forall k a. (ToData k, ToData a) => [(k, a)] -> Map k a
 
--- | Unsafely create an <a>Map</a> from a list of pairs. This should _only_
---   be applied to lists which have been checked to not contain duplicate
---   keys, otherwise the resulting <a>Map</a> will contain conflicting
---   entries (two entries sharing the same key), and therefore be
---   ill-defined.
-unsafeFromList :: (ToData k, ToData a) => [(k, a)] -> Map k a
+-- | Unsafely create an <a>Map</a> from a sums of products list of pairs.
+--   This should _only_ be applied to lists which have been checked to not
+--   contain duplicate keys, otherwise the resulting <a>Map</a> will
+--   contain conflicting entries (two entries sharing the same key), and
+--   therefore be ill-defined. Warning: this requires traversing the list
+--   and encoding the keys and values, so it should be avoided in favor of
+--   <a>unsafeFromBuiltinList</a> if the input is already in
+--   <a>BuiltinData</a> form.
+unsafeFromSOPList :: (ToData k, ToData a) => [(k, a)] -> Map k a
+
+-- | Unsafely create an <a>Map</a> from a <a>List</a> of key-value pairs.
+--   This function is unsafe because it assumes that the elements of the
+--   list can be safely decoded from their <a>BuiltinData</a>
+--   representation. It also does not deduplicate the keys.
+unsafeFromDataList :: List (a, k) -> Map k a
 
 -- | Unsafely create an <a>Map</a> from a <a>BuiltinList</a> of key-value
---   pairs. This function is unsafe because it assumes that the elements of
---   the list can be safely decoded from their <a>BuiltinData</a>
---   representation.
+--   pairs. This operation is O(1). This function is unsafe because it
+--   assumes that the elements of the list can be safely decoded from their
+--   <a>BuiltinData</a> representation. It also does not deduplicate the
+--   keys.
 unsafeFromBuiltinList :: forall k a. BuiltinList (BuiltinPair BuiltinData BuiltinData) -> Map k a
 
 -- | Check if the <a>Map</a> is well-defined. Warning: this operation is
@@ -3839,10 +4109,15 @@ union :: forall k a b. (UnsafeFromData a, UnsafeFromData b, ToData a, ToData b) 
 
 -- | Combine two <a>Map</a>s with the given combination function.
 unionWith :: forall k a. (UnsafeFromData a, ToData a) => (a -> a -> a) -> Map k a -> Map k a -> Map k a
-keys :: forall k a. Map k a -> BuiltinList BuiltinData
+keys :: forall k a. Map k a -> List k
+elems :: forall k a. Map k a -> List a
 map :: forall k a b. (UnsafeFromData a, ToData b) => (a -> b) -> Map k a -> Map k b
 mapThese :: forall v k a b. (ToData a, ToData b, UnsafeFromData v) => (v -> These a b) -> Map k v -> (Map k a, Map k b)
 foldr :: forall a b k. UnsafeFromData a => (a -> b -> b) -> b -> Map k a -> b
+filter :: forall k a. UnsafeFromData a => (a -> Bool) -> Map k a -> Map k a
+mapWithKey :: forall k a b. (UnsafeFromData k, UnsafeFromData a, ToData b) => (k -> a -> b) -> Map k a -> Map k b
+mapMaybe :: forall k a b. (UnsafeFromData a, ToData b) => (a -> Maybe b) -> Map k a -> Map k b
+mapMaybeWithKey :: forall k a b. (UnsafeFromData k, UnsafeFromData a, ToData b) => (k -> a -> Maybe b) -> Map k a -> Map k b
 instance PlutusTx.Lift.Class.Typeable PlutusCore.Default.Universe.DefaultUni PlutusTx.Data.AssocMap.Map
 instance PlutusTx.Lift.Class.Lift PlutusCore.Default.Universe.DefaultUni (PlutusTx.Data.AssocMap.Map k a)
 instance GHC.Show.Show (PlutusTx.Data.AssocMap.Map k a)
