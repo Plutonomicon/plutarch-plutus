@@ -6,12 +6,14 @@
 
 * `DerivePlutusType` and everything related
 * `Plutarch.DataRepr`
+* `DeriveAsTag`, use `DeriveTagPlutusType` and `DeriveTagPLiftable` instead
 
 ## Added
 
 * `DeriveAsDataStruct``DeriveAsDataRec`, `DeriveAsSOPStruct`, `DeriveAsSOPRec` to `Plutarch.Prelude`
 * `pmatchListN`, `pmatchList`, `pmatchListUnsafe` for matching on list efficiently and ergonomically.
 * Added `ConstantHoist` option to the compilation option to allow configuring how threshold for constant to be hoisted.
+I `DeriveTagPlutusType` and `DeriveTagPLiftable`
 
 ## Changed
 
