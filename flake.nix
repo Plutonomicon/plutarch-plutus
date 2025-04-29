@@ -126,6 +126,7 @@
               cp ${self'.packages.haddock}/share/doc/* $out/haddock -r
               cp ${self'.packages.plutarch-docs}/* $out -r
               cp ${self'.packages.hackage}/* $out -r
+              echo "plutarch-plutus.org" > $out/CNAME
             '';
           };
 
