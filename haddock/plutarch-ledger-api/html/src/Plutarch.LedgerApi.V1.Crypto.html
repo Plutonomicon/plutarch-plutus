@@ -13,10 +13,10 @@
 </span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Builtins.Internal</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
 </span><span id="line-14"></span><span>
 </span><span id="line-15"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-16"></span><span class="hs-keyword">newtype</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679321473"><span class="annot"><a href="#local-6989586621679321473"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679321473"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">newtype</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679321717"><span class="annot"><a href="#local-6989586621679321717"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PPubKeyHash"><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-var">PPubKeyHash</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679321717"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span>
 </span><span id="line-17"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-18"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-19"></span><span>      </span><span id="local-6989586621679321476"><span id="local-6989586621679321478"><span class="annot"><span class="annottext">(forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x)
+</span><span id="line-19"></span><span>      </span><span id="local-6989586621679321720"><span id="local-6989586621679321722"><span class="annot"><span class="annottext">(forall x. PPubKeyHash s -&gt; Rep (PPubKeyHash s) x)
 -&gt; (forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s)
 -&gt; Generic (PPubKeyHash s)
 forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
@@ -33,7 +33,7 @@ to :: forall x. Rep (PPubKeyHash s) x -&gt; PPubKeyHash s
 </span><span id="line-20"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-21"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
 </span><span id="line-22"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-23"></span><span>      </span><span id="local-6989586621679321485"><span id="local-6989586621679321494"><span class="annot"><span class="annottext">All SListI (Code (PPubKeyHash s))
+</span><span id="line-23"></span><span>      </span><span id="local-6989586621679321729"><span id="local-6989586621679321738"><span class="annot"><span class="annottext">All SListI (Code (PPubKeyHash s))
 All SListI (Code (PPubKeyHash s)) =&gt;
 (PPubKeyHash s -&gt; Rep (PPubKeyHash s))
 -&gt; (Rep (PPubKeyHash s) -&gt; PPubKeyHash s)
@@ -52,7 +52,7 @@ $cto :: forall (s :: S). Rep (PPubKeyHash s) -&gt; PPubKeyHash s
 to :: Rep (PPubKeyHash s) -&gt; PPubKeyHash s
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
 </span><span id="line-24"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-25"></span><span>      </span><span id="local-6989586621679321524"><span id="local-6989586621679321530"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-25"></span><span>      </span><span id="local-6989586621679321768"><span id="local-6989586621679321774"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PAsData PPubKeyHash) -&gt; Term s PPubKeyHash)
 -&gt; (forall (s :: S). Term s PPubKeyHash -&gt; Term s PData)
 -&gt; PIsData PPubKeyHash
@@ -67,7 +67,7 @@ $cpdataImpl :: forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PPubKeyHash -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
 </span><span id="line-26"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-27"></span><span>      </span><span id="local-6989586621679321537"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-27"></span><span>      </span><span id="local-6989586621679321781"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
 -&gt; PEq PPubKeyHash
 forall (s :: S).
@@ -80,7 +80,7 @@ Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
 </span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-29"></span><span>      </span><span id="local-6989586621679321556"><span id="local-6989586621679321562"><span id="local-6989586621679321567"><span id="local-6989586621679321570"><span class="annot"><span class="annottext">PEq PPubKeyHash
+</span><span id="line-29"></span><span>      </span><span id="local-6989586621679321800"><span id="local-6989586621679321806"><span id="local-6989586621679321811"><span id="local-6989586621679321814"><span class="annot"><span class="annottext">PEq PPubKeyHash
 PEq PPubKeyHash =&gt;
 (forall (s :: S).
  Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PBool)
@@ -120,7 +120,7 @@ pmin :: forall (s :: S).
 Term s PPubKeyHash -&gt; Term s PPubKeyHash -&gt; Term s PPubKeyHash
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
 </span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-31"></span><span>      </span><span id="local-6989586621679321575"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString)
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679321819"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString)
 -&gt; PShow PPubKeyHash
 forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString
 forall (t :: S -&gt; Type).
@@ -131,7 +131,7 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PPubKeyHash -&gt; Term s PString
 </span><span id="line-32"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-35"></span><span>      </span><span id="local-6989586621679321590"><span id="local-6989586621679321598"><span class="annot"><span class="annottext">(forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash))
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679321834"><span id="local-6989586621679321842"><span class="annot"><span class="annottext">(forall (s :: S). PPubKeyHash s -&gt; Term s (PInner PPubKeyHash))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner PPubKeyHash)
     -&gt; (PPubKeyHash s -&gt; Term s b) -&gt; Term s b)
@@ -162,13 +162,13 @@ Term s (PInner PPubKeyHash)
 </span><span id="line-41"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><span class="hs-identifier hs-var">AsHaskell</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span>
 </span><span id="line-42"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><span class="hs-identifier hs-var">PlutusRepr</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Crypto.html#PPubKeyHash"><span class="hs-identifier hs-type">PPubKeyHash</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.6.6/html/libraries/bytestring-0.11.5.3/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
 </span><span id="line-43"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">haskToRepr</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-44"></span><span>  </span><span id="local-6989586621679321616"><span class="annot"><span class="annottext">haskToRepr :: AsHaskell PPubKeyHash -&gt; PlutusRepr PPubKeyHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span id="local-6989586621679321619"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679321619"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621679321860"><span class="annot"><span class="annottext">haskToRepr :: AsHaskell PPubKeyHash -&gt; PlutusRepr PPubKeyHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.PubKeyHash</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span id="local-6989586621679321863"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679321863"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
 PlutusRepr PPubKeyHash
-</span><a href="#local-6989586621679321619"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><a href="#local-6989586621679321863"><span class="hs-identifier hs-var">str</span></a></span><span>
 </span><span id="line-45"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">reprToHask</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-46"></span><span>  </span><span id="local-6989586621679321621"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr PPubKeyHash -&gt; Either LiftError (AsHaskell PPubKeyHash)
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621679321865"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr PPubKeyHash -&gt; Either LiftError (AsHaskell PPubKeyHash)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToHask</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; Either LiftError PubKeyHash
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(PubKeyHash -&gt; Either LiftError PubKeyHash)
@@ -183,14 +183,14 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.6.6/html/libraries/base-4.18.2.1/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
 </span><span class="hs-identifier hs-var">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-47"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">reprToPlut</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-48"></span><span>  </span><span id="local-6989586621679321630"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S). PlutusRepr PPubKeyHash -&gt; PLifted s PPubKeyHash
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679321874"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S). PlutusRepr PPubKeyHash -&gt; PLifted s PPubKeyHash
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToPlut</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PlutusRepr PPubKeyHash -&gt; PLifted s PPubKeyHash
 forall (a :: S -&gt; Type) (s :: S).
 (PLiftable a, Includes DefaultUni (PlutusRepr a)) =&gt;
 PlutusRepr a -&gt; PLifted s a
 </span><span class="hs-identifier hs-var">reprToPlutUni</span></span><span>
 </span><span id="line-49"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">plutToRepr</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-50"></span><span>  </span><span id="local-6989586621679321637"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s PPubKeyHash)
+</span><span id="line-50"></span><span>  </span><span id="local-6989586621679321881"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s PPubKeyHash)
 -&gt; Either LiftError (PlutusRepr PPubKeyHash)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">plutToRepr</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). PLifted s PPubKeyHash)
 -&gt; Either LiftError (PlutusRepr PPubKeyHash)

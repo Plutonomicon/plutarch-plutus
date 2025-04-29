@@ -2387,20 +2387,32 @@ PTag :: Term s PInteger -> PTag (struct :: [S -> Type]) (s :: S)
 
 [$sel:unPTag:PTag] :: PTag (struct :: [S -> Type]) (s :: S) -> Term s PInteger
 
-newtype DeriveAsTag (a :: S -> Type) s
-DeriveAsTag :: a s -> DeriveAsTag (a :: S -> Type) s
-
-[$sel:unDeriveAsTag:DeriveAsTag] :: DeriveAsTag (a :: S -> Type) s -> a s
-
 newtype TagLiftHelper r struct
 TagLiftHelper :: (Integer -> (SOP I struct -> r) -> r) -> TagLiftHelper r struct
 
 [$sel:unTagLiftHelper:TagLiftHelper] :: TagLiftHelper r struct -> Integer -> (SOP I struct -> r) -> r
+
+-- | @since IWP
+newtype DeriveTagPlutusType (a :: S -> Type) s
+DeriveTagPlutusType :: a s -> DeriveTagPlutusType (a :: S -> Type) s
+
+-- | @since WIP
+[$sel:unDeriveTagPlutusType:DeriveTagPlutusType] :: DeriveTagPlutusType (a :: S -> Type) s -> a s
+
+-- | @since WIP
+newtype DeriveTagPLiftable (a :: S -> Type) (h :: Type) s
+DeriveTagPLiftable :: a s -> DeriveTagPLiftable (a :: S -> Type) (h :: Type) s
+
+-- | @since WIP
+[$sel:unDeriveTagPLiftable:DeriveTagPLiftable] :: DeriveTagPLiftable (a :: S -> Type) (h :: Type) s -> a s
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Repr.Tag.PTag struct s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) h. Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveTagPLiftable a h)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) h (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Repr.Tag.DeriveTagPLiftable a h s)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) h (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Repr.Tag.DeriveTagPLiftable a h s)
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.PTag struct)
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveAsTag a)
+instance forall (a :: Plutarch.Internal.Term.PType) h. (Plutarch.Internal.PlutusType.PlutusType a, Generics.SOP.Universe.Generic h, Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} (GHC.Types.Any @Plutarch.Internal.Term.S) a (Generics.SOP.Universe.Code h)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Tag.DeriveTagPLiftable a h)
+instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (forall (s :: Plutarch.Internal.Term.S). Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} s a struct) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveTagPlutusType a)
 instance forall k (a :: k -> GHC.Types.Type) (s :: k) (struct :: [[GHC.Types.Type]]). (Generics.SOP.Universe.Generic (a s), Plutarch.Repr.Tag.TagTypePrettyError (Generics.SOP.Universe.Code (a s)), (Generics.SOP.Universe.Code (a s) :: [[GHC.Types.Type]]) GHC.Types.~ (struct :: [[GHC.Types.Type]]), Data.SOP.Constraint.All @[GHC.Types.Type] (Plutarch.Repr.Tag.IsEmpty @GHC.Types.Type) struct) => Plutarch.Repr.Tag.TagTypeConstraints @{k} s a struct
-instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (struct :: [[GHC.Types.Type]]). (Plutarch.Internal.PlutusType.PlutusType (Plutarch.Repr.Tag.DeriveAsTag a), Generics.SOP.Universe.Generic (a (GHC.Types.Any @Plutarch.Internal.Term.S)), Plutarch.Repr.Tag.TagTypeConstraints @{Plutarch.Internal.Term.S} (GHC.Types.Any @Plutarch.Internal.Term.S) a struct) => Plutarch.Internal.Lift.PLiftable (Plutarch.Repr.Tag.DeriveAsTag a)
 instance forall k1 k2 (x :: [k1]). ((x :: [k1]) GHC.Types.~ ('[] @k1 :: [k1])) => Plutarch.Repr.Tag.IsEmpty @k2 ('[] @k2)
 instance forall (struct :: [Plutarch.Internal.Term.S -> GHC.Types.Type]) (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Repr.Tag.PTag struct s)
 
@@ -3460,12 +3472,21 @@ plutToRepr :: PLiftable a => (forall (s :: S). PLifted s a) -> Either LiftError 
 --   Haskell-level equivalent <tt>h</tt> by way of its <tt>Data</tt>
 --   encoding, rather than by <tt>h</tt> being directly part of the Plutus
 --   default universe.
-data DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+newtype DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
+DeriveDataPLiftable :: a s -> DeriveDataPLiftable (a :: S -> Type) (h :: Type) (s :: S)
 
 -- | <tt>via</tt>-deriving helper, indicating that <tt>wrapper</tt> has a
 --   Haskell-level equivalent <tt>h</tt> by way <tt>PInner wrapper</tt>, up
 --   to coercibility.
-data DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
+newtype DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
+DeriveNewtypePLiftable :: wrapper s -> DeriveNewtypePLiftable (wrapper :: S -> Type) (h :: Type) (s :: S)
+
+-- | @since WIP
+newtype DeriveTagPLiftable (a :: S -> Type) (h :: Type) s
+DeriveTagPLiftable :: a s -> DeriveTagPLiftable (a :: S -> Type) (h :: Type) s
+
+-- | @since WIP
+[$sel:unDeriveTagPLiftable:DeriveTagPLiftable] :: DeriveTagPLiftable (a :: S -> Type) (h :: Type) s -> a s
 
 -- | Similar to <tt>Identity</tt>, but at the level of Plutarch. Only
 --   needed when writing manual instances of <a>PLiftable</a>, or if you
@@ -3724,6 +3745,10 @@ DeriveAsSOPStruct :: a s -> DeriveAsSOPStruct (a :: S -> Type) s
 --   optimizations.
 newtype DeriveAsSOPRec (a :: S -> Type) s
 DeriveAsSOPRec :: a s -> DeriveAsSOPRec (a :: S -> Type) s
+
+-- | @since IWP
+newtype DeriveTagPlutusType (a :: S -> Type) s
+DeriveTagPlutusType :: a s -> DeriveTagPlutusType (a :: S -> Type) s
 
 data Positive
 

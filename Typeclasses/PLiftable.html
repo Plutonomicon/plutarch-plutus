@@ -310,6 +310,17 @@ deriving via
 <li><code>inner</code> has <code>PLiftable</code> instance</li>
 <li><code>AsHaskell inner</code> is coercible to <code>h</code></li>
 </ul>
+<h3 id="via-derivetagpliftable"><a class="header" href="#via-derivetagpliftable">Via <code>DeriveTagPLiftable</code></a></h3>
+<pre><code class="language-haskell">data Foo = A | B
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+
+data PFoo s = PB | PA
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via DeriveTagPlutusType PFoo
+  deriving (PLiftable) via DeriveTagPLiftable PFoo Foo
+</code></pre>
 <h3 id="manual-derivation"><a class="header" href="#manual-derivation">Manual derivation</a></h3>
 <p>In the (unlikely) case that your type fits neither of the above, you will have
 to write the instance manually. Given how unusual this situation is, we can't
