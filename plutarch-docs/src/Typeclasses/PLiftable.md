@@ -201,6 +201,20 @@ To use `DeriveNewtypePLiftable` the following must hold:
 * `inner` has `PLiftable` instance
 * `AsHaskell inner` is coercible to `h`
 
+### Via `DeriveTagPLiftable`
+
+```haskell
+data Foo = A | B
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+
+data PFoo s = PB | PA
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic)
+  deriving (PlutusType) via DeriveTagPlutusType PFoo
+  deriving (PLiftable) via DeriveTagPLiftable PFoo Foo
+```
+
 ### Manual derivation
 
 In the (unlikely) case that your type fits neither of the above, you will have
