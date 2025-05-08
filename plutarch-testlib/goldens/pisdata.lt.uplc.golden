@@ -38,14 +38,15 @@ PCredential.pmatch.true program
                                                   force
                                                     (case
                                                        (constr 0
-                                                          [ (equalsInteger 1 !2)
+                                                          [ (equalsInteger 0 !2)
+                                                          , (delay False)
                                                           , (delay
                                                                (lessThanByteString
                                                                   (unBData
                                                                      (!8 !4))
                                                                   (unBData
-                                                                     (!8 !1))))
-                                                          , (delay False) ])
+                                                                     (!8
+                                                                        !1)))) ])
                                                        [!7]))
                                                  (!9 !2))
                                               (!9 !1))
@@ -72,26 +73,7 @@ PCredential.pmatch.false program
                            force
                              (case
                                 (constr 0
-                                   [ (equalsInteger 1 !2)
-                                   , (delay
-                                        ((\!0 ->
-                                            (\!0 ->
-                                               (\!0 ->
-                                                  force
-                                                    (case
-                                                       (constr 0
-                                                          [ (equalsInteger 1 !2)
-                                                          , (delay
-                                                               (lessThanByteString
-                                                                  (unBData
-                                                                     (!8 !4))
-                                                                  (unBData
-                                                                     (!8 !1))))
-                                                          , (delay False) ])
-                                                       [!7]))
-                                                 (!9 !2))
-                                              (!9 !1))
-                                           (unConstrData !6)))
+                                   [ (equalsInteger 0 !2)
                                    , (delay
                                         ((\!0 ->
                                             (\!0 ->
@@ -107,6 +89,26 @@ PCredential.pmatch.false program
                                                                   (unBData
                                                                      (!8 !1))))
                                                           , (delay True) ])
+                                                       [!7]))
+                                                 (!9 !2))
+                                              (!9 !1))
+                                           (unConstrData !6)))
+                                   , (delay
+                                        ((\!0 ->
+                                            (\!0 ->
+                                               (\!0 ->
+                                                  force
+                                                    (case
+                                                       (constr 0
+                                                          [ (equalsInteger 0 !2)
+                                                          , (delay False)
+                                                          , (delay
+                                                               (lessThanByteString
+                                                                  (unBData
+                                                                     (!8 !4))
+                                                                  (unBData
+                                                                     (!8
+                                                                        !1)))) ])
                                                        [!7]))
                                                  (!9 !2))
                                               (!9 !1))

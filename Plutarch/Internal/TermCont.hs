@@ -10,8 +10,7 @@ module Plutarch.Internal.TermCont (
   pfindAllPlaceholders,
 ) where
 
-import Crypto.Hash (Digest)
-import Crypto.Hash.Algorithms (Blake2b_160)
+import Data.Hashable (Hashed, hashed)
 import Data.Kind (Type)
 import Data.List (nub)
 import Data.String (fromString)
@@ -24,7 +23,6 @@ import Plutarch.Internal.Term (
   TracingMode (DetTracing),
   asRawTerm,
   getTerm,
-  hashRawTerm,
   perror,
   pgetConfig,
  )
@@ -63,10 +61,11 @@ instance MonadFail (TermCont s) where
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
 
-hashOpenTerm :: Term s a -> TermCont s (Digest Blake2b_160)
+hashOpenTerm :: Term s a -> TermCont s (Hashed RawTerm)
 hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
-  asRawTerm (f . hashRawTerm . getTerm $ y) i
+  let h = hashed $ getTerm y
+  asRawTerm (f h) i
 
 -- This can technically be done outside of TermCont.
 -- Need to pay close attention when killing branch with this.
