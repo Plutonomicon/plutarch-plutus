@@ -204,8 +204,8 @@ instance PIsData PByteString where
   pdataImpl x = punsafeBuiltin PLC.BData # x
 
 instance PIsData PUnit where
-  pfromDataImpl _ = punit
-  pdataImpl _ = punsafeConstantInternal $ PLC.someValue (PTx.Constr 0 [])
+  pfromDataImpl x = plet x $ const punit
+  pdataImpl x = plet x $ const (punsafeConstantInternal $ PLC.someValue (PTx.Constr 0 []))
 
 instance
   forall (a :: S -> Type).
