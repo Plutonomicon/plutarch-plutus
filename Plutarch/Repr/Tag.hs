@@ -2,11 +2,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+-- Force PlutusType constraint when using fake strategy for wrappers
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Plutarch.Repr.Tag (
   PTag (..),
-  DeriveAsTag (..),
   TagLiftHelper (..),
+  DeriveTagPlutusType (..),
+  DeriveTagPLiftable (..),
 ) where
 
 import Data.Proxy (Proxy (Proxy))
@@ -37,6 +40,7 @@ import Plutarch.Internal.Lift (
   pconstant,
  )
 import Plutarch.Internal.PlutusType (
+  DeriveFakePlutusType (DeriveFakePlutusType),
   PContravariant',
   PCovariant',
   PInner,
@@ -63,10 +67,10 @@ instance SOP.Generic (PTag struct s)
 -- | @since 1.10.0
 deriving via DeriveNewtypePlutusType (PTag struct) instance PlutusType (PTag struct)
 
--- | @since 1.10.0
-newtype DeriveAsTag (a :: S -> Type) s = DeriveAsTag
-  { unDeriveAsTag :: a s
-  -- ^ @since 1.10.0
+-- | @since IWP
+newtype DeriveTagPlutusType (a :: S -> Type) s = DeriveTagPlutusType
+  { unDeriveTagPlutusType :: a s
+  -- ^ @since WIP
   }
 
 {- | This derives tag-only PlutusType automatically. Resulted instances will use `PInteger` as underlying type, making this much more efficient than using regular Data/Scott/SOP based encoding. As name suggests, types with no-argument constructors can use this.
@@ -76,30 +80,29 @@ Example:
 data PFoo s = A | B | C | D | E
   deriving stock (GHC.Generic, Show)
   deriving anyclass (PEq, PIsData)
-  deriving (PlutusType, PLiftable)
-    via DeriveAsTag PFoo
+  deriving (PlutusType) via DeriveTagPlutusType PFoo
 
 instance SOP.Generic (PFoo s)
 @@
 
 @since 1.10.0
 -}
-instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a) where
-  type PInner (DeriveAsTag a) = PInteger
-  type PCovariant' (DeriveAsTag a) = (PCovariant' a)
-  type PContravariant' (DeriveAsTag a) = (PContravariant' a)
-  type PVariant' (DeriveAsTag a) = (PVariant' a)
-  pcon' :: forall s. DeriveAsTag a s -> Term s (PInner (DeriveAsTag a))
-  pcon' (DeriveAsTag x) =
+instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveTagPlutusType a) where
+  type PInner (DeriveTagPlutusType a) = PInteger
+  type PCovariant' (DeriveTagPlutusType a) = (PCovariant' a)
+  type PContravariant' (DeriveTagPlutusType a) = (PContravariant' a)
+  type PVariant' (DeriveTagPlutusType a) = (PVariant' a)
+  pcon' :: forall s. DeriveTagPlutusType a s -> Term s (PInner (DeriveTagPlutusType a))
+  pcon' (DeriveTagPlutusType x) =
     pconstant @PInteger $ toInteger $ SOP.hindex $ SOP.from x
 
-  pmatch' :: forall s b. Term s (PInner (DeriveAsTag a)) -> (DeriveAsTag a s -> Term s b) -> Term s b
+  pmatch' :: forall s b. Term s (PInner (DeriveTagPlutusType a)) -> (DeriveTagPlutusType a s -> Term s b) -> Term s b
   pmatch' tag f = unTermCont $ do
     -- plet here because tag might be a big computation
     tag' <- pletC tag
     let
       g :: SOP I (Code (a s)) -> Term s b
-      g = f . DeriveAsTag . SOP.to
+      g = f . DeriveTagPlutusType . SOP.to
 
       go :: forall x xs. IsEmpty x => TagMatchHandler s b xs -> TagMatchHandler s b (x ': xs)
       go (TagMatchHandler rest) =
@@ -130,7 +133,7 @@ type family TagTypePrettyError' n (xs :: [[Type]]) :: Bool where
   TagTypePrettyError' n ('[] ': rest) = TagTypePrettyError' (n + 1) rest
   TagTypePrettyError' n (invalid ': _) =
     TypeError
-      ( 'Text "DeriveAsTag only supports constructors without arguments. However, at constructor #"
+      ( 'Text "DeriveTagPlutusType only supports constructors without arguments. However, at constructor #"
           ':<>: 'ShowType n
           ':<>: 'Text ", I got:"
           ':$$: 'ShowType invalid
@@ -146,15 +149,28 @@ newtype TagMatchHandler s b struct = TagMatchHandler
   { unTagMatchHandler :: Integer -> (SOP I struct -> Term s b) -> NP (K (Integer, Term s b)) struct
   }
 
+-- | @since WIP
+newtype DeriveTagPLiftable (a :: S -> Type) (h :: Type) s = DeriveTagPLiftable
+  { unDeriveTagPLiftable :: a s
+  -- ^ @since WIP
+  }
+  deriving stock (GHC.Generic)
+  deriving anyclass (SOP.Generic)
+  deriving
+    ( -- | @since WIP
+      PlutusType
+    )
+    via (DeriveFakePlutusType (DeriveTagPLiftable a h))
+
 instance
-  ( PlutusType (DeriveAsTag a)
-  , SOP.Generic (a Any)
-  , TagTypeConstraints Any a struct
+  ( PlutusType a
+  , SOP.Generic h
+  , TagTypeConstraints Any a (Code h)
   ) =>
-  PLiftable (DeriveAsTag a)
+  PLiftable (DeriveTagPLiftable a h)
   where
-  type AsHaskell (DeriveAsTag a) = a Any
-  type PlutusRepr (DeriveAsTag a) = Integer
+  type AsHaskell (DeriveTagPLiftable a h) = h
+  type PlutusRepr (DeriveTagPLiftable a h) = Integer
 
   haskToRepr = toInteger . SOP.hindex . SOP.from
 
@@ -167,7 +183,7 @@ instance
             then f $ SOP $ Z Nil
             else rest (n + 1) \(SOP s) -> f $ SOP $ S s
 
-      helper :: TagLiftHelper (Maybe (a Any)) (Code (a Any))
+      helper :: TagLiftHelper (Maybe h) (Code h)
       helper = SOP.cpara_SList (Proxy @IsEmpty) (TagLiftHelper \_ _ -> Nothing) go
      in
       maybe (Left (OtherLiftError "Invalid index")) Right $ unTagLiftHelper helper 0 (Just <$> SOP.to)

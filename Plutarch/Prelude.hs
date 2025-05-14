@@ -98,8 +98,9 @@ module Plutarch.Prelude (
 
   -- * Lifting and lowering
   PLiftable (..),
-  DeriveDataPLiftable,
-  DeriveNewtypePLiftable,
+  DeriveDataPLiftable (..),
+  DeriveNewtypePLiftable (..),
+  DeriveTagPLiftable (..),
   PLifted (..),
   reprToPlutUni,
   plutToReprUni,
@@ -152,6 +153,7 @@ module Plutarch.Prelude (
   DeriveAsDataRec (DeriveAsDataRec),
   DeriveAsSOPStruct (DeriveAsSOPStruct),
   DeriveAsSOPRec (DeriveAsSOPRec),
+  DeriveTagPlutusType (DeriveTagPlutusType),
 
   -- * Numeric
   Positive,
@@ -291,6 +293,7 @@ import Plutarch.Pair
 import Plutarch.Rational
 import Plutarch.Repr.Data
 import Plutarch.Repr.SOP
+import Plutarch.Repr.Tag
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unroll

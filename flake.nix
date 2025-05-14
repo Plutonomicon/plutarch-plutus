@@ -58,7 +58,7 @@
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
             compiler-nix-name = "ghc966";
-            index-state = "2025-02-08T01:45:27Z";
+            index-state = "2025-04-16T12:27:40Z";
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };
@@ -126,6 +126,7 @@
               cp ${self'.packages.haddock}/share/doc/* $out/haddock -r
               cp ${self'.packages.plutarch-docs}/* $out -r
               cp ${self'.packages.hackage}/* $out -r
+              echo "plutarch-plutus.org" > $out/CNAME
             '';
           };
 
