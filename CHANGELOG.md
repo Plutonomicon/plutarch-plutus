@@ -22,6 +22,8 @@
 ## Fixed
 
 * V3 scriptHash function now prepends the correct version prefix to the script hash
+* `PIsData` for `PUnit` is now properly strict
+  ([#834](https://github.com/Plutonomicon/plutarch-plutus/issues/834))
 
 # 1.10.1 -- 17-02-2025
 
