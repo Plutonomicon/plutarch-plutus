@@ -28,21 +28,21 @@ tests =
             "round"
             [ goldenEval "5/3" (pround # (5 / 3 :: Term s PRational))
             , goldenEval "4/3" (pround # (4 / 3 :: Term s PRational))
-            , goldenEval "-5/2" (pround # (-5 / 2 :: Term s PRational))
-            , goldenEval "-1/4" (pround # (-1 / 4 :: Term s PRational))
+            , goldenEval "-5/2" (pround # ((-5) / 2 :: Term s PRational))
+            , goldenEval "-1/4" (pround # ((-1) / 4 :: Term s PRational))
             ]
         , goldenGroup
             "truncate"
             [ goldenEval "5/4" (ptruncate # (5 / 4 :: Term s PRational))
             , goldenEval "7/4" (ptruncate # (7 / 4 :: Term s PRational))
             , goldenEval "1/4" (ptruncate # (1 / 4 :: Term s PRational))
-            , goldenEval "-7/4" (ptruncate # (-7 / 4 :: Term s PRational))
+            , goldenEval "-7/4" (ptruncate # ((-7) / 4 :: Term s PRational))
             ]
         , goldenGroup
             "properFraction"
-            [ goldenEval "-1/2" (let mkP r a b = pmatch (pproperFraction # r) $ \(PPair x y) -> x #== a #&& y #== b in mkP (-1 / 2) 0 (-1 / 2))
-            , goldenEval "-3/2" (let mkP r a b = pmatch (pproperFraction # r) $ \(PPair x y) -> x #== a #&& y #== b in mkP (-3 / 2) (-1) (-1 / 2))
-            , goldenEval "-4/3" (let mkP r a b = pmatch (pproperFraction # r) $ \(PPair x y) -> x #== a #&& y #== b in mkP (-4 / 3) (-1) (-1 / 3))
+            [ goldenEval "-1/2" (let mkP r a b = pmatch (pproperFraction # r) $ \(PPair x y) -> x #== a #&& y #== b in mkP ((-1) / 2) 0 ((-1) / 2))
+            , goldenEval "-3/2" (let mkP r a b = pmatch (pproperFraction # r) $ \(PPair x y) -> x #== a #&& y #== b in mkP ((-3) / 2) (-1) ((-1) / 2))
+            , goldenEval "-4/3" (let mkP r a b = pmatch (pproperFraction # r) $ \(PPair x y) -> x #== a #&& y #== b in mkP ((-4) / 3) (-1) ((-1) / 3))
             ]
         , goldenGroup
             "data.id"
