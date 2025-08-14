@@ -148,7 +148,7 @@ bcompare ::
   -- | Test or test tree to compare with baseline test
   TestTree ->
   TestTree
-bcompare = bcompareWithin (-1 / 0, 1 / 0) (-1 / 0, 1 / 0) (-1 / 0, 1 / 0)
+bcompare = bcompareWithin ((-1) / 0, 1 / 0) ((-1) / 0, 1 / 0) ((-1) / 0, 1 / 0)
 
 {- | Like 'bcompare' but with customizable upper and lower bounds of relative differences
 

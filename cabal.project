@@ -1,3 +1,16 @@
+-- Note (Koz, 15/08/2025): For the next person who needs to bump Plutus
+-- dependencies, this is the order of operations:
+--
+-- 1. Update `index-state`, both in this file, and in `flake.nix`, to the 
+--    one from https://chap.intersectmbo.org corresponding to the version of 
+--    `plutus-core` you want. Ensure you update both!
+-- 2. Increase the version of `plutus-core` in the `plutarch.cabal` file.
+-- 3. Run `nix flake update`.
+-- 
+-- A common source of errors is an `index-state` that's 'too new': namely, 
+-- less than a week ago. In that case, use the next-lowest version of
+-- `plutus-core` (and the appropriate older `index-state`).
+
 repository cardano-haskell-packages
   url: https://chap.intersectmbo.org/
   secure: True
@@ -9,7 +22,7 @@ repository cardano-haskell-packages
     c00aae8461a256275598500ea0e187588c35a5d5d7454fb57eac18d9edb86a56
     d4a35cd3121aa00d18544bb0ac01c3e1691d618f462c46129271bccf39f7e8ee
 
-index-state: 2024-10-09T22:38:57Z
+index-state: 2025-07-30T14:13:57Z
 
 packages:
   ./.
@@ -18,3 +31,27 @@ packages:
 benchmarks: true
 tests: true
 test-show-details: direct
+
+-- Note (Koz, 15/08/2025): Added with the bump to `index-state` at
+-- 2025-07-30T14:13:57Z. On next bump, we should try disabling all these 
+-- and seeing if we still need them. 
+allow-newer:
+  -- https://github.com/tweag/HaskellR/pull/420
+  , inline-r:singletons-th
+  , inline-r:aeson
+  , inline-r:text
+  , inline-r:template-haskell
+  , inline-r:deepseq
+  , inline-r:bytestring
+  , inline-r:containers
+  , inline-r:primitive
+
+allow-newer:
+  -- https://github.com/phadej/vec/issues/121
+  ral:QuickCheck,
+  fin:QuickCheck,
+  bin:QuickCheck,
+
+-- https://github.com/IntersectMBO/plutus/pull/7236
+constraints: setup.optparse-applicative >=0.19.0.0
+allow-newer: turtle:optparse-applicative

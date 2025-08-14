@@ -1,5 +1,11 @@
 # Revision history for plutarch
 
+# 1.11.0 -- 
+
+## Changed
+
+* `plutus-core` dependency is now `1.51.0.0`
+
 # 1.10.1 -- 17-02-2025
 
 ## Added

@@ -1,21 +1,25 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module PlutusLedgerApi.V3.Orphans (MintValue, getMintValue) where
+module PlutusLedgerApi.V3.Orphans where
 
 import Control.Monad (guard)
+import Data.ByteString (ByteString)
+import Data.ByteString qualified as BS
 import Data.Coerce (coerce)
+import Data.Kind (Type)
 import Data.Set qualified as Set
 import PlutusLedgerApi.Orphans.Common (
   Blake2b256Hash (Blake2b256Hash),
+  getBlake2b244Hash,
  )
 import PlutusLedgerApi.V1.Orphans.Credential ()
 import PlutusLedgerApi.V1.Orphans.Interval ()
 import PlutusLedgerApi.V1.Orphans.Time ()
 import PlutusLedgerApi.V1.Orphans.Value ()
+import PlutusLedgerApi.V1.Value qualified as Value
 import PlutusLedgerApi.V2.Orphans.Tx ()
 import PlutusLedgerApi.V3 qualified as PLA
-import PlutusLedgerApi.V3.Orphans.Value (MintValue, getMintValue)
-import PlutusLedgerApi.V3.Orphans.Value qualified as Value
+import PlutusLedgerApi.V3.MintValue (MintValue (UnsafeMintValue))
 import PlutusTx.AssocMap qualified as AssocMap
 import PlutusTx.Builtins qualified as Builtins
 import PlutusTx.Prelude qualified as PlutusTx
@@ -25,17 +29,25 @@ import Test.QuickCheck (
   Arbitrary1 (liftArbitrary, liftShrink),
   CoArbitrary (coarbitrary),
   Function (function),
+  Gen,
   NonEmptyList (NonEmpty),
   NonNegative (NonNegative),
+  NonZero (NonZero),
   Positive (Positive),
+  chooseBoundedIntegral,
   chooseInt,
   elements,
   functionMap,
   getNonEmpty,
   getNonNegative,
+  getNonZero,
   getPositive,
   oneof,
+  resize,
+  scale,
+  sized,
   variant,
+  vectorOf,
  )
 import Test.QuickCheck.Instances.Containers ()
 
@@ -856,6 +868,53 @@ instance Arbitrary PLA.TxInInfo where
 -- TODO: CoArbitrary, Function
 -- TODO: invariants
 
+-- | @since 1.2.0
+instance Arbitrary PLA.MintValue where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = do
+    -- Generate a set of currency symbols that aren't Ada
+    keySet <- Set.fromList <$> liftArbitrary (PLA.CurrencySymbol . getBlake2b244Hash <$> arbitrary)
+    let keyList = Set.toList keySet
+    -- For each key, generate a list of token name keys that aren't Ada
+    keyVals <- traverse (scale (`quot` 8) . mkInner) keyList
+    -- It is possible to generate both a positive and a negative quantity of the
+    -- same asset, so we have to prune zeros, despite using the `NonZero`
+    -- generator.
+    pure
+      . UnsafeMintValue
+      . coerce
+      . pruneZeroes
+      . foldMap (\(cs, vals) -> foldMap (uncurry (Value.singleton cs)) vals)
+      $ keyVals
+    where
+      mkInner :: PLA.CurrencySymbol -> Gen (PLA.CurrencySymbol, [(PLA.TokenName, Integer)])
+      mkInner cs =
+        (cs,)
+          . Set.toList
+          . Set.fromList
+          . getNonEmpty
+          <$> liftArbitrary ((,) <$> genNonAdaTokenName <*> (getNonZero <$> arbitrary))
+      genNonAdaTokenName :: Gen PLA.TokenName
+      genNonAdaTokenName = fmap (PLA.TokenName . PlutusTx.toBuiltin @ByteString . BS.pack) . sized $ \size -> do
+        len <- resize size . chooseInt $ (1, 32)
+        vectorOf len . chooseBoundedIntegral $ (33, 126)
+  {-# INLINEABLE shrink #-}
+  shrink (UnsafeMintValue v) =
+    UnsafeMintValue <$> do
+      -- To ensure we don't break anything, we shrink in only two ways:
+      --
+      -- 1. Dropping keys (outer or inner); and
+      -- 2. Shrinking amounts.
+      --
+      -- To make this a bit easier on ourselves, we first 'unpack' the `MintValue`
+      -- completely, shrink the resulting (nested) list, then 'repack'. As neither
+      -- of these changes affect order or uniqueness, we're safe.
+      let asList = fmap AssocMap.toList <$> AssocMap.toList v
+      shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getNonZero <$> shrink (NonZero amount)) inner) asList
+      pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
+
+-- TODO: CoArbitrary, Function
+
 -- | @since 1.0.1
 instance Arbitrary PLA.TxInfo where
   {-# INLINEABLE arbitrary #-}
@@ -864,7 +923,7 @@ instance Arbitrary PLA.TxInfo where
     routs <- arbitrary
     outs <- getNonEmpty <$> arbitrary
     fee <- arbitrary
-    mint <- Value.getMintValue <$> arbitrary
+    mint <- arbitrary
     cert <- arbitrary
     wdrl <- arbitrary
     valid <- arbitrary
@@ -883,7 +942,7 @@ instance Arbitrary PLA.TxInfo where
     routs' <- shrink routs
     NonEmpty outs' <- shrink (NonEmpty outs)
     fee' <- shrink fee
-    (Value.MintValue mint') <- shrink (Value.MintValue mint)
+    mint' <- shrink mint
     cert' <- shrink cert
     wdrl' <- shrink wdrl
     valid' <- shrink valid
@@ -906,3 +965,17 @@ instance Arbitrary PLA.ScriptContext where
   {-# INLINEABLE shrink #-}
   shrink (PLA.ScriptContext tinfo red sinfo) =
     PLA.ScriptContext <$> shrink tinfo <*> shrink red <*> shrink sinfo
+
+-- Helpers
+
+pruneZeroes :: Value.Value -> Value.Value
+pruneZeroes (Value.Value assets) =
+  Value.Value $
+    AssocMap.unsafeFromList $
+      filter (not . AssocMap.null . snd) $ -- clear empty currency lists from token purges
+        AssocMap.toList (AssocMap.mapMaybe (assocMapNonEmpty . filter ((/= 0) . snd) . AssocMap.toList) assets) -- remove all zero tokes
+  where
+    assocMapNonEmpty :: forall (k :: Type) (v :: Type). [(k, v)] -> Maybe (AssocMap.Map k v)
+    assocMapNonEmpty = \case
+      [] -> Nothing
+      lst -> Just $ AssocMap.unsafeFromList lst

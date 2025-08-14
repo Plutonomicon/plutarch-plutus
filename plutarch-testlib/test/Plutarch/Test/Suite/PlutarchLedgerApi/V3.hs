@@ -2,7 +2,6 @@ module Plutarch.Test.Suite.PlutarchLedgerApi.V3 (tests) where
 
 import Plutarch.LedgerApi.V3 qualified as PLA
 import Plutarch.Test.Laws (checkLedgerProperties)
-import Plutarch.Test.Suite.PlutarchLedgerApi.V3.Value qualified as Value
 import Plutarch.Test.Utils (fewerTests)
 import PlutusLedgerApi.V3.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
@@ -33,5 +32,4 @@ tests =
     , checkLedgerProperties @PLA.PChangedParameters
     , checkLedgerProperties @PLA.PConstitution
     , checkLedgerProperties @PLA.PCommittee
-    , Value.tests
     ]
