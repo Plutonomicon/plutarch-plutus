@@ -46,9 +46,11 @@ import Data.Coerce (Coercible, coerce)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
+import Data.Vector.Strict qualified as StrictVector
 import Data.Word (Word8)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Builtin.Array (PArray)
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
@@ -561,3 +563,16 @@ deriving via
   (DeriveBuiltinPLiftable PBuiltinBLS12_381_MlResult BLS12_381.Pairing.MlResult)
   instance
     PLiftable PBuiltinBLS12_381_MlResult
+
+-- | @since 1.11.0
+instance (PLC.Contains UPLC.DefaultUni (PlutusRepr a), PLiftable a) => PLiftable (PArray a) where
+  type AsHaskell (PArray a) = StrictVector.Vector (AsHaskell a)
+  type PlutusRepr (PArray a) = StrictVector.Vector (PlutusRepr a)
+  {-# INLINEABLE haskToRepr #-}
+  haskToRepr = StrictVector.map (haskToRepr @a)
+  {-# INLINEABLE reprToHask #-}
+  reprToHask = StrictVector.mapM (reprToHask @a)
+  {-# INLINEABLE reprToPlut #-}
+  reprToPlut = reprToPlutUni
+  {-# INLINEABLE plutToRepr #-}
+  plutToRepr = plutToReprUni

@@ -2,6 +2,11 @@
 
 # 1.11.0 -- 
 
+## Added
+
+* `PArray` data type, corresponding to CIP-138 arrays
+* Plutarch wrappers for CIP-138 array functions
+
 ## Changed
 
 * `plutus-core` dependency is now `1.51.0.0`
