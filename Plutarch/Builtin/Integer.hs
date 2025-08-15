@@ -20,7 +20,6 @@ module Plutarch.Builtin.Integer (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Term (S, Term, punsafeBuiltin, punsafeConstantInternal, (:-->))

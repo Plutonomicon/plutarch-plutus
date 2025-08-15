@@ -151,6 +151,12 @@ module Plutarch.Prelude (
   pzipWith,
   pzipWith',
 
+  -- * Arrays
+  PArray,
+  plengthOfArray,
+  pindexArray,
+  plistToArray,
+
   -- * PlutusType
   DerivePlutusType (DPTStrat),
   PCon,
@@ -271,6 +277,7 @@ module Plutarch.Prelude (
 ) where
 
 import Plutarch.Builtin
+import Plutarch.Builtin.Array
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Crypto

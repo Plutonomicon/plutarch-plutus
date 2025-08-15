@@ -1,6 +1,9 @@
-module Plutarch.Builtin.Opaque where
+module Plutarch.Builtin.Opaque (
+  POpaque (POpaque),
+  popaque,
+) where
 
-import Plutarch.Internal.Term
+import Plutarch.Internal.Term (Term, punsafeCoerce)
 
 -- | An Arbitrary Term with an unknown type
 newtype POpaque s = POpaque (Term s POpaque)
