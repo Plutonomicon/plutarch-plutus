@@ -8,7 +8,9 @@ module Plutarch.LedgerApi.V1.Crypto (
 import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1 qualified as Plutus
 import PlutusTx.Builtins.Internal qualified as PlutusTx
 
@@ -48,3 +50,27 @@ instance PLiftable PPubKeyHash where
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
+
+-- | @since 3.3.1
+instance PTryFrom PData PPubKeyHash where
+  type PTryFromExcess PData PPubKeyHash = Mret PPubKeyHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif
+        (plengthBS # unwrapped #== 28)
+        (f ())
+        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
+    pure (punsafeCoerce opq, pcon . PPubKeyHash . pcon $ unwrapped)
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PPubKeyHash) where
+  type PTryFromExcess PData (PAsData PPubKeyHash) = Mret PPubKeyHash
+  ptryFrom' opq = runTermCont $ do
+    unwrapped <- tcont . plet $ ptryFrom @(PAsData PByteString) opq snd
+    tcont $ \f ->
+      pif
+        (plengthBS # unwrapped #== 28)
+        (f ())
+        (ptraceInfoError "ptryFrom(PPubKeyHash): must be 28 bytes long")
+    pure (punsafeCoerce opq, pcon . PPubKeyHash . pcon $ unwrapped)

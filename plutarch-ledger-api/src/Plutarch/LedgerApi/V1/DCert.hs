@@ -35,6 +35,8 @@ data PDCert (s :: S)
       PEq
     , -- | @since 3.1.1
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -47,3 +49,6 @@ deriving via
   DeriveDataPLiftable PDCert Plutus.DCert
   instance
     PLiftable PDCert
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PDCert)

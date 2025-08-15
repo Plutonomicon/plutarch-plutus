@@ -106,6 +106,8 @@ data PTxInInfo (s :: S) = PTxInInfo
       PEq
     , -- | @since 3.1.1
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -118,6 +120,9 @@ deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
     PLiftable PTxInInfo
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PTxInInfo)
 
 -- | @since 3.1.1
 data PTxInfo (s :: S) = PTxInfo
@@ -147,6 +152,8 @@ data PTxInfo (s :: S) = PTxInfo
       PEq
     , -- | @since 3.1.1
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -159,6 +166,9 @@ deriving via
   DeriveDataPLiftable PTxInfo Plutus.TxInfo
   instance
     PLiftable PTxInfo
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PTxInInfo)
 
 -- | @since 3.1.1
 data PScriptContext (s :: S) = PScriptContext
@@ -178,6 +188,8 @@ data PScriptContext (s :: S) = PScriptContext
       PEq
     , -- | @since 3.1.1
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -190,3 +202,6 @@ deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance
     PLiftable PScriptContext
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PScriptContext)

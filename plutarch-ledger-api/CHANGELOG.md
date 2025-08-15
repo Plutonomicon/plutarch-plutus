@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 * `Mret`, as it wasn't used for anything
 
+### Fixed
+
+* Added missing `PTryFrom` instances for plutarch-ledger-api types
+
 ## 3.3.0 -- 01-29-2025
 
 ### Added

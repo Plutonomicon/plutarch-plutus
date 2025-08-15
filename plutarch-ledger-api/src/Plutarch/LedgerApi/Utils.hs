@@ -40,6 +40,7 @@ module Plutarch.LedgerApi.Utils (
   psor',
 ) where
 
+import Control.Arrow (Arrow (first))
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
@@ -76,6 +77,12 @@ deriving via
   DeriveDataPLiftable (PMaybeData a) (Maybe (AsHaskell a))
   instance
     (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PMaybeData a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
 
 -- | @since 3.3.0
 instance PIsData (PMaybeData a) where
@@ -161,6 +168,27 @@ deriving via
   DeriveDataPLiftable PRationalData Plutus.Rational
   instance
     PLiftable PRationalData
+
+-- | @since 3.3.1
+instance PTryFrom PData PRationalData where
+  type PTryFromExcess PData PRationalData = Mret PPositive
+  ptryFrom' opq cont = ptryFrom @(PAsData PRationalData) opq (cont . first punsafeCoerce)
+
+{- | This instance produces a verified positive denominator as the excess output.
+
+@since 3.3.1
+-}
+instance PTryFrom PData (PAsData PRationalData) where
+  type PTryFromExcess PData (PAsData PRationalData) = Mret PPositive
+  ptryFrom' opq = runTermCont $ do
+    opq' <- pletC $ pasConstr # opq
+    pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
+    flds <- pletC $ psndBuiltin # opq'
+    _numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
+    ratTail <- pletC $ ptail # flds
+    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) snd
+    pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
+    pure (punsafeCoerce opq, denm)
 
 -- | @since 3.1.0
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)

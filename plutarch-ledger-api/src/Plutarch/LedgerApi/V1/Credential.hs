@@ -34,6 +34,8 @@ data PCredential (s :: S)
 
       -- | @since 2.0.0
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -46,6 +48,9 @@ deriving via
   DeriveDataPLiftable PCredential Plutus.Credential
   instance
     PLiftable PCredential
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PCredential)
 
 -- | @since 2.0.0
 data PStakingCredential (s :: S)
@@ -67,6 +72,8 @@ data PStakingCredential (s :: S)
 
       -- | @since 2.0.0
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -79,3 +86,6 @@ deriving via
   DeriveDataPLiftable PStakingCredential Plutus.StakingCredential
   instance
     PLiftable PStakingCredential
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PStakingCredential)

@@ -71,6 +71,12 @@ deriving via
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PInterval a)
 
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PInterval a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PAsData (PInterval a))
+
 -- | @since 2.0.0
 data PLowerBound (a :: S -> Type) (s :: S)
   = PLowerBound (Term s (PExtended a)) (Term s (PAsData PBool))
@@ -109,6 +115,12 @@ instance (PIsData a, PCountable a) => POrd (PLowerBound a) where
   {-# INLINEABLE (#<) #-}
   lb1 #< lb2 = (pinclusiveLowerBound # lb1) #< (pinclusiveLowerBound # lb2)
 
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PLowerBound a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PAsData (PLowerBound a))
+
 -- | @since 2.0.0
 data PUpperBound (a :: S -> Type) (s :: S)
   = PUpperBound (Term s (PExtended a)) (Term s (PAsData PBool))
@@ -134,6 +146,12 @@ deriving via
   DeriveDataPLiftable (PUpperBound a) (Plutus.UpperBound (AsHaskell a))
   instance
     (Plutus.FromData (AsHaskell a), Plutus.ToData (AsHaskell a)) => PLiftable (PUpperBound a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PUpperBound a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PAsData (PUpperBound a))
 
 -- | @since 3.3.0
 instance (PIsData a, PEnumerable a) => PEq (PUpperBound a) where
@@ -208,6 +226,12 @@ instance (POrd a, PIsData a) => POrd (PExtended a) where
                 (_, PPosInf) -> pconstant True
                 (PPosInf, _) -> pconstant False
                 (PFinite l, PFinite r) -> pfromData l #< pfromData r
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PExtended a)
+
+-- | @since 3.3.1
+instance PTryFrom PData a => PTryFrom PData (PAsData (PExtended a))
 
 {- | Check if a value is inside the given interval.
 

@@ -34,6 +34,8 @@ data PAddress (s :: S) = PAddress
 
       -- | @since 2.0.0
       PShow
+    , -- | @since 3.3.1
+      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -46,3 +48,6 @@ deriving via
   DeriveDataPLiftable PAddress Plutus.Address
   instance
     PLiftable PAddress
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PAddress)
