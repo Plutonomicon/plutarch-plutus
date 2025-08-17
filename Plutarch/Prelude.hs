@@ -1,6 +1,4 @@
 module Plutarch.Prelude (
-  PDataNewtype (..),
-
   -- * Boolean
   PBool (..),
   pand',
@@ -276,7 +274,6 @@ module Plutarch.Prelude (
   punrollUnboundWhole,
 ) where
 
-import Plutarch.Builtin
 import Plutarch.Builtin.Array
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString

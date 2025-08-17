@@ -74,7 +74,6 @@ library
   import:          c
   exposed-modules:
     Plutarch.BitString
-    Plutarch.Builtin
     Plutarch.Builtin.Array
     Plutarch.Builtin.BLS
     Plutarch.Builtin.Bool
