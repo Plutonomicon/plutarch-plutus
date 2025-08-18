@@ -7,7 +7,6 @@ multiple places.
 -}
 module Plutarch.LedgerApi.Utils (
   -- * Types
-  Mret (..),
   PMaybeData (..),
   PRationalData (..),
   PSBool (..),
@@ -49,31 +48,6 @@ import Plutarch.Prelude
 import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
-
-{- | 'Term', but with its type arguments flipped. This is a useful helper for
-defining 'PTryFrom' instances.
-
-For example, consider the 'PTryFrom' instance for 'PTokenName':
-
-@
-instance PTryFrom PData (PAsData PTokenName) where
-   type PTryFromExcess PData (PAsData PTokenName) = Mret PTokenName
-@
-
-We need to do this because 'PTryFromExcess' expects something of kind @S ->
-Type@, but 'Term' has kind @S -> (S -> Type) -> Type@, which doesn't quite
-fit. By using 'Mret', we end up with something of kind @(S -> Type)
--> S -> Type@, which fits.
-
-The name is just 'Term' written backwards.
-
-@since 2.0.0
--}
-newtype Mret (a :: S -> Type) (s :: S) = Mret (Term s a)
-  deriving stock
-    ( -- | @since 2.0.0
-      Generic
-    )
 
 -- | @since 3.3.0
 data PMaybeData (a :: S -> Type) (s :: S)
