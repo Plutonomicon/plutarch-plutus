@@ -34,8 +34,6 @@ data PAddress (s :: S) = PAddress
 
       -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0

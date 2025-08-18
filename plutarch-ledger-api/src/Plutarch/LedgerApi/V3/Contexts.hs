@@ -74,8 +74,6 @@ newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCr
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -107,8 +105,6 @@ newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCred
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -140,8 +136,6 @@ newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -176,8 +170,6 @@ data PDRep (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -192,7 +184,7 @@ deriving via
     PLiftable PDRep
 
 -- | @since 3.3.1
-instance PTryFrom PData (PAsData PDrep)
+instance PTryFrom PData (PAsData PDRep)
 
 -- | @since 3.1.0
 data PDelegatee (s :: S)
@@ -212,8 +204,6 @@ data PDelegatee (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -256,8 +246,6 @@ data PTxCert (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -292,8 +280,6 @@ data PVoter (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -328,8 +314,6 @@ data PVote (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -362,8 +346,6 @@ data PGovernanceActionId (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -400,8 +382,6 @@ data PCommittee (s :: S) = PCommittee
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -436,8 +416,6 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -472,8 +450,6 @@ data PProtocolVersion (s :: S) = PProtocolVersion
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -506,8 +482,6 @@ newtype PChangedParameters (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -552,8 +526,6 @@ data PGovernanceAction (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -589,8 +561,6 @@ data PProposalProcedure (s :: S) = PProposalProcedure
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -631,8 +601,6 @@ data PScriptPurpose (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -670,8 +638,6 @@ data PScriptInfo (s :: S)
       PEq
     , -- | @since 3.1.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -709,8 +675,6 @@ data PTxInInfo (s :: S) = PTxInInfo
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -761,8 +725,6 @@ data PTxInfo (s :: S) = PTxInfo
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -798,8 +760,6 @@ data PScriptContext (s :: S) = PScriptContext
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0

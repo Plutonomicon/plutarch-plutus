@@ -35,8 +35,6 @@ data PDCert (s :: S)
       PEq
     , -- | @since 3.1.1
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0

@@ -105,8 +105,6 @@ data PTxOut (s :: S) = PTxOut
       PEq
     , -- | @since 3.1.1
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -141,8 +139,6 @@ data PTxInInfo (s :: S) = PTxInInfo
       PEq
     , -- | @since 3.1.1
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -185,8 +181,6 @@ data PTxInfo (s :: S) = PTxInfo
       PEq
     , -- | @since 3.1.1
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -221,8 +215,6 @@ data PScriptContext (s :: S) = PScriptContext
       PEq
     , -- | @since 3.1.1
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0

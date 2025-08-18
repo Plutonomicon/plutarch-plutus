@@ -34,8 +34,6 @@ data PCredential (s :: S)
 
       -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -72,8 +70,6 @@ data PStakingCredential (s :: S)
 
       -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0

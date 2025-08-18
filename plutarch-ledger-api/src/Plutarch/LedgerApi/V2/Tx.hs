@@ -41,8 +41,6 @@ data POutputDatum (s :: S)
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.3.1
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
@@ -79,8 +77,6 @@ data PTxOut (s :: S) = PTxOut
       PEq
     , -- | @since 2.0.0
       PShow
-    , -- | @since 3.1.0
-      PTryFrom PData
     )
   deriving
     ( -- | @since 3.3.0
