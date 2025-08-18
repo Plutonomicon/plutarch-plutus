@@ -468,6 +468,21 @@ deriving via
   instance
     PLiftable PAssetClass
 
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PAssetClass) where
+  ptryFrom' opq = runTermCont $ do
+    -- Step 1: Disassemble PData just enough to get the two sides of the pair
+    let asConstr = pasConstr # opq
+    let fields = psndBuiltin # asConstr
+    let opqCs = pheadBuiltin # fields
+    let opqTn = pheadBuiltin #$ ptailBuiltin # fields
+    -- Step 2: Run ptryFrom on the bits we pulled out to get a CurrencySymbol
+    -- and a TokenName
+    (cs, _) <- tcont $ ptryFrom @(PAsData PCurrencySymbol) opqCs
+    (tn, _) <- tcont $ ptryFrom @(PAsData PTokenName) opqTn
+    -- Step 3: Assemble and return
+    pure (pdata . pcon . PAssetClass $ ppairDataBuiltin # cs # tn, ())
+
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 
 @since 2.0.0
