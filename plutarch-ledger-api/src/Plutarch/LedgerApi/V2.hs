@@ -119,6 +119,9 @@ deriving via
   instance
     PLiftable PTxInInfo
 
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PTxInInfo)
+
 -- | @since 3.1.1
 data PTxInfo (s :: S) = PTxInfo
   { ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
@@ -161,7 +164,7 @@ deriving via
     PLiftable PTxInfo
 
 -- | @since 3.3.1
-instance PTryFrom PData (PAsData PTxInInfo)
+instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.1
 data PScriptContext (s :: S) = PScriptContext

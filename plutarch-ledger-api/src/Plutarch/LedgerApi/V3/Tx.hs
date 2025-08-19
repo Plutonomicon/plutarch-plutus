@@ -53,6 +53,9 @@ instance PLiftable PTxId where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PTxId)
+
 -- | @since 3.1.0
 data PTxOutRef (s :: S) = PTxOutRef
   { ptxOutRef'id :: Term s (PAsData PTxId)
@@ -86,3 +89,6 @@ deriving via
   DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
   instance
     PLiftable PTxOutRef
+
+-- | @since 3.3.1
+instance PTryFrom PData (PAsData PTxOutRef)
