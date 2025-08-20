@@ -54,7 +54,7 @@ deriving via
   instance
     PLiftable POutputDatum
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData POutputDatum)
 
 -- | @since 2.0.0
@@ -90,5 +90,5 @@ deriving via
   instance
     PLiftable PTxOut
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxOut)

@@ -165,7 +165,7 @@ instance PEq (PMap 'Sorted k v) where
         Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PBool)
       peqViaData = phoistAcyclic $ plam $ \m0 m1 -> pdata m0 #== pdata m1
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance
   ( PTryFrom PData (PAsData k)
   , PTryFrom PData (PAsData v)
@@ -185,7 +185,7 @@ instance
           # ptryFrom (pfstBuiltin # p) fst
           # ptryFrom (psndBuiltin # p) fst
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance
   ( POrd k
   , PIsData k

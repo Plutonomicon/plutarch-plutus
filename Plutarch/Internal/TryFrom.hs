@@ -196,7 +196,7 @@ instance PTryFrom PData (PAsData PPositive) where
     resData <- tcont . plet $ pdata res
     pure (resData, res)
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PNatural) where
   ptryFrom' opq = runTermCont $ do
     (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq

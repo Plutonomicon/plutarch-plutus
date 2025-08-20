@@ -91,7 +91,7 @@ deriving via
   instance
     PLiftable PPosixTime
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PPosixTime) where
   ptryFrom' ::
     forall (s :: S) (r :: S -> Type).

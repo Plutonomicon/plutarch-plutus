@@ -48,5 +48,5 @@ deriving via
   instance
     PLiftable PDCert
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PDCert)

@@ -87,7 +87,7 @@ deriving via
   instance
     PLiftable PColdCommitteeCredential
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PColdCommitteeCredential)
 
 -- | @since 3.1.0
@@ -118,7 +118,7 @@ deriving via
   instance
     PLiftable PHotCommitteeCredential
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PHotCommitteeCredential)
 
 -- | @since 3.1.0
@@ -149,7 +149,7 @@ deriving via
   instance
     PLiftable PDRepCredential
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PDRepCredential)
 
 -- | @since 3.1.0
@@ -183,7 +183,7 @@ deriving via
   instance
     PLiftable PDRep
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PDRep)
 
 -- | @since 3.1.0
@@ -217,7 +217,7 @@ deriving via
   instance
     PLiftable PDelegatee
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PDelegatee)
 
 -- | @since 3.1.0
@@ -259,7 +259,7 @@ deriving via
   instance
     PLiftable PTxCert
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxCert)
 
 -- | @since 3.1.0
@@ -293,7 +293,7 @@ deriving via
   instance
     PLiftable PVoter
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PVoter)
 
 -- | @since 3.1.0
@@ -327,7 +327,7 @@ deriving via
   instance
     PLiftable PVote
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PVote)
 
 -- | @since 3.1.0
@@ -359,7 +359,7 @@ deriving via
   instance
     PLiftable PGovernanceActionId
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PGovernanceActionId)
 
 -- TODO: Investigate what guarantees this provides on the Map, if any
@@ -395,7 +395,7 @@ deriving via
   instance
     PLiftable PCommittee
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PCommittee)
 
 {- | A constitution, omitting the optional anchor.
@@ -429,7 +429,7 @@ deriving via
   instance
     PLiftable PConstitution
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PConstitution)
 
 -- | @since 3.1.0
@@ -463,7 +463,7 @@ deriving via
   instance
     PLiftable PProtocolVersion
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PProtocolVersion)
 
 -- | @since 3.1.0
@@ -495,7 +495,7 @@ deriving via
   instance
     PLiftable PChangedParameters
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PChangedParameters)
 
 -- | @since 3.1.0
@@ -539,7 +539,7 @@ deriving via
   instance
     PLiftable PGovernanceAction
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PGovernanceAction)
 
 -- | @since 3.1.0
@@ -574,7 +574,7 @@ deriving via
   instance
     PLiftable PProposalProcedure
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PProposalProcedure)
 
 -- | @since 2.0.0
@@ -614,7 +614,7 @@ deriving via
   instance
     PLiftable PScriptPurpose
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptPurpose)
 
 -- | @since 3.1.0
@@ -651,7 +651,7 @@ deriving via
   instance
     PLiftable PScriptInfo
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptInfo)
 
 {- | An input of the pending transaction.
@@ -688,7 +688,7 @@ deriving via
   instance
     PLiftable PTxInInfo
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxInInfo)
 
 -- A pending transaction. This is the view as seen by a validator script.
@@ -738,7 +738,7 @@ deriving via
   instance
     PLiftable PTxInfo
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.0
@@ -773,7 +773,7 @@ deriving via
   instance
     PLiftable PScriptContext
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptContext)
 
 {- | Find the datum corresponding to a datum hash, if there is one.

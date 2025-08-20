@@ -119,7 +119,7 @@ deriving via
   instance
     PLiftable PTxInInfo
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxInInfo)
 
 -- | @since 3.1.1
@@ -163,7 +163,7 @@ deriving via
   instance
     PLiftable PTxInfo
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxInfo)
 
 -- | @since 3.1.1
@@ -197,5 +197,5 @@ deriving via
   instance
     PLiftable PScriptContext
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptContext)

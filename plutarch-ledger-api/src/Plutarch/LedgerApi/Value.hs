@@ -108,7 +108,7 @@ deriving via
   instance
     PLiftable PLovelace
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PLovelace)
 
 -- | @since 2.0.0
@@ -150,7 +150,7 @@ instance PLiftable PTokenName where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTokenName) where
   ptryFrom' opq = runTermCont $ do
     let bs = pasByteStr # opq
@@ -376,34 +376,34 @@ instance
   inv a =
     punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'AssocMap.Sorted 'NoGuarantees))
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees))
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NoGuarantees))
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) where
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) where
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) where
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
@@ -463,7 +463,7 @@ deriving via
   instance
     PLiftable PAssetClass
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PAssetClass) where
   ptryFrom' opq = runTermCont $ do
     -- Step 1: Disassemble PData just enough to get the two sides of the pair

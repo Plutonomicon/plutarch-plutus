@@ -77,7 +77,7 @@ deriving via
   instance
     (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
 
 -- | @since 3.3.0
@@ -167,7 +167,7 @@ deriving via
 
 {- | This instance produces a verified positive denominator as the excess output.
 
-@since 3.3.1
+@since 3.4.0
 -}
 instance PTryFrom PData (PAsData PRationalData) where
   ptryFrom' opq = runTermCont $ do

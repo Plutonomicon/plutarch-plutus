@@ -40,7 +40,7 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
     )
     via (DeriveNewtypePlutusType PScriptHash)
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptHash) where
   ptryFrom' opq = runTermCont $ do
     let bs = pasByteStr # opq
@@ -86,7 +86,7 @@ deriving via
   instance
     PLiftable PDatum
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PDatum)
 
 -- | @since 2.0.0
@@ -113,7 +113,7 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
     )
     via (DeriveNewtypePlutusType PDatumHash)
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PDatumHash)
 
 -- | @since 3.3.0
@@ -146,7 +146,7 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
       PShow
     )
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PRedeemer)
 
 -- | @since 2.0.0
@@ -183,7 +183,7 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
     )
     via (DeriveNewtypePlutusType PRedeemerHash)
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PRedeemerHash)
 
 -- | @since 3.3.0

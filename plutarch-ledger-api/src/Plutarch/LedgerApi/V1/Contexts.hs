@@ -46,5 +46,5 @@ deriving via
   instance
     PLiftable PScriptPurpose
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptPurpose)

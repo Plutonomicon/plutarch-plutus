@@ -47,7 +47,7 @@ deriving via
   instance
     PLiftable PCredential
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PCredential)
 
 -- | @since 2.0.0
@@ -83,5 +83,5 @@ deriving via
   instance
     PLiftable PStakingCredential
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PStakingCredential)

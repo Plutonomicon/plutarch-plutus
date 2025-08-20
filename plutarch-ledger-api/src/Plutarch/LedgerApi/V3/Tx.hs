@@ -53,7 +53,7 @@ instance PLiftable PTxId where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxId)
 
 -- | @since 3.1.0
@@ -90,5 +90,5 @@ deriving via
   instance
     PLiftable PTxOutRef
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxOutRef)

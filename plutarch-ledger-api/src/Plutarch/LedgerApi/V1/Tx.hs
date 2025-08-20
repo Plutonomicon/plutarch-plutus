@@ -46,7 +46,7 @@ deriving via
   instance
     PLiftable PTxId
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxId) where
   ptryFrom' opq = runTermCont $ do
     let unwrapped = pasConstr # opq
@@ -93,5 +93,5 @@ deriving via
   instance
     PLiftable PTxOutRef
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxOutRef)

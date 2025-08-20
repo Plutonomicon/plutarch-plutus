@@ -49,7 +49,7 @@ instance PLiftable PPubKeyHash where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since 3.3.1
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PPubKeyHash) where
   ptryFrom' opq = runTermCont $ do
     let bs = pasByteStr # opq
