@@ -170,16 +170,15 @@ deriving via
 @since 3.3.1
 -}
 instance PTryFrom PData (PAsData PRationalData) where
-  type PTryFromExcess PData (PAsData PRationalData) = Mret PPositive
   ptryFrom' opq = runTermCont $ do
     opq' <- pletC $ pasConstr # opq
     pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
     flds <- pletC $ psndBuiltin # opq'
-    _numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
+    numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
     ratTail <- pletC $ ptail # flds
     denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) snd
     pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
-    pure (punsafeCoerce opq, denm)
+    pure (pdata . pcon $ PRationalData (pdata numr) (pdata denm), ())
 
 -- | @since 3.1.0
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)

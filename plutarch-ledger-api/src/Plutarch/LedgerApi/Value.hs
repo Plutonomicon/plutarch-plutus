@@ -70,7 +70,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -385,35 +384,31 @@ instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NoGuarantees))
 
 -- | @since 3.3.1
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) = Mret (PValue 'AssocMap.Sorted 'Positive)
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+    pure (pdata unwrapped, ())
 
 -- | @since 3.3.1
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) = Mret (PValue 'AssocMap.Unsorted 'Positive)
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+    pure (pdata unwrapped, ())
 
 -- | @since 3.3.1
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) = Mret (PValue 'AssocMap.Sorted 'NonZero)
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+    pure (pdata unwrapped, ())
 
 -- | @since 3.3.1
 instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
-  type PTryFromExcess PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) = Mret (PValue 'AssocMap.Unsorted 'NonZero)
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
     unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+    pure (pdata unwrapped, ())
 
 -- | @since 3.3.0
 newtype PAssetClass (s :: S) = PAssetClass (Term s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)))

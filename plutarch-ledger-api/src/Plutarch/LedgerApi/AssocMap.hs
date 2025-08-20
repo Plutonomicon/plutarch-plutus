@@ -87,7 +87,6 @@ import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
 import Plutarch.LedgerApi.Utils (
-  Mret,
   PSBool (PSFalse, PSTrue),
   psfalse,
   pstrue,
@@ -173,11 +172,10 @@ instance
   ) =>
   PTryFrom PData (PAsData (PMap 'Unsorted k v))
   where
-  type PTryFromExcess PData (PAsData (PMap 'Unsorted k v)) = Mret (PMap 'Unsorted k v)
   ptryFrom' opq = runTermCont $ do
     opq' <- tcont . plet $ pasMap # opq
     unwrapped <- tcont . plet $ PPrelude.pmap # ptryFromPair # opq'
-    pure (punsafeCoerce opq, pcon . PMap $ unwrapped)
+    pure (pdata . pcon . PMap $ unwrapped, ())
     where
       ptryFromPair ::
         forall (s :: S).
@@ -196,11 +194,10 @@ instance
   ) =>
   PTryFrom PData (PAsData (PMap 'Sorted k v))
   where
-  type PTryFromExcess PData (PAsData (PMap 'Sorted k v)) = Mret (PMap 'Sorted k v)
   ptryFrom' opq = runTermCont $ do
     (opq', _) <- tcont $ ptryFrom @(PAsData (PMap 'Unsorted k v)) opq
     unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
-    pure (punsafeCoerce opq, unwrapped)
+    pure (pdata unwrapped, ())
 
 -- | @since 2.0.0
 data Commutativity = Commutative | NonCommutative

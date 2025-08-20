@@ -13,7 +13,6 @@ module Plutarch.LedgerApi.V1.Time (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.LedgerApi.Utils (Mret)
 import Plutarch.Prelude
 import Plutarch.Reducible (Reduce)
 import Plutarch.Unsafe (punsafeCoerce)
@@ -94,16 +93,15 @@ deriving via
 
 -- | @since 3.3.1
 instance PTryFrom PData (PAsData PPosixTime) where
-  type PTryFromExcess PData (PAsData PPosixTime) = Mret PPosixTime
   ptryFrom' ::
     forall (s :: S) (r :: S -> Type).
     Term s PData ->
     ((Term s (PAsData PPosixTime), Reduce (PTryFromExcess PData (PAsData PPosixTime) s)) -> Term s r) ->
     Term s r
   ptryFrom' opq = runTermCont $ do
-    (wrapped :: Term s (PAsData PInteger), unwrapped :: Term s PInteger) <-
+    (wrapped :: Term s (PAsData PInteger), _) <-
       tcont $ ptryFrom @(PAsData PInteger) opq
-    pure (punsafeCoerce wrapped, pposixTime unwrapped)
+    pure (punsafeCoerce wrapped, ())
 
 {- | Construct a 'PPosixTime' from a 'PInteger'. Same as using the constructor,
 but a lot shorter.
