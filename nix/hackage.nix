@@ -114,4 +114,13 @@
       src = ../.;
     };
   };
+  plutarch-testlib = {
+    # Unstable
+    "0" = {
+      timestamp = "2024-10-09T22:38:57Z";
+      overrideVersion = true;
+      subdir = "plutarch-testlib";
+      src = ../.;
+    };
+  };
 }
