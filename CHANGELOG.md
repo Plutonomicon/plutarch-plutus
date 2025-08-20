@@ -1,6 +1,6 @@
 # Revision history for plutarch
 
-# 1.11.0 -- 
+# 1.11.0 -- 21-08-2025 
 
 ## Added
 
@@ -10,6 +10,7 @@
 ## Changed
 
 * `plutus-core` dependency is now `1.51.0.0`
+* `plutarch-testlib` is now available via Nix as well
 
 # 1.10.1 -- 17-02-2025
 
