@@ -47,6 +47,9 @@ deriving via
   instance
     PLiftable PCredential
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PCredential)
+
 -- | @since 2.0.0
 data PStakingCredential (s :: S)
   = PStakingHash (Term s PCredential)
@@ -79,3 +82,6 @@ deriving via
   DeriveDataPLiftable PStakingCredential Plutus.StakingCredential
   instance
     PLiftable PStakingCredential
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PStakingCredential)

@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.Test.QuickCheck (
@@ -5,10 +6,12 @@ module Plutarch.Test.QuickCheck (
   propEvalFail,
   propCompileFail,
   propEvalEqual,
+  propPTryFromRoundrip,
   checkHaskellEquivalent,
   checkHaskellEquivalent2,
 ) where
 
+import Data.Data (Proxy (Proxy), Typeable, typeRep)
 import Data.Kind (Type)
 import Data.Text qualified as Text
 import Plutarch.Internal.Term (Config (NoTracing))
@@ -16,6 +19,7 @@ import Plutarch.Prelude
 import Plutarch.Test.Unit (TermResult (Evaluated, FailedToCompile, FailedToEvaluate), evalTermResult)
 import Plutarch.Test.Utils (precompileTerm, prettyEquals, prettyShow)
 import Prettyprinter (Pretty)
+import Test.QuickCheck (forAll)
 import Test.QuickCheck qualified as QuickCheck
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.QuickCheck (
@@ -99,6 +103,33 @@ propEval name mkTerm =
       FailedToCompile err -> counterexample ("Failed to compile: " <> Text.unpack err) False
       FailedToEvaluate err _ -> counterexample ("Failed to evaluate: " <> show err) False
       Evaluated _ _ -> property True
+
+-- | @since 3.1.1
+propPTryFromRoundrip ::
+  forall a.
+  ( Show (AsHaskell a)
+  , Arbitrary (AsHaskell a)
+  , Typeable (AsHaskell a)
+  , PLiftable a
+  , PEq a
+  , PIsData a
+  , PTryFrom PData (PAsData a)
+  ) =>
+  TestTree
+propPTryFromRoundrip = testProperty testName $ forAll arbitrary $ \original ->
+  plift (precompileTerm (roundtripScript @a) # pconstant original)
+  where
+    testName :: TestName
+    testName = "PTryFrom PData (PAsData " ++ show (typeRep (Proxy @(AsHaskell a))) ++ ")"
+
+    roundtripScript ::
+      forall (a :: S -> Type) (s :: S).
+      (PEq a, PIsData a, PTryFrom PData (PAsData a)) =>
+      Term s (a :--> PBool)
+    roundtripScript = plam $ \original -> do
+      let encoded = pdataImpl original
+      let decoded = pfromData . unTermCont $ fst <$> tcont (ptryFrom @(PAsData a) encoded)
+      original #== decoded
 
 -- | @since 1.0.0
 checkHaskellEquivalent ::

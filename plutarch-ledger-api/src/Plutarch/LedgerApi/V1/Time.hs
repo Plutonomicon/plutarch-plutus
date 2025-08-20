@@ -88,6 +88,9 @@ deriving via
   instance
     PLiftable PPosixTime
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PPosixTime)
+
 {- | Construct a 'PPosixTime' from a 'PInteger'. Same as using the constructor,
 but a lot shorter.
 

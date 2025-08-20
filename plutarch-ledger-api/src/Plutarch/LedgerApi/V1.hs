@@ -118,6 +118,9 @@ deriving via
   instance
     PLiftable PTxOut
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxOut)
+
 -- | @since 3.1.1
 data PTxInInfo (s :: S) = PTxInInfo
   { ptxInInfo'outRef :: Term s Tx.PTxOutRef
@@ -148,6 +151,9 @@ deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
     PLiftable PTxInInfo
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxInInfo)
 
 -- | @since 3.3.0
 data PTxInfo (s :: S) = PTxInfo
@@ -188,6 +194,9 @@ deriving via
   instance
     PLiftable PTxInfo
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxInfo)
+
 -- | @since 3.1.1
 data PScriptContext (s :: S) = PScriptContext
   { pscriptContext'txInfo :: Term s PTxInfo
@@ -218,3 +227,6 @@ deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance
     PLiftable PScriptContext
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PScriptContext)

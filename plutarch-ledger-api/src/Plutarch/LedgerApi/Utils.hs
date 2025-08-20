@@ -77,6 +77,9 @@ deriving via
   instance
     (Plutus.ToData (AsHaskell a), Plutus.FromData (AsHaskell a)) => PLiftable (PMaybeData a)
 
+-- | @since 3.4.0
+instance PTryFrom PData a => PTryFrom PData (PAsData (PMaybeData a))
+
 -- | @since 3.3.0
 instance PIsData (PMaybeData a) where
   {-# INLINEABLE pdataImpl #-}
@@ -161,6 +164,18 @@ deriving via
   DeriveDataPLiftable PRationalData Plutus.Rational
   instance
     PLiftable PRationalData
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PRationalData) where
+  ptryFrom' opq = runTermCont $ do
+    opq' <- pletC $ pasConstr # opq
+    pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
+    flds <- pletC $ psndBuiltin # opq'
+    numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) fst
+    ratTail <- pletC $ ptail # flds
+    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) fst
+    pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
+    pure (pdata . pcon $ PRationalData numr denm, ())
 
 -- | @since 3.1.0
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)
