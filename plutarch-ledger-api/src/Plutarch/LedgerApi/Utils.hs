@@ -165,20 +165,17 @@ deriving via
   instance
     PLiftable PRationalData
 
-{- | This instance produces a verified positive denominator as the excess output.
-
-@since 3.4.0
--}
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PRationalData) where
   ptryFrom' opq = runTermCont $ do
     opq' <- pletC $ pasConstr # opq
     pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
     flds <- pletC $ psndBuiltin # opq'
-    numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) snd
+    numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) fst
     ratTail <- pletC $ ptail # flds
-    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) snd
+    denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) fst
     pguardC "ptryFrom(PRationalData): constructor fields len > 2" $ ptail # ratTail #== pnil
-    pure (pdata . pcon $ PRationalData (pdata numr) (pdata denm), ())
+    pure (pdata . pcon $ PRationalData numr denm, ())
 
 -- | @since 3.1.0
 prationalFromData :: ClosedTerm (PRationalData :--> PRational)

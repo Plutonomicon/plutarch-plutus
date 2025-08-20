@@ -189,17 +189,14 @@ instance PTryFrom PInteger PPositive where
 
 -- | @since 1.10.0
 instance PTryFrom PData (PAsData PPositive) where
-  type PTryFromExcess PData (PAsData PPositive) = Flip Term PPositive
   ptryFrom' opq = runTermCont $ do
     (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq
-    res <- tcont . plet $ ptryPositive # i
-    resData <- tcont . plet $ pdata res
-    pure (resData, res)
+    let res = ptryPositive # i
+    pure (pdata res, ())
 
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PNatural) where
   ptryFrom' opq = runTermCont $ do
     (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq
-    res <- tcont . plet $ ptryNatural # i
-    resData <- tcont . plet $ pdata res
-    pure (resData, ())
+    let res = ptryNatural # i
+    pure (pdata res, ())
