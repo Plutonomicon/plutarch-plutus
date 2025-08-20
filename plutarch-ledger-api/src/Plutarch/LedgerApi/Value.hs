@@ -151,10 +151,7 @@ instance PLiftable PTokenName where
   plutToRepr = plutToReprUni
 
 -- | @since 3.4.0
-instance PTryFrom PData (PAsData PTokenName) where
-  ptryFrom' opq = runTermCont $ do
-    let bs = pasByteStr # opq
-    pure (pdata . pcon . PTokenName $ bs, ())
+instance PTryFrom PData (PAsData PTokenName)
 
 -- | @since 2.0.0
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
@@ -193,10 +190,7 @@ instance PLiftable PCurrencySymbol where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
-instance PTryFrom PData (PAsData PCurrencySymbol) where
-  ptryFrom' opq = runTermCont $ do
-    let bs = pasByteStr # opq
-    pure (pdata . pcon . PCurrencySymbol $ bs, ())
+instance PTryFrom PData (PAsData PCurrencySymbol)
 
 -- | @since 2.0.0
 data AmountGuarantees = NoGuarantees | NonZero | Positive
@@ -464,19 +458,7 @@ deriving via
     PLiftable PAssetClass
 
 -- | @since 3.4.0
-instance PTryFrom PData (PAsData PAssetClass) where
-  ptryFrom' opq = runTermCont $ do
-    -- Step 1: Disassemble PData just enough to get the two sides of the pair
-    let asConstr = pasConstr # opq
-    let fields = psndBuiltin # asConstr
-    let opqCs = pheadBuiltin # fields
-    let opqTn = pheadBuiltin #$ ptailBuiltin # fields
-    -- Step 2: Run ptryFrom on the bits we pulled out to get a CurrencySymbol
-    -- and a TokenName
-    (cs, _) <- tcont $ ptryFrom @(PAsData PCurrencySymbol) opqCs
-    (tn, _) <- tcont $ ptryFrom @(PAsData PTokenName) opqTn
-    -- Step 3: Assemble and return
-    pure (pdata . pcon . PAssetClass $ ppairDataBuiltin # cs # tn, ())
+instance PTryFrom PData (PAsData PAssetClass)
 
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 

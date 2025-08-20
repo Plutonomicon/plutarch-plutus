@@ -50,7 +50,4 @@ instance PLiftable PPubKeyHash where
   plutToRepr = plutToReprUni
 
 -- | @since 3.4.0
-instance PTryFrom PData (PAsData PPubKeyHash) where
-  ptryFrom' opq = runTermCont $ do
-    let bs = pasByteStr # opq
-    pure (pdata . pcon . PPubKeyHash $ bs, ())
+instance PTryFrom PData (PAsData PPubKeyHash)

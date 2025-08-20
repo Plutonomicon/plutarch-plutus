@@ -41,10 +41,7 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
     via (DeriveNewtypePlutusType PScriptHash)
 
 -- | @since 3.4.0
-instance PTryFrom PData (PAsData PScriptHash) where
-  ptryFrom' opq = runTermCont $ do
-    let bs = pasByteStr # opq
-    pure (pdata . pcon . PScriptHash $ bs, ())
+instance PTryFrom PData (PAsData PScriptHash)
 
 -- | @since 3.3.0
 instance PLiftable PScriptHash where

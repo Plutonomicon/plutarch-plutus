@@ -47,13 +47,7 @@ deriving via
     PLiftable PTxId
 
 -- | @since 3.4.0
-instance PTryFrom PData (PAsData PTxId) where
-  ptryFrom' opq = runTermCont $ do
-    let unwrapped = pasConstr # opq
-    let inner = psndBuiltin # unwrapped
-    let opqTxId = phead # inner
-    (txId, _) <- tcont $ ptryFrom @(PAsData PByteString) opqTxId
-    pure (pdata . pcon . PTxId $ txId, ())
+instance PTryFrom PData (PAsData PTxId)
 
 {- | Reference to a transaction output, with an index referencing which exact
 output we mean.
