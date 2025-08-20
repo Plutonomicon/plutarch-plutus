@@ -20,13 +20,7 @@ import Generics.SOP.Constraint (All, All2, Head, SListI, SListI2)
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PContravariant'',
-  PCovariant',
-  PCovariant'',
   PInner,
-  PVariant',
-  PVariant'',
   PlutusType,
   pcon,
   pcon',
@@ -67,9 +61,6 @@ newtype PScottStruct (struct :: [[S -> Type]]) (s :: S) = PScottStruct
 -- | @since 1.10.0
 instance forall struct. (SListI2 struct, PScottStructConstraint struct) => PlutusType (PScottStruct struct) where
   type PInner (PScottStruct struct) = PForall (PScottStructInner struct) -- try `Any`
-  type PCovariant' (PScottStruct struct) = All2 PCovariant'' struct
-  type PContravariant' (PScottStruct struct) = All2 PContravariant'' struct
-  type PVariant' (PScottStruct struct) = All2 PVariant'' struct
   pcon' (PScottStruct x) = punsafeCoerce $ pconScottStruct @struct x
   pmatch' x f = pmatchScottStruct @struct (punsafeCoerce x) (f . PScottStruct)
 
@@ -98,9 +89,6 @@ newtype PScottRec (struct :: [S -> Type]) (s :: S) = PScottRec
 -- | @since 1.10.0
 instance SListI struct => PlutusType (PScottRec struct) where
   type PInner (PScottRec struct) = PForall (PScottRecInner struct)
-  type PCovariant' (PScottRec struct) = All PCovariant'' struct
-  type PContravariant' (PScottRec struct) = All PContravariant'' struct
-  type PVariant' (PScottRec struct) = All PVariant'' struct
   pcon' (PScottRec x) = punsafeCoerce $ pconScottRec x
   pmatch' x f = pmatchScottRec (punsafeCoerce x) (f . PScottRec)
 
@@ -142,9 +130,6 @@ instance
   PlutusType (DeriveAsScottStruct a)
   where
   type PInner (DeriveAsScottStruct a) = PScottStruct (UnTermStruct (a Any))
-  type PCovariant' (DeriveAsScottStruct a) = (PCovariant' a)
-  type PContravariant' (DeriveAsScottStruct a) = (PContravariant' a)
-  type PVariant' (DeriveAsScottStruct a) = (PVariant' a)
   pcon' (DeriveAsScottStruct x) =
     pcon @(PScottStruct (UnTermStruct (a Any))) $ PScottStruct $ PStruct $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
@@ -169,9 +154,6 @@ instance
   PlutusType (DeriveAsScottRec a)
   where
   type PInner (DeriveAsScottRec a) = PScottRec (UnTermRec (Head (Code (a Any))))
-  type PCovariant' (DeriveAsScottRec a) = (PCovariant' a)
-  type PContravariant' (DeriveAsScottRec a) = (PContravariant' a)
-  type PVariant' (DeriveAsScottRec a) = (PVariant' a)
   pcon' (DeriveAsScottRec x) =
     pcon $ PScottRec $ PRec $ SOP.unZ $ SOP.unSOP $ SOP.hcoerce $ SOP.from x
   pmatch' x f =

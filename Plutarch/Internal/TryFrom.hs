@@ -11,8 +11,6 @@ module Plutarch.Internal.TryFrom (
   PSubtype,
   PSubtype',
   pupcast,
-  pupcastF,
-  pdowncastF,
 ) where
 
 import Data.Functor.Const (Const)
@@ -52,9 +50,7 @@ import Plutarch.Internal.Subtype (
   PSubtype,
   PSubtype',
   PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
-  pdowncastF,
   pupcast,
-  pupcastF,
  )
 import Plutarch.Internal.Term (
   PType,

@@ -37,10 +37,7 @@ import Plutarch.Internal.Lift (
   pconstant,
  )
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PCovariant',
   PInner,
-  PVariant',
   PlutusType,
   pcon',
   pmatch',
@@ -86,9 +83,6 @@ instance SOP.Generic (PFoo s)
 -}
 instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a) where
   type PInner (DeriveAsTag a) = PInteger
-  type PCovariant' (DeriveAsTag a) = (PCovariant' a)
-  type PContravariant' (DeriveAsTag a) = (PContravariant' a)
-  type PVariant' (DeriveAsTag a) = (PVariant' a)
   pcon' :: forall s. DeriveAsTag a s -> Term s (PInner (DeriveAsTag a))
   pcon' (DeriveAsTag x) =
     pconstant @PInteger $ toInteger $ SOP.hindex $ SOP.from x

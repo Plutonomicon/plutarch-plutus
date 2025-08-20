@@ -7,8 +7,6 @@ module Plutarch.Internal.PlutusType (
   PlutusType,
   PInnermost,
   PlutusTypeStratConstraint,
-  PCon,
-  PMatch,
   pcon',
   pmatch',
   pmatch,
@@ -20,15 +18,6 @@ module Plutarch.Internal.PlutusType (
   DerivedPInner,
   derivedPCon,
   derivedPMatch,
-  PVariant,
-  PCovariant,
-  PContravariant,
-  PVariant',
-  PCovariant',
-  PContravariant',
-  PVariant'',
-  PCovariant'',
-  PContravariant'',
   DeriveNewtypePlutusType (DeriveNewtypePlutusType, unDeriveNewtypePlutusType),
   DeriveFakePlutusType (DeriveFakePlutusType),
 ) where
@@ -66,7 +55,6 @@ import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import GHC.TypeLits (ErrorMessage (ShowType, Text, (:<>:)), TypeError)
 import Generics.SOP (
-  All2,
   Code,
   I (I),
   NP (Nil, (:*)),
@@ -117,12 +105,6 @@ class
 class PlutusType (a :: PType) where
   type PInner a :: PType
   type PInner a = DerivedPInner (DPTStrat a) a
-  type PCovariant' a :: Constraint
-  type PCovariant' a = All2 PCovariant'' (PCode a)
-  type PContravariant' a :: Constraint
-  type PContravariant' a = All2 PContravariant'' (PCode a)
-  type PVariant' a :: Constraint
-  type PVariant' a = All2 PVariant'' (PCode a)
   pcon' :: forall s. a s -> Term s (PInner a)
   default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
   pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
@@ -132,11 +114,6 @@ class PlutusType (a :: PType) where
   default pmatch' :: DerivePlutusType a => forall s b. Term s (PInner a) -> (a s -> Term s b) -> Term s b
   pmatch' = derivedPMatch
 
-{-# DEPRECATED PCon "Use PlutusType" #-}
-type PCon = PlutusType
-{-# DEPRECATED PMatch "Use PlutusType" #-}
-type PMatch = PlutusType
-
 -- | Construct a Plutarch Term via a Haskell datatype
 pcon :: PlutusType a => a s -> Term s a
 pcon x = punsafeCoerce (pcon' x)
@@ -145,29 +122,8 @@ pcon x = punsafeCoerce (pcon' x)
 pmatch :: PlutusType a => Term s a -> (a s -> Term s b) -> Term s b
 pmatch x = pmatch' (punsafeCoerce x)
 
-class PCovariant' a => PCovariant'' a
-instance PCovariant' a => PCovariant'' a
-
-class PContravariant' a => PContravariant'' a
-instance PContravariant' a => PContravariant'' a
-
-class PVariant' a => PVariant'' a
-instance PVariant' a => PVariant'' a
-
-class (forall t. PCovariant'' t => PCovariant'' (a t)) => PCovariant a
-instance (forall t. PCovariant'' t => PCovariant'' (a t)) => PCovariant a
-
-class (forall t. PCovariant'' t => PContravariant'' (a t)) => PContravariant a
-instance (forall t. PCovariant'' t => PContravariant'' (a t)) => PContravariant a
-
-class (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
-instance (forall t. PVariant'' t => PVariant'' (a t)) => PVariant a
-
 instance PlutusType (a :--> b) where
   type PInner (a :--> b) = a :--> b
-  type PCovariant' (a :--> b) = (PContravariant' a, PCovariant' b)
-  type PContravariant' (a :--> b) = (PCovariant' a, PContravariant' b)
-  type PVariant' (a :--> b) = (PVariant' a, PVariant' b)
   pcon' (PLam f) = plam' f
   pmatch' f g = plet f \f' -> g (PLam (f' #))
 
@@ -234,9 +190,6 @@ instance
   -- This is not @PInner (DeriveNewtypePlutusType a) = PInner a@ because
   -- We want the PInner of wrapper type to be the type it wraps not the PInner of that.
   type PInner (DeriveNewtypePlutusType a) = UnTermSingle (Head (Head (Code (a Any))))
-  type PCovariant' (DeriveNewtypePlutusType a) = PCovariant' a
-  type PContravariant' (DeriveNewtypePlutusType a) = PContravariant' a
-  type PVariant' (DeriveNewtypePlutusType a) = PVariant' a
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
   pcon' :: forall s. DeriveNewtypePlutusType a s -> Term s (PInner (DeriveNewtypePlutusType a))
@@ -250,8 +203,6 @@ instance
 
 --------------------------------------------------------------------------------
 
-class Bottom
-
 {- |
 This is a cursed derivation strategy that will give you @PlutusType@ with no questions asked. This is occasionally helpful
 for deriving @PlutusType@ for another derivation strategy wrapper whose target instance requires @PlutusType@ as superclass.
@@ -262,9 +213,6 @@ newtype DeriveFakePlutusType (a :: S -> Type) (s :: S) = DeriveFakePlutusType (a
 
 instance PlutusType (DeriveFakePlutusType a) where
   type PInner (DeriveFakePlutusType a) = TypeError ('ShowType a ':<>: 'Text " derived PlutusType with DeriveFakePlutusType. This type is not meant to be used as PlutusType.")
-  type PCovariant' (DeriveFakePlutusType a) = Bottom
-  type PContravariant' (DeriveFakePlutusType a) = Bottom
-  type PVariant' (DeriveFakePlutusType a) = Bottom
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
   pcon' :: forall s. DeriveFakePlutusType a s -> Term s (PInner (DeriveFakePlutusType a))
@@ -279,9 +227,6 @@ deriving via (DeriveNewtypePlutusType PInteger) instance PlutusType PInteger
 
 instance PlutusType POpaque where
   type PInner POpaque = POpaque
-  type PCovariant' POpaque = ()
-  type PContravariant' POpaque = ()
-  type PVariant' POpaque = ()
   pcon' (POpaque x) = x
   pmatch' x f = f (POpaque x)
 
@@ -296,25 +241,16 @@ instance PlutusType PBool where
 
 instance PlutusType PData where
   type PInner PData = PData
-  type PCovariant' PData = ()
-  type PContravariant' PData = ()
-  type PVariant' PData = ()
   pcon' (PData t) = t
   pmatch' t f = f (PData t)
 
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
-  type PCovariant' (PBuiltinPair a b) = (PCovariant' a, PCovariant' b)
-  type PContravariant' (PBuiltinPair a b) = (PContravariant' a, PContravariant' b)
-  type PVariant' (PBuiltinPair a b) = (PVariant' a, PVariant' b)
   pcon' (PBuiltinPair x) = x
   pmatch' x f = f (PBuiltinPair x)
 
 instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
-  type PCovariant' (PBuiltinList a) = PCovariant' a
-  type PContravariant' (PBuiltinList a) = PContravariant' a
-  type PVariant' (PBuiltinList a) = PVariant' a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
   pcon' PNil = getPLifted $ unsafeHaskToUni @[PlutusRepr a] []
   pmatch' xs' f = plet xs' $ \xs ->
@@ -326,9 +262,6 @@ instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList 
 
 instance PIsData a => PlutusType (PAsData a) where
   type PInner (PAsData a) = PData
-  type PCovariant' (PAsData a) = PCovariant' a
-  type PContravariant' (PAsData a) = PContravariant' a
-  type PVariant' (PAsData a) = PVariant' a
   pcon' (PAsData t) = punsafeCoerce $ pdata t
   pmatch' t f = f (PAsData $ pfromData $ punsafeCoerce t)
 
@@ -364,8 +297,5 @@ deriving via (DeriveNewtypePlutusType PEndianness) instance PlutusType PEndianne
 -- | @since 1.11.0
 instance PlutusType (PArray a) where
   type PInner (PArray a) = PArray a
-  type PCovariant' (PArray a) = PCovariant' a
-  type PContravariant' (PArray a) = PContravariant' a
-  type PVariant' (PArray a) = PVariant' a
   pcon' (PArray t) = t
   pmatch' x f = f (PArray x)

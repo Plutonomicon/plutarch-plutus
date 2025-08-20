@@ -157,8 +157,6 @@ module Plutarch.Prelude (
 
   -- * PlutusType
   DerivePlutusType (DPTStrat),
-  PCon,
-  PMatch,
   PlutusType (PInner),
   pcon,
   pmatch,

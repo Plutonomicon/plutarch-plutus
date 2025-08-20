@@ -34,13 +34,7 @@ import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Lift
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PContravariant'',
-  PCovariant',
-  PCovariant'',
   PInner,
-  PVariant',
-  PVariant'',
   PlutusType,
   pcon,
   pcon',
@@ -84,9 +78,6 @@ newtype PSOPStruct (struct :: [[S -> Type]]) (s :: S) = PSOPStruct
 -- | @since 1.10.0
 instance (SListI2 struct, PSOPStructConstraint struct) => PlutusType (PSOPStruct struct) where
   type PInner (PSOPStruct struct) = POpaque
-  type PCovariant' (PSOPStruct struct) = All2 PCovariant'' struct
-  type PContravariant' (PSOPStruct struct) = All2 PContravariant'' struct
-  type PVariant' (PSOPStruct struct) = All2 PVariant'' struct
   pcon' (PSOPStruct x) = punsafeCoerce $ pconSOPStruct x
   pmatch' x f = pmatchSOPStruct (punsafeCoerce x) (f . PSOPStruct)
 
@@ -111,9 +102,6 @@ newtype PSOPRec (struct :: [S -> Type]) (s :: S) = PSOPRec
 -- | @since 1.10.0
 instance SListI struct => PlutusType (PSOPRec struct) where
   type PInner (PSOPRec struct) = POpaque
-  type PCovariant' (PSOPRec struct) = All PCovariant'' struct
-  type PContravariant' (PSOPRec struct) = All PContravariant'' struct
-  type PVariant' (PSOPRec struct) = All PVariant'' struct
   pcon' (PSOPRec x) = punsafeCoerce $ pconSOPRec x
   pmatch' x f = pmatchSOPRec (punsafeCoerce x) (f . PSOPRec)
 
@@ -152,9 +140,6 @@ instance
   PlutusType (DeriveAsSOPStruct a)
   where
   type PInner (DeriveAsSOPStruct a) = PSOPStruct (UnTermStruct (a Any))
-  type PCovariant' (DeriveAsSOPStruct a) = PCovariant' a
-  type PContravariant' (DeriveAsSOPStruct a) = PContravariant' a
-  type PVariant' (DeriveAsSOPStruct a) = PVariant' a
   pcon' (DeriveAsSOPStruct x) =
     pcon @(PSOPStruct (UnTermStruct (a Any))) $ PSOPStruct $ PStruct $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
@@ -184,9 +169,6 @@ instance
   PlutusType (DeriveAsSOPRec a)
   where
   type PInner (DeriveAsSOPRec a) = PSOPRec (UnTermRec (Head (Code (a Any))))
-  type PCovariant' (DeriveAsSOPRec a) = PCovariant' a
-  type PContravariant' (DeriveAsSOPRec a) = PContravariant' a
-  type PVariant' (DeriveAsSOPRec a) = PVariant' a
   pcon' (DeriveAsSOPRec x) =
     pcon $ PSOPRec $ PRec $ SOP.unZ $ SOP.unSOP $ SOP.hcoerce $ SOP.from x
   pmatch' x f =

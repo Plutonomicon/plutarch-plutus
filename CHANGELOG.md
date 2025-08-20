@@ -1,5 +1,15 @@
 # Revision history for plutarch
 
+# 1.12.0 -- 
+
+## Removed
+
+* `PCon` and `PMatch`, as they were deprecated (for a long time)
+* `PVariant`, `PCovariant`, `PContravariant`, and all related types and type
+  classes (not useful)
+* `prememberData`, `pforgetData'` and `prememberData'` (as they were broken for
+  a while)
+
 # 1.11.0 -- 21-08-2025 
 
 ## Added
