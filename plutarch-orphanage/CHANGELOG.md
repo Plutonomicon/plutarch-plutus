@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 1.2.0 -- 21-08-2025
+
+### Added
+
+* `Arbitrary` instance for `plutus-ledger-api`'s `MintValue`
+
+### Changed
+
+* V3 `TxInfo` generator and shrinker now use `MintValue` from
+  `plutus-ledger-api` instead of `MintValue` from us
+* Bump `plutus-core` to `1.52.0.0`
+
+### Removed
+
+* `MintValue` modifier, as it no longer has a use
+
 ## 1.1.0
 
 ### Added

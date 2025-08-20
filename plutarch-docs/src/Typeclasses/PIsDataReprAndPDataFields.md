@@ -296,7 +296,7 @@ Thus, you can use `PBuiltinList (PAsData PInteger)` as a field type, but not `PB
 
 > Also see: [Isomorphism between Haskell ADTs and `PIsData`](./../Tricks/makeIsDataIndexed,HaskellADTs,PIsDataRepr.md)
 
-And you'd simply derive `PlutustType` with plutus data representation using generics. You can then also derive `PIsData` and if the dataype only has one ocnstructor `PDataFields`.
+And you'd simply derive `PlutustType` with plutus data representation using generics. You can then also derive `PIsData` and if the datatype only has one constructor `PDataFields`.
 
 Furthermore, you can also derive the following typeclasses after deriving `PlutusType` with `DPTStrat _ = PlutusTypeData`
 

@@ -48,3 +48,6 @@ instance PLiftable PPubKeyHash where
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PPubKeyHash)

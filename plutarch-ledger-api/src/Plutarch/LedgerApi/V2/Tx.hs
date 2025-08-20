@@ -54,6 +54,9 @@ deriving via
   instance
     PLiftable POutputDatum
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData POutputDatum)
+
 -- | @since 2.0.0
 data PTxOut (s :: S) = PTxOut
   { ptxOut'address :: Term s PAddress
@@ -86,3 +89,6 @@ deriving via
   DeriveDataPLiftable PTxOut Plutus.TxOut
   instance
     PLiftable PTxOut
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxOut)

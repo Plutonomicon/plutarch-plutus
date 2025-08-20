@@ -45,7 +45,7 @@ import Plutarch.Internal.IsData (
   pfromData,
  )
 import Plutarch.Internal.ListLike (PListLike (pnull), pmap)
-import Plutarch.Internal.Numeric (PPositive, ptryPositive)
+import Plutarch.Internal.Numeric (PNatural, PPositive, ptryNatural, ptryPositive)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Subtype (
@@ -189,9 +189,14 @@ instance PTryFrom PInteger PPositive where
 
 -- | @since 1.10.0
 instance PTryFrom PData (PAsData PPositive) where
-  type PTryFromExcess PData (PAsData PPositive) = Flip Term PPositive
   ptryFrom' opq = runTermCont $ do
     (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq
-    res <- tcont . plet $ ptryPositive # i
-    resData <- tcont . plet $ pdata res
-    pure (resData, res)
+    let res = ptryPositive # i
+    pure (pdata res, ())
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PNatural) where
+  ptryFrom' opq = runTermCont $ do
+    (_, i) <- tcont $ ptryFrom @(PAsData PInteger) opq
+    let res = ptryNatural # i
+    pure (pdata res, ())

@@ -1,8 +1,18 @@
-# Changelog for `plutarch-ledger-api-v2`
+# Changelog for `plutarch-ledger-api`
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## 3.4.0 -- 21-08-2025
+
+### Removed
+
+* `Mret`, as it wasn't used for anything
+
+### Fixed
+
+* Added missing `PTryFrom` instances for plutarch-ledger-api types
 
 ## 3.3.0 -- 01-29-2025
 

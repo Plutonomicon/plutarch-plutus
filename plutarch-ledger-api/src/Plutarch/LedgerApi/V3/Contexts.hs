@@ -87,6 +87,9 @@ deriving via
   instance
     PLiftable PColdCommitteeCredential
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PColdCommitteeCredential)
+
 -- | @since 3.1.0
 newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCredential)
   deriving stock
@@ -115,6 +118,9 @@ deriving via
   instance
     PLiftable PHotCommitteeCredential
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PHotCommitteeCredential)
+
 -- | @since 3.1.0
 newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
   deriving stock
@@ -142,6 +148,9 @@ deriving via
   DeriveDataPLiftable PDRepCredential Plutus.DRepCredential
   instance
     PLiftable PDRepCredential
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PDRepCredential)
 
 -- | @since 3.1.0
 data PDRep (s :: S)
@@ -174,6 +183,9 @@ deriving via
   instance
     PLiftable PDRep
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PDRep)
+
 -- | @since 3.1.0
 data PDelegatee (s :: S)
   = PDelegStake (Term s (PAsData PPubKeyHash))
@@ -204,6 +216,9 @@ deriving via
   DeriveDataPLiftable PDelegatee Plutus.Delegatee
   instance
     PLiftable PDelegatee
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PDelegatee)
 
 -- | @since 3.1.0
 data PTxCert (s :: S)
@@ -244,6 +259,9 @@ deriving via
   instance
     PLiftable PTxCert
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxCert)
+
 -- | @since 3.1.0
 data PVoter (s :: S)
   = PCommitteeVoter (Term s PHotCommitteeCredential)
@@ -274,6 +292,9 @@ deriving via
   DeriveDataPLiftable PVoter Plutus.Voter
   instance
     PLiftable PVoter
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PVoter)
 
 -- | @since 3.1.0
 data PVote (s :: S)
@@ -306,6 +327,9 @@ deriving via
   instance
     PLiftable PVote
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PVote)
+
 -- | @since 3.1.0
 data PGovernanceActionId (s :: S)
   = PGovernanceActionId (Term s (PAsData PTxId)) (Term s (PAsData PInteger))
@@ -334,6 +358,9 @@ deriving via
   DeriveDataPLiftable PGovernanceActionId Plutus.GovernanceActionId
   instance
     PLiftable PGovernanceActionId
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PGovernanceActionId)
 
 -- TODO: Investigate what guarantees this provides on the Map, if any
 
@@ -368,6 +395,9 @@ deriving via
   instance
     PLiftable PCommittee
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PCommittee)
+
 {- | A constitution, omitting the optional anchor.
 
 @since 3.1.0
@@ -398,6 +428,9 @@ deriving via
   DeriveDataPLiftable PConstitution Plutus.Constitution
   instance
     PLiftable PConstitution
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PConstitution)
 
 -- | @since 3.1.0
 data PProtocolVersion (s :: S) = PProtocolVersion
@@ -430,6 +463,9 @@ deriving via
   instance
     PLiftable PProtocolVersion
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PProtocolVersion)
+
 -- | @since 3.1.0
 newtype PChangedParameters (s :: S)
   = PChangedParameters (Term s PData)
@@ -458,6 +494,9 @@ deriving via
   DeriveDataPLiftable PChangedParameters Plutus.ChangedParameters
   instance
     PLiftable PChangedParameters
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PChangedParameters)
 
 -- | @since 3.1.0
 data PGovernanceAction (s :: S)
@@ -500,6 +539,9 @@ deriving via
   instance
     PLiftable PGovernanceAction
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PGovernanceAction)
+
 -- | @since 3.1.0
 data PProposalProcedure (s :: S) = PProposalProcedure
   { pproposalProcedure'deposit :: Term s (PAsData Value.PLovelace)
@@ -531,6 +573,9 @@ deriving via
   DeriveDataPLiftable PProposalProcedure Plutus.ProposalProcedure
   instance
     PLiftable PProposalProcedure
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PProposalProcedure)
 
 -- | @since 2.0.0
 data PScriptPurpose (s :: S)
@@ -569,6 +614,9 @@ deriving via
   instance
     PLiftable PScriptPurpose
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PScriptPurpose)
+
 -- | @since 3.1.0
 data PScriptInfo (s :: S)
   = PMintingScript (Term s (PAsData Value.PCurrencySymbol))
@@ -603,6 +651,9 @@ deriving via
   instance
     PLiftable PScriptInfo
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PScriptInfo)
+
 {- | An input of the pending transaction.
 
 @since 2.0.0
@@ -636,6 +687,9 @@ deriving via
   DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
   instance
     PLiftable PTxInInfo
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxInInfo)
 
 -- A pending transaction. This is the view as seen by a validator script.
 --
@@ -684,6 +738,9 @@ deriving via
   instance
     PLiftable PTxInfo
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxInfo)
+
 -- | @since 3.1.0
 data PScriptContext (s :: S) = PScriptContext
   { pscriptContext'txInfo :: Term s PTxInfo
@@ -715,6 +772,9 @@ deriving via
   DeriveDataPLiftable PScriptContext Plutus.ScriptContext
   instance
     PLiftable PScriptContext
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PScriptContext)
 
 {- | Find the datum corresponding to a datum hash, if there is one.
 

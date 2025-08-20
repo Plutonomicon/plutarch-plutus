@@ -47,3 +47,6 @@ deriving via
   DeriveDataPLiftable PDCert Plutus.DCert
   instance
     PLiftable PDCert
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PDCert)

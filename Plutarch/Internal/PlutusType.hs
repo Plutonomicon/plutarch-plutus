@@ -33,6 +33,7 @@ module Plutarch.Internal.PlutusType (
   DeriveFakePlutusType (DeriveFakePlutusType),
 ) where
 
+import Plutarch.Builtin.Array (PArray (PArray))
 import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
@@ -359,3 +360,12 @@ deriving via (DeriveNewtypePlutusType PBuiltinBLS12_381_MlResult) instance Plutu
 
 -- | @since 1.10.0
 deriving via (DeriveNewtypePlutusType PEndianness) instance PlutusType PEndianness
+
+-- | @since 1.11.0
+instance PlutusType (PArray a) where
+  type PInner (PArray a) = PArray a
+  type PCovariant' (PArray a) = PCovariant' a
+  type PContravariant' (PArray a) = PContravariant' a
+  type PVariant' (PArray a) = PVariant' a
+  pcon' (PArray t) = t
+  pmatch' x f = f (PArray x)

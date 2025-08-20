@@ -1,6 +1,4 @@
 module Plutarch.Prelude (
-  PDataNewtype (..),
-
   -- * Boolean
   PBool (..),
   pand',
@@ -151,6 +149,12 @@ module Plutarch.Prelude (
   pzipWith,
   pzipWith',
 
+  -- * Arrays
+  PArray,
+  plengthOfArray,
+  pindexArray,
+  plistToArray,
+
   -- * PlutusType
   DerivePlutusType (DPTStrat),
   PCon,
@@ -270,7 +274,7 @@ module Plutarch.Prelude (
   punrollUnboundWhole,
 ) where
 
-import Plutarch.Builtin
+import Plutarch.Builtin.Array
 import Plutarch.Builtin.Bool
 import Plutarch.Builtin.ByteString
 import Plutarch.Builtin.Crypto

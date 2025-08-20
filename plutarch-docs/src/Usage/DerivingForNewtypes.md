@@ -19,14 +19,14 @@ import GHC.Generics (Generic)
 If you're defining a `newtype` to an existing Plutarch type, like so:
 
 ```haskell
-newtype PPubKeyHash' (s :: S) = PPubKeyHash' (Term s (PDataNewtype PByteString))
+newtype PPubKeyHash' (s :: S) = PPubKeyHash' (Term s PByteString)
 ```
 
 You ideally want to just have this `newtype` be represented as a `PByteString` under the hood. Therefore, all the typeclass instances of `PByteString` make sense for
 `PPubKeyHash` as well. In this case, you can simply derive all those typeclasses for your `PPubKeyHash` type as well:
 
 ```haskell
-newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s (PDataNewtype PByteString))
+newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (PlutusType, PIsData, PEq, POrd, PShow)
 instance DerivePlutusType PPubKeyHash where type DPTStrat _ = PlutusTypeNewtype

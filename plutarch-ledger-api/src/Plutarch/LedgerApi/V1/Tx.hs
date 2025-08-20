@@ -46,6 +46,9 @@ deriving via
   instance
     PLiftable PTxId
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxId)
+
 {- | Reference to a transaction output, with an index referencing which exact
 output we mean.
 
@@ -83,3 +86,6 @@ deriving via
   DeriveDataPLiftable PTxOutRef Plutus.TxOutRef
   instance
     PLiftable PTxOutRef
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTxOutRef)

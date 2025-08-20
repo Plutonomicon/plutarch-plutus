@@ -108,6 +108,9 @@ deriving via
   instance
     PLiftable PLovelace
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PLovelace)
+
 -- | @since 2.0.0
 newtype PTokenName (s :: S) = PTokenName (Term s PByteString)
   deriving stock
@@ -147,6 +150,9 @@ instance PLiftable PTokenName where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PTokenName)
+
 -- | @since 2.0.0
 newtype PCurrencySymbol (s :: S) = PCurrencySymbol (Term s PByteString)
   deriving stock
@@ -183,6 +189,8 @@ instance PLiftable PCurrencySymbol where
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
+
+instance PTryFrom PData (PAsData PCurrencySymbol)
 
 -- | @since 2.0.0
 data AmountGuarantees = NoGuarantees | NonZero | Positive
@@ -362,6 +370,40 @@ instance
   inv a =
     punsafeCoerce $ PlutusTx.inv (punsafeCoerce a :: Term s (PValue 'AssocMap.Sorted 'NoGuarantees))
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees))
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NoGuarantees))
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'Positive)) where
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
+    pure (pdata unwrapped, ())
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'Positive)) where
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertPositive . pfromData $ opq'
+    pure (pdata unwrapped, ())
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Sorted 'NonZero)) where
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Sorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
+    pure (pdata unwrapped, ())
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData (PValue 'AssocMap.Unsorted 'NonZero)) where
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PValue 'AssocMap.Unsorted 'NoGuarantees)) opq
+    unwrapped <- tcont . plet . papp passertNonZero . pfromData $ opq'
+    pure (pdata unwrapped, ())
+
 -- | @since 3.3.0
 newtype PAssetClass (s :: S) = PAssetClass (Term s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName)))
   deriving stock
@@ -414,6 +456,9 @@ deriving via
   DeriveNewtypePLiftable PAssetClass PlutusValue.AssetClass
   instance
     PLiftable PAssetClass
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PAssetClass)
 
 {- | \'Forget\' that a 'Value' has an only-positive guarantee.
 

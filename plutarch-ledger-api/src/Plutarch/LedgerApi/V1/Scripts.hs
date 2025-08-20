@@ -40,6 +40,9 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
     )
     via (DeriveNewtypePlutusType PScriptHash)
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PScriptHash)
+
 -- | @since 3.3.0
 instance PLiftable PScriptHash where
   type AsHaskell PScriptHash = Plutus.ScriptHash
@@ -80,6 +83,9 @@ deriving via
   instance
     PLiftable PDatum
 
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PDatum)
+
 -- | @since 2.0.0
 newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
   deriving stock
@@ -103,6 +109,9 @@ newtype PDatumHash (s :: S) = PDatumHash (Term s PByteString)
       PlutusType
     )
     via (DeriveNewtypePlutusType PDatumHash)
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PDatumHash)
 
 -- | @since 3.3.0
 instance PLiftable PDatumHash where
@@ -133,6 +142,9 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
     , -- | @since 2.0.0
       PShow
     )
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PRedeemer)
 
 -- | @since 2.0.0
 instance DerivePlutusType PRedeemer where
@@ -167,6 +179,9 @@ newtype PRedeemerHash (s :: S) = PRedeemerHash (Term s PByteString)
       PlutusType
     )
     via (DeriveNewtypePlutusType PRedeemerHash)
+
+-- | @since 3.4.0
+instance PTryFrom PData (PAsData PRedeemerHash)
 
 -- | @since 3.3.0
 instance PLiftable PRedeemerHash where

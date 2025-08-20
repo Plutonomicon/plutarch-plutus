@@ -165,6 +165,40 @@ instance PEq (PMap 'Sorted k v) where
         Term s (PMap 'Sorted k v :--> PMap 'Sorted k v :--> PBool)
       peqViaData = phoistAcyclic $ plam $ \m0 m1 -> pdata m0 #== pdata m1
 
+-- | @since 3.4.0
+instance
+  ( PTryFrom PData (PAsData k)
+  , PTryFrom PData (PAsData v)
+  ) =>
+  PTryFrom PData (PAsData (PMap 'Unsorted k v))
+  where
+  ptryFrom' opq = runTermCont $ do
+    opq' <- tcont . plet $ pasMap # opq
+    unwrapped <- tcont . plet $ PPrelude.pmap # ptryFromPair # opq'
+    pure (pdata . pcon . PMap $ unwrapped, ())
+    where
+      ptryFromPair ::
+        forall (s :: S).
+        Term s (PBuiltinPair PData PData :--> PBuiltinPair (PAsData k) (PAsData v))
+      ptryFromPair = plam $ \p ->
+        ppairDataBuiltin
+          # ptryFrom (pfstBuiltin # p) fst
+          # ptryFrom (psndBuiltin # p) fst
+
+-- | @since 3.4.0
+instance
+  ( POrd k
+  , PIsData k
+  , PTryFrom PData (PAsData k)
+  , PTryFrom PData (PAsData v)
+  ) =>
+  PTryFrom PData (PAsData (PMap 'Sorted k v))
+  where
+  ptryFrom' opq = runTermCont $ do
+    (opq', _) <- tcont $ ptryFrom @(PAsData (PMap 'Unsorted k v)) opq
+    unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
+    pure (pdata unwrapped, ())
+
 -- | @since 2.0.0
 data Commutativity = Commutative | NonCommutative
   deriving stock
