@@ -55,14 +55,10 @@ tests =
 base16 :: ByteString -> Text
 base16 = Encoding.decodeUtf8 . Base16.encode
 
-type PSignature = PByteString
-type PPubKey = PByteString
-type PubKey = ByteString
-
 authorizedValidator ::
-  ClosedTerm PPubKey ->
+  ClosedTerm PByteString ->
   Term s PByteString ->
-  Term s PSignature ->
+  Term s PByteString ->
   Term s PScriptContext ->
   Term s POpaque
 authorizedValidator authKey datumMessage redeemerSig _ctx =
@@ -99,7 +95,7 @@ authorizedStakeValidator authHash _redeemer ctx' =
         (popaque $ pcon PUnit)
         perror
 
-adminPubKey :: PubKey
+adminPubKey :: ByteString
 adminPubKey = "11661a8aca9b09bb93eefda295b5da2be3f944d1f4253ab29da17db580f50d02d26218e33fbba5e0cc1b0c0cadfb67a5f9a90157dcc19eecd7c9373b0415c888"
 
 adminPubKeyHash :: Plutus.PubKeyHash
