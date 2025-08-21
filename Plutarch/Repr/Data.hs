@@ -42,13 +42,7 @@ import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PContravariant'',
-  PCovariant',
-  PCovariant'',
   PInner,
-  PVariant',
-  PVariant'',
   PlutusType,
   pcon,
   pcon',
@@ -94,18 +88,12 @@ newtype PDataRec (struct :: [S -> Type]) (s :: S) = PDataRec {unPDataRec :: PRec
 -- | @since 1.10.0
 instance (SListI2 struct, All2 PInnermostIsDataDataRepr struct) => PlutusType (PDataStruct struct) where
   type PInner (PDataStruct struct) = PData
-  type PCovariant' (PDataStruct struct) = All2 PCovariant'' struct
-  type PContravariant' (PDataStruct struct) = All2 PContravariant'' struct
-  type PVariant' (PDataStruct struct) = All2 PVariant'' struct
   pcon' (PDataStruct x) = punsafeCoerce $ pconDataStruct x
   pmatch' x f = pmatchDataStruct (punsafeCoerce x) (f . PDataStruct)
 
 -- | @since 1.10.0
 instance (SListI struct, All PInnermostIsDataDataRepr struct) => PlutusType (PDataRec struct) where
   type PInner (PDataRec struct) = PBuiltinList PData
-  type PCovariant' (PDataRec struct) = All PCovariant'' struct
-  type PContravariant' (PDataRec struct) = All PContravariant'' struct
-  type PVariant' (PDataRec struct) = All PVariant'' struct
   pcon' (PDataRec x) = punsafeCoerce $ pconDataRec x
   pmatch' x f = pmatchDataRec (punsafeCoerce x) (f . PDataRec)
 
@@ -167,9 +155,6 @@ instance
   PlutusType (DeriveAsDataRec a)
   where
   type PInner (DeriveAsDataRec a) = PDataRec (UnTermRec (Head (Code (a Any))))
-  type PCovariant' (DeriveAsDataRec a) = PCovariant' a
-  type PContravariant' (DeriveAsDataRec a) = PContravariant' a
-  type PVariant' (DeriveAsDataRec a) = PVariant' a
   pcon' (DeriveAsDataRec x) =
     pcon $ PDataRec $ PRec $ SOP.unZ $ SOP.unSOP $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
@@ -215,9 +200,6 @@ instance
   PlutusType (DeriveAsDataStruct a)
   where
   type PInner (DeriveAsDataStruct a) = PDataStruct (UnTermStruct (a Any))
-  type PCovariant' (DeriveAsDataStruct a) = PCovariant' a
-  type PContravariant' (DeriveAsDataStruct a) = PContravariant' a
-  type PVariant' (DeriveAsDataStruct a) = PVariant' a
   pcon' (DeriveAsDataStruct x) =
     pcon @(PDataStruct (UnTermStruct (a Any))) $ PDataStruct $ PStruct $ SOP.hcoerce $ SOP.from x
   pmatch' x f =

@@ -19,10 +19,7 @@ import Generics.SOP (
 import Generics.SOP qualified as SOP
 import Generics.SOP.Constraint (Head)
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PCovariant',
   PInner,
-  PVariant',
   PlutusType,
   pcon',
   pmatch',
@@ -51,9 +48,6 @@ instance
   PlutusType (DeriveNewtypePlutusType a)
   where
   type PInner (DeriveNewtypePlutusType a) = UnTermSingle (Head (Head (Code (a Any))))
-  type PCovariant' (DeriveNewtypePlutusType a) = PCovariant' a
-  type PContravariant' (DeriveNewtypePlutusType a) = PContravariant' a
-  type PVariant' (DeriveNewtypePlutusType a) = PVariant' a
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
   pcon' :: forall s. DeriveNewtypePlutusType a s -> Term s (PInner (DeriveNewtypePlutusType a))
