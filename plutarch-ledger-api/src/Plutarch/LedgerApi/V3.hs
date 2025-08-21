@@ -27,7 +27,7 @@ module Plutarch.LedgerApi.V3 (
 
   -- ** Functions
   pgetContinuingOutputs,
-  pfindOwnInput,
+  pfindInputByOutRef,
 
   -- * Script
 
@@ -139,6 +139,7 @@ import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.Value qualified as Value
+import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
 import Plutarch.Script (Script (unScript))
 import PlutusLedgerApi.Common (serialiseUPLC)
@@ -213,14 +214,14 @@ pgetContinuingOutputs ::
   forall (s :: S).
   Term
     s
-    ( PBuiltinList Contexts.PTxInInfo
+    ( PBuiltinList (PAsData Contexts.PTxInInfo)
         :--> PBuiltinList V2Tx.PTxOut
         :--> V3Tx.PTxOutRef
         :--> PBuiltinList V2Tx.PTxOut
     )
 pgetContinuingOutputs = phoistAcyclic $
   plam $ \inputs outputs outRef ->
-    pmatch (pfindOwnInput # inputs # outRef) $ \case
+    pmatch (pfindInputByOutRef # inputs # outRef) $ \case
       PJust tx -> unTermCont $ do
         txInInfo <- pmatchC tx
         txOut <- pmatchC $ Contexts.ptxInInfo'resolved txInInfo
@@ -238,9 +239,10 @@ pgetContinuingOutputs = phoistAcyclic $
         pmatch txOut $ \out ->
           adr #== V2Tx.ptxOut'address out
 
-{- | Find the input being spent in the current transaction.
+{- | Look up an input by its output reference.
 
-  Takes as arguments the inputs, as well as the spending transaction referenced from `PScriptPurpose`.
+  Returns the input corresponding to the given output reference from a list of
+  inputs. If no matching input exists, the result is `PNothing`.
 
   __Example:__
 
@@ -250,32 +252,32 @@ pgetContinuingOutputs = phoistAcyclic $
     PSpending outRef' -> do
       let outRef = pfield @"_0" # outRef'
           inputs = pfield @"inputs" # (getField @"txInfo" ctx)
-      pure $ pfindOwnInput # inputs # outRef
+      pure $ pfindInputByOutRef # inputs # outRef
     _ ->
       pure $ ptraceInfoError "not a spending tx"
   @
 
   @since 2.1.0
 -}
-pfindOwnInput ::
+pfindInputByOutRef ::
   forall (s :: S).
   Term
     s
-    ( PBuiltinList Contexts.PTxInInfo
+    ( PBuiltinList (PAsData Contexts.PTxInInfo)
         :--> V3Tx.PTxOutRef
         :--> PMaybe Contexts.PTxInInfo
     )
-pfindOwnInput = phoistAcyclic $
+pfindInputByOutRef = phoistAcyclic $
   plam $ \inputs outRef ->
-    pfind # (matches # outRef) # inputs
+    pmapMaybe # plam pfromData #$ pfind # (matches # outRef) # inputs
   where
     matches ::
       forall (s' :: S).
-      Term s' (V3Tx.PTxOutRef :--> Contexts.PTxInInfo :--> PBool)
+      Term s' (V3Tx.PTxOutRef :--> PAsData Contexts.PTxInInfo :--> PBool)
     matches = phoistAcyclic $
-      plam $ \outref txininfo ->
-        pmatch txininfo $ \ininfo ->
-          outref #== Contexts.ptxInInfo'outRef ininfo
+      plam $ \outRef txininfo ->
+        pmatch (pfromData txininfo) $ \ininfo ->
+          outRef #== Contexts.ptxInInfo'outRef ininfo
 
 {- | Lookup up the datum given the datum hash.
 
