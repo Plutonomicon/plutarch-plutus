@@ -3,11 +3,8 @@
 Plutarch `Term`s are terms in the sense of simply-typed lambda calculus terms. In a lambda calculus, we can construct terms as either "constants" or "lambdas," and terms can either be "open" (having free variables) or "closed" (having no free variables). We compose Plutarch `Term`s to build up increasingly complex computations. Once all free variables are eliminated from a `Term` (making it a `Closed Term`), we can compile it using the eponymous function from the `Plutarch` module:
 
 ```hs
--- | Closed term is a type synonym
-type ClosedTerm (a :: PType) = forall (s :: S). Term s a
-
 -- | Compile operates on closed terms to produce usable UPLC scripts.
-compile :: ClosedTerm a -> Script
+compile :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text Script
 ```
 
 `Term`s are constructed from Haskell values and are tagged with `PType`s.

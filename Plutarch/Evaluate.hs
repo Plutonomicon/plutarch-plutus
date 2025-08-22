@@ -13,12 +13,13 @@ module Plutarch.Evaluate (
 ) where
 
 import Control.Lens.Combinators (over)
+import Data.Kind (Type)
 import Data.Text (Text)
 import Plutarch.Internal.Evaluate qualified as E
 import Plutarch.Internal.Term (
-  ClosedTerm,
   Config,
   RawTerm (RCompiled),
+  S,
   Term (..),
   TermResult (TermResult),
   compile,
@@ -31,9 +32,10 @@ import UntypedPlutusCore qualified as UPLC
 
 -- | Compile and evaluate term.
 evalTerm ::
+  forall (a :: S -> Type).
   Config ->
-  ClosedTerm a ->
-  Either Text (Either E.EvalError (ClosedTerm a), ExBudget, [Text])
+  (forall (s0 :: S). Term s0 a) ->
+  Either Text (Either E.EvalError (forall (s1 :: S). Term s1 a), ExBudget, [Text])
 evalTerm config term =
   case compile config term of
     Right script ->
@@ -41,19 +43,19 @@ evalTerm config term =
        in Right (fromScript <$> s, b, t)
     Left a -> Left a
   where
-    fromScript :: Script -> ClosedTerm a
+    fromScript :: Script -> (forall (s2 :: S). Term s2 a)
     fromScript (Script script) =
       Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []
 
 -- | Same as `evalTerm` but without error handling
-evalTerm' :: Config -> ClosedTerm a -> ClosedTerm a
+evalTerm' :: forall (a :: S -> Type). Config -> (forall (s0 :: S). Term s0 a) -> (forall (s1 :: S). Term s1 a)
 evalTerm' config term =
   case evalTerm config term of
     Right (Right t, _, _) -> t
     Left err -> error $ "evalTerm' failed: " <> show err
     _ -> error "evalTerm' failed"
 
-{- | Compile and evaluate a ClosedTerm
+{- | Compile and evaluate a closed term
 Useful for pre-evaluating terms so that they can be used as constants in
 an onchain script. Consider the following:
  _________________________________________________________________________
@@ -83,10 +85,10 @@ pre-evaluated with `unsafeEvalTerm` and thus appears as a constant.
 
 Error if the compilation or evaluation fails.
 -}
-unsafeEvalTerm :: Config -> ClosedTerm a -> ClosedTerm a
+unsafeEvalTerm :: forall (a :: S -> Type). Config -> (forall (s0 :: S). Term s0 a) -> (forall (s1 :: S). Term s1 a)
 unsafeEvalTerm c t = extractResult $ evalTerm c t
   where
-    extractResult :: Either Text (Either E.EvalError (ClosedTerm a), ExBudget, [Text]) -> ClosedTerm a
+    extractResult :: Either Text (Either E.EvalError (forall (s2 :: S). Term s2 a), ExBudget, [Text]) -> (forall (s3 :: S). Term s3 a)
     extractResult (Right (Right term, _, _)) = term
     extractResult _ = error "unsafeEvalTerm: failed to evaluate or compile the term."
 

@@ -163,7 +163,7 @@ checkHaskellUnsortedPMapEquivalent ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (PlutusMap.Map Integer Integer -> AsHaskell plutarchOutput) ->
-  ClosedTerm (PMap 'Unsorted PInteger PInteger :--> plutarchOutput) ->
+  (forall (s :: S). Term s (PMap 'Unsorted PInteger PInteger :--> plutarchOutput)) ->
   Property
 checkHaskellUnsortedPMapEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
@@ -179,7 +179,7 @@ checkHaskellUnsortedPMapEquivalent2 ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (AsHaskell plutarchInput -> PlutusMap.Map Integer Integer -> AsHaskell plutarchOutput) ->
-  ClosedTerm (plutarchInput :--> PMap 'Unsorted PInteger PInteger :--> plutarchOutput) ->
+  (forall (s :: S). Term s (plutarchInput :--> PMap 'Unsorted PInteger PInteger :--> plutarchOutput)) ->
   Property
 checkHaskellUnsortedPMapEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
@@ -197,7 +197,7 @@ checkHaskellSortedPMapEquivalent2 ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (AsHaskell plutarchInput -> PlutusMap.Map Integer Integer -> AsHaskell plutarchOutput) ->
-  ClosedTerm (plutarchInput :--> PMap 'Sorted PInteger PInteger :--> plutarchOutput) ->
+  (forall (s :: S). Term s (plutarchInput :--> PMap 'Sorted PInteger PInteger :--> plutarchOutput)) ->
   Property
 checkHaskellSortedPMapEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
@@ -213,5 +213,5 @@ mkEven n
   | even n = Just n
   | otherwise = Nothing
 
-pmkEven :: ClosedTerm (PInteger :--> PMaybe PInteger)
+pmkEven :: forall (s :: S). Term s (PInteger :--> PMaybe PInteger)
 pmkEven = plam $ \n -> pif (peven # n) (pjust # n) pnothing

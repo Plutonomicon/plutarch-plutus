@@ -9,6 +9,7 @@ module Plutarch.Test.Unit (
   evalTermResult,
 ) where
 
+import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Plutarch.Evaluate (EvalError, evalScriptUnlimited)
@@ -27,7 +28,7 @@ import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
 
 @since 1.0.0
 -}
-testEval :: TestName -> ClosedTerm a -> TestTree
+testEval :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> TestTree
 testEval name term = testCase name $ do
   case evalTermResult (Tracing LogDebug DetTracing) term of
     FailedToCompile err -> assertFailure $ "Failed to compile: " <> Text.unpack err
@@ -38,7 +39,7 @@ testEval name term = testCase name $ do
 
 @since 1.0.0
 -}
-testEvalFail :: TestName -> ClosedTerm a -> TestTree
+testEvalFail :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> TestTree
 testEvalFail name term = testCase name $ do
   case evalTermResult NoTracing term of
     FailedToCompile err -> assertFailure $ "Failed to compile: " <> Text.unpack err
@@ -49,7 +50,7 @@ testEvalFail name term = testCase name $ do
 
 @since 1.0.0
 -}
-testCompileFail :: TestName -> ClosedTerm a -> TestTree
+testCompileFail :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> TestTree
 testCompileFail name term = testCase name $ do
   case evalTermResult NoTracing term of
     FailedToCompile _ -> pure ()
@@ -62,11 +63,12 @@ note that comparison is done on AST level, not by `Eq` or `PEq`
 @since 1.0.0
 -}
 testEvalEqual ::
+  forall (a :: S -> Type).
   TestName ->
   -- | Actual
-  ClosedTerm a ->
+  (forall (s0 :: S). Term s0 a) ->
   -- | Expected
-  ClosedTerm a ->
+  (forall (s1 :: S). Term s1 a) ->
   TestTree
 testEvalEqual name term expectedTerm = testCase name $ do
   actual <- case evalTermResult NoTracing term of
@@ -84,7 +86,7 @@ evaluated to error if traces still match
 
 @since 1.0.0
 -}
-testEvalEqualTraces :: TestName -> ClosedTerm a -> LogLevel -> [Text] -> TestTree
+testEvalEqualTraces :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> LogLevel -> [Text] -> TestTree
 testEvalEqualTraces name term traceLevel expected = testCase name $
   case evalTermResult (Tracing traceLevel DetTracing) term of
     FailedToCompile err -> assertFailure $ "Failed to compile: " <> Text.unpack err
@@ -98,7 +100,7 @@ data TermResult
   | Evaluated String [Text]
 
 -- | @since 1.0.0
-evalTermResult :: Config -> ClosedTerm a -> TermResult
+evalTermResult :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> TermResult
 evalTermResult config term =
   case compile config term of
     Left err -> FailedToCompile err

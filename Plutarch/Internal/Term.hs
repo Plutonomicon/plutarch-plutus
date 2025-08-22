@@ -27,7 +27,6 @@ module Plutarch.Internal.Term (
   compileOptimized,
   compile',
   optimizeTerm,
-  ClosedTerm,
   hashTerm,
   hashRawTerm,
   RawTerm (..),
@@ -437,11 +436,6 @@ type role Term nominal nominal
 -}
 newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
 
-{- |
-  *Closed* terms with no free variables.
--}
-type ClosedTerm (a :: PType) = forall (s :: S). Term s a
-
 newtype (:-->) (a :: PType) (b :: PType) (s :: S)
   = PLam (Term s a -> Term s b)
 infixr 0 :-->
@@ -685,11 +679,11 @@ punsafeConstantInternal c = Term \_ ->
   let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
    in pure $ TermResult (RHoisted hoisted) [hoisted]
 
-asClosedRawTerm :: ClosedTerm a -> TermMonad TermResult
+asClosedRawTerm :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> TermMonad TermResult
 asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
-phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
+phoistAcyclic :: forall (a :: S -> Type) (s :: S). HasCallStack => (forall (s' :: S). Term s' a) -> Term s a
 phoistAcyclic t = Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
@@ -827,7 +821,7 @@ compile' t =
    in wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script
-compile :: Config -> ClosedTerm a -> Either Text Script
+compile :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text Script
 compile config t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (defaultInternalConfig, config)
 
@@ -900,7 +894,7 @@ optimizeTerm (Term raw) = Term $ \w64 ->
       debruijnd <- UPLC.deBruijnTerm simplified
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
-hashTerm :: Config -> ClosedTerm a -> Either Text (Digest Blake2b_160)
+hashTerm :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text (Digest Blake2b_160)
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) (defaultInternalConfig, config)
 
 {- |

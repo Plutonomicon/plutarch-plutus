@@ -43,9 +43,10 @@ import Test.Tasty.QuickCheck (
 @since 1.0.0
 -}
 propEvalFail ::
+  forall (a :: Type) (b :: S -> Type).
   (Arbitrary a, Show a) =>
   TestName ->
-  (a -> ClosedTerm b) ->
+  (a -> (forall (s :: S). Term s b)) ->
   TestTree
 propEvalFail name mkTerm =
   testProperty name $ forAllShrinkShow arbitrary shrink show $ \(input :: a) ->
@@ -59,9 +60,10 @@ propEvalFail name mkTerm =
 @since 1.0.0
 -}
 propCompileFail ::
+  forall (a :: Type) (b :: S -> Type).
   (Arbitrary a, Show a) =>
   TestName ->
-  (a -> ClosedTerm b) ->
+  (a -> (forall (s :: S). Term s b)) ->
   TestTree
 propCompileFail name mkTerm =
   testProperty name $ forAllShrinkShow arbitrary shrink show $ \(input :: a) ->
@@ -75,12 +77,13 @@ propCompileFail name mkTerm =
 @since 1.0.0
 -}
 propEvalEqual ::
+  forall (a :: Type) (b :: S -> Type).
   (Arbitrary a, Show a) =>
   TestName ->
   -- | Actual
-  (a -> ClosedTerm b) ->
+  (a -> (forall (s0 :: S). Term s0 b)) ->
   -- | Expected
-  (a -> ClosedTerm b) ->
+  (a -> (forall (s1 :: S). Term s1 b)) ->
   TestTree
 propEvalEqual name mkTerm mkExpected =
   testProperty name $ forAllShrinkShow arbitrary shrink show $ \(input :: a) ->
@@ -96,7 +99,7 @@ propEvalEqual name mkTerm mkExpected =
 
 @since 1.0.0
 -}
-propEval :: (Arbitrary a, Show a) => TestName -> (a -> ClosedTerm b) -> TestTree
+propEval :: forall (a :: Type) (b :: S -> Type). (Arbitrary a, Show a) => TestName -> (a -> (forall (s :: S). Term s b)) -> TestTree
 propEval name mkTerm =
   testProperty name $ forAllShrinkShow arbitrary shrink show $ \(input :: a) ->
     case evalTermResult NoTracing (mkTerm input) of
@@ -142,13 +145,13 @@ checkHaskellEquivalent ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (AsHaskell plutarchInput -> AsHaskell plutarchOutput) ->
-  ClosedTerm (plutarchInput :--> plutarchOutput) ->
+  (forall (s0 :: S). Term s0 (plutarchInput :--> plutarchOutput)) ->
   Property
 checkHaskellEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \(input :: haskellInput) -> goHaskell input `prettyEquals` plift (pfun # pconstant input)
   where
-    pfun :: ClosedTerm (plutarchInput :--> plutarchOutput)
+    pfun :: forall (s1 :: S). Term s1 (plutarchInput :--> plutarchOutput)
     pfun = precompileTerm goPlutarch
 
 -- | @since 1.0.0
@@ -165,14 +168,14 @@ checkHaskellEquivalent2 ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (AsHaskell plutarchInput1 -> AsHaskell plutarchInput2 -> AsHaskell plutarchOutput) ->
-  ClosedTerm (plutarchInput1 :--> plutarchInput2 :--> plutarchOutput) ->
+  (forall (s0 :: S). Term s0 (plutarchInput1 :--> plutarchInput2 :--> plutarchOutput)) ->
   Property
 checkHaskellEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \(input1 :: AsHaskell plutarchInput1, input2 :: AsHaskell plutarchInput2) ->
       goHaskell input1 input2 `prettyEquals` plift (pfun # pconstant input1 # pconstant input2)
   where
-    pfun :: ClosedTerm (plutarchInput1 :--> plutarchInput2 :--> plutarchOutput)
+    pfun :: forall (s1 :: S). Term s1 (plutarchInput1 :--> plutarchInput2 :--> plutarchOutput)
     pfun = precompileTerm goPlutarch
 
 -- * Orphans

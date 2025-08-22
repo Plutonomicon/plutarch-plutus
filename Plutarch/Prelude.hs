@@ -199,7 +199,6 @@ module Plutarch.Prelude (
   -- * Term and related functionality
   Term,
   S,
-  ClosedTerm,
   PDelayed,
   papp,
   pdelay,
