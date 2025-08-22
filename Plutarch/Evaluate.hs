@@ -5,7 +5,6 @@ module Plutarch.Evaluate (
   E.evalScriptHuge,
   E.evalScript',
   E.evalScriptUnlimited,
-  E.EvalError,
   evalTerm,
   evalTerm',
   unsafeEvalTerm,
@@ -25,17 +24,19 @@ import Plutarch.Internal.Term (
   compile,
  )
 import Plutarch.Script (Script (Script))
+import PlutusCore qualified as PLC (DefaultFun, DefaultUni, NamedDeBruijn)
 import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import PlutusCore.MkPlc (mkConstant, mkIterAppNoAnn)
 import PlutusLedgerApi.Common (Data)
 import UntypedPlutusCore qualified as UPLC
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek (CekEvaluationException)
 
 -- | Compile and evaluate term.
 evalTerm ::
   forall (a :: S -> Type).
   Config ->
   (forall (s0 :: S). Term s0 a) ->
-  Either Text (Either E.EvalError (forall (s1 :: S). Term s1 a), ExBudget, [Text])
+  Either Text (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) (forall (s1 :: S). Term s1 a), ExBudget, [Text])
 evalTerm config term =
   case compile config term of
     Right script ->
@@ -88,7 +89,7 @@ Error if the compilation or evaluation fails.
 unsafeEvalTerm :: forall (a :: S -> Type). Config -> (forall (s0 :: S). Term s0 a) -> (forall (s1 :: S). Term s1 a)
 unsafeEvalTerm c t = extractResult $ evalTerm c t
   where
-    extractResult :: Either Text (Either E.EvalError (forall (s2 :: S). Term s2 a), ExBudget, [Text]) -> (forall (s3 :: S). Term s3 a)
+    extractResult :: Either Text (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) (forall (s2 :: S). Term s2 a), ExBudget, [Text]) -> (forall (s3 :: S). Term s3 a)
     extractResult (Right (Right term, _, _)) = term
     extractResult _ = error "unsafeEvalTerm: failed to evaluate or compile the term."
 

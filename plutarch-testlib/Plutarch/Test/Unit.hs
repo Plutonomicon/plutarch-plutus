@@ -12,7 +12,7 @@ module Plutarch.Test.Unit (
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
-import Plutarch.Evaluate (EvalError, evalScriptUnlimited)
+import Plutarch.Evaluate (evalScriptUnlimited)
 import Plutarch.Internal.Other (printScript)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
@@ -21,8 +21,10 @@ import Plutarch.Internal.Term (
   compile,
  )
 import Plutarch.Prelude
+import PlutusCore qualified as PLC (DefaultFun, DefaultUni, NamedDeBruijn)
 import Test.Tasty (TestName, TestTree)
 import Test.Tasty.HUnit (assertEqual, assertFailure, testCase)
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
 {- | Assert that term compiled and evaluated without errors
 
@@ -96,7 +98,7 @@ testEvalEqualTraces name term traceLevel expected = testCase name $
 -- | @since 1.0.0
 data TermResult
   = FailedToCompile Text
-  | FailedToEvaluate EvalError [Text]
+  | FailedToEvaluate (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) [Text]
   | Evaluated String [Text]
 
 -- | @since 1.0.0

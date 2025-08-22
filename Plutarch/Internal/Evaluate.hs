@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Plutarch.Internal.Evaluate (uplcVersion, evalScript, evalScriptHuge, evalScriptUnlimited, evalScript', EvalError) where
+module Plutarch.Internal.Evaluate (uplcVersion, evalScript, evalScriptHuge, evalScriptUnlimited, evalScript') where
 
 import Data.Text (Text)
 import Plutarch.Script (Script (Script))
@@ -20,20 +20,18 @@ import UntypedPlutusCore (
 import UntypedPlutusCore qualified as UPLC
 import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
-type EvalError = (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
-
 uplcVersion :: Version
 uplcVersion = Version 1 1 0
 
 -- | Evaluate a script with a big budget, returning the trace log and term result.
-evalScript :: Script -> (Either EvalError Script, ExBudget, [Text])
+evalScript :: Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
 evalScript = evalScript' budget
   where
     -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
     budget = ExBudget (ExCPU 10000000000) (ExMemory 10000000)
 
 -- | Evaluate a script with a huge budget, returning the trace log and term result.
-evalScriptHuge :: Script -> (Either EvalError Script, ExBudget, [Text])
+evalScriptHuge :: Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
 evalScriptHuge = evalScript' budget
   where
     -- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17
@@ -57,7 +55,7 @@ evalTerm ::
   ExBudget ->
   Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun () ->
   ( Either
-      EvalError
+      (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
       (Term PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun ())
   , ExBudget
   , [Text]

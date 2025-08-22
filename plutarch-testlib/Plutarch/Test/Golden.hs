@@ -20,7 +20,7 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal.Other (printScript)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -32,12 +32,14 @@ import Plutarch.Internal.Term (
   compile,
  )
 import Plutarch.Script (Script (unScript))
+import PlutusCore qualified as PLC (DefaultFun, DefaultUni, NamedDeBruijn)
 import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory)
 import System.FilePath ((</>))
 import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
 import Test.Tasty.HUnit (assertFailure, testCase)
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek (CekEvaluationException)
 
 {- | Opaque type representing tree of golden tests
 
@@ -162,7 +164,7 @@ data Benchmark = Benchmark
   -- ^ Memory budget used by the script.
   , scriptSizeBytes :: Int64
   -- ^ Size of Plutus script in bytes
-  , result :: Either EvalError Script
+  , result :: Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script
   , unevaluated :: Script
   }
   deriving stock (Show)
