@@ -4,6 +4,7 @@
 
 module Plutarch.Internal.ScottEncoding (PlutusTypeScott, PScottEncoded (PScottEncoded)) where
 
+import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import Generics.SOP (
   All,
@@ -33,7 +34,7 @@ import Plutarch.Internal.PlutusType (
 import Plutarch.Internal.Quantification (PForall (PForall))
 import Plutarch.Internal.Term (
   PDelayed,
-  PType,
+  S,
   Term,
   pdelay,
   pforce,
@@ -45,18 +46,18 @@ import Plutarch.Internal.Term (
 
 data PlutusTypeScott
 
-type ScottFn' :: [PType] -> PType -> PType
+type ScottFn' :: [S -> Type] -> (S -> Type) -> (S -> Type)
 type family ScottFn' xs r where
   ScottFn' '[] r = r
   ScottFn' (x ': xs) r = x :--> ScottFn' xs r
 
-type ScottFn :: [PType] -> PType -> PType
+type ScottFn :: [S -> Type] -> (S -> Type) -> (S -> Type)
 type family ScottFn xs r where
   ScottFn '[] r = PDelayed r
   ScottFn xs r = ScottFn' xs r
 
 -- scottList l r = map (flip scottFn r) l
-type ScottList :: [[PType]] -> PType -> [PType]
+type ScottList :: [[S -> Type]] -> (S -> Type) -> [S -> Type]
 type family ScottList code r where
   ScottList '[] _ = '[]
   ScottList (xs ': xss) r = ScottFn xs r ': ScottList xss r

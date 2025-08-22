@@ -14,7 +14,6 @@ import Plutarch.Builtin.String (ptraceInfo)
 import Plutarch.Internal.PrettyStack (prettyStack)
 import Plutarch.Internal.Term (
   Config (Tracing),
-  PType,
   S,
   Term,
   pgetConfig,
@@ -41,7 +40,7 @@ import PlutusCore qualified as PLC
 mkstring :: Text.Text -> Term s a
 mkstring x = punsafeConstantInternal $ PLC.someValue @Text.Text @PLC.DefaultUni x
 
-class PLamN (a :: Type) (b :: PType) (s :: S) | a -> b, s b -> a where
+class PLamN (a :: Type) (b :: S -> Type) (s :: S) | a -> b, s b -> a where
   plam :: forall c. HasCallStack => (Term s c -> a) -> Term s (c :--> b)
 
 instance {-# OVERLAPPABLE #-} a' ~ Term s a => PLamN a' a s where

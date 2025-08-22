@@ -44,7 +44,7 @@ Guess what this Plutarch level function does:
 f :: Term s (PInteger :--> PString :--> a :--> a)
 ```
 
-It takes in an integer, a string, and a type `a` and returns the same type `a`. Notice that the types are all of kind `PType`. This means that when faced with filling out the gap:
+It takes in an integer, a string, and a type `a` and returns the same type `a`. Notice that the types are all of kind `S -> Type`. This means that when faced with filling out the gap:
 
 ```hs
 f :: Term s (PInteger :--> PString :--> a :--> a)
@@ -79,4 +79,4 @@ infixl 8 #
 infixr 0 #$
 ```
 
-The types of each operator match our intuition. Applying a lambda `Term` to a `Term` (tagged with the `PType` of the domain of the lambda) produces a `Term` (tagged with the `PType` of the codomain.).
+The types of each operator match our intuition. Applying a lambda `Term` to a `Term` (tagged with the `S -> Type` of the domain of the lambda) produces a `Term` (tagged with the `S -> Type` of the codomain.).

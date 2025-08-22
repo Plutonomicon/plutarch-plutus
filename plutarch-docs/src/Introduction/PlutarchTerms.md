@@ -7,7 +7,7 @@ Plutarch `Term`s are terms in the sense of simply-typed lambda calculus terms. I
 compile :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text Script
 ```
 
-`Term`s are constructed from Haskell values and are tagged with `PType`s.
+`Term`s are constructed from Haskell values and are tagged with `S -> Type`s.
 
 - [Plutarch Constant `Term`s](./PlutarchTerms/PlutarchConstants.md)
   - [Static building of constant `Term`s with `pconstant`](./PlutarchTerms/PlutarchConstants.md#static-building-of-constant-terms-with-pconstant)

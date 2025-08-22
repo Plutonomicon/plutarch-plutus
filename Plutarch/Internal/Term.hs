@@ -33,7 +33,6 @@ module Plutarch.Internal.Term (
   HoistedTerm (..),
   TermResult (TermResult, getDeps, getTerm),
   S (SI),
-  PType,
   pthrow,
   Config (NoTracing, Tracing),
   InternalConfig (..),
@@ -180,9 +179,6 @@ mkTermRes r = TermResult r []
 to "forget" the `s`.
 -}
 data S = SI
-
--- | Shorthand for Plutarch types.
-type PType = S -> Type
 
 {- | How to trace.
 
@@ -434,13 +430,13 @@ type role Term nominal nominal
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
+newtype Term (s :: S) (a :: S -> Type) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
 
-newtype (:-->) (a :: PType) (b :: PType) (s :: S)
+newtype (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLam (Term s a -> Term s b)
 infixr 0 :-->
 
-data PDelayed (a :: PType) (s :: S)
+data PDelayed (a :: S -> Type) (s :: S)
 
 {- |
   Lambda abstraction.

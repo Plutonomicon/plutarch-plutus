@@ -15,8 +15,8 @@ import GHC.Generics (Generic)
 # `PTryFrom`
 
 ```hs
-class PTryFrom (a :: PType) (b :: PType) where
-  type PTryFromExcess a b :: PType
+class PTryFrom (a :: S -> Type) (b :: S -> Type) where
+  type PTryFromExcess a b :: S -> Type
   ptryFrom :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 ```
 
@@ -77,7 +77,7 @@ recoverAB = unTermCont $ fst <$> tcont (ptryFrom sampleABdata)
    - example:
        `ptryFrom @PData @(PAsData (PBuiltinList PData))` ssucceeds iff the underlying representation is a `BuiltinList` containing any `PData`
 - all conversions are fallible, this happens if the representation doesn't match the expected type.
-- the operation `ptryFrom @a @b` proves equality between the less expressive `PType` `a` and the more expressive `PType` `b`, hence the first 
+- the operation `ptryFrom @a @b` proves equality between the less expressive Plutarch type (`S -> Type`) `a` and the more expressive `S -> Type` `b`, hence the first 
      element of the resulting Tuple must always be wrapped in `PAsData` if the origin type was `PData` (see law 1)
 - the result type `b` must always be safer than the origin type `a`, i.e. it must carry more information
 

@@ -14,6 +14,7 @@ module Plutarch.Internal.TryFrom (
 ) where
 
 import Data.Functor.Const (Const)
+import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool, pif, (#||))
 import Plutarch.Builtin.ByteString (PByteString)
@@ -53,7 +54,7 @@ import Plutarch.Internal.Subtype (
   pupcast,
  )
 import Plutarch.Internal.Term (
-  PType,
+  S,
   Term,
   perror,
   plet,
@@ -70,8 +71,8 @@ and a way to go from @a@ to @b@.
 Laws:
 - @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
 -}
-class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
-  type PTryFromExcess a b :: PType
+class PSubtype a b => PTryFrom (a :: S -> Type) (b :: S -> Type) where
+  type PTryFromExcess a b :: S -> Type
   type PTryFromExcess a b = PTryFromExcess a (PInner b)
   ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
   default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r

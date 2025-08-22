@@ -16,7 +16,6 @@ import Data.String (fromString)
 import Plutarch.Internal.Term (
   Config (Tracing),
   HoistedTerm (..),
-  PType,
   RawTerm (..),
   S,
   Term (Term),
@@ -29,7 +28,7 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Internal.Trace (ptraceInfo)
 
-newtype TermCont :: forall (r :: PType). S -> Type -> Type where
+newtype TermCont :: forall (r :: S -> Type). S -> Type -> Type where
   TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
 
 unTermCont :: TermCont @a s (Term s a) -> Term s a
