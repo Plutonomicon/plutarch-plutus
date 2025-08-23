@@ -257,7 +257,7 @@ pgetContinuingOutputs = phoistAcyclic $
       pure $ ptraceInfoError "not a spending tx"
   @
 
-  @since 2.1.0
+  @since 3.5.0
 -}
 pfindInputByOutRef ::
   forall (s :: S).

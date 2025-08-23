@@ -1,14 +1,5 @@
 # Revision history for plutarch
 
-# 1.13.0 --
-
-## Changed
-
-* `pfindOwnInput` has been renamed to `pfindInputByOutRef`
-* `pfindInputByOutRef` (formerly `pfindOwnInput`) and `pgetContinuingOutputs`
-  now both accept a builtin list of inputs wrapped in `PAsData`, enabling
-  compatibility with `PTxInfo` inputs
-
 # 1.12.0 -- 
 
 ## Removed
