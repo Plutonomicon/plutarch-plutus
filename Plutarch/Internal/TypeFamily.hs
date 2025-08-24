@@ -22,5 +22,5 @@ type family UnTerm x where
   UnTerm (Term _ a) = a
   UnTerm invalid = TypeError ('Text "Non-term in Plutarch data type not allowed. Got: `" ':<>: 'ShowType invalid ':<>: 'Text "`")
 
-type family Snd ab where
+type family Snd (ab :: (k1, k2)) :: k2 where
   Snd '(_, b) = b

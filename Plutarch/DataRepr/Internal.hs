@@ -156,9 +156,9 @@ instance SListI l => PlutusType (PDataRecord l) where
     $ H
     $ \f ->
       plet l' \l ->
-        let x :: Term _ (PAsData x)
+        let x :: Term _ (PAsData a)
             x = punsafeCoerce $ phead # l
-            xs :: Term _ (PDataRecord xs)
+            xs :: Term _ (PDataRecord as)
             xs = punsafeCoerce $ ptail # l
          in f $ PDCons x xs
 
@@ -537,7 +537,7 @@ newtype HRecP (as :: [(Symbol, P.S -> Type)]) (s :: P.S)
   = HRecP (NoReduce (HRecGeneric (HRecPApply as s)))
   deriving stock (Generic)
 
-newtype Flip f a b = Flip (f b a)
+newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a)
   deriving stock (Generic)
 
 class Helper2 (b :: PSubtypeRelation) a where
@@ -590,7 +590,8 @@ instance
     tv <- tcont $ ptryFrom @(PDataRecord as) @(PBuiltinList PData) t
     pure (punsafeCoerce opq, HRecGeneric (HCons (Labeled hv) (coerce $ snd tv)))
 
-newtype Helper a b s = Helper (Reduce (a s), Reduce (b s)) deriving stock (Generic)
+newtype Helper (a :: P.S -> Type) (b :: P.S -> Type) (s :: P.S) = Helper (Reduce (a s), Reduce (b s))
+  deriving stock (Generic)
 
 instance
   ( PTryFrom (PBuiltinList PData) (PDataRecord as)

@@ -1,0 +1,350 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeAbstractions #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE NoPartialTypeSignatures #-}
+
+module Plutarch.Internal.Parse (
+  -- * Type class
+  PValidateData (..),
+
+  -- * Function
+  pparse,
+
+  -- * Helper deriving newtype
+  PDon'tValidate (..),
+) where
+
+import Data.Kind (Type)
+import Data.Proxy (Proxy (Proxy))
+import GHC.Exts (Any)
+import Generics.SOP qualified as SOP
+import Plutarch.Builtin.Bool (PBool, pif)
+import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (
+  PAsData,
+  PBuiltinList,
+  PBuiltinPair,
+  PData,
+  pasByteStr,
+  pasConstr,
+  pasInt,
+  pasList,
+  pchooseListBuiltin,
+  pfstBuiltin,
+  pheadBuiltin,
+  psndBuiltin,
+  ptailBuiltin,
+ )
+import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
+import Plutarch.Internal.Eq ((#==))
+import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl))
+import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Ord ((#<), (#>=))
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.PlutusType (
+  PlutusType (PInner, pcon', pmatch'),
+  pcon,
+  pmatch,
+ )
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  perror,
+  phoistAcyclic,
+  plet,
+  (#),
+  (#$),
+  (:-->),
+ )
+import Plutarch.Repr.Data (
+  DeriveAsDataRec,
+  DeriveAsDataStruct,
+  PInnermostIsDataDataRepr,
+ )
+import Plutarch.Repr.Internal (UnTermRec, UnTermStruct)
+import Plutarch.Repr.Tag (DeriveAsTag)
+import Plutarch.Unsafe (punsafeCoerce)
+
+{- | Describes a @Data@ encoded Plutarch type that requires some additional
+validation to ensure its structure is indeed what we expect. This is
+especially useful for datums or other user-supplied arguments, since these
+can be malformed.
+
+= Why the CPS
+
+'pwithValidated' is written in continuation-passing style (or CPS) for
+reasons of efficiency. As 'pwithValidated' is meant to check structure (and
+nothing more), our first instinct would be to write something like
+
+@pwithValidated :: Term s PData -> Term s PBool@
+
+or
+
+@pwithValidated :: Term s PData -> Term s PUnit@
+
+and rely on 'perror' to sort things out. However, constructing either 'PUnit'
+or 'PBool' isn't free, and ultimately, this value ends up unused. At the same
+time, we want to ensure that the validation specified in 'pwithValidated' is
+actually performed, which neither of the above signatures can promise
+anything about.
+
+CPS solves both of these problems. Since the result of 'pwithValidated' is
+technically a function that /must/ behave the same no matter what type of @r@
+it operates over, we can't do anything except potentially mess with the
+argument 'PData' or error out, which means we don't need to allocate any
+\'result value\'. Furthermore, by working in CPS, we ensure that any
+validation defined in 'pwithValidated' must happen, even if the 'PData' (or
+whatever it's supposed to be) is never handled or forced.
+
+= Important note
+
+It is essential practice to document what /exactly/ any given instance of
+'PValidateData' checks. Each instance should specify this: all the instances
+provided by Plutarch and its related libraries follow this rule.
+
+@since 1.12.0
+-}
+class PIsData a => PValidateData (a :: S -> Type) where
+  pwithValidated ::
+    forall (s :: S).
+    Term s PData ->
+    (forall (r :: S -> Type). Term s r -> Term s r)
+
+{- | Given a 'PData', check that it is, indeed, structured as @a@ expects. If it
+is, return that same 'PData' \'rewrapped\' into 'PAsData' @a@.
+
+This helper exists to avoid having to work in CPS when writing regular code.
+It is kept out of 'PValidateData' for efficiency and safety reasons.
+
+@since 1.12.0
+-}
+pparse ::
+  forall (a :: S -> Type) (s :: S).
+  PValidateData a =>
+  Term s PData ->
+  Term s (PAsData a)
+pparse opq = pwithValidated @a opq . punsafeCoerce $ opq
+
+{- | Checks (and does) nothing.
+
+@since 1.12.0
+-}
+deriving via (PDon'tValidate PData) instance PValidateData PData
+
+{- | Checks that we have an @I@.
+
+@since 1.12.0
+-}
+instance PValidateData PInteger where
+  pwithValidated opq = plet (pasInt # opq) . const
+
+{- | Checks that we have a @B@.
+
+@since 1.12.0
+-}
+instance PValidateData PByteString where
+  pwithValidated opq = plet (pasByteStr # opq) . const
+
+{- | Checks that we have a @Constr@ with either @0@ or @1@ as its tag. The
+second field of @Constr@ is not checked at all.
+
+@since 1.12.0
+-}
+instance PValidateData PBool where
+  pwithValidated opq x = plet (pfstBuiltin #$ pasConstr # opq) $ \i ->
+    pif
+      (i #== pconstantInteger 0)
+      x
+      ( pif
+          (i #== pconstantInteger 1)
+          x
+          perror
+      )
+
+{- | Checks that we have a @Constr@ with a second field of at least length 2.
+Furthermore, checks that the first element validates as per @a@, while the
+second element validates as per @b@. The @Constr@ tag is not checked at all.
+
+@since 1.12.0
+-}
+instance (PValidateData a, PValidateData b) => PValidateData (PBuiltinPair (PAsData a) (PAsData b)) where
+  pwithValidated opq x = plet (psndBuiltin #$ pasConstr # opq) $ \p ->
+    plet (pheadBuiltin # p) $ \fstOne ->
+      plet (pheadBuiltin #$ ptailBuiltin # p) $ \sndOne ->
+        pwithValidated @a fstOne . pwithValidated @b sndOne $ x
+
+{- | Checks that we have a @Constr@ with a second field of at least length 2.
+The @Constr@ tag, or the elements, are not checked at all.
+
+@since 1.12.0
+-}
+instance PValidateData (PBuiltinPair PData PData) where
+  pwithValidated opq x = plet (psndBuiltin #$ pasConstr # opq) $ \p ->
+    plet (pheadBuiltin # p) $ \_ ->
+      plet (pheadBuiltin #$ ptailBuiltin # p) $ const x
+
+{- | Checks that we have a @List@. Furthermore, checks that every element
+validates as per @a@.
+
+@since 1.12.0
+-}
+instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
+  pwithValidated opq x = plet (pasList # opq) $ \ell ->
+    phoistAcyclic (pfix #$ plam go) # ell # x
+    where
+      go ::
+        forall (r :: S -> Type) (s :: S).
+        Term s (PBuiltinList PData :--> r :--> r) ->
+        Term s (PBuiltinList PData) ->
+        Term s r ->
+        Term s r
+      go self ell done = pchooseListBuiltin # ell # done #$ plet (pheadBuiltin # ell) $ \h ->
+        plet (ptailBuiltin # ell) $ \t ->
+          self # t # pwithValidated @a h done
+
+{- | Checks that we have a @List@.
+
+@since 1.12.0
+-}
+instance PValidateData (PBuiltinList PData) where
+  pwithValidated opq x = plet (pasList # opq) $ const x
+
+{- | Checks that we have an @I@, and that it is in the range @[0, n - 1]@, where
+@n@ is the number of \'arms\' in the encoded sum type.
+
+@since 1.12.0
+-}
+instance SOP.Generic (a Any) => PValidateData (DeriveAsTag a) where
+  {-# INLINEABLE pwithValidated #-}
+  pwithValidated opq x = plet (pasInt # opq) $ \i ->
+    let len = SOP.lengthSList @_ @(SOP.Code (a Any)) Proxy
+     in plet (pconstant @PInteger . fromIntegral $ len) $ \plen ->
+          pif
+            (i #< 0)
+            perror
+            ( pif
+                (i #>= plen)
+                perror
+                x
+            )
+
+{- | Checks that we have a @List@, that it has (at least) enough elements for
+each field of @a@, and that each of those elements, in order, validates as
+per its respective 'PValidateData' instance.
+
+@since 1.12.0
+-}
+instance
+  forall (a :: S -> Type) (struct' :: [Type]) (struct :: [S -> Type]).
+  ( SOP.Generic (a Any)
+  , SOP.All PInnermostIsDataDataRepr struct
+  , struct ~ UnTermRec struct'
+  , SOP.Generic (a Any)
+  , '[struct'] ~ SOP.Code (a Any)
+  , SOP.All PValidateData struct
+  , SOP.SListI struct
+  ) =>
+  PValidateData (DeriveAsDataRec a)
+  where
+  {-# INLINEABLE pwithValidated #-}
+  pwithValidated opq x = plet (pasList # opq) $ \ell ->
+    case SOP.shape @(S -> Type) @struct of
+      aShape -> go ell aShape x
+    where
+      go ::
+        forall (w :: [S -> Type]) (s :: S) (r :: S -> Type).
+        SOP.All PValidateData w =>
+        Term s (PBuiltinList PData) ->
+        SOP.Shape w ->
+        Term s r ->
+        Term s r
+      go ell = \case
+        SOP.ShapeNil -> id
+        SOP.ShapeCons @ys @y restShape -> \arg ->
+          plet (pheadBuiltin # ell) $ \h ->
+            plet (ptailBuiltin # ell) $ \t ->
+              plet (pwithValidated @y h arg) $ \arg' ->
+                go t restShape arg'
+
+{- | Checks that we have a @Constr@, that its tag is in the range @[0, n - 1]@
+(where @n@ is the number of \'arms\' in the encoded sum type), and that there
+are at least enough fields in the second @Constr@ argument, each of which
+decodes as per that field's 'PValidateData' instance.
+
+@since 1.12.0
+-}
+instance
+  forall (a :: S -> Type) (struct :: [[S -> Type]]).
+  ( SOP.Generic (a Any)
+  , struct ~ UnTermStruct (a Any)
+  , SOP.All2 PInnermostIsDataDataRepr struct
+  , SOP.All2 PValidateData struct
+  , SOP.SListI2 struct
+  ) =>
+  PValidateData (DeriveAsDataStruct a)
+  where
+  {-# INLINEABLE pwithValidated #-}
+  pwithValidated opq x = plet (pasConstr # opq) $ \p ->
+    plet (pfstBuiltin # p) $ \ix ->
+      plet (psndBuiltin # p) $ \fields ->
+        case SOP.shape @[S -> Type] @struct of
+          outerShape -> goOuter ix fields outerShape x
+    where
+      goOuter ::
+        forall (wOuter :: [[S -> Type]]) (s :: S) (r :: S -> Type).
+        (SOP.SListI2 wOuter, SOP.All2 PValidateData wOuter) =>
+        Term s PInteger ->
+        Term s (PBuiltinList PData) ->
+        SOP.Shape wOuter ->
+        Term s r ->
+        Term s r
+      goOuter ix ell = \case
+        -- Note (Koz, 25/08/2025): If we end up here, we got an index that can't
+        -- possibly match.
+        SOP.ShapeNil -> const perror
+        SOP.ShapeCons @ys @y restShape -> \arg ->
+          pif
+            (ix #== 0)
+            ( case SOP.shape @(S -> Type) @y of
+                innerShape -> goInner ell innerShape arg
+            )
+            (goOuter (ix - 1) ell restShape arg)
+      goInner ::
+        forall (wInner :: [S -> Type]) (s :: S) (r :: S -> Type).
+        SOP.All PValidateData wInner =>
+        Term s (PBuiltinList PData) ->
+        SOP.Shape wInner ->
+        Term s r ->
+        Term s r
+      goInner ell = \case
+        SOP.ShapeNil -> id
+        SOP.ShapeCons @ys @y restShape -> \arg ->
+          plet (pheadBuiltin # ell) $ \h ->
+            plet (ptailBuiltin # ell) $ \t ->
+              plet (pwithValidated @y h arg) $ \arg' ->
+                goInner t restShape arg'
+
+{- | Helper to define a do-nothing instance of 'PValidateData'. Useful when
+defining an instance for a complex type where we want to validate some parts,
+but not others.
+
+@since 1.12.0
+-}
+newtype PDon'tValidate (a :: S -> Type) (s :: S) = PDon'tValidate {unPDon'tValidate :: a s}
+
+-- | @since 1.12.0
+instance PlutusType a => PlutusType (PDon'tValidate a) where
+  type PInner (PDon'tValidate a) = PInner a
+  pcon' (PDon'tValidate x) = pcon' x
+  pmatch' x f = pmatch' x (f . PDon'tValidate)
+
+-- | @since 1.12.0
+instance (PlutusType a, PIsData a) => PIsData (PDon'tValidate a) where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl x = pmatch x $ \(PDon'tValidate x') -> pdataImpl . pcon $ x'
+
+-- | @since 1.12.0
+instance (PlutusType a, PIsData a) => PValidateData (PDon'tValidate a) where
+  pwithValidated _ = id

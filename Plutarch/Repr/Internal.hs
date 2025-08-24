@@ -152,7 +152,7 @@ class
   , AllZipN @Type (Prod SOP) (LiftedCoercible I (Term s)) (Code (a s)) struct
   , AllZipN @Type (Prod SOP) (LiftedCoercible (Term s) I) struct (Code (a s))
   ) =>
-  StructSameRepr s a struct
+  StructSameRepr (s :: S) (a :: S -> Type) (struct :: [k])
 
 instance
   ( SOP.Generic (a s)
@@ -170,7 +170,7 @@ type family UnTermRec (struct :: [Type]) :: [S -> Type] where
 type UnTermStruct x = UnTermStruct' (Code x)
 
 -- | @since 1.10.0
-type RecTypePrettyError struct = RecTypePrettyError' struct ~ 'True
+type RecTypePrettyError (struct :: [[k]]) = RecTypePrettyError' struct ~ 'True
 
 -- Helpers
 

@@ -2,6 +2,11 @@
 
 # 1.12.0 -- 
 
+## Added
+
+* `PIsData` instances for `DeriveAsTag`, `DeriveAsDataRec` and
+  `DeriveAsDataStruct`.
+
 ## Removed
 
 * `PCon` and `PMatch`, as they were deprecated (for a long time)

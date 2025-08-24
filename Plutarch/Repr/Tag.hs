@@ -9,10 +9,9 @@ module Plutarch.Repr.Tag (
   TagLiftHelper (..),
 ) where
 
-import Data.Proxy (Proxy (Proxy))
-
 import Data.Coerce (coerce)
 import Data.Kind (Type)
+import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import GHC.Generics qualified as GHC
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
@@ -28,8 +27,8 @@ import Generics.SOP (
  )
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Integer (PInteger)
-
 import Plutarch.Builtin.Opaque (popaque)
+import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl))
 import Plutarch.Internal.Lift (
   LiftError (OtherLiftError),
   PLiftable (AsHaskell, PlutusRepr, haskToRepr, plutToRepr, reprToHask, reprToPlut),
@@ -37,12 +36,12 @@ import Plutarch.Internal.Lift (
   pconstant,
  )
 import Plutarch.Internal.PlutusType (
-  PInner,
-  PlutusType,
-  pcon',
-  pmatch',
+  PlutusType (PInner, pcon', pmatch'),
+  pcon,
+  pmatch,
  )
-import Plutarch.Internal.Term (S, Term)
+import Plutarch.Internal.Subtype (pupcast)
+import Plutarch.Internal.Term (S, Term, punsafeCoerce)
 import Plutarch.Repr.Internal (groupHandlers)
 import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.TermCont (pletC, unTermCont)
@@ -133,7 +132,7 @@ type family TagTypePrettyError' n (xs :: [[Type]]) :: Bool where
 
 type TagTypePrettyError struct = TagTypePrettyError' 1 struct ~ 'True
 
-class (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints s a struct | s a -> struct
+class (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints (s :: S) (a :: S -> Type) (struct :: [[Type]]) | s a -> struct
 instance (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints s a struct
 
 newtype TagMatchHandler s b struct = TagMatchHandler
@@ -171,3 +170,8 @@ instance
   reprToPlut idx = PLifted $ popaque $ pconstant @PInteger idx
 
   plutToRepr p = plutToRepr @PInteger $ coerce p
+
+-- | @since 1.12.0
+instance PIsData (DeriveAsTag a) where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl x = pmatch (pupcast @PInteger x) (pdataImpl . pcon)

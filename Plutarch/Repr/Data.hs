@@ -7,6 +7,7 @@ module Plutarch.Repr.Data (
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
+  PInnermostIsDataDataRepr,
 ) where
 
 import Data.Kind (Type)
@@ -36,8 +37,21 @@ import Plutarch.Builtin.Data (
   psndBuiltin,
  )
 import Plutarch.Internal.Eq (PEq, (#==))
-import Plutarch.Internal.IsData (PInnermostIsData, PIsData)
-import Plutarch.Internal.Lift
+import Plutarch.Internal.IsData (PInnermostIsData, PIsData (pdataImpl, pfromDataImpl))
+import Plutarch.Internal.Lift (
+  LiftError (OtherLiftError),
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    haskToRepr,
+    plutToRepr,
+    reprToHask,
+    reprToPlut
+  ),
+  mkPLifted,
+  pconstant,
+  punsafeCoercePLifted,
+ )
 import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -49,6 +63,7 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
+import Plutarch.Internal.Subtype (pupcast)
 import Plutarch.Internal.Term (
   InternalConfig (..),
   S,
@@ -75,6 +90,8 @@ import Plutarch.Repr.Internal (
 import Plutarch.TermCont (pfindPlaceholder, pletC, unTermCont)
 import PlutusLedgerApi.V3 qualified as PLA
 
+-- Helper for working with SOP representations of `Data`-encoded records. If you
+-- don't know why you need this, it's probably better that way.
 type PInnermostIsDataDataRepr =
   PInnermostIsData
     ('Just "Data representation can only hold types whose inner most representation is PData")
@@ -160,6 +177,18 @@ instance
   pmatch' x f =
     pmatch x (f . DeriveAsDataRec . SOP.to . SOP.hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPDataRec)
 
+-- | @since 1.12.0
+instance
+  ( All PInnermostIsDataDataRepr struct
+  , struct ~ UnTermRec struct'
+  , SOP.Generic (a Any)
+  , '[struct'] ~ Code (a Any)
+  ) =>
+  PIsData (DeriveAsDataRec a)
+  where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl x = pmatch (pupcast @(PDataRec (UnTermRec (Head (Code (a Any))))) x) (pdataImpl . pcon)
+
 {- |
 @DeriveAsDataStruct@ derives @PlutusType@ instances for the given type as Data structure, namely, using @Constr@ constructor
 of the @Data@ type. Each constructor of the given type will have matching constructor index in the order of its definition.
@@ -204,6 +233,19 @@ instance
     pcon @(PDataStruct (UnTermStruct (a Any))) $ PDataStruct $ PStruct $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
     pmatch @(PDataStruct (UnTermStruct (a Any))) x (f . DeriveAsDataStruct . SOP.to . SOP.hcoerce . unPStruct . unPDataStruct)
+
+-- | @since 1.12.0
+instance
+  forall (a :: S -> Type) (struct :: [[S -> Type]]).
+  ( SOP.Generic (a Any)
+  , struct ~ UnTermStruct (a Any)
+  , All2 PInnermostIsDataDataRepr struct
+  , SListI2 struct
+  ) =>
+  PIsData (DeriveAsDataStruct a)
+  where
+  pfromDataImpl = punsafeCoerce
+  pdataImpl x = pmatch (pupcast @(PDataStruct (UnTermStruct (a Any))) x) (pdataImpl . pcon)
 
 -- Helpers
 
