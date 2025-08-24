@@ -3,6 +3,7 @@
 
 module Plutarch.Internal.Newtype (PlutusTypeNewtype) where
 
+import Data.Kind (Type)
 import Generics.SOP qualified as SOP
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom, gpto)
 import Plutarch.Internal.PlutusType (
@@ -12,12 +13,12 @@ import Plutarch.Internal.PlutusType (
   derivedPCon,
   derivedPMatch,
  )
-import Plutarch.Internal.Term (PType)
+import Plutarch.Internal.Term (S)
 
 data PlutusTypeNewtype
 
-class (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
-instance (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
+class (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: S -> Type)
+instance (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: S -> Type)
 
 instance PlutusTypeStrat PlutusTypeNewtype where
   type PlutusTypeStratConstraint PlutusTypeNewtype = Helper
@@ -27,8 +28,8 @@ instance PlutusTypeStrat PlutusTypeNewtype where
     SOP.SOP (SOP.S x) -> case x of {}
   derivedPMatch x f = f (gpto $ SOP.SOP $ SOP.Z $ x SOP.:* SOP.Nil)
 
-type family GetPNewtype' (a :: [[PType]]) :: PType where
+type family GetPNewtype' (a :: [[S -> Type]]) :: S -> Type where
   GetPNewtype' '[ '[a]] = a
 
-type family GetPNewtype (a :: PType) :: PType where
+type family GetPNewtype (a :: S -> Type) :: S -> Type where
   GetPNewtype a = GetPNewtype' (PCode a)

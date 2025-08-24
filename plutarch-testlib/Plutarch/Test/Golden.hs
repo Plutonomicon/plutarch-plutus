@@ -16,26 +16,30 @@ import Data.ByteString.Lazy (ByteString)
 import Data.ByteString.Lazy.Char8 qualified as LBS
 import Data.ByteString.Short qualified as Short
 import Data.Int (Int64)
+import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
-import Plutarch.Evaluate (EvalError, evalScript)
+import Plutarch.Evaluate (evalScript)
 import Plutarch.Internal.Other (printScript)
 import Plutarch.Internal.Term (
-  ClosedTerm,
   Config (Tracing),
   LogLevel (LogInfo),
+  S,
   Script,
+  Term,
   TracingMode (DetTracing),
   compile,
  )
 import Plutarch.Script (Script (unScript))
+import PlutusCore qualified as PLC (DefaultFun, DefaultUni, NamedDeBruijn)
 import PlutusLedgerApi.Common (serialiseUPLC)
 import PlutusLedgerApi.V1 (ExBudget (ExBudget), ExCPU, ExMemory)
 import System.FilePath ((</>))
 import Test.Tasty (TestName, TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
 import Test.Tasty.HUnit (assertFailure, testCase)
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek (CekEvaluationException)
 
 {- | Opaque type representing tree of golden tests
 
@@ -43,8 +47,8 @@ import Test.Tasty.HUnit (assertFailure, testCase)
 -}
 data GoldenTestTree where
   GoldenTestTree :: TestName -> [GoldenTestTree] -> GoldenTestTree
-  GoldenTestTreeEval :: TestName -> ClosedTerm a -> GoldenTestTree
-  GoldenTestTreeEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
+  GoldenTestTreeEval :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> GoldenTestTree
+  GoldenTestTreeEvalFail :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> GoldenTestTree
 
 {- | Convert tree of golden tests into standard Tasty `TestTree`, capturing results produced
 by nested golden tests
@@ -108,14 +112,14 @@ goldenGroup = GoldenTestTree
 
 @since 1.0.0
 -}
-goldenEval :: TestName -> ClosedTerm a -> GoldenTestTree
+goldenEval :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> GoldenTestTree
 goldenEval = GoldenTestTreeEval
 
 {- | Like `Plutarch.Test.Unit.testEvalFail` but will append to goldens created by enclosing `plutarchGolden`
 
 @since 1.0.0
 -}
-goldenEvalFail :: TestName -> ClosedTerm a -> GoldenTestTree
+goldenEvalFail :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> GoldenTestTree
 goldenEvalFail = GoldenTestTreeEvalFail
 
 -- Internals
@@ -141,7 +145,7 @@ mkTest (GoldenTestTreeEvalFail name term) = either id id $ do
       , [(name, benchmark)]
       )
 
-benchmarkTerm :: ClosedTerm a -> Either Text Benchmark
+benchmarkTerm :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Either Text Benchmark
 benchmarkTerm term = do
   compiled <- compile testConfig term
   let (res, ExBudget cpu mem, _traces) = evalScript compiled
@@ -160,7 +164,7 @@ data Benchmark = Benchmark
   -- ^ Memory budget used by the script.
   , scriptSizeBytes :: Int64
   -- ^ Size of Plutus script in bytes
-  , result :: Either EvalError Script
+  , result :: Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script
   , unevaluated :: Script
   }
   deriving stock (Show)

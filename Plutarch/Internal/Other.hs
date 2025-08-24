@@ -6,14 +6,15 @@ module Plutarch.Internal.Other (
   pto,
 ) where
 
+import Data.Kind (Type)
 import Data.Text qualified as T
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal.PlutusType (
   PInner,
  )
 import Plutarch.Internal.Term (
-  ClosedTerm,
   Config,
+  S,
   Term,
   compile,
   punsafeCoerce,
@@ -33,7 +34,7 @@ printScript = show . prettyPlcReadable . (\(Script s) -> s)
 
   > show . prettyPlcReadableDef . (\(Right p) -> p) . Scripts.mkTermToEvaluate . compile $ term
 -}
-printTerm :: HasCallStack => Config -> ClosedTerm a -> String
+printTerm :: forall (a :: S -> Type). HasCallStack => Config -> (forall (s :: S). Term s a) -> String
 printTerm config term = printScript $ either (error . T.unpack) id $ compile config term
 
 {- |

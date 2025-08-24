@@ -3,7 +3,7 @@
 {- | Plutarch benchmarking tools
 
 Interface mirrors the one from @tasty-bench@ but 'bench' instead of taking @Benchmarkable@
-takes 'Plutarch.ClosedTerm'
+takes a closed 'Plutarch.Term'
 
 To compare benchmark run against baseline file you need to generate it first with
 @cabal run bench -- --csv baseline.csv@. Then after making modifications you can rerun the
@@ -51,6 +51,7 @@ import Data.Foldable (traverse_)
 import Data.Int (Int64)
 import Data.IntMap.Strict (IntMap)
 import Data.IntMap.Strict qualified as IntMap
+import Data.Kind (Type)
 import Data.List (intercalate, isPrefixOf, stripPrefix)
 import Data.Maybe (isNothing)
 import Data.Monoid (All (All), Any (Any))
@@ -128,14 +129,14 @@ data BenchConfig
 
 @since 1.0.0
 -}
-bench :: TestName -> ClosedTerm a -> TestTree
+bench :: forall (a :: S -> Type). TestName -> (forall (s :: S). Term s a) -> TestTree
 bench name = benchWithConfig name (NonOptimizing NoTracing)
 
 {- | Like 'bench' but with customizable compilation config
 
 @since 1.0.0
 -}
-benchWithConfig :: TestName -> BenchConfig -> ClosedTerm a -> TestTree
+benchWithConfig :: forall (a :: S -> Type). TestName -> BenchConfig -> (forall (s :: S). Term s a) -> TestTree
 benchWithConfig name config term = singleTest name $ PBenchmarkable config term
 
 {- | Compare benchmarks, reporting relative CPU, MEM, and size differences
@@ -514,7 +515,7 @@ data WithLoHi a
   deriving stock (Show, Read)
 
 data PBenchmarkable where
-  PBenchmarkable :: BenchConfig -> ClosedTerm a -> PBenchmarkable
+  PBenchmarkable :: forall (a :: S -> Type). BenchConfig -> (forall (s :: S). Term s a) -> PBenchmarkable
 
 instance IsTest PBenchmarkable where
   testOptions =

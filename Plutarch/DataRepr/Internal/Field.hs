@@ -67,7 +67,7 @@ type family Helper (x :: S -> Type) :: [PLabeledType] where
   Helper (PDataRecord y) = y
 
 {- |
-  Class allowing 'letFields' to work for a PType, usually via
+  Class allowing 'letFields' to work for a Plutarch type (`S -> Type`), usually via
   `PIsDataRepr`, but is derived for some other types for convenience.
 -}
 class PDataFields (a :: S -> Type) where

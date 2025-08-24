@@ -26,7 +26,7 @@ If we know the desired value of a constant `Term` at compile-time, we can build 
 Constructing constants in this way utilizes the [`PLiftable`](../../Typeclasses/PLiftable.md) typeclasses. These typeclasses expose the following [associated type family](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
 
 ```hs
-type AsHaskell :: PType -> Type
+type AsHaskell :: (S -> Type) -> Type
 ```
 
 `pconstant` takes a single argument: a regular Haskell type with a `PLiftable` instance, and yields a Plutarch term tagged with the corresponding Plutarch type. Note that you usually need to use type applications with `pconstant` as one Haskell type may have many Plutarch representations.
@@ -56,7 +56,7 @@ Sometimes the value that we want to treat as a constant `Term` is not known at c
 `PMaybe` has the following definition:
 
 ```hs
-data PMaybe (a :: PType) (s :: S)
+data PMaybe (a :: S -> Type) (s :: S)
   = PJust (Term s a)
   | PNothing
 ```
@@ -65,13 +65,13 @@ and the following kind:
 
 ```hs
 >>> :k PMaybe
-PMaybe :: PType -> S -> Type
+PMaybe :: (S -> Type) -> S -> Type
 ```
 
 Let's dissect what this means.
 
-- `PMaybe` builds a `PType` from a `PType`; given a `PType`, we can tag a computation with the type `PMaybe a` to indicate that its return value should be semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
-- `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: PType) (s :: S)` is a helper to signify the concept of `Just x`. It contains a Plutarch term.
+- `PMaybe` builds a `S -> Type` from a `S -> Type`; given a `S -> Type`, we can tag a computation with the type `PMaybe a` to indicate that its return value should be semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
+- `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)` is a helper to signify the concept of `Just x`. It contains a Plutarch term.
 
 Now suppose that we want to carry around a constant `Term` in a Plutarch script that can be either `PJust a` or `PNothing`. To do so, we need a function to go from `PJust a` (which we _can_ instantiate as a Haskell value, unlike `PInteger`) to a `Term s (PMaybe a)`. This function is `pcon`:
 
