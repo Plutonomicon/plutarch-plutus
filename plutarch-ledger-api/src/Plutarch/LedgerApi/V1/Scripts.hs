@@ -12,6 +12,7 @@ module Plutarch.LedgerApi.V1.Scripts (
 import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Parse (PValidateData (pwithValidated))
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Builtins.Internal qualified as PlutusTx
@@ -42,6 +43,10 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
 
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptHash)
+
+-- | @since 3.5.0
+instance PValidateData PScriptHash where
+  pwithValidated opq x = plet (pasByteStr # opq) $ const x
 
 -- | @since 3.3.0
 instance PLiftable PScriptHash where

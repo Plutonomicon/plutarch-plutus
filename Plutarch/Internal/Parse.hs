@@ -3,6 +3,9 @@
 {-# LANGUAGE TypeAbstractions #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
+-- Note (Koz, 25/08/2025): Needed to ensure that `pparseData` doesn't get used
+-- on a type that doesn't have a sensible `PAsData`.
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Plutarch.Internal.Parse (
   -- * Type class
@@ -106,7 +109,7 @@ provided by Plutarch and its related libraries follow this rule.
 
 @since 1.12.0
 -}
-class PIsData a => PValidateData (a :: S -> Type) where
+class PValidateData (a :: S -> Type) where
   pwithValidated ::
     forall (s :: S).
     Term s PData ->
@@ -122,7 +125,7 @@ It is kept out of 'PValidateData' for efficiency and safety reasons.
 -}
 pparse ::
   forall (a :: S -> Type) (s :: S).
-  PValidateData a =>
+  (PIsData a, PValidateData a) =>
   Term s PData ->
   Term s (PAsData a)
 pparse opq = pwithValidated @a opq . punsafeCoerce $ opq
@@ -210,6 +213,10 @@ instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
 -}
 instance PValidateData (PBuiltinList PData) where
   pwithValidated opq x = plet (pasList # opq) $ const x
+
+-- | @since 1.12.0
+instance PValidateData a => PValidateData (PAsData a) where
+  pwithValidated = pwithValidated @a
 
 {- | Checks that we have an @I@, and that it is in the range @[0, n - 1]@, where
 @n@ is the number of \'arms\' in the encoded sum type.
@@ -346,5 +353,5 @@ instance (PlutusType a, PIsData a) => PIsData (PDon'tValidate a) where
   pdataImpl x = pmatch x $ \(PDon'tValidate x') -> pdataImpl . pcon $ x'
 
 -- | @since 1.12.0
-instance (PlutusType a, PIsData a) => PValidateData (PDon'tValidate a) where
+instance PValidateData (PDon'tValidate a) where
   pwithValidated _ = id
