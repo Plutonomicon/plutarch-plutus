@@ -4,6 +4,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Test.Laws (
+  AsTagTest (tagNum),
   checkLedgerPropertiesValue,
   checkLedgerPropertiesAssocMap,
   checkLedgerProperties,
@@ -12,6 +13,7 @@ module Plutarch.Test.Laws (
   checkHaskellOrdEquivalent,
   checkHaskellNumEquivalent,
   checkPLiftableLaws,
+  checkPLiftableLawsForDeriveTags,
   checkPOrdLaws,
   checkPAdditiveSemigroupLaws,
   checkPAdditiveMonoidLaws,
@@ -310,6 +312,25 @@ checkPLiftableLaws =
   , testProperty "plift . pconstant = id" . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
       plift (pconstant @a x) `prettyEquals` x
   ]
+
+class AsTagTest a where
+  tagNum :: a -> Integer
+
+-- | @since 3.5.0
+checkPLiftableLawsForDeriveTags ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PLiftable a
+  , PlutusRepr a ~ Integer
+  , AsTagTest (AsHaskell a)
+  ) =>
+  TestTree
+checkPLiftableLawsForDeriveTags =
+  testProperty "verify tag id" . forAllShrinkShow arbitrary shrink prettyShow $
+    ( \(x :: AsHaskell a) ->
+        tagNum x === haskToRepr @a x
+    )
 
 {- | Like `checkLedgerProperties` but specialized to `PValue`
 
