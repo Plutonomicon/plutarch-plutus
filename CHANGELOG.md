@@ -4,8 +4,8 @@
 
 ## Added
 
-* `PIsData` instances for `DeriveAsTag`, `DeriveAsDataRec` and
-  `DeriveAsDataStruct`.
+* `PValidateData`, a replacement for `PTryFrom` to perform validation of
+  @Data@-encoded types.
 
 ## Removed
 

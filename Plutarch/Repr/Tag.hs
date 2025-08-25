@@ -28,20 +28,14 @@ import Generics.SOP (
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (popaque)
-import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl))
 import Plutarch.Internal.Lift (
   LiftError (OtherLiftError),
   PLiftable (AsHaskell, PlutusRepr, haskToRepr, plutToRepr, reprToHask, reprToPlut),
   PLifted (PLifted),
   pconstant,
  )
-import Plutarch.Internal.PlutusType (
-  PlutusType (PInner, pcon', pmatch'),
-  pcon,
-  pmatch,
- )
-import Plutarch.Internal.Subtype (pupcast)
-import Plutarch.Internal.Term (S, Term, punsafeCoerce)
+import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.Term (S, Term)
 import Plutarch.Repr.Internal (groupHandlers)
 import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.TermCont (pletC, unTermCont)
@@ -170,8 +164,3 @@ instance
   reprToPlut idx = PLifted $ popaque $ pconstant @PInteger idx
 
   plutToRepr p = plutToRepr @PInteger $ coerce p
-
--- | @since 1.12.0
-instance PIsData (DeriveAsTag a) where
-  pfromDataImpl = punsafeCoerce
-  pdataImpl x = pmatch (pupcast @PInteger x) (pdataImpl . pcon)

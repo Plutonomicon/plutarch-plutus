@@ -37,7 +37,7 @@ import Plutarch.Builtin.Data (
   psndBuiltin,
  )
 import Plutarch.Internal.Eq (PEq, (#==))
-import Plutarch.Internal.IsData (PInnermostIsData, PIsData (pdataImpl, pfromDataImpl))
+import Plutarch.Internal.IsData (PInnermostIsData, PIsData)
 import Plutarch.Internal.Lift (
   LiftError (OtherLiftError),
   PLiftable (
@@ -63,7 +63,6 @@ import Plutarch.Internal.PlutusType (
   pmatch,
   pmatch',
  )
-import Plutarch.Internal.Subtype (pupcast)
 import Plutarch.Internal.Term (
   InternalConfig (..),
   S,
@@ -177,18 +176,6 @@ instance
   pmatch' x f =
     pmatch x (f . DeriveAsDataRec . SOP.to . SOP.hcoerce . SOP . (Z @_ @_ @'[]) . unPRec . unPDataRec)
 
--- | @since 1.12.0
-instance
-  ( All PInnermostIsDataDataRepr struct
-  , struct ~ UnTermRec struct'
-  , SOP.Generic (a Any)
-  , '[struct'] ~ Code (a Any)
-  ) =>
-  PIsData (DeriveAsDataRec a)
-  where
-  pfromDataImpl = punsafeCoerce
-  pdataImpl x = pmatch (pupcast @(PDataRec (UnTermRec (Head (Code (a Any))))) x) (pdataImpl . pcon)
-
 {- |
 @DeriveAsDataStruct@ derives @PlutusType@ instances for the given type as Data structure, namely, using @Constr@ constructor
 of the @Data@ type. Each constructor of the given type will have matching constructor index in the order of its definition.
@@ -233,19 +220,6 @@ instance
     pcon @(PDataStruct (UnTermStruct (a Any))) $ PDataStruct $ PStruct $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
     pmatch @(PDataStruct (UnTermStruct (a Any))) x (f . DeriveAsDataStruct . SOP.to . SOP.hcoerce . unPStruct . unPDataStruct)
-
--- | @since 1.12.0
-instance
-  forall (a :: S -> Type) (struct :: [[S -> Type]]).
-  ( SOP.Generic (a Any)
-  , struct ~ UnTermStruct (a Any)
-  , All2 PInnermostIsDataDataRepr struct
-  , SListI2 struct
-  ) =>
-  PIsData (DeriveAsDataStruct a)
-  where
-  pfromDataImpl = punsafeCoerce
-  pdataImpl x = pmatch (pupcast @(PDataStruct (UnTermStruct (a Any))) x) (pdataImpl . pcon)
 
 -- Helpers
 
