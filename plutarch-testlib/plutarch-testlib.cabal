@@ -160,7 +160,11 @@ benchmark bench
   hs-source-dirs: bench test
   other-modules:  Plutarch.Test.Suite.Plutarch.Unroll
   build-depends:
+    , bytestring
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-testlib
+    , plutus-core
+    , plutus-tx
     , tasty

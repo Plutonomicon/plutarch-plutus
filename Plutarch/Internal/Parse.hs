@@ -12,7 +12,7 @@ module Plutarch.Internal.Parse (
   PValidateData (..),
 
   -- * Function
-  pparse,
+  pparseData,
 
   -- * Helper deriving newtype
   PDon'tValidate (..),
@@ -120,12 +120,12 @@ It is kept out of 'PValidateData' for efficiency and safety reasons.
 
 @since 1.12.0
 -}
-pparse ::
+pparseData ::
   forall (a :: S -> Type) (s :: S).
   (PIsData a, PValidateData a) =>
   Term s PData ->
   Term s (PAsData a)
-pparse opq = pwithValidated @a opq . punsafeCoerce $ opq
+pparseData opq = pwithValidated @a opq . punsafeCoerce $ opq
 
 {- | Checks (and does) nothing.
 
