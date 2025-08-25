@@ -16,6 +16,7 @@ module Plutarch.Internal.Parse (
 
   -- * Helper deriving newtype
   PDon'tValidate (..),
+  DeriveNewtypePValidateData (..),
 ) where
 
 import Data.Kind (Type)
@@ -42,15 +43,11 @@ import Plutarch.Builtin.Data (
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl))
+import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord ((#<), (#>=))
 import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (
-  PlutusType (PInner, pcon', pmatch'),
-  pcon,
-  pmatch,
- )
+import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -348,10 +345,18 @@ instance PlutusType a => PlutusType (PDon'tValidate a) where
   pmatch' x f = pmatch' x (f . PDon'tValidate)
 
 -- | @since 1.12.0
-instance (PlutusType a, PIsData a) => PIsData (PDon'tValidate a) where
-  pfromDataImpl = punsafeCoerce
-  pdataImpl x = pmatch x $ \(PDon'tValidate x') -> pdataImpl . pcon $ x'
-
--- | @since 1.12.0
 instance PValidateData (PDon'tValidate a) where
   pwithValidated _ = id
+
+{- | Helper to define an instance of 'PValidateData' for @newtype@s over
+'Term's, which \'borrows\' the 'PValidateData' instance for whatever the
+@newtype@ is wrapping.
+
+@since 1.12.0
+-}
+newtype DeriveNewtypePValidateData (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = DeriveNewtypePValidateData (a s)
+
+-- | @since 1.12.0
+instance PValidateData b => PValidateData (DeriveNewtypePValidateData a b) where
+  pwithValidated = pwithValidated @b

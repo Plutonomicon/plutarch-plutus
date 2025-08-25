@@ -62,6 +62,7 @@ common lang
     -Wno-operator-whitespace -Wno-unticked-promoted-constructors
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-foralls -Wno-missing-export-lists
+    -Wno-missing-role-annotations -Wno-x-partial
 
 library
   import:          lang
