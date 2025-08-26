@@ -255,22 +255,22 @@ instance
   {-# INLINEABLE pwithValidated #-}
   pwithValidated opq x = plet (pasList # opq) $ \ell ->
     case SOP.shape @(S -> Type) @struct of
-      aShape -> go ell aShape x
+      SOP.ShapeNil -> x
+      SOP.ShapeCons @ys @y restShape -> go @y ell restShape x
     where
       go ::
-        forall (w :: [S -> Type]) (s :: S) (r :: S -> Type).
-        SOP.All PValidateData w =>
+        forall (a :: S -> Type) (w :: [S -> Type]) (s :: S) (r :: S -> Type).
+        (PValidateData a, SOP.All PValidateData w) =>
         Term s (PBuiltinList PData) ->
         SOP.Shape w ->
         Term s r ->
         Term s r
-      go ell = \case
-        SOP.ShapeNil -> id
-        SOP.ShapeCons @ys @y restShape -> \arg ->
-          plet (pheadBuiltin # ell) $ \h ->
-            plet (ptailBuiltin # ell) $ \t ->
-              plet (pwithValidated @y h arg) $ \arg' ->
-                go t restShape arg'
+      go ell aShape =
+        pwithValidated @a (pheadBuiltin # ell) . case aShape of
+          -- We don't have any more elements of `ell` we care about, so nothing
+          -- else to do.
+          SOP.ShapeNil -> id
+          SOP.ShapeCons @ys @y restShape -> go @y (plet (ptailBuiltin # ell) id) restShape
 
 {- | Checks that we have a @Constr@, that its tag is in the range @[0, n - 1]@
 (where @n@ is the number of \'arms\' in the encoded sum type), and that there
@@ -294,41 +294,47 @@ instance
     plet (pfstBuiltin # p) $ \ix ->
       plet (psndBuiltin # p) $ \fields ->
         case SOP.shape @[S -> Type] @struct of
-          outerShape -> goOuter ix fields outerShape x
+          outerShape ->
+            let numArms = SOP.lengthSList @[S -> Type] (Proxy @struct)
+                possibleMatches = pconstant @PInteger . fromIntegral <$> [0, 1 .. numArms - 1]
+             in goOuter ix fields outerShape possibleMatches x
     where
+      -- outerShape -> goOuter ix fields outerShape x
+
       goOuter ::
         forall (wOuter :: [[S -> Type]]) (s :: S) (r :: S -> Type).
         (SOP.SListI2 wOuter, SOP.All2 PValidateData wOuter) =>
         Term s PInteger ->
         Term s (PBuiltinList PData) ->
         SOP.Shape wOuter ->
+        [Term s PInteger] ->
         Term s r ->
         Term s r
-      goOuter ix ell = \case
-        -- Note (Koz, 25/08/2025): If we end up here, we got an index that can't
-        -- possibly match.
-        SOP.ShapeNil -> const perror
-        SOP.ShapeCons @ys @y restShape -> \arg ->
-          pif
-            (ix #== 0)
-            ( case SOP.shape @(S -> Type) @y of
-                innerShape -> goInner ell innerShape arg
-            )
-            (goOuter (ix - 1) ell restShape arg)
+      goOuter ix ell outerShape = \case
+        -- We tried everything, and nothing matched the index.
+        [] -> const perror
+        (i : is) -> case outerShape of
+          -- Technically impossible
+          SOP.ShapeNil -> const perror
+          SOP.ShapeCons @ys @y restShape -> \arg ->
+            pif
+              (ix #== i)
+              ( case SOP.shape @(S -> Type) @y of
+                  SOP.ShapeNil -> arg
+                  SOP.ShapeCons @zs @z restInnerShape -> goInner @z ell restInnerShape arg
+              )
+              (goOuter ix ell restShape is arg)
       goInner ::
-        forall (wInner :: [S -> Type]) (s :: S) (r :: S -> Type).
-        SOP.All PValidateData wInner =>
+        forall (a :: S -> Type) (wInner :: [S -> Type]) (s :: S) (r :: S -> Type).
+        (PValidateData a, SOP.All PValidateData wInner) =>
         Term s (PBuiltinList PData) ->
         SOP.Shape wInner ->
         Term s r ->
         Term s r
-      goInner ell = \case
-        SOP.ShapeNil -> id
-        SOP.ShapeCons @ys @y restShape -> \arg ->
-          plet (pheadBuiltin # ell) $ \h ->
-            plet (ptailBuiltin # ell) $ \t ->
-              plet (pwithValidated @y h arg) $ \arg' ->
-                goInner t restShape arg'
+      goInner ell aShape =
+        pwithValidated @a (pheadBuiltin # ell) . case aShape of
+          SOP.ShapeNil -> id
+          SOP.ShapeCons @ys @y restShape -> goInner @y (plet (ptailBuiltin # ell) id) restShape
 
 {- | Helper to define a do-nothing instance of 'PValidateData'. Useful when
 defining an instance for a complex type where we want to validate some parts,

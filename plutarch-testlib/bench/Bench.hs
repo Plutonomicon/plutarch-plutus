@@ -301,24 +301,20 @@ instance PTryFrom PData (PAsData PASum) where
       ( pif
           (ix #== 0)
           ( unTermCont $ do
-              h <- tcont $ plet (pheadBuiltin # fields)
-              _ <- tcont $ ptryFrom @(PAsData PByteString) h
+              _ <- tcont $ ptryFrom @(PAsData PByteString) (pheadBuiltin # fields)
               pure . punsafeCoerce $ opq
           )
           ( pif
               (ix #== 1)
               ( unTermCont $ do
-                  h <- tcont $ plet (pheadBuiltin # fields)
-                  _ <- tcont $ ptryFrom @(PAsData PInteger) h
+                  _ <- tcont $ ptryFrom @(PAsData PInteger) (pheadBuiltin # fields)
                   pure . punsafeCoerce $ opq
               )
               ( pif
                   (ix #== 2)
                   ( unTermCont $ do
-                      h1 <- tcont $ plet (pheadBuiltin # fields)
-                      h2 <- tcont $ plet (pheadBuiltin #$ ptailBuiltin # fields)
-                      _ <- tcont $ ptryFrom @(PAsData PByteString) h1
-                      _ <- tcont $ ptryFrom @(PAsData PInteger) h2
+                      _ <- tcont $ ptryFrom @(PAsData PByteString) (pheadBuiltin # fields)
+                      _ <- tcont $ ptryFrom @(PAsData PInteger) (pheadBuiltin #$ ptailBuiltin # fields)
                       pure . punsafeCoerce $ opq
                   )
                   perror
@@ -349,13 +345,10 @@ instance PLiftable PAProduct where
 instance PTryFrom PData (PAsData PAProduct) where
   ptryFrom' opq = runTermCont $ do
     ell <- tcont $ plet (pasList # opq)
-    h1 <- tcont $ plet (pheadBuiltin # ell)
-    _ <- tcont $ ptryFrom @(PAsData PByteString) h1
+    _ <- tcont $ ptryFrom @(PAsData PByteString) (pheadBuiltin # ell)
     t1 <- tcont $ plet (ptailBuiltin # ell)
-    h2 <- tcont $ plet (pheadBuiltin # t1)
-    _ <- tcont $ ptryFrom @(PAsData PInteger) h2
-    h3 <- tcont $ plet (pheadBuiltin #$ ptailBuiltin # t1)
-    _ <- tcont $ ptryFrom @(PAsData PInteger) h3
+    _ <- tcont $ ptryFrom @(PAsData PInteger) (pheadBuiltin # t1)
+    _ <- tcont $ ptryFrom @(PAsData PInteger) (pheadBuiltin #$ ptailBuiltin # t1)
     pure (punsafeCoerce opq, ())
 
 aProductData :: Data
