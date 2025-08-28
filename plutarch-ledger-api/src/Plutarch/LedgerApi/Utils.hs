@@ -43,6 +43,7 @@ module Plutarch.LedgerApi.Utils (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Prelude
 import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
@@ -68,6 +69,8 @@ data PMaybeData (a :: S -> Type) (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since 3.5.0
+      PValidateData
     )
     via (DeriveAsDataStruct (PMaybeData a))
 

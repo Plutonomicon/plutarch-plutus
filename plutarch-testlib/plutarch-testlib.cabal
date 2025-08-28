@@ -62,6 +62,7 @@ common lang
     -Wno-operator-whitespace -Wno-unticked-promoted-constructors
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-foralls -Wno-missing-export-lists
+    -Wno-missing-role-annotations -Wno-x-partial
 
 library
   import:          lang
@@ -159,7 +160,11 @@ benchmark bench
   hs-source-dirs: bench test
   other-modules:  Plutarch.Test.Suite.Plutarch.Unroll
   build-depends:
+    , bytestring
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-testlib
+    , plutus-core
+    , plutus-tx
     , tasty

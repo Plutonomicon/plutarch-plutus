@@ -37,7 +37,7 @@ For example:
 
 ```haskell
 -- | A Plutarch level boolean. Its value is "True", in this case.
-x :: Term s PBool
+x :: forall s . Term s PBool
 x = pconstant True
 ```
 
@@ -45,7 +45,7 @@ You can also directly create a [`PAsData`](./../../Types/PAsData.md) term using 
 
 ```haskell
 -- | A Plutarch level boolean encoded as `Data`.
-xd :: Term s (PAsData PBool)
+xd :: forall s . Term s (PAsData PBool)
 xd = pconstant @(PAsData PBool) True
 ```
 
@@ -79,10 +79,10 @@ Now suppose that we want to carry around a constant `Term` in a Plutarch script 
 -- pcon :: a s -> Term s a
 -- For example:
 
-x' :: Term s PInteger
+x' :: forall s . Term s PInteger
 x' = pconstant 3
 
-justTerm :: Term s (PMaybe PInteger)
+justTerm :: forall s . Term s (PMaybe PInteger)
 justTerm = pcon (PJust x')
 ```
 
@@ -96,7 +96,7 @@ That is, if we ask `justTerm` what it will return when evaluated, it responds, "
 If you don't want to pretend to not know `x` during compile time, another example may be:
 
 ```haskell
-hPJustPInteger :: Term s PInteger -> Term s (PMaybe PInteger)
+hPJustPInteger :: forall s . Term s PInteger -> Term s (PMaybe PInteger)
 hPJustPInteger x = pcon (PJust x)
 ```
 
@@ -108,11 +108,11 @@ The `pcon` function is a method of the [`PCon` typeclass](./../../Typeclasses/Pl
 
 ```haskell
 -- | A Plutarch level integer. Its value is 1, in this case.
-i :: Term s PInteger
+i :: forall s . Term s PInteger
 i = 1
 
 -- | A Plutarch level string (this is actually `Text`). Its value is "foobar", in this case.
-s :: Term s PString
+s :: forall s . Term s PString
 s = "foobar"
 ```
 
@@ -122,7 +122,7 @@ Finally, Plutarch provides helper functions to build certain types of constants:
 
 ```haskell
 -- | A plutarch level bytestring. Its value is [65], in this case.
-hexs :: Term s PByteString
+hexs :: forall s . Term s PByteString
 hexs = phexByteStr "41"
 -- ^ 'phexByteStr' interprets a hex string as a bytestring. 0x41 is 65 - of course.
 ```

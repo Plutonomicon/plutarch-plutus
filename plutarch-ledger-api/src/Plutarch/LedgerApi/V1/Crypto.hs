@@ -8,6 +8,10 @@ module Plutarch.LedgerApi.V1.Crypto (
 import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Parse (
+  DeriveNewtypePValidateData,
+  PValidateData,
+ )
 import Plutarch.Prelude
 import PlutusLedgerApi.V1 qualified as Plutus
 import PlutusTx.Builtins.Internal qualified as PlutusTx
@@ -35,6 +39,11 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
       PlutusType
     )
     via (DeriveNewtypePlutusType PPubKeyHash)
+  deriving
+    ( -- | @since 3.5.0
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PPubKeyHash PByteString)
 
 -- | @since 3.3.0
 instance PLiftable PPubKeyHash where

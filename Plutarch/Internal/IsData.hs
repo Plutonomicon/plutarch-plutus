@@ -14,6 +14,7 @@ module Plutarch.Internal.IsData (
 
 import Data.Kind (Constraint, Type)
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
+import GHC.TypeLits (Symbol)
 import Plutarch.Builtin.Bool (PBool, pif')
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
@@ -57,7 +58,7 @@ import Plutarch.Unsafe (punsafeDowncast)
 import PlutusCore qualified as PLC
 import PlutusTx qualified as PTx
 
-type family PInnermostIsData' msg a b :: Constraint where
+type family PInnermostIsData' (msg :: Maybe Symbol) (a :: k) (b :: S -> Type) :: Constraint where
   PInnermostIsData' _ _ PData = ()
   PInnermostIsData' ('Just msg) a b =
     TypeError

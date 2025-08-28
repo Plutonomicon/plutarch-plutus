@@ -12,6 +12,7 @@ module Plutarch.Rational (
   pproperFraction,
 ) where
 
+import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pcond, pif)
@@ -285,7 +286,8 @@ instance PShow PRational where
         plam $ \n -> pmatch n $ \(PRational x y) ->
           pshow x <> "/" <> pshow (pto y)
 
-newtype Flip f a b = Flip (f b a) deriving stock (Generic)
+newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a)
+  deriving stock (Generic)
 
 -- | NOTE: This instance produces a verified 'PPositive' as the excess output.
 instance PTryFrom PData (PAsData PRational) where

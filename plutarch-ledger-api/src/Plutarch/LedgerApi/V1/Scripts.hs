@@ -12,6 +12,10 @@ module Plutarch.LedgerApi.V1.Scripts (
 import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Parse (
+  DeriveNewtypePValidateData,
+  PValidateData,
+ )
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Builtins.Internal qualified as PlutusTx
@@ -39,6 +43,11 @@ newtype PScriptHash (s :: S) = PScriptHash (Term s PByteString)
       PlutusType
     )
     via (DeriveNewtypePlutusType PScriptHash)
+  deriving
+    ( -- | @since 3.5.0
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PScriptHash PByteString)
 
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptHash)

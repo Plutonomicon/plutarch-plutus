@@ -2,6 +2,11 @@
 
 # 1.12.0 -- 
 
+## Added
+
+* `PValidateData`, a replacement for `PTryFrom` to perform validation of
+  @Data@-encoded types.
+
 ## Removed
 
 * `PCon` and `PMatch`, as they were deprecated (for a long time)
