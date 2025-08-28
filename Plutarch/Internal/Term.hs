@@ -27,15 +27,12 @@ module Plutarch.Internal.Term (
   compileOptimized,
   compile',
   optimizeTerm,
-  ClosedTerm,
-  Dig,
   hashTerm,
   hashRawTerm,
   RawTerm (..),
   HoistedTerm (..),
   TermResult (TermResult, getDeps, getTerm),
   S (SI),
-  PType,
   pthrow,
   Config (NoTracing, Tracing),
   InternalConfig (..),
@@ -103,12 +100,8 @@ import UntypedPlutusCore qualified as UPLC
  though the name is relative to the current level.
 -}
 
-type Dig = Digest Blake2b_160
-
-data HoistedTerm = HoistedTerm Dig RawTerm
+data HoistedTerm = HoistedTerm (Digest Blake2b_160) RawTerm
   deriving stock (Show)
-
-type UTerm = UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 
 data RawTerm
   = RVar Word64
@@ -118,7 +111,7 @@ data RawTerm
   | RDelay RawTerm
   | RConstant (Some (ValueOf PLC.DefaultUni))
   | RBuiltin PLC.DefaultFun
-  | RCompiled UTerm
+  | RCompiled (UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
   | RError
   | RHoisted HoistedTerm
   | RPlaceHolder Integer
@@ -129,7 +122,12 @@ data RawTerm
 addHashIndex :: forall alg. HashAlgorithm alg => Integer -> Context alg -> Context alg
 addHashIndex i = flip hashUpdate ((fromString $ show i) :: BS.ByteString)
 
-hashUTerm :: forall alg. HashAlgorithm alg => UTerm -> Context alg -> Context alg
+hashUTerm ::
+  forall alg.
+  HashAlgorithm alg =>
+  UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+  Context alg ->
+  Context alg
 hashUTerm (UPLC.Var _ name) = addHashIndex 0 . flip hashUpdate (F.flat name)
 hashUTerm (UPLC.LamAbs _ name uterm) = addHashIndex 1 . flip hashUpdate (F.flat name) . hashUTerm uterm
 hashUTerm (UPLC.Apply _ uterm1 uterm2) = addHashIndex 2 . hashUTerm uterm1 . hashUTerm uterm2
@@ -161,7 +159,7 @@ hashRawTerm' (RConstr x y) =
 hashRawTerm' (RCase x y) =
   addHashIndex 12 . hashRawTerm' x . flip (foldl' $ flip hashRawTerm') y
 
-hashRawTerm :: RawTerm -> Dig
+hashRawTerm :: RawTerm -> Digest Blake2b_160
 hashRawTerm t = hashFinalize . hashRawTerm' t $ hashInit
 
 data TermResult = TermResult
@@ -181,9 +179,6 @@ mkTermRes r = TermResult r []
 to "forget" the `s`.
 -}
 data S = SI
-
--- | Shorthand for Plutarch types.
-type PType = S -> Type
 
 {- | How to trace.
 
@@ -435,18 +430,13 @@ type role Term nominal nominal
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: S) (a :: PType) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
+newtype Term (s :: S) (a :: S -> Type) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
 
-{- |
-  *Closed* terms with no free variables.
--}
-type ClosedTerm (a :: PType) = forall (s :: S). Term s a
-
-newtype (:-->) (a :: PType) (b :: PType) (s :: S)
+newtype (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLam (Term s a -> Term s b)
 infixr 0 :-->
 
-data PDelayed (a :: PType) (s :: S)
+data PDelayed (a :: S -> Type) (s :: S)
 
 {- |
   Lambda abstraction.
@@ -685,11 +675,11 @@ punsafeConstantInternal c = Term \_ ->
   let hoisted = HoistedTerm (hashRawTerm $ RConstant c) (RConstant c)
    in pure $ TermResult (RHoisted hoisted) [hoisted]
 
-asClosedRawTerm :: ClosedTerm a -> TermMonad TermResult
+asClosedRawTerm :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> TermMonad TermResult
 asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
-phoistAcyclic :: HasCallStack => ClosedTerm a -> Term s a
+phoistAcyclic :: forall (a :: S -> Type) (s :: S). HasCallStack => (forall (s' :: S). Term s' a) -> Term s a
 phoistAcyclic t = Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
@@ -701,7 +691,11 @@ phoistAcyclic t = Term \_ ->
       (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)
 
 -- Couldn't find a definition for this in plutus-core
-subst :: Word64 -> (Word64 -> UTerm) -> UTerm -> UTerm
+subst ::
+  Word64 ->
+  (Word64 -> UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()) ->
+  UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+  UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 subst idx x (UPLC.Apply () yx yy) = UPLC.Apply () (subst idx x yx) (subst idx x yy)
 subst idx x (UPLC.LamAbs () name y) = UPLC.LamAbs () name (subst (idx + 1) x y)
 subst idx x (UPLC.Delay () y) = UPLC.Delay () (subst idx x y)
@@ -727,7 +721,11 @@ rawTermToUPLC m l (RLamAbs n t) =
   foldr ($) (rawTermToUPLC m (l + n + 1) t) (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
 rawTermToUPLC m l (RApply x y) =
   let
-    inline' :: Word64 -> UTerm -> [UTerm] -> (UTerm, [UTerm])
+    inline' ::
+      Word64 ->
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      [UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()] ->
+      (UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun (), [UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()])
     inline' _ func [] = (func, [])
     inline' target (UPLC.LamAbs () _ body) ((UPLC.Var () (DeBruijn (Index idx))) : args) =
       inline' target (subst 1 (\lvl -> UPLC.Var () (DeBruijn (Index $ idx + lvl - 1 + target))) body) args
@@ -770,7 +768,7 @@ smallEnoughToInline = \case
   _ -> False
 
 -- The logic is mostly for hoisting
-compile' :: TermResult -> UTerm
+compile' :: TermResult -> UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
 compile' t =
   let t' = getTerm t
       deps = getDeps t
@@ -781,8 +779,8 @@ compile' t =
 
       g ::
         HoistedTerm ->
-        (M.Map Dig Word64, [(Word64, RawTerm)], Word64) ->
-        (M.Map Dig Word64, [(Word64, RawTerm)], Word64)
+        (M.Map (Digest Blake2b_160) Word64, [(Word64, RawTerm)], Word64) ->
+        (M.Map (Digest Blake2b_160) Word64, [(Word64, RawTerm)], Word64)
       g (HoistedTerm hash term) (m, defs, n) = case M.alterF (f n) hash m of
         (True, m) -> (m, (n, term) : defs, n + 1)
         (False, m) -> (m, defs, n)
@@ -790,7 +788,7 @@ compile' t =
       hoistedTermRaw :: HoistedTerm -> RawTerm
       hoistedTermRaw (HoistedTerm _ t) = t
 
-      toInline :: S.Set Dig
+      toInline :: S.Set (Digest Blake2b_160)
       toInline =
         S.fromList
           . fmap (\(HoistedTerm hash _) -> hash)
@@ -819,7 +817,7 @@ compile' t =
    in wrapped
 
 -- | Compile a (closed) Plutus Term to a usable script
-compile :: Config -> ClosedTerm a -> Either Text Script
+compile :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text Script
 compile config t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (defaultInternalConfig, config)
 
@@ -892,7 +890,7 @@ optimizeTerm (Term raw) = Term $ \w64 ->
       debruijnd <- UPLC.deBruijnTerm simplified
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
-hashTerm :: Config -> ClosedTerm a -> Either Text Dig
+hashTerm :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text (Digest Blake2b_160)
 hashTerm config t = hashRawTerm . getTerm <$> runReaderT (runTermMonad $ asRawTerm t 0) (defaultInternalConfig, config)
 
 {- |

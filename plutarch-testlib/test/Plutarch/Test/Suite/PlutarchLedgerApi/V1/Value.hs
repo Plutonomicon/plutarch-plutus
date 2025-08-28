@@ -71,8 +71,8 @@ tests =
           ]
     ]
 
-ptoSortedNonZero :: ClosedTerm (PValue 'Unsorted 'NoGuarantees :--> PValue 'Sorted 'NonZero)
+ptoSortedNonZero :: forall (s :: S). Term s (PValue 'Unsorted 'NoGuarantees :--> PValue 'Sorted 'NonZero)
 ptoSortedNonZero = plam punsafeCoerce
 
-ptoSortedPositive :: ClosedTerm (PValue 'Unsorted 'NoGuarantees :--> PValue 'Sorted 'Positive)
+ptoSortedPositive :: forall (s :: S). Term s (PValue 'Unsorted 'NoGuarantees :--> PValue 'Sorted 'Positive)
 ptoSortedPositive = plam punsafeCoerce

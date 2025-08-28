@@ -18,6 +18,8 @@ module Plutarch.Repr.Internal (
   RecTypePrettyError,
 ) where
 
+import Crypto.Hash (Digest)
+import Crypto.Hash.Algorithms (Blake2b_160)
 import Data.Kind (Type)
 import Data.List (groupBy, sortBy)
 import Data.Proxy (Proxy (Proxy))
@@ -45,7 +47,7 @@ import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Lift (AsHaskell, pconstant)
-import Plutarch.Internal.Term (Dig, S, Term, plet)
+import Plutarch.Internal.Term (S, Term, plet)
 import Plutarch.Internal.TermCont (hashOpenTerm, unTermCont)
 
 -- | @since 1.10.0
@@ -105,7 +107,7 @@ gstructEq x y =
 -}
 groupHandlers :: forall (s :: S) (r :: S -> Type). [(Integer, Term s r)] -> Term s PInteger -> Term s r
 groupHandlers handlers idx = unTermCont $ do
-  handlersWithHash :: [(Integer, (Term s b, Dig))] <-
+  handlersWithHash :: [(Integer, (Term s b, Digest Blake2b_160))] <-
     traverse (\(i, t) -> (\hash -> (i, (t, hash))) <$> hashOpenTerm t) handlers
 
   let

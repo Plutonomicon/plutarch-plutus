@@ -6,8 +6,9 @@
 module Plutarch.Docs.Run (applyArguments, evalT, evalSerialize, evalWithArgsT, evalWithArgsT') where
 import Data.Bifunctor (first)
 import Data.ByteString.Short (ShortByteString)
+import Data.Kind (Type)
 import Data.Text (Text, pack)
-import Plutarch.Internal.Term (ClosedTerm, compile)
+import Plutarch.Internal.Term (S, Term, compile)
 import Plutarch.Script (Script (unScript), serialiseScript)
 import Plutarch.Evaluate (evalScript, applyArguments)
 import PlutusLedgerApi.V1 (Data, ExBudget)
@@ -100,20 +101,20 @@ You can compile a Plutarch term using `compile` (from `Plutarch` module), making
 > Note: You can pretty much ignore the UPLC types involved here. All it really means is that the result is a "UPLC program". When it's printed, it's pretty legible - especially for debugging purposes. Although not necessary to use Plutarch, you may find the [Plutonomicon UPLC guide](https://github.com/Plutonomicon/plutonomicon/blob/main/uplc.md) useful.
 
 ```haskell
-evalSerialize :: ClosedTerm a -> Either Text ShortByteString
+evalSerialize :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Either Text ShortByteString
 evalSerialize x = serialiseScript . (\(a, _, _) -> a) <$> evalT x
 
-evalT :: ClosedTerm a -> Either Text (Script, ExBudget, [Text])
+evalT :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Either Text (Script, ExBudget, [Text])
 evalT x = evalWithArgsT x []
 
-evalWithArgsT :: ClosedTerm a -> [Data] -> Either Text (Script, ExBudget, [Text])
+evalWithArgsT :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> [Data] -> Either Text (Script, ExBudget, [Text])
 evalWithArgsT x args = do
   cmp <- compile mempty x
   let (escr, budg, trc) = evalScript $ applyArguments cmp args
   scr <- first (pack . show) escr
   pure (scr, budg, trc)
 
-evalWithArgsT' :: ClosedTerm a -> [Data] -> Either Text (Program DeBruijn DefaultUni DefaultFun (), ExBudget, [Text])
+evalWithArgsT' :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> [Data] -> Either Text (Program DeBruijn DefaultUni DefaultFun (), ExBudget, [Text])
 evalWithArgsT' x args =
   (\(res, budg, trcs) -> (unScript res, budg, trcs))
     <$> evalWithArgsT x args

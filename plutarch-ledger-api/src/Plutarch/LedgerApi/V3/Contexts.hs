@@ -23,7 +23,7 @@ module Plutarch.LedgerApi.V3.Contexts (
   PTxInfo (..),
   PScriptContext (..),
   -- TODO: Add these
-  -- pfindOwnInput,
+  -- pfindInputByOutRef,
   pfindDatum,
   pfindDatumHash,
   -- pfindTxInByTxOutRef,
@@ -654,7 +654,7 @@ deriving via
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PScriptInfo)
 
-{- | An input of the pending transaction.
+{- | An input of the transaction.
 
 @since 2.0.0
 -}

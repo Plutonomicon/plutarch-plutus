@@ -68,7 +68,7 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque, popaque)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
-import Plutarch.Internal.Evaluate (EvalError, evalScriptHuge)
+import Plutarch.Internal.Evaluate (evalScriptHuge)
 import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.PlutusType (DeriveFakePlutusType (DeriveFakePlutusType), PlutusType (PInner))
 import Plutarch.Internal.Subtype (PSubtype)
@@ -91,6 +91,7 @@ import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
 import PlutusTx qualified as PTx
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek (CekEvaluationException)
 
 {- | Used with 'fromPlutarch' methods to give additional information about why
 evaluating a Plutarch term into a Haskell value went wrong.
@@ -99,7 +100,7 @@ evaluating a Plutarch term into a Haskell value went wrong.
 -}
 data LiftError
   = -- | Evaluation failed for some reason.
-    CouldNotEvaluate EvalError
+    CouldNotEvaluate (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
   | -- | We tried to use a builtin not part of the Plutus universe.
     TypeError BuiltinError
   | -- | Compiling the term into a script failed.

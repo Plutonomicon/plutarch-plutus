@@ -9,13 +9,13 @@ module Plutarch.Internal.TermCont (
   pfindPlaceholder,
 ) where
 
+import Crypto.Hash (Digest)
+import Crypto.Hash.Algorithms (Blake2b_160)
 import Data.Kind (Type)
 import Data.String (fromString)
 import Plutarch.Internal.Term (
   Config (Tracing),
-  Dig,
   HoistedTerm (..),
-  PType,
   RawTerm (..),
   S,
   Term (Term),
@@ -28,7 +28,7 @@ import Plutarch.Internal.Term (
  )
 import Plutarch.Internal.Trace (ptraceInfo)
 
-newtype TermCont :: forall (r :: PType). S -> Type -> Type where
+newtype TermCont :: forall (r :: S -> Type). S -> Type -> Type where
   TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
 
 unTermCont :: TermCont @a s (Term s a) -> Term s a
@@ -61,7 +61,7 @@ instance MonadFail (TermCont s) where
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
 
-hashOpenTerm :: Term s a -> TermCont s Dig
+hashOpenTerm :: Term s a -> TermCont s (Digest Blake2b_160)
 hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
   asRawTerm (f . hashRawTerm . getTerm $ y) i

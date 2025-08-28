@@ -14,6 +14,8 @@
   classes (not useful)
 * `prememberData`, `pforgetData'` and `prememberData'` (as they were broken for
   a while)
+* `ClosedTerm` and `EvalError` type synonyms
+* `PType` kind synonym
 
 # 1.11.0 -- 21-08-2025 
 

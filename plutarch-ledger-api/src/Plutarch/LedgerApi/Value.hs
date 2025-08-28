@@ -852,7 +852,7 @@ passertNonZero = plam $ \val ->
       pmatch m $ \case
         PCons x xs -> inner # (pto . pfromData $ psndBuiltin # x) #&& self # xs
         PNil -> pcon PTrue
-    inner :: ClosedTerm (PBuiltinList (PBuiltinPair (PAsData PTokenName) (PAsData PInteger)) :--> PBool)
+    inner :: forall (s :: S). Term s (PBuiltinList (PBuiltinPair (PAsData PTokenName) (PAsData PInteger)) :--> PBool)
     inner = pfix #$ plam $ \self m ->
       pmatch m $ \case
         PCons x xs -> pnot # (psndBuiltin # x #== pconstant @(PAsData PInteger) 0) #&& self # xs

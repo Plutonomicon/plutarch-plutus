@@ -71,12 +71,12 @@ instanceOfType ::
 instanceOfType instanceName = instanceName <> " " <> typeName' False (typeRep @a)
 
 -- | @since 1.0.0
-precompileTerm :: forall (p :: S -> Type). ClosedTerm p -> ClosedTerm p
+precompileTerm :: forall (p :: S -> Type). (forall (s0 :: S). Term s0 p) -> (forall (s1 :: S). Term s1 p)
 precompileTerm t =
   case compile NoTracing t of
     Left err -> error $ "precompileTerm: failed to compile: " <> show err
     Right script -> unsafeTermFromScript script
 
-unsafeTermFromScript :: forall (p :: S -> Type). Script -> ClosedTerm p
+unsafeTermFromScript :: forall (p :: S -> Type). Script -> (forall (s :: S). Term s p)
 unsafeTermFromScript (Script script) =
   Term $ const $ pure $ TermResult (RCompiled $ _progTerm script) []

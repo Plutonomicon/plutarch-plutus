@@ -75,7 +75,7 @@ import {-# SOURCE #-} Plutarch.Internal.Lift (
   unsafeHaskToUni,
  )
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
-import Plutarch.Internal.Term (PType, S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
+import Plutarch.Internal.Term (S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
 import Plutarch.Internal.Witness (witness)
 import PlutusCore qualified as PLC
 
@@ -86,8 +86,8 @@ type family PInnermost' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
 type PInnermost a = PInnermost' (PInner a) a
 
 class PlutusTypeStrat (strategy :: Type) where
-  type PlutusTypeStratConstraint strategy :: PType -> Constraint
-  type DerivedPInner strategy (a :: PType) :: PType
+  type PlutusTypeStratConstraint strategy :: (S -> Type) -> Constraint
+  type DerivedPInner strategy (a :: S -> Type) :: S -> Type
   derivedPCon :: forall a s. (DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
   derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
 
@@ -97,13 +97,13 @@ class
   , PlutusTypeStratConstraint (DPTStrat a) a
   , PlutusType a
   ) =>
-  DerivePlutusType (a :: PType)
+  DerivePlutusType (a :: S -> Type)
   where
   type DPTStrat a :: Type
   type DPTStrat a = TypeError ('Text "Please specify a strategy for deriving PlutusType for type " ':<>: 'ShowType a)
 
-class PlutusType (a :: PType) where
-  type PInner a :: PType
+class PlutusType (a :: S -> Type) where
+  type PInner a :: S -> Type
   type PInner a = DerivedPInner (DPTStrat a) a
   pcon' :: forall s. a s -> Term s (PInner a)
   default pcon' :: DerivePlutusType a => forall s. a s -> Term s (PInner a)
@@ -146,8 +146,8 @@ instance PlutusType (PFix f) where
 
 data PlutusTypeNewtype
 
-class (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
-instance (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: PType)
+class (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: S -> Type)
+instance (PGeneric a, PCode a ~ '[ '[GetPNewtype a]]) => Helper (a :: S -> Type)
 
 instance PlutusTypeStrat PlutusTypeNewtype where
   type PlutusTypeStratConstraint PlutusTypeNewtype = Helper
@@ -157,10 +157,10 @@ instance PlutusTypeStrat PlutusTypeNewtype where
     SOP.SOP (SOP.S x) -> case x of {}
   derivedPMatch x f = f (gpto $ SOP.SOP $ SOP.Z $ x SOP.:* SOP.Nil)
 
-type family GetPNewtype' (a :: [[PType]]) :: PType where
+type family GetPNewtype' (a :: [[S -> Type]]) :: S -> Type where
   GetPNewtype' '[ '[a]] = a
 
-type family GetPNewtype (a :: PType) :: PType where
+type family GetPNewtype (a :: S -> Type) :: S -> Type where
   GetPNewtype a = GetPNewtype' (PCode a)
 
 --------------------------------------------------------------------------------

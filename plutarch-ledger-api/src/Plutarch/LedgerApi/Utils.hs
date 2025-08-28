@@ -181,7 +181,7 @@ instance PTryFrom PData (PAsData PRationalData) where
     pure (pdata . pcon $ PRationalData numr denm, ())
 
 -- | @since 3.1.0
-prationalFromData :: ClosedTerm (PRationalData :--> PRational)
+prationalFromData :: forall (s :: S). Term s (PRationalData :--> PRational)
 prationalFromData = phoistAcyclic $
   plam $ \x -> unTermCont $ do
     PRationalData n d <- pmatchC x

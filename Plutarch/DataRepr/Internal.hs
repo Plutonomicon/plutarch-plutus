@@ -20,6 +20,8 @@ module Plutarch.DataRepr.Internal (
   PlutusTypeData,
 ) where
 
+import Crypto.Hash (Digest)
+import Crypto.Hash.Algorithms (Blake2b_160)
 import Data.Coerce (coerce)
 import Data.Functor.Compose qualified as F
 import Data.Functor.Const (Const (Const))
@@ -97,7 +99,6 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Show (PShow (pshow'))
 import Plutarch.Internal.Term (
-  Dig,
   Term,
   pdelay,
   perror,
@@ -478,7 +479,7 @@ pmatchLT d1 d2 handlers = unTermCont $ do
         : applyHandlers args1 args2 rest
 
 reprHandlersGo ::
-  (Dig, Term s out) ->
+  (Digest Blake2b_160, Term s out) ->
   Integer ->
   [Term s out] ->
   Term s PInteger ->
@@ -494,14 +495,14 @@ reprHandlersGo common idx (handler : rest) c =
           handler
           $ reprHandlersGo common (idx + 1) rest c
 
-hashHandlers :: [Term s out] -> TermCont s [(Dig, Term s out)]
+hashHandlers :: [Term s out] -> TermCont s [(Digest Blake2b_160, Term s out)]
 hashHandlers [] = pure []
 hashHandlers (handler : rest) = do
   hash <- hashOpenTerm handler
   hashes <- hashHandlers rest
   pure $ (hash, handler) : hashes
 
-findCommon :: [Term s out] -> TermCont s (Dig, Term s out)
+findCommon :: [Term s out] -> TermCont s (Digest Blake2b_160, Term s out)
 findCommon handlers = do
   l <- hashHandlers handlers
   pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
