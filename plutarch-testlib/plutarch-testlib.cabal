@@ -163,3 +163,4 @@ benchmark bench
     , plutarch-ledger-api
     , plutarch-testlib
     , tasty
+    , vector

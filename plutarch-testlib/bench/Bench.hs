@@ -1,5 +1,8 @@
 module Main (main) where
 
+import Data.Kind (Type)
+import Data.Vector.Strict (Vector)
+import Data.Vector.Strict qualified as Vector
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogInfo),
@@ -15,6 +18,7 @@ import Plutarch.Test.Bench (
   benchWithConfig,
   defaultMain,
  )
+import Plutarch.Test.Utils (precompileTerm)
 import Test.Tasty (TestTree, testGroup)
 
 import Plutarch.Test.Suite.Plutarch.Unroll (unrollBenches)
@@ -28,9 +32,15 @@ main =
       , testGroup "Exponentiation" expBenches
       , testGroup "Tracing" tracingBenches
       , testGroup "Unroll" unrollBenches
+      , testGroup "Array" arrayBenches
       ]
 
 -- Suites
+
+arrayBenches :: [TestTree]
+arrayBenches =
+  [ bench "map twice" (precompileTerm (plam $ \x -> pmap # pinc # parrayMap pinc x) # pconstant @(PArray PInteger) iota)
+  ]
 
 tracingBenches :: [TestTree]
 tracingBenches =
@@ -119,3 +129,32 @@ bySquaringExp = phoistAcyclic $ pfix #$ plam $ \self b e ->
             (b #* res)
             res
     )
+
+iota :: Vector Integer
+iota = Vector.generate 20 fromIntegral
+
+pinc :: forall (s :: S). Term s (PInteger :--> PInteger)
+pinc = phoistAcyclic $ plam (+ 1)
+
+parrayMap ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  PLiftable (PBuiltinList b) =>
+  Term s (a :--> b) ->
+  Term s (PArray a) ->
+  Term s (PBuiltinList b)
+parrayMap f arr = plet (plengthOfArray # arr) $ \len ->
+  phoistAcyclic (pfix # plam go) # f # arr # (len - 1) # pcon PNil
+  where
+    go ::
+      forall (s' :: S).
+      Term s' ((a :--> b) :--> PArray a :--> PInteger :--> PBuiltinList b :--> PBuiltinList b) ->
+      Term s' (a :--> b) ->
+      Term s' (PArray a) ->
+      Term s' PInteger ->
+      Term s' (PBuiltinList b) ->
+      Term s' (PBuiltinList b)
+    go self f arr' currIx acc =
+      pif
+        (currIx #== (-1))
+        acc
+        (self # f # arr' # (currIx - 1) #$ pconsBuiltin # (f #$ pindexArray # arr' # currIx) # acc)

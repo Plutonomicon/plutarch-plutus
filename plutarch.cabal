@@ -73,6 +73,7 @@ common c
 library
   import:          c
   exposed-modules:
+    Plutarch.Array
     Plutarch.BitString
     Plutarch.Builtin.Array
     Plutarch.Builtin.BLS
