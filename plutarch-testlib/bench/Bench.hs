@@ -8,7 +8,7 @@ import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
+import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData, OtherLiftError))
 import Plutarch.Internal.Parse (PValidateData (pwithValidated), pparseData)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
@@ -28,6 +28,7 @@ import Plutarch.Repr.Data (
   DeriveAsDataRec (DeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct),
  )
+import Plutarch.Repr.Tag (DeriveAsTag (DeriveAsTag))
 import Plutarch.Test.Bench (
   BenchConfig (NonOptimizing, Optimizing),
   bcompare,
@@ -52,10 +53,12 @@ import PlutusTx.Builtins.Internal (
   chooseData,
   mkCons,
   mkConstr,
+  mkI,
   mkList,
   mkNilData,
   unitval,
   unsafeDataAsConstr,
+  unsafeDataAsI,
   unsafeDataAsList,
  )
 import PlutusTx.Builtins.Internal qualified as PTx
@@ -86,6 +89,9 @@ pvalidateDataBenches =
   , bench "Sum" (precompileTerm (plam $ pparseData @PASum) # pconstant @PData aSumData)
   , bcompare "$(NF-1) == \"PValidateData\" && $NF == \"Sum\"" $
       bench "PTryFrom sum" (precompileTerm (plam $ \x -> ptryFrom @(PAsData PASum) x fst) # pconstant @PData aSumData)
+  , bench "Tag" (precompileTerm (plam $ pparseData @PATag) # pconstant @PData aTagData)
+  , bcompare "$(NF-1) == \"PValidateData\" && $NF == \"Tag\"" $
+      bench "PTryFrom tag" (precompileTerm (plam $ \x -> ptryFrom @(PAsData PATag) x fst) # pconstant @PData aTagData)
   ]
 
 tracingBenches :: [TestTree]
@@ -249,6 +255,26 @@ instance FromData AProduct where
           )
           ell
 
+data ATag = TagOne | TagTwo | TagThree
+
+instance ToData ATag where
+  toBuiltinData = \case
+    TagOne -> mkI 0
+    TagTwo -> mkI 1
+    TagThree -> mkI 2
+
+instance FromData ATag where
+  fromBuiltinData d = chooseData d Nothing Nothing Nothing go Nothing
+    where
+      go :: Maybe ATag
+      go = do
+        let i = unsafeDataAsI d
+        if
+          | i == 0 -> pure TagOne
+          | i == 1 -> pure TagTwo
+          | i == 2 -> pure TagThree
+          | otherwise -> Nothing
+
 newtype PANewtype (s :: S) = PANewtype (Term s PByteString)
   deriving stock (Generic)
   deriving anyclass (SOP.Generic, PIsData)
@@ -351,8 +377,46 @@ instance PTryFrom PData (PAsData PAProduct) where
     _ <- tcont $ ptryFrom @(PAsData PInteger) (pheadBuiltin #$ ptailBuiltin # t1)
     pure (punsafeCoerce opq, ())
 
+data PATag (s :: S) = PTagOne | PTagTwo | PTagThree
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PIsData)
+  deriving (PlutusType, PValidateData) via (DeriveAsTag PATag)
+
+instance PLiftable PATag where
+  type AsHaskell PATag = ATag
+  type PlutusRepr PATag = Integer
+  haskToRepr = \case
+    TagOne -> 0
+    TagTwo -> 1
+    TagThree -> 2
+  reprToHask = \case
+    0 -> pure TagOne
+    1 -> pure TagTwo
+    2 -> pure TagThree
+    _ -> Left . OtherLiftError $ "Not a valid tag"
+  plutToRepr = plutToReprUni
+  reprToPlut = reprToPlutUni
+
+instance PTryFrom PData (PAsData PATag) where
+  ptryFrom' opq = runTermCont $ do
+    i <- tcont $ plet (pasInt # opq)
+    pure
+      ( pif
+          (i #< 0)
+          perror
+          ( pif
+              (i #>= 3)
+              perror
+              (punsafeCoerce opq)
+          )
+      , ()
+      )
+
 aProductData :: Data
 aProductData = List [aNewtypeData, I 42, I 42]
 
 aSumData :: Data
 aSumData = Constr 2 [aNewtypeData, I 42]
+
+aTagData :: Data
+aTagData = I 2
