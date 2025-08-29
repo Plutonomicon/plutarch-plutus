@@ -286,7 +286,7 @@ instance PEq (PValue 'AssocMap.Sorted 'NoGuarantees) where
       # (AssocMap.pall # plam (#== 0))
       -- While '(-)' is not commutative, we don't need that property here.
       -- TODO benchmark with '(==)'
-      # pto (punionResolvingCollisionsWith AssocMap.Commutative # plam (-) # a # b)
+      # pto (punionResolvingCollisionsWith # plam (-) # a # b)
 
 -- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'Positive) where
@@ -296,12 +296,12 @@ instance PSemigroup (PValue 'AssocMap.Sorted 'Positive) where
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
-    punsafeDowncast (pto $ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b)
+    punsafeDowncast (pto $ punionResolvingCollisionsWith # plam (+) # a # b)
 
 -- | @since 2.0.0
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
-    punsafeDowncast (pto $ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b)
+    punsafeDowncast (pto $ punionResolvingCollisionsWith # plam (+) # a # b)
 
 -- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'NonZero) where
@@ -311,12 +311,12 @@ instance PSemigroup (PValue 'AssocMap.Sorted 'NonZero) where
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
   a <> b =
-    pnormalize #$ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    pnormalize #$ punionResolvingCollisionsWith # plam (+) # a # b
 
 -- | @since 2.0.0
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
   a <> b =
-    pnormalize #$ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    pnormalize #$ punionResolvingCollisionsWith # plam (+) # a # b
 
 -- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'NoGuarantees) where
@@ -326,12 +326,12 @@ instance PSemigroup (PValue 'AssocMap.Sorted 'NoGuarantees) where
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
   a <> b =
-    punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    punionResolvingCollisionsWith # plam (+) # a # b
 
 -- | @since 2.0.0
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
   a <> b =
-    punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    punionResolvingCollisionsWith # plam (+) # a # b
 
 -- | @since 3.3.0
 instance
@@ -504,7 +504,6 @@ pcheckBinRel = phoistAcyclic $
 -}
 punionResolvingCollisionsWith ::
   forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
-  AssocMap.Commutativity ->
   Term
     s
     ( (PInteger :--> PInteger :--> PInteger)
@@ -512,11 +511,11 @@ punionResolvingCollisionsWith ::
         :--> PValue 'AssocMap.Sorted any1
         :--> PValue 'AssocMap.Sorted 'NoGuarantees
     )
-punionResolvingCollisionsWith commutativity = phoistAcyclic $
+punionResolvingCollisionsWith = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith commutativity
-        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWith commutativity # combine # x' # y')
+      AssocMap.punionResolvingCollisionsWith
+        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWith # combine # x' # y')
         # pto x
         # pto y
 
@@ -726,7 +725,7 @@ pleftBiasedTokenUnion ::
 pleftBiasedTokenUnion = phoistAcyclic $
   plam $ \x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith AssocMap.NonCommutative
+      AssocMap.punionResolvingCollisionsWith
         # plam (\x' y' -> AssocMap.pleftBiasedUnion # x' # y')
         # pto x
         # pto y
@@ -739,7 +738,6 @@ pleftBiasedTokenUnion = phoistAcyclic $
 -}
 punionResolvingCollisionsWithData ::
   forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
-  AssocMap.Commutativity ->
   Term
     s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
@@ -747,11 +745,11 @@ punionResolvingCollisionsWithData ::
         :--> PValue 'AssocMap.Sorted any1
         :--> PValue 'AssocMap.Sorted 'NoGuarantees
     )
-punionResolvingCollisionsWithData commutativity = phoistAcyclic $
+punionResolvingCollisionsWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith commutativity
-        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWithData commutativity # combine # x' # y')
+      AssocMap.punionResolvingCollisionsWith
+        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWithData # combine # x' # y')
         # pto x
         # pto y
 

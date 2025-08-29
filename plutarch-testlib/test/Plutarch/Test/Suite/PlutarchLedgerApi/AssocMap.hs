@@ -112,38 +112,24 @@ tests =
         checkHaskellSortedPMapEquivalent2 @PInteger @(PMap 'Unsorted PInteger PInteger)
           PlutusMap.delete
           (plam (\k m -> AssocMap.pforgetSorted $ AssocMap.pdelete # k # m))
-    , testProperty "unionWith (+) = punionResolvingCollisionsWith Commutative (#+)" $
+    , testProperty "unionWith (+) = punionResolvingCollisionsWith (#+)" $
         forAllShrinkShow arbitrary shrink show $
           \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
             PlutusMap.unionWith (+) m1 m2
               `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
                 ( AssocMap.pforgetSorted $
                     AssocMap.punionResolvingCollisionsWith
-                      AssocMap.Commutative
-                      # plam ((#+) @PInteger)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m1)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m2)
-                )
-    , testProperty "unionWith (+) = punionResolvingCollisionsWith NonCommutative (#+)" $
-        forAllShrinkShow arbitrary shrink show $
-          \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
-            PlutusMap.unionWith (+) m1 m2
-              `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
-                ( AssocMap.pforgetSorted $
-                    AssocMap.punionResolvingCollisionsWith
-                      AssocMap.NonCommutative
                       # plam (#+)
                       # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m1)
                       # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m2)
                 )
-    , testProperty "unionWith (-) = punionResolvingCollisionsWith NonCommutative (#-)" $
+    , testProperty "unionWith (-) = punionResolvingCollisionsWith (#-)" $
         forAllShrinkShow arbitrary shrink show $
           \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
             PlutusMap.unionWith (-) m1 m2
               `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
                 ( AssocMap.pforgetSorted $
                     AssocMap.punionResolvingCollisionsWith
-                      AssocMap.NonCommutative
                       # plam (#-)
                       # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m1)
                       # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m2)
