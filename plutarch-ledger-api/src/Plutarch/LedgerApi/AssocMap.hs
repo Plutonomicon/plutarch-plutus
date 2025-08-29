@@ -86,7 +86,18 @@ import Generics.SOP qualified as SOP
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
-import Plutarch.LedgerApi.AssocMap.Zip qualified as Zip (MergeHandler, defaultMergeHandler, differenceMergeHandler, intersectionMergeHandler, leftBiasedUnionMergeHandler, mergeHandlerOnData, unionMergeHandler, zipWorker)
+import Plutarch.LedgerApi.AssocMap.Zip qualified as Zip (
+  MergeHandler,
+  defaultMergeHandler,
+  differenceMergeHandler,
+  intersectionMergeHandler,
+  leftBiasedUnionMergeHandler,
+  mergeHandlerOnData,
+  mergeHandlerOnDataKeepValues,
+  unionMergeHandler,
+  zipWorker,
+  zipWorkerKeepValues,
+ )
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -346,8 +357,13 @@ punionResolvingCollisionsWith ::
     )
 punionResolvingCollisionsWith =
   phoistAcyclic $
-    plam $
-      pzipWith . Zip.unionMergeHandler
+    plam $ \combine mapL mapR ->
+      pcon $
+        PMap $
+          Zip.zipWorkerKeepValues
+            (Zip.mergeHandlerOnDataKeepValues $ Zip.unionMergeHandler combine)
+            # pto mapL
+            # pto mapR
 
 {- | Build the union of two 'PMap's, merging values that share the same key
 using the given function.
@@ -368,8 +384,13 @@ punionResolvingCollisionsWithData ::
     )
 punionResolvingCollisionsWithData =
   phoistAcyclic $
-    plam $
-      pzipWithData . Zip.unionMergeHandler
+    plam $ \combine mapL mapR ->
+      pcon $
+        PMap $
+          Zip.zipWorkerKeepValues
+            (Zip.unionMergeHandler combine)
+            # pto mapL
+            # pto mapR
 
 {- | Maps and filters the map, much like 'Data.PPrelude.mapMaybe'.
 
@@ -612,7 +633,13 @@ pleftBiasedUnion ::
     )
 pleftBiasedUnion =
   phoistAcyclic $
-    pzipWith Zip.leftBiasedUnionMergeHandler
+    plam $ \mapL mapR ->
+      pcon $
+        PMap $
+          Zip.zipWorkerKeepValues
+            (Zip.mergeHandlerOnDataKeepValues Zip.leftBiasedUnionMergeHandler)
+            # pto mapL
+            # pto mapR
 
 {- Difference of two maps. Return elements of the first map not existing in the second map.
 
@@ -709,8 +736,13 @@ pzipWithDefaults ::
     )
 pzipWithDefaults defLeft defRight =
   phoistAcyclic $
-    plam $
-      pzipWith . Zip.defaultMergeHandler defLeft defRight
+    plam $ \combine mapL mapR ->
+      pcon $
+        PMap $
+          Zip.zipWorkerKeepValues
+            (Zip.mergeHandlerOnDataKeepValues $ Zip.defaultMergeHandler defLeft defRight combine)
+            # pto mapL
+            # pto mapR
 
 {- | Build the intersection of two 'PMap's, merging values that share the same
 key using the given function.
@@ -1112,7 +1144,7 @@ pzipWith ::
   , PIsData b
   , PIsData c
   ) =>
-  Zip.MergeHandler s k a b c ->
+  Zip.MergeHandler s k a b (PMaybe c) ->
   Term
     s
     ( PMap 'Sorted k a
@@ -1130,7 +1162,7 @@ pzipWithData ::
   ( POrd k
   , PIsData k
   ) =>
-  Zip.MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c) ->
+  Zip.MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PMaybe (PAsData c)) ->
   Term
     s
     ( PMap 'Sorted k a
