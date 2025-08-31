@@ -1,3 +1,4 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE QualifiedDo #-}
 {-# LANGUAGE RankNTypes #-}
@@ -9,17 +10,18 @@ module Plutarch.LedgerApi.AssocMap.Zip (
   intersectionMergeHandler,
   leftBiasedUnionMergeHandler,
   mergeHandlerOnData,
-  mergeHandlerOnDataKeepValues,
   unionMergeHandler,
   zipWorker,
-  zipWorkerKeepValues,
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Maybe (pjust, pmapMaybe, pmaybe, pnothing)
+import Plutarch.Maybe (pmapMaybe, pmaybe)
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude hiding (pmap)
 import Plutarch.Prelude qualified as PPrelude (pmap)
+
+--------------------------------------------------------------------------------
+-- Helpers
 
 pmapDropNothing ::
   forall (s :: S) (list :: (S -> Type) -> S -> Type) (a :: S -> Type) (b :: S -> Type).
@@ -38,18 +40,27 @@ pmapDropNothing =
         )
         (const pnil)
 
+--------------------------------------------------------------------------------
+-- Types
+
 data MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) = MergeHandler
-  { mhBothPresent :: Term s (k :--> a :--> b :--> c)
-  , mhLeftPresent :: Term s (k :--> a :--> c)
-  , mhRightPresent :: Term s (k :--> b :--> c)
+  { mhBothPresent :: BothPresentHandler s k a b c
+  , mhLeftPresent :: OnePresentHandler s k a c
+  , mhRightPresent :: OnePresentHandler s k b c
   }
 
-{- TODO: Should we really care about commutativity here?
-data MergeHandlerCommutative (s :: S) (k :: S -> Type) (v :: S -> Type) = MergeHandlerCommutative
-  { mhBothPresent :: Term s (k :--> v :--> v :--> PMaybe v)
-  , mhOnePresent :: Term s (k :--> v :--> PMaybe v)
-  }
--}
+data BothPresentHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type)
+  = DropBoth
+  | HandleBoth (Term s (k :--> a :--> b :--> c))
+  | HandleOrDropBoth (Term s (k :--> a :--> b :--> PMaybe c))
+
+data OnePresentHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type)
+  = DropOne
+  | HandleOne (Term s (k :--> a :--> b))
+  | HandleOrDropOne (Term s (k :--> a :--> PMaybe b))
+
+--------------------------------------------------------------------------------
+-- Handler Conversion
 
 mergeHandlerOnData ::
   forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
@@ -58,48 +69,54 @@ mergeHandlerOnData ::
   , PIsData b
   , PIsData c
   ) =>
-  MergeHandler s k a b (PMaybe c) ->
-  MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PMaybe (PAsData c))
+  MergeHandler s k a b c ->
+  MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c)
 mergeHandlerOnData mergeHandler =
   MergeHandler
-    { mhBothPresent =
-        plam $ \k valL valR ->
-          pmapMaybe
-            # plam pdata
-            # (mergeHandler.mhBothPresent # pfromData k # pfromData valL # pfromData valR)
-    , mhLeftPresent =
-        plam $ \k valL ->
-          pmapMaybe
-            # plam pdata
-            # (mergeHandler.mhLeftPresent # pfromData k # pfromData valL)
-    , mhRightPresent =
-        plam $ \k valR ->
-          pmapMaybe
-            # plam pdata
-            # (mergeHandler.mhRightPresent # pfromData k # pfromData valR)
+    { mhBothPresent = bothPresentHandlerOnData mergeHandler.mhBothPresent
+    , mhLeftPresent = onePresentHandlerOnData mergeHandler.mhLeftPresent
+    , mhRightPresent = onePresentHandlerOnData mergeHandler.mhRightPresent
     }
 
-mergeHandlerOnDataKeepValues ::
+bothPresentHandlerOnData ::
   forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
   ( PIsData k
   , PIsData a
   , PIsData b
   , PIsData c
   ) =>
-  MergeHandler s k a b c ->
-  MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c)
-mergeHandlerOnDataKeepValues mergeHandler =
-  MergeHandler
-    { mhBothPresent =
-        plam $ \k valL valR ->
-          pdata $ mergeHandler.mhBothPresent # pfromData k # pfromData valL # pfromData valR
-    , mhLeftPresent =
-        plam $ \k valL ->
-          pdata $ mergeHandler.mhLeftPresent # pfromData k # pfromData valL
-    , mhRightPresent =
-        plam $ \k valR ->
-          pdata $ mergeHandler.mhRightPresent # pfromData k # pfromData valR
-    }
+  BothPresentHandler s k a b c ->
+  BothPresentHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c)
+bothPresentHandlerOnData = \case
+  DropBoth -> DropBoth
+  HandleBoth f ->
+    HandleBoth $ plam \k valL valR ->
+      pdata $ f # pfromData k # pfromData valL # pfromData valR
+  HandleOrDropBoth f ->
+    HandleOrDropBoth $ plam \k valL valR ->
+      pmapMaybe
+        # plam pdata
+        # (f # pfromData k # pfromData valL # pfromData valR)
+
+onePresentHandlerOnData ::
+  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type).
+  ( PIsData k
+  , PIsData a
+  , PIsData b
+  ) =>
+  OnePresentHandler s k a b ->
+  OnePresentHandler s (PAsData k) (PAsData a) (PAsData b)
+onePresentHandlerOnData = \case
+  DropOne -> DropOne
+  HandleOne f ->
+    HandleOne $ plam \k v ->
+      pdata $ f # pfromData k # pfromData v
+  HandleOrDropOne f ->
+    HandleOrDropOne $ plam \k v ->
+      pmapMaybe # plam pdata # (f # pfromData k # pfromData v)
+
+--------------------------------------------------------------------------------
+-- Handlers
 
 defaultMergeHandler ::
   forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
@@ -109,30 +126,30 @@ defaultMergeHandler ::
   MergeHandler s k a b c
 defaultMergeHandler defL defR combine =
   MergeHandler
-    { mhBothPresent = plam (\_ valL valR -> combine # valL # valR)
-    , mhLeftPresent = plam (\_ valL -> combine # valL # defR)
-    , mhRightPresent = plam (\_ valR -> combine # defL # valR)
+    { mhBothPresent = HandleBoth $ plam (\_ valL valR -> combine # valL # valR)
+    , mhLeftPresent = HandleOne $ plam (\_ valL -> combine # valL # defR)
+    , mhRightPresent = HandleOne $ plam (\_ valR -> combine # defL # valR)
     }
 
 intersectionMergeHandler ::
   forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
   Term s (a :--> b :--> c) ->
-  MergeHandler s k a b (PMaybe c)
+  MergeHandler s k a b c
 intersectionMergeHandler merge =
   MergeHandler
-    { mhBothPresent = plam (\_ valL valR -> pjust #$ merge # valL # valR)
-    , mhLeftPresent = plam (\_ _ -> pnothing)
-    , mhRightPresent = plam (\_ _ -> pnothing)
+    { mhBothPresent = HandleBoth $ plam (\_ valL valR -> merge # valL # valR)
+    , mhLeftPresent = DropOne
+    , mhRightPresent = DropOne
     }
 
 differenceMergeHandler ::
   forall (s :: S) (k :: S -> Type) (v :: S -> Type).
-  MergeHandler s k v v (PMaybe v)
+  MergeHandler s k v v v
 differenceMergeHandler =
   MergeHandler
-    { mhBothPresent = plam (\_ _ _ -> pnothing)
-    , mhLeftPresent = plam (\_ valL -> pjust # valL)
-    , mhRightPresent = plam (\_ _ -> pnothing)
+    { mhBothPresent = DropBoth
+    , mhLeftPresent = HandleOne $ plam (\_ valL -> valL)
+    , mhRightPresent = DropOne
     }
 
 unionMergeHandler ::
@@ -141,9 +158,9 @@ unionMergeHandler ::
   MergeHandler s k v v v
 unionMergeHandler merge =
   MergeHandler
-    { mhBothPresent = plam (\_ valL valR -> merge # valL # valR)
-    , mhLeftPresent = plam (\_ valL -> valL)
-    , mhRightPresent = plam (\_ valR -> valR)
+    { mhBothPresent = HandleBoth $ plam (\_ valL valR -> merge # valL # valR)
+    , mhLeftPresent = HandleOne $ plam (\_ valL -> valL)
+    , mhRightPresent = HandleOne $ plam (\_ valR -> valR)
     }
 
 leftBiasedUnionMergeHandler ::
@@ -151,7 +168,10 @@ leftBiasedUnionMergeHandler ::
   MergeHandler s k v v v
 leftBiasedUnionMergeHandler = unionMergeHandler $ plam const
 
-zipWorkerKeepValues ::
+--------------------------------------------------------------------------------
+-- Logic
+
+zipWorker ::
   forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
   ( POrd k
   , PIsData k
@@ -163,91 +183,51 @@ zipWorkerKeepValues ::
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData b))
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData c))
     )
-zipWorkerKeepValues mergeHandler =
-  pfix #$ plam $ \self mapL mapR ->
-    pmatch mapL $ \case
-      PNil ->
-        PPrelude.pmap
-          # plam
-            ( \entry -> P.do
-                k <- plet $ pfstBuiltin # entry
-                ppairDataBuiltin # k #$ mergeHandler.mhRightPresent # k #$ psndBuiltin # entry
-            )
-          # mapR
-      PCons entryL restL ->
-        pmatch mapR $ \case
-          PNil ->
-            PPrelude.pmap
-              # plam
-                ( \entry -> P.do
-                    k <- plet $ pfstBuiltin # entry
-                    ppairDataBuiltin # k #$ mergeHandler.mhLeftPresent # k #$ psndBuiltin # entry
-                )
-              # mapL
-          PCons entryR restR -> P.do
-            keyDataL <- plet $ pfstBuiltin # entryL
-            keyDataR <- plet $ pfstBuiltin # entryR
-            keyL <- plet $ pfromData keyDataL
-            keyR <- plet $ pfromData keyDataR
-            valL <- plet $ psndBuiltin # entryL
-            valR <- plet $ psndBuiltin # entryR
-            pif
-              (keyL #== keyR)
-              ( pcons
-                  # (ppairDataBuiltin # keyDataL #$ mergeHandler.mhBothPresent # keyDataL # valL # valR)
-                  # (self # restL # restR)
-              )
-              ( pif
-                  (keyL #< keyR)
-                  ( pcons
-                      # (ppairDataBuiltin # keyDataL #$ mergeHandler.mhLeftPresent # keyDataL # valL)
-                      # (self # restL # mapR)
-                  )
-                  ( pcons
-                      # (ppairDataBuiltin # keyDataR #$ mergeHandler.mhRightPresent # keyDataR # valR)
-                      # (self # mapL # restR)
-                  )
-              )
-
-zipWorker ::
-  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
-  ( POrd k
-  , PIsData k
-  ) =>
-  MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PMaybe (PAsData c)) ->
-  Term
-    s
-    ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData a))
-        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData b))
-        :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData c))
-    )
 zipWorker mergeHandler =
   pfix #$ plam $ \self mapL mapR ->
     pmatch mapL $ \case
       PNil ->
-        pmapDropNothing
-          # plam
-            ( \entry -> P.do
-                k <- plet $ pfstBuiltin # entry
-                v <- plet $ psndBuiltin # entry
-                pmapMaybe
-                  # plam (\x -> ppairDataBuiltin # k # x)
-                  # (mergeHandler.mhRightPresent # k # v)
-            )
-          # mapR
-      PCons entryL restL ->
-        pmatch mapR $ \case
-          PNil ->
+        case mergeHandler.mhRightPresent of
+          DropOne -> pnil
+          HandleOne handler ->
+            PPrelude.pmap
+              # plam
+                ( \entry -> P.do
+                    k <- plet $ pfstBuiltin # entry
+                    ppairDataBuiltin # k #$ handler # k #$ psndBuiltin # entry
+                )
+              # mapR
+          HandleOrDropOne handler ->
             pmapDropNothing
               # plam
                 ( \entry -> P.do
                     k <- plet $ pfstBuiltin # entry
                     v <- plet $ psndBuiltin # entry
-                    pmapMaybe
-                      # plam (\x -> ppairDataBuiltin # k # x)
-                      # (mergeHandler.mhLeftPresent # k # v)
+                    pmapMaybe # plam (\x -> ppairDataBuiltin # k # x) # (handler # k # v)
                 )
-              # mapL
+              # mapR
+      PCons entryL restL ->
+        pmatch mapR $ \case
+          PNil ->
+            case mergeHandler.mhLeftPresent of
+              DropOne -> pnil
+              HandleOne handler ->
+                PPrelude.pmap
+                  # plam
+                    ( \entry -> P.do
+                        k <- plet $ pfstBuiltin # entry
+                        ppairDataBuiltin # k #$ handler # k #$ psndBuiltin # entry
+                    )
+                  # mapL
+              HandleOrDropOne handler ->
+                pmapDropNothing
+                  # plam
+                    ( \entry -> P.do
+                        k <- plet $ pfstBuiltin # entry
+                        v <- plet $ psndBuiltin # entry
+                        pmapMaybe # plam (\x -> ppairDataBuiltin # k # x) # (handler # k # v)
+                    )
+                  # mapL
           PCons entryR restR -> P.do
             keyDataL <- plet $ pfstBuiltin # entryL
             keyDataR <- plet $ pfstBuiltin # entryR
@@ -257,27 +237,54 @@ zipWorker mergeHandler =
             valR <- plet $ psndBuiltin # entryR
             pif
               (keyL #== keyR)
-              ( P.do
-                  zipped <- plet $ self # restL # restR
-                  pmaybe
-                    # zipped
-                    # plam (\v -> pcons # (ppairDataBuiltin # keyDataL # v) # zipped)
-                    # (mergeHandler.mhBothPresent # keyDataL # valL # valR)
+              ( let
+                  xs = self # restL # restR
+                  k = keyDataL
+                 in
+                  case mergeHandler.mhBothPresent of
+                    DropBoth ->
+                      xs
+                    HandleBoth handler ->
+                      pcons # (ppairDataBuiltin # k #$ handler # k # valL # valR) # xs
+                    HandleOrDropBoth handler -> P.do
+                      zipped <- plet xs
+                      pmaybe
+                        # zipped
+                        # plam (\v -> pcons # (ppairDataBuiltin # k # v) # zipped)
+                        # (handler # k # valL # valR)
               )
               ( pif
                   (keyL #< keyR)
-                  ( P.do
-                      zipped <- plet $ self # restL # mapR
-                      pmaybe
-                        # zipped
-                        # plam (\v -> pcons # (ppairDataBuiltin # keyDataL # v) # zipped)
-                        # (mergeHandler.mhLeftPresent # keyDataL # valL)
+                  ( let
+                      xs = self # restL # mapR
+                     in
+                      case mergeHandler.mhLeftPresent of
+                        DropOne -> xs
+                        HandleOne handler ->
+                          pcons
+                            # (ppairDataBuiltin # keyDataL #$ handler # keyDataL # valL)
+                            # xs
+                        HandleOrDropOne handler -> P.do
+                          zipped <- plet xs
+                          pmaybe
+                            # zipped
+                            # plam (\v -> pcons # (ppairDataBuiltin # keyDataL # v) # zipped)
+                            # (handler # keyDataL # valL)
                   )
-                  ( P.do
-                      zipped <- plet $ self # mapL # restR
-                      pmaybe
-                        # zipped
-                        # plam (\v -> pcons # (ppairDataBuiltin # keyDataR # v) # zipped)
-                        # (mergeHandler.mhRightPresent # keyDataR # valR)
+                  ( let
+                      xs = self # mapL # restR
+                     in
+                      case mergeHandler.mhRightPresent of
+                        DropOne -> xs
+                        HandleOne handler ->
+                          pcons
+                            # (ppairDataBuiltin # keyDataR #$ handler # keyDataR # valR)
+                            # xs
+                        HandleOrDropOne handler -> P.do
+                          zipped <- plet xs
+                          pmaybe
+                            # zipped
+                            # plam (\v -> pcons # (ppairDataBuiltin # keyDataR # v) # zipped)
+                            # (handler # keyDataR # valR)
                   )
               )
