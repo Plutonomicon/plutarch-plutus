@@ -1,12 +1,23 @@
-module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (tests) where
+module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (
+  assocMapBenches,
+  tests,
+) where
 
 import Data.Bifunctor (bimap)
+import Data.Ix (range)
 import Data.Kind (Type)
-import Plutarch.LedgerApi.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
+import Plutarch.LedgerApi.AssocMap (
+  BothPresentHandler (..),
+  KeyGuarantees (Sorted, Unsorted),
+  MergeHandler (..),
+  OnePresentHandler (..),
+  PMap,
+ )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.Maybe (pjust, pmapMaybe, pnothing)
 import Plutarch.Prelude
+import Plutarch.Test.Bench (bcompare, bench)
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, propEvalEqual)
 import Plutarch.Test.Unit (testEvalEqual)
@@ -18,6 +29,92 @@ import Prettyprinter (Pretty)
 import Test.QuickCheck (Arbitrary, arbitrary, shrink)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (Property, forAllShrinkShow, testProperty)
+
+assocMapBenches :: [TestTree]
+assocMapBenches =
+  [ testGroup
+      "union"
+      [ bench
+          "punionResolvingCollisionsWith (optimized)"
+          ( AssocMap.punionResolvingCollisionsWith
+              # plam (#+)
+              # assocMapFixture0
+              # assocMapFixture1
+          )
+      , bcompare "$(NF-1) == \"union\" && $NF == \"punionResolvingCollisionsWith (optimized)\"" $
+          bench
+            "non-optimized"
+            ( let
+                mergeHandler =
+                  MergeHandler
+                    { mhBothPresent = HandleOrDropBoth $ plam (\_ x y -> pjust #$ x #+ y)
+                    , mhLeftPresent = HandleOrDropOne $ plam (\_ x -> pjust # x)
+                    , mhRightPresent = HandleOrDropOne $ plam (\_ y -> pjust # y)
+                    }
+               in
+                AssocMap.zipWithBuilder mergeHandler
+                  # assocMapFixture0
+                  # assocMapFixture1
+            )
+      ]
+  , testGroup
+      "intersection"
+      [ bench
+          "pintersectionWith (optimized)"
+          ( AssocMap.pintersectionWith
+              # plam (#+)
+              # assocMapFixture0
+              # assocMapFixture1
+          )
+      , bcompare "$(NF-1) == \"intersection\" && $NF == \"pintersectionWith (optimized)\"" $
+          bench
+            "non-optimized"
+            ( let
+                mergeHandler =
+                  MergeHandler
+                    { mhBothPresent = HandleOrDropBoth $ plam (\_ x y -> pjust #$ x #+ y)
+                    , mhLeftPresent = HandleOrDropOne $ plam (\_ _ -> pnothing)
+                    , mhRightPresent = HandleOrDropOne $ plam (\_ _ -> pnothing)
+                    }
+               in
+                AssocMap.zipWithBuilder mergeHandler
+                  # assocMapFixture0
+                  # assocMapFixture1
+            )
+      ]
+  , testGroup
+      "difference"
+      [ bench
+          "pdifference (optimized)"
+          (AssocMap.pdifference # assocMapFixture0 # assocMapFixture1)
+      , bcompare "$(NF-1) == \"difference\" && $NF == \"pdifference (optimized)\"" $
+          bench
+            "non-optimized"
+            ( let
+                mergeHandler =
+                  MergeHandler
+                    { mhBothPresent = HandleOrDropBoth $ plam (\_ _ _ -> pnothing)
+                    , mhLeftPresent = HandleOrDropOne $ plam (\_ x -> pjust # x)
+                    , mhRightPresent = HandleOrDropOne $ plam (\_ _ -> pnothing)
+                    }
+               in
+                AssocMap.zipWithBuilder mergeHandler
+                  # assocMapFixture0
+                  # assocMapFixture1
+            )
+      ]
+  ]
+
+mkAssocMapFixture :: forall (s :: S). [Integer] -> Term s (PMap 'Sorted PInteger PInteger)
+mkAssocMapFixture =
+  AssocMap.psortedMapFromFoldable @PInteger @PInteger @[]
+    . fmap (\x -> (pconstant x, pconstant x))
+
+assocMapFixture0 :: forall (s :: S). Term s (PMap 'Sorted PInteger PInteger)
+assocMapFixture0 = mkAssocMapFixture $ range (0, 99)
+
+assocMapFixture1 :: forall (s :: S). Term s (PMap 'Sorted PInteger PInteger)
+assocMapFixture1 = mkAssocMapFixture $ range (20, 44) <> range (60, 84) <> range (100, 200)
 
 tests :: TestTree
 tests =
