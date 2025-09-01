@@ -6,7 +6,11 @@ module Plutarch.Array (
 
   -- * Functions
   pfromArray,
+  piota,
   pmapArray,
+  pimapArray,
+  pzipWithArray,
+  pizipWithArray,
   ppullArrayToList,
 ) where
 
@@ -23,8 +27,8 @@ import Plutarch.Builtin.Data (PBuiltinList (PNil), pconsBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.Lift (PLiftable)
 import Plutarch.Internal.Numeric (PNatural)
+import Plutarch.Internal.Ord (POrd ((#<=)))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pcon, pmatch)
 import Plutarch.Internal.Subtype (pupcast)
@@ -65,7 +69,7 @@ pmapArray f arr = pmatch arr $ \(PPullArray len g) ->
 
 ppullArrayToList ::
   forall (a :: S -> Type) (s :: S).
-  PLiftable (PBuiltinList a) =>
+  PlutusType (PBuiltinList a) =>
   Term s (PPullArray a) ->
   Term s (PBuiltinList a)
 ppullArrayToList arr = pmatch arr $ \(PPullArray len f) ->
@@ -84,6 +88,40 @@ ppullArrayToList arr = pmatch arr $ \(PPullArray len f) ->
         acc
         (self # f # (currIx - 1) #$ pconsBuiltin # (f # currIx) # acc)
 
+pimapArray ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PInteger :--> a :--> b) ->
+  Term s (PPullArray a) ->
+  Term s (PPullArray b)
+pimapArray f arr = pmatch arr $ \(PPullArray len g) ->
+  pcon . PPullArray len . plam $ \ix -> f # ix #$ g # ix
+
+pzipWithArray ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  Term s (a :--> b :--> c) ->
+  Term s (PPullArray a) ->
+  Term s (PPullArray b) ->
+  Term s (PPullArray c)
+pzipWithArray f arr1 arr2 = pmatch arr1 $ \(PPullArray len1 g1) ->
+  pmatch arr2 $ \(PPullArray len2 g2) ->
+    pcon . PPullArray (pmin len1 len2) . plam $ \ix -> f # (g1 # ix) #$ g2 # ix
+
+pizipWithArray ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  Term s (PInteger :--> a :--> b :--> c) ->
+  Term s (PPullArray a) ->
+  Term s (PPullArray b) ->
+  Term s (PPullArray c)
+pizipWithArray f arr1 arr2 = pmatch arr1 $ \(PPullArray len1 g1) ->
+  pmatch arr2 $ \(PPullArray len2 g2) ->
+    pcon . PPullArray (pmin len1 len2) . plam $ \ix -> f # ix # (g1 # ix) #$ g2 # ix
+
+piota ::
+  forall (s :: S).
+  Term s PNatural ->
+  Term s (PPullArray PInteger)
+piota len = pcon . PPullArray len $ pid
+
 -- Helpers
 
 pcompose ::
@@ -92,3 +130,16 @@ pcompose ::
   Term s (b :--> c) ->
   Term s (a :--> c)
 pcompose f g = plam $ \x -> g #$ f # x
+
+pmin ::
+  forall (a :: S -> Type) (s :: S).
+  POrd a =>
+  Term s a ->
+  Term s a ->
+  Term s a
+pmin x y = pif (x #<= y) x y
+
+pid ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (a :--> a)
+pid = phoistAcyclic $ plam id

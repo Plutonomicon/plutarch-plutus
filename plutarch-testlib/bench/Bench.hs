@@ -3,6 +3,12 @@ module Main (main) where
 import Data.Kind (Type)
 import Data.Vector.Strict (Vector)
 import Data.Vector.Strict qualified as Vector
+import Plutarch.Array (
+  pfromArray,
+  pmapArray,
+  ppullArrayToList,
+  pzipWithArray,
+ )
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogInfo),
@@ -40,6 +46,23 @@ main =
 arrayBenches :: [TestTree]
 arrayBenches =
   [ bench "map twice" (precompileTerm (plam $ \x -> pmap # pinc # parrayMap pinc x) # pconstant @(PArray PInteger) iota)
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"map twice\"" $
+      bench
+        "with PPullArray"
+        ( precompileTerm (plam $ \x -> ppullArrayToList . pmapArray pinc . pmapArray pinc . pfromArray $ x)
+            # pconstant @(PArray PInteger) iota
+        )
+  , bench "zip-map" (precompileTerm (plam $ \x y -> pmap # pinc # parrayZipWith ptimes x y) # pconstant @(PArray PInteger) iota # pconstant @(PArray PInteger) iota)
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"zip-map\"" $
+      bench
+        "with PPullArray"
+        ( precompileTerm (plam $ \x y -> ppullArrayToList . pmapArray pinc . pzipWithArray ptimes (pfromArray x) . pfromArray $ y)
+            # pconstant @(PArray PInteger) iota
+            # pconstant @(PArray PInteger) iota
+        )
+  , bench "map-zip" (precompileTerm (plam $ \x y -> pzipWith # ptimes # parrayMap pinc x # parrayMap pinc y) # pconstant @(PArray PInteger) iota # pconstant @(PArray PInteger) iota)
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"map-zip\"" $
+      bench "with PPullArray" (precompileTerm (plam $ \x y -> ppullArrayToList . pzipWithArray ptimes (pmapArray pinc . pfromArray $ x) . pmapArray pinc . pfromArray $ y))
   ]
 
 tracingBenches :: [TestTree]
@@ -138,7 +161,7 @@ pinc = phoistAcyclic $ plam (+ 1)
 
 parrayMap ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  PLiftable (PBuiltinList b) =>
+  PlutusType (PBuiltinList b) =>
   Term s (a :--> b) ->
   Term s (PArray a) ->
   Term s (PBuiltinList b)
@@ -158,3 +181,35 @@ parrayMap f arr = plet (plengthOfArray # arr) $ \len ->
         (currIx #== (-1))
         acc
         (self # f # arr' # (currIx - 1) #$ pconsBuiltin # (f #$ pindexArray # arr' # currIx) # acc)
+
+parrayZipWith ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  PlutusType (PBuiltinList c) =>
+  Term s (a :--> b :--> c) ->
+  Term s (PArray a) ->
+  Term s (PArray b) ->
+  Term s (PBuiltinList c)
+parrayZipWith f arr1 arr2 = plet (plengthOfArray # arr1) $ \len1 ->
+  plet (plengthOfArray # arr2) $ \len2 ->
+    plet (pmin len1 len2) $ \len ->
+      phoistAcyclic (pfix # plam go) # f # arr1 # arr2 # (len - 1) # pcon PNil
+  where
+    go ::
+      forall (s' :: S).
+      Term s' ((a :--> b :--> c) :--> PArray a :--> PArray b :--> PInteger :--> PBuiltinList c :--> PBuiltinList c) ->
+      Term s' (a :--> b :--> c) ->
+      Term s' (PArray a) ->
+      Term s' (PArray b) ->
+      Term s' PInteger ->
+      Term s' (PBuiltinList c) ->
+      Term s' (PBuiltinList c)
+    go self f arr1' arr2' currIx acc =
+      pif
+        (currIx #== (-1))
+        acc
+        (self # f # arr1' # arr2' # (currIx - 1) #$ pconsBuiltin # (f # (pindexArray # arr1' # currIx) # (pindexArray # arr2' # currIx)) # acc)
+
+ptimes ::
+  forall (s :: S).
+  Term s (PInteger :--> PInteger :--> PInteger)
+ptimes = phoistAcyclic $ plam (#*)
