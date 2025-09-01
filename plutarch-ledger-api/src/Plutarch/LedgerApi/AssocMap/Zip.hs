@@ -4,7 +4,9 @@
 {-# LANGUAGE RankNTypes #-}
 
 module Plutarch.LedgerApi.AssocMap.Zip (
+  BothPresentHandler (..),
   MergeHandler (..),
+  OnePresentHandler (..),
   defaultMergeHandler,
   differenceMergeHandler,
   intersectionMergeHandler,
@@ -15,30 +17,10 @@ module Plutarch.LedgerApi.AssocMap.Zip (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Maybe (pmapMaybe, pmaybe)
+import Plutarch.Maybe (pmapDropNothing, pmapMaybe, pmaybe)
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude hiding (pmap)
 import Plutarch.Prelude qualified as PPrelude (pmap)
-
---------------------------------------------------------------------------------
--- Helpers
-
-pmapDropNothing ::
-  forall (s :: S) (list :: (S -> Type) -> S -> Type) (a :: S -> Type) (b :: S -> Type).
-  ( PListLike list
-  , PElemConstraint list a
-  , PElemConstraint list b
-  ) =>
-  Term s ((a :--> PMaybe b) :--> list a :--> list b)
-pmapDropNothing =
-  phoistAcyclic $
-    plam $ \f ->
-      precList
-        ( \self x xs -> P.do
-            xs' <- plet $ self # xs
-            pmaybe # xs' # plam (\x' -> pcons # x' # xs') #$ f # x
-        )
-        (const pnil)
 
 --------------------------------------------------------------------------------
 -- Types

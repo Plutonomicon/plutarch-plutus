@@ -11,6 +11,9 @@ module Plutarch.LedgerApi.AssocMap (
   PMap (..),
   KeyGuarantees (..),
   Commutativity (..),
+  MergeHandler (..),
+  BothPresentHandler (..),
+  OnePresentHandler (..),
 
   -- * Functions
 
@@ -44,6 +47,8 @@ module Plutarch.LedgerApi.AssocMap (
   pfoldlWithKey,
 
   -- ** Combination
+  zipWithBuilder,
+  zipWithDataBuilder,
   punionResolvingCollisionsWith,
   punionResolvingCollisionsWithData,
   pleftBiasedUnion,
@@ -86,16 +91,12 @@ import Generics.SOP qualified as SOP
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
 import Plutarch.Internal.Term (punsafeBuiltin)
 import Plutarch.Internal.Witness (witness)
-import Plutarch.LedgerApi.AssocMap.Zip qualified as Zip (
-  MergeHandler,
-  defaultMergeHandler,
-  differenceMergeHandler,
-  intersectionMergeHandler,
-  leftBiasedUnionMergeHandler,
-  mergeHandlerOnData,
-  unionMergeHandler,
-  zipWorker,
+import Plutarch.LedgerApi.AssocMap.Zip (
+  BothPresentHandler (..),
+  MergeHandler (..),
+  OnePresentHandler (..),
  )
+import Plutarch.LedgerApi.AssocMap.Zip qualified as Zip
 import Plutarch.Prelude hiding (pall, pany, pmap, pnull, psingleton, pzipWith)
 import Plutarch.Prelude qualified as PPrelude
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
@@ -356,7 +357,7 @@ punionResolvingCollisionsWith ::
 punionResolvingCollisionsWith =
   phoistAcyclic $
     plam $
-      pzipWith . Zip.unionMergeHandler
+      zipWithBuilder . Zip.unionMergeHandler
 
 {- | Build the union of two 'PMap's, merging values that share the same key
 using the given function.
@@ -378,7 +379,7 @@ punionResolvingCollisionsWithData ::
 punionResolvingCollisionsWithData =
   phoistAcyclic $
     plam $
-      pzipWithData . Zip.unionMergeHandler
+      zipWithDataBuilder . Zip.unionMergeHandler
 
 {- | Maps and filters the map, much like 'Data.PPrelude.mapMaybe'.
 
@@ -621,7 +622,7 @@ pleftBiasedUnion ::
     )
 pleftBiasedUnion =
   phoistAcyclic $
-    pzipWith Zip.leftBiasedUnionMergeHandler
+    zipWithBuilder Zip.leftBiasedUnionMergeHandler
 
 {- Difference of two maps. Return elements of the first map not existing in the second map.
 
@@ -641,7 +642,7 @@ pdifference ::
     )
 pdifference =
   phoistAcyclic $
-    pzipWith Zip.differenceMergeHandler
+    zipWithBuilder Zip.differenceMergeHandler
 
 {- | Tests if anu value in the map satisfies the given predicate.
 
@@ -694,6 +695,67 @@ pdelete ::
   Term s (k :--> PMap 'Sorted k v :--> PMap 'Sorted k v)
 pdelete = rebuildAtKey # plam id
 
+{- | Build a function that zips two sorted 'PMap's together using a custom 'MergeHandler'.
+
+The provided 'MergeHandler' determines how to merge entries based on whether a
+key is present in the left map, the right map, or both.
+
+NOTE: This function itself cannot be hoisted with 'phoistAcyclic' because it
+depends on the supplied 'MergeHandler'. However, once you specialize it
+by providing a specific merge handler, the resulting function /should/ be
+hoisted if it will be reused, to avoid duplication.
+
+@since 3.5.0
+-}
+zipWithBuilder ::
+  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
+  ( POrd k
+  , PIsData k
+  , PIsData a
+  , PIsData b
+  , PIsData c
+  ) =>
+  MergeHandler s k a b c ->
+  Term
+    s
+    ( PMap 'Sorted k a
+        :--> PMap 'Sorted k b
+        :--> PMap 'Sorted k c
+    )
+zipWithBuilder mergeHandler =
+  zipWithDataBuilder (Zip.mergeHandlerOnData mergeHandler)
+
+{- | Build a function that zips two sorted 'PMap's together using a custom 'MergeHandler'.
+
+The provided 'MergeHandler' determines how to merge entries based on whether a
+key is present in the left map, the right map, or both.
+
+Unlike 'zipWithBuilder', 'zipWithDataBuilder' operates on values wrapped in
+'PAsData' (typed BuiltinData).
+
+NOTE: This function itself cannot be hoisted with 'phoistAcyclic' because it
+depends on the supplied 'MergeHandler'. However, once you specialize it
+by providing a specific merge handler, the resulting function /should/ be
+hoisted if it will be reused, to avoid duplication.
+
+@since 3.5.0
+-}
+zipWithDataBuilder ::
+  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
+  ( POrd k
+  , PIsData k
+  ) =>
+  MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c) ->
+  Term
+    s
+    ( PMap 'Sorted k a
+        :--> PMap 'Sorted k b
+        :--> PMap 'Sorted k c
+    )
+zipWithDataBuilder mergeHandler =
+  plam $ \mapL mapR ->
+    pcon (PMap $ Zip.zipWorker mergeHandler # pto mapL # pto mapR)
+
 {- | Zip two 'PMap's, using the given value merge function for key collisions,
     and different values for the sides.
 
@@ -719,7 +781,7 @@ pzipWithDefaults ::
 pzipWithDefaults defLeft defRight =
   phoistAcyclic $
     plam $
-      pzipWith . Zip.defaultMergeHandler defLeft defRight
+      zipWithBuilder . Zip.defaultMergeHandler defLeft defRight
 
 {- | Build the intersection of two 'PMap's, merging values that share the same
 key using the given function.
@@ -744,7 +806,7 @@ pintersectionWith ::
 pintersectionWith =
   phoistAcyclic $
     plam $
-      pzipWith . Zip.intersectionMergeHandler
+      zipWithBuilder . Zip.intersectionMergeHandler
 
 {- | Build the intersection of two 'PMap's, merging data-encoded values that
 share the same key using the given function.
@@ -766,7 +828,7 @@ pintersectionWithData ::
 pintersectionWithData =
   phoistAcyclic $
     plam $
-      pzipWithData . Zip.intersectionMergeHandler
+      zipWithDataBuilder . Zip.intersectionMergeHandler
 
 {- | Forget the knowledge that keys were sorted.
 
@@ -1109,46 +1171,6 @@ rebuildAtKey = phoistAcyclic $
         (const $ plam (#$ handler # pnil))
         # pto m
         # plam id
-
-{- Zip two 'PMap's, using a 'MergeHandler' to decide how to merge based on key
-presence on the left and right.
--}
-pzipWith ::
-  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
-  ( POrd k
-  , PIsData k
-  , PIsData a
-  , PIsData b
-  , PIsData c
-  ) =>
-  Zip.MergeHandler s k a b c ->
-  Term
-    s
-    ( PMap 'Sorted k a
-        :--> PMap 'Sorted k b
-        :--> PMap 'Sorted k c
-    )
-pzipWith mergeHandler =
-  pzipWithData (Zip.mergeHandlerOnData mergeHandler)
-
-{- Zip two 'PMap's, using a 'MergeHandler' to decide how to merge based on key
-presence on the left and right.
--}
-pzipWithData ::
-  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
-  ( POrd k
-  , PIsData k
-  ) =>
-  Zip.MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c) ->
-  Term
-    s
-    ( PMap 'Sorted k a
-        :--> PMap 'Sorted k b
-        :--> PMap 'Sorted k c
-    )
-pzipWithData mergeHandler =
-  plam $ \mapL mapR ->
-    pcon (PMap $ Zip.zipWorker mergeHandler # pto mapL # pto mapR)
 
 -- We have to clone this in here or we get a dependency cycle
 passertPJust :: forall (a :: S -> Type) (s :: S). Term s (PString :--> PMaybe a :--> a)

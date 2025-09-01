@@ -47,7 +47,6 @@ library
   import:          common-lang
   exposed-modules:
     Plutarch.LedgerApi.AssocMap
-    Plutarch.LedgerApi.AssocMap.Zip
     Plutarch.LedgerApi.Interval
     Plutarch.LedgerApi.Utils
     Plutarch.LedgerApi.V1
@@ -56,6 +55,7 @@ library
     Plutarch.LedgerApi.Value
 
   other-modules:
+    Plutarch.LedgerApi.AssocMap.Zip
     Plutarch.LedgerApi.V1.Address
     Plutarch.LedgerApi.V1.Contexts
     Plutarch.LedgerApi.V1.Credential
