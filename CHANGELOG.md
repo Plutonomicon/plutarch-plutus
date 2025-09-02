@@ -2,6 +2,10 @@
 
 # 1.12.0 -- 
 
+## Added
+
+* `pmapDropNothing` to `Plutarch.Maybe` 
+
 ## Removed
 
 * `PCon` and `PMatch`, as they were deprecated (for a long time)

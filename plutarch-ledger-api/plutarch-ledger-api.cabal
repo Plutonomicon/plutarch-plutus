@@ -55,6 +55,7 @@ library
     Plutarch.LedgerApi.Value
 
   other-modules:
+    Plutarch.LedgerApi.AssocMap.Zip
     Plutarch.LedgerApi.V1.Address
     Plutarch.LedgerApi.V1.Contexts
     Plutarch.LedgerApi.V1.Credential

@@ -28,6 +28,7 @@ import Plutarch.Test.Utils (precompileTerm)
 import Test.Tasty (TestTree, testGroup)
 
 import Plutarch.Test.Suite.Plutarch.Unroll (unrollBenches)
+import Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (assocMapBenches)
 
 main :: IO ()
 main =
@@ -39,6 +40,7 @@ main =
       , testGroup "Tracing" tracingBenches
       , testGroup "Unroll" unrollBenches
       , testGroup "Array" arrayBenches
+      , testGroup "AssocMap" assocMapBenches
       ]
 
 -- Suites

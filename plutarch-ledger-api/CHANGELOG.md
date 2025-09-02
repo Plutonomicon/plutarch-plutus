@@ -6,12 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## 3.5.0
 
+### Added
+
+* `pdifferenceWith` to `Plutarch.LedgerApi.AssocMap`
+* `zipWithBuilder` and `zipWithDataBuilder` to `Plutarch.LedgerApi.AssocMap`
+  along with the corresponding data types (`MergeHandler`, `BothPresentHandler`,
+  and `OnePresentHandler`), enabling quick bootstrapping of custom zip functions
+
 ### Changed
 
 * `pfindOwnInput` has been renamed to `pfindInputByOutRef`
 * `pfindInputByOutRef` (formerly `pfindOwnInput`) and `pgetContinuingOutputs`
   now both accept a builtin list of inputs wrapped in `PAsData`, enabling
   compatibility with `PTxInfo` inputs
+* In `Plutarch.LedgerApi.AssocMap`:
+    * `punionResolvingCollisionsWith` has been renamed to `punionWith`
+    * `punionResolvingCollisionsWithData` has been renamed to `punionWithData`
+    * `pzipWithDefaults`, `pdifference`, `pintersectionWith`, and
+      `pintersectionWithData` functions now have more generic type signatures 
+* In `Plutarch.LedgerApi.Value`:
+    * `punionResolvingCollisionsWith` has been renamed to `punionWith`
+    * `punionResolvingCollisionsWithData` has been renamed to `punionWithData`
+* The following zip functions no longer have a `Commutativity` argument:
+    * In `Plutarch.LedgerApi.AssocMap`: `punionWithData`, `punionWithData`,
+      `pintersectionWith`, `pintersectionWithData`
+    * In `Plutarch.LedgerApi.Value`: `punionWith`, `punionWithData`
+
+### Removed
+
+* `Commutativity` data type
 
 ## 3.4.0 -- 21-08-2025
 
