@@ -15,7 +15,7 @@ import Plutarch.Internal.Lift (
 import Plutarch.Internal.PlutusType (PlutusType)
 import Plutarch.Prelude (S)
 import Plutarch.Repr.Tag (DeriveAsTag (DeriveAsTag))
-import Plutarch.Test.Laws (AsTagTest (tagNum), checkPLiftableLawsForDeriveTags)
+import Plutarch.Test.Laws (checkPLiftableLaws, checkPLiftableLawsForDeriveTags)
 import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck.Arbitrary (Arbitrary (arbitrary))
 import Test.QuickCheck.Gen (elements)
@@ -28,12 +28,7 @@ data PFoo (s :: S) = A | B | C | D | E
     via DeriveAsTag PFoo
 
 instance Pretty (PFoo s) where
-  pretty = \case
-    A -> "A"
-    B -> "B"
-    C -> "C"
-    D -> "D"
-    E -> "E"
+  pretty = pretty . show
 
 instance SOP.Generic (PFoo s)
 
@@ -41,15 +36,12 @@ instance Arbitrary (PFoo s) where
   {-# INLINEABLE arbitrary #-}
   arbitrary = elements [A, B, C, D, E]
 
-instance AsTagTest (PFoo s) where
-  tagNum A = 0
-  tagNum B = 1
-  tagNum C = 2
-  tagNum D = 3
-  tagNum E = 4
-
 tests :: TestTree
 tests =
   testGroup
     "DeriveAsTag"
-    [checkPLiftableLawsForDeriveTags @PFoo]
+    ( mconcat
+        [ checkPLiftableLawsForDeriveTags @PFoo
+        , checkPLiftableLaws @PFoo
+        ]
+    )
