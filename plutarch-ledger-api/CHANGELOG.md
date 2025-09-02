@@ -24,11 +24,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     * `punionResolvingCollisionsWithData` has been renamed to `punionWithData`
     * `pzipWithDefaults`, `pdifference`, `pintersectionWith`, and
       `pintersectionWithData` functions now have more generic type signatures 
+* In `Plutarch.LedgerApi.Value`:
+    * `punionResolvingCollisionsWith` has been renamed to `punionWith`
+    * `punionResolvingCollisionsWithData` has been renamed to `punionWithData`
 * The following zip functions no longer have a `Commutativity` argument:
     * In `Plutarch.LedgerApi.AssocMap`: `punionWithData`, `punionWithData`,
       `pintersectionWith`, `pintersectionWithData`
-    * In `Plutarch.LedgerApi.Value`: `punionResolvingCollisionsWith`,
-      `punionResolvingCollisionsWithData`
+    * In `Plutarch.LedgerApi.Value`: `punionWith`, `punionWithData`
 
 ### Removed
 
