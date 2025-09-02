@@ -57,7 +57,6 @@ module Plutarch.LedgerApi.V3 (
   -- ** Types
   AssocMap.PMap (..),
   AssocMap.KeyGuarantees (..),
-  AssocMap.Commutativity (..),
 
   -- * Address
   Credential.PCredential (..),

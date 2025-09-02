@@ -137,6 +137,7 @@ test-suite tests
   build-depends:
     , base16-bytestring
     , bytestring
+    , containers
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
@@ -158,13 +159,21 @@ benchmark bench
   type:           exitcode-stdio-1.0
   main-is:        Bench.hs
   hs-source-dirs: bench test
-  other-modules:  Plutarch.Test.Suite.Plutarch.Unroll
+  other-modules:
+    Plutarch.Test.Suite.Plutarch.Unroll
+    Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
+
   build-depends:
     , bytestring
+    , containers
     , generics-sop
     , plutarch
     , plutarch-ledger-api
+    , plutarch-orphanage
     , plutarch-testlib
     , plutus-core
     , plutus-tx
+    , prettyprinter
+    , QuickCheck
     , tasty
+    , tasty-quickcheck

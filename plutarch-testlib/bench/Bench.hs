@@ -37,6 +37,7 @@ import Plutarch.Test.Bench (
   defaultMain,
  )
 import Plutarch.Test.Suite.Plutarch.Unroll (unrollBenches)
+import Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (assocMapBenches)
 import Plutarch.Test.Utils (precompileTerm)
 import PlutusCore.Data (Data (B, Constr, I, List))
 import PlutusTx (
@@ -74,6 +75,7 @@ main =
       , testGroup "Tracing" tracingBenches
       , testGroup "Unroll" unrollBenches
       , testGroup "PValidateData" pvalidateDataBenches
+      , testGroup "AssocMap" assocMapBenches
       ]
 
 -- Suites
