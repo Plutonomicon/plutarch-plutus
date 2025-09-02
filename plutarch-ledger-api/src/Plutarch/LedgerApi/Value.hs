@@ -514,8 +514,8 @@ punionResolvingCollisionsWith ::
 punionResolvingCollisionsWith = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith
-        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWith # combine # x' # y')
+      AssocMap.punionWith
+        # plam (\x' y' -> AssocMap.punionWith # combine # x' # y')
         # pto x
         # pto y
 
@@ -709,9 +709,6 @@ pleftBiasedCurrencyUnion = phoistAcyclic $
 {- | Combine two 'PValue's, taking the tokens from the left only, if a token name
  of the same currency occurs on both sides.
 
- Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'.
- It is equivalent, but performs better.
-
  @since 2.1.1
 -}
 pleftBiasedTokenUnion ::
@@ -725,7 +722,7 @@ pleftBiasedTokenUnion ::
 pleftBiasedTokenUnion = phoistAcyclic $
   plam $ \x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith
+      AssocMap.punionWith
         # plam (\x' y' -> AssocMap.pleftBiasedUnion # x' # y')
         # pto x
         # pto y
@@ -748,8 +745,8 @@ punionResolvingCollisionsWithData ::
 punionResolvingCollisionsWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith
-        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWithData # combine # x' # y')
+      AssocMap.punionWith
+        # plam (\x' y' -> AssocMap.punionWithData # combine # x' # y')
         # pto x
         # pto y
 

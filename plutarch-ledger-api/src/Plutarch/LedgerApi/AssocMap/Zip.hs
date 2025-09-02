@@ -7,12 +7,12 @@ module Plutarch.LedgerApi.AssocMap.Zip (
   BothPresentHandler (..),
   MergeHandler (..),
   OnePresentHandler (..),
-  defaultMergeHandler,
   differenceMergeHandler,
   intersectionMergeHandler,
   leftBiasedUnionMergeHandler,
   mergeHandlerOnData,
   unionMergeHandler,
+  zipMergeHandler,
   zipWorker,
 ) where
 
@@ -100,13 +100,13 @@ onePresentHandlerOnData = \case
 --------------------------------------------------------------------------------
 -- Handlers
 
-defaultMergeHandler ::
+zipMergeHandler ::
   forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
   Term s a ->
   Term s b ->
   Term s (a :--> b :--> c) ->
   MergeHandler s k a b c
-defaultMergeHandler defL defR combine =
+zipMergeHandler defL defR combine =
   MergeHandler
     { mhBothPresent = HandleBoth $ plam (\_ valL valR -> combine # valL # valR)
     , mhLeftPresent = HandleOne $ plam (\_ valL -> combine # valL # defR)
@@ -125,8 +125,8 @@ intersectionMergeHandler merge =
     }
 
 differenceMergeHandler ::
-  forall (s :: S) (k :: S -> Type) (v :: S -> Type).
-  MergeHandler s k v v v
+  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type).
+  MergeHandler s k a b a
 differenceMergeHandler =
   MergeHandler
     { mhBothPresent = DropBoth

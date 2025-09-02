@@ -49,10 +49,11 @@ module Plutarch.LedgerApi.AssocMap (
   -- ** Combination
   zipWithBuilder,
   zipWithDataBuilder,
-  punionResolvingCollisionsWith,
-  punionResolvingCollisionsWithData,
+  punionWith,
+  punionWithData,
   pleftBiasedUnion,
   pdifference,
+  pdifferenceWith,
   pzipWithDefaults,
   pintersectionWith,
   pintersectionWithData,
@@ -339,9 +340,9 @@ pall = phoistAcyclic $
 {- | Build the union of two 'PMap's, merging values that share the same key using the
 given function.
 
-@since 2.0.0
+@since 3.5.0
 -}
-punionResolvingCollisionsWith ::
+punionWith ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( POrd k
   , PIsData k
@@ -354,7 +355,7 @@ punionResolvingCollisionsWith ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-punionResolvingCollisionsWith =
+punionWith =
   phoistAcyclic $
     plam $
       zipWithBuilder . Zip.unionMergeHandler
@@ -364,7 +365,7 @@ using the given function.
 
 @since 2.1.1
 -}
-punionResolvingCollisionsWithData ::
+punionWithData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( POrd k
   , PIsData k
@@ -376,7 +377,7 @@ punionResolvingCollisionsWithData ::
         :--> PMap 'Sorted k v
         :--> PMap 'Sorted k v
     )
-punionResolvingCollisionsWithData =
+punionWithData =
   phoistAcyclic $
     plam $
       zipWithDataBuilder . Zip.unionMergeHandler
@@ -629,20 +630,49 @@ pleftBiasedUnion =
 @since 2.1.1
 -}
 pdifference ::
-  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  forall (b :: S -> Type) (a :: S -> Type) (k :: S -> Type) (s :: S).
   ( POrd k
   , PIsData k
-  , PIsData v
+  , PIsData a
+  , PIsData b
   ) =>
   Term
     s
-    ( PMap 'Sorted k v
-        :--> PMap 'Sorted k v
-        :--> PMap 'Sorted k v
+    ( PMap 'Sorted k a
+        :--> PMap 'Sorted k b
+        :--> PMap 'Sorted k a
     )
 pdifference =
   phoistAcyclic $
     zipWithBuilder Zip.differenceMergeHandler
+
+{- Difference with a combining function. When two equal keys are encountered,
+the combining function is applied to the values of these keys. If it returns
+'PNothing', the element is discarded.
+
+@since 3.5.0
+-}
+pdifferenceWith ::
+  forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  ( POrd k
+  , PIsData k
+  , PIsData a
+  , PIsData b
+  ) =>
+  Term
+    s
+    ( (a :--> b :--> PMaybe a)
+        :--> PMap 'Sorted k a
+        :--> PMap 'Sorted k b
+        :--> PMap 'Sorted k a
+    )
+pdifferenceWith =
+  phoistAcyclic $
+    plam $ \combine ->
+      zipWithBuilder $
+        Zip.differenceMergeHandler
+          { mhBothPresent = HandleOrDropBoth $ plam (\_ valL valR -> combine # valL # valR)
+          }
 
 {- | Tests if anu value in the map satisfies the given predicate.
 
@@ -781,7 +811,7 @@ pzipWithDefaults ::
 pzipWithDefaults defLeft defRight =
   phoistAcyclic $
     plam $
-      zipWithBuilder . Zip.defaultMergeHandler defLeft defRight
+      zipWithBuilder . Zip.zipMergeHandler defLeft defRight
 
 {- | Build the intersection of two 'PMap's, merging values that share the same
 key using the given function.
