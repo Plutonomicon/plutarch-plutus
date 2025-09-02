@@ -10,7 +10,6 @@ module Plutarch.LedgerApi.AssocMap (
   -- * Types
   PMap (..),
   KeyGuarantees (..),
-  Commutativity (..),
   MergeHandler (..),
   BothPresentHandler (..),
   OnePresentHandler (..),
@@ -205,17 +204,6 @@ instance
     (opq', _) <- tcont $ ptryFrom @(PAsData (PMap 'Unsorted k v)) opq
     unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
     pure (pdata unwrapped, ())
-
--- | @since 2.0.0
-data Commutativity = Commutative | NonCommutative
-  deriving stock
-    ( -- | @since 2.0.0
-      Eq
-    , -- | @since 2.0.0
-      Ord
-    , -- | @since 2.0.0
-      Show
-    )
 
 -- TODO: Rename this, because the name is confusing.
 

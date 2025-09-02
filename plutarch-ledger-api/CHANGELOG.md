@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     * In `Plutarch.LedgerApi.Value`: `punionResolvingCollisionsWith`,
       `punionResolvingCollisionsWithData`
 
+### Removed
+
+* `Commutativity` data type
+
 ## 3.4.0 -- 21-08-2025
 
 ### Removed
