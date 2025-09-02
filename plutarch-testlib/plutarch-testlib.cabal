@@ -71,6 +71,7 @@ library
     , containers
     , deepseq
     , filepath
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
