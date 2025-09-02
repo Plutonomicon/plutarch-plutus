@@ -730,7 +730,9 @@ pdelete = rebuildAtKey # plam id
 The provided 'MergeHandler' determines how to merge entries based on whether a
 key is present in the left map, the right map, or both.
 
-NOTE: This function itself cannot be hoisted with 'phoistAcyclic' because it
+= NOTE
+
+This function itself cannot be hoisted with 'phoistAcyclic' because it
 depends on the supplied 'MergeHandler'. However, once you specialize it
 by providing a specific merge handler, the resulting function /should/ be
 hoisted if it will be reused, to avoid duplication.
@@ -763,7 +765,9 @@ key is present in the left map, the right map, or both.
 Unlike 'zipWithBuilder', 'zipWithDataBuilder' operates on values wrapped in
 'PAsData' (typed BuiltinData).
 
-NOTE: This function itself cannot be hoisted with 'phoistAcyclic' because it
+= NOTE
+
+This function itself cannot be hoisted with 'phoistAcyclic' because it
 depends on the supplied 'MergeHandler'. However, once you specialize it
 by providing a specific merge handler, the resulting function /should/ be
 hoisted if it will be reused, to avoid duplication.
