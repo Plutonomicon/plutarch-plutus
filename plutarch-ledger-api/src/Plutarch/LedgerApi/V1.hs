@@ -49,7 +49,6 @@ module Plutarch.LedgerApi.V1 (
   -- * Helpers
   AssocMap.PMap (..),
   AssocMap.KeyGuarantees (..),
-  AssocMap.Commutativity (..),
 
   -- * Utilities
 

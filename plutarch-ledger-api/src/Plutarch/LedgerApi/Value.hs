@@ -56,8 +56,8 @@ module Plutarch.LedgerApi.Value (
   -- ** Combination
   pleftBiasedCurrencyUnion,
   pleftBiasedTokenUnion,
-  punionResolvingCollisionsWith,
-  punionResolvingCollisionsWithData,
+  punionWith,
+  punionWithData,
 
   -- ** Queries
   pvalueOf,
@@ -286,7 +286,7 @@ instance PEq (PValue 'AssocMap.Sorted 'NoGuarantees) where
       # (AssocMap.pall # plam (#== 0))
       -- While '(-)' is not commutative, we don't need that property here.
       -- TODO benchmark with '(==)'
-      # pto (punionResolvingCollisionsWith AssocMap.Commutative # plam (-) # a # b)
+      # pto (punionWith # plam (-) # a # b)
 
 -- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'Positive) where
@@ -296,12 +296,12 @@ instance PSemigroup (PValue 'AssocMap.Sorted 'Positive) where
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
-    punsafeDowncast (pto $ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b)
+    punsafeDowncast (pto $ punionWith # plam (+) # a # b)
 
 -- | @since 2.0.0
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'Positive)) where
   a <> b =
-    punsafeDowncast (pto $ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b)
+    punsafeDowncast (pto $ punionWith # plam (+) # a # b)
 
 -- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'NonZero) where
@@ -311,12 +311,12 @@ instance PSemigroup (PValue 'AssocMap.Sorted 'NonZero) where
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
   a <> b =
-    pnormalize #$ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    pnormalize #$ punionWith # plam (+) # a # b
 
 -- | @since 2.0.0
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NonZero)) where
   a <> b =
-    pnormalize #$ punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    pnormalize #$ punionWith # plam (+) # a # b
 
 -- | @since 3.3.0
 instance PSemigroup (PValue 'AssocMap.Sorted 'NoGuarantees) where
@@ -326,12 +326,12 @@ instance PSemigroup (PValue 'AssocMap.Sorted 'NoGuarantees) where
 -- | @since 2.0.0
 instance Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
   a <> b =
-    punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    punionWith # plam (+) # a # b
 
 -- | @since 2.0.0
 instance PlutusTx.Semigroup (Term s (PValue 'AssocMap.Sorted 'NoGuarantees)) where
   a <> b =
-    punionResolvingCollisionsWith AssocMap.Commutative # plam (+) # a # b
+    punionWith # plam (+) # a # b
 
 -- | @since 3.3.0
 instance
@@ -500,11 +500,10 @@ pcheckBinRel = phoistAcyclic $
  quantities with the same asset class. Note that the result is _not_
  'normalize'd and may contain zero quantities.
 
- @since 2.0.0
+ @since 3.5.0
 -}
-punionResolvingCollisionsWith ::
+punionWith ::
   forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
-  AssocMap.Commutativity ->
   Term
     s
     ( (PInteger :--> PInteger :--> PInteger)
@@ -512,11 +511,11 @@ punionResolvingCollisionsWith ::
         :--> PValue 'AssocMap.Sorted any1
         :--> PValue 'AssocMap.Sorted 'NoGuarantees
     )
-punionResolvingCollisionsWith commutativity = phoistAcyclic $
+punionWith = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith commutativity
-        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWith commutativity # combine # x' # y')
+      AssocMap.punionWith
+        # plam (\x' y' -> AssocMap.punionWith # combine # x' # y')
         # pto x
         # pto y
 
@@ -710,9 +709,6 @@ pleftBiasedCurrencyUnion = phoistAcyclic $
 {- | Combine two 'PValue's, taking the tokens from the left only, if a token name
  of the same currency occurs on both sides.
 
- Prefer this over 'punionResolvingCollisionsWith NonCommutative # plam const'.
- It is equivalent, but performs better.
-
  @since 2.1.1
 -}
 pleftBiasedTokenUnion ::
@@ -726,7 +722,7 @@ pleftBiasedTokenUnion ::
 pleftBiasedTokenUnion = phoistAcyclic $
   plam $ \x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith AssocMap.NonCommutative
+      AssocMap.punionWith
         # plam (\x' y' -> AssocMap.pleftBiasedUnion # x' # y')
         # pto x
         # pto y
@@ -735,11 +731,10 @@ pleftBiasedTokenUnion = phoistAcyclic $
  data-encoded quantities with the same asset class. Note that the result is
  _not_ 'normalize'd and may contain zero quantities.
 
- @since 2.1.1
+ @since 3.5.0
 -}
-punionResolvingCollisionsWithData ::
+punionWithData ::
   forall (any0 :: AmountGuarantees) (any1 :: AmountGuarantees) (s :: S).
-  AssocMap.Commutativity ->
   Term
     s
     ( (PAsData PInteger :--> PAsData PInteger :--> PAsData PInteger)
@@ -747,11 +742,11 @@ punionResolvingCollisionsWithData ::
         :--> PValue 'AssocMap.Sorted any1
         :--> PValue 'AssocMap.Sorted 'NoGuarantees
     )
-punionResolvingCollisionsWithData commutativity = phoistAcyclic $
+punionWithData = phoistAcyclic $
   plam $ \combine x y ->
     pcon . PValue $
-      AssocMap.punionResolvingCollisionsWith commutativity
-        # plam (\x' y' -> AssocMap.punionResolvingCollisionsWithData commutativity # combine # x' # y')
+      AssocMap.punionWith
+        # plam (\x' y' -> AssocMap.punionWithData # combine # x' # y')
         # pto x
         # pto y
 
