@@ -163,6 +163,7 @@ benchmark bench
     Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
 
   build-depends:
+    , containers
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage

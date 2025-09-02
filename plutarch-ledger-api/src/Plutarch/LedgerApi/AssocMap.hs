@@ -363,7 +363,7 @@ punionWith =
 {- | Build the union of two 'PMap's, merging values that share the same key
 using the given function.
 
-@since 2.1.1
+@since 3.5.0
 -}
 punionWithData ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).

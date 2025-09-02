@@ -99,7 +99,7 @@ assocMapBenches =
                 # assocMapFixture0
                 # assocMapFixture1
             )
-        , bcompare' "$(NF-1) == \"union\" && $NF == \"punionResolvingCollisionsWith (optimized)\"" $
+        , bcompare' "$(NF-1) == \"union\" && $NF == \"punionWith (optimized)\"" $
             bench
               "non-optimized"
               ( let
