@@ -15,7 +15,7 @@ module Plutarch.Internal.Parse (
   pparseData,
 
   -- * Helper deriving newtype
-  PDon'tValidate (..),
+  Don'tValidate (..),
   DeriveNewtypePValidateData (..),
 ) where
 
@@ -131,7 +131,7 @@ pparseData opq = pwithValidated @a opq . punsafeCoerce $ opq
 
 @since 1.12.0
 -}
-deriving via (PDon'tValidate PData) instance PValidateData PData
+deriving via (Don'tValidate PData) instance PValidateData PData
 
 {- | Checks that we have an @I@.
 
@@ -342,16 +342,16 @@ but not others.
 
 @since 1.12.0
 -}
-newtype PDon'tValidate (a :: S -> Type) (s :: S) = PDon'tValidate {unPDon'tValidate :: a s}
+newtype Don'tValidate (a :: S -> Type) (s :: S) = Don'tValidate {unDon'tValidate :: a s}
 
 -- | @since 1.12.0
-instance PlutusType a => PlutusType (PDon'tValidate a) where
-  type PInner (PDon'tValidate a) = PInner a
-  pcon' (PDon'tValidate x) = pcon' x
-  pmatch' x f = pmatch' x (f . PDon'tValidate)
+instance PlutusType a => PlutusType (Don'tValidate a) where
+  type PInner (Don'tValidate a) = PInner a
+  pcon' (Don'tValidate x) = pcon' x
+  pmatch' x f = pmatch' x (f . Don'tValidate)
 
 -- | @since 1.12.0
-instance PValidateData (PDon'tValidate a) where
+instance PValidateData (Don'tValidate a) where
   pwithValidated _ = id
 
 {- | Helper to define an instance of 'PValidateData' for @newtype@s over
