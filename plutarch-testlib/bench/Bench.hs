@@ -86,9 +86,17 @@ main =
       , testGroup "Array" arrayBenches
       , testGroup "PValidateData" pvalidateDataBenches
       , testGroup "AssocMap" assocMapBenches
+      , testGroup "PBuiltinPair" pbuiltinPairBenches
       ]
 
 -- Suites
+
+pbuiltinPairBenches :: [TestTree]
+pbuiltinPairBenches =
+  [ bench "manual fst" (precompileTerm (plam $ \x -> pfstBuiltin # x) # pconstant @(PBuiltinPair PInteger PInteger) (42, 12))
+  , bcompare "$(NF-1) == \"PBuiltinPair\" && $NF == \"manual fst\"" $
+      bench "with pmatch" (precompileTerm (plam $ \x -> pmatch x $ \(PBuiltinPair y _) -> y) # pconstant @(PBuiltinPair PInteger PInteger) (42, 12))
+  ]
 
 arrayBenches :: [TestTree]
 arrayBenches =

@@ -8,6 +8,11 @@
   @Data@-encoded types.
 * `pmapDropNothing` to `Plutarch.Maybe` 
 
+## Changed
+
+* `PBuiltinPair` can now be `pmatch`ed against, with partial matches not
+  generating code for the 'side' not matched (issue 836).
+
 ## Removed
 
 * `PCon` and `PMatch`, as they were deprecated (for a long time)
