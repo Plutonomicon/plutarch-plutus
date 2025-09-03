@@ -18,7 +18,7 @@ import GHC.TypeLits (
   type (-),
  )
 
-newtype Labeled sym a = Labeled {unLabeled :: a}
+newtype Labeled (sym :: Symbol) (a :: Type) = Labeled {unLabeled :: a}
 
 -- | GADT proof-witness of HList membership, usable as an index
 data Elem (a :: k) (as :: [k]) where
