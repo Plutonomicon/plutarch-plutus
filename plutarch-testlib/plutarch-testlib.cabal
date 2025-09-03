@@ -62,6 +62,7 @@ common lang
     -Wno-operator-whitespace -Wno-unticked-promoted-constructors
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-foralls -Wno-missing-export-lists
+    -Wno-missing-role-annotations -Wno-x-partial
 
 library
   import:          lang
@@ -163,11 +164,14 @@ benchmark bench
     Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
 
   build-depends:
+    , bytestring
     , containers
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
     , plutarch-testlib
+    , plutus-core
     , plutus-tx
     , prettyprinter
     , QuickCheck

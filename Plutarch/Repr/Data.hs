@@ -7,6 +7,7 @@ module Plutarch.Repr.Data (
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
+  PInnermostIsDataDataRepr,
 ) where
 
 import Data.Kind (Type)
@@ -37,7 +38,20 @@ import Plutarch.Builtin.Data (
  )
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.IsData (PInnermostIsData, PIsData)
-import Plutarch.Internal.Lift
+import Plutarch.Internal.Lift (
+  LiftError (OtherLiftError),
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    haskToRepr,
+    plutToRepr,
+    reprToHask,
+    reprToPlut
+  ),
+  mkPLifted,
+  pconstant,
+  punsafeCoercePLifted,
+ )
 import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
@@ -75,6 +89,8 @@ import Plutarch.Repr.Internal (
 import Plutarch.TermCont (pfindPlaceholder, pletC, unTermCont)
 import PlutusLedgerApi.V3 qualified as PLA
 
+-- Helper for working with SOP representations of `Data`-encoded records. If you
+-- don't know why you need this, it's probably better that way.
 type PInnermostIsDataDataRepr =
   PInnermostIsData
     ('Just "Data representation can only hold types whose inner most representation is PData")
