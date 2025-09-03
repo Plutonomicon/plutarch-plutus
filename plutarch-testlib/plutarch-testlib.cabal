@@ -177,3 +177,4 @@ benchmark bench
     , QuickCheck
     , tasty
     , tasty-quickcheck
+    , vector

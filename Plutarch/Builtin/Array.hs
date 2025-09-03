@@ -13,6 +13,8 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Term (
   S,
   Term,
+  pforce,
+  phoistAcyclic,
   punsafeBuiltin,
   (:-->),
  )
@@ -41,7 +43,7 @@ newtype PArray (a :: S -> Type) (s :: S)
 plengthOfArray ::
   forall (a :: S -> Type) (s :: S).
   Term s (PArray a :--> PInteger)
-plengthOfArray = punsafeBuiltin PLC.LengthOfArray
+plengthOfArray = phoistAcyclic $ pforce $ punsafeBuiltin PLC.LengthOfArray
 
 {- | Convert a (builtin) list to an array with the same contents in the same
 order, as per
@@ -52,7 +54,7 @@ order, as per
 plistToArray ::
   forall (a :: S -> Type) (s :: S).
   Term s (PBuiltinList a :--> PArray a)
-plistToArray = punsafeBuiltin PLC.ListToArray
+plistToArray = phoistAcyclic $ pforce $ punsafeBuiltin PLC.ListToArray
 
 {- | Index an array, as per
 [CIP-138](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0138).
@@ -62,4 +64,4 @@ plistToArray = punsafeBuiltin PLC.ListToArray
 pindexArray ::
   forall (a :: S -> Type) (s :: S).
   Term s (PArray a :--> PInteger :--> a)
-pindexArray = punsafeBuiltin PLC.IndexArray
+pindexArray = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IndexArray
