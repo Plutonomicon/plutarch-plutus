@@ -42,12 +42,14 @@ import Plutarch.Builtin.Data (
   PData (PData),
   pchooseListBuiltin,
   pconsBuiltin,
+  pfstBuiltin,
   pheadBuiltin,
+  psndBuiltin,
   ptailBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
-import Plutarch.Builtin.String (PString)
+import Plutarch.Builtin.String (PString, ptraceInfo)
 import Plutarch.Builtin.Unit (PUnit (PUnit), punit)
 
 import Data.Kind (Constraint, Type)
@@ -75,7 +77,18 @@ import {-# SOURCE #-} Plutarch.Internal.Lift (
   unsafeHaskToUni,
  )
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
-import Plutarch.Internal.Term (S, Term, pdelay, pforce, plam', plet, punsafeCoerce, (#), (:-->) (PLam))
+import Plutarch.Internal.Term (
+  S,
+  Term,
+  pdelay,
+  perror,
+  pforce,
+  plam',
+  plet,
+  punsafeCoerce,
+  (#),
+  (:-->) (PLam),
+ )
 import Plutarch.Internal.Witness (witness)
 import PlutusCore qualified as PLC
 
@@ -244,10 +257,19 @@ instance PlutusType PData where
   pcon' (PData t) = t
   pmatch' t f = f (PData t)
 
+{- | = Important note
+
+Due to some weirdnesses regarding builtins, 'PBuiltinPair's cannot be
+constructed from anything that's not already @Data@-encoded, but as builtin
+pairs are, well, /built-in/, we can lift, and 'pmatch', them just fine. Thus,
+you should /not/ use 'pcon' for 'PBuiltinPair'.
+
+@since 1.12.0
+-}
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
-  pcon' (PBuiltinPair x) = x
-  pmatch' x f = f (PBuiltinPair x)
+  pcon' _ = ptraceInfo "Do not use pcon for PBuiltinPair; instead, use ppairDataBuiltin or pconstant" perror
+  pmatch' t f = f (PBuiltinPair (pfstBuiltin # t) (psndBuiltin # t))
 
 instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a

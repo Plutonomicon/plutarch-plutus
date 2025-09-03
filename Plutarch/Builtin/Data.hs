@@ -70,8 +70,12 @@ pconstrBuiltin = punsafeBuiltin PLC.ConstrData
 
 --------------------------------------------------------------------------------
 
-newtype PBuiltinPair (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PBuiltinPair (Term s (PBuiltinPair a b))
+{- | A builtin Plutus pair.
+
+@since 1.12.0
+-}
+data PBuiltinPair (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PBuiltinPair (Term s a) (Term s b)
 
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
