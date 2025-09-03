@@ -17,6 +17,7 @@ module Plutarch.Test.Laws (
   checkPAdditiveSemigroupLaws,
   checkPAdditiveMonoidLaws,
   checkPAdditiveGroupLaws,
+  checkPlutusTypeLaws,
   checkPSemigroupLaws,
   checkPMonoidLaws,
 ) where
@@ -25,6 +26,7 @@ import Control.Applicative ((<|>))
 import Data.Data (Proxy (Proxy))
 import Data.Kind (Type)
 import GHC.Exts (Any)
+import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Prelude
@@ -334,6 +336,51 @@ checkPLiftableLawsForDeriveTags =
           let n = SOP.lengthSList @_ @(SOP.Code (a Any)) Proxy
               hask = haskToRepr @a x
            in hask >= 0 && hask < toInteger n
+      )
+  ]
+
+-- | @since 1.0.2
+newtype Foo (a :: S -> Type) (s :: S) = Foo (Term s a)
+  deriving stock (Generic)
+  deriving anyclass
+    ( SOP.Generic
+    )
+
+-- | @since 1.0.2
+deriving via DeriveNewtypePlutusType (Foo a) instance PlutusType (Foo a)
+
+-- | @since 1.0.2
+instance PEq a => PEq (Foo a) where
+  (#==) x y = inner # x # y
+    where
+      inner = plam $ \x' y' ->
+        pmatch x' (\(Foo x'') -> pmatch y' (\(Foo y'') -> x'' #== y''))
+
+{- | Verify that PlutusType laws hold
+
+@since 1.0.2
+-}
+checkPlutusTypeLaws ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PEq a
+  , PLiftable a
+  ) =>
+  [TestTree]
+checkPlutusTypeLaws =
+  [ testProperty "pmatch (pcon x) f = f x" . forAllShrinkShow arbitrary shrink prettyShow $
+      ( \(x :: AsHaskell a) ->
+          ( let
+              script :: Term s' (a :--> PBool)
+              script =
+                let f :: a s' -> Term s' (Foo a)
+                    f = pcon . Foo . pcon
+                 in plam \x' -> pmatch x' $ \x'' ->
+                      pmatch (pcon @a x'') f #== f x''
+             in
+              plift $ precompileTerm (script # pconstant @a x)
+          )
       )
   ]
 
