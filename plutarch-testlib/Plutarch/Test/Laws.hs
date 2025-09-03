@@ -315,7 +315,10 @@ checkPLiftableLaws =
       plift (pconstant @a x) `prettyEquals` x
   ]
 
--- | @since 3.5.0
+{- | Verifies that `PLiftable` instances derived by `DeriveAsTag` encode to valid integer ranges
+
+@since 1.0.2
+-}
 checkPLiftableLawsForDeriveTags ::
   forall (a :: S -> Type).
   ( Arbitrary (AsHaskell a)
