@@ -14,7 +14,6 @@ import Plutarch.LedgerApi.V1.Address (PAddress)
 import Plutarch.LedgerApi.V1.Scripts (PDatum, PDatumHash, PScriptHash)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 2.0.0

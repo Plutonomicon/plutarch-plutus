@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 -- | Scott-encoded lists and ListLike typeclass
@@ -14,10 +15,21 @@ module Plutarch.List (
   pelemAt,
   pelemAt',
   plistEquals,
+  pmatchListN,
+  pmatchList,
+  pmatchListUnsafe,
+  pmatchList',
+  Length,
+  Replicate,
+  UnsafeConstrNP (..),
 ) where
 
+import Data.Bifunctor (bimap)
 import Data.Kind (Type)
+import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)
+import GHC.TypeLits (KnownNat, natVal, type (+), type (-))
+import Generics.SOP (NP (..))
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, ptrue, (#&&))
 import Plutarch.Builtin.Integer (PInteger)
@@ -46,14 +58,21 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Show (PShow (pshow'), pshowList)
 import Plutarch.Internal.Term (
+  InternalConfig (InternalConfig, internalConfig'dataRecPMatchOptimization),
   S,
   Term,
   perror,
+  pgetInternalConfig,
   phoistAcyclic,
+  plet,
+  pplaceholder,
+  punsafeCoerce,
+  pwithInternalConfig,
   (#),
   (#$),
   (:-->),
  )
+import Plutarch.Internal.TermCont (pfindAllPlaceholders, unTermCont)
 import Plutarch.Internal.Trace (ptraceInfo)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
@@ -221,3 +240,137 @@ pelemAt' = phoistAcyclic $
       (n #== 0)
       (phead # xs)
       (self # (n - 1) #$ ptail # xs)
+
+{- | Match first N elements from the list. It's is better to use @pmatchList@ if number of elements that needs to be
+match does not need to be dynamically determined. It is important to understand each element given in Haskell
+list is "computation" to get nth element. If those need to be referenced multiple times, it needs to be pletted to
+prevent duplication of computation.
+
+@since WIP
+-}
+pmatchListN ::
+  forall b li a s.
+  PIsListLike li a =>
+  Integer ->
+  Term s (li a) ->
+  ([Term s a] -> Term s (li a) -> Term s b) ->
+  Term s b
+pmatchListN n xs f = pgetInternalConfig $ \cfg -> unTermCont $ do
+  let
+    -- placeholders are from 0 to n - 1, n is the "rest" part
+    placeholders = pplaceholder <$> [0 .. (n - 1)]
+    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f placeholders (pplaceholder n)
+
+  usedFields <-
+    if internalConfig'dataRecPMatchOptimization cfg
+      then pfindAllPlaceholders placeholderApplied
+      else pure [0 .. n]
+
+  pure $ pmatchList' n usedFields xs f
+
+{- | Same functionality to @pmatchListN@ but each matched value will be given in @NP@ for better typing. Same performance
+implications as @pmatchListN@.
+
+@since WIP
+-}
+pmatchList ::
+  forall n r li a s.
+  ( PIsListLike li a
+  , KnownNat (Length (Replicate n a))
+  , UnsafeConstrNP (Replicate n a)
+  ) =>
+  Term s (li a) ->
+  (NP (Term s) (Replicate n a) -> Term s (li a) -> Term s r) ->
+  Term s r
+pmatchList = pmatchListUnsafe @(Replicate n a)
+
+{- | Same as @pmatchList@ but allows matching each element to arbitrary type. Essentially, this is @pmatchList@ combined
+with @punsafeCoerce@; therefore, this is unsafe and will require careful attention when using this.
+
+This function is especially helpful when matching on @PBuiltinList (PData)@ when user knows the type of each elements.
+If first two elements are Data Integers, one can use @pmatchListUnsafe @'[PAsData PInteger, PAsData PInteger] li@ and
+have everything already coerced when it's being matched.
+
+@since WIP
+-}
+pmatchListUnsafe ::
+  forall (struct :: [S -> Type]) r li a s.
+  (PIsListLike li a, KnownNat (Length struct), UnsafeConstrNP struct) =>
+  Term s (li a) ->
+  (NP (Term s) struct -> Term s (li a) -> Term s r) ->
+  Term s r
+pmatchListUnsafe xs f =
+  let
+    go xs' rest =
+      case constrNP @struct xs' of
+        Nothing -> error "impossible"
+        Just xs'' -> f xs'' rest
+   in
+    pmatchListN (natVal (Proxy @(Length struct))) xs go
+
+-- TODO: make pmatchDataRec use this
+-- NOTE: Maybe not, it could require some more coercing, less safer when messing with internal code.
+pmatchList' ::
+  forall b li a s.
+  PIsListLike li a =>
+  Integer ->
+  [Integer] ->
+  Term s (li a) ->
+  ([Term s a] -> Term s (li a) -> Term s b) ->
+  Term s b
+pmatchList' n usedFields xs f = unTermCont $ do
+  let
+    mkMatches ::
+      Integer ->
+      Term s (li a) ->
+      (Integer, Term s (li a)) ->
+      ([(Term s a, Term s (li a))] -> Term s r) ->
+      Term s r
+    mkMatches idx running lastBind@(lastBindIdx, lastBindT) cps
+      | idx > n = cps [] -- >= is not correct, we want to compute one more for the "rest" part.
+      | idx `elem` usedFields =
+          let
+            isLastBind = all (<= idx) usedFields
+            dropAmount = fromInteger $ idx - lastBindIdx
+            dropToCurrent' :: forall s'. Term s' (li a) -> Term s' (li a)
+            dropToCurrent' = foldr (.) id $ replicate dropAmount (ptail #)
+
+            -- If this is last term, or amount of @ptail@ we need is less than 3, we don't hoist.
+            currentTerm
+              | isLastBind || dropAmount <= 3 = dropToCurrent' lastBindT
+              | otherwise = phoistAcyclic (plam dropToCurrent') # lastBindT
+
+            bindIfNeeded = if isLastBind then (\a h -> h a) else plet
+           in
+            bindIfNeeded currentTerm $ \newBind ->
+              mkMatches (idx + 1) (ptail # running) (idx, newBind) $ \rest ->
+                cps $ (phead # newBind, newBind) : rest
+      | otherwise =
+          mkMatches (idx + 1) (ptail # running) lastBind $
+            \rest ->
+              cps $ (phead # running, running) : rest
+
+  pure $ mkMatches 0 xs (0, xs) (uncurry f . bimap (take $ fromInteger n) last . unzip)
+
+type family Length xs where
+  Length '[] = 0
+  Length (_ ': xs) = 1 + Length xs
+
+type family Replicate n a where
+  Replicate 0 _ = '[]
+  Replicate x a = a ': Replicate (x - 1) a
+
+-- This is very dangerous, be extra careful when using it
+-- Essentially, this will construct NP of specified structure from the given list of term
+-- There is no type assurances whatsoever and each term will be coerced.
+class UnsafeConstrNP xs where
+  constrNP :: forall a s. [Term s a] -> Maybe (NP (Term s) xs)
+
+instance UnsafeConstrNP xs => UnsafeConstrNP (x ': xs) where
+  constrNP [] = Nothing
+  constrNP (x : xs) = do
+    rest <- constrNP @xs xs
+    pure $ punsafeCoerce x :* rest
+
+instance UnsafeConstrNP '[] where
+  constrNP _ = Just Nil

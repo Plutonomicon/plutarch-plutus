@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module Plutarch.Repr.Internal (
   RecAsHaskell,
@@ -18,9 +19,14 @@ module Plutarch.Repr.Internal (
   RecTypePrettyError,
 ) where
 
+import Control.Arrow (Arrow (..))
+import Data.HashMap.Strict qualified as HM
+import Data.Hashable (Hashed)
 import Data.Kind (Type)
-import Data.List (groupBy, sortBy)
+import Data.List (groupBy, sort, sortBy)
+import Data.Ord (Down (..), comparing)
 import Data.Proxy (Proxy (Proxy))
+import Debug.Trace (traceShow)
 import GHC.TypeError (ErrorMessage (Text), TypeError)
 import Generics.SOP (
   All,
@@ -45,7 +51,7 @@ import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.Lift (AsHaskell, pconstant)
-import Plutarch.Internal.Term (Dig, S, Term, plet)
+import Plutarch.Internal.Term (RawTerm, S, Term, plet)
 import Plutarch.Internal.TermCont (hashOpenTerm, unTermCont)
 
 -- | @since 1.10.0
@@ -105,17 +111,18 @@ gstructEq x y =
 -}
 groupHandlers :: forall (s :: S) (r :: S -> Type). [(Integer, Term s r)] -> Term s PInteger -> Term s r
 groupHandlers handlers idx = unTermCont $ do
-  handlersWithHash :: [(Integer, (Term s b, Dig))] <-
+  handlersWithHash :: [(Integer, (Term s b, Hashed RawTerm))] <-
     traverse (\(i, t) -> (\hash -> (i, (t, hash))) <$> hashOpenTerm t) handlers
 
   let
     groupedHandlers :: [([Integer], Term s b)]
     groupedHandlers =
-      sortBy (\g1 g2 -> length (fst g1) `compare` length (fst g2)) $
-        (\g -> (fst <$> g, fst $ snd $ head g))
-          <$> groupBy
-            (\x1 x2 -> snd (snd x1) == snd (snd x2))
-            (sortBy (\(_, (_, h1)) (_, (_, h2)) -> h1 `compare` h2) handlersWithHash)
+      sortBy (comparing ((length . fst) &&& fst))
+        . map (first sort)
+        . HM.elems
+        . HM.map (\xs -> (map fst xs, snd $ head xs))
+        . HM.fromListWith (flip (++))
+        $ [(h, [(i, t)]) | (i, (t, h)) <- handlersWithHash]
 
   pure $
     let

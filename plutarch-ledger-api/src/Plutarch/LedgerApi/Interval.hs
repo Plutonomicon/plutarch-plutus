@@ -37,7 +37,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Prelude hiding (psingleton, pto)
-import Plutarch.Repr.Data
 import PlutusLedgerApi.V3 qualified as Plutus
 
 -- | @since 2.0.0

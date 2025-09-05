@@ -85,7 +85,6 @@ import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 3.1.1

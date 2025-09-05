@@ -8,6 +8,13 @@ license:            MIT
 extra-source-files: README.md
 tested-with:        GHC ==9.6.4
 
+flag check-phoist
+  description:
+    Checks every single phoistAcyclic. This is fairly costly for large scripts!
+
+  default:     False
+  manual:      True
+
 common c
   default-language:   GHC2021
   default-extensions:
@@ -69,6 +76,9 @@ common c
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-foralls -Wno-missing-import-lists
     -Wno-missing-export-lists
+
+  if flag(check-phoist)
+    cpp-options: -DCHECKPHOIST
 
 library
   import:          c
@@ -154,13 +164,15 @@ library
     , data-default
     , flat
     , generics-sop
+    , hashable
     , lens
     , mtl
-    , plutus-core        >=1.51.0.0
+    , plutus-core           >=1.45.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
     , QuickCheck
     , random
     , sop-core
+    , unordered-containers
     , vector
