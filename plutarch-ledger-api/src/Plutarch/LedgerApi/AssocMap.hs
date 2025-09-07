@@ -8,6 +8,26 @@ identifiers clash with the Plutarch prelude.
 -}
 module Plutarch.LedgerApi.AssocMap (
   -- * Types
+  PIsAssocMap (..), -- should be hidden
+  PSortedMap (..),
+  PUnsortedMap (..),
+  pempty',
+  pall',
+  pmap',
+  pmapData',
+  pmapMaybe',
+  pmapMaybeData',
+  pmapMaybeWithKey,
+  pmapMaybeDataWithKey,
+  pnull',
+  pcheckBinRel',
+  pfoldAt',
+  pfoldAtData',
+  psingleton',
+  psingletonData',
+  punionWith',
+  zipWithBuilder',
+  pinsert',
   PMap (..),
   KeyGuarantees (..),
   MergeHandler (..),
@@ -109,6 +129,516 @@ import Prelude hiding (pred)
 
 -- | @since 2.0.0
 data KeyGuarantees = Sorted | Unsorted
+
+----------------------------------------------------------------------
+-- Sorted Map
+
+newtype PSortedMap (k :: S -> Type) (v :: S -> Type) (s :: S)
+  = PSortedMap (Term s (PUnsortedMap k v))
+  deriving stock
+    ( -- | @since 3.5.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.5.0
+      SOP.Generic
+    , -- | @since 3.5.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.5.0
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PSortedMap k v))
+
+-- | @since 3.5.0
+instance PIsData (PSortedMap k v) where
+  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.MapData # x
+
+-- | @since 3.5.0
+instance PEq (PSortedMap k v) where
+  x #== y = peqViaData # x # y
+    where
+      peqViaData ::
+        forall (s :: S).
+        Term s (PSortedMap k v :--> PSortedMap k v :--> PBool)
+      peqViaData = phoistAcyclic $ plam $ \m0 m1 -> pdata m0 #== pdata m1
+
+{- | Given a comparison function and a "zero" value, check whether a binary
+relation holds over 2 sorted 'PMap's.
+
+= Important note
+
+This is primarily intended to be used with 'PValue'. We assume that the comparison behaves like
+a comparison would (thus, being at least a partial order, or possibly a total order or
+equivalence), and that the starting value does not break it. Use with extreme care.
+
+@since 2.0.0
+-}
+pcheckBinRel' ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  ( POrd k
+  , PIsData k
+  , PIsData v
+  ) =>
+  Term
+    s
+    ( (v :--> v :--> PBool)
+        :--> v
+        :--> PSortedMap k v
+        :--> PSortedMap k v
+        :--> PBool
+    )
+pcheckBinRel' = phoistAcyclic $
+  plam $ \f z m1 m2 ->
+    let inner = pfix #$ plam $ \self l1 l2 ->
+          pelimList
+            ( \x xs ->
+                plet (pfromData $ psndBuiltin # x) $ \v1 ->
+                  pelimList
+                    ( \y ys -> unTermCont $ do
+                        v2 <- tcont . plet . pfromData $ psndBuiltin # y
+                        k1 <- tcont . plet . pfromData $ pfstBuiltin # x
+                        k2 <- tcont . plet . pfromData $ pfstBuiltin # y
+                        pure
+                          $ pif
+                            (k1 #== k2)
+                            ( f
+                                # v1
+                                # v2
+                                #&& self
+                                # xs
+                                # ys
+                            )
+                          $ pif
+                            (k1 #< k2)
+                            (f # v1 # z #&& self # xs # l2)
+                          $ f
+                            # z
+                            # v2
+                            #&& self
+                            # l1
+                            # ys
+                    )
+                    ( f
+                        # v1
+                        # z
+                        #&& PPrelude.pall
+                        # plam (\p -> f # pfromData (psndBuiltin # p) # z)
+                        # xs
+                    )
+                    l2
+            )
+            (PPrelude.pall # plam (\p -> f # z #$ pfromData $ psndBuiltin # p) # l2)
+            l1
+     in inner # pto (pto m1) # pto (pto m2)
+
+{- | Build the union of two 'PSortedMap's, merging values that share the same
+key using the given function.
+
+@since 3.5.0
+-}
+punionWith' ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  ( POrd k
+  , PIsData k
+  , PIsData v
+  ) =>
+  Term
+    s
+    ( (v :--> v :--> v)
+        :--> PSortedMap k v
+        :--> PSortedMap k v
+        :--> PSortedMap k v
+    )
+punionWith' =
+  phoistAcyclic $
+    plam $
+      zipWithBuilder' . Zip.unionMergeHandler
+
+{- | Build a function that zips two 'PSortedMap's together using a custom 'MergeHandler'.
+
+The provided 'MergeHandler' determines how to merge entries based on whether a
+key is present in the left map, the right map, or both.
+
+= NOTE
+
+This function itself cannot be hoisted with 'phoistAcyclic' because it
+depends on the supplied 'MergeHandler'. However, once you specialize it
+by providing a specific merge handler, the resulting function /should/ be
+hoisted if it will be reused, to avoid duplication.
+
+@since 3.5.0
+-}
+zipWithBuilder' ::
+  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
+  ( POrd k
+  , PIsData k
+  , PIsData a
+  , PIsData b
+  , PIsData c
+  ) =>
+  MergeHandler s k a b c ->
+  Term
+    s
+    ( PSortedMap k a
+        :--> PSortedMap k b
+        :--> PSortedMap k c
+    )
+zipWithBuilder' mergeHandler =
+  zipWithDataBuilder' (Zip.mergeHandlerOnData mergeHandler)
+
+{- | Build a function that zips two 'PSortedMap's together using a custom 'MergeHandler'.
+
+The provided 'MergeHandler' determines how to merge entries based on whether a
+key is present in the left map, the right map, or both.
+
+Unlike 'zipWithBuilder', 'zipWithDataBuilder' operates on values wrapped in
+'PAsData' (typed BuiltinData).
+
+= NOTE
+
+This function itself cannot be hoisted with 'phoistAcyclic' because it
+depends on the supplied 'MergeHandler'. However, once you specialize it
+by providing a specific merge handler, the resulting function /should/ be
+hoisted if it will be reused, to avoid duplication.
+
+@since 3.5.0
+-}
+zipWithDataBuilder' ::
+  forall (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type).
+  ( POrd k
+  , PIsData k
+  ) =>
+  MergeHandler s (PAsData k) (PAsData a) (PAsData b) (PAsData c) ->
+  Term
+    s
+    ( PSortedMap k a
+        :--> PSortedMap k b
+        :--> PSortedMap k c
+    )
+zipWithDataBuilder' mergeHandler =
+  plam $ \mapL mapR ->
+    pcon $
+      PSortedMap $
+        pcon $
+          PUnsortedMap $
+            Zip.zipWorker mergeHandler # pto (pto mapL) # pto (pto mapR)
+
+{- | Insert a new key/value pair into the map, overriding the previous if any.
+
+@since 2.1.1
+-}
+pinsert' ::
+  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
+  ( POrd k
+  , PIsData k
+  , PIsData v
+  ) =>
+  Term s (k :--> v :--> PSortedMap k v :--> PSortedMap k v)
+pinsert' = phoistAcyclic $
+  plam $ \key val ->
+    rebuildAtKey' # plam (pcons # (ppairDataBuiltin # pdata key # pdata val) #) # key
+
+----------------------------------------------------------------------
+-- Unsorted Map
+
+-- | @since 3.5.0
+newtype PUnsortedMap (k :: S -> Type) (v :: S -> Type) (s :: S)
+  = PUnsortedMap (Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))))
+  deriving stock
+    ( -- | @since 3.5.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.5.0
+      SOP.Generic
+    , -- | @since 3.5'Sorted.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.5.0
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType (PUnsortedMap k v))
+
+-- | @since 3.5.0
+instance PIsData (PUnsortedMap k v) where
+  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.MapData # x
+
+----------------------------------------------------------------------
+-- PIsAssocMap
+
+class PIsAssocMap t where
+  ptoUnsortedMap :: Term s (t k v) -> Term s (PUnsortedMap k v)
+  punsafeFromUnsortedMap :: Term s (PUnsortedMap k v) -> Term s (t k v)
+
+instance PIsAssocMap PUnsortedMap where
+  ptoUnsortedMap = id
+  punsafeFromUnsortedMap = id
+
+instance PIsAssocMap PSortedMap where
+  ptoUnsortedMap = pto
+  punsafeFromUnsortedMap = punsafeDowncast
+
+{- | Construct an empty map.
+
+@since 2.0.0
+-}
+pempty' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s (t k v)
+pempty' = punsafeFromUnsortedMap $ punsafeDowncast pnil
+
+{- | Construct a singleton map with the given key and value.
+
+@since 2.1.1
+-}
+psingleton' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , PIsData k
+  , PIsData v
+  ) =>
+  Term s (k :--> v :--> t k v)
+psingleton' =
+  phoistAcyclic $
+    plam $ \key value ->
+      psingletonData' # pdata key # pdata value
+
+{- | Construct a singleton map with the given data-encoded key and value.
+
+@since 2.1.1
+-}
+psingletonData' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s (PAsData k :--> PAsData v :--> t k v)
+psingletonData' =
+  phoistAcyclic $
+    plam $ \key value ->
+      punsafeFromUnsortedMap $
+        punsafeDowncast $
+          pcons
+            # (ppairDataBuiltin # key # value)
+            # pnil
+
+{- | Verifies all values in the map satisfy the given predicate.
+
+@since 2.0.0
+-}
+pall' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  PIsData v =>
+  Term s ((v :--> PBool) :--> t k v :--> PBool)
+pall' = phoistAcyclic $
+  plam $ \pred m ->
+    PPrelude.pall
+      # plam (\pair -> pred #$ pfromData $ psndBuiltin # pair)
+      # pto (ptoUnsortedMap m)
+
+{- | Applies a function to every value in the map, much like 'Data.PPrelude.map'.
+
+@since 2.0.0
+-}
+pmap' ::
+  forall t (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , PIsData a
+  , PIsData b
+  ) =>
+  Term s ((a :--> b) :--> t k a :--> t k b)
+pmap' = phoistAcyclic $
+  plam $
+    \f -> pmapData' #$ plam $ \v -> pdata (f # pfromData v)
+
+{- | As 'pmap', but over Data representations.
+
+@since 2.0.0
+-}
+pmapData' ::
+  forall t (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s ((PAsData a :--> PAsData b) :--> t k a :--> t k b)
+pmapData' = phoistAcyclic $
+  plam $ \f m ->
+    punsafeFromUnsortedMap $
+      pcon . PUnsortedMap $
+        precList
+          ( \self x xs ->
+              pcons
+                # (ppairDataBuiltin # (pfstBuiltin # x) # (f #$ psndBuiltin # x))
+                # (self # xs)
+          )
+          (const pnil)
+          # pto (ptoUnsortedMap m)
+
+{- | Maps and filters the map, much like 'Data.PPrelude.mapMaybe'.
+
+@since 2.0.0
+-}
+pmapMaybe' ::
+  forall t (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , PIsData a
+  , PIsData b
+  ) =>
+  Term s ((a :--> PMaybe b) :--> t k a :--> t k b)
+pmapMaybe' = phoistAcyclic $
+  plam $ \f -> pmapMaybeData' #$ plam $ \v -> pmatch (f # pfromData v) $ \case
+    PNothing -> pcon PNothing
+    PJust v' -> pcon $ PJust (pdata v')
+
+{- | As 'pmapMaybe', but over Data representation.
+
+@since 2.0.0
+-}
+pmapMaybeData' ::
+  forall t (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s ((PAsData a :--> PMaybe (PAsData b)) :--> t k a :--> t k b)
+pmapMaybeData' = phoistAcyclic $
+  plam $ \f m ->
+    punsafeFromUnsortedMap $
+      pcon . PUnsortedMap $
+        precList
+          ( \self x xs ->
+              plet (self # xs) $ \xs' ->
+                pmatch (f #$ psndBuiltin # x) $ \case
+                  PNothing -> xs'
+                  PJust v -> pcons # (ppairDataBuiltin # (pfstBuiltin # x) # v) # xs'
+          )
+          (const pnil)
+          # pto (ptoUnsortedMap m)
+
+{- | As 'pmapMaybe', but gives key access as well.
+
+@since 2.0.0
+-}
+pmapMaybeWithKey ::
+  forall t (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , PIsData k
+  , PIsData a
+  , PIsData b
+  ) =>
+  Term s ((k :--> a :--> PMaybe b) :--> t k a :--> t k b)
+pmapMaybeWithKey = phoistAcyclic $
+  plam $ \f ->
+    pmapMaybeDataWithKey #$ plam $ \k v -> pmatch (f # pfromData k # pfromData v) $ \case
+      PNothing -> pcon PNothing
+      PJust v' -> pcon $ PJust (pdata v')
+
+{- | As 'pmapMaybeData', but gives key access as well.
+
+@since 2.0.0
+-}
+pmapMaybeDataWithKey ::
+  forall t (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s ((PAsData k :--> PAsData a :--> PMaybe (PAsData b)) :--> t k a :--> t k b)
+pmapMaybeDataWithKey = phoistAcyclic $
+  plam $ \f m ->
+    punsafeFromUnsortedMap $
+      pcon . PUnsortedMap $
+        precList
+          ( \self x xs ->
+              plet (self # xs) $ \xs' ->
+                pmatch (f # (pfstBuiltin # x) # (psndBuiltin # x)) $ \case
+                  PNothing -> xs'
+                  PJust v -> pcons # (ppairDataBuiltin # (pfstBuiltin # x) # v) # xs'
+          )
+          (const pnil)
+          # pto (ptoUnsortedMap m)
+
+{- | Tests whether the map is empty.
+
+@since 2.0.0
+-}
+pnull' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s (t k v :--> PBool)
+pnull' = plam (\m -> PPrelude.pnull # pto (ptoUnsortedMap m))
+
+{- | Look up the given key in a 'PMap'; return the default if the key is
+ absent or apply the argument function to the value data if present.
+
+ @since 2.1.1
+-}
+pfoldAt' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (r :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , PIsData k
+  ) =>
+  Term s (k :--> r :--> (PAsData v :--> r) :--> t k v :--> r)
+pfoldAt' = phoistAcyclic $
+  plam $
+    \key -> pfoldAtData' # pdata key
+
+{- | Look up the given key data in a 'PMap'; return the default if the key is
+ absent or apply the argument function to the value data if present.
+
+ @since 2.1.1
+-}
+pfoldAtData' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (r :: S -> Type) (s :: S).
+  PIsAssocMap t =>
+  Term s (PAsData k :--> r :--> (PAsData v :--> r) :--> t k v :--> r)
+pfoldAtData' = phoistAcyclic $
+  plam $ \key def apply m ->
+    precList
+      ( \self x xs ->
+          pif
+            (pfstBuiltin # x #== key)
+            (apply #$ psndBuiltin # x)
+            (self # xs)
+      )
+      (const def)
+      # pto (ptoUnsortedMap m)
+
+-- | Rebuild the map at the given key.
+rebuildAtKey' ::
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , POrd k
+  , PIsData k
+  ) =>
+  Term
+    s
+    ( ( PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+          :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))
+      )
+        :--> k
+        :--> t k v
+        :--> t k v
+    )
+rebuildAtKey' = phoistAcyclic $
+  plam $ \handler key m ->
+    punsafeFromUnsortedMap $
+      punsafeDowncast $
+        precList
+          ( \self x xs ->
+              plet (pfromData $ pfstBuiltin # x) $ \k ->
+                plam $ \prefix ->
+                  pif
+                    (k #< key)
+                    (self # xs #$ plam $ \suffix -> prefix #$ pcons # x # suffix)
+                    ( pif
+                        (k #== key)
+                        (prefix #$ handler # xs)
+                        (prefix #$ handler #$ pcons # x # xs)
+                    )
+          )
+          (const $ plam (#$ handler # pnil))
+          # pto (ptoUnsortedMap m)
+          # plam id
+
+----------------------------------------------------------------------
 
 -- | @since 2.0.0
 newtype PMap (keysort :: KeyGuarantees) (k :: S -> Type) (v :: S -> Type) (s :: S)
@@ -662,7 +1192,7 @@ pdifferenceWith =
           { mhBothPresent = HandleOrDropBoth $ plam (\_ valL valR -> combine # valL # valR)
           }
 
-{- | Tests if anu value in the map satisfies the given predicate.
+{- | Tests if any value in the map satisfies the given predicate.
 
 @since 2.1.1
 -}

@@ -61,12 +61,16 @@ library
     Plutarch.LedgerApi.V1.Credential
     Plutarch.LedgerApi.V1.Crypto
     Plutarch.LedgerApi.V1.DCert
+    Plutarch.LedgerApi.V1.MintValue
     Plutarch.LedgerApi.V1.Scripts
     Plutarch.LedgerApi.V1.Time
     Plutarch.LedgerApi.V1.Tx
     Plutarch.LedgerApi.V2.Tx
     Plutarch.LedgerApi.V3.Contexts
+    Plutarch.LedgerApi.V3.MintValue
     Plutarch.LedgerApi.V3.Tx
+    Plutarch.LedgerApi.Value.CurrencySymbol
+    Plutarch.LedgerApi.Value.TokenName
 
   build-depends:
     , bytestring
