@@ -1,9 +1,10 @@
 module Plutarch.Test.Suite.Plutarch.List (tests, integerList) where
 
 import Data.List (find)
+import Data.SOP (NP (..))
 import Plutarch.Internal.ListLike (pconvertLists, pfoldl')
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
-import Plutarch.List (pcheckSorted, preverse)
+import Plutarch.List (pcheckSorted, pmatchList, preverse)
 import Plutarch.Prelude
 import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent)
@@ -90,6 +91,30 @@ tests =
                   pmatch isEmpty $ \case
                     PTrue -> perror
                     PFalse -> plet (phead # numList) $ \_x -> ptail # numList
+            ]
+        , -- Used BuiltinList here because it generates less bloat golden
+          goldenGroup
+            "pmatchList"
+            [ goldenEval "match-nothing" $
+                pmatchList
+                  @0
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
+                  (\Nil rest -> rest)
+            , goldenEval "rest-unused" $
+                pmatchList
+                  @5
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
+                  (\(_ :* a :* _ :* b :* _) _rest -> a + b)
+            , goldenEval "rest-used" $
+                pmatchList
+                  @5
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
+                  (\(a :* _ :* b :* _ :* _) rest -> a + b + (phead # rest))
+            , goldenEval "use-only-rest(drop N)" $
+                pmatchList
+                  @5
+                  (pconstant @(PBuiltinList PInteger) [1 .. 10])
+                  (\(_ :* _ :* _ :* _ :* _) rest -> rest)
             ]
         ]
     , testGroup

@@ -9,7 +9,6 @@ module Plutarch.LedgerApi.V1.Tx (
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 {- | Hashed with @BLAKE2b-256@.

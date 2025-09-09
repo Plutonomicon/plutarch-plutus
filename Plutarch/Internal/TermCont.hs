@@ -7,11 +7,13 @@ module Plutarch.Internal.TermCont (
   unTermCont,
   tcont,
   pfindPlaceholder,
+  pfindAllPlaceholders,
 ) where
 
 import Crypto.Hash (Digest)
 import Crypto.Hash.Algorithms (Blake2b_160)
 import Data.Kind (Type)
+import Data.List (nub)
 import Data.String (fromString)
 import Plutarch.Internal.Term (
   Config (Tracing),
@@ -77,20 +79,41 @@ hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
 pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
 pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
-
-  let
-    findPlaceholder (RLamAbs _ x) = findPlaceholder x
-    findPlaceholder (RApply x xs) = any findPlaceholder (x : xs)
-    findPlaceholder (RForce x) = findPlaceholder x
-    findPlaceholder (RDelay x) = findPlaceholder x
-    findPlaceholder (RHoisted (HoistedTerm _ x)) = findPlaceholder x
-    findPlaceholder (RPlaceHolder idx') = idx == idx'
-    findPlaceholder (RConstr _ xs) = any findPlaceholder xs
-    findPlaceholder (RCase x xs) = any findPlaceholder (x : xs)
-    findPlaceholder (RVar _) = False
-    findPlaceholder (RConstant _) = False
-    findPlaceholder (RBuiltin _) = False
-    findPlaceholder (RCompiled _) = False
-    findPlaceholder RError = False
-
   asRawTerm (f . findPlaceholder . getTerm $ y) i
+  where
+    findPlaceholder = \case
+      RLamAbs _ x -> findPlaceholder x
+      RApply x xs -> any findPlaceholder (x : xs)
+      RForce x -> findPlaceholder x
+      RDelay x -> findPlaceholder x
+      RHoisted (HoistedTerm _ x) -> findPlaceholder x
+      RPlaceHolder idx' -> idx == idx'
+      RConstr _ xs -> any findPlaceholder xs
+      RCase x xs -> any findPlaceholder (x : xs)
+      RVar _ -> False
+      RConstant _ -> False
+      RBuiltin _ -> False
+      RCompiled _ -> False
+      RError -> False
+
+-- | Finds all placeholder ids and returns it
+pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
+pfindAllPlaceholders x = TermCont $ \f -> Term $ \i -> do
+  y <- asRawTerm x i
+  asRawTerm (f . nub . findPlaceholder . getTerm $ y) i
+  where
+    findPlaceholder :: RawTerm -> [Integer]
+    findPlaceholder = \case
+      RLamAbs _ x -> findPlaceholder x
+      RApply x xs -> findPlaceholder x <> foldMap findPlaceholder xs
+      RForce x -> findPlaceholder x
+      RDelay x -> findPlaceholder x
+      RHoisted (HoistedTerm _ x) -> findPlaceholder x
+      RPlaceHolder idx -> [idx]
+      RConstr _ xs -> foldMap findPlaceholder xs
+      RCase x xs -> findPlaceholder x <> foldMap findPlaceholder xs
+      RVar _ -> []
+      RConstant _ -> []
+      RBuiltin _ -> []
+      RCompiled _ -> []
+      RError -> []

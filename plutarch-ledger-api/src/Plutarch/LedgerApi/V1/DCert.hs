@@ -10,7 +10,6 @@ import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.V1.Credential (PStakingCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1
