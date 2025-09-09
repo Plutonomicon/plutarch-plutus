@@ -73,12 +73,12 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 
-import Data.Maybe (catMaybes)
+import Plutarch.Internal.TermCont (pfindAllPlaceholders)
 import Plutarch.Internal.Trace (ptraceInfo)
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
 import Plutarch.Pair (PPair (PPair))
 import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
-import Plutarch.TermCont (pfindPlaceholder, unTermCont)
+import Plutarch.TermCont (unTermCont)
 
 {- | SOP-encoded list.
 
@@ -265,14 +265,7 @@ pmatchListN n xs f = pgetInternalConfig $ \cfg -> unTermCont $ do
 
   usedFields <-
     if internalConfig'dataRecPMatchOptimization cfg
-      then
-        catMaybes
-          <$> traverse
-            ( \idx -> do
-                found <- pfindPlaceholder idx placeholderApplied
-                pure $ if found then Just idx else Nothing
-            )
-            [0 .. n]
+      then pfindAllPlaceholders placeholderApplied
       else pure [0 .. n]
 
   pure $ pmatchList' n usedFields xs f
