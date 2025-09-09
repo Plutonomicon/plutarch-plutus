@@ -24,7 +24,9 @@ module Plutarch.Internal.Term (
   punsafeConstant,
   punsafeConstantInternal,
   compile,
+  compileWithInternalConfig,
   compileOptimized,
+  compileOptimizedWithInternalConfig,
   compile',
   optimizeTerm,
   hashTerm,
@@ -403,13 +405,14 @@ pattern Tracing ll tm <- Config (Last (Just (ll, tm)))
 {-# COMPLETE NoTracing, Tracing #-}
 
 -- These are settings we need internally
-newtype InternalConfig = InternalConfig
+data InternalConfig = InternalConfig
   { internalConfig'dataRecPMatchOptimization :: Bool
+  , internalConfig'phoistAcyclicEvalCheck :: Bool
   }
   deriving stock (Show, Eq)
 
 defaultInternalConfig :: InternalConfig
-defaultInternalConfig = InternalConfig True
+defaultInternalConfig = InternalConfig True True
 
 newtype TermMonad m = TermMonad {runTermMonad :: ReaderT (InternalConfig, Config) (Either Text) m}
   deriving newtype (Functor, Applicative, Monad)
@@ -680,15 +683,18 @@ asClosedRawTerm t = asRawTerm t 0
 
 -- FIXME: Give proper error message when mutually recursive.
 phoistAcyclic :: forall (a :: S -> Type) (s :: S). HasCallStack => (forall (s' :: S). Term s' a) -> Term s a
-phoistAcyclic t = Term \_ ->
+phoistAcyclic t = pgetInternalConfig $ \InternalConfig {internalConfig'phoistAcyclicEvalCheck = chk} -> Term \_ ->
   asRawTerm t 0 >>= \case
     -- Built-ins are smaller than variable references
     t'@(getTerm -> RBuiltin _) -> pure t'
-    t' -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' t' of
+    t' | chk -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' t' of
       (Right _, _, _) ->
         let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
          in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
       (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)
+    t' ->
+      let hoisted = HoistedTerm (hashRawTerm . getTerm $ t') (getTerm t')
+       in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
 
 -- Couldn't find a definition for this in plutus-core
 subst ::
@@ -818,8 +824,15 @@ compile' t =
 
 -- | Compile a (closed) Plutus Term to a usable script
 compile :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> Either Text Script
-compile config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (defaultInternalConfig, config)
+compile = compileWithInternalConfig defaultInternalConfig
+
+{- | As 'compile' but exposes 'InternalConfig' options.
+
+@since 1.12.0
+-}
+compileWithInternalConfig :: forall (a :: S -> Type). InternalConfig -> Config -> (forall (s :: S). Term s a) -> Either Text Script
+compileWithInternalConfig internalConfig config t = case asClosedRawTerm t of
+  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (internalConfig, config)
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -830,9 +843,20 @@ compileOptimized ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
   Either Text Script
-compileOptimized t = case asClosedRawTerm t of
+compileOptimized = compileOptimizedWithInternalConfig defaultInternalConfig
+
+{- | As 'compileOptimized' but exposes 'InternalConfig' options.
+
+@since 1.12.0
+-}
+compileOptimizedWithInternalConfig ::
+  forall (a :: S -> Type).
+  InternalConfig ->
+  (forall (s :: S). Term s a) ->
+  Either Text Script
+compileOptimizedWithInternalConfig internalConfig t = case asClosedRawTerm t of
   TermMonad (ReaderT t') -> do
-    configured <- t' (defaultInternalConfig, NoTracing)
+    configured <- t' (internalConfig, NoTracing)
     let compiled = compile' configured
     case go compiled of
       Left err -> Left . Text.pack . show $ err

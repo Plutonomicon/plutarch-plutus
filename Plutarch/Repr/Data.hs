@@ -289,7 +289,7 @@ pmatchDataRec (punsafeCoerce -> x) f = pgetInternalConfig $ \cfg -> unTermCont $
     placeholder :: (PRec struct s, Integer)
     placeholder = (unPHB $ SOP.para_SList (PHB $ \idx g -> (g (PRec Nil), idx - 1)) placeholderBuilder) 0 id
 
-    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f (fst placeholder)
+    placeholderApplied = pwithInternalConfig (InternalConfig False (internalConfig'phoistAcyclicEvalCheck cfg)) $ f (fst placeholder)
 
   usedFields <-
     if internalConfig'dataRecPMatchOptimization cfg
