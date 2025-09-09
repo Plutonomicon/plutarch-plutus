@@ -23,3 +23,7 @@ x1+x2.pmatch {"exBudgetCPU":1271259,"exBudgetMemory":4362,"scriptSizeBytes":51}
 uncons.ChooseList {"exBudgetCPU":470757,"exBudgetMemory":1764,"scriptSizeBytes":27}
 uncons.head-and-tail {"exBudgetCPU":372913,"exBudgetMemory":1464,"scriptSizeBytes":23}
 uncons.head-and-tail-and-null {"exBudgetCPU":747395,"exBudgetMemory":2897,"scriptSizeBytes":37}
+pmatchList.match-nothing {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":18}
+pmatchList.rest-unused {"exBudgetCPU":928597,"exBudgetMemory":2862,"scriptSizeBytes":42}
+pmatchList.rest-used {"exBudgetCPU":1484281,"exBudgetMemory":4260,"scriptSizeBytes":54}
+pmatchList.use-only-rest(drop N) {"exBudgetCPU":648415,"exBudgetMemory":1760,"scriptSizeBytes":32}

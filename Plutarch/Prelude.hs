@@ -109,6 +109,10 @@ module Plutarch.Prelude (
   PLiftable (..),
   DeriveDataPLiftable,
   DeriveNewtypePLiftable,
+  DeriveAsDataRec (..),
+  DeriveAsDataStruct (..),
+  DeriveAsSOPRec (..),
+  DeriveAsSOPStruct (..),
   PLifted (..),
   reprToPlutUni,
   plutToReprUni,
@@ -304,6 +308,8 @@ import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
+import Plutarch.Repr.Data
+import Plutarch.Repr.SOP (DeriveAsSOPRec (..), DeriveAsSOPStruct (..))
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unroll

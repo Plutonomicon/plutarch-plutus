@@ -33,10 +33,6 @@ import Plutarch.LedgerApi.Utils (
  )
 import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
-import Plutarch.Repr.Data (
-  DeriveAsDataRec (DeriveAsDataRec),
-  DeriveAsDataStruct (DeriveAsDataStruct),
- )
 import Plutarch.Repr.Tag (DeriveAsTag (DeriveAsTag))
 import Plutarch.Test.Bench (
   BenchConfig (NonOptimizing, Optimizing),

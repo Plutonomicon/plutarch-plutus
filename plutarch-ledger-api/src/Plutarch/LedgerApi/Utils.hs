@@ -46,7 +46,6 @@ import Generics.SOP qualified as SOP
 import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V3 qualified as Plutus
 
