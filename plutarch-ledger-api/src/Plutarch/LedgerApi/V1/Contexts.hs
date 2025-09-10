@@ -9,14 +9,14 @@ import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
-import Plutarch.LedgerApi.Value qualified as Value
+import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol)
 import Plutarch.Prelude
 import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1
 data PScriptPurpose (s :: S)
-  = PMinting (Term s (PAsData Value.PCurrencySymbol))
+  = PMinting (Term s (PAsData PCurrencySymbol))
   | PSpending (Term s Tx.PTxOutRef)
   | PRewarding (Term s Credential.PStakingCredential)
   | PCertifying (Term s DCert.PDCert)

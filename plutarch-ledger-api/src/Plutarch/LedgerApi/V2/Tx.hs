@@ -8,11 +8,10 @@ module Plutarch.LedgerApi.V2.Tx (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Address (PAddress)
 import Plutarch.LedgerApi.V1.Scripts (PDatum, PDatumHash, PScriptHash)
-import Plutarch.LedgerApi.Value qualified as Value
+import Plutarch.LedgerApi.Value (PLedgerValue)
 import Plutarch.Prelude
 import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V2 qualified as Plutus
@@ -60,7 +59,7 @@ instance PTryFrom PData (PAsData POutputDatum)
 -- | @since 2.0.0
 data PTxOut (s :: S) = PTxOut
   { ptxOut'address :: Term s PAddress
-  , ptxOut'value :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
+  , ptxOut'value :: Term s (PAsData PLedgerValue)
   , ptxOut'datum :: Term s POutputDatum
   , ptxOut'referenceScript :: Term s (PMaybeData PScriptHash)
   }
