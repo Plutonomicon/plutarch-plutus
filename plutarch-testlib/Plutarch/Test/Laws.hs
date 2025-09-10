@@ -311,7 +311,7 @@ checkPLiftableLaws =
       plift (pconstant @a x) `prettyEquals` x
   ]
 
-{- | Like `checkLedgerProperties` but specialized to `PValue`
+{- | Like `checkLedgerProperties` but specialized to `PRawValue`
 
 This is an ugly kludge because PValue doesn't have a direct PData conversion,
 and bringing one in would break too much other stuff to be worth it.
@@ -320,9 +320,9 @@ and bringing one in would break too much other stuff to be worth it.
 -}
 checkLedgerPropertiesValue :: TestTree
 checkLedgerPropertiesValue =
-  testGroup "PValue" . mconcat $
-    [ pisDataLaws @(V1.PValue V1.Unsorted V1.NoGuarantees) "PValue"
-    , checkPLiftableLaws @(V1.PValue V1.Unsorted V1.NoGuarantees)
+  testGroup "PRawValue" . mconcat $
+    [ pisDataLaws @V1.PRawValue "PRawValue"
+    , checkPLiftableLaws @V1.PRawValue
     ]
 
 {- | Like `checkLedgerProperties` but specialized to `PMap`
@@ -334,8 +334,8 @@ Same as above
 checkLedgerPropertiesAssocMap :: TestTree
 checkLedgerPropertiesAssocMap =
   testGroup "PMap" . mconcat $
-    [ pisDataLaws @(V1.PMap V1.Unsorted PInteger PInteger) "PMap"
-    , checkPLiftableLaws @(V1.PMap V1.Unsorted PInteger PInteger)
+    [ pisDataLaws @(V1.PUnsortedMap PInteger PInteger) "PMap"
+    , checkPLiftableLaws @(V1.PUnsortedMap PInteger PInteger)
     ]
 
 -- | @since 1.0.0

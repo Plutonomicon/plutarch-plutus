@@ -1,8 +1,7 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value (tests) where
 
 import Plutarch.Internal.Term (punsafeCoerce)
-import Plutarch.LedgerApi.AssocMap (KeyGuarantees (Sorted, Unsorted))
-import Plutarch.LedgerApi.Value (AmountGuarantees (NoGuarantees, NonZero, Positive), PValue)
+import Plutarch.LedgerApi.Value (PLedgerValue, PRawValue)
 import Plutarch.LedgerApi.Value qualified as PValue
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerPropertiesValue)
@@ -20,59 +19,36 @@ tests =
     [ checkLedgerPropertiesValue
     , testGroup
         "Generators sanity tests"
-        [ propEval "UtxoValue is sorted" $
-            \val ->
-              precompileTerm (PValue.passertSorted @Unsorted @NoGuarantees)
-                # pconstant (getUtxoValue val)
-        , propEval "UtxoValue is positive" $
-            \val ->
-              precompileTerm (PValue.passertPositive @Unsorted @NoGuarantees)
-                # pconstant (getUtxoValue val)
+        [ propEval "UtxoValue is sorted" $ \val ->
+            precompileTerm (PValue.passertSorted @PLedgerValue)
+              # pconstant (getUtxoValue val)
+              -- FIXME: remove this test case or re-add passertPositive
+              -- , propEval "UtxoValue is positive" $ \val ->
+              --    precompileTerm PValue.passertPositive # pconstant (getUtxoValue val)
         ]
     , after AllSucceed "$(NF-1) == \"Generators sanity tests\" && $(NF-2) == \"Value\" && $(NF-3) == \"V1\"" $
         testGroup
           "Haskell Equivalents"
-          [ testProperty "leq = pleNonZero" $
-              forAllShrinkShow arbitrary shrink prettyShow $
-                \(getUtxoValue -> lhs, getUtxoValue -> rhs) ->
-                  Value.leq lhs rhs
-                    `prettyEquals` plift
-                      ( precompileTerm (plam $ \plhs prhs -> PValue.pleqNonZero plhs prhs)
-                          # (ptoSortedNonZero # pconstant lhs)
-                          # (ptoSortedNonZero # pconstant rhs)
-                      )
-          , testProperty "lt = pltNonZero" $
+          [ testProperty "lt = plt" $
               forAllShrinkShow arbitrary shrink prettyShow $
                 \(getUtxoValue -> lhs, getUtxoValue -> rhs) ->
                   Value.lt lhs rhs
                     `prettyEquals` plift
-                      ( precompileTerm (plam $ \plhs prhs -> PValue.pltNonZero plhs prhs)
-                          # (ptoSortedNonZero # pconstant lhs)
-                          # (ptoSortedNonZero # pconstant rhs)
+                      ( precompileTerm (plam $ \plhs prhs -> PValue.plt plhs prhs)
+                          # (ptoLedgerValue # pconstant lhs)
+                          # (ptoLedgerValue # pconstant rhs)
                       )
-          , testProperty "leq = plePositive" $
+          , testProperty "leq = pleq" $
               forAllShrinkShow arbitrary shrink prettyShow $
                 \(getUtxoValue -> lhs, getUtxoValue -> rhs) ->
                   Value.leq lhs rhs
                     `prettyEquals` plift
-                      ( precompileTerm (plam $ \plhs prhs -> PValue.pleqPositive plhs prhs)
-                          # (ptoSortedPositive # pconstant lhs)
-                          # (ptoSortedPositive # pconstant rhs)
-                      )
-          , testProperty "lt = pltPositive" $
-              forAllShrinkShow arbitrary shrink prettyShow $
-                \(getUtxoValue -> lhs, getUtxoValue -> rhs) ->
-                  Value.lt lhs rhs
-                    `prettyEquals` plift
-                      ( precompileTerm (plam $ \plhs prhs -> PValue.pltPositive plhs prhs)
-                          # (ptoSortedPositive # pconstant lhs)
-                          # (ptoSortedPositive # pconstant rhs)
+                      ( precompileTerm (plam $ \plhs prhs -> PValue.pleq plhs prhs)
+                          # (ptoLedgerValue # pconstant lhs)
+                          # (ptoLedgerValue # pconstant rhs)
                       )
           ]
     ]
 
-ptoSortedNonZero :: forall (s :: S). Term s (PValue 'Unsorted 'NoGuarantees :--> PValue 'Sorted 'NonZero)
-ptoSortedNonZero = plam punsafeCoerce
-
-ptoSortedPositive :: forall (s :: S). Term s (PValue 'Unsorted 'NoGuarantees :--> PValue 'Sorted 'Positive)
-ptoSortedPositive = plam punsafeCoerce
+ptoLedgerValue :: forall (s :: S). Term s (PRawValue :--> PLedgerValue)
+ptoLedgerValue = plam punsafeCoerce

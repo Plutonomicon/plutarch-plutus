@@ -14,6 +14,7 @@ module Plutarch.LedgerApi.V1 (
 
   -- * Value
   Value.PLedgerValue,
+  Value.PRawValue (..),
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),

@@ -5,6 +5,7 @@ module Plutarch.LedgerApi.Value (
   PCurrencySymbol (..),
   PTokenName (..),
   PLovelace (..),
+  PAssetClass (..),
 
   -- * Classes
   PIsValue (..),
@@ -61,11 +62,13 @@ import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap (PIsAssocMap)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
+import Plutarch.LedgerApi.Value.AssetClass (PAssetClass (..))
 import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol (..), padaSymbol, padaSymbolData)
 import Plutarch.LedgerApi.Value.Lovelace (PLovelace (..))
 import Plutarch.LedgerApi.Value.TokenName (PTokenName (..), padaToken)
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Prelude qualified as PlutusTx
 
 ----------------------------------------------------------------------
@@ -94,6 +97,12 @@ newtype PRawValue (s :: S)
 
 -- | @since 3.5.0
 instance PTryFrom PData (PAsData PRawValue)
+
+-- | @since 3.5.0
+deriving via
+  DeriveNewtypePLiftable PRawValue Plutus.Value
+  instance
+    PLiftable PRawValue
 
 ----------------------------------------------------------------------
 -- PLedgerValue
@@ -396,7 +405,7 @@ passertSorted = phoistAcyclic $
       ( pnormalizeValue $
           punsafeFromSortedMap @t
             -- punsafeCoerce since we know that the token maps are sorted at this point
-            (AssocMap.passertSorted #$ punsafeCoerce $ pto value)
+            (AssocMap.passertSorted @AssocMap.PUnsortedMap #$ punsafeCoerce $ pto value)
       )
 
 ----------------------------------------------------------------------

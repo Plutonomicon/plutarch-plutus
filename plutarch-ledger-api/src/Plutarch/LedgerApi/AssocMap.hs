@@ -340,11 +340,12 @@ they are not.
 @since 2.0.0
 -}
 passertSorted ::
-  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
+  forall t (k :: S -> Type) (v :: S -> Type) (s :: S).
+  ( PIsAssocMap t
+  , POrd k
   , PIsData k
   ) =>
-  Term s (PUnsortedMap k v :--> PSortedMap k v)
+  Term s (t k v :--> PSortedMap k v)
 passertSorted =
   let _ = witness (Proxy :: Proxy (k ~ k))
    in phoistAcyclic $
@@ -360,8 +361,8 @@ passertSorted =
             )
             -- this is actually the empty map so we can
             -- safely assume that it is sorted
-            (const . plam . const $ punsafeDowncast m)
-            # pto m
+            (const . plam . const . punsafeDowncast $ ptoUnsortedMap m)
+            # pto (ptoUnsortedMap m)
             # plam (const $ pcon PFalse)
 
 {- | Forget the knowledge that keys were sorted.
