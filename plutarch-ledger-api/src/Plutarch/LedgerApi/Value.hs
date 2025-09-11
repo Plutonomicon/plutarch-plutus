@@ -60,7 +60,6 @@ module Plutarch.LedgerApi.Value (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.LedgerApi.AssocMap (PIsAssocMap)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Value.AssetClass (PAssetClass (..))
 import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol (..), padaSymbol, padaSymbolData)
@@ -255,8 +254,11 @@ pnormalizeNoAdaNonZeroTokens = phoistAcyclic $
       AssocMap.pmapMaybeWithKey # plam normalizeTokenMap # ptoSortedMap value
   where
     normalizeTokenMap ::
-      forall t' (s' :: S) (k :: S -> Type).
-      PIsAssocMap t' =>
+      forall
+        (t' :: (S -> Type) -> (S -> Type) -> S -> Type)
+        (s' :: S)
+        (k :: S -> Type).
+      PInner (t' k PInteger) ~ AssocMap.PAssocMap k PInteger =>
       Term s' PCurrencySymbol ->
       Term s' (t' k PInteger) ->
       Term s' (PMaybe (t' k PInteger))
@@ -266,7 +268,7 @@ pnormalizeNoAdaNonZeroTokens = phoistAcyclic $
         (pcon PNothing)
         ( plet (AssocMap.pmapMaybeData # plam nonZero # tokenMap) $ \normalMap ->
             pif
-              (AssocMap.pnull # normalMap)
+              (AssocMap.pnull # punsafeDowncast (pto normalMap))
               (pcon PNothing)
               (pcon $ PJust normalMap)
         )
@@ -397,7 +399,7 @@ passertSorted = phoistAcyclic $
           # plam
             ( \submap ->
                 AssocMap.pnull
-                  # (AssocMap.passertSorted # submap)
+                  # AssocMap.pforgetSorted (AssocMap.passertSorted # submap)
             )
           # pto value
       )
@@ -405,7 +407,7 @@ passertSorted = phoistAcyclic $
       ( pnormalizeValue $
           punsafeFromSortedMap @t
             -- punsafeCoerce since we know that the token maps are sorted at this point
-            (AssocMap.passertSorted @AssocMap.PUnsortedMap #$ punsafeCoerce $ pto value)
+            (AssocMap.passertSorted #$ punsafeCoerce $ pto value)
       )
 
 ----------------------------------------------------------------------

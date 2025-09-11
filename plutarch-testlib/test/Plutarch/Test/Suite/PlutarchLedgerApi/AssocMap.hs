@@ -203,8 +203,8 @@ tests =
     , adjustOption (fewerTests 4) $
         propEval "passertSorted . psortedMapFromFoldable" $
           \(m :: UnsortedAssocMap Integer Integer) ->
-            AssocMap.passertSorted
-              #$ AssocMap.psortedMapFromFoldable @PInteger @PInteger
+            papp AssocMap.passertSorted . AssocMap.pforgetSorted $
+              AssocMap.psortedMapFromFoldable @PInteger @PInteger
                 (map (bimap pconstant pconstant) $ PlutusMap.toList $ getUnsortedAssocMap m)
     , testProperty "null = pnull" $ checkHaskellUnsortedPMapEquivalent PlutusMap.null AssocMap.pnull
     , testProperty "lookup = plookup" $
@@ -227,7 +227,7 @@ tests =
           (plam $ \k v -> AssocMap.pforgetSorted $ AssocMap.psingleton # k # v)
     , propEvalEqual @(Integer, Integer)
         "plookup k (psingleton k v) = PJust v"
-        (\(k, v) -> AssocMap.plookup @PSortedMap # pconstant @PInteger k #$ AssocMap.psingleton # pconstant k # pconstant @PInteger v)
+        (\(k, v) -> AssocMap.plookup # pconstant @PInteger k #$ AssocMap.psingleton # pconstant k # pconstant @PInteger v)
         (\(_, v) -> pjust # pconstant v)
     , testProperty "foldl . toList = pfoldlWithKey" $
         forAllShrinkShow arbitrary shrink show $
