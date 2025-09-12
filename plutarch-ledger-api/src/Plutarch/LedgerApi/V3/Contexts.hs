@@ -53,6 +53,7 @@ import Plutarch.LedgerApi.V1.Scripts (
  )
 import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V2.Tx (PTxOut)
+import Plutarch.LedgerApi.V3.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
@@ -365,7 +366,7 @@ instance PTryFrom PData (PAsData PGovernanceActionId)
 
 -- | @since 3.1.0
 data PCommittee (s :: S) = PCommittee
-  { pcommittee'members :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PColdCommitteeCredential PInteger))
+  { pcommittee'members :: Term s (PAsData (AssocMap.PUnsortedMap PColdCommitteeCredential PInteger))
   , pcommittee'quorum :: Term s PRationalData
   }
   deriving stock
@@ -502,13 +503,13 @@ data PGovernanceAction (s :: S)
   = PParameterChange (Term s (PMaybeData PGovernanceActionId)) (Term s PChangedParameters) (Term s (PMaybeData PScriptHash))
   | PHardForkInitiation (Term s (PMaybeData PGovernanceActionId)) (Term s PProtocolVersion)
   | PTreasuryWithdrawals
-      (Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace)))
+      (Term s (PAsData (AssocMap.PUnsortedMap PCredential Value.PLovelace)))
       (Term s (PMaybeData PScriptHash))
   | PNoConfidence (Term s (PMaybeData PGovernanceActionId))
   | PUpdateCommittee
       (Term s (PMaybeData PGovernanceActionId))
       (Term s (PAsData (PBuiltinList (PAsData PColdCommitteeCredential))))
-      (Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PColdCommitteeCredential PInteger)))
+      (Term s (PAsData (AssocMap.PUnsortedMap PColdCommitteeCredential PInteger)))
       (Term s PRationalData)
   | PNewConstitution (Term s (PMaybeData PGovernanceActionId)) (Term s PConstitution)
   | PInfoAction
@@ -698,15 +699,15 @@ data PTxInfo (s :: S) = PTxInfo
   , ptxInfo'referenceInputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
   , ptxInfo'outputs :: Term s (PAsData (PBuiltinList (PAsData PTxOut)))
   , ptxInfo'fee :: Term s (PAsData Value.PLovelace)
-  , ptxInfo'mint :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.NonZero)) -- value minted by transaction
+  , ptxInfo'mint :: Term s (PAsData MintValue.PMintValue) -- value minted by transaction
   , ptxInfo'txCerts :: Term s (PAsData (PBuiltinList (PAsData PTxCert)))
-  , ptxInfo'wdrl :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PCredential Value.PLovelace)) -- Staking withdrawals
+  , ptxInfo'wdrl :: Term s (PAsData (AssocMap.PUnsortedMap PCredential Value.PLovelace)) -- Staking withdrawals
   , ptxInfo'validRange :: Term s (Interval.PInterval PPosixTime)
   , ptxInfo'signatories :: Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
-  , ptxInfo'redeemers :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PScriptPurpose PRedeemer))
-  , ptxInfo'data :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PDatumHash PDatum))
+  , ptxInfo'redeemers :: Term s (PAsData (AssocMap.PUnsortedMap PScriptPurpose PRedeemer))
+  , ptxInfo'data :: Term s (PAsData (AssocMap.PUnsortedMap PDatumHash PDatum))
   , ptxInfo'id :: Term s (PAsData PTxId) -- hash of the pending transaction
-  , ptxInfo'votes :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted PVoter (AssocMap.PMap 'AssocMap.Unsorted PGovernanceActionId PVote)))
+  , ptxInfo'votes :: Term s (PAsData (AssocMap.PUnsortedMap PVoter (AssocMap.PUnsortedMap PGovernanceActionId PVote)))
   , ptxInfo'proposalProcedures :: Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
   , ptxInfo'currentTreasuryAmount :: Term s (PMaybeData Value.PLovelace)
   , ptxInfo'treasuryDonation :: Term s (PMaybeData Value.PLovelace)
@@ -795,8 +796,8 @@ pfindDatumHash ::
   Term s (PDatum :--> PTxInfo :--> PMaybe PDatumHash)
 pfindDatumHash = phoistAcyclic $ plam $ \d txI ->
   pmatch txI $ \tx ->
-    pmatch (pfromData (ptxInfo'data tx)) $ \(AssocMap.PMap ell) ->
-      pmatch (pfind # (matches # d) # ell) $ \case
+    pmatch (pfromData (ptxInfo'data tx)) $ \(AssocMap.PUnsortedMap ell) ->
+      pmatch (pfind # (matches # d) # pto ell) $ \case
         PNothing -> pcon PNothing
         PJust p -> pcon . PJust . pfromData $ pfstBuiltin # p
   where
