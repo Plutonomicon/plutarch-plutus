@@ -1,31 +1,28 @@
 module Plutarch.LedgerApi.V3.MintValue (
   PMintValue,
+  pempty,
   psingleton,
+  ptoMintValue,
 ) where
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Value (
-  PIsSortedValue (..),
-  PIsValue (..),
-  PRawValue,
-  passertSorted,
+  PSortedValue,
+  pemptySortedValue,
   pnormalizeNoAdaNonZeroTokens,
-  punionWith,
-  punsafeMapAmounts,
+  psingletonSortedValue,
  )
 import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol, padaSymbol)
 import Plutarch.LedgerApi.Value.TokenName (PTokenName)
 import Plutarch.Prelude hiding (psingleton)
-import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import Plutarch.Unsafe (punsafeDowncast)
 import PlutusTx.Prelude qualified as PlutusTx
 
 -- sorted, no ada entry, non-zero tokens
 
 -- | @since 3.5.0
-newtype PMintValue (s :: S)
-  = PMintValue (Term s (AssocMap.PSortedMap PCurrencySymbol (AssocMap.PSortedMap PTokenName PInteger)))
+newtype PMintValue (s :: S) = PMintValue (Term s PSortedValue)
   deriving stock
     ( -- | @since 3.5.0
       Generic
@@ -45,29 +42,16 @@ newtype PMintValue (s :: S)
     via (DeriveNewtypePlutusType PMintValue)
 
 -- | @since 3.5.0
-instance PIsValue PMintValue where
-  -- ptoRawValue x = punsafeDowncast $ AssocMap.ptoUnsortedMap $ AssocMap.pmap' # plam AssocMap.ptoUnsortedMap # pto x
-  ptoRawValue = punsafeCoerce
-
--- | @since 3.5.0
-instance PIsSortedValue PMintValue where
-  ptoSortedMap = pto
-  punsafeFromSortedMap = punsafeDowncast
-
-  -- no ada entry, non-zero tokens
-  pnormalizeValue val = pnormalizeNoAdaNonZeroTokens # val
-
--- | @since 3.5.0
 instance PEq PMintValue where
   a #== b = pto a #== pto b
 
 -- | @since 3.5.0
 instance Semigroup (Term s PMintValue) where
-  a <> b = punionWith # plam (+) # a # b
+  a <> b = ptoMintValue #$ pto a <> pto b
 
 -- | @since 3.5.0
 instance PlutusTx.Semigroup (Term s PMintValue) where
-  a <> b = punionWith # plam (+) # a # b
+  a <> b = ptoMintValue #$ pto a <> pto b
 
 -- | @since 3.5.0
 instance PSemigroup PMintValue where
@@ -76,11 +60,11 @@ instance PSemigroup PMintValue where
 
 -- | @since 3.5.0
 instance Monoid (Term s PMintValue) where
-  mempty = punsafeDowncast AssocMap.pempty
+  mempty = pempty
 
 -- | @since 3.5.0
 instance PlutusTx.Monoid (Term s PMintValue) where
-  mempty = punsafeDowncast AssocMap.pempty
+  mempty = pempty
 
 -- | @since 3.5.0
 instance PMonoid PMintValue where
@@ -89,14 +73,21 @@ instance PMonoid PMintValue where
 
 -- | @since 3.5.0
 instance PlutusTx.Group (Term s PMintValue) where
-  inv a = punsafeMapAmounts # plam negate # a
+  inv = punsafeDowncast . PlutusTx.inv . pto
 
 -- | @since 3.5.0
 instance PTryFrom PData (PAsData PMintValue) where
   ptryFrom' opq = runTermCont $ do
-    (opq', _) <- tcont $ ptryFrom @(PAsData PRawValue) opq
-    unwrapped <- tcont . plet . papp passertSorted . pfromData $ opq'
+    (opq', _) <- tcont $ ptryFrom @(PAsData PSortedValue) opq
+    unwrapped <- tcont . plet . papp ptoMintValue . pfromData $ opq'
     pure (pdata unwrapped, ())
+
+{- | Construct an empty 'PMintValue'.
+
+@since 3.5.0
+-}
+pempty :: forall (s :: S). Term s PMintValue
+pempty = punsafeDowncast pemptySortedValue
 
 {- | Construct a singleton 'PMintValue' containing only the given quantity of
 the given currency.
@@ -118,5 +109,13 @@ psingleton =
         (amount #== 0 #|| symbol #== padaSymbol)
         mempty
         ( punsafeDowncast $
-            AssocMap.psingleton # symbol #$ AssocMap.psingleton # token # amount
+            psingletonSortedValue # symbol # token # amount
         )
+
+{- Convert a 'PSortedValue' to a 'PMintValue', ensuring no Ada entry and
+non-zero token quantities.
+
+@since 3.5.0
+-}
+ptoMintValue :: forall (s :: S). Term s (PSortedValue :--> PMintValue)
+ptoMintValue = plam (punsafeDowncast . papp pnormalizeNoAdaNonZeroTokens)

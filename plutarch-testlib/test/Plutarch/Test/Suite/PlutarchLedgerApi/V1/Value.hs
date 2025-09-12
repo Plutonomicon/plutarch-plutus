@@ -1,7 +1,7 @@
 module Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value (tests) where
 
 import Plutarch.Internal.Term (punsafeCoerce)
-import Plutarch.LedgerApi.Value (PLedgerValue, PRawValue)
+import Plutarch.LedgerApi.Value (PRawValue, PSortedValue)
 import Plutarch.LedgerApi.Value qualified as PValue
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerPropertiesValue)
@@ -20,7 +20,7 @@ tests =
     , testGroup
         "Generators sanity tests"
         [ propEval "UtxoValue is sorted" $ \val ->
-            precompileTerm (PValue.passertSorted @PLedgerValue)
+            precompileTerm PValue.passertSorted
               # pconstant (getUtxoValue val)
               -- FIXME: remove this test case or re-add passertPositive
               -- , propEval "UtxoValue is positive" $ \val ->
@@ -35,8 +35,8 @@ tests =
                   Value.lt lhs rhs
                     `prettyEquals` plift
                       ( precompileTerm (plam $ \plhs prhs -> PValue.plt plhs prhs)
-                          # (ptoLedgerValue # pconstant lhs)
-                          # (ptoLedgerValue # pconstant rhs)
+                          # (ptoSortedValue # pconstant lhs)
+                          # (ptoSortedValue # pconstant rhs)
                       )
           , testProperty "leq = pleq" $
               forAllShrinkShow arbitrary shrink prettyShow $
@@ -44,11 +44,11 @@ tests =
                   Value.leq lhs rhs
                     `prettyEquals` plift
                       ( precompileTerm (plam $ \plhs prhs -> PValue.pleq plhs prhs)
-                          # (ptoLedgerValue # pconstant lhs)
-                          # (ptoLedgerValue # pconstant rhs)
+                          # (ptoSortedValue # pconstant lhs)
+                          # (ptoSortedValue # pconstant rhs)
                       )
           ]
     ]
 
-ptoLedgerValue :: forall (s :: S). Term s (PRawValue :--> PLedgerValue)
-ptoLedgerValue = plam punsafeCoerce
+ptoSortedValue :: forall (s :: S). Term s (PRawValue :--> PSortedValue)
+ptoSortedValue = plam punsafeCoerce
