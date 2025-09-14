@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 * `zipWithBuilder` and `zipWithDataBuilder` to `Plutarch.LedgerApi.AssocMap`
   along with the corresponding data types (`MergeHandler`, `BothPresentHandler`,
   and `OnePresentHandler`), enabling quick bootstrapping of custom zip functions
+* `pmapMaybeWithKey` and `pmapMaybeDataWithKey` to `Plutarch.LedgerApi.AssocMap`
+* `pemptyRawValue`, `pemptySortedValue` and `pemptyLedgerValue` functions to
+  `Plutarch.LedgerApi.Value`
+* `ptoLedgerValue` to convert `PSortedValue`s to `PLedgerValue`s
+* Newtypes representing mint Values: `V1.MintValue` and `V3.MintValue`,
+  along with their construction functions: `pempty`, `psingleton`, and
+  `ptoMintValue`
 
 ### Changed
 
@@ -31,10 +38,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
     * In `Plutarch.LedgerApi.AssocMap`: `punionWithData`, `punionWithData`,
       `pintersectionWith`, `pintersectionWithData`
     * In `Plutarch.LedgerApi.Value`: `punionWith`, `punionWithData`
+* Refactored `PMap` with a `KeyGuarantees` type argument into two distinct
+  newtypes over `PAssocMap`: `PUnsortedMap` and `PSortedMap`
+* Removed `PValue` with type-level tags and introduced newtypes instead:
+  `PRawValue`, `PSortedValue`, and `PLedgerValue`
+* Removed `psingleton`, `psingletonData`, and `pconstantPositiveSingleton` in
+  favor of new singleton functions for specific Value newtypes:
+    * For `PRawValue`: `psingletonRawValue` and `psingletonRawValueData`
+    * For `PSortedValue`: `psingletonSortedValue` and `psingletonSortedValueData`
+    * For `PLedgerValue`: `psingletonLedgerValue` and `psingletonLedgerValueData`
+* Replaced `pltPositive` and `pltNonZero` with a single function over
+  `PSortedValue`s: `plt` 
+* Replaced `pleqPositive` and `pleqNonZero` with a single function over
+  `PSortedValue`s: `pleq`
+* Updated `PTxInfo`, `PTxOut`, `PCommittee`, and `PGovernanceAction` definitions
+  to use the newly introduced AssocMap and Value types
 
 ### Removed
 
 * `Commutativity` data type
+* `KeyGuarantees` and `AmountGuarantees` kinds
+* `passertPositive`, `passertNonZero`, `pforgetPositive`, `pnormalize`,
+  `padaOnlyValue`, and `pnoAdaValue` from `Plutarch.LedgerApi.Value`
 
 ## 3.4.0 -- 21-08-2025
 
