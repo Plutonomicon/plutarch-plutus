@@ -20,9 +20,11 @@ import Plutarch.Prelude hiding (psingleton)
 import Plutarch.Unsafe (punsafeDowncast)
 import PlutusTx.Prelude qualified as PlutusTx
 
--- sorted, mandatory zero ada entry, non-zero tokens
+{- | Represents sorted, well-formed Values with a mandatory /zero/ Ada entry,
+while all other token quantities must be non-zero.
 
--- | @since 3.5.0
+@since 3.5.0
+-}
 newtype PMintValue (s :: S) = PMintValue (Term s PSortedValue)
   deriving stock
     ( -- | @since 3.5.0

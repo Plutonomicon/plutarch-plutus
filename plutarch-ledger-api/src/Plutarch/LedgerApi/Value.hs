@@ -77,7 +77,13 @@ import PlutusTx.Prelude qualified as PlutusTx
 ----------------------------------------------------------------------
 -- PRawValue
 
--- | @since 3.5.0
+{- | Represents Values without any guarantees.
+
+Values of this type may be unsorted, contain empty token maps, and include
+entries with zero token quantities.
+
+@since 3.5.0
+-}
 newtype PRawValue (s :: S)
   = PRawValue (Term s (AssocMap.PUnsortedMap PCurrencySymbol (AssocMap.PUnsortedMap PTokenName PInteger)))
   deriving stock
@@ -110,9 +116,13 @@ deriving via
 ----------------------------------------------------------------------
 -- PSortedValue
 
--- sorted and well-formed, no other guarantees
+{- | Represents sorted, well-formed Values without empty token maps.
 
--- | @since 3.5.0
+Compared to 'PRawValue', this type provides stronger guarantees, though
+'PSortedValue's may still contain entries with zero token quantities.
+
+@since 3.5.0
+-}
 newtype PSortedValue (s :: S)
   = PSortedValue (Term s (AssocMap.PSortedMap PCurrencySymbol (AssocMap.PSortedMap PTokenName PInteger)))
   deriving stock
@@ -177,9 +187,14 @@ instance PTryFrom PData (PAsData PSortedValue) where
 ----------------------------------------------------------------------
 -- PLedgerValue
 
--- sorted, mandatory ada
+{- | Represents sorted, well-formed Values with a mandatory Ada entry.
 
--- | @since 3.5.0
+Like 'PSortedValue', but requires the presence of an Ada entry, which may have a
+zero quantity. Values of this type may still contain entries with zero token
+quantities.
+
+@since 3.5.0
+-}
 newtype PLedgerValue (s :: S) = PLedgerValue (Term s PSortedValue)
   deriving stock
     ( -- | @since 3.5.0

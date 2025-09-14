@@ -48,6 +48,7 @@ instance PLiftable PCurrencySymbol where
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
+-- | @since 3.4.0
 instance PTryFrom PData (PAsData PCurrencySymbol)
 
 {- | The 'PCurrencySymbol' of the Ada currency.
