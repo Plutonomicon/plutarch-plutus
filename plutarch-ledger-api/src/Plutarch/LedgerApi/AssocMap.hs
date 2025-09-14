@@ -1,6 +1,9 @@
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE RankNTypes #-}
 
+{- | This module is designed to be imported qualified, as many of its
+identifiers clash with the Plutarch prelude.
+-}
 module Plutarch.LedgerApi.AssocMap (
   -- * Types
   PSortedMap,
@@ -522,7 +525,7 @@ pmapMaybeData = phoistAcyclic $
 
 {- | As 'pmapMaybe', but gives key access as well.
 
-@since 2.0.0
+@since 3.5.0
 -}
 pmapMaybeWithKey ::
   forall
@@ -546,7 +549,7 @@ pmapMaybeWithKey = phoistAcyclic $
 
 {- | As 'pmapMaybeData', but gives key access as well.
 
-@since 2.0.0
+@since 3.5.0
 -}
 pmapMaybeDataWithKey ::
   forall

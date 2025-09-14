@@ -13,8 +13,9 @@ module Plutarch.LedgerApi.V1 (
   Credential.PStakingCredential (..),
 
   -- * Value
-  Value.PLedgerValue,
   Value.PRawValue (..),
+  Value.PSortedValue,
+  Value.PLedgerValue,
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),
@@ -47,8 +48,9 @@ module Plutarch.LedgerApi.V1 (
   PTxInfo (..),
 
   -- * Helpers
-  AssocMap.PSortedMap,
+  AssocMap.PAssocMap (..),
   AssocMap.PUnsortedMap (..),
+  AssocMap.PSortedMap,
 
   -- * Utilities
 

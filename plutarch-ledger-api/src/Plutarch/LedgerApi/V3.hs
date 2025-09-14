@@ -46,8 +46,9 @@ module Plutarch.LedgerApi.V3 (
   pparseDatum,
 
   -- * Value
-  Value.PLedgerValue,
   Value.PRawValue (..),
+  Value.PSortedValue,
+  Value.PLedgerValue,
   Value.PCurrencySymbol (..),
   Value.PTokenName (..),
   Value.PLovelace (..),
@@ -55,8 +56,9 @@ module Plutarch.LedgerApi.V3 (
   -- * Assoc map
 
   -- ** Types
-  AssocMap.PSortedMap,
+  AssocMap.PAssocMap (..),
   AssocMap.PUnsortedMap (..),
+  AssocMap.PSortedMap,
 
   -- * Address
   Credential.PCredential (..),
