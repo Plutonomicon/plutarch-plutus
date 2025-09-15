@@ -72,6 +72,7 @@ library
     , containers
     , deepseq
     , filepath
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
@@ -105,6 +106,7 @@ test-suite tests
   other-modules:
     Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.Plutarch.ByteString
+    Plutarch.Test.Suite.Plutarch.DeriveAsTag
     Plutarch.Test.Suite.Plutarch.Either
     Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.Plutarch.Integer
@@ -138,6 +140,7 @@ test-suite tests
     , base16-bytestring
     , bytestring
     , containers
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage

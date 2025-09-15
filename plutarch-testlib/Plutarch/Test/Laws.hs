@@ -12,6 +12,7 @@ module Plutarch.Test.Laws (
   checkHaskellOrdEquivalent,
   checkHaskellNumEquivalent,
   checkPLiftableLaws,
+  checkPLiftableLawsForDeriveTags,
   checkPOrdLaws,
   checkPAdditiveSemigroupLaws,
   checkPAdditiveMonoidLaws,
@@ -21,7 +22,10 @@ module Plutarch.Test.Laws (
 ) where
 
 import Control.Applicative ((<|>))
+import Data.Data (Proxy (Proxy))
 import Data.Kind (Type)
+import GHC.Exts (Any)
+import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.Prelude
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, checkHaskellEquivalent2)
@@ -309,6 +313,28 @@ checkPLiftableLaws =
         reprToHask @a (haskToRepr @a x) === Right x
   , testProperty "plift . pconstant = id" . forAllShrinkShow arbitrary shrink prettyShow $ \(x :: AsHaskell a) ->
       plift (pconstant @a x) `prettyEquals` x
+  ]
+
+{- | Verifies that `PLiftable` instances derived by `DeriveAsTag` encode to valid integer ranges
+
+@since 1.0.2
+-}
+checkPLiftableLawsForDeriveTags ::
+  forall (a :: S -> Type).
+  ( Arbitrary (AsHaskell a)
+  , Pretty (AsHaskell a)
+  , PLiftable a
+  , PlutusRepr a ~ Integer
+  , SOP.Generic (a Any)
+  ) =>
+  [TestTree]
+checkPLiftableLawsForDeriveTags =
+  [ testProperty "range check" . forAllShrinkShow arbitrary shrink prettyShow $
+      ( \(x :: AsHaskell a) ->
+          let n = SOP.lengthSList @_ @(SOP.Code (a Any)) Proxy
+              hask = haskToRepr @a x
+           in hask >= 0 && hask < toInteger n
+      )
   ]
 
 {- | Like `checkLedgerProperties` but specialized to `PValue`
