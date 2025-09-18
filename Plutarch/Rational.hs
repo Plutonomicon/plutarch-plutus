@@ -12,7 +12,6 @@ module Plutarch.Rational (
   pproperFraction,
 ) where
 
-import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pcond, pif)
@@ -57,7 +56,7 @@ import Plutarch.Internal.Numeric (
 import Plutarch.Internal.Ord (
   POrd ((#<), (#<=)),
  )
-import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.Other (Flip, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType, pcon, pmatch)
 import Plutarch.Internal.Show (PShow, pshow, pshow')
@@ -285,9 +284,6 @@ instance PShow PRational where
       pshowRat = phoistAcyclic $
         plam $ \n -> pmatch n $ \(PRational x y) ->
           pshow x <> "/" <> pshow (pto y)
-
-newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a)
-  deriving stock (Generic)
 
 -- | NOTE: This instance produces a verified 'PPositive' as the excess output.
 instance PTryFrom PData (PAsData PRational) where
