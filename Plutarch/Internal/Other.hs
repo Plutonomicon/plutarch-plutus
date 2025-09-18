@@ -4,10 +4,12 @@ module Plutarch.Internal.Other (
   printTerm,
   printScript,
   pto,
+  Flip,
 ) where
 
 import Data.Kind (Type)
 import Data.Text qualified as T
+import GHC.Generics (Generic)
 import GHC.Stack (HasCallStack)
 import Plutarch.Internal.PlutusType (
   PInner,
@@ -42,3 +44,10 @@ printTerm config term = printScript $ either (error . T.unpack) id $ compile con
 -}
 pto :: Term s a -> Term s (PInner a)
 pto = punsafeCoerce
+
+{- | Type level flip operation, reversing the order of arguments
+Commonly used in Plutarch to get the PTryFromExcess associated type of PTryFrom for a Plutarch type
+@since 1.12.0
+-}
+newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a)
+  deriving stock (Generic)

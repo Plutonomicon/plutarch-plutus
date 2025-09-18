@@ -86,7 +86,7 @@ import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
-import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.Other (Flip, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -540,9 +540,6 @@ type family HRecPApply as s where
 
 newtype HRecP (as :: [(Symbol, P.S -> Type)]) (s :: P.S)
   = HRecP (NoReduce (HRecGeneric (HRecPApply as s)))
-  deriving stock (Generic)
-
-newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a)
   deriving stock (Generic)
 
 class Helper2 (b :: PSubtypeRelation) a where

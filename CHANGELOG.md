@@ -4,6 +4,7 @@
 
 ## Added
 
+* Coalescing all `Flip` declarations into one under `Plutarch.Internal.Other`
 * `PValidateData`, a replacement for `PTryFrom` to perform validation of
   @Data@-encoded types.
 * `pmapDropNothing` to `Plutarch.Maybe` 

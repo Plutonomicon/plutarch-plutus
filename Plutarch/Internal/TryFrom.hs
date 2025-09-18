@@ -45,6 +45,7 @@ import Plutarch.Internal.IsData (
  )
 import Plutarch.Internal.ListLike (PListLike (pnull), pmap)
 import Plutarch.Internal.Numeric (PNatural, PPositive, ptryNatural, ptryPositive)
+import Plutarch.Internal.Other (Flip)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Subtype (
@@ -80,8 +81,6 @@ class PSubtype a b => PTryFrom (a :: S -> Type) (b :: S -> Type) where
 
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 ptryFrom = ptryFrom'
-
-newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a) deriving stock (Generic)
 
 instance PTryFrom PData (PAsData PInteger) where
   type PTryFromExcess PData (PAsData PInteger) = Flip Term PInteger
