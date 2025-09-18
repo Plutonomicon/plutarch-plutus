@@ -15,7 +15,6 @@ module Plutarch.Internal.TryFrom (
 
 import Data.Functor.Const (Const)
 import Data.Kind (Type)
-import GHC.Generics (Generic)
 import Plutarch.Builtin.Bool (PBool, pif, (#||))
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (

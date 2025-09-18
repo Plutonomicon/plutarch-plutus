@@ -12,7 +12,6 @@ module Plutarch.Rational (
   pproperFraction,
 ) where
 
-import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool, pcond, pif)
