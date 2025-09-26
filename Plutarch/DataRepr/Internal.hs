@@ -20,13 +20,15 @@ module Plutarch.DataRepr.Internal (
   PlutusTypeData,
 ) where
 
-import Crypto.Hash (Digest)
-import Crypto.Hash.Algorithms (Blake2b_160)
+import Control.Arrow (second)
 import Data.Coerce (coerce)
 import Data.Functor.Compose qualified as F
 import Data.Functor.Const (Const (Const))
+import Data.HashMap.Strict qualified as HM
+import Data.Hashable (Hashed)
 import Data.Kind (Type)
-import Data.List (groupBy, maximumBy, sortOn)
+import Data.List (maximumBy)
+import Data.Ord (comparing)
 import Data.Proxy (Proxy (Proxy))
 import Data.SOP.NP (cana_NP)
 import Data.String (fromString)
@@ -84,7 +86,7 @@ import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (PListLike (pnil), pcons, pdrop, phead, ptail, ptryIndex)
 import Plutarch.Internal.Newtype (PlutusTypeNewtype)
 import Plutarch.Internal.Ord (POrd (pmax, pmin, (#<), (#<=)))
-import Plutarch.Internal.Other (pto)
+import Plutarch.Internal.Other (Flip, pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   DerivePlutusType (DPTStrat),
@@ -99,6 +101,7 @@ import Plutarch.Internal.PlutusType (
  )
 import Plutarch.Internal.Show (PShow (pshow'))
 import Plutarch.Internal.Term (
+  RawTerm,
   Term,
   pdelay,
   perror,
@@ -479,7 +482,7 @@ pmatchLT d1 d2 handlers = unTermCont $ do
         : applyHandlers args1 args2 rest
 
 reprHandlersGo ::
-  (Digest Blake2b_160, Term s out) ->
+  (Hashed RawTerm, Term s out) ->
   Integer ->
   [Term s out] ->
   Term s PInteger ->
@@ -495,17 +498,18 @@ reprHandlersGo common idx (handler : rest) c =
           handler
           $ reprHandlersGo common (idx + 1) rest c
 
-hashHandlers :: [Term s out] -> TermCont s [(Digest Blake2b_160, Term s out)]
+hashHandlers :: [Term s out] -> TermCont s [(Hashed RawTerm, Term s out)]
 hashHandlers [] = pure []
 hashHandlers (handler : rest) = do
   hash <- hashOpenTerm handler
   hashes <- hashHandlers rest
   pure $ (hash, handler) : hashes
 
-findCommon :: [Term s out] -> TermCont s (Digest Blake2b_160, Term s out)
+findCommon :: [Term s out] -> TermCont s (Hashed RawTerm, Term s out)
 findCommon handlers = do
   l <- hashHandlers handlers
-  pure $ head . maximumBy (\x y -> length x `compare` length y) . groupBy (\x y -> fst x == fst y) . sortOn fst $ l
+  let counted :: HM.HashMap (Hashed RawTerm) [Term _ _] = HM.fromListWith (++) $ map (second (: [])) l
+  pure . second head . maximumBy (comparing (length . snd)) $ HM.toList counted
 
 mkLTHandler :: forall def s. All (Compose POrd PDataRecord) def => NP (DualReprHandler s PBool) def
 mkLTHandler = cana_NP (Proxy @(Compose POrd PDataRecord)) rer $ Const ()
@@ -536,9 +540,6 @@ type family HRecPApply as s where
 
 newtype HRecP (as :: [(Symbol, P.S -> Type)]) (s :: P.S)
   = HRecP (NoReduce (HRecGeneric (HRecPApply as s)))
-  deriving stock (Generic)
-
-newtype Flip (f :: k1 -> k2 -> Type) (a :: k2) (b :: k1) = Flip (f b a)
   deriving stock (Generic)
 
 class Helper2 (b :: PSubtypeRelation) a where

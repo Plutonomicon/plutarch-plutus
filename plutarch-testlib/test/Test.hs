@@ -3,6 +3,7 @@ module Main (main) where
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Test.Suite.Plutarch.Bool qualified as Bool
 import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
+import Plutarch.Test.Suite.Plutarch.DeriveAsTag as DeriveAsTag
 import Plutarch.Test.Suite.Plutarch.Either qualified as Either
 import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
@@ -42,6 +43,7 @@ main = do
         "Plutarch"
         [ Bool.tests
         , ByteString.tests
+        , DeriveAsTag.tests
         , Either.tests
         , Field.tests
         , Integer.tests

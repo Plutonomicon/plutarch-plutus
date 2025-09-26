@@ -11,7 +11,6 @@ module Plutarch.Repr.Data (
 ) where
 
 import Data.Kind (Type)
-import Data.Maybe (catMaybes)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import Generics.SOP (
@@ -76,6 +75,7 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
+import Plutarch.Internal.TermCont (pfindAllPlaceholders)
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
@@ -86,7 +86,7 @@ import Plutarch.Repr.Internal (
   UnTermStruct,
   groupHandlers,
  )
-import Plutarch.TermCont (pfindPlaceholder, pletC, unTermCont)
+import Plutarch.TermCont (pletC, unTermCont)
 import PlutusLedgerApi.V3 qualified as PLA
 
 -- Helper for working with SOP representations of `Data`-encoded records. If you
@@ -289,18 +289,11 @@ pmatchDataRec (punsafeCoerce -> x) f = pgetInternalConfig $ \cfg -> unTermCont $
     placeholder :: (PRec struct s, Integer)
     placeholder = (unPHB $ SOP.para_SList (PHB $ \idx g -> (g (PRec Nil), idx - 1)) placeholderBuilder) 0 id
 
-    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f (fst placeholder)
+    placeholderApplied = pwithInternalConfig (InternalConfig False (internalConfig'phoistAcyclicEvalCheck cfg)) $ f (fst placeholder)
 
   usedFields <-
     if internalConfig'dataRecPMatchOptimization cfg
-      then
-        catMaybes
-          <$> traverse
-            ( \idx -> do
-                found <- pfindPlaceholder idx placeholderApplied
-                pure $ if found then Just idx else Nothing
-            )
-            [0 .. (snd placeholder)]
+      then pfindAllPlaceholders placeholderApplied
       else pure [0 .. (snd placeholder)]
 
   let

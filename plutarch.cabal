@@ -153,17 +153,17 @@ library
     , bytestring
     , constraints
     , containers
-    , cryptonite
     , data-default
-    , flat
     , generics-sop
+    , hashable
     , lens
     , mtl
-    , plutus-core        >=1.51.0.0
+    , plutus-core           >=1.51.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
     , QuickCheck
     , random
     , sop-core
+    , unordered-containers
     , vector

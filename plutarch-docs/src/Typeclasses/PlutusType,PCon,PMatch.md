@@ -10,7 +10,6 @@ import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Prelude
-import Plutarch.Repr.SOP (DeriveAsSOPStruct (DeriveAsSOPStruct))
 ```
 
 </p>
