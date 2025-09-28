@@ -46,8 +46,9 @@ module Plutarch.LedgerApi.V3 (
   pparseDatum,
 
   -- * Value
-  Value.PValue (..),
-  Value.AmountGuarantees (..),
+  Value.PRawValue (..),
+  Value.PSortedValue,
+  Value.PLedgerValue,
   Value.PCurrencySymbol (..),
   Value.PTokenName (..),
   Value.PLovelace (..),
@@ -55,8 +56,9 @@ module Plutarch.LedgerApi.V3 (
   -- * Assoc map
 
   -- ** Types
-  AssocMap.PMap (..),
-  AssocMap.KeyGuarantees (..),
+  AssocMap.PAssocMap (..),
+  AssocMap.PUnsortedMap (..),
+  AssocMap.PSortedMap,
 
   -- * Address
   Credential.PCredential (..),
@@ -294,7 +296,7 @@ pfindInputByOutRef = phoistAcyclic $
 pparseDatum ::
   forall (a :: S -> Type) (s :: S).
   PTryFrom PData (PAsData a) =>
-  Term s (Scripts.PDatumHash :--> AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum :--> PMaybe (PAsData a))
+  Term s (Scripts.PDatumHash :--> AssocMap.PUnsortedMap Scripts.PDatumHash Scripts.PDatum :--> PMaybe (PAsData a))
 pparseDatum = phoistAcyclic $ plam $ \dh datums ->
   pmatch (AssocMap.plookup # dh # datums) $ \case
     PNothing -> pcon PNothing

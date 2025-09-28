@@ -30,6 +30,7 @@ import Plutarch.Test.Suite.PlutarchLedgerApi.Utils qualified as Utils
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
 import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
 import Plutarch.Test.Suite.PlutarchLedgerApi.V3 qualified as V3
+import Plutarch.Test.Suite.PlutarchLedgerApi.Value.AssetClass qualified as AssetClass
 import Test.Tasty (adjustOption, defaultMain, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 
@@ -69,6 +70,7 @@ main = do
         [ testGroup
             "Laws"
             [ Utils.tests
+            , AssetClass.tests
             , AssocMap.tests
             , V1.tests
             , V2.tests
