@@ -83,9 +83,26 @@ main =
       , testGroup "PValidateData" pvalidateDataBenches
       , testGroup "AssocMap" assocMapBenches
       , testGroup "PBuiltinPair" pbuiltinPairBenches
+      , testGroup "pfix" pfixBenches
       ]
 
 -- Suites
+
+pfixBenches :: [TestTree]
+pfixBenches =
+  [ bench "pfixHoisted" (precompileTerm pfacHoisted # pconstant @PInteger 80)
+  , bcompare "$(NF-1) == \"pfix\" && $NF == \"pfixHoisted\"" $
+      bench "pfix" (precompileTerm pfac # pconstant @PInteger 80)
+  , bcompare "$(NF-1) == \"pfix\" && $NF == \"pfixHoisted\"" $
+      bench "pfixInline" (precompileTerm pfacInline # pconstant @PInteger 80)
+  ]
+  where
+    pfacHoisted :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfacHoisted = pfixHoisted #$ plam $ \self n -> pif (n #== 1) n $ n * (self #$ n - 1)
+    pfac :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfac = pfix $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
+    pfacInline :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfacInline = pfixInline $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
 
 pbuiltinPairBenches :: [TestTree]
 pbuiltinPairBenches =
