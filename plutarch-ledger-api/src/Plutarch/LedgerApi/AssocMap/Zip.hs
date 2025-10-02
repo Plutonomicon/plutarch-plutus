@@ -166,7 +166,7 @@ zipWorker ::
         :--> PBuiltinList (PBuiltinPair (PAsData k) (PAsData c))
     )
 zipWorker mergeHandler =
-  pfix #$ plam $ \self mapL mapR ->
+  pfixHoisted #$ plam $ \self mapL mapR ->
     pmatch mapL $ \case
       PNil ->
         case mergeHandler.mhRightPresent of

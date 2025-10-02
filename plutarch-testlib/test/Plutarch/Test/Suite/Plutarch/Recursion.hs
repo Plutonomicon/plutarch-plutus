@@ -31,7 +31,7 @@ double :: Term s (PInteger :--> PInteger)
 double = plam $ \x -> x * 2
 
 iterateN :: Term s (PInteger :--> (a :--> a) :--> a :--> a)
-iterateN = pfix # plam iterateN'
+iterateN = pfixHoisted # plam iterateN'
   where
     iterateN' ::
       Term s (PInteger :--> (a :--> a) :--> a :--> a) ->

@@ -34,7 +34,7 @@ import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, ptrue, (#&&))
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.ListLike (
   PElemConstraint,
@@ -156,7 +156,7 @@ pzip = phoistAcyclic $ pzipWith' $ \x y -> pcon (PPair x y)
 -- | / O(n) /. like haskell level `find` but on plutarch level
 pfind :: PIsListLike l a => Term s ((a :--> PBool) :--> l a :--> PMaybe a)
 pfind = phoistAcyclic $
-  pfix #$ plam $ \self f xs ->
+  pfixHoisted #$ plam $ \self f xs ->
     pelimList
       ( \y ys ->
           pif
@@ -186,7 +186,7 @@ pcheckSorted ::
   (PIsListLike l a, POrd a) =>
   Term s (l a :--> PBool)
 pcheckSorted =
-  pfix #$ plam $ \self xs ->
+  pfixHoisted #$ plam $ \self xs ->
     pelimList
       ( \x1 xs ->
           pelimList
@@ -210,7 +210,7 @@ pelem =
 plistEquals :: (PIsListLike list a, PEq a) => Term s (list a :--> list a :--> PBool)
 plistEquals =
   phoistAcyclic $
-    pfix #$ plam $ \self xlist ylist ->
+    pfixHoisted #$ plam $ \self xlist ylist ->
       pelimList
         ( \x xs ->
             pelimList (\y ys -> pif (x #== y) (self # xs # ys) (pconstant False)) (pconstant False) ylist
@@ -237,7 +237,7 @@ pelemAt = phoistAcyclic $
 -- | / O(n) /. like `pelemAt` but doesn't fail on negative indexes
 pelemAt' :: PIsListLike l a => Term s (PInteger :--> l a :--> a)
 pelemAt' = phoistAcyclic $
-  pfix #$ plam $ \self n xs ->
+  pfixHoisted #$ plam $ \self n xs ->
     pif
       (n #== 0)
       (phead # xs)

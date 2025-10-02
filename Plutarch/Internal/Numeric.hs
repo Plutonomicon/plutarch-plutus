@@ -64,7 +64,7 @@ import Plutarch.Builtin.Integer (
   psubtractInteger,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (
   DeriveNewtypePLiftable,
@@ -591,7 +591,7 @@ pbySquaringDefault ::
 pbySquaringDefault f b e = go # b # e
   where
     go :: forall (s'' :: S). Term s'' (a :--> PPositive :--> a)
-    go = phoistAcyclic $ pfix #$ plam $ \self b e -> plet e $ \e' ->
+    go = phoistAcyclic $ pfixHoisted #$ plam $ \self b e -> plet e $ \e' ->
       pif
         (pto e' #== pconstantInteger 1)
         b

@@ -97,7 +97,9 @@ module Plutarch.Prelude (
   (#>=),
 
   -- * Fixed point
+  pfixHoisted,
   pfix,
+  pfixInline,
 
   -- * IsData
   PIsData (..),

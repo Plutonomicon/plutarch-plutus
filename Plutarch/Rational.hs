@@ -18,7 +18,7 @@ import Plutarch.Builtin.Bool (PBool, pcond, pif)
 import Plutarch.Builtin.Data (PAsData, PBuiltinList, PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.Lift (
   PLiftable (
     AsHaskell,
@@ -313,7 +313,7 @@ pgcd = phoistAcyclic $
 
 -- assumes inputs are non negative and a >= b
 pgcd' :: Term s (PInteger :--> PInteger :--> PInteger)
-pgcd' = phoistAcyclic $ pfix #$ plam f
+pgcd' = phoistAcyclic $ pfixHoisted #$ plam f
   where
     f self a b =
       pif
