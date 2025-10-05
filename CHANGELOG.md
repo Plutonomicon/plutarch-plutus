@@ -8,11 +8,18 @@
 * `PValidateData`, a replacement for `PTryFrom` to perform validation of
   @Data@-encoded types.
 * `pmapDropNothing` to `Plutarch.Maybe` 
+* `pfixInline`, a fixpoint combinator which does more inling. This gives more
+  performance at the cost of script size.
 
 ## Changed
 
 * `PBuiltinPair` can now be `pmatch`ed against, with partial matches not
   generating code for the 'side' not matched (issue 836).
+* Original `pfix` renamed to `pfixHoisted`.
+* `pfix` now is _not_ hoisted, which gives more performance at the cost of some
+  script size.
+* All previous internal uses of `pfix` are replaced with uses of `pfixHoisted`
+  for consistency.
 
 ## Removed
 

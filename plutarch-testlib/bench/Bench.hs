@@ -83,9 +83,26 @@ main =
       , testGroup "PValidateData" pvalidateDataBenches
       , testGroup "AssocMap" assocMapBenches
       , testGroup "PBuiltinPair" pbuiltinPairBenches
+      , testGroup "pfix" pfixBenches
       ]
 
 -- Suites
+
+pfixBenches :: [TestTree]
+pfixBenches =
+  [ bench "pfixHoisted" (precompileTerm pfacHoisted # pconstant @PInteger 80)
+  , bcompare "$(NF-1) == \"pfix\" && $NF == \"pfixHoisted\"" $
+      bench "pfix" (precompileTerm pfac # pconstant @PInteger 80)
+  , bcompare "$(NF-1) == \"pfix\" && $NF == \"pfixHoisted\"" $
+      bench "pfixInline" (precompileTerm pfacInline # pconstant @PInteger 80)
+  ]
+  where
+    pfacHoisted :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfacHoisted = pfixHoisted #$ plam $ \self n -> pif (n #== 1) n $ n * (self #$ n - 1)
+    pfac :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfac = pfix $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
+    pfacInline :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfacInline = pfixInline $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
 
 pbuiltinPairBenches :: [TestTree]
 pbuiltinPairBenches =
@@ -194,21 +211,21 @@ peven :: Term s (PInteger :--> PBool)
 peven = plam $ \n -> pmod # n # 2 #== 0
 
 pfib :: Term s (PInteger :--> PInteger)
-pfib = pfix #$ plam $ \self n -> pif (n #<= 1) (pconstant 1) ((self # (n - 1)) * (self # (n - 2)))
+pfib = pfixHoisted #$ plam $ \self n -> pif (n #<= 1) (pconstant 1) ((self # (n - 1)) * (self # (n - 2)))
 
 linearExp :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 linearExp = phoistAcyclic $ plam $ \b e ->
   inner # b # b # e
   where
     inner :: forall (s' :: S). Term s' (PInteger :--> PInteger :--> PInteger :--> PInteger)
-    inner = phoistAcyclic $ pfix #$ plam $ \self b acc e ->
+    inner = phoistAcyclic $ pfixHoisted #$ plam $ \self b acc e ->
       pif
         (e #== pone)
         acc
         (self # b # (acc #* b) # (e #- pone))
 
 bySquaringExp :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
-bySquaringExp = phoistAcyclic $ pfix #$ plam $ \self b e ->
+bySquaringExp = phoistAcyclic $ pfixHoisted #$ plam $ \self b e ->
   pif
     (e #== pone)
     b
@@ -233,7 +250,7 @@ parrayMap ::
   Term s (PArray a) ->
   Term s (PBuiltinList b)
 parrayMap f arr = plet (plengthOfArray # arr) $ \len ->
-  phoistAcyclic (pfix # plam go) # f # arr # (len - 1) # pcon PNil
+  phoistAcyclic (pfixHoisted # plam go) # f # arr # (len - 1) # pcon PNil
   where
     go ::
       forall (s' :: S).
@@ -259,7 +276,7 @@ parrayZipWith ::
 parrayZipWith f arr1 arr2 = plet (plengthOfArray # arr1) $ \len1 ->
   plet (plengthOfArray # arr2) $ \len2 ->
     plet (pmin len1 len2) $ \len ->
-      phoistAcyclic (pfix # plam go) # f # arr1 # arr2 # (len - 1) # pcon PNil
+      phoistAcyclic (pfixHoisted # plam go) # f # arr1 # arr2 # (len - 1) # pcon PNil
   where
     go ::
       forall (s' :: S).

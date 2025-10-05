@@ -21,7 +21,7 @@ Basic examples demonstrating Plutarch usage.
 ```haskell
 fib :: Term s (PInteger :--> PInteger)
 fib = phoistAcyclic $
-  pfix #$ plam $ \self n ->
+  pfixHoisted #$ plam $ \self n ->
     pif
       (n #== 0)
       0

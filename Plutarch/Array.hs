@@ -48,7 +48,7 @@ import Plutarch.Builtin.Bool (pif)
 import Plutarch.Builtin.Data (PBuiltinList (PNil), pconsBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.Numeric (
   PAdditiveSemigroup (pscalePositive, (#+)),
   PMultiplicativeSemigroup (ppowPositive, (#*)),
@@ -179,7 +179,7 @@ pfoldlArray f acc arr = pmatch arr $ \(PPullArray (PForall g)) ->
   where
     go :: Term s (PNatural :--> (PInteger :--> a) :--> b)
     go = plam $ \len get ->
-      phoistAcyclic (pfix # plam goInner) # f # get # pupcast len # 0 # acc
+      phoistAcyclic (pfixHoisted # plam goInner) # f # get # pupcast len # 0 # acc
     goInner ::
       forall (s' :: S).
       Term s' ((b :--> a :--> b) :--> (PInteger :--> a) :--> PInteger :--> PInteger :--> b :--> b) ->
@@ -233,7 +233,7 @@ ppullArrayToList arr = pmatch arr $ \(PPullArray (PForall f)) ->
   where
     go :: Term s (PNatural :--> (PInteger :--> a) :--> PBuiltinList a)
     go = phoistAcyclic $ plam $ \len f ->
-      phoistAcyclic (pfix # plam goInner) # f # (pupcast len - 1) # pcon PNil
+      phoistAcyclic (pfixHoisted # plam goInner) # f # (pupcast len - 1) # pcon PNil
     goInner ::
       forall (s' :: S).
       Term s' ((PInteger :--> a) :--> PInteger :--> PBuiltinList a :--> PBuiltinList a) ->

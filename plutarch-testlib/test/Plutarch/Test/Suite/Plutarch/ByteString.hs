@@ -98,7 +98,7 @@ pallBS = phoistAcyclic $ plam $ \p bs ->
       Term s' PInteger ->
       Term s' PByteString ->
       Term s' (PInteger :--> PBool)
-    go p len bs = pfix #$ plam $ \self ix ->
+    go p len bs = pfixHoisted #$ plam $ \self ix ->
       pif
         (ix #< len)
         ( pif

@@ -41,7 +41,7 @@ import Generics.SOP (
   ccompare_NS,
   hcliftA2,
  )
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData, pdata)
 import Plutarch.Internal.Lift (PLiftable (PlutusRepr), pconstant)
@@ -139,7 +139,7 @@ instance (PEq a, PLC.Contains PLC.DefaultUni (PlutusRepr a)) => Fc 'False a wher
       -- TODO: This is copied from ListLike. See if there's a way to not do this
       plistEquals =
         phoistAcyclic $
-          pfix #$ plam $ \self xlist ylist ->
+          pfixHoisted #$ plam $ \self xlist ylist ->
             pelimList
               ( \x xs ->
                   pelimList (\y ys -> pif (x #== y) (self # xs # ys) (pconstant False)) (pconstant False) ylist

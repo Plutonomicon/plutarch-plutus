@@ -63,7 +63,7 @@ import Plutarch.Builtin.String (
  )
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Lift (PlutusRepr, pconstant)
@@ -210,7 +210,7 @@ instance PShow PString where
           "\"" <> (pdecodeUtf8 #$ pshowUtf8Bytes #$ pencodeUtf8 # s) <> "\""
       pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
       pshowUtf8Bytes = phoistAcyclic $
-        pfix #$ plam $ \self bs ->
+        pfixHoisted #$ plam $ \self bs ->
           pelimBS
             # bs
             # bs
@@ -241,7 +241,7 @@ instance PShow PInteger where
     where
       pshowInt :: Term s (PInteger :--> PString)
       pshowInt = phoistAcyclic $
-        pfix #$ plam $ \self n ->
+        pfixHoisted #$ plam $ \self n ->
           let sign = pif (n #< 0) "-" ""
            in sign
                 <> plet
@@ -271,7 +271,7 @@ instance PShow PByteString where
           "0x" <> showByteString' # bs
       showByteString' :: Term s (PByteString :--> PString)
       showByteString' = phoistAcyclic $
-        pfix #$ plam $ \self bs ->
+        pfixHoisted #$ plam $ \self bs ->
           pelimBS
             # bs
             # pconstant @PString ""
@@ -299,7 +299,7 @@ instance PShow PData where
       wrap s = pif (pconstant b) ("(" <> s <> ")") s
       go0 :: Term s (PData :--> PString)
       go0 = phoistAcyclic $
-        pfix #$ plam $ \go t ->
+        pfixHoisted #$ plam $ \go t ->
           let pshowConstr pp0 = plet pp0 $ \pp ->
                 "Constr "
                   <> pshow' False (pfstBuiltin # pp)
