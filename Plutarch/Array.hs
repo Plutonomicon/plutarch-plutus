@@ -36,6 +36,7 @@ module Plutarch.Array (
 
   -- *** Conversions
   ppullArrayToList,
+  ppullArrayToSOPList,
 ) where
 
 import Data.Kind (Type)
@@ -73,6 +74,7 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
+import Plutarch.List (PList (PSCons, PSNil))
 
 {- | A pull array, represented as its Boehm-Berrarducci encoding. Put another
 way, a pull array is a function which can be \'materialized\' to produce the
@@ -241,6 +243,34 @@ ppullArrayToList arr = pmatch arr $ \(PPullArray (PForall f)) ->
         (currIx #== (-1))
         acc
         (self # f # (currIx - 1) #$ pconsBuiltin # (f # currIx) # acc)
+
+{- | Convert a pull array to a 'PList'. Prefer this function to using a fold, as
+it builds the 'PList' \'in reverse\' to avoid quadratic construction cost.
+
+\(\Theta(n)\) space and time complexity.
+
+@since 1.12.0
+-}
+ppullArrayToSOPList ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (PPullArray a) ->
+  Term s (PList a)
+ppullArrayToSOPList arr = pmatch arr $ \(PPullArray (PForall f)) ->
+  punsafeCoerce f
+    # plam
+      ( \len f ->
+          phoistAcyclic (pfix go) # f # (pupcast @_ @PNatural len - 1) # pcon PSNil
+      )
+  where
+    go ::
+      forall (s' :: S).
+      Term s' ((PInteger :--> a) :--> PInteger :--> PList a :--> PList a) ->
+      Term s' ((PInteger :--> a) :--> PInteger :--> PList a :--> PList a)
+    go self = plam $ \f currIx acc ->
+      pif
+        (currIx #== (-1))
+        acc
+        (self # f # (currIx - 1) # (pcon . PSCons (f # currIx) $ acc))
 
 {- | As 'pmapArray', but with an index-aware \'transformer function\'.
 
