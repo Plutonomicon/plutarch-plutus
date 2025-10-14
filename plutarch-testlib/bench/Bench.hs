@@ -12,6 +12,7 @@ import Data.Vector.Strict qualified as Vector
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Array (
+  pfoldlArray,
   pfromArray,
   pmapArray,
   ppullArrayToList,
@@ -130,7 +131,23 @@ arrayBenches =
         )
   , bench "map-zip" (precompileTerm (plam $ \x y -> pzipWith # ptimes # parrayMap pinc x # parrayMap pinc y) # pconstant @(PArray PInteger) iota # pconstant @(PArray PInteger) iota)
   , bcompare "$(NF-1) == \"Array\" && $NF == \"map-zip\"" $
-      bench "with PPullArray" (precompileTerm (plam $ \x y -> ppullArrayToList . pzipWithArray ptimes (pmapArray pinc . pfromArray $ x) . pmapArray pinc . pfromArray $ y))
+      bench
+        "with PPullArray"
+        ( precompileTerm (plam $ \x y -> ppullArrayToList . pzipWithArray ptimes (pmapArray pinc . pfromArray $ x) . pmapArray pinc . pfromArray $ y)
+            # pconstant @(PArray PInteger) iota
+            # pconstant @(PArray PInteger) iota
+        )
+  , bench
+      "map-fold"
+      ( precompileTerm (plam $ \x -> pfoldl # ptimes # 1 # parrayMap pinc x)
+          # pconstant @(PArray PInteger) iota
+      )
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"map-fold\"" $
+      bench
+        "with PPullArray"
+        ( precompileTerm (plam $ \x -> pfoldlArray ptimes 1 . pmapArray pinc . pfromArray $ x)
+            # pconstant @(PArray PInteger) iota
+        )
   ]
 
 pvalidateDataBenches :: [TestTree]

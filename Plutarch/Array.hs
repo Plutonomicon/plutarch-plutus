@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE NoPartialTypeSignatures #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 -- | @since 1.12.0
@@ -48,7 +49,7 @@ import Plutarch.Builtin.Bool (pif)
 import Plutarch.Builtin.Data (PBuiltinList (PNil), pconsBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Numeric (
   PAdditiveSemigroup (pscalePositive, (#+)),
   PMultiplicativeSemigroup (ppowPositive, (#*)),
@@ -175,21 +176,17 @@ pfoldlArray ::
   Term s (PPullArray a) ->
   Term s b
 pfoldlArray f acc arr = pmatch arr $ \(PPullArray (PForall g)) ->
-  punsafeCoerce g # go
+  punsafeCoerce g
+    # plam
+      ( \len get ->
+          phoistAcyclic (pfix go) # f # get # pupcast @_ @PNatural len # 0 # acc
+      )
   where
-    go :: Term s (PNatural :--> (PInteger :--> a) :--> b)
-    go = plam $ \len get ->
-      phoistAcyclic (pfixHoisted # plam goInner) # f # get # pupcast len # 0 # acc
-    goInner ::
+    go ::
       forall (s' :: S).
       Term s' ((b :--> a :--> b) :--> (PInteger :--> a) :--> PInteger :--> PInteger :--> b :--> b) ->
-      Term s' (b :--> a :--> b) ->
-      Term s' (PInteger :--> a) ->
-      Term s' PInteger ->
-      Term s' PInteger ->
-      Term s' b ->
-      Term s' b
-    goInner self combine get limit currIx acc' =
+      Term s' ((b :--> a :--> b) :--> (PInteger :--> a) :--> PInteger :--> PInteger :--> b :--> b)
+    go self = plam $ \combine get limit currIx acc' ->
       pif
         (currIx #== limit)
         acc'
@@ -229,19 +226,17 @@ ppullArrayToList ::
   Term s (PPullArray a) ->
   Term s (PBuiltinList a)
 ppullArrayToList arr = pmatch arr $ \(PPullArray (PForall f)) ->
-  punsafeCoerce f # go
+  punsafeCoerce f
+    # phoistAcyclic
+      ( plam $ \len f ->
+          phoistAcyclic (pfix go) # f # (pupcast @_ @PNatural len - 1) # pcon PNil
+      )
   where
-    go :: Term s (PNatural :--> (PInteger :--> a) :--> PBuiltinList a)
-    go = phoistAcyclic $ plam $ \len f ->
-      phoistAcyclic (pfixHoisted # plam goInner) # f # (pupcast len - 1) # pcon PNil
-    goInner ::
+    go ::
       forall (s' :: S).
       Term s' ((PInteger :--> a) :--> PInteger :--> PBuiltinList a :--> PBuiltinList a) ->
-      Term s' (PInteger :--> a) ->
-      Term s' PInteger ->
-      Term s' (PBuiltinList a) ->
-      Term s' (PBuiltinList a)
-    goInner self f currIx acc =
+      Term s' ((PInteger :--> a) :--> PInteger :--> PBuiltinList a :--> PBuiltinList a)
+    go self = plam $ \f currIx acc ->
       pif
         (currIx #== (-1))
         acc
