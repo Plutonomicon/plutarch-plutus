@@ -23,22 +23,19 @@ auth_policy.0 program
              [ ((\!0 ->
                    (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
                   (\!0 !0 ->
-                     force
-                       (case
-                          (constr 0
-                             [ !1
-                             , (delay False)
-                             , (delay
-                                  (force
-                                     (case
-                                        (constr 0
-                                           [ (equalsData
-                                                (!7 !1)
-                                                (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                                           , (delay True)
-                                           , (delay (!2 (!6 !1))) ])
-                                        [!5]))) ])
-                          [(force (force chooseList))]))
+                     case
+                       !1
+                       [ (\!0 !0 ->
+                            force
+                              (case
+                                 (constr 0
+                                    [ (equalsData
+                                         !2
+                                         (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                                    , (delay True)
+                                    , (delay (!4 !1)) ])
+                                 [!7]))
+                       , False ])
                   (unListData
                      (!5
                         (!4
@@ -58,7 +55,7 @@ auth_policy.0 program
              , (delay ())
              , (delay error) ])
           [!3]))
-auth_policy.hash program 1.1.0 "581cb579545d3c024b0824dc15a5f32fad7c3e536babca5433cb8a4dfe31"
+auth_policy.hash program 1.1.0 "581cc9c6b42702a8afbfb66d8ea38f69856b2b73c7edaca3ba28b0b65ce3"
 auth_stake_validator.0 program
   1.1.0
   (\!0 !0 ->
@@ -68,22 +65,19 @@ auth_stake_validator.0 program
              [ ((\!0 ->
                    (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
                   (\!0 !0 ->
-                     force
-                       (case
-                          (constr 0
-                             [ !1
-                             , (delay False)
-                             , (delay
-                                  (force
-                                     (case
-                                        (constr 0
-                                           [ (equalsData
-                                                (!7 !1)
-                                                (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                                           , (delay True)
-                                           , (delay (!2 (!6 !1))) ])
-                                        [!5]))) ])
-                          [(force (force chooseList))]))
+                     case
+                       !1
+                       [ (\!0 !0 ->
+                            force
+                              (case
+                                 (constr 0
+                                    [ (equalsData
+                                         !2
+                                         (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                                    , (delay True)
+                                    , (delay (!4 !1)) ])
+                                 [!7]))
+                       , False ])
                   (unListData
                      (!5
                         (!4
@@ -103,4 +97,4 @@ auth_stake_validator.0 program
              , (delay ())
              , (delay error) ])
           [!3]))
-auth_stake_validator.hash program 1.1.0 "581cb579545d3c024b0824dc15a5f32fad7c3e536babca5433cb8a4dfe31"
+auth_stake_validator.hash program 1.1.0 "581cc9c6b42702a8afbfb66d8ea38f69856b2b73c7edaca3ba28b0b65ce3"
