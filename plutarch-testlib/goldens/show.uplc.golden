@@ -2061,7 +2061,7 @@ str.unicode program
                            (equalsInteger !2 34)
                            [ (consByteString !2 (!4 !1))
                            , (consByteString 92 (consByteString !2 (!4 !1))) ]))
-                 (encodeUtf8 "vis-\224-vis")))
+                 (encodeUtf8 "vis-à-vis")))
            !1))
      "\"")
 str.unicode-quoted program
@@ -2092,7 +2092,7 @@ str.unicode-quoted program
                            (equalsInteger !2 34)
                            [ (consByteString !2 (!4 !1))
                            , (consByteString 92 (consByteString !2 (!4 !1))) ]))
-                 (encodeUtf8 "vis-\"\224\"-vis")))
+                 (encodeUtf8 "vis-\"à\"-vis")))
            !1))
      "\"")
 maybe.nothing program

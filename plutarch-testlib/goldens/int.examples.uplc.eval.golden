@@ -12,8 +12,60 @@ fib.lam program
        [ (case
             (equalsInteger !1 1)
             [ (addInteger
-                 (!2 (subtractInteger !1 1))
-                 (!2 (subtractInteger !1 2)))
+                 ((\!0 ->
+                     (\!0 ->
+                        (\!0 !0 ->
+                           case
+                             (equalsInteger !1 0)
+                             [ (case
+                                  (equalsInteger !1 1)
+                                  [ (addInteger
+                                       (!2 (subtractInteger !1 1))
+                                       (!2 (subtractInteger !1 2)))
+                                  , 1 ])
+                             , 0 ])
+                          (\!0 -> !2 !2 !1))
+                       (\!0 ->
+                          (\!0 !0 ->
+                             case
+                               (equalsInteger !1 0)
+                               [ (case
+                                    (equalsInteger !1 1)
+                                    [ (addInteger
+                                         (!2 (subtractInteger !1 1))
+                                         (!2 (subtractInteger !1 2)))
+                                    , 1 ])
+                               , 0 ])
+                            (\!0 -> !2 !2 !1))
+                       !1)
+                    (subtractInteger !1 1))
+                 ((\!0 ->
+                     (\!0 ->
+                        (\!0 !0 ->
+                           case
+                             (equalsInteger !1 0)
+                             [ (case
+                                  (equalsInteger !1 1)
+                                  [ (addInteger
+                                       (!2 (subtractInteger !1 1))
+                                       (!2 (subtractInteger !1 2)))
+                                  , 1 ])
+                             , 0 ])
+                          (\!0 -> !2 !2 !1))
+                       (\!0 ->
+                          (\!0 !0 ->
+                             case
+                               (equalsInteger !1 0)
+                               [ (case
+                                    (equalsInteger !1 1)
+                                    [ (addInteger
+                                         (!2 (subtractInteger !1 1))
+                                         (!2 (subtractInteger !1 2)))
+                                    , 1 ])
+                               , 0 ])
+                            (\!0 -> !2 !2 !1))
+                       !1)
+                    (subtractInteger !1 2)))
             , 1 ])
        , 0 ])
 fib.app.9 program 1.1.0 34

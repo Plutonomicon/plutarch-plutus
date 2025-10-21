@@ -26,19 +26,19 @@ auth_policy.0 program
                       [(!4 !1), True])
                , False ])
           (unListData
-             (!4
-                (!3
-                   (!3
-                      (!3
-                         (!3
-                            (!3
-                               (!3
-                                  (!3
-                                     (!3
-                                        (!5
+             (force headList
+                (force tailList
+                   (force tailList
+                      (force tailList
+                         (force tailList
+                            (force tailList
+                               (force tailList
+                                  (force tailList
+                                     (force tailList
+                                        (force (force sndPair)
                                            (unConstrData
-                                              (!4
-                                                 (!5
+                                              (force headList
+                                                 (force (force sndPair)
                                                     (unConstrData
                                                        !1))))))))))))))))
        [error, ()])
@@ -59,19 +59,19 @@ auth_stake_validator.0 program
                       [(!4 !1), True])
                , False ])
           (unListData
-             (!4
-                (!3
-                   (!3
-                      (!3
-                         (!3
-                            (!3
-                               (!3
-                                  (!3
-                                     (!3
-                                        (!5
+             (force headList
+                (force tailList
+                   (force tailList
+                      (force tailList
+                         (force tailList
+                            (force tailList
+                               (force tailList
+                                  (force tailList
+                                     (force tailList
+                                        (force (force sndPair)
                                            (unConstrData
-                                              (!4
-                                                 (!5
+                                              (force headList
+                                                 (force (force sndPair)
                                                     (unConstrData
                                                        !1))))))))))))))))
        [error, ()])

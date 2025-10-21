@@ -3,6 +3,28 @@ iterateN.lam program
   (\!0 !0 !0 ->
      case
        (equalsInteger !3 0)
-       [(case (constr 0 [(subtractInteger !3 1), !2, (!2 !1)]) [!4]), !1])
+       [ (case
+            (constr 0 [(subtractInteger !3 1), !2, (!2 !1)])
+            [ (\!0 ->
+                 (\!0 ->
+                    (\!0 !0 !0 !0 ->
+                       case
+                         (equalsInteger !3 0)
+                         [ (case
+                              (constr 0 [(subtractInteger !3 1), !2, (!2 !1)])
+                              [!4])
+                         , !1 ])
+                      (\!0 -> !2 !2 !1))
+                   (\!0 ->
+                      (\!0 !0 !0 !0 ->
+                         case
+                           (equalsInteger !3 0)
+                           [ (case
+                                (constr 0 [(subtractInteger !3 1), !2, (!2 !1)])
+                                [!4])
+                           , !1 ])
+                        (\!0 -> !2 !2 !1))
+                   !1) ])
+       , !1 ])
 iterateN.app.succ program 1.1.0 10
 iterateN.app.double program 1.1.0 1024
