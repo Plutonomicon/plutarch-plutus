@@ -41,8 +41,6 @@ import Plutarch.Builtin.Data (
   PBuiltinPair (PBuiltinPair),
   PData (PData),
   pconsBuiltin,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
@@ -230,10 +228,10 @@ instance PlutusType (DeriveFakePlutusType a) where
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
   pcon' :: forall s. DeriveFakePlutusType a s -> Term s (PInner (DeriveFakePlutusType a))
-  pcon' _ = error "Attepted to use a type derived with DeriveFakePlutusType"
+  pcon' _ = error "Attempted to use a type derived with DeriveFakePlutusType"
 
   pmatch' :: forall s b. Term s (PInner (DeriveFakePlutusType a)) -> (DeriveFakePlutusType a s -> Term s b) -> Term s b
-  pmatch' _ _ = error "Attepted to use a type derived with DeriveFakePlutusType"
+  pmatch' _ _ = error "Attempted to use a type derived with DeriveFakePlutusType"
 
 --------------------------------------------------------------------------------
 
@@ -281,7 +279,11 @@ you should /not/ use 'pcon' for 'PBuiltinPair'.
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
   pcon' _ = ptraceInfo "Do not use pcon for PBuiltinPair; instead, use ppairDataBuiltin or pconstant" perror
-  pmatch' t f = f (PBuiltinPair (pfstBuiltin # t) (psndBuiltin # t))
+  pmatch' t f = Term $ \level -> do
+    TermResult handler depsHandler <- asRawTerm (plam $ \x y -> f (PBuiltinPair x y)) level
+    TermResult rawT depsT <- asRawTerm t level
+    let allDeps = depsHandler <> depsT
+    pure . TermResult (RCase rawT [handler]) $ allDeps
 
 instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
