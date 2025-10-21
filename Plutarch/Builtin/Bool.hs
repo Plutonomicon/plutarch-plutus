@@ -123,7 +123,7 @@ infixr 2 #||
 @since 1.10.0
 -}
 pand :: forall (s :: S). Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-pand = phoistAcyclic $ plam $ \x y -> pif' # x # y # phoistAcyclic (pdelay pfalse)
+pand = phoistAcyclic $ plam $ \x y -> pdelay $ pif x (pforce y) x
 
 {- | As 'pand', but strict.
 

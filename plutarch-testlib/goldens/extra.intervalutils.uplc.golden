@@ -44,14 +44,12 @@ contains.in interval program
                                                                                      [ (force
                                                                                           ((\!0
                                                                                              !0 ->
-                                                                                              case
-                                                                                                (constr 0
+                                                                                              delay
+                                                                                                (case
+                                                                                                   !2
                                                                                                    [ !2
-                                                                                                   , !1
-                                                                                                   , (delay
-                                                                                                        False) ])
-                                                                                                [ (force
-                                                                                                     ifThenElse) ])
+                                                                                                   , (force
+                                                                                                        !1) ]))
                                                                                              (!12
                                                                                                 (!10
                                                                                                    !4)
@@ -335,14 +333,12 @@ contains.out interval program
                                                                                      [ (force
                                                                                           ((\!0
                                                                                              !0 ->
-                                                                                              case
-                                                                                                (constr 0
+                                                                                              delay
+                                                                                                (case
+                                                                                                   !2
                                                                                                    [ !2
-                                                                                                   , !1
-                                                                                                   , (delay
-                                                                                                        False) ])
-                                                                                                [ (force
-                                                                                                     ifThenElse) ])
+                                                                                                   , (force
+                                                                                                        !1) ]))
                                                                                              (!12
                                                                                                 (!10
                                                                                                    !4)
@@ -618,14 +614,12 @@ contains.always program
                                                                          [ (force
                                                                               ((\!0
                                                                                  !0 ->
-                                                                                  case
-                                                                                    (constr 0
+                                                                                  delay
+                                                                                    (case
+                                                                                       !2
                                                                                        [ !2
-                                                                                       , !1
-                                                                                       , (delay
-                                                                                            False) ])
-                                                                                    [ (force
-                                                                                         ifThenElse) ])
+                                                                                       , (force
+                                                                                            !1) ]))
                                                                                  (!11
                                                                                     (!9
                                                                                        !4)
@@ -882,14 +876,12 @@ member.[b,c], a < b program
                                                                                   [ (force
                                                                                        ((\!0
                                                                                           !0 ->
-                                                                                           case
-                                                                                             (constr 0
+                                                                                           delay
+                                                                                             (case
+                                                                                                !2
                                                                                                 [ !2
-                                                                                                , !1
-                                                                                                , (delay
-                                                                                                     False) ])
-                                                                                             [ (force
-                                                                                                  ifThenElse) ])
+                                                                                                , (force
+                                                                                                     !1) ]))
                                                                                           (!12
                                                                                              (!10
                                                                                                 !4)
@@ -1158,14 +1150,12 @@ member.[b,c], a = b program
                                                                                      [ (force
                                                                                           ((\!0
                                                                                              !0 ->
-                                                                                              case
-                                                                                                (constr 0
+                                                                                              delay
+                                                                                                (case
+                                                                                                   !2
                                                                                                    [ !2
-                                                                                                   , !1
-                                                                                                   , (delay
-                                                                                                        False) ])
-                                                                                                [ (force
-                                                                                                     ifThenElse) ])
+                                                                                                   , (force
+                                                                                                        !1) ]))
                                                                                              (!12
                                                                                                 (!10
                                                                                                    !4)
@@ -1446,14 +1436,12 @@ member.[b,c], a > b, a < c program
                                                                                   [ (force
                                                                                        ((\!0
                                                                                           !0 ->
-                                                                                           case
-                                                                                             (constr 0
+                                                                                           delay
+                                                                                             (case
+                                                                                                !2
                                                                                                 [ !2
-                                                                                                , !1
-                                                                                                , (delay
-                                                                                                     False) ])
-                                                                                             [ (force
-                                                                                                  ifThenElse) ])
+                                                                                                , (force
+                                                                                                     !1) ]))
                                                                                           (!12
                                                                                              (!10
                                                                                                 !4)
@@ -1722,14 +1710,12 @@ member.[b,c], a = c program
                                                                                      [ (force
                                                                                           ((\!0
                                                                                              !0 ->
-                                                                                              case
-                                                                                                (constr 0
+                                                                                              delay
+                                                                                                (case
+                                                                                                   !2
                                                                                                    [ !2
-                                                                                                   , !1
-                                                                                                   , (delay
-                                                                                                        False) ])
-                                                                                                [ (force
-                                                                                                     ifThenElse) ])
+                                                                                                   , (force
+                                                                                                        !1) ]))
                                                                                              (!12
                                                                                                 (!10
                                                                                                    !4)
@@ -2010,14 +1996,12 @@ member.[b,c], a > c program
                                                                                   [ (force
                                                                                        ((\!0
                                                                                           !0 ->
-                                                                                           case
-                                                                                             (constr 0
+                                                                                           delay
+                                                                                             (case
+                                                                                                !2
                                                                                                 [ !2
-                                                                                                , !1
-                                                                                                , (delay
-                                                                                                     False) ])
-                                                                                             [ (force
-                                                                                                  ifThenElse) ])
+                                                                                                , (force
+                                                                                                     !1) ]))
                                                                                           (!12
                                                                                              (!10
                                                                                                 !4)
@@ -2287,14 +2271,12 @@ hull.hull 3 5 contains 3 5 program
                                                                                         [ (force
                                                                                              ((\!0
                                                                                                 !0 ->
-                                                                                                 case
-                                                                                                   (constr 0
+                                                                                                 delay
+                                                                                                   (case
+                                                                                                      !2
                                                                                                       [ !2
-                                                                                                      , !1
-                                                                                                      , (delay
-                                                                                                           False) ])
-                                                                                                   [ (force
-                                                                                                        ifThenElse) ])
+                                                                                                      , (force
+                                                                                                           !1) ]))
                                                                                                 (!11
                                                                                                    (!9
                                                                                                       !4)
@@ -2672,14 +2654,12 @@ hull.2 not member of hull 3 5 program
                                                                                      [ (force
                                                                                           ((\!0
                                                                                              !0 ->
-                                                                                              case
-                                                                                                (constr 0
+                                                                                              delay
+                                                                                                (case
+                                                                                                   !2
                                                                                                    [ !2
-                                                                                                   , !1
-                                                                                                   , (delay
-                                                                                                        False) ])
-                                                                                                [ (force
-                                                                                                     ifThenElse) ])
+                                                                                                   , (force
+                                                                                                        !1) ]))
                                                                                              (!11
                                                                                                 (!9
                                                                                                    !4)
@@ -3022,14 +3002,12 @@ hull.6 not member of hull 3 5 program
                                                                                      [ (force
                                                                                           ((\!0
                                                                                              !0 ->
-                                                                                              case
-                                                                                                (constr 0
+                                                                                              delay
+                                                                                                (case
+                                                                                                   !2
                                                                                                    [ !2
-                                                                                                   , !1
-                                                                                                   , (delay
-                                                                                                        False) ])
-                                                                                                [ (force
-                                                                                                     ifThenElse) ])
+                                                                                                   , (force
+                                                                                                        !1) ]))
                                                                                              (!11
                                                                                                 (!9
                                                                                                    !4)
@@ -3373,14 +3351,12 @@ intersection.intersection [2,4] [3,5] contains [3,4] program
                                                                                         [ (force
                                                                                              ((\!0
                                                                                                 !0 ->
-                                                                                                 case
-                                                                                                   (constr 0
+                                                                                                 delay
+                                                                                                   (case
+                                                                                                      !2
                                                                                                       [ !2
-                                                                                                      , !1
-                                                                                                      , (delay
-                                                                                                           False) ])
-                                                                                                   [ (force
-                                                                                                        ifThenElse) ])
+                                                                                                      , (force
+                                                                                                           !1) ]))
                                                                                                 (!11
                                                                                                    (!9
                                                                                                       !4)
@@ -3754,14 +3730,12 @@ intersection.intersection [3,5] [2,4] contains [3,4] program
                                                                                         [ (force
                                                                                              ((\!0
                                                                                                 !0 ->
-                                                                                                 case
-                                                                                                   (constr 0
+                                                                                                 delay
+                                                                                                   (case
+                                                                                                      !2
                                                                                                       [ !2
-                                                                                                      , !1
-                                                                                                      , (delay
-                                                                                                           False) ])
-                                                                                                   [ (force
-                                                                                                        ifThenElse) ])
+                                                                                                      , (force
+                                                                                                           !1) ]))
                                                                                                 (!11
                                                                                                    (!9
                                                                                                       !4)

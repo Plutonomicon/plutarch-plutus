@@ -1244,9 +1244,7 @@ properFraction.-1/2 program
                                 [ (\!0 !0 ->
                                      force
                                        ((\!0 !0 ->
-                                           case
-                                             (constr 0 [!2, !1, (delay False)])
-                                             [(force ifThenElse)])
+                                           delay (case !2 [!2, (force !1)]))
                                           (equalsInteger !2 0)
                                           (delay
                                              ((\!0 ->
@@ -1354,9 +1352,7 @@ properFraction.-3/2 program
                                 [ (\!0 !0 ->
                                      force
                                        ((\!0 !0 ->
-                                           case
-                                             (constr 0 [!2, !1, (delay False)])
-                                             [(force ifThenElse)])
+                                           delay (case !2 [!2, (force !1)]))
                                           (equalsInteger !2 -1)
                                           (delay
                                              ((\!0 ->
@@ -1464,9 +1460,7 @@ properFraction.-4/3 program
                                 [ (\!0 !0 ->
                                      force
                                        ((\!0 !0 ->
-                                           case
-                                             (constr 0 [!2, !1, (delay False)])
-                                             [(force ifThenElse)])
+                                           delay (case !2 [!2, (force !1)]))
                                           (equalsInteger !2 -1)
                                           (delay
                                              ((\!0 ->

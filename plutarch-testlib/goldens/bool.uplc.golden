@@ -2,38 +2,23 @@ pnot.lam program 1.1.0 (\!0 -> case !1 [True, False])
 pnot.app program 1.1.0 (case True [True, False])
 pand.tf program
   1.1.0
-  (force
-     ((\!0 -> case (constr 0 [True, !1, (delay False)]) [(force ifThenElse)])
-        (delay False)))
+  (force ((\!0 -> delay (case True [True, (force !1)])) (delay False)))
 pand.ft program
   1.1.0
-  (force
-     ((\!0 -> case (constr 0 [False, !1, (delay False)]) [(force ifThenElse)])
-        (delay True)))
+  (force ((\!0 -> delay (case False [False, (force !1)])) (delay True)))
 pand.tt program
   1.1.0
-  (force
-     ((\!0 -> case (constr 0 [True, !1, (delay False)]) [(force ifThenElse)])
-        (delay True)))
+  (force ((\!0 -> delay (case True [True, (force !1)])) (delay True)))
 pand.ff program
   1.1.0
-  (force
-     ((\!0 -> case (constr 0 [False, !1, (delay False)]) [(force ifThenElse)])
-        (delay False)))
-pand.laziness.pand program
-  1.1.0
-  ((\!0 -> case (constr 0 [False, !1, (delay False)]) [(force ifThenElse)])
-     (delay error))
+  (force ((\!0 -> delay (case False [False, (force !1)])) (delay False)))
+pand.laziness.pand program 1.1.0 ((\!0 -> delay (case False [False, (force !1)])) (delay error))
 pand.laziness.op program
   1.1.0
-  (force
-     ((\!0 -> case (constr 0 [False, !1, (delay False)]) [(force ifThenElse)])
-        (delay error)))
+  (force ((\!0 -> delay (case False [False, (force !1)])) (delay error)))
 pand.laziness.pand.perror.op program
   1.1.0
-  (force
-     ((\!0 -> case (constr 0 [True, !1, (delay False)]) [(force ifThenElse)])
-        (delay error)))
+  (force ((\!0 -> delay (case True [True, (force !1)])) (delay error)))
 por.tf program 1.1.0 (force (force ifThenElse True (delay True) (delay False)))
 por.ft program 1.1.0 (force (force ifThenElse False (delay True) (delay True)))
 por.tt program 1.1.0 (force (force ifThenElse True (delay True) (delay True)))
