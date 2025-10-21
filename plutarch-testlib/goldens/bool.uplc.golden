@@ -19,14 +19,14 @@ pand.laziness.op program
 pand.laziness.pand.perror.op program
   1.1.0
   (force ((\!0 -> delay (case True [True, (force !1)])) (delay error)))
-por.tf program 1.1.0 (force (force ifThenElse True (delay True) (delay False)))
-por.ft program 1.1.0 (force (force ifThenElse False (delay True) (delay True)))
-por.tt program 1.1.0 (force (force ifThenElse True (delay True) (delay True)))
-por.ff program 1.1.0 (force (force ifThenElse False (delay True) (delay False)))
-por.laziness.por program 1.1.0 (force ifThenElse True (delay True) (delay error))
-por.laziness.op program 1.1.0 (force (force ifThenElse True (delay True) (delay error)))
-por.laziness.pand.perror.op.true program 1.1.0 (force (force ifThenElse True (delay True) (delay error)))
-por.laziness.pand.perror.op.false program 1.1.0 (force (force ifThenElse False (delay True) (delay error)))
+por.tf program 1.1.0 (force ((\!0 -> case True [!1, (delay True)]) (delay False)))
+por.ft program 1.1.0 (force ((\!0 -> case False [!1, (delay True)]) (delay True)))
+por.tt program 1.1.0 (force ((\!0 -> case True [!1, (delay True)]) (delay True)))
+por.ff program 1.1.0 (force ((\!0 -> case False [!1, (delay True)]) (delay False)))
+por.laziness.por program 1.1.0 ((\!0 -> case True [!1, (delay True)]) (delay error))
+por.laziness.op program 1.1.0 (force ((\!0 -> case True [!1, (delay True)]) (delay error)))
+por.laziness.pand.perror.op.true program 1.1.0 (force ((\!0 -> case True [!1, (delay True)]) (delay error)))
+por.laziness.pand.perror.op.false program 1.1.0 (force ((\!0 -> case False [!1, (delay True)]) (delay error)))
 pcond.direct-1 program 1.1.0 1
 pcond.pcond-1 program 1.1.0 1
 pcond.direct-2 program 1.1.0 (case (lessThanInteger 1 2) [2, 1])

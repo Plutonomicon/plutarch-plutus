@@ -130,14 +130,14 @@ pand = phoistAcyclic $ plam $ \x y -> pdelay $ pif x (pforce y) x
 @since 1.10.0
 -}
 pand' :: forall (s :: S). Term s (PBool :--> PBool :--> PBool)
-pand' = phoistAcyclic $ plam $ \x y -> pif' # x # y # pfalse
+pand' = phoistAcyclic $ plam $ \x y -> pif x y x
 
 {- | Hoisted lazy OR at the Plutarch level.
 
 @since 1.10.0
 -}
 por :: forall (s :: S). Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x -> pif' # x # phoistAcyclic (pdelay ptrue)
+por = phoistAcyclic $ plam $ \x -> pif x (phoistAcyclic (pdelay ptrue))
 
 {- | As 'por', but strict.
 
