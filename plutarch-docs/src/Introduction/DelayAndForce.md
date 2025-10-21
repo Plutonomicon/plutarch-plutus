@@ -3,6 +3,7 @@
 <p>
 
 ```haskell
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Plutarch.Docs.DelayAndForce (hif, pif') where 
 import Plutarch.Prelude
 ```

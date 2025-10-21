@@ -583,10 +583,10 @@ plovelaceValueOf = phoistAcyclic $
     pmatch (pto $ pto $ pto value) $ \case
       PNil -> 0
       PCons x _ ->
-        pif'
-          # (pfstBuiltin # x #== padaSymbolData)
-          # pfromData (psndBuiltin #$ phead #$ pto $ pto $ pfromData $ psndBuiltin # x)
-          # 0
+        pif
+          (pfstBuiltin # x #== padaSymbolData)
+          (pfromData (psndBuiltin #$ phead #$ pto $ pto $ pfromData $ psndBuiltin # x))
+          0
 
 {- | Test if the 'PSortedValue' contains nothing except an Ada entry.
 

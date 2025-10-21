@@ -17,7 +17,7 @@ por.laziness.pand.perror.op.true {"exBudgetCPU":236149,"exBudgetMemory":1101,"sc
 por.laziness.pand.perror.op.false {"exBudgetCPU":76149,"exBudgetMemory":101,"scriptSizeBytes":13}
 pcond.direct-1 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
 pcond.pcond-1 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
-pcond.direct-2 {"exBudgetCPU":329439,"exBudgetMemory":1402,"scriptSizeBytes":22}
-pcond.pcond-2 {"exBudgetCPU":329439,"exBudgetMemory":1402,"scriptSizeBytes":22}
-pcond.direct-3 {"exBudgetCPU":377439,"exBudgetMemory":1702,"scriptSizeBytes":40}
-pcond.pcond-3 {"exBudgetCPU":377439,"exBudgetMemory":1702,"scriptSizeBytes":40}
+pcond.direct-2 {"exBudgetCPU":157390,"exBudgetMemory":801,"scriptSizeBytes":17}
+pcond.pcond-2 {"exBudgetCPU":157390,"exBudgetMemory":801,"scriptSizeBytes":17}
+pcond.direct-3 {"exBudgetCPU":157390,"exBudgetMemory":801,"scriptSizeBytes":28}
+pcond.pcond-3 {"exBudgetCPU":157390,"exBudgetMemory":801,"scriptSizeBytes":28}

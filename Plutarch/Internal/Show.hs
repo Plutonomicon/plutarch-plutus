@@ -30,7 +30,7 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
-import Plutarch.Builtin.Bool (PBool, pif, pif')
+import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
@@ -194,7 +194,7 @@ productGroup wrap sep = \case
  Works for all types.
 -}
 pshowAndErr :: Term s a -> Term s b
-pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif' # punsafeCoerce x # x # x) # 0
+pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif (punsafeCoerce x) x x) # 0
 
 --------------------------------------------------------------------------------
 

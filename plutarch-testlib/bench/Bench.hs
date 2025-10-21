@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Main (main) where
 
@@ -84,9 +85,29 @@ main =
       , testGroup "AssocMap" assocMapBenches
       , testGroup "PBuiltinPair" pbuiltinPairBenches
       , testGroup "pfix" pfixBenches
+      , testGroup "pif" pifBenches
       ]
 
 -- Suites
+
+pifBenches :: [TestTree]
+pifBenches =
+  [ bench
+      "pif lazy"
+      ( precompileTerm (plam $ \c x y -> pif c x y)
+          # pconstant @PBool True
+          # pconstant @PInteger 1
+          # pconstant @PInteger 2
+      )
+  , bcompare "$(NF-1) == \"pif\" && $NF == \"pif lazy\"" $
+      bench
+        "pif strict"
+        ( precompileTerm (plam $ \c x y -> pif' # c # x # y)
+            # pconstant @PBool True
+            # pconstant @PInteger 1
+            # pconstant @PInteger 2
+        )
+  ]
 
 pfixBenches :: [TestTree]
 pfixBenches =

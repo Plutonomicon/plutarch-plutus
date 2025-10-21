@@ -20,6 +20,7 @@
   script size.
 * All previous internal uses of `pfix` are replaced with uses of `pfixHoisted`
   for consistency.
+* `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
 
 ## Removed
 

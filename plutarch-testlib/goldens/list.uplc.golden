@@ -32,13 +32,7 @@ ptail program
                         case
                           !3
                           [ (\!0 !0 ->
-                               force
-                                 (case
-                                    (constr 0
-                                       [ (equalsInteger !4 !2)
-                                       , (delay (!7 !3 !1))
-                                       , (delay False) ])
-                                    [(force ifThenElse)]))
+                               case (equalsInteger !4 !2) [False, (!7 !3 !1)])
                           , False ])
                    , (case !1 [(\!0 !0 -> False), True]) ])
               (!1 [2,3,4,5,6,7,8,9,10])
@@ -74,32 +68,28 @@ pconcat.identity program
             (\!0 ->
                (\!0 ->
                   (\!0 ->
-                     (\!0 ->
-                        force
-                          ((\!0 !0 ->
-                              case (constr 0 [!2, !1, (delay False)]) [!4])
-                             (!1
-                                (!3 (!4 !7) (constr 1 []))
-                                (!3 (constr 1 []) (!4 !7)))
-                             (delay (!1 (!3 (constr 1 []) (!4 !7)) (!4 !7)))))
-                       (!4
-                          (\!0 !0 !0 ->
-                             case
-                               !2
-                               [ (\!0 !0 ->
-                                    case
-                                      !3
-                                      [ (\!0 !0 ->
-                                           force
-                                             (case
-                                                (constr 0
-                                                   [ (equalsInteger !4 !2)
-                                                   , (delay (!7 !3 !1))
-                                                   , (delay False) ])
-                                                [!8]))
-                                      , False ])
-                               , (case !1 [(\!0 !0 -> False), True]) ])))
-                    (force ifThenElse))
+                     force
+                       ((\!0 !0 ->
+                           case
+                             (constr 0 [!2, !1, (delay False)])
+                             [(force ifThenElse)])
+                          (!1
+                             (!2 (!3 !6) (constr 1 []))
+                             (!2 (constr 1 []) (!3 !6)))
+                          (delay (!1 (!2 (constr 1 []) (!3 !6)) (!3 !6)))))
+                    (!3
+                       (\!0 !0 !0 ->
+                          case
+                            !2
+                            [ (\!0 !0 ->
+                                 case
+                                   !3
+                                   [ (\!0 !0 ->
+                                        case
+                                          (equalsInteger !4 !2)
+                                          [False, (!7 !3 !1)])
+                                   , False ])
+                            , (case !1 [(\!0 !0 -> False), True]) ])))
                  (\!0 !0 ->
                     !4 (\!0 !0 -> case !1 [(\!0 !0 -> !9 !2 (!4 !1)), !3]) !2))
               (!1
@@ -121,13 +111,7 @@ pmap.eg program
                         case
                           !3
                           [ (\!0 !0 ->
-                               force
-                                 (case
-                                    (constr 0
-                                       [ (equalsInteger !4 !2)
-                                       , (delay (!7 !3 !1))
-                                       , (delay False) ])
-                                    [(force ifThenElse)]))
+                               case (equalsInteger !4 !2) [False, (!7 !3 !1)])
                           , False ])
                    , (case !1 [(\!0 !0 -> False), True]) ])
               ((\!0 ->
@@ -150,14 +134,7 @@ pmap.identity program
              [ (\!0 !0 ->
                   case
                     !3
-                    [ (\!0 !0 ->
-                         force
-                           (case
-                              (constr 0
-                                 [ (equalsInteger !4 !2)
-                                 , (delay (!7 !3 !1))
-                                 , (delay False) ])
-                              [(force ifThenElse)]))
+                    [ (\!0 !0 -> case (equalsInteger !4 !2) [False, (!7 !3 !1)])
                     , False ])
              , (case !1 [(\!0 !0 -> False), True]) ])
         ((\!0 ->
@@ -176,42 +153,27 @@ pfilter.evens program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               !3
-                 (\!0 !0 !0 ->
-                    case
-                      !2
-                      [ (\!0 !0 ->
-                           case
-                             !3
-                             [ (\!0 !0 ->
-                                  force
-                                    (case
-                                       (constr 0
-                                          [ (equalsInteger !4 !2)
-                                          , (delay (!7 !3 !1))
-                                          , (delay False) ])
-                                       [!8]))
-                             , False ])
-                      , (case !1 [(\!0 !0 -> False), True]) ])
-                 ((\!0 ->
-                     !4
-                       (\!0 !0 ->
-                          case
-                            !1
-                            [ (\!0 !0 ->
-                                 force
-                                   (case
-                                      (constr 0
-                                         [ (!5 !2)
-                                         , (delay (!9 !2 (!4 !1)))
-                                         , (delay (!4 !1)) ])
-                                      [!6]))
-                            , (constr 1 []) ]))
-                    (\!0 -> equalsInteger (modInteger !1 2) 0)
-                    (!2 [1,2,3,4,5,6,7,8,9,10]))
-                 (!2 [2,4,6,8,10]))
-              (force ifThenElse))
+            !2
+              (\!0 !0 !0 ->
+                 case
+                   !2
+                   [ (\!0 !0 ->
+                        case
+                          !3
+                          [ (\!0 !0 ->
+                               case (equalsInteger !4 !2) [False, (!7 !3 !1)])
+                          , False ])
+                   , (case !1 [(\!0 !0 -> False), True]) ])
+              ((\!0 ->
+                  !3
+                    (\!0 !0 ->
+                       case
+                         !1
+                         [ (\!0 !0 -> case (!5 !2) [(!4 !1), (!8 !2 (!4 !1))])
+                         , (constr 1 []) ]))
+                 (\!0 -> equalsInteger (modInteger !1 2) 0)
+                 (!1 [1,2,3,4,5,6,7,8,9,10]))
+              (!1 [2,4,6,8,10]))
            (!1 (\!0 !0 -> case !1 [(\!0 !0 -> !6 !2 (!4 !1)), (constr 1 [])])))
         (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
      (\!0 !0 -> constr 0 [!2, !1]))
@@ -220,42 +182,27 @@ pfilter.gt5 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               !3
-                 (\!0 !0 !0 ->
-                    case
-                      !2
-                      [ (\!0 !0 ->
-                           case
-                             !3
-                             [ (\!0 !0 ->
-                                  force
-                                    (case
-                                       (constr 0
-                                          [ (equalsInteger !4 !2)
-                                          , (delay (!7 !3 !1))
-                                          , (delay False) ])
-                                       [!8]))
-                             , False ])
-                      , (case !1 [(\!0 !0 -> False), True]) ])
-                 ((\!0 ->
-                     !4
-                       (\!0 !0 ->
-                          case
-                            !1
-                            [ (\!0 !0 ->
-                                 force
-                                   (case
-                                      (constr 0
-                                         [ (!5 !2)
-                                         , (delay (!9 !2 (!4 !1)))
-                                         , (delay (!4 !1)) ])
-                                      [!6]))
-                            , (constr 1 []) ]))
-                    (\!0 -> lessThanInteger 5 !1)
-                    (!2 [1,2,3,4,5,6,7,8,9,10]))
-                 (!2 [6,7,8,9,10]))
-              (force ifThenElse))
+            !2
+              (\!0 !0 !0 ->
+                 case
+                   !2
+                   [ (\!0 !0 ->
+                        case
+                          !3
+                          [ (\!0 !0 ->
+                               case (equalsInteger !4 !2) [False, (!7 !3 !1)])
+                          , False ])
+                   , (case !1 [(\!0 !0 -> False), True]) ])
+              ((\!0 ->
+                  !3
+                    (\!0 !0 ->
+                       case
+                         !1
+                         [ (\!0 !0 -> case (!5 !2) [(!4 !1), (!8 !2 (!4 !1))])
+                         , (constr 1 []) ]))
+                 (\!0 -> lessThanInteger 5 !1)
+                 (!1 [1,2,3,4,5,6,7,8,9,10]))
+              (!1 [6,7,8,9,10]))
            (!1 (\!0 !0 -> case !1 [(\!0 !0 -> !6 !2 (!4 !1)), (constr 1 [])])))
         (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
      (\!0 !0 -> constr 0 [!2, !1]))
@@ -273,13 +220,9 @@ pzipWith.double program
                            case
                              !3
                              [ (\!0 !0 ->
-                                  force
-                                    (case
-                                       (constr 0
-                                          [ (equalsInteger !4 !2)
-                                          , (delay (!7 !3 !1))
-                                          , (delay False) ])
-                                       [(force ifThenElse)]))
+                                  case
+                                    (equalsInteger !4 !2)
+                                    [False, (!7 !3 !1)])
                              , False ])
                       , (case !1 [(\!0 !0 -> False), True]) ])
                  (case
@@ -374,127 +317,73 @@ elemAt.elemAt_3_[1..10] program
   1.1.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            force
-              (case
-                 (constr 0
-                    [ (lessThanInteger 3 0)
-                    , (delay
-                         (force
-                            (force trace
-                               "pelemAt: negative index"
-                               (delay error))))
-                    , (delay
-                         (!3
-                            (\!0 !0 !0 ->
-                               force
-                                 (case
-                                    (constr 0
-                                       [ (equalsInteger !2 0)
-                                       , (delay
-                                            (case !1 [(\!0 !0 -> !2), error]))
-                                       , (delay
-                                            (!3
-                                               (subtractInteger !2 1)
-                                               (case
-                                                  !1
-                                                  [(\!0 !0 -> !1), error]))) ])
-                                    [!5]))
-                            3
-                            !1)) ])
-                 [!2]))
-           (!2
-              (\!0 !0 ->
-                 case
-                   !1
-                   [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !1))
-                   , (constr 1 []) ])
-              [1,2,3,4,5,6,7,8,9,10]))
-        (force ifThenElse))
+         case
+           (lessThanInteger 3 0)
+           [ (!2
+                (\!0 !0 !0 ->
+                   case
+                     (equalsInteger !2 0)
+                     [ (!3
+                          (subtractInteger !2 1)
+                          (case !1 [(\!0 !0 -> !1), error]))
+                     , (case !1 [(\!0 !0 -> !2), error]) ])
+                3
+                !1)
+           , (force (force trace "pelemAt: negative index" (delay error))) ])
+        (!1
+           (\!0 !0 ->
+              case
+                !1
+                [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !1)), (constr 1 [])])
+           [1,2,3,4,5,6,7,8,9,10]))
      (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
 elemAt.elemAt_0_[1..10] program
   1.1.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            force
-              (case
-                 (constr 0
-                    [ (lessThanInteger 0 0)
-                    , (delay
-                         (force
-                            (force trace
-                               "pelemAt: negative index"
-                               (delay error))))
-                    , (delay
-                         (!3
-                            (\!0 !0 !0 ->
-                               force
-                                 (case
-                                    (constr 0
-                                       [ (equalsInteger !2 0)
-                                       , (delay
-                                            (case !1 [(\!0 !0 -> !2), error]))
-                                       , (delay
-                                            (!3
-                                               (subtractInteger !2 1)
-                                               (case
-                                                  !1
-                                                  [(\!0 !0 -> !1), error]))) ])
-                                    [!5]))
-                            0
-                            !1)) ])
-                 [!2]))
-           (!2
-              (\!0 !0 ->
-                 case
-                   !1
-                   [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !1))
-                   , (constr 1 []) ])
-              [1,2,3,4,5,6,7,8,9,10]))
-        (force ifThenElse))
+         case
+           (lessThanInteger 0 0)
+           [ (!2
+                (\!0 !0 !0 ->
+                   case
+                     (equalsInteger !2 0)
+                     [ (!3
+                          (subtractInteger !2 1)
+                          (case !1 [(\!0 !0 -> !1), error]))
+                     , (case !1 [(\!0 !0 -> !2), error]) ])
+                0
+                !1)
+           , (force (force trace "pelemAt: negative index" (delay error))) ])
+        (!1
+           (\!0 !0 ->
+              case
+                !1
+                [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !1)), (constr 1 [])])
+           [1,2,3,4,5,6,7,8,9,10]))
      (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
 elemAt.elemAt_9_[1..10] program
   1.1.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            force
-              (case
-                 (constr 0
-                    [ (lessThanInteger 9 0)
-                    , (delay
-                         (force
-                            (force trace
-                               "pelemAt: negative index"
-                               (delay error))))
-                    , (delay
-                         (!3
-                            (\!0 !0 !0 ->
-                               force
-                                 (case
-                                    (constr 0
-                                       [ (equalsInteger !2 0)
-                                       , (delay
-                                            (case !1 [(\!0 !0 -> !2), error]))
-                                       , (delay
-                                            (!3
-                                               (subtractInteger !2 1)
-                                               (case
-                                                  !1
-                                                  [(\!0 !0 -> !1), error]))) ])
-                                    [!5]))
-                            9
-                            !1)) ])
-                 [!2]))
-           (!2
-              (\!0 !0 ->
-                 case
-                   !1
-                   [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !1))
-                   , (constr 1 []) ])
-              [1,2,3,4,5,6,7,8,9,10]))
-        (force ifThenElse))
+         case
+           (lessThanInteger 9 0)
+           [ (!2
+                (\!0 !0 !0 ->
+                   case
+                     (equalsInteger !2 0)
+                     [ (!3
+                          (subtractInteger !2 1)
+                          (case !1 [(\!0 !0 -> !1), error]))
+                     , (case !1 [(\!0 !0 -> !2), error]) ])
+                9
+                !1)
+           , (force (force trace "pelemAt: negative index" (delay error))) ])
+        (!1
+           (\!0 !0 ->
+              case
+                !1
+                [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !1)), (constr 1 [])])
+           [1,2,3,4,5,6,7,8,9,10]))
      (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
 find.find_(==3)_[1..4] program
   1.1.0
@@ -503,14 +392,7 @@ find.find_(==3)_[1..4] program
         (\!0 !0 !0 ->
            case
              !1
-             [ (\!0 !0 ->
-                  force
-                    (case
-                       (constr 0
-                          [ (!4 !2)
-                          , (delay (constr 0 [!2]))
-                          , (delay (!5 !4 !1)) ])
-                       [(force ifThenElse)]))
+             [ (\!0 !0 -> case (!4 !2) [(!5 !4 !1), (constr 0 [!2])])
              , (constr 1 []) ])
         (\!0 -> equalsInteger !1 3)
         (!1
@@ -527,14 +409,7 @@ find.find_(==5)_[1..4] program
         (\!0 !0 !0 ->
            case
              !1
-             [ (\!0 !0 ->
-                  force
-                    (case
-                       (constr 0
-                          [ (!4 !2)
-                          , (delay (constr 0 [!2]))
-                          , (delay (!5 !4 !1)) ])
-                       [(force ifThenElse)]))
+             [ (\!0 !0 -> case (!4 !2) [(!5 !4 !1), (constr 0 [!2])])
              , (constr 1 []) ])
         (\!0 -> equalsInteger !1 5)
         (!1

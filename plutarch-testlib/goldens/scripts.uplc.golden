@@ -1,116 +1,90 @@
 auth_validator.0 program
   1.1.0
   (\!0 !0 !0 ->
-     force
+     case
        (case
           (constr 0
-             [ (case
-                  (constr 0
-                     [ #3131363631613861636139623039626239336565666461323935623564613262653366393434643166343235336162323964613137646235383066353064303264323632313865333366626261356530636331623063306361646662363761356639613930313537646363313965656364376339333733623034313563383838
-                     , (unBData !3)
-                     , (unBData !2) ])
-                  [verifyEd25519Signature])
-             , (delay ())
-             , (delay error) ])
-          [(force ifThenElse)]))
-auth_validator.hash program 1.1.0 "581c3a6c55e04ee0299b8110fe00a7bc49877bb2b6a824e00f69aff8d42b"
+             [ #3131363631613861636139623039626239336565666461323935623564613262653366393434643166343235336162323964613137646235383066353064303264323632313865333366626261356530636331623063306361646662363761356639613930313537646363313965656364376339333733623034313563383838
+             , (unBData !3)
+             , (unBData !2) ])
+          [verifyEd25519Signature])
+       [error, ()])
+auth_validator.hash program 1.1.0 "581c4396a3e5d1dab0145ad87f0f74c71a418f314e82ec4f3373114a5300"
 auth_policy.0 program
   1.1.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            (\!0 !0 !0 ->
-               force
-                 (case
-                    (constr 0
-                       [ ((\!0 ->
-                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                            (\!0 !0 ->
-                               case
-                                 !1
-                                 [ (\!0 !0 ->
-                                      force
-                                        (case
-                                           (constr 0
-                                              [ (equalsData
-                                                   !2
-                                                   (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                                              , (delay True)
-                                              , (delay (!4 !1)) ])
-                                           [!7]))
-                                 , False ])
-                            (unListData
-                               (!5
-                                  (!4
-                                     (!4
-                                        (!4
-                                           (!4
-                                              (!4
-                                                 (!4
-                                                    (!4
-                                                       (!4
-                                                          (!6
-                                                             (unConstrData
-                                                                (!5
-                                                                   (!6
-                                                                      (unConstrData
-                                                                         !1))))))))))))))))
-                       , (delay ())
-                       , (delay error) ])
-                    [!3]))
-              (force ifThenElse))
+         (\!0 !0 !0 ->
+            case
+              ((\!0 ->
+                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                 (\!0 !0 ->
+                    case
+                      !1
+                      [ (\!0 !0 ->
+                           case
+                             (equalsData
+                                !2
+                                (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                             [(!4 !1), True])
+                      , False ])
+                 (unListData
+                    (!4
+                       (!3
+                          (!3
+                             (!3
+                                (!3
+                                   (!3
+                                      (!3
+                                         (!3
+                                            (!3
+                                               (!5
+                                                  (unConstrData
+                                                     (!4
+                                                        (!5
+                                                           (unConstrData
+                                                              !1))))))))))))))))
+              [error, ()])
            (force tailList))
         (force headList))
      (force (force sndPair)))
-auth_policy.hash program 1.1.0 "581cc9c6b42702a8afbfb66d8ea38f69856b2b73c7edaca3ba28b0b65ce3"
+auth_policy.hash program 1.1.0 "581ca64b4be5ec65d5ce1ada719fcb099eb1fde620615d6583ade4405bda"
 auth_stake_validator.0 program
   1.1.0
   ((\!0 ->
       (\!0 ->
-         (\!0 ->
-            (\!0 !0 !0 ->
-               force
-                 (case
-                    (constr 0
-                       [ ((\!0 ->
-                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
-                            (\!0 !0 ->
-                               case
-                                 !1
-                                 [ (\!0 !0 ->
-                                      force
-                                        (case
-                                           (constr 0
-                                              [ (equalsData
-                                                   !2
-                                                   (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                                              , (delay True)
-                                              , (delay (!4 !1)) ])
-                                           [!7]))
-                                 , False ])
-                            (unListData
-                               (!5
-                                  (!4
-                                     (!4
-                                        (!4
-                                           (!4
-                                              (!4
-                                                 (!4
-                                                    (!4
-                                                       (!4
-                                                          (!6
-                                                             (unConstrData
-                                                                (!5
-                                                                   (!6
-                                                                      (unConstrData
-                                                                         !1))))))))))))))))
-                       , (delay ())
-                       , (delay error) ])
-                    [!3]))
-              (force ifThenElse))
+         (\!0 !0 !0 ->
+            case
+              ((\!0 ->
+                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                 (\!0 !0 ->
+                    case
+                      !1
+                      [ (\!0 !0 ->
+                           case
+                             (equalsData
+                                !2
+                                (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
+                             [(!4 !1), True])
+                      , False ])
+                 (unListData
+                    (!4
+                       (!3
+                          (!3
+                             (!3
+                                (!3
+                                   (!3
+                                      (!3
+                                         (!3
+                                            (!3
+                                               (!5
+                                                  (unConstrData
+                                                     (!4
+                                                        (!5
+                                                           (unConstrData
+                                                              !1))))))))))))))))
+              [error, ()])
            (force tailList))
         (force headList))
      (force (force sndPair)))
-auth_stake_validator.hash program 1.1.0 "581cc9c6b42702a8afbfb66d8ea38f69856b2b73c7edaca3ba28b0b65ce3"
+auth_stake_validator.hash program 1.1.0 "581ca64b4be5ec65d5ce1ada719fcb099eb1fde620615d6583ade4405bda"

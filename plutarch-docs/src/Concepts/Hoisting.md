@@ -3,6 +3,7 @@
 <p>
 
 ```haskell
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Plutarch.Docs.Hoisting (hor, (#||)) where
 import Plutarch.Prelude hiding ((#||))
 ```

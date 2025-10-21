@@ -1,26 +1,26 @@
 literal {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":11}
-ops.+ {"exBudgetCPU":12967037,"exBudgetMemory":53765,"scriptSizeBytes":294}
-ops.- {"exBudgetCPU":12967037,"exBudgetMemory":53765,"scriptSizeBytes":294}
-ops.* {"exBudgetCPU":22734246,"exBudgetMemory":92717,"scriptSizeBytes":334}
-ops.harmonic-sum {"exBudgetCPU":33786011,"exBudgetMemory":137371,"scriptSizeBytes":332}
-ops.multi-product {"exBudgetCPU":36228046,"exBudgetMemory":148781,"scriptSizeBytes":342}
-ops.abs {"exBudgetCPU":5316788,"exBudgetMemory":22327,"scriptSizeBytes":240}
-ops.signum {"exBudgetCPU":5359962,"exBudgetMemory":22427,"scriptSizeBytes":277}
-compare {"exBudgetCPU":11056692,"exBudgetMemory":46553,"scriptSizeBytes":286}
-round.5/3 {"exBudgetCPU":7641759,"exBudgetMemory":30137,"scriptSizeBytes":330}
-round.4/3 {"exBudgetCPU":6901447,"exBudgetMemory":27134,"scriptSizeBytes":330}
-round.-5/2 {"exBudgetCPU":7317628,"exBudgetMemory":28237,"scriptSizeBytes":330}
-round.-1/4 {"exBudgetCPU":6874655,"exBudgetMemory":26336,"scriptSizeBytes":330}
-truncate.5/4 {"exBudgetCPU":5354728,"exBudgetMemory":22125,"scriptSizeBytes":233}
-truncate.7/4 {"exBudgetCPU":6095040,"exBudgetMemory":25128,"scriptSizeBytes":233}
-truncate.1/4 {"exBudgetCPU":4614416,"exBudgetMemory":19122,"scriptSizeBytes":233}
-truncate.-7/4 {"exBudgetCPU":6308248,"exBudgetMemory":25830,"scriptSizeBytes":233}
-properFraction.-1/2 {"exBudgetCPU":14997212,"exBudgetMemory":61479,"scriptSizeBytes":351}
-properFraction.-3/2 {"exBudgetCPU":15737524,"exBudgetMemory":64482,"scriptSizeBytes":351}
-properFraction.-4/3 {"exBudgetCPU":15737524,"exBudgetMemory":64482,"scriptSizeBytes":351}
+ops.+ {"exBudgetCPU":9782057,"exBudgetMemory":43345,"scriptSizeBytes":268}
+ops.- {"exBudgetCPU":9782057,"exBudgetMemory":43345,"scriptSizeBytes":268}
+ops.* {"exBudgetCPU":17364580,"exBudgetMemory":75283,"scriptSizeBytes":307}
+ops.harmonic-sum {"exBudgetCPU":25607463,"exBudgetMemory":110919,"scriptSizeBytes":306}
+ops.multi-product {"exBudgetCPU":26957155,"exBudgetMemory":118822,"scriptSizeBytes":316}
+ops.abs {"exBudgetCPU":4004396,"exBudgetMemory":17919,"scriptSizeBytes":213}
+ops.signum {"exBudgetCPU":3891521,"exBudgetMemory":17518,"scriptSizeBytes":240}
+compare {"exBudgetCPU":8495908,"exBudgetMemory":38137,"scriptSizeBytes":260}
+round.5/3 {"exBudgetCPU":5861220,"exBudgetMemory":24226,"scriptSizeBytes":283}
+round.4/3 {"exBudgetCPU":5276957,"exBudgetMemory":21724,"scriptSizeBytes":283}
+round.-5/2 {"exBudgetCPU":5693138,"exBudgetMemory":22827,"scriptSizeBytes":283}
+round.-1/4 {"exBudgetCPU":5250165,"exBudgetMemory":20926,"scriptSizeBytes":283}
+truncate.5/4 {"exBudgetCPU":4042336,"exBudgetMemory":17717,"scriptSizeBytes":207}
+truncate.7/4 {"exBudgetCPU":4626599,"exBudgetMemory":20219,"scriptSizeBytes":207}
+truncate.1/4 {"exBudgetCPU":3458073,"exBudgetMemory":15215,"scriptSizeBytes":207}
+truncate.-7/4 {"exBudgetCPU":4839807,"exBudgetMemory":20921,"scriptSizeBytes":207}
+properFraction.-1/2 {"exBudgetCPU":11828232,"exBudgetMemory":51159,"scriptSizeBytes":325}
+properFraction.-3/2 {"exBudgetCPU":12412495,"exBudgetMemory":53661,"scriptSizeBytes":325}
+properFraction.-4/3 {"exBudgetCPU":12412495,"exBudgetMemory":53661,"scriptSizeBytes":325}
 data.id.0.5 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":11}
 data.id.2 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":11}
-data.id.11/3 {"exBudgetCPU":5883110,"exBudgetMemory":24627,"scriptSizeBytes":229}
-div by 0.1/0 {"exBudgetCPU":278933,"exBudgetMemory":136,"scriptSizeBytes":229}
-div by 0.recip 0 {"exBudgetCPU":187980,"exBudgetMemory":134,"scriptSizeBytes":118}
-div by 0.1/(1-1) {"exBudgetCPU":4825994,"exBudgetMemory":20158,"scriptSizeBytes":279}
+data.id.11/3 {"exBudgetCPU":4414669,"exBudgetMemory":19718,"scriptSizeBytes":202}
+div by 0.1/0 {"exBudgetCPU":202884,"exBudgetMemory":135,"scriptSizeBytes":202}
+div by 0.recip 0 {"exBudgetCPU":111931,"exBudgetMemory":133,"scriptSizeBytes":105}
+div by 0.1/(1-1) {"exBudgetCPU":1169700,"exBudgetMemory":152,"scriptSizeBytes":250}

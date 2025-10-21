@@ -26,8 +26,11 @@ import Data.Kind (Type)
 import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
   PDelayed,
+  RawTerm (RCase),
   S,
-  Term,
+  Term (Term),
+  TermResult (TermResult),
+  asRawTerm,
   pdelay,
   pforce,
   phoistAcyclic,
@@ -64,6 +67,7 @@ pbuiltinIfThenElse = punsafeBuiltin PLC.IfThenElse
 
 @since 1.10.0
 -}
+{-# DEPRECATED pif' "Use pif instead" #-}
 pif' ::
   forall (a :: S -> Type) (s :: S).
   Term s (PBool :--> a :--> a :--> a)
@@ -79,8 +83,12 @@ pif ::
   Term s a ->
   Term s a ->
   Term s a
-pif cond ifT ifF =
-  pforce $ pif' # cond # pdelay ifT # pdelay ifF
+pif cond ifT ifF = Term $ \level -> do
+  TermResult condRaw depsCond <- asRawTerm cond level
+  TermResult handleFalse depsFalse <- asRawTerm ifF level
+  TermResult handleTrue depsTrue <- asRawTerm ifT level
+  let allDeps = depsCond <> depsFalse <> depsTrue
+  pure . TermResult (RCase condRaw [handleFalse, handleTrue]) $ allDeps
 
 {- | Boolean negation.
 
