@@ -52,7 +52,7 @@ pnull.empty program
         []))
 pnull.nonempty program
   1.1.0
-  ((\!0 -> case (constr 0 [!1, False, True]) [(force ifThenElse)])
+  ((\!0 -> case !1 [True, False])
      ((\!0 -> case !1 [(\!0 !0 -> False), True])
         ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
            (\!0 !0 ->

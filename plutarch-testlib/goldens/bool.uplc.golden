@@ -1,5 +1,5 @@
-pnot.lam program 1.1.0 (\!0 -> case (constr 0 [!1, False, True]) [(force ifThenElse)])
-pnot.app program 1.1.0 (case (constr 0 [True, False, True]) [(force ifThenElse)])
+pnot.lam program 1.1.0 (\!0 -> case !1 [True, False])
+pnot.app program 1.1.0 (case True [True, False])
 pand.tf program
   1.1.0
   (force

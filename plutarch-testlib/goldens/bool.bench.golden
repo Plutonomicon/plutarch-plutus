@@ -1,5 +1,5 @@
-pnot.lam {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":14}
-pnot.app {"exBudgetCPU":188149,"exBudgetMemory":801,"scriptSizeBytes":13}
+pnot.lam {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":10}
+pnot.app {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":10}
 pand.tf {"exBudgetCPU":268149,"exBudgetMemory":1301,"scriptSizeBytes":17}
 pand.ft {"exBudgetCPU":268149,"exBudgetMemory":1301,"scriptSizeBytes":17}
 pand.tt {"exBudgetCPU":268149,"exBudgetMemory":1301,"scriptSizeBytes":17}

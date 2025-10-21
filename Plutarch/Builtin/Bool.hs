@@ -97,8 +97,8 @@ pif cond ifT ifF = Term $ \level -> do
 pnot ::
   forall (s :: S).
   Term s (PBool :--> PBool)
-pnot = phoistAcyclic $ plam $ \x ->
-  pif' # x # pfalse # ptrue
+pnot = phoistAcyclic $ plam $ \b ->
+  pif b pfalse ptrue
 
 {- | Lazy AND for terms.
 
