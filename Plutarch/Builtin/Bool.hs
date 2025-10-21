@@ -144,7 +144,7 @@ por = phoistAcyclic $ plam $ \x -> pif x (phoistAcyclic (pdelay ptrue))
 @since 1.10.0
 -}
 por' :: Term s (PBool :--> PBool :--> PBool)
-por' = phoistAcyclic $ plam $ \x -> pif' # x # ptrue
+por' = phoistAcyclic $ plam $ \x -> pif x ptrue
 
 {- | Essentially multi-way 'pif'. More precisely, given a list of
 condition-action pairs, and an \'action of last resort\', construct a
