@@ -1,6 +1,8 @@
 # Revision history for plutarch
 
-# 1.12.0 -- 
+# Unreleased
+
+# 1.12.0 -- 07-11-2025
 
 ## Added
 
