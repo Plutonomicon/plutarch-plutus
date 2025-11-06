@@ -4,7 +4,6 @@
 
 ## Added
 
-* Coalescing all `Flip` declarations into one under `Plutarch.Internal.Other`
 * `PValidateData`, a replacement for `PTryFrom` to perform validation of
   @Data@-encoded types.
 * `pmapDropNothing` to `Plutarch.Maybe` 
@@ -14,6 +13,8 @@
 
 ## Changed
 
+* All `Flip` declarations are now coalesced into one, in
+  `Plutarch.Internal.Other`.
 * `PBuiltinPair` can now be `pmatch`ed against, with partial matches not
   generating code for the 'side' not matched (issue 836).
 * Original `pfix` renamed to `pfixHoisted`.
