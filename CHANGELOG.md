@@ -10,6 +10,7 @@
 * `pmapDropNothing` to `Plutarch.Maybe` 
 * `pfixInline`, a fixpoint combinator which does more inling. This gives more
   performance at the cost of script size.
+* `Plutarch.Array`, containing a full implementation of pull arrays
 
 ## Changed
 
