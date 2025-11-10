@@ -8,7 +8,7 @@ import Plutarch.Test.Unit (testEvalEqual, testEvalFail)
 import Test.Tasty (TestTree, testGroup)
 
 regularLength :: forall list a s. PIsListLike list a => Term s (list a :--> PInteger)
-regularLength = pfix # plam go #$ 0
+regularLength = pfixHoisted # plam go #$ 0
   where
     go :: Term s (PInteger :--> list a :--> PInteger) -> Term s (PInteger :--> list a :--> PInteger)
     go self = plam $ \n -> pelimList (\_ xs -> self # (n + 1) # xs) n

@@ -6,7 +6,7 @@ module Plutarch.Maybe (
 
   -- * Functions
 
-  -- ** Introduction
+  -- ** Constructors
   pjust,
   pnothing,
 
@@ -19,6 +19,9 @@ module Plutarch.Maybe (
   pfromMaybe,
   pmaybe,
   passertPJust,
+
+  -- ** Misc
+  pmapDropNothing,
   pmapMaybe,
 ) where
 
@@ -45,6 +48,7 @@ import Plutarch.Internal.Lift (
   pliftedFromClosed,
   pliftedToClosed,
  )
+import Plutarch.Internal.ListLike (PElemConstraint, PListLike, pcons, pnil, precList)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PlutusType,
@@ -56,6 +60,7 @@ import Plutarch.Internal.Term (
   Term,
   perror,
   phoistAcyclic,
+  plet,
   (#),
   (:-->),
  )
@@ -198,8 +203,32 @@ passertPJust = phoistAcyclic $
 
 @since 1.10.0
 -}
-pmapMaybe :: Term s ((a :--> b) :--> PMaybe a :--> PMaybe b)
+pmapMaybe ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s ((a :--> b) :--> PMaybe a :--> PMaybe b)
 pmapMaybe = phoistAcyclic $
   plam $ \f mv -> pmatch mv $ \case
     PJust v -> pjust # (f # v)
     PNothing -> pnothing
+
+{- | / O(n) /. Map a function returning `PMaybe` over a list of elements,
+discarding all `PNothing` results.
+
+@since 1.12.0
+-}
+pmapDropNothing ::
+  forall (b :: S -> Type) (a :: S -> Type) (list :: (S -> Type) -> S -> Type) (s :: S).
+  ( PListLike list
+  , PElemConstraint list a
+  , PElemConstraint list b
+  ) =>
+  Term s ((a :--> PMaybe b) :--> list a :--> list b)
+pmapDropNothing =
+  phoistAcyclic $
+    plam $ \f ->
+      precList
+        ( \self x xs ->
+            plet (self # xs) \xs' ->
+              pmaybe # xs' # plam (\x' -> pcons # x' # xs') # (f # x)
+        )
+        (const pnil)

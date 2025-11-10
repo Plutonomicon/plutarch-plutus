@@ -26,7 +26,7 @@ If we know the desired value of a constant `Term` at compile-time, we can build 
 Constructing constants in this way utilizes the [`PLiftable`](../../Typeclasses/PLiftable.md) typeclasses. These typeclasses expose the following [associated type family](https://wiki.haskell.org/GHC/Type_families#An_associated_type_synonym_example):
 
 ```hs
-type AsHaskell :: PType -> Type
+type AsHaskell :: (S -> Type) -> Type
 ```
 
 `pconstant` takes a single argument: a regular Haskell type with a `PLiftable` instance, and yields a Plutarch term tagged with the corresponding Plutarch type. Note that you usually need to use type applications with `pconstant` as one Haskell type may have many Plutarch representations.
@@ -37,7 +37,7 @@ For example:
 
 ```haskell
 -- | A Plutarch level boolean. Its value is "True", in this case.
-x :: Term s PBool
+x :: forall s . Term s PBool
 x = pconstant True
 ```
 
@@ -45,7 +45,7 @@ You can also directly create a [`PAsData`](./../../Types/PAsData.md) term using 
 
 ```haskell
 -- | A Plutarch level boolean encoded as `Data`.
-xd :: Term s (PAsData PBool)
+xd :: forall s . Term s (PAsData PBool)
 xd = pconstant @(PAsData PBool) True
 ```
 
@@ -56,7 +56,7 @@ Sometimes the value that we want to treat as a constant `Term` is not known at c
 `PMaybe` has the following definition:
 
 ```hs
-data PMaybe (a :: PType) (s :: S)
+data PMaybe (a :: S -> Type) (s :: S)
   = PJust (Term s a)
   | PNothing
 ```
@@ -65,13 +65,13 @@ and the following kind:
 
 ```hs
 >>> :k PMaybe
-PMaybe :: PType -> S -> Type
+PMaybe :: (S -> Type) -> S -> Type
 ```
 
 Let's dissect what this means.
 
-- `PMaybe` builds a `PType` from a `PType`; given a `PType`, we can tag a computation with the type `PMaybe a` to indicate that its return value should be semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
-- `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: PType) (s :: S)` is a helper to signify the concept of `Just x`. It contains a Plutarch term.
+- `PMaybe` builds a `S -> Type` from a `S -> Type`; given a `S -> Type`, we can tag a computation with the type `PMaybe a` to indicate that its return value should be semantically either `Just a` or `Nothing`. Such a tagging would look like a value with the type `Term s (PMaybe a)`.
+- `PJust` and `PNothing` are data constructors. They are _not_ tags. `PJust :: Term s a -> PMaybe (a :: S -> Type) (s :: S)` is a helper to signify the concept of `Just x`. It contains a Plutarch term.
 
 Now suppose that we want to carry around a constant `Term` in a Plutarch script that can be either `PJust a` or `PNothing`. To do so, we need a function to go from `PJust a` (which we _can_ instantiate as a Haskell value, unlike `PInteger`) to a `Term s (PMaybe a)`. This function is `pcon`:
 
@@ -79,10 +79,10 @@ Now suppose that we want to carry around a constant `Term` in a Plutarch script 
 -- pcon :: a s -> Term s a
 -- For example:
 
-x' :: Term s PInteger
+x' :: forall s . Term s PInteger
 x' = pconstant 3
 
-justTerm :: Term s (PMaybe PInteger)
+justTerm :: forall s . Term s (PMaybe PInteger)
 justTerm = pcon (PJust x')
 ```
 
@@ -96,7 +96,7 @@ That is, if we ask `justTerm` what it will return when evaluated, it responds, "
 If you don't want to pretend to not know `x` during compile time, another example may be:
 
 ```haskell
-hPJustPInteger :: Term s PInteger -> Term s (PMaybe PInteger)
+hPJustPInteger :: forall s . Term s PInteger -> Term s (PMaybe PInteger)
 hPJustPInteger x = pcon (PJust x)
 ```
 
@@ -108,11 +108,11 @@ The `pcon` function is a method of the [`PCon` typeclass](./../../Typeclasses/Pl
 
 ```haskell
 -- | A Plutarch level integer. Its value is 1, in this case.
-i :: Term s PInteger
+i :: forall s . Term s PInteger
 i = 1
 
 -- | A Plutarch level string (this is actually `Text`). Its value is "foobar", in this case.
-s :: Term s PString
+s :: forall s . Term s PString
 s = "foobar"
 ```
 
@@ -122,7 +122,7 @@ Finally, Plutarch provides helper functions to build certain types of constants:
 
 ```haskell
 -- | A plutarch level bytestring. Its value is [65], in this case.
-hexs :: Term s PByteString
+hexs :: forall s . Term s PByteString
 hexs = phexByteStr "41"
 -- ^ 'phexByteStr' interprets a hex string as a bytestring. 0x41 is 65 - of course.
 ```

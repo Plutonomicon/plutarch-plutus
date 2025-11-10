@@ -8,11 +8,12 @@ import Control.Monad.State (MonadState (get, put), StateT (runStateT), modify, m
 import Data.ByteString.Short qualified as SBS
 import Data.Foldable (fold, toList)
 import Data.Functor (($>), (<&>))
+import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Txt
 import Data.Traversable (for)
 import Plutarch.Evaluate (evalTerm)
-import Plutarch.Internal.Term (ClosedTerm, Config, compile)
+import Plutarch.Internal.Term (Config, S, Term, compile)
 import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
 import Plutarch.Pretty.Internal.Config (indentWidth)
 import Plutarch.Pretty.Internal.Name (freshVarName, smartName)
@@ -46,6 +47,8 @@ import UntypedPlutusCore (
   DefaultFun,
   DefaultUni,
   Program (_progTerm),
+ )
+import UntypedPlutusCore qualified as UPLC (
   Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var),
  )
 
@@ -212,14 +215,14 @@ To achieve better prettification, certain AST structures are given special handl
 
   Bindings to forced builtin functions inherit the builtin function name, prefixed with a `fr`.
 -}
-prettyTerm :: Config -> ClosedTerm a -> PP.Doc ()
+prettyTerm :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> PP.Doc ()
 prettyTerm conf x = either (error . Txt.unpack) id $ prettyTerm' conf x
 
 {- | Same as `prettyTerm` but also includes the execution budget and script size
 
 @since 1.10.0
 -}
-prettyTermAndCost :: forall a. Config -> ClosedTerm a -> PP.Doc ()
+prettyTermAndCost :: forall (a :: S -> Type). Config -> (forall (s :: S). Term s a) -> PP.Doc ()
 prettyTermAndCost conf x =
   let
     pp = either (error . Txt.unpack) id $ prettyTerm' conf x
@@ -234,39 +237,39 @@ prettyTermAndCost conf x =
     pp <> "\n" <> "CPU: " <> PP.pretty cpu <> "\nMEM: " <> PP.pretty mem <> "\nSIZE: " <> PP.pretty scriptSize
 
 -- | Non-partial 'prettyTerm'.
-prettyTerm' :: Config -> ClosedTerm p -> Either Text (PP.Doc ())
+prettyTerm' :: forall (p :: S -> Type). Config -> (forall (s :: S). Term s p) -> Either Text (PP.Doc ())
 prettyTerm' conf x = prettyScript <$> compile conf x
 
 {- This isn't suitable for pretty printing UPLC from any source. It's primarily suited for Plutarch output.
 Practically speaking though, it should work with any _idiomatic_ UPLC.
 -}
-prettyUPLC :: Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
+prettyUPLC :: UPLC.Term DeBruijn DefaultUni DefaultFun () -> PP.Doc ()
 prettyUPLC uplc = runST $ do
   stGen <- newSTGenM $ mkStdGen 42
   (doc, _) <- runReaderT (go uplc) stGen `runStateT` PrettyState mempty mempty Normal
   pure doc
   where
-    go :: Term DeBruijn DefaultUni DefaultFun () -> PrettyMonad s (PP.Doc ())
-    go (Constant _ c) = pure $ prettyConstant c
-    go (Builtin _ b) = pure $ PP.pretty b
-    go (Error _) = pure "ERROR"
-    go (Var _ (DeBruijn x)) = do
+    go :: UPLC.Term DeBruijn DefaultUni DefaultFun () -> PrettyMonad s (PP.Doc ())
+    go (UPLC.Constant _ c) = pure $ prettyConstant c
+    go (UPLC.Builtin _ b) = pure $ PP.pretty b
+    go (UPLC.Error _) = pure "ERROR"
+    go (UPLC.Var _ (DeBruijn x)) = do
       PrettyState {ps'nameMap} <- get
       pure $ case nameOfRef x ps'nameMap of
         Just nm -> PP.pretty nm
         Nothing -> "(impossible: FREE VARIABLE: " <> PP.pretty x <> ")"
-    go (IfThenElseLikeAST (Force () (Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) = prettyIfThenElse (forkState . go) cond trueBranch falseBranch
+    go (IfThenElseLikeAST (UPLC.Force () (UPLC.Builtin () PLC.IfThenElse)) cond trueBranch falseBranch) = prettyIfThenElse (forkState . go) cond trueBranch falseBranch
     go ast@(IfThenElseLikeAST scrutinee cond trueBranch falseBranch) = do
       PrettyState {ps'nameMap} <- get
       case scrutinee of
-        Var () (DeBruijn (builtinFunAtRef ps'nameMap -> Just PLC.IfThenElse)) ->
+        UPLC.Var () (DeBruijn (builtinFunAtRef ps'nameMap -> Just PLC.IfThenElse)) ->
           prettyIfThenElse (forkState . go) cond trueBranch falseBranch
         _ -> case ast of
-          Force _ t@Apply {} -> modify specializeCursor *> go t <&> ("!" <>)
+          UPLC.Force _ t@UPLC.Apply {} -> modify specializeCursor *> go t <&> ("!" <>)
           _ -> error "impossible: IfThenElseLikeAST"
-    go (Force _ t) = modify specializeCursor *> go t <&> ("!" <>)
-    go (Delay _ t) = modify specializeCursor *> go t <&> ("~" <>)
-    go (LamAbs _ _ t') = do
+    go (UPLC.Force _ t) = modify specializeCursor *> go t <&> ("!" <>)
+    go (UPLC.Delay _ t) = modify specializeCursor *> go t <&> ("~" <>)
+    go (UPLC.LamAbs _ _ t') = do
       currState@PrettyState {ps'cursor} <- get
       let (depth, bodyTerm) = unwrapLamAbs 0 t'
       names <- traverse (const freshVarName) [0 .. depth]
@@ -279,7 +282,7 @@ prettyUPLC uplc = runST $ do
           [ "\\" <> PP.hsep (reverse $ fmap PP.pretty names) <+> "->"
           , funcBody
           ]
-    go (Apply _ (LamAbs _ _ t) firstArg) = do
+    go (UPLC.Apply _ (UPLC.LamAbs _ _ t) firstArg) = do
       PrettyState {ps'cursor} <- get
       let (restArgs, coreF) = unwrapBindings [] t
           helper (name, expr) = do
@@ -305,7 +308,7 @@ prettyUPLC uplc = runST $ do
             [ "let" <+> PP.align (firstBindingDoc <> restBindingDoc)
             , "in" <+> coreExprDoc
             ]
-    go (Apply _ t arg) = do
+    go (UPLC.Apply _ t arg) = do
       PrettyState {ps'cursor} <- get
       let (l, f) = unwrapApply [] t
           args = l <> [arg]
@@ -315,10 +318,10 @@ prettyUPLC uplc = runST $ do
         PP.hang indentWidth $
           PP.sep $
             functionDoc : argsDoc
-    go (Constr _ i args) = do
+    go (UPLC.Constr _ i args) = do
       vals <- traverse go args
       pure $ PP.parens $ "Constr" <+> PP.pretty i <+> PP.parens (PP.hsep vals)
-    go (Case _ x handlers) = do
+    go (UPLC.Case _ x handlers) = do
       val <- go x
       handlers <- map PP.parens . toList <$> traverse go handlers
       pure $ PP.parens $ "Case" <+> PP.hang -3 (PP.parens (PP.vsep (val : handlers)))

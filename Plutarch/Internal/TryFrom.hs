@@ -11,12 +11,10 @@ module Plutarch.Internal.TryFrom (
   PSubtype,
   PSubtype',
   pupcast,
-  pupcastF,
-  pdowncastF,
 ) where
 
 import Data.Functor.Const (Const)
-import GHC.Generics (Generic)
+import Data.Kind (Type)
 import Plutarch.Builtin.Bool (PBool, pif, (#||))
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
@@ -46,18 +44,17 @@ import Plutarch.Internal.IsData (
  )
 import Plutarch.Internal.ListLike (PListLike (pnull), pmap)
 import Plutarch.Internal.Numeric (PNatural, PPositive, ptryNatural, ptryPositive)
+import Plutarch.Internal.Other (Flip)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (PInner)
 import Plutarch.Internal.Subtype (
   PSubtype,
   PSubtype',
   PSubtypeRelation (PNoSubtypeRelation, PSubtypeRelation),
-  pdowncastF,
   pupcast,
-  pupcastF,
  )
 import Plutarch.Internal.Term (
-  PType,
+  S,
   Term,
   perror,
   plet,
@@ -74,8 +71,8 @@ and a way to go from @a@ to @b@.
 Laws:
 - @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
 -}
-class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
-  type PTryFromExcess a b :: PType
+class PSubtype a b => PTryFrom (a :: S -> Type) (b :: S -> Type) where
+  type PTryFromExcess a b :: S -> Type
   type PTryFromExcess a b = PTryFromExcess a (PInner b)
   ptryFrom' :: forall s r. Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
   default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
@@ -83,8 +80,6 @@ class PSubtype a b => PTryFrom (a :: PType) (b :: PType) where
 
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 ptryFrom = ptryFrom'
-
-newtype Flip f a b = Flip (f b a) deriving stock (Generic)
 
 instance PTryFrom PData (PAsData PInteger) where
   type PTryFromExcess PData (PAsData PInteger) = Flip Term PInteger

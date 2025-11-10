@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.11.0
+version:            1.12.0
 author:
   Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>, Philip DiSarro <philipdisarro@gmail.com>
 
@@ -68,11 +68,13 @@ common c
     -Wno-unrecognised-pragmas -Wno-operator-whitespace
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-foralls -Wno-missing-import-lists
-    -Wno-missing-export-lists
+    -Wno-missing-export-lists -Wno-missing-role-annotations
+    -Wno-x-partial
 
 library
   import:          c
   exposed-modules:
+    Plutarch.Array
     Plutarch.BitString
     Plutarch.Builtin.Array
     Plutarch.Builtin.BLS
@@ -104,6 +106,7 @@ library
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
+    Plutarch.Internal.Parse
     Plutarch.Internal.PLam
     Plutarch.Internal.PlutusType
     Plutarch.Internal.PrettyStack
@@ -150,17 +153,17 @@ library
     , bytestring
     , constraints
     , containers
-    , cryptonite
     , data-default
-    , flat
     , generics-sop
+    , hashable
     , lens
     , mtl
-    , plutus-core        >=1.51.0.0
+    , plutus-core           >=1.51.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
     , QuickCheck
     , random
     , sop-core
+    , unordered-containers
     , vector

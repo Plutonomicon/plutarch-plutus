@@ -10,12 +10,11 @@ module Plutarch.Internal.IsData (
   pdata,
   pfromData,
   pforgetData,
-  prememberData,
-  pforgetData',
-  prememberData',
 ) where
 
+import Data.Kind (Constraint, Type)
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
+import GHC.TypeLits (Symbol)
 import Plutarch.Builtin.Bool (PBool, pif')
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
@@ -33,24 +32,17 @@ import Plutarch.Builtin.Data (
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Builtin.Unit (PUnit, punit)
-
-import Data.Kind (Constraint, Type)
-import Data.Proxy (Proxy (Proxy))
-
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.ListLike (
   PListLike (pcons, phead, pnil, ptail),
  )
-
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (
-  PCovariant,
   PInnermost,
-  PVariant,
   PlutusType (PInner),
  )
-import Plutarch.Internal.Subtype (PSubtype, pupcast, pupcastF)
+import Plutarch.Internal.Subtype (PSubtype, pupcast)
 import Plutarch.Internal.Term (
   S,
   Term,
@@ -62,13 +54,11 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
-import Plutarch.Internal.Witness (witness)
 import Plutarch.Unsafe (punsafeDowncast)
-
 import PlutusCore qualified as PLC
 import PlutusTx qualified as PTx
 
-type family PInnermostIsData' msg a b :: Constraint where
+type family PInnermostIsData' (msg :: Maybe Symbol) (a :: k) (b :: S -> Type) :: Constraint where
   PInnermostIsData' _ _ PData = ()
   PInnermostIsData' ('Just msg) a b =
     TypeError
@@ -115,39 +105,6 @@ pdata = punsafeCoerce . pdataImpl
 
 pforgetData :: forall s a. Term s (PAsData a) -> Term s PData
 pforgetData = punsafeCoerce
-
--- FIXME: remove, broken
-
-{- | Like 'pforgetData', except it works for complex types.
- Equivalent to 'pupcastF'.
--}
-pforgetData' ::
-  forall a (p :: (S -> Type) -> S -> Type) (s :: S).
-  PCovariant p =>
-  Proxy p ->
-  Term s (p (PAsData a)) ->
-  Term s (p PData)
-pforgetData' _ = let _ = witness (Proxy @(PCovariant p)) in punsafeCoerce
-
--- | Inverse of 'pforgetData''.
-prememberData ::
-  forall (p :: (S -> Type) -> S -> Type) (s :: S).
-  PVariant p =>
-  Proxy p ->
-  Term s (p PData) ->
-  Term s (p (PAsData PData))
-prememberData Proxy = let _ = witness (Proxy @(PVariant p)) in punsafeCoerce
-
--- | Like 'prememberData' but generalised.
-prememberData' ::
-  forall a (p :: (S -> Type) -> S -> Type) (s :: S).
-  (PInnermostIsData 'Nothing a, PSubtype PData a, PVariant p) =>
-  Proxy p ->
-  Term s (p a) ->
-  Term s (p (PAsData a))
-prememberData' Proxy =
-  let _ = witness (Proxy @(PInnermostIsData 'Nothing a, PSubtype PData a, PVariant p))
-   in punsafeCoerce
 
 instance PIsData PData where
   pfromDataImpl = pupcast
@@ -215,4 +172,4 @@ instance
   PIsData (PBuiltinList a)
   where
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
-  pdataImpl x = plistData # pupcastF @PData @a (Proxy @PBuiltinList) x
+  pdataImpl x = plistData # punsafeCoerce x

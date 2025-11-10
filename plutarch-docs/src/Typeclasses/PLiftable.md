@@ -77,7 +77,7 @@ To fully grasp how these methods work, we need to examine two more types: the
 newtype PLifted (a :: S -> Type) (s :: S) = PLifted (Term s POpaque)
 
 data LiftError
-  = CouldNotEvaluate EvalError
+  = CouldNotEvaluate (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun)
   | TypeError BuiltinError
   | CouldNotCompile Text
   | CouldNotDecodeData

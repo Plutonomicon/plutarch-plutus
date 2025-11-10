@@ -7,28 +7,28 @@ module Plutarch.Internal.TermCont (
   unTermCont,
   tcont,
   pfindPlaceholder,
+  pfindAllPlaceholders,
 ) where
 
+import Data.Hashable (Hashed, hashed)
 import Data.Kind (Type)
+import Data.List (nub)
 import Data.String (fromString)
 import Plutarch.Internal.Term (
   Config (Tracing),
-  Dig,
   HoistedTerm (..),
-  PType,
   RawTerm (..),
   S,
   Term (Term),
   TracingMode (DetTracing),
   asRawTerm,
   getTerm,
-  hashRawTerm,
   perror,
   pgetConfig,
  )
 import Plutarch.Internal.Trace (ptraceInfo)
 
-newtype TermCont :: forall (r :: PType). S -> Type -> Type where
+newtype TermCont :: forall (r :: S -> Type). S -> Type -> Type where
   TermCont :: forall r s a. {runTermCont :: (a -> Term s r) -> Term s r} -> TermCont @r s a
 
 unTermCont :: TermCont @a s (Term s a) -> Term s a
@@ -61,10 +61,11 @@ instance MonadFail (TermCont s) where
 tcont :: ((a -> Term s r) -> Term s r) -> TermCont @r s a
 tcont = TermCont
 
-hashOpenTerm :: Term s a -> TermCont s Dig
+hashOpenTerm :: Term s a -> TermCont s (Hashed RawTerm)
 hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
-  asRawTerm (f . hashRawTerm . getTerm $ y) i
+  let h = hashed $ getTerm y
+  asRawTerm (f h) i
 
 -- This can technically be done outside of TermCont.
 -- Need to pay close attention when killing branch with this.
@@ -77,20 +78,41 @@ hashOpenTerm x = TermCont $ \f -> Term $ \i -> do
 pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
 pfindPlaceholder idx x = TermCont $ \f -> Term $ \i -> do
   y <- asRawTerm x i
-
-  let
-    findPlaceholder (RLamAbs _ x) = findPlaceholder x
-    findPlaceholder (RApply x xs) = any findPlaceholder (x : xs)
-    findPlaceholder (RForce x) = findPlaceholder x
-    findPlaceholder (RDelay x) = findPlaceholder x
-    findPlaceholder (RHoisted (HoistedTerm _ x)) = findPlaceholder x
-    findPlaceholder (RPlaceHolder idx') = idx == idx'
-    findPlaceholder (RConstr _ xs) = any findPlaceholder xs
-    findPlaceholder (RCase x xs) = any findPlaceholder (x : xs)
-    findPlaceholder (RVar _) = False
-    findPlaceholder (RConstant _) = False
-    findPlaceholder (RBuiltin _) = False
-    findPlaceholder (RCompiled _) = False
-    findPlaceholder RError = False
-
   asRawTerm (f . findPlaceholder . getTerm $ y) i
+  where
+    findPlaceholder = \case
+      RLamAbs _ x -> findPlaceholder x
+      RApply x xs -> any findPlaceholder (x : xs)
+      RForce x -> findPlaceholder x
+      RDelay x -> findPlaceholder x
+      RHoisted (HoistedTerm _ x) -> findPlaceholder x
+      RPlaceHolder idx' -> idx == idx'
+      RConstr _ xs -> any findPlaceholder xs
+      RCase x xs -> any findPlaceholder (x : xs)
+      RVar _ -> False
+      RConstant _ -> False
+      RBuiltin _ -> False
+      RCompiled _ -> False
+      RError -> False
+
+-- | Finds all placeholder ids and returns it
+pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
+pfindAllPlaceholders x = TermCont $ \f -> Term $ \i -> do
+  y <- asRawTerm x i
+  asRawTerm (f . nub . findPlaceholder . getTerm $ y) i
+  where
+    findPlaceholder :: RawTerm -> [Integer]
+    findPlaceholder = \case
+      RLamAbs _ x -> findPlaceholder x
+      RApply x xs -> findPlaceholder x <> foldMap findPlaceholder xs
+      RForce x -> findPlaceholder x
+      RDelay x -> findPlaceholder x
+      RHoisted (HoistedTerm _ x) -> findPlaceholder x
+      RPlaceHolder idx -> [idx]
+      RConstr _ xs -> foldMap findPlaceholder xs
+      RCase x xs -> findPlaceholder x <> foldMap findPlaceholder xs
+      RVar _ -> []
+      RConstant _ -> []
+      RBuiltin _ -> []
+      RCompiled _ -> []
+      RError -> []

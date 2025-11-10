@@ -1,12 +1,26 @@
-module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (tests) where
+module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (
+  assocMapBenches,
+  tests,
+) where
 
 import Data.Bifunctor (bimap)
+import Data.Ix (range)
 import Data.Kind (Type)
-import Plutarch.LedgerApi.AssocMap (KeyGuarantees (Sorted, Unsorted), PMap)
+import Data.Map qualified as Map
+import Plutarch.Evaluate (unsafeEvalTerm)
+import Plutarch.Internal.Term (Config (NoTracing))
+import Plutarch.LedgerApi.AssocMap (
+  BothPresentHandler (..),
+  MergeHandler (..),
+  OnePresentHandler (..),
+  PSortedMap,
+  PUnsortedMap,
+ )
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.Maybe (pjust, pmapMaybe, pnothing)
 import Plutarch.Prelude
+import Plutarch.Test.Bench (bcompareWithin, bench)
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, propEvalEqual)
 import Plutarch.Test.Unit (testEvalEqual)
@@ -18,6 +32,136 @@ import Prettyprinter (Pretty)
 import Test.QuickCheck (Arbitrary, arbitrary, shrink)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (Property, forAllShrinkShow, testProperty)
+
+mkAssocMapFixture :: [Integer] -> Term s (PSortedMap PInteger PInteger)
+mkAssocMapFixture =
+  AssocMap.psortedMapFromFoldable @PInteger @PInteger @[]
+    . fmap (\x -> (pconstant x, pconstant x))
+
+assocMapBenches :: [TestTree]
+assocMapBenches =
+  let
+    bcompare' :: String -> TestTree -> TestTree
+    bcompare' = bcompareWithin {- cpu= -} (1.1, 1 / 0 {- mem= -}) (1.1, 1 / 0 {- size= -}) (1, 1 / 0)
+
+    assocMapFixture0 :: forall (s :: S). Term s (PSortedMap PInteger PInteger)
+    assocMapFixture0 =
+      unsafeEvalTerm NoTracing $
+        mkAssocMapFixture $
+          range (0, 99)
+
+    assocMapFixture1 :: forall (s :: S). Term s (PSortedMap PInteger PInteger)
+    assocMapFixture1 =
+      unsafeEvalTerm NoTracing $
+        mkAssocMapFixture $
+          range (20, 44) <> range (60, 84) <> range (100, 124)
+
+    combine :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+    combine = plam (#+)
+
+    defaultL :: forall (s :: S). Term s PInteger
+    defaultL = -1000
+
+    defaultR :: forall (s :: S). Term s PInteger
+    defaultR = 1000
+   in
+    [ testGroup
+        "zip"
+        [ bench
+            "pzipWithDefaults (optimized)"
+            ( AssocMap.pzipWithDefaults defaultL defaultR
+                # combine
+                # assocMapFixture0
+                # assocMapFixture1
+            )
+        , bcompare' "$(NF-1) == \"zip\" && $NF == \"pzipWithDefaults (optimized)\"" $
+            bench
+              "non-optimized"
+              ( let
+                  mergeHandler =
+                    MergeHandler
+                      { mhBothPresent = HandleOrDropBoth $ plam (\_ x y -> pjust #$ combine # x # y)
+                      , mhLeftPresent = HandleOrDropOne $ plam (\_ x -> pjust #$ combine # x # defaultR)
+                      , mhRightPresent = HandleOrDropOne $ plam (\_ y -> pjust #$ combine # defaultL # y)
+                      }
+                 in
+                  AssocMap.zipWithBuilder mergeHandler
+                    # assocMapFixture0
+                    # assocMapFixture1
+              )
+        ]
+    , testGroup
+        "union"
+        [ bench
+            "punionWith (optimized)"
+            ( AssocMap.punionWith
+                # plam (#+)
+                # assocMapFixture0
+                # assocMapFixture1
+            )
+        , bcompare' "$(NF-1) == \"union\" && $NF == \"punionWith (optimized)\"" $
+            bench
+              "non-optimized"
+              ( let
+                  mergeHandler =
+                    MergeHandler
+                      { mhBothPresent = HandleOrDropBoth $ plam (\_ x y -> pjust #$ x #+ y)
+                      , mhLeftPresent = HandleOrDropOne $ plam (\_ x -> pjust # x)
+                      , mhRightPresent = HandleOrDropOne $ plam (\_ y -> pjust # y)
+                      }
+                 in
+                  AssocMap.zipWithBuilder mergeHandler
+                    # assocMapFixture0
+                    # assocMapFixture1
+              )
+        ]
+    , testGroup
+        "intersection"
+        [ bench
+            "pintersectionWith (optimized)"
+            ( AssocMap.pintersectionWith
+                # plam (#+)
+                # assocMapFixture0
+                # assocMapFixture1
+            )
+        , bcompare' "$(NF-1) == \"intersection\" && $NF == \"pintersectionWith (optimized)\"" $
+            bench
+              "non-optimized"
+              ( let
+                  mergeHandler =
+                    MergeHandler
+                      { mhBothPresent = HandleOrDropBoth $ plam (\_ x y -> pjust #$ x #+ y)
+                      , mhLeftPresent = HandleOrDropOne $ plam (\_ _ -> pnothing)
+                      , mhRightPresent = HandleOrDropOne $ plam (\_ _ -> pnothing)
+                      }
+                 in
+                  AssocMap.zipWithBuilder mergeHandler
+                    # assocMapFixture0
+                    # assocMapFixture1
+              )
+        ]
+    , testGroup
+        "difference"
+        [ bench
+            "pdifference (optimized)"
+            (AssocMap.pdifference # assocMapFixture0 # assocMapFixture1)
+        , bcompare' "$(NF-1) == \"difference\" && $NF == \"pdifference (optimized)\"" $
+            bench
+              "non-optimized"
+              ( let
+                  mergeHandler =
+                    MergeHandler
+                      { mhBothPresent = HandleOrDropBoth $ plam (\_ _ _ -> pnothing)
+                      , mhLeftPresent = HandleOrDropOne $ plam (\_ x -> pjust # x)
+                      , mhRightPresent = HandleOrDropOne $ plam (\_ _ -> pnothing)
+                      }
+                 in
+                  AssocMap.zipWithBuilder mergeHandler
+                    # assocMapFixture0
+                    # assocMapFixture1
+              )
+        ]
+    ]
 
 tests :: TestTree
 tests =
@@ -55,12 +199,12 @@ tests =
             (pconstant @PBool True)
         ]
     , propEval "Ledger AssocMap is sorted (sanity check for punsafeCoerce below)" $
-        \(m :: PlutusMap.Map Integer Integer) -> AssocMap.passertSorted # pconstant @(PMap 'Unsorted PInteger PInteger) m
+        \(m :: PlutusMap.Map Integer Integer) -> AssocMap.passertSorted # pconstant @(PUnsortedMap PInteger PInteger) m
     , adjustOption (fewerTests 4) $
         propEval "passertSorted . psortedMapFromFoldable" $
           \(m :: UnsortedAssocMap Integer Integer) ->
-            AssocMap.passertSorted @PInteger @PInteger
-              #$ AssocMap.psortedMapFromFoldable
+            papp AssocMap.passertSorted . AssocMap.pforgetSorted $
+              AssocMap.psortedMapFromFoldable @PInteger @PInteger
                 (map (bimap pconstant pconstant) $ PlutusMap.toList $ getUnsortedAssocMap m)
     , testProperty "null = pnull" $ checkHaskellUnsortedPMapEquivalent PlutusMap.null AssocMap.pnull
     , testProperty "lookup = plookup" $
@@ -78,7 +222,7 @@ tests =
                 # m
           )
     , testProperty "singleton = psingleton" $
-        checkHaskellEquivalent2 @PInteger @PInteger @(PMap 'Unsorted PInteger PInteger)
+        checkHaskellEquivalent2 @PInteger @PInteger @(PUnsortedMap PInteger PInteger)
           PlutusMap.singleton
           (plam $ \k v -> AssocMap.pforgetSorted $ AssocMap.psingleton # k # v)
     , propEvalEqual @(Integer, Integer)
@@ -93,14 +237,14 @@ tests =
                 ( AssocMap.pfoldlWithKey
                     # plam (\acc k v -> acc + k + v)
                     # pconstant a
-                    # (AssocMap.passertSorted # pconstant @(PMap 'Unsorted PInteger PInteger) m)
+                    # (AssocMap.passertSorted # pconstant @(PUnsortedMap PInteger PInteger) m)
                 )
     , testProperty "all = pall" $
         checkHaskellUnsortedPMapEquivalent (PlutusMap.all even) (AssocMap.pall # peven)
     , testProperty "any = pany" $
         checkHaskellUnsortedPMapEquivalent (any even . PlutusMap.elems) (AssocMap.pany # peven)
     , testProperty "insert = pinsert" $
-        checkHaskellSortedPMapEquivalent2 @(PBuiltinPair PInteger PInteger) @(PMap 'Unsorted PInteger PInteger)
+        checkHaskellSortedPMapEquivalent2 @(PBuiltinPair PInteger PInteger) @(PUnsortedMap PInteger PInteger)
           (\(k, v) m -> PlutusMap.insert k v m)
           ( plam
               ( \kv m ->
@@ -109,51 +253,79 @@ tests =
               )
           )
     , testProperty "delete = pdelete" $
-        checkHaskellSortedPMapEquivalent2 @PInteger @(PMap 'Unsorted PInteger PInteger)
+        checkHaskellSortedPMapEquivalent2 @PInteger @(PUnsortedMap PInteger PInteger)
           PlutusMap.delete
           (plam (\k m -> AssocMap.pforgetSorted $ AssocMap.pdelete # k # m))
-    , testProperty "unionWith (+) = punionResolvingCollisionsWith Commutative (#+)" $
-        forAllShrinkShow arbitrary shrink show $
-          \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
-            PlutusMap.unionWith (+) m1 m2
-              `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
-                ( AssocMap.pforgetSorted $
-                    AssocMap.punionResolvingCollisionsWith
-                      AssocMap.Commutative
-                      # plam ((#+) @PInteger)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m1)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m2)
-                )
-    , testProperty "unionWith (+) = punionResolvingCollisionsWith NonCommutative (#+)" $
-        forAllShrinkShow arbitrary shrink show $
-          \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
-            PlutusMap.unionWith (+) m1 m2
-              `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
-                ( AssocMap.pforgetSorted $
-                    AssocMap.punionResolvingCollisionsWith
-                      AssocMap.NonCommutative
-                      # plam (#+)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m1)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m2)
-                )
-    , testProperty "unionWith (-) = punionResolvingCollisionsWith NonCommutative (#-)" $
-        forAllShrinkShow arbitrary shrink show $
-          \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
-            PlutusMap.unionWith (-) m1 m2
-              `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
-                ( AssocMap.pforgetSorted $
-                    AssocMap.punionResolvingCollisionsWith
-                      AssocMap.NonCommutative
-                      # plam (#-)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m1)
-                      # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m2)
-                )
     , testProperty "mapMaybe mkEven = pmapMaybe pmkEven" $
         forAllShrinkShow arbitrary shrink show $
           \(m :: PlutusMap.Map Integer Integer) ->
             PlutusMap.mapMaybe mkEven m
-              `prettyEquals` plift @(PMap 'Unsorted PInteger PInteger)
-                (AssocMap.pforgetSorted $ AssocMap.pmapMaybe # pmkEven # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) m))
+              `prettyEquals` plift @(PUnsortedMap PInteger PInteger)
+                (AssocMap.pforgetSorted $ AssocMap.pmapMaybe # pmkEven # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m))
+    , testGroup
+        "zippers"
+        [ testProperty "unionWith (+) = punionWith (#+)" $
+            forAllShrinkShow arbitrary shrink show $
+              \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
+                PlutusMap.unionWith (+) m1 m2
+                  `prettyEquals` plift @(PUnsortedMap PInteger PInteger)
+                    ( AssocMap.pforgetSorted $
+                        AssocMap.punionWith
+                          # plam (#+)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m1)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m2)
+                    )
+        , testProperty "unionWith (-) = punionWith (#-)" $
+            forAllShrinkShow arbitrary shrink show $
+              \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
+                PlutusMap.unionWith (-) m1 m2
+                  `prettyEquals` plift @(PUnsortedMap PInteger PInteger)
+                    ( AssocMap.pforgetSorted $
+                        AssocMap.punionWith
+                          # plam (#-)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m1)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m2)
+                    )
+        , testProperty "Data.Map.intersectionWith = pintersectionWith" $
+            forAllShrinkShow arbitrary shrink show $
+              \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
+                PlutusMap.safeFromList (Map.toList (Map.intersectionWith (+) (Map.fromList $ PlutusMap.toList m1) (Map.fromList $ PlutusMap.toList m2)))
+                  `prettyEquals` plift @(PUnsortedMap PInteger PInteger)
+                    ( AssocMap.pforgetSorted $
+                        AssocMap.pintersectionWith
+                          # plam (#+)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m1)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m2)
+                    )
+        , testProperty "Data.Map.difference = pdifference" $
+            forAllShrinkShow arbitrary shrink show $
+              \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
+                PlutusMap.safeFromList (Map.toList (Map.difference (Map.fromList $ PlutusMap.toList m1) (Map.fromList $ PlutusMap.toList m2)))
+                  `prettyEquals` plift @(PUnsortedMap PInteger PInteger)
+                    ( AssocMap.pforgetSorted $
+                        AssocMap.pdifference @(PSortedMap PInteger PInteger)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m1)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m2)
+                    )
+        , testProperty "Data.Map.differenceWith = pdifferenceWith" $
+            forAllShrinkShow arbitrary shrink show $
+              \(m1 :: PlutusMap.Map Integer Integer, m2 :: PlutusMap.Map Integer Integer) ->
+                prettyEquals
+                  ( PlutusMap.safeFromList $
+                      Map.toList $
+                        Map.differenceWith
+                          (\a b -> if a < b then Nothing else Just (a * b))
+                          (Map.fromList $ PlutusMap.toList m1)
+                          (Map.fromList $ PlutusMap.toList m2)
+                  )
+                  ( plift @(PUnsortedMap PInteger PInteger) $
+                      AssocMap.pforgetSorted $
+                        AssocMap.pdifferenceWith
+                          # plam (\a b -> pif (a #< b) pnothing (pjust #$ a #* b))
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m1)
+                          # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) m2)
+                  )
+        ]
     ]
 
 checkHaskellUnsortedPMapEquivalent ::
@@ -163,7 +335,7 @@ checkHaskellUnsortedPMapEquivalent ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (PlutusMap.Map Integer Integer -> AsHaskell plutarchOutput) ->
-  ClosedTerm (PMap 'Unsorted PInteger PInteger :--> plutarchOutput) ->
+  (forall (s :: S). Term s (PUnsortedMap PInteger PInteger :--> plutarchOutput)) ->
   Property
 checkHaskellUnsortedPMapEquivalent goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
@@ -179,7 +351,7 @@ checkHaskellUnsortedPMapEquivalent2 ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (AsHaskell plutarchInput -> PlutusMap.Map Integer Integer -> AsHaskell plutarchOutput) ->
-  ClosedTerm (plutarchInput :--> PMap 'Unsorted PInteger PInteger :--> plutarchOutput) ->
+  (forall (s :: S). Term s (plutarchInput :--> PUnsortedMap PInteger PInteger :--> plutarchOutput)) ->
   Property
 checkHaskellUnsortedPMapEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
@@ -197,13 +369,13 @@ checkHaskellSortedPMapEquivalent2 ::
   , Eq (AsHaskell plutarchOutput)
   ) =>
   (AsHaskell plutarchInput -> PlutusMap.Map Integer Integer -> AsHaskell plutarchOutput) ->
-  ClosedTerm (plutarchInput :--> PMap 'Sorted PInteger PInteger :--> plutarchOutput) ->
+  (forall (s :: S). Term s (plutarchInput :--> PSortedMap PInteger PInteger :--> plutarchOutput)) ->
   Property
 checkHaskellSortedPMapEquivalent2 goHaskell goPlutarch =
   forAllShrinkShow arbitrary shrink prettyShow $
     \(input1 :: AsHaskell plutarchInput, input2 :: PlutusMap.Map Integer Integer) ->
       goHaskell input1 input2
-        `prettyEquals` plift (goPlutarch # pconstant input1 # punsafeCoerce (pconstant @(PMap 'Unsorted PInteger PInteger) input2))
+        `prettyEquals` plift (goPlutarch # pconstant input1 # punsafeCoerce (pconstant @(PUnsortedMap PInteger PInteger) input2))
 
 peven :: Term s (PInteger :--> PBool)
 peven = plam $ \n -> pmod # n # 2 #== 0
@@ -213,5 +385,5 @@ mkEven n
   | even n = Just n
   | otherwise = Nothing
 
-pmkEven :: ClosedTerm (PInteger :--> PMaybe PInteger)
+pmkEven :: forall (s :: S). Term s (PInteger :--> PMaybe PInteger)
 pmkEven = plam $ \n -> pif (peven # n) (pjust # n) pnothing

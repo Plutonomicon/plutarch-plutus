@@ -8,10 +8,10 @@ module Plutarch.LedgerApi.V1.Credential (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
@@ -38,6 +38,8 @@ data PCredential (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since 3.5.0
+      PValidateData
     )
     via (DeriveAsDataStruct PCredential)
 
@@ -74,6 +76,8 @@ data PStakingCredential (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since 3.5.0
+      PValidateData
     )
     via (DeriveAsDataStruct PStakingCredential)
 

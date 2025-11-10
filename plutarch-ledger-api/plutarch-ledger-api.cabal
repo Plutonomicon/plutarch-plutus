@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-ledger-api
-version:       3.4.0
+version:       3.5.0
 
 common common-lang
   default-language:   Haskell2010
@@ -55,17 +55,24 @@ library
     Plutarch.LedgerApi.Value
 
   other-modules:
+    Plutarch.LedgerApi.AssocMap.Zip
     Plutarch.LedgerApi.V1.Address
     Plutarch.LedgerApi.V1.Contexts
     Plutarch.LedgerApi.V1.Credential
     Plutarch.LedgerApi.V1.Crypto
     Plutarch.LedgerApi.V1.DCert
+    Plutarch.LedgerApi.V1.MintValue
     Plutarch.LedgerApi.V1.Scripts
     Plutarch.LedgerApi.V1.Time
     Plutarch.LedgerApi.V1.Tx
     Plutarch.LedgerApi.V2.Tx
     Plutarch.LedgerApi.V3.Contexts
+    Plutarch.LedgerApi.V3.MintValue
     Plutarch.LedgerApi.V3.Tx
+    Plutarch.LedgerApi.Value.AssetClass
+    Plutarch.LedgerApi.Value.CurrencySymbol
+    Plutarch.LedgerApi.Value.Lovelace
+    Plutarch.LedgerApi.Value.TokenName
 
   build-depends:
     , bytestring

@@ -7,10 +7,10 @@ module Plutarch.LedgerApi.V1.Address (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 2.0.0
@@ -38,6 +38,8 @@ data PAddress (s :: S) = PAddress
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since 3.5.0
+      PValidateData
     )
     via (DeriveAsDataStruct PAddress)
 

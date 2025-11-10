@@ -9,10 +9,9 @@ module Plutarch.Repr.Tag (
   TagLiftHelper (..),
 ) where
 
-import Data.Proxy (Proxy (Proxy))
-
 import Data.Coerce (coerce)
 import Data.Kind (Type)
+import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import GHC.Generics qualified as GHC
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
@@ -28,7 +27,6 @@ import Generics.SOP (
  )
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Integer (PInteger)
-
 import Plutarch.Builtin.Opaque (popaque)
 import Plutarch.Internal.Lift (
   LiftError (OtherLiftError),
@@ -36,15 +34,7 @@ import Plutarch.Internal.Lift (
   PLifted (PLifted),
   pconstant,
  )
-import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PCovariant',
-  PInner,
-  PVariant',
-  PlutusType,
-  pcon',
-  pmatch',
- )
+import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Internal.Term (S, Term)
 import Plutarch.Repr.Internal (groupHandlers)
 import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
@@ -86,9 +76,6 @@ instance SOP.Generic (PFoo s)
 -}
 instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a) where
   type PInner (DeriveAsTag a) = PInteger
-  type PCovariant' (DeriveAsTag a) = (PCovariant' a)
-  type PContravariant' (DeriveAsTag a) = (PContravariant' a)
-  type PVariant' (DeriveAsTag a) = (PVariant' a)
   pcon' :: forall s. DeriveAsTag a s -> Term s (PInner (DeriveAsTag a))
   pcon' (DeriveAsTag x) =
     pconstant @PInteger $ toInteger $ SOP.hindex $ SOP.from x
@@ -139,7 +126,7 @@ type family TagTypePrettyError' n (xs :: [[Type]]) :: Bool where
 
 type TagTypePrettyError struct = TagTypePrettyError' 1 struct ~ 'True
 
-class (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints s a struct | s a -> struct
+class (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints (s :: S) (a :: S -> Type) (struct :: [[Type]]) | s a -> struct
 instance (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints s a struct
 
 newtype TagMatchHandler s b struct = TagMatchHandler

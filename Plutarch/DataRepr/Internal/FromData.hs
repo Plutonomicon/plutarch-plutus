@@ -3,9 +3,10 @@
 
 module Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData) where
 
+import Data.Kind (Type)
 import Plutarch.Builtin.Data (PAsData)
 import Plutarch.Internal.IsData (PIsData, pfromData)
-import Plutarch.Internal.Term (PType, Term)
+import Plutarch.Internal.Term (S, Term)
 
 {- |
     removes the PAsData if the hole requires it but leaves it
@@ -19,7 +20,7 @@ import Plutarch.Internal.Term (PType, Term)
     pmaybeFromAsData (pdata 3 :: (Term s (PAsData PInteger))) :: (Term (s::S) (PAsData PInteger))
     :: forall (s :: S). Term s (PAsData (PInteger @{S}))
 -}
-class PFromDataable (a :: PType) (b :: PType) | b -> a, a -> b where
+class PFromDataable (a :: S -> Type) (b :: S -> Type) | b -> a, a -> b where
   pmaybeFromAsData :: Term s (PAsData a) -> Term s b
 
 instance {-# OVERLAPPABLE #-} PFromDataable a (PAsData a) where

@@ -15,12 +15,12 @@ module Plutarch.Internal.Generic (
 
 -- lol
 import Data.Constraint (Dict (Dict))
-import Data.Kind (Constraint)
+import Data.Kind (Constraint, Type)
 import GHC.Exts (Any)
 import GHC.Generics (Generic)
 import Generics.SOP (All2, I, SOP, Top)
 import Generics.SOP.GGP (GCode, GDatatypeInfo, GFrom, GTo, gfrom, gto)
-import Plutarch.Internal.Term (PType, S, Term)
+import Plutarch.Internal.Term (S, Term)
 import Plutarch.Internal.TypeFamily (ToPType2)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -30,7 +30,7 @@ instance GFrom a => GFrom' a
 class GTo a => GTo' a
 instance GTo a => GTo' a
 
-type PGeneric' :: PType -> S -> Constraint
+type PGeneric' :: (S -> Type) -> S -> Constraint
 class
   ( Generic (a s)
   , GFrom (a s)
@@ -51,12 +51,12 @@ instance
   PGeneric' a s
 
 -- | `Generic` constraint extended to work with Plutarch types.
-type PGeneric :: PType -> Constraint
+type PGeneric :: (S -> Type) -> Constraint
 class (forall s. PGeneric' a s) => PGeneric a
 
 instance (forall s. PGeneric' a s) => PGeneric a
 
-type PCode :: PType -> [[PType]]
+type PCode :: (S -> Type) -> [[S -> Type]]
 
 -- | Like `Code` but for Plutarch types
 type PCode a = ToPType2 (GCode (a Any))

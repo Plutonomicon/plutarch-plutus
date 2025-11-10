@@ -62,6 +62,7 @@ common lang
     -Wno-operator-whitespace -Wno-unticked-promoted-constructors
     -fprint-equality-relations -fprint-explicit-kinds
     -fprint-explicit-foralls -Wno-missing-export-lists
+    -Wno-missing-role-annotations -Wno-x-partial
 
 library
   import:          lang
@@ -71,6 +72,7 @@ library
     , containers
     , deepseq
     , filepath
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
@@ -104,6 +106,7 @@ test-suite tests
   other-modules:
     Plutarch.Test.Suite.Plutarch.Bool
     Plutarch.Test.Suite.Plutarch.ByteString
+    Plutarch.Test.Suite.Plutarch.DeriveAsTag
     Plutarch.Test.Suite.Plutarch.Either
     Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.Plutarch.Integer
@@ -132,10 +135,13 @@ test-suite tests
     Plutarch.Test.Suite.PlutarchLedgerApi.V1.Value
     Plutarch.Test.Suite.PlutarchLedgerApi.V2
     Plutarch.Test.Suite.PlutarchLedgerApi.V3
+    Plutarch.Test.Suite.PlutarchLedgerApi.Value.AssetClass
 
   build-depends:
     , base16-bytestring
     , bytestring
+    , containers
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
@@ -146,6 +152,7 @@ test-suite tests
     , prettyprinter
     , QuickCheck
     , serialise
+    , sop-core
     , tasty
     , tasty-hunit
     , tasty-quickcheck
@@ -157,9 +164,22 @@ benchmark bench
   type:           exitcode-stdio-1.0
   main-is:        Bench.hs
   hs-source-dirs: bench test
-  other-modules:  Plutarch.Test.Suite.Plutarch.Unroll
+  other-modules:
+    Plutarch.Test.Suite.Plutarch.Unroll
+    Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
+
   build-depends:
+    , bytestring
+    , containers
+    , generics-sop
     , plutarch
     , plutarch-ledger-api
+    , plutarch-orphanage
     , plutarch-testlib
+    , plutus-core
+    , plutus-tx
+    , prettyprinter
+    , QuickCheck
     , tasty
+    , tasty-quickcheck
+    , vector

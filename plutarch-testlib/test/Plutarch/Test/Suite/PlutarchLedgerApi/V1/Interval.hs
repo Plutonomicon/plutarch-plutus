@@ -171,7 +171,7 @@ checkMember a b c = actual == expected
     actual = plift $ precompileTerm pmember # pconstant @(PAsData PInteger) a # i
     expected = (min b c <= a) && (a <= max b c)
 
-pcontains' :: ClosedTerm (PInterval PInteger :--> PInterval PInteger :--> PBool)
+pcontains' :: forall (s :: S). Term s (PInterval PInteger :--> PInterval PInteger :--> PBool)
 pcontains' = precompileTerm pcontains
 
 checkAlways :: Integer -> Integer -> Bool
@@ -215,7 +215,7 @@ checkBoundedContains a b c d = actual == expected
     expected :: Bool
     expected = (min a b <= min c d) && (max c d <= max a b)
 
-    actual' :: ClosedTerm PBool
+    actual' :: forall (s :: S). Term s PBool
     actual' = pcontains' # i1 # i2
     actual = plift actual'
 
@@ -230,7 +230,7 @@ checkUnboundedUpperContains a b c = actual == expected
     expected :: Bool
     expected = a <= min b c
 
-    actual' :: ClosedTerm PBool
+    actual' :: forall (s :: S). Term s PBool
     actual' = pcontains' # i1 # i2
     actual = plift actual'
 
@@ -245,7 +245,7 @@ checkUnboundedLowerContains a b c = actual == expected
     expected :: Bool
     expected = a >= max b c
 
-    actual' :: ClosedTerm PBool
+    actual' :: forall (s :: S). Term s PBool
     actual' = pcontains' # i1 # i2
     actual = plift actual'
 
@@ -258,7 +258,7 @@ checkBefore a b c = actual == expected
     expected :: Bool
     expected = a < min b c
 
-    actual' :: ClosedTerm PBool
+    actual' :: forall (s :: S). Term s PBool
     actual' = precompileTerm pbefore # pconstant a # i
     actual = plift actual'
 
@@ -271,7 +271,7 @@ checkAfter a b c = actual == expected
     expected :: Bool
     expected = max b c < a
 
-    actual' :: ClosedTerm PBool
+    actual' :: forall (s :: S). Term s PBool
     actual' = precompileTerm pafter # pconstant a # i
     actual = plift actual'
 

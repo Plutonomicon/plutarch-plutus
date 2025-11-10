@@ -5,6 +5,7 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Base16 qualified as Base16
 import Data.ByteString.Lazy (toStrict)
 import Data.Coerce (coerce)
+import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as Text
 import Data.Text.Encoding qualified as Encoding
@@ -55,14 +56,10 @@ tests =
 base16 :: ByteString -> Text
 base16 = Encoding.decodeUtf8 . Base16.encode
 
-type PSignature = PByteString
-type PPubKey = PByteString
-type PubKey = ByteString
-
 authorizedValidator ::
-  ClosedTerm PPubKey ->
+  (forall (s :: S). Term s PByteString) ->
   Term s PByteString ->
-  Term s PSignature ->
+  Term s PByteString ->
   Term s PScriptContext ->
   Term s POpaque
 authorizedValidator authKey datumMessage redeemerSig _ctx =
@@ -72,8 +69,8 @@ authorizedValidator authKey datumMessage redeemerSig _ctx =
     perror
 
 authorizedPolicy ::
-  forall s.
-  ClosedTerm (PAsData PPubKeyHash) ->
+  forall (s :: S).
+  (forall (s' :: S). Term s' (PAsData PPubKeyHash)) ->
   Term s PData ->
   Term s PScriptContext ->
   Term s POpaque
@@ -86,8 +83,8 @@ authorizedPolicy authHash _redeemer ctx' =
         perror
 
 authorizedStakeValidator ::
-  forall s.
-  ClosedTerm (PAsData PPubKeyHash) ->
+  forall (s :: S).
+  (forall (s' :: S). Term s' (PAsData PPubKeyHash)) ->
   Term s PData ->
   Term s PScriptContext ->
   Term s POpaque
@@ -99,7 +96,7 @@ authorizedStakeValidator authHash _redeemer ctx' =
         (popaque $ pcon PUnit)
         perror
 
-adminPubKey :: PubKey
+adminPubKey :: ByteString
 adminPubKey = "11661a8aca9b09bb93eefda295b5da2be3f944d1f4253ab29da17db580f50d02d26218e33fbba5e0cc1b0c0cadfb67a5f9a90157dcc19eecd7c9373b0415c888"
 
 adminPubKeyHash :: Plutus.PubKeyHash
@@ -108,7 +105,7 @@ adminPubKeyHash = "cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f"
 authValidatorCompiled :: Script
 authValidatorCompiled = compileD authValidatorTerm
 
-authValidatorTerm :: ClosedTerm (PData :--> PData :--> PScriptContext :--> POpaque)
+authValidatorTerm :: forall (s :: S). Term s (PData :--> PData :--> PScriptContext :--> POpaque)
 authValidatorTerm =
   plam $ \datum redeemer ctx ->
     authorizedValidator
@@ -123,7 +120,7 @@ authValidatorHash = scriptHash authValidatorCompiled
 authPolicyCompiled :: Script
 authPolicyCompiled = compileD authPolicyTerm
 
-authPolicyTerm :: ClosedTerm (PData :--> PScriptContext :--> POpaque)
+authPolicyTerm :: forall (s :: S). Term s (PData :--> PScriptContext :--> POpaque)
 authPolicyTerm =
   plam $ \redeemer ctx ->
     authorizedPolicy
@@ -138,7 +135,7 @@ authPolicySymbol =
 authStakeValidatorCompiled :: Script
 authStakeValidatorCompiled = compileD authStakeValidatorTerm
 
-authStakeValidatorTerm :: ClosedTerm (PData :--> PScriptContext :--> POpaque)
+authStakeValidatorTerm :: forall (s :: S). Term s (PData :--> PScriptContext :--> POpaque)
 authStakeValidatorTerm =
   plam $ \redeemer ctx ->
     authorizedStakeValidator
@@ -158,5 +155,5 @@ policySymEncoded = base16 . toStrict . serialise $ (coerce authPolicySymbol :: P
 stakeValidatorHashEncoded :: Text
 stakeValidatorHashEncoded = base16 . toStrict . serialise $ (coerce authStakeValidatorHash :: Plutus.BuiltinByteString)
 
-compileD :: ClosedTerm a -> Script
+compileD :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> Script
 compileD t = either (error . Text.unpack) id $ compile (Tracing LogInfo DetTracing) t

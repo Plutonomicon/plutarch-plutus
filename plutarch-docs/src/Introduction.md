@@ -15,14 +15,14 @@ import Plutarch.Prelude
 
 Plutarch is an eDSL in Haskell for writing on-chain scripts for Cardano. With some caveats, Plutarch is a [simply-typed lambda calculus](https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus) (or STLC). Writing a script in Plutarch allows us to leverage the language features provided by Haskell while retaining the ability to compile to compact Untyped Plutus Core (or UPLC, which is an untyped lambda calculus).
 
-When we talk about "Plutarch scripts," we are referring to values of type `Term (s :: S) (a :: PType)`. `Term` is a `newtype` wrapper around a more complex type, the details of which Plutarch end-users can ignore. A `Term` is a typed lambda term; it can be thought of as representing a computation that, if successfully evaluated, will return a value of type `a`.
+When we talk about "Plutarch scripts," we are referring to values of type `Term (s :: S) (a :: S -> Type)`. `Term` is a `newtype` wrapper around a more complex type, the details of which Plutarch end-users can ignore. A `Term` is a typed lambda term; it can be thought of as representing a computation that, if successfully evaluated, will return a value of type `a`.
 
 The two type variables of the `Term s a` declaration have particular kinds:
 
 - `s :: S` is like the `s` of `ST s a`. It represents the computation context in a manner that mimics mutable state while providing a familiar functional interface. Sections 1 through 4 of \[[1](#references)] give an accessible introduction to how this works. `s` is never instantiated with a concrete value; it is merely a type-level way to ensure that computational contexts remain properly encapsulated (i.e., different state threads don't interact). For more in-depth coverage of this and other eDSL design principles used in Plutarch, see \[[2](#references)].
-- `a :: PType` is short-hand for "Plutarch Type". We prefix these types with a capital `P`, such as `PInteger`, `PBool`, and so forth. _Tagging_ a `Term` with a `PType` indicates the type of the `Term`'s return value. Doing this allows us to bridge between the simple type system of Plutarch and the untyped UPLC.
+- `a :: S -> Type` is short-hand for "Plutarch Type". We prefix these types with a capital `P`, such as `PInteger`, `PBool`, and so forth. _Tagging_ a `Term` with a `S -> Type` indicates the type of the `Term`'s return value. Doing this allows us to bridge between the simple type system of Plutarch and the untyped UPLC.
 
-Note that we _should not_ think of a type of kind `PType` as carrying a value; it is a tag for a computation that may produce a value. For instance, the definition of `PInteger` is simply
+Note that we _should not_ think of a type of kind `S -> Type` as carrying a value; it is a tag for a computation that may produce a value. For instance, the definition of `PInteger` is simply
 
 ```hs
 data PInteger s
@@ -34,8 +34,8 @@ That is, there are no data constructors. _If_ a value of type `Term s PInteger` 
 
 In brief, when writing Plutarch scripts, we have a few tasks:
 
-- A.) Defining _Plutarch Types_ (or _`PType`s_). We prefix these types with a capital `P`, such as `PInteger`, `PMaybe a`, `PBool`, and so forth. As previously mentioned, these form the "tags" for Plutarch `Term`'s, representing the type of the result of compiling and evaluating a Plutarch Script.
-- B.) Working with _Plutarch `Terms`_, which are values of the type `Term (s :: S) (a :: PType)`. These are the Plutarch scripts themselves, from which we build up more complex scripts before compiling and executing them on-chain.
+- A.) Defining _Plutarch Types_. We prefix these types with a capital `P`, such as `PInteger`, `PMaybe a`, `PBool`, and so forth. As previously mentioned, these form the "tags" for Plutarch `Term`'s, representing the type of the result of compiling and evaluating a Plutarch Script.
+- B.) Working with _Plutarch `Terms`_, which are values of the type `Term (s :: S) (a :: S -> Type)`. These are the Plutarch scripts themselves, from which we build up more complex scripts before compiling and executing them on-chain.
 - C.) Writing Haskell-level functions _between Plutarch Terms_ (i.e., with types like `Term s a -> Term s b`). Doing so allows us to leverage Haskell's language features and ecosystem.
 - D.) Efficiently Converting the functions from _(C.)_ to _Plutarch-level functions_, which are of the type `Term s (a :--> b)`. We can _directly_ convert the functions from (C.) to Plutarch-level functions at the most naive level using `plam`. Additional Plutarch utilities provide for optimization opportunities.
 - E.) Compiling and executing the functions from _(D.)_, targeting UPLC for on-chain usage.

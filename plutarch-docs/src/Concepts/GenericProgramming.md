@@ -21,7 +21,7 @@ import Plutarch.Unsafe (punsafeCoerce)
 
 ### `Term`
 
-A `Term` or `ClosedTerm` represents Plutus Lambda Calculus expression in Plutarch world.
+A `Term` represents Plutus Lambda Calculus expression in Plutarch world.
 Allows for additional checks and safety compared to UPLC.
 See more: [Plutarch Terms](../Introduction/PlutarchTerms.md).
 

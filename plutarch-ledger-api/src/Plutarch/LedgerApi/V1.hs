@@ -13,8 +13,9 @@ module Plutarch.LedgerApi.V1 (
   Credential.PStakingCredential (..),
 
   -- * Value
-  Value.PValue (..),
-  Value.AmountGuarantees (..),
+  Value.PRawValue (..),
+  Value.PSortedValue,
+  Value.PLedgerValue,
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),
@@ -47,9 +48,9 @@ module Plutarch.LedgerApi.V1 (
   PTxInfo (..),
 
   -- * Helpers
-  AssocMap.PMap (..),
-  AssocMap.KeyGuarantees (..),
-  AssocMap.Commutativity (..),
+  AssocMap.PAssocMap (..),
+  AssocMap.PUnsortedMap (..),
+  AssocMap.PSortedMap,
 
   -- * Utilities
 
@@ -78,18 +79,18 @@ import Plutarch.LedgerApi.V1.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
+import Plutarch.LedgerApi.V1.MintValue qualified as MintValue (PMintValue)
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V1 qualified as Plutus
 
 -- | @since 3.1.1
 data PTxOut (s :: S) = PTxOut
   { ptxOut'address :: Term s Address.PAddress
-  , ptxOut'value :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
+  , ptxOut'value :: Term s (PAsData Value.PLedgerValue)
   , ptxOut'datumHash :: Term s (PAsData Scripts.PDatumHash)
   }
   deriving stock
@@ -159,8 +160,8 @@ instance PTryFrom PData (PAsData PTxInInfo)
 data PTxInfo (s :: S) = PTxInfo
   { ptxInfo'inputs :: Term s (PAsData (PBuiltinList PTxInInfo))
   , ptxInfo'outputs :: Term s (PAsData (PBuiltinList PTxOut))
-  , ptxInfo'fee :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
-  , ptxInfo'mint :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees)) -- value minted by transaction
+  , ptxInfo'fee :: Term s (PAsData Value.PLedgerValue)
+  , ptxInfo'mint :: Term s (PAsData MintValue.PMintValue) -- value minted by transaction
   , ptxInfo'dCert :: Term s (PAsData (PBuiltinList DCert.PDCert))
   , ptxInfo'wdrl :: Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData Credential.PStakingCredential) (PAsData PInteger))))) -- Staking withdrawals
   , ptxInfo'validRange :: Term s (Interval.PInterval Time.PPosixTime)

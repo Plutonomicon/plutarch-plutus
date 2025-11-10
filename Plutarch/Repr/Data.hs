@@ -7,10 +7,10 @@ module Plutarch.Repr.Data (
   PDataRec (PDataRec, unPDataRec),
   DeriveAsDataRec (DeriveAsDataRec, unDeriveAsDataRec),
   DeriveAsDataStruct (DeriveAsDataStruct, unDeriveAsDataStruct),
+  PInnermostIsDataDataRepr,
 ) where
 
 import Data.Kind (Type)
-import Data.Maybe (catMaybes)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Exts (Any)
 import Generics.SOP (
@@ -37,18 +37,25 @@ import Plutarch.Builtin.Data (
  )
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.IsData (PInnermostIsData, PIsData)
-import Plutarch.Internal.Lift
+import Plutarch.Internal.Lift (
+  LiftError (OtherLiftError),
+  PLiftable (
+    AsHaskell,
+    PlutusRepr,
+    haskToRepr,
+    plutToRepr,
+    reprToHask,
+    reprToPlut
+  ),
+  mkPLifted,
+  pconstant,
+  punsafeCoercePLifted,
+ )
 import Plutarch.Internal.ListLike (phead, ptail)
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
-  PContravariant',
-  PContravariant'',
-  PCovariant',
-  PCovariant'',
   PInner,
-  PVariant',
-  PVariant'',
   PlutusType,
   pcon,
   pcon',
@@ -68,6 +75,7 @@ import Plutarch.Internal.Term (
   (#),
   (#$),
  )
+import Plutarch.Internal.TermCont (pfindAllPlaceholders)
 import Plutarch.Repr.Internal (
   PRec (PRec, unPRec),
   PStruct (PStruct, unPStruct),
@@ -78,9 +86,11 @@ import Plutarch.Repr.Internal (
   UnTermStruct,
   groupHandlers,
  )
-import Plutarch.TermCont (pfindPlaceholder, pletC, unTermCont)
+import Plutarch.TermCont (pletC, unTermCont)
 import PlutusLedgerApi.V3 qualified as PLA
 
+-- Helper for working with SOP representations of `Data`-encoded records. If you
+-- don't know why you need this, it's probably better that way.
 type PInnermostIsDataDataRepr =
   PInnermostIsData
     ('Just "Data representation can only hold types whose inner most representation is PData")
@@ -94,18 +104,12 @@ newtype PDataRec (struct :: [S -> Type]) (s :: S) = PDataRec {unPDataRec :: PRec
 -- | @since 1.10.0
 instance (SListI2 struct, All2 PInnermostIsDataDataRepr struct) => PlutusType (PDataStruct struct) where
   type PInner (PDataStruct struct) = PData
-  type PCovariant' (PDataStruct struct) = All2 PCovariant'' struct
-  type PContravariant' (PDataStruct struct) = All2 PContravariant'' struct
-  type PVariant' (PDataStruct struct) = All2 PVariant'' struct
   pcon' (PDataStruct x) = punsafeCoerce $ pconDataStruct x
   pmatch' x f = pmatchDataStruct (punsafeCoerce x) (f . PDataStruct)
 
 -- | @since 1.10.0
 instance (SListI struct, All PInnermostIsDataDataRepr struct) => PlutusType (PDataRec struct) where
   type PInner (PDataRec struct) = PBuiltinList PData
-  type PCovariant' (PDataRec struct) = All PCovariant'' struct
-  type PContravariant' (PDataRec struct) = All PContravariant'' struct
-  type PVariant' (PDataRec struct) = All PVariant'' struct
   pcon' (PDataRec x) = punsafeCoerce $ pconDataRec x
   pmatch' x f = pmatchDataRec (punsafeCoerce x) (f . PDataRec)
 
@@ -167,9 +171,6 @@ instance
   PlutusType (DeriveAsDataRec a)
   where
   type PInner (DeriveAsDataRec a) = PDataRec (UnTermRec (Head (Code (a Any))))
-  type PCovariant' (DeriveAsDataRec a) = PCovariant' a
-  type PContravariant' (DeriveAsDataRec a) = PContravariant' a
-  type PVariant' (DeriveAsDataRec a) = PVariant' a
   pcon' (DeriveAsDataRec x) =
     pcon $ PDataRec $ PRec $ SOP.unZ $ SOP.unSOP $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
@@ -215,9 +216,6 @@ instance
   PlutusType (DeriveAsDataStruct a)
   where
   type PInner (DeriveAsDataStruct a) = PDataStruct (UnTermStruct (a Any))
-  type PCovariant' (DeriveAsDataStruct a) = PCovariant' a
-  type PContravariant' (DeriveAsDataStruct a) = PContravariant' a
-  type PVariant' (DeriveAsDataStruct a) = PVariant' a
   pcon' (DeriveAsDataStruct x) =
     pcon @(PDataStruct (UnTermStruct (a Any))) $ PDataStruct $ PStruct $ SOP.hcoerce $ SOP.from x
   pmatch' x f =
@@ -291,18 +289,11 @@ pmatchDataRec (punsafeCoerce -> x) f = pgetInternalConfig $ \cfg -> unTermCont $
     placeholder :: (PRec struct s, Integer)
     placeholder = (unPHB $ SOP.para_SList (PHB $ \idx g -> (g (PRec Nil), idx - 1)) placeholderBuilder) 0 id
 
-    placeholderApplied = pwithInternalConfig (InternalConfig False) $ f (fst placeholder)
+    placeholderApplied = pwithInternalConfig (InternalConfig False (internalConfig'phoistAcyclicEvalCheck cfg)) $ f (fst placeholder)
 
   usedFields <-
     if internalConfig'dataRecPMatchOptimization cfg
-      then
-        catMaybes
-          <$> traverse
-            ( \idx -> do
-                found <- pfindPlaceholder idx placeholderApplied
-                pure $ if found then Just idx else Nothing
-            )
-            [0 .. (snd placeholder)]
+      then pfindAllPlaceholders placeholderApplied
       else pure [0 .. (snd placeholder)]
 
   let

@@ -97,7 +97,9 @@ module Plutarch.Prelude (
   (#>=),
 
   -- * Fixed point
+  pfixHoisted,
   pfix,
+  pfixInline,
 
   -- * IsData
   PIsData (..),
@@ -109,6 +111,10 @@ module Plutarch.Prelude (
   PLiftable (..),
   DeriveDataPLiftable,
   DeriveNewtypePLiftable,
+  DeriveAsDataRec (..),
+  DeriveAsDataStruct (..),
+  DeriveAsSOPRec (..),
+  DeriveAsSOPStruct (..),
   PLifted (..),
   reprToPlutUni,
   plutToReprUni,
@@ -157,8 +163,6 @@ module Plutarch.Prelude (
 
   -- * PlutusType
   DerivePlutusType (DPTStrat),
-  PCon,
-  PMatch,
   PlutusType (PInner),
   pcon,
   pmatch,
@@ -201,7 +205,6 @@ module Plutarch.Prelude (
   -- * Term and related functionality
   Term,
   S,
-  ClosedTerm,
   PDelayed,
   papp,
   pdelay,
@@ -307,6 +310,8 @@ import Plutarch.List
 import Plutarch.Maybe
 import Plutarch.Pair
 import Plutarch.Rational
+import Plutarch.Repr.Data
+import Plutarch.Repr.SOP (DeriveAsSOPRec (..), DeriveAsSOPStruct (..))
 import Plutarch.TermCont
 import Plutarch.Trace
 import Plutarch.Unroll

@@ -5,34 +5,29 @@ module Plutarch.Internal.Subtype (
   PSubtype,
   PSubtype',
   pupcast,
-  pupcastF,
-  pdowncastF,
 ) where
 
-import Data.Kind (Constraint)
+import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.TypeError (
   ErrorMessage (ShowType, Text, (:<>:)),
   TypeError,
  )
-
 import Plutarch.Internal.PlutusType (
-  PContravariant,
-  PCovariant,
   PlutusType (PInner),
  )
-import Plutarch.Internal.Term (PType, Term, punsafeCoerce)
+import Plutarch.Internal.Term (S, Term, punsafeCoerce)
 import Plutarch.Internal.Witness (witness)
 
 data PSubtypeRelation
   = PSubtypeRelation
   | PNoSubtypeRelation
 
-type family Helper (a :: PType) (b :: PType) (bi :: PType) :: PSubtypeRelation where
+type family Helper (a :: S -> Type) (b :: S -> Type) (bi :: S -> Type) :: PSubtypeRelation where
   Helper _ b b = 'PNoSubtypeRelation
   Helper a _ bi = PSubtype' a bi
 
-type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
+type family PSubtype' (a :: S -> Type) (b :: S -> Type) :: PSubtypeRelation where
   PSubtype' a a = 'PSubtypeRelation
   PSubtype' a b = Helper a b (PInner b)
 
@@ -48,7 +43,7 @@ type family PSubtype' (a :: PType) (b :: PType) :: PSubtypeRelation where
 
  Subtyping is transitive.
 -}
-type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: Constraint where
+type family PSubtypeHelper (a :: S -> Type) (b :: S -> Type) (r :: PSubtypeRelation) :: Constraint where
   PSubtypeHelper a b 'PNoSubtypeRelation =
     TypeError
       ( 'Text "\""
@@ -61,20 +56,8 @@ type family PSubtypeHelper (a :: PType) (b :: PType) (r :: PSubtypeRelation) :: 
       )
   PSubtypeHelper _ _ 'PSubtypeRelation = ()
 
-type family PSubtype (a :: PType) (b :: PType) :: Constraint where
+type family PSubtype (a :: S -> Type) (b :: S -> Type) :: Constraint where
   PSubtype a b = (PSubtype' a b ~ 'PSubtypeRelation, PSubtypeHelper a b (PSubtype' a b))
 
 pupcast :: forall a b s. PSubtype a b => Term s b -> Term s a
 pupcast = let _ = witness (Proxy @(PSubtype a b)) in punsafeCoerce
-
-pupcastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PCovariant p) => Proxy p -> Term s (p b) -> Term s (p a)
-pupcastF _ =
-  let _ = witness (Proxy @(PSubtype a b))
-      _ = witness (Proxy @(PCovariant p))
-   in punsafeCoerce
-
-pdowncastF :: forall a b (p :: PType -> PType) s. (PSubtype a b, PContravariant p) => Proxy p -> Term s (p a) -> Term s (p b)
-pdowncastF _ =
-  let _ = witness (Proxy @(PSubtype a b))
-      _ = witness (Proxy @(PContravariant p))
-   in punsafeCoerce

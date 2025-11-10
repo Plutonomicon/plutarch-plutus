@@ -50,7 +50,7 @@ import Plutarch.Builtin.Integer (
   pconstantInteger,
  )
 
-import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Fix (pfixHoisted)
 import {-# SOURCE #-} Plutarch.Internal.Lift (PlutusRepr)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (pcon, pmatch)
@@ -122,7 +122,7 @@ pconvertLists ::
   (PIsListLike f a, PIsListLike g a) =>
   Term s (f a :--> g a)
 pconvertLists = phoistAcyclic $
-  pfix #$ plam $ \self ->
+  pfixHoisted #$ plam $ \self ->
     pelimList
       (\x xs -> pcons # x #$ self # xs)
       pnil
@@ -134,7 +134,7 @@ precList ::
   (Term s (list a :--> r) -> Term s r) ->
   Term s (list a :--> r)
 precList mcons mnil =
-  pfix #$ plam $ \self ->
+  pfixHoisted #$ plam $ \self ->
     pelimList
       (mcons self)
       (mnil self)
@@ -154,7 +154,7 @@ plength :: PIsListLike list a => Term s (list a :--> PInteger)
 plength =
   phoistAcyclic $
     let go :: PIsListLike list a => Term s (PInteger :--> list a :--> PInteger)
-        go = pfix #$ plam $ \self n -> pelimList (\_ xs -> self # (paddInteger # n # pconstantInteger 1) # xs) n
+        go = pfixHoisted #$ plam $ \self n -> pelimList (\_ xs -> self # (paddInteger # n # pconstantInteger 1) # xs) n
      in go # pconstantInteger 0
 
 -- | Index a BuiltinList, throwing an error if the index is out of bounds.
@@ -182,7 +182,7 @@ pdrop n xs = pdrop' n # xs
 pfoldl :: PIsListLike list a => Term s ((b :--> a :--> b) :--> b :--> list a :--> b)
 pfoldl = phoistAcyclic $
   plam $ \f ->
-    pfix #$ plam $ \self z ->
+    pfixHoisted #$ plam $ \self z ->
       pelimList
         (\x xs -> self # (f # z # x) # xs)
         z
@@ -190,7 +190,7 @@ pfoldl = phoistAcyclic $
 -- | The same as 'pfoldl', but with Haskell-level reduction function.
 pfoldl' :: PIsListLike list a => (forall s. Term s b -> Term s a -> Term s b) -> Term s (b :--> list a :--> b)
 pfoldl' f = phoistAcyclic $
-  pfix #$ plam $ \self z ->
+  pfixHoisted #$ plam $ \self z ->
     pelimList
       (\x xs -> self # f z x # xs)
       z
@@ -290,7 +290,7 @@ pzipWith ::
 pzipWith =
   phoistAcyclic $
     plam $ \f ->
-      pfix #$ plam $ \self lx ly ->
+      pfixHoisted #$ plam $ \self lx ly ->
         pelimList
           ( \x xs ->
               pelimList
@@ -311,7 +311,7 @@ pzipWith' ::
   (Term s a -> Term s b -> Term s c) ->
   Term s (list a :--> list b :--> list c)
 pzipWith' f =
-  pfix #$ plam $ \self lx ly ->
+  pfixHoisted #$ plam $ \self lx ly ->
     pelimList
       ( \x xs ->
           pelimList

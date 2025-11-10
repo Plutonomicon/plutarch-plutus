@@ -3,6 +3,7 @@ module Main (main) where
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Plutarch.Test.Suite.Plutarch.Bool qualified as Bool
 import Plutarch.Test.Suite.Plutarch.ByteString qualified as ByteString
+import Plutarch.Test.Suite.Plutarch.DeriveAsTag as DeriveAsTag
 import Plutarch.Test.Suite.Plutarch.Either qualified as Either
 import Plutarch.Test.Suite.Plutarch.Field qualified as Field
 import Plutarch.Test.Suite.Plutarch.Integer qualified as Integer
@@ -29,6 +30,7 @@ import Plutarch.Test.Suite.PlutarchLedgerApi.Utils qualified as Utils
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
 import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
 import Plutarch.Test.Suite.PlutarchLedgerApi.V3 qualified as V3
+import Plutarch.Test.Suite.PlutarchLedgerApi.Value.AssetClass qualified as AssetClass
 import Test.Tasty (adjustOption, defaultMain, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
 
@@ -41,6 +43,7 @@ main = do
         "Plutarch"
         [ Bool.tests
         , ByteString.tests
+        , DeriveAsTag.tests
         , Either.tests
         , Field.tests
         , Integer.tests
@@ -67,6 +70,7 @@ main = do
         [ testGroup
             "Laws"
             [ Utils.tests
+            , AssetClass.tests
             , AssocMap.tests
             , V1.tests
             , V2.tests

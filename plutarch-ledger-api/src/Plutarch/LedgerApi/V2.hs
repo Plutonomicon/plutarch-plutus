@@ -13,8 +13,9 @@ module Plutarch.LedgerApi.V2 (
   Credential.PStakingCredential (..),
 
   -- * Value
-  Value.PValue (..),
-  Value.AmountGuarantees (..),
+  Value.PRawValue (..),
+  Value.PSortedValue,
+  Value.PLedgerValue,
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),
@@ -48,9 +49,9 @@ module Plutarch.LedgerApi.V2 (
   V2Tx.POutputDatum (..),
 
   -- * Helpers
-  AssocMap.PMap (..),
-  AssocMap.KeyGuarantees (..),
-  AssocMap.Commutativity (..),
+  AssocMap.PAssocMap (..),
+  AssocMap.PUnsortedMap (..),
+  AssocMap.PSortedMap,
 
   -- * Utilities
 
@@ -79,13 +80,13 @@ import Plutarch.LedgerApi.V1.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
+import Plutarch.LedgerApi.V1.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as V1Tx
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
-import Plutarch.Repr.Data (DeriveAsDataStruct (DeriveAsDataStruct))
 import PlutusLedgerApi.V2 qualified as Plutus
 
 -- | @since 3.1.1
@@ -127,14 +128,14 @@ data PTxInfo (s :: S) = PTxInfo
   { ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
   , ptxInfo'referenceInputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
   , ptxInfo'outputs :: Term s (PAsData (PBuiltinList (PAsData V2Tx.PTxOut)))
-  , ptxInfo'fee :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.Positive))
-  , ptxInfo'mint :: Term s (PAsData (Value.PValue 'AssocMap.Sorted 'Value.NoGuarantees)) -- value minted by transaction
+  , ptxInfo'fee :: Term s (PAsData Value.PLedgerValue)
+  , ptxInfo'mint :: Term s (PAsData MintValue.PMintValue) -- value minted by transaction
   , ptxInfo'dcert :: Term s (PAsData (PBuiltinList (PAsData DCert.PDCert)))
-  , ptxInfo'wdrl :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted Credential.PStakingCredential PInteger)) -- Staking withdrawals
+  , ptxInfo'wdrl :: Term s (PAsData (AssocMap.PUnsortedMap Credential.PStakingCredential PInteger)) -- Staking withdrawals
   , ptxInfo'validRange :: Term s (Interval.PInterval Time.PPosixTime)
   , ptxInfo'signatories :: Term s (PAsData (PBuiltinList (PAsData Crypto.PPubKeyHash)))
-  , ptxInfo'redeemers :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted Contexts.PScriptPurpose Scripts.PRedeemer))
-  , ptxInfo'data :: Term s (PAsData (AssocMap.PMap 'AssocMap.Unsorted Scripts.PDatumHash Scripts.PDatum))
+  , ptxInfo'redeemers :: Term s (PAsData (AssocMap.PUnsortedMap Contexts.PScriptPurpose Scripts.PRedeemer))
+  , ptxInfo'data :: Term s (PAsData (AssocMap.PUnsortedMap Scripts.PDatumHash Scripts.PDatum))
   , ptxInfo'id :: Term s V1Tx.PTxId -- hash of the pending transaction
   }
   deriving stock
