@@ -7,19 +7,21 @@
 * Bump `plutus-core` to 1.54.0.0
 * `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
 
-# 1.12.0 -- 
+# 1.12.0 -- 07-11-2025
 
 ## Added
 
-* Coalescing all `Flip` declarations into one under `Plutarch.Internal.Other`
 * `PValidateData`, a replacement for `PTryFrom` to perform validation of
   @Data@-encoded types.
 * `pmapDropNothing` to `Plutarch.Maybe` 
 * `pfixInline`, a fixpoint combinator which does more inling. This gives more
   performance at the cost of script size.
+* `Plutarch.Array`, containing a full implementation of pull arrays
 
 ## Changed
 
+* All `Flip` declarations are now coalesced into one, in
+  `Plutarch.Internal.Other`.
 * `PBuiltinPair` can now be `pmatch`ed against, with partial matches not
   generating code for the 'side' not matched (issue 836).
 * Original `pfix` renamed to `pfixHoisted`.

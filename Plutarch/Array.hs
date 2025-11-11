@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE NoPartialTypeSignatures #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 -- | @since 1.12.0
@@ -35,6 +36,7 @@ module Plutarch.Array (
 
   -- *** Conversions
   ppullArrayToList,
+  ppullArrayToSOPList,
 ) where
 
 import Data.Kind (Type)
@@ -48,7 +50,7 @@ import Plutarch.Builtin.Bool (pif)
 import Plutarch.Builtin.Data (PBuiltinList (PNil), pconsBuiltin)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Numeric (
   PAdditiveSemigroup (pscalePositive, (#+)),
   PMultiplicativeSemigroup (ppowPositive, (#*)),
@@ -72,6 +74,7 @@ import Plutarch.Internal.Term (
   (#$),
   (:-->),
  )
+import Plutarch.List (PList (PSCons, PSNil))
 
 {- | A pull array, represented as its Boehm-Berrarducci encoding. Put another
 way, a pull array is a function which can be \'materialized\' to produce the
@@ -175,21 +178,17 @@ pfoldlArray ::
   Term s (PPullArray a) ->
   Term s b
 pfoldlArray f acc arr = pmatch arr $ \(PPullArray (PForall g)) ->
-  punsafeCoerce g # go
+  punsafeCoerce g
+    # plam
+      ( \len get ->
+          phoistAcyclic (pfix go) # f # get # pupcast @_ @PNatural len # 0 # acc
+      )
   where
-    go :: Term s (PNatural :--> (PInteger :--> a) :--> b)
-    go = plam $ \len get ->
-      phoistAcyclic (pfixHoisted # plam goInner) # f # get # pupcast len # 0 # acc
-    goInner ::
+    go ::
       forall (s' :: S).
       Term s' ((b :--> a :--> b) :--> (PInteger :--> a) :--> PInteger :--> PInteger :--> b :--> b) ->
-      Term s' (b :--> a :--> b) ->
-      Term s' (PInteger :--> a) ->
-      Term s' PInteger ->
-      Term s' PInteger ->
-      Term s' b ->
-      Term s' b
-    goInner self combine get limit currIx acc' =
+      Term s' ((b :--> a :--> b) :--> (PInteger :--> a) :--> PInteger :--> PInteger :--> b :--> b)
+    go self = plam $ \combine get limit currIx acc' ->
       pif
         (currIx #== limit)
         acc'
@@ -229,23 +228,49 @@ ppullArrayToList ::
   Term s (PPullArray a) ->
   Term s (PBuiltinList a)
 ppullArrayToList arr = pmatch arr $ \(PPullArray (PForall f)) ->
-  punsafeCoerce f # go
+  punsafeCoerce f
+    # phoistAcyclic
+      ( plam $ \len f ->
+          phoistAcyclic (pfix go) # f # (pupcast @_ @PNatural len - 1) # pcon PNil
+      )
   where
-    go :: Term s (PNatural :--> (PInteger :--> a) :--> PBuiltinList a)
-    go = phoistAcyclic $ plam $ \len f ->
-      phoistAcyclic (pfixHoisted # plam goInner) # f # (pupcast len - 1) # pcon PNil
-    goInner ::
+    go ::
       forall (s' :: S).
       Term s' ((PInteger :--> a) :--> PInteger :--> PBuiltinList a :--> PBuiltinList a) ->
-      Term s' (PInteger :--> a) ->
-      Term s' PInteger ->
-      Term s' (PBuiltinList a) ->
-      Term s' (PBuiltinList a)
-    goInner self f currIx acc =
+      Term s' ((PInteger :--> a) :--> PInteger :--> PBuiltinList a :--> PBuiltinList a)
+    go self = plam $ \f currIx acc ->
       pif
         (currIx #== (-1))
         acc
         (self # f # (currIx - 1) #$ pconsBuiltin # (f # currIx) # acc)
+
+{- | Convert a pull array to a 'PList'. Prefer this function to using a fold, as
+it builds the 'PList' \'in reverse\' to avoid quadratic construction cost.
+
+\(\Theta(n)\) space and time complexity.
+
+@since 1.12.0
+-}
+ppullArrayToSOPList ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (PPullArray a) ->
+  Term s (PList a)
+ppullArrayToSOPList arr = pmatch arr $ \(PPullArray (PForall f)) ->
+  punsafeCoerce f
+    # plam
+      ( \len f ->
+          phoistAcyclic (pfix go) # f # (pupcast @_ @PNatural len - 1) # pcon PSNil
+      )
+  where
+    go ::
+      forall (s' :: S).
+      Term s' ((PInteger :--> a) :--> PInteger :--> PList a :--> PList a) ->
+      Term s' ((PInteger :--> a) :--> PInteger :--> PList a :--> PList a)
+    go self = plam $ \f currIx acc ->
+      pif
+        (currIx #== (-1))
+        acc
+        (self # f # (currIx - 1) # (pcon . PSCons (f # currIx) $ acc))
 
 {- | As 'pmapArray', but with an index-aware \'transformer function\'.
 

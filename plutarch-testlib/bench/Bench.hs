@@ -13,9 +13,11 @@ import Data.Vector.Strict qualified as Vector
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Array (
+  pfoldlArray,
   pfromArray,
   pmapArray,
   ppullArrayToList,
+  ppullArrayToSOPList,
   pzipWithArray,
  )
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData, OtherLiftError))
@@ -187,8 +189,18 @@ arrayBenches =
   [ bench "map twice" (precompileTerm (plam $ \x -> pmap # pinc # parrayMap pinc x) # pconstant @(PArray PInteger) iota)
   , bcompare "$(NF-1) == \"Array\" && $NF == \"map twice\"" $
       bench
+        "using SOP lists"
+        (precompileTerm (plam $ \x -> pmap # pinc # parrayMapSOP pinc x) # pconstant @(PArray PInteger) iota)
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"map twice\"" $
+      bench
         "with PPullArray"
         ( precompileTerm (plam $ \x -> ppullArrayToList . pmapArray pinc . pmapArray pinc . pfromArray $ x)
+            # pconstant @(PArray PInteger) iota
+        )
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"map twice\"" $
+      bench
+        "with PPullArray into SOP list"
+        ( precompileTerm (plam $ \x -> ppullArrayToSOPList . pmapArray pinc . pmapArray pinc . pfromArray $ x)
             # pconstant @(PArray PInteger) iota
         )
   , bench "zip-map" (precompileTerm (plam $ \x y -> pmap # pinc # parrayZipWith ptimes x y) # pconstant @(PArray PInteger) iota # pconstant @(PArray PInteger) iota)
@@ -201,7 +213,23 @@ arrayBenches =
         )
   , bench "map-zip" (precompileTerm (plam $ \x y -> pzipWith # ptimes # parrayMap pinc x # parrayMap pinc y) # pconstant @(PArray PInteger) iota # pconstant @(PArray PInteger) iota)
   , bcompare "$(NF-1) == \"Array\" && $NF == \"map-zip\"" $
-      bench "with PPullArray" (precompileTerm (plam $ \x y -> ppullArrayToList . pzipWithArray ptimes (pmapArray pinc . pfromArray $ x) . pmapArray pinc . pfromArray $ y))
+      bench
+        "with PPullArray"
+        ( precompileTerm (plam $ \x y -> ppullArrayToList . pzipWithArray ptimes (pmapArray pinc . pfromArray $ x) . pmapArray pinc . pfromArray $ y)
+            # pconstant @(PArray PInteger) iota
+            # pconstant @(PArray PInteger) iota
+        )
+  , bench
+      "map-fold"
+      ( precompileTerm (plam $ \x -> pfoldl # ptimes # 1 # parrayMap pinc x)
+          # pconstant @(PArray PInteger) iota
+      )
+  , bcompare "$(NF-1) == \"Array\" && $NF == \"map-fold\"" $
+      bench
+        "with PPullArray"
+        ( precompileTerm (plam $ \x -> pfoldlArray ptimes 1 . pmapArray pinc . pfromArray $ x)
+            # pconstant @(PArray PInteger) iota
+        )
   ]
 
 pvalidateDataBenches :: [TestTree]
@@ -321,21 +349,35 @@ parrayMap ::
   Term s (PArray a) ->
   Term s (PBuiltinList b)
 parrayMap f arr = plet (plengthOfArray # arr) $ \len ->
-  phoistAcyclic (pfixHoisted # plam go) # f # arr # (len - 1) # pcon PNil
+  phoistAcyclic (pfix go) # f # arr # (len - 1) # pcon PNil
   where
     go ::
       forall (s' :: S).
       Term s' ((a :--> b) :--> PArray a :--> PInteger :--> PBuiltinList b :--> PBuiltinList b) ->
-      Term s' (a :--> b) ->
-      Term s' (PArray a) ->
-      Term s' PInteger ->
-      Term s' (PBuiltinList b) ->
-      Term s' (PBuiltinList b)
-    go self f arr' currIx acc =
+      Term s' ((a :--> b) :--> PArray a :--> PInteger :--> PBuiltinList b :--> PBuiltinList b)
+    go self = plam $ \f arr' currIx acc ->
       pif
         (currIx #== (-1))
         acc
         (self # f # arr' # (currIx - 1) #$ pconsBuiltin # (f #$ pindexArray # arr' # currIx) # acc)
+
+parrayMapSOP ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (a :--> b) ->
+  Term s (PArray a) ->
+  Term s (PList b)
+parrayMapSOP f arr = plet (plengthOfArray # arr) $ \len ->
+  phoistAcyclic (pfix go) # f # arr # (len - 1) # pcon PSNil
+  where
+    go ::
+      forall (s' :: S).
+      Term s' ((a :--> b) :--> PArray a :--> PInteger :--> PList b :--> PList b) ->
+      Term s' ((a :--> b) :--> PArray a :--> PInteger :--> PList b :--> PList b)
+    go self = plam $ \f arr' currIx acc ->
+      pif
+        (currIx #== (-1))
+        acc
+        (self # f # arr' # (currIx - 1) # (pcon . PSCons (f #$ pindexArray # arr' # currIx) $ acc))
 
 parrayZipWith ::
   forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
@@ -347,18 +389,13 @@ parrayZipWith ::
 parrayZipWith f arr1 arr2 = plet (plengthOfArray # arr1) $ \len1 ->
   plet (plengthOfArray # arr2) $ \len2 ->
     plet (pmin len1 len2) $ \len ->
-      phoistAcyclic (pfixHoisted # plam go) # f # arr1 # arr2 # (len - 1) # pcon PNil
+      phoistAcyclic (pfix go) # f # arr1 # arr2 # (len - 1) # pcon PNil
   where
     go ::
       forall (s' :: S).
       Term s' ((a :--> b :--> c) :--> PArray a :--> PArray b :--> PInteger :--> PBuiltinList c :--> PBuiltinList c) ->
-      Term s' (a :--> b :--> c) ->
-      Term s' (PArray a) ->
-      Term s' (PArray b) ->
-      Term s' PInteger ->
-      Term s' (PBuiltinList c) ->
-      Term s' (PBuiltinList c)
-    go self f arr1' arr2' currIx acc =
+      Term s' ((a :--> b :--> c) :--> PArray a :--> PArray b :--> PInteger :--> PBuiltinList c :--> PBuiltinList c)
+    go self = plam $ \f arr1' arr2' currIx acc ->
       pif
         (currIx #== (-1))
         acc
