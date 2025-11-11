@@ -20,7 +20,6 @@ module Plutarch.DataRepr.Internal.Field (
   -- * Re-exports
   HRec (..),
   Labeled (Labeled, unLabeled),
-  hrecField,
 ) where
 
 import Data.Kind (Constraint, Type)
@@ -45,7 +44,6 @@ import Plutarch.DataRepr.Internal.FromData (PFromDataable, pmaybeFromAsData)
 import Plutarch.DataRepr.Internal.HList (
   HRec (HCons, HNil),
   Labeled (Labeled, unLabeled),
-  hrecField,
   type Drop,
   type ElemOf,
   type IndexLabel,

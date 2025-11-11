@@ -2,6 +2,11 @@
 
 # Unreleased
 
+## Changed
+
+* `hrecField` has been made hidden. Not only should this not be used anymore, it
+  was deprecated for a long time already.
+
 ## Removed
 
 * `pverifySignature`, due to deprecation. Replace any use of this with a more

@@ -9,7 +9,6 @@ module Plutarch.DataRepr.Internal.HList (
   Labeled (Labeled, unLabeled),
 
   -- * Field indexing functions
-  hrecField,
   hrecField',
 
   -- * Type families
@@ -104,14 +103,6 @@ instance
   elemOf :: Elem '(name, a) (b ': as)
   elemOf = There (elemOf @name @a @as)
 
-{- |
-  Index a `HRec` with a field in a provided list of data fields.
-  Implicitly unwraps `PAsData a` to `a` when necessary.
-
-  >>> xs = HRec @["x", "y", "z"] (HCons 1 (HCons 2 (HCons 3 HNil)))
-  >>> hrecField @"y" @["x", "y", "z"] xs
-  >>> 2
--}
 hrecField ::
   forall name c as a b s.
   ( ElemOf name a as
@@ -122,7 +113,6 @@ hrecField ::
   Term s c
 hrecField xs =
   pmaybeFromAsData @b @c $ hrecField' @name xs
-{-# DEPRECATED hrecField "please use getField from GHC.Records" #-}
 
 ---------- HasField instances
 instance
