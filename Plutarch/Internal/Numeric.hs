@@ -251,8 +251,9 @@ class PAdditiveSemigroup (a :: S -> Type) where
   x #+ y = punsafeDowncast $ pto x #+ pto y
   {-# INLINEABLE pscalePositive #-}
 
-  -- | This defaults to exponentiation-by-squaring, which in general is the best
-  -- we can do.
+  {- | This defaults to exponentiation-by-squaring, which in general is the best
+  we can do.
+  -}
   pscalePositive ::
     forall (s :: S).
     Term s a ->

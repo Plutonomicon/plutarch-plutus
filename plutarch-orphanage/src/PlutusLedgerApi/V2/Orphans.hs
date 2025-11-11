@@ -159,8 +159,7 @@ instance Function PLC.Data where
               ByteString
               ( Either
                   (Integer, [PLA.Data])
-                  ( Either [PLA.Data] [(PLA.Data, PLA.Data)]
-                  )
+                  (Either [PLA.Data] [(PLA.Data, PLA.Data)])
               )
           )
       into = \case
@@ -176,8 +175,7 @@ instance Function PLC.Data where
               ByteString
               ( Either
                   (Integer, [PLA.Data])
-                  ( Either [PLA.Data] [(PLA.Data, PLA.Data)]
-                  )
+                  (Either [PLA.Data] [(PLA.Data, PLA.Data)])
               )
           ) ->
         PLA.Data

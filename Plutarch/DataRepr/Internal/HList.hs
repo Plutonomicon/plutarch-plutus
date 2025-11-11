@@ -79,15 +79,16 @@ hrecField' xs = indexHRec xs $ elemOf @name @a @as
 -}
 type ElemOf :: Symbol -> Type -> [(Symbol, Type)] -> Constraint
 class IndexLabel name as ~ a => ElemOf name a as | as name -> a where
-  -- | Construct the `Elem` corresponding to a Nat index.
-  --
-  --    Example:
-  --
-  --    >>> natElem @_ @0
-  --    Here
-  --
-  --    >>> natElem @_ @3
-  --    There (There (There Here))
+  {- | Construct the `Elem` corresponding to a Nat index.
+
+   Example:
+
+   >>> natElem @_ @0
+   Here
+
+   >>> natElem @_ @3
+   There (There (There Here))
+  -}
   elemOf :: Elem '(name, a) as
 
 instance ElemOf name a ('(name, a) ': as) where

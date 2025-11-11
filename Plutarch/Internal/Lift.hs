@@ -165,19 +165,22 @@ class PlutusType a => PLiftable (a :: S -> Type) where
   -- can be processed further.
   type PlutusRepr a :: Type
 
-  -- | Transform @a@'s Haskell equivalent to its Plutus universe
-  -- representation.
+  {- | Transform @a@'s Haskell equivalent to its Plutus universe
+  representation.
+  -}
   haskToRepr :: AsHaskell a -> PlutusRepr a
 
-  -- | Given @a@'s Plutus universe representation, turn it back into its (true)
-  -- Haskell equivalent if possible.
+  {- | Given @a@'s Plutus universe representation, turn it back into its (true)
+  Haskell equivalent if possible.
+  -}
   reprToHask :: PlutusRepr a -> Either LiftError (AsHaskell a)
 
   -- | Given @a@'s Plutus universe representation, lift it into Plutarch.
   reprToPlut :: forall (s :: S). PlutusRepr a -> PLifted s a
 
-  -- | Given a closed Plutarch term, evaluate it back into its Plutus universe
-  -- representation, or fail.
+  {- | Given a closed Plutarch term, evaluate it back into its Plutus universe
+  representation, or fail.
+  -}
   plutToRepr :: (forall (s :: S). PLifted s a) -> Either LiftError (PlutusRepr a)
 
 {- | Valid definition of 'reprToPlut' if @PlutusRepr a@ is in the Plutus universe.
@@ -254,11 +257,11 @@ plift t = case plutToRepr @a $ mkPLifted t of
     error $
       "plift failed: "
         <> ( case err of
-              CouldNotEvaluate evalErr -> "term errored: " <> show evalErr
-              TypeError builtinError -> "incorrect type: " <> show builtinError
-              CouldNotCompile compErr -> "could not compile: " <> Text.unpack compErr
-              CouldNotDecodeData -> "Data value is not a valid encoding for this type"
-              OtherLiftError err -> "other error: " <> Text.unpack err
+               CouldNotEvaluate evalErr -> "term errored: " <> show evalErr
+               TypeError builtinError -> "incorrect type: " <> show builtinError
+               CouldNotCompile compErr -> "could not compile: " <> Text.unpack compErr
+               CouldNotDecodeData -> "Data value is not a valid encoding for this type"
+               OtherLiftError err -> "other error: " <> Text.unpack err
            )
   Right res -> case reprToHask @a res of
     Left _ ->

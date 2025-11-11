@@ -95,10 +95,11 @@ import Plutarch.Maybe (PMaybe)
 import PlutusCore qualified as PLC
 
 class PShow t where
-  -- | Return the string representation of a Plutarch value
-  --
-  --  If the wrap argument is True, optionally wrap the output in `(..)` if it
-  --  represents multiple parameters.
+  {- | Return the string representation of a Plutarch value
+
+  If the wrap argument is True, optionally wrap the output in `(..)` if it
+  represents multiple parameters.
+  -}
   pshow' :: Bool -> Term s t -> Term s PString
   default pshow' :: (PGeneric t, PlutusType t, All2 PShow (PCode t)) => Bool -> Term s t -> Term s PString
   pshow' wrap x = gpshow wrap # x

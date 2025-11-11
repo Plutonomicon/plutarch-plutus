@@ -195,12 +195,13 @@ type family BoundTerms ps bs s where
   BoundTerms ((name ':= p) ': ps) ('Bind ': bs) s = '(name, Term s (PAsData p)) ': BoundTerms ps bs s
 
 class BindFields (ps :: [PLabeledType]) (bs :: [ToBind]) where
-  -- |
-  --    Bind all the fields in a 'PDataList' term to a corresponding
-  --    HList of Terms.
-  --
-  --    A continuation is returned to enable sharing of
-  --    the generated bound-variables.
+  {- |
+   Bind all the fields in a 'PDataList' term to a corresponding
+   HList of Terms.
+
+   A continuation is returned to enable sharing of
+   the generated bound-variables.
+  -}
   bindFields :: Proxy bs -> Term s (PDataRecord ps) -> TermCont s (HRec (BoundTerms ps bs s))
 
 instance {-# OVERLAPPABLE #-} BindFields ((l ':= p) ': ps) ('Bind ': '[]) where

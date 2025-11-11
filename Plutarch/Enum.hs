@@ -47,11 +47,12 @@ class POrd a => PCountable (a :: S -> Type) where
   -- | @since 1.10.0
   psuccessor :: forall (s :: S). Term s (a :--> a)
 
-  -- | The default implementation of this function is inefficient: if at all
-  -- possible, give instances an optimized version that doesn't require
-  -- recursion.
-  --
-  -- @since 1.10.0
+  {- | The default implementation of this function is inefficient: if at all
+  possible, give instances an optimized version that doesn't require
+  recursion.
+
+  @since 1.10.0
+  -}
   {-# INLINEABLE psuccessorN #-}
   psuccessorN :: forall (s :: S). Term s (PPositive :--> a :--> a)
   psuccessorN = phoistAcyclic $ plam $ \n x -> go n # (psuccessor # x) # pone
@@ -104,11 +105,12 @@ class PCountable a => PEnumerable (a :: S -> Type) where
   -- | @since 1.10.0
   ppredecessor :: forall (s :: S). Term s (a :--> a)
 
-  -- | The default implementation of this function is inefficient: if at all
-  -- possible, give instances an optimized version that doesn't require
-  -- recursion.
-  --
-  -- @since 1.10.0
+  {- | The default implementation of this function is inefficient: if at all
+  possible, give instances an optimized version that doesn't require
+  recursion.
+
+  @since 1.10.0
+  -}
   {-# INLINEABLE ppredecessorN #-}
   ppredecessorN :: forall (s :: S). Term s (PPositive :--> a :--> a)
   ppredecessorN = phoistAcyclic $ plam $ \n x -> go n # (ppredecessor # x) # pone

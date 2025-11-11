@@ -169,8 +169,7 @@ instance Function PlutusTx.BuiltinData where
               [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)]
               ( Either
                   [PlutusTx.BuiltinData]
-                  ( Either Integer PlutusTx.BuiltinByteString
-                  )
+                  (Either Integer PlutusTx.BuiltinByteString)
               )
           )
       into dat =
@@ -188,8 +187,7 @@ instance Function PlutusTx.BuiltinData where
               [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)]
               ( Either
                   [PlutusTx.BuiltinData]
-                  ( Either Integer PlutusTx.BuiltinByteString
-                  )
+                  (Either Integer PlutusTx.BuiltinByteString)
               )
           ) ->
         PlutusTx.BuiltinData
