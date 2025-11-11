@@ -6,7 +6,6 @@ module Plutarch.Builtin.Crypto (
   pblake2b_256,
   pkeccak_256,
   pripemd_160,
-  pverifySignature,
   pverifyEd25519Signature,
 
   -- ** from V2
@@ -52,11 +51,6 @@ pkeccak_256 = punsafeBuiltin PLC.Keccak_256
 -}
 pripemd_160 :: Term s (PByteString :--> PByteString)
 pripemd_160 = punsafeBuiltin PLC.Ripemd_160
-
--- | Verify the signature against the public key and message.
-pverifySignature :: Term s (PByteString :--> PByteString :--> PByteString :--> PBool)
-pverifySignature = pverifyEd25519Signature
-{-# DEPRECATED pverifySignature "use one of the Ed25519, Schnorr- or ECDSA Secp256k1 signature verification functions" #-}
 
 {- | Verify an ED25519 signature
    arguments are in this order: pubkey, message, signature

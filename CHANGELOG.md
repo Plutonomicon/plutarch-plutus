@@ -2,6 +2,11 @@
 
 # Unreleased
 
+## Removed
+
+* `pverifySignature`, due to deprecation. Replace any use of this with a more
+  specific signature verification builtin.  
+
 # 1.12.0 -- 07-11-2025
 
 ## Added
