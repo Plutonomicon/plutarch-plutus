@@ -2,24 +2,11 @@ module Plutarch.Internal.Trace (
   ptraceInfo,
   ptraceDebug,
   ptrace',
-  ptrace,
 ) where
 
 import Data.Kind (Type)
 import Plutarch.Builtin.String (PString, ptrace', ptraceInfo)
 import Plutarch.Internal.Term (Config (Tracing), LogLevel (LogDebug), S, Term, pdelay, pforce, pgetConfig, (#))
-
-{- | Backward compatibility synonym for 'ptraceInfo'.
-
-@since 1.6.0
--}
-ptrace ::
-  forall (a :: S -> Type) (s :: S).
-  Term s PString ->
-  Term s a ->
-  Term s a
-ptrace = ptraceInfo
-{-# DEPRECATED ptrace "Use ptraceInfo" #-}
 
 {- | Trace the given message at the debug level before evaluating the given
 argument.

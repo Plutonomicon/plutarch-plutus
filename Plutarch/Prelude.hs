@@ -32,7 +32,6 @@ module Plutarch.Prelude (
   -- * Cryptographic primitives
   psha2_256,
   psha3_256,
-  pverifySignature,
 
   -- * Data encoding
   PAsData (..),
@@ -248,20 +247,16 @@ module Plutarch.Prelude (
   tcont,
 
   -- * Tracing
-  ptrace,
   ptraceDebug,
   ptraceDebugError,
   ptraceDebugIfFalse,
   ptraceDebugIfTrue,
   ptraceDebugShowId,
-  ptraceError,
-  ptraceIfFalse,
   ptraceInfo,
   ptraceInfoError,
   ptraceInfoIfFalse,
   ptraceInfoIfTrue,
   ptraceInfoShowId,
-  ptraceShowId,
 
   -- * Semigroup and Monoid
   PSemigroup (..),

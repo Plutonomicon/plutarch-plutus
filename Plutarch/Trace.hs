@@ -12,13 +12,6 @@ module Plutarch.Trace (
   ptraceDebugIfTrue,
   ptraceDebugIfFalse,
   ptraceDebugError,
-
-  -- * Deprecated
-  ptrace,
-  ptraceShowId,
-  ptraceError,
-  ptraceIfTrue,
-  ptraceIfFalse,
 ) where
 
 import Data.Kind (Type)
@@ -35,7 +28,7 @@ import Plutarch.Internal.Term (
   plet,
   (#),
  )
-import Plutarch.Internal.Trace (ptrace, ptrace', ptraceDebug, ptraceInfo)
+import Plutarch.Internal.Trace (ptrace', ptraceDebug, ptraceInfo)
 
 {- | Like Haskell's @traceShowId@ but for Plutarch, at the info level.
 
@@ -49,18 +42,6 @@ ptraceInfoShowId ::
 ptraceInfoShowId x = pgetConfig $ \case
   NoTracing -> x
   Tracing _ _ -> ptraceInfo (pshow x) x
-
-{- | Synonym for 'ptraceInfoShowId'.
-
-@since 1.6.0
--}
-ptraceShowId ::
-  forall (a :: S -> Type) (s :: S).
-  PShow a =>
-  Term s a ->
-  Term s a
-ptraceShowId = ptraceInfoShowId
-{-# DEPRECATED ptraceShowId "Use ptraceInfoShowId" #-}
 
 {- | Like Haskell's @traceShowId@ but for Plutarch, at the debug level.
 
@@ -85,17 +66,6 @@ ptraceInfoError ::
   Term s a
 ptraceInfoError = flip ptraceInfo perror
 
-{- | Synonym for 'ptraceInfoError'.
-
-@since 1.6.0
--}
-ptraceError ::
-  forall (a :: S -> Type) (s :: S).
-  Term s PString ->
-  Term s a
-ptraceError = ptraceInfoError
-{-# DEPRECATED ptraceError "Use ptraceInfoError" #-}
-
 {- | Trace the given message at the debug level, then terminate with 'perror'.
 
 @since 1.6.0
@@ -118,18 +88,6 @@ ptraceInfoIfTrue ::
 ptraceInfoIfTrue msg x = pgetConfig $ \case
   NoTracing -> x
   _ -> plet x $ \x' -> pif x' (ptrace' # msg # x') x'
-
-{- | Synonym for 'ptraceInfoIfTrue'.
-
-@since 1.6.0
--}
-ptraceIfTrue ::
-  forall (s :: S).
-  Term s PString ->
-  Term s PBool ->
-  Term s PBool
-ptraceIfTrue = ptraceInfoIfTrue
-{-# DEPRECATED ptraceIfTrue "Use ptraceInfoIfTrue" #-}
 
 {- | Trace the given message at the debug level if the argument is true.
 
@@ -158,18 +116,6 @@ ptraceInfoIfFalse ::
 ptraceInfoIfFalse msg x = pgetConfig $ \case
   NoTracing -> x
   _ -> plet x $ \x' -> pif x' x' (ptrace' # msg # x')
-
-{- | Synonym for 'ptraceInfoIfFalse'.
-
-@since 1.6.0
--}
-ptraceIfFalse ::
-  forall (s :: S).
-  Term s PString ->
-  Term s PBool ->
-  Term s PBool
-ptraceIfFalse = ptraceInfoIfFalse
-{-# DEPRECATED ptraceIfFalse "Use ptraceInfoIfFalse" #-}
 
 {- | Trace the given message at the debug level if the argument is false.
 

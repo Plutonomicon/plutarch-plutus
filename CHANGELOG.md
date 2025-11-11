@@ -2,6 +2,21 @@
 
 # Unreleased
 
+## Changed
+
+* `hrecField` has been made hidden. Not only should this not be used anymore, it
+  was deprecated for a long time already.
+
+## Removed
+
+* `pverifySignature`, due to deprecation. Replace any use of this with a more
+  specific signature verification builtin.  
+* `ptraceShowId`, `ptraceError`, `ptraceIfTrue`, `ptraceIfFalse`, and `ptrace` due to
+  deprecation. Replace any uses of these with the equivalent function specifying
+  a tracing level.
+* `punsafeConstant` due to deprecation. Replace any uses of it with `pconstant`
+  or `punsafeConstantInternal`.
+
 # 1.12.0 -- 07-11-2025
 
 ## Added
