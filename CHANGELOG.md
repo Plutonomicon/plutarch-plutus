@@ -9,6 +9,8 @@
 * `ptraceShowId`, `ptraceError`, `ptraceIfTrue`, `ptraceIfFalse`, and `ptrace` due to
   deprecation. Replace any uses of these with the equivalent function specifying
   a tracing level.
+* `punsafeConstant` due to deprecation. Replace any uses of it with `pconstant`
+  or `punsafeConstantInternal`.
 
 # 1.12.0 -- 07-11-2025
 
