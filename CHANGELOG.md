@@ -6,6 +6,9 @@
 
 * `pverifySignature`, due to deprecation. Replace any use of this with a more
   specific signature verification builtin.  
+* `ptraceShowId`, `ptraceError`, `ptraceIfTrue`, `ptraceIfFalse`, and `ptrace` due to
+  deprecation. Replace any uses of these with the equivalent function specifying
+  a tracing level.
 
 # 1.12.0 -- 07-11-2025
 
