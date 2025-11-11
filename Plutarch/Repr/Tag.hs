@@ -159,7 +159,7 @@ instance
      in
       maybe (Left (OtherLiftError "Invalid index")) Right $ unTagLiftHelper helper 0 (Just <$> SOP.to)
 
-  -- NOTE: Do we need index boudns checking in these two?
+  -- NOTE: Do we need index bounds checking in these two?
 
   reprToPlut idx = PLifted $ popaque $ pconstant @PInteger idx
 
