@@ -29,7 +29,7 @@
     herbage.url = "github:seungheonoh/herbage";
   };
 
-  outputs = inputs@{ flake-parts, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
+  outputs = inputs@{ flake-parts, haskell-nix, iohk-nix, CHaP, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./nix/pre-commit.nix
@@ -59,7 +59,7 @@
             src = ./.;
             compiler-nix-name = "ghc984";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2025-07-30T14:13:57Z";
+            index-state = "2025-09-22T06:47:49Z";
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };

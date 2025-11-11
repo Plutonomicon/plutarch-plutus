@@ -22,9 +22,10 @@ module Plutarch.Test.Bench (
 
   -- * CLI options
 
-  -- | Benchmarks can be compared against CSV file and fail if they differ too much.
-  -- Run @cabal run bench -- --help@ to see available flags and descriptions.
-  -- These options are available by default when running benchmarks in 'Plutarch.Test.Bench.defaultMain'
+  {- | Benchmarks can be compared against CSV file and fail if they differ too much.
+  Run @cabal run bench -- --help@ to see available flags and descriptions.
+  These options are available by default when running benchmarks in 'Plutarch.Test.Bench.defaultMain'
+  -}
   BaselinePath,
   CsvPath,
   FailIfMoreCpu,
@@ -36,8 +37,9 @@ module Plutarch.Test.Bench (
 
   -- * Ingredients
 
-  -- | These are used by default in 'Plutarch.Test.Bench.defaultMain'.
-  -- You do not need to do anything with them unless you build your own benchmark runner
+  {- | These are used by default in 'Plutarch.Test.Bench.defaultMain'.
+  You do not need to do anything with them unless you build your own benchmark runner
+  -}
   consoleBenchReporter,
   csvReporter,
 ) where

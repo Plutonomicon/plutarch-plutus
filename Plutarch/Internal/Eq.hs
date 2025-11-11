@@ -9,7 +9,7 @@ import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G1_Element,
   PBuiltinBLS12_381_G2_Element,
  )
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, pif', pnot, (#&&))
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pif, pnot, (#&&))
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
@@ -77,7 +77,7 @@ infix 4 #==
 
 instance PEq PBool where
   {-# INLINEABLE (#==) #-}
-  x #== y' = plet y' $ \y -> pif' # x # y #$ pnot # y
+  x #== y' = plet y' $ \y -> pif x y (pnot # y)
 
 -- Helpers
 

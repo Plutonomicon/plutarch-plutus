@@ -318,7 +318,7 @@ instance
               mkPLifted $
                 pmatch (getPLiftedClosed x) $ \case
                   (PSOPRec (PRec (d :* _))) -> d
-            )
+          )
             >>= reprToHask @y
 
         pure $ SOP.I curr :* rest'
@@ -388,7 +388,7 @@ instance
                     pmatch (getPLiftedClosed d) $ \case
                       (PSOPStruct (PStruct (SOP (S _x')))) -> perror
                       (PSOPStruct (PStruct (SOP (Z x')))) -> pcon $ PSOPRec $ PRec x'
-                )
+              )
                 >>= reprToHask @(PSOPRec y)
 
             pure $ case curr of

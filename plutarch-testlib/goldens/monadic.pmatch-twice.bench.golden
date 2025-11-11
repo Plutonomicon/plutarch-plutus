@@ -1,4 +1,4 @@
-normal {"exBudgetCPU":9191164,"exBudgetMemory":39092,"scriptSizeBytes":74}
-do {"exBudgetCPU":9303164,"exBudgetMemory":39792,"scriptSizeBytes":138}
-cont {"exBudgetCPU":9191164,"exBudgetMemory":39092,"scriptSizeBytes":74}
-termcont {"exBudgetCPU":9303164,"exBudgetMemory":39792,"scriptSizeBytes":128}
+normal {"exBudgetCPU":3728100,"exBudgetMemory":23400,"scriptSizeBytes":62}
+do {"exBudgetCPU":3840100,"exBudgetMemory":24100,"scriptSizeBytes":126}
+cont {"exBudgetCPU":3728100,"exBudgetMemory":23400,"scriptSizeBytes":62}
+termcont {"exBudgetCPU":3840100,"exBudgetMemory":24100,"scriptSizeBytes":116}

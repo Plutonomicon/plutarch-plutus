@@ -566,7 +566,7 @@ minLower = phoistAcyclic $
       pif
         (xt #< yt)
         x'
-        (pif (yt #< xt) y' (pif' # pfromData xc # x' # y'))
+        (pif (yt #< xt) y' (pif (pfromData xc) x' y'))
 
 maxLower ::
   forall (a :: S -> Type) (s :: S).
@@ -585,7 +585,7 @@ maxLower = phoistAcyclic $
       pif
         (xt #< yt)
         y'
-        (pif (yt #< xt) x' (pif' # pfromData xc # y' # x'))
+        (pif (yt #< xt) x' (pif (pfromData xc) y' x'))
 
 minUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -604,7 +604,7 @@ minUpper = phoistAcyclic $
       pif
         (xt #< yt)
         x'
-        (pif (yt #< xt) y' (pif' # pfromData xc # y' # x'))
+        (pif (yt #< xt) y' (pif (pfromData xc) y' x'))
 
 maxUpper ::
   forall (a :: S -> Type) (s :: S).
@@ -623,7 +623,7 @@ maxUpper = phoistAcyclic $
       pif
         (xt #< yt)
         y'
-        (pif (yt #< xt) x' (pif' # pfromData xc # x' # y'))
+        (pif (yt #< xt) x' (pif (pfromData xc) x' y'))
 
 -- value <= PExtended
 leqE' ::

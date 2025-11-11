@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Main (main) where
 
@@ -24,7 +25,11 @@ import Plutarch.Internal.Parse (PValidateData (pwithValidated), pparseData)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogInfo),
+  RawTerm (RCase),
+  Term (Term),
+  TermResult (TermResult),
   TracingMode (DoTracing),
+  asRawTerm,
   punsafeCoerce,
  )
 import Plutarch.LedgerApi.Utils (
@@ -86,9 +91,75 @@ main =
       , testGroup "AssocMap" assocMapBenches
       , testGroup "PBuiltinPair" pbuiltinPairBenches
       , testGroup "pfix" pfixBenches
+      , testGroup "pif" pifBenches
+      , testGroup "list matching" listMatchingBenches
       ]
 
 -- Suites
+
+listMatchingBenches :: [TestTree]
+listMatchingBenches =
+  [ bench
+      "head builtin"
+      ( precompileTerm (plam $ \x -> pheadBuiltin # x)
+          # pconstant @(PBuiltinList PInteger) [1]
+      )
+  , bcompare "$(NF-1) == \"list matching\" && $NF == \"head builtin\"" $
+      bench
+        "head via partial match"
+        ( precompileTerm (plam pheadPM)
+            # pconstant @(PBuiltinList PInteger) [1]
+        )
+  , bench
+      "tail builtin"
+      ( precompileTerm (plam $ \x -> ptailBuiltin # x)
+          # pconstant @(PBuiltinList PInteger) [1, 2]
+      )
+  , bcompare "$(NF-1) == \"list matching\" && $NF == \"tail builtin\"" $
+      bench
+        "tail via partial match"
+        ( precompileTerm (plam ptailPM)
+            # pconstant @(PBuiltinList PInteger) [1, 2]
+        )
+  ]
+  where
+    pheadPM ::
+      forall (a :: S -> Type) (s :: S).
+      Term s (PBuiltinList a) ->
+      Term s a
+    pheadPM t = Term $ \level -> do
+      TermResult matchRaw matchDeps <- asRawTerm (plam const) level
+      TermResult rawT depsT <- asRawTerm t level
+      let allDeps = matchDeps <> depsT
+      pure . TermResult (RCase rawT [matchRaw]) $ allDeps
+    ptailPM ::
+      forall (a :: S -> Type) (s :: S).
+      Term s (PBuiltinList a) ->
+      Term s (PBuiltinList a)
+    ptailPM t = Term $ \level -> do
+      TermResult matchRaw matchDeps <- asRawTerm (plam $ \_ xs -> xs) level
+      TermResult rawT depsT <- asRawTerm t level
+      let allDeps = matchDeps <> depsT
+      pure . TermResult (RCase rawT [matchRaw]) $ allDeps
+
+pifBenches :: [TestTree]
+pifBenches =
+  [ bench
+      "pif lazy"
+      ( precompileTerm (plam $ \c x y -> pif c x y)
+          # pconstant @PBool True
+          # pconstant @PInteger 1
+          # pconstant @PInteger 2
+      )
+  , bcompare "$(NF-1) == \"pif\" && $NF == \"pif lazy\"" $
+      bench
+        "pif strict"
+        ( precompileTerm (plam $ \c x y -> pif' # c # x # y)
+            # pconstant @PBool True
+            # pconstant @PInteger 1
+            # pconstant @PInteger 2
+        )
+  ]
 
 pfixBenches :: [TestTree]
 pfixBenches =

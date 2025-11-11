@@ -28,7 +28,7 @@ import Plutarch.Builtin.BLS (
   PBuiltinBLS12_381_G2_Element,
   PBuiltinBLS12_381_MlResult,
  )
-import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pfalse, pif', ptrue)
+import Plutarch.Builtin.Bool (PBool (PFalse, PTrue), pfalse, ptrue)
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
@@ -40,17 +40,13 @@ import Plutarch.Builtin.Data (
   PBuiltinList (PCons, PNil),
   PBuiltinPair (PBuiltinPair),
   PData (PData),
-  pchooseListBuiltin,
   pconsBuiltin,
-  pfstBuiltin,
-  pheadBuiltin,
-  psndBuiltin,
-  ptailBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque (POpaque))
 import Plutarch.Builtin.String (PString, ptraceInfo)
 import Plutarch.Builtin.Unit (PUnit (PUnit), punit)
+import Plutarch.Internal.PLam (plam)
 
 import Data.Kind (Constraint, Type)
 import Data.Proxy (Proxy (Proxy))
@@ -78,11 +74,14 @@ import {-# SOURCE #-} Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (
+  RawTerm (RCase),
   S,
-  Term,
-  pdelay,
+  Term (Term),
+  TermResult (TermResult),
+  asRawTerm,
+  -- pdelay,
   perror,
-  pforce,
+  -- pforce,
   plam',
   plet,
   punsafeCoerce,
@@ -229,10 +228,10 @@ instance PlutusType (DeriveFakePlutusType a) where
 
   -- This breaks without type signature because of (s :: S) needs to be bind.
   pcon' :: forall s. DeriveFakePlutusType a s -> Term s (PInner (DeriveFakePlutusType a))
-  pcon' _ = error "Attepted to use a type derived with DeriveFakePlutusType"
+  pcon' _ = error "Attempted to use a type derived with DeriveFakePlutusType"
 
   pmatch' :: forall s b. Term s (PInner (DeriveFakePlutusType a)) -> (DeriveFakePlutusType a s -> Term s b) -> Term s b
-  pmatch' _ _ = error "Attepted to use a type derived with DeriveFakePlutusType"
+  pmatch' _ _ = error "Attempted to use a type derived with DeriveFakePlutusType"
 
 --------------------------------------------------------------------------------
 
@@ -247,10 +246,21 @@ instance PlutusType POpaque where
 instance PlutusType PBool where
   type PInner PBool = PBool
   {-# INLINEABLE pcon' #-}
-  pcon' PTrue = ptrue
-  pcon' PFalse = pfalse
+  pcon' = \case
+    PTrue -> ptrue
+    PFalse -> pfalse
+
+  -- pcon' PTrue = ptrue
+  -- pcon' PFalse = pfalse
   {-# INLINEABLE pmatch' #-}
-  pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+  pmatch' b f = Term $ \level -> do
+    TermResult handleFalse depsFalse <- asRawTerm (f PFalse) level
+    TermResult handleTrue depsTrue <- asRawTerm (f PTrue) level
+    TermResult rawT depsT <- asRawTerm b level
+    let allDeps = depsFalse <> depsTrue <> depsT
+    pure . TermResult (RCase rawT [handleFalse, handleTrue]) $ allDeps
+
+-- pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
 
 instance PlutusType PData where
   type PInner PData = PData
@@ -269,18 +279,22 @@ you should /not/ use 'pcon' for 'PBuiltinPair'.
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
   pcon' _ = ptraceInfo "Do not use pcon for PBuiltinPair; instead, use ppairDataBuiltin or pconstant" perror
-  pmatch' t f = f (PBuiltinPair (pfstBuiltin # t) (psndBuiltin # t))
+  pmatch' t f = Term $ \level -> do
+    TermResult handler depsHandler <- asRawTerm (plam $ \x y -> f (PBuiltinPair x y)) level
+    TermResult rawT depsT <- asRawTerm t level
+    let allDeps = depsHandler <> depsT
+    pure . TermResult (RCase rawT [handler]) $ allDeps
 
 instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
   pcon' (PCons x xs) = pconsBuiltin # x # xs
   pcon' PNil = getPLifted $ unsafeHaskToUni @[PlutusRepr a] []
-  pmatch' xs' f = plet xs' $ \xs ->
-    pforce $
-      pchooseListBuiltin
-        # xs
-        # pdelay (f PNil)
-        # pdelay (f (PCons (pheadBuiltin # xs) (ptailBuiltin # xs)))
+  pmatch' xs f = Term $ \level -> do
+    TermResult handleCons depsCons <- asRawTerm (plam $ \y ys -> f (PCons y ys)) level
+    TermResult handleNil depsNil <- asRawTerm (f PNil) level
+    TermResult rawT depsT <- asRawTerm xs level
+    let allDeps = depsCons <> depsNil <> depsT
+    pure . TermResult (RCase rawT [handleCons, handleNil]) $ allDeps
 
 instance PIsData a => PlutusType (PAsData a) where
   type PInner (PAsData a) = PData

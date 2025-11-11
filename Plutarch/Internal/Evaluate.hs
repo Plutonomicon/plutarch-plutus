@@ -1,3 +1,4 @@
+{-# LANGUAGE NoPartialTypeSignatures #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
 module Plutarch.Internal.Evaluate (uplcVersion, evalScript, evalScriptHuge, evalScriptUnlimited, evalScript') where
@@ -49,7 +50,13 @@ evalScript' budget (Script (Program _ _ t)) = case evalTerm budget (UPLC.termMap
 evalScriptUnlimited :: Script -> (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) Script, ExBudget, [Text])
 evalScriptUnlimited (Script (Program _ _ t)) =
   case Cek.runCekDeBruijn defaultCekParametersForTesting Cek.counting Cek.logEmitter (UPLC.termMapNames UPLC.fakeNameDeBruijn t) of
-    (errOrRes, Cek.CountingSt final, logs) -> (Script . Program () uplcVersion . UPLC.termMapNames UPLC.unNameDeBruijn <$> errOrRes, final, logs)
+    Cek.CekReport res (Cek.CountingSt cost) logs -> case res of
+      Cek.CekFailure err -> (Left err, cost, logs)
+      Cek.CekSuccessConstant c -> (Right . toScript . UPLC.Constant () $ c, cost, logs)
+      Cek.CekSuccessNonConstant t -> (Right . toScript . UPLC.termMapNames UPLC.unNameDeBruijn $ t, cost, logs)
+  where
+    toScript :: Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () -> Script
+    toScript = Script . Program () uplcVersion
 
 evalTerm ::
   ExBudget ->
@@ -62,4 +69,7 @@ evalTerm ::
   )
 evalTerm budget t =
   case Cek.runCekDeBruijn defaultCekParametersForTesting (Cek.restricting (ExRestrictingBudget budget)) Cek.logEmitter t of
-    (errOrRes, Cek.RestrictingSt (ExRestrictingBudget final), logs) -> (errOrRes, budget `minusExBudget` final, logs)
+    Cek.CekReport res (Cek.RestrictingSt (ExRestrictingBudget cost)) logs -> case res of
+      Cek.CekFailure err -> (Left err, budget `minusExBudget` cost, logs)
+      Cek.CekSuccessConstant c -> (Right . UPLC.Constant () $ c, budget `minusExBudget` cost, logs)
+      Cek.CekSuccessNonConstant t -> (Right t, budget `minusExBudget` cost, logs)
