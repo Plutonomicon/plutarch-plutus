@@ -1,8 +1,10 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
-module Plutarch.DataRepr.Internal.Field (
+module Plutarch.DataRepr.Internal.Field
+  {-# DEPRECATED "Use the new mechanism instead" #-} (
   -- * PDataField class & deriving utils
   PDataFields (..),
   pletFields,

@@ -98,12 +98,14 @@ type family PInnermost' (a :: S -> Type) (b :: S -> Type) :: S -> Type where
 
 type PInnermost a = PInnermost' (PInner a) a
 
+{-# DEPRECATED PlutusTypeStrat "Use the new mechanisms instead" #-}
 class PlutusTypeStrat (strategy :: Type) where
   type PlutusTypeStratConstraint strategy :: (S -> Type) -> Constraint
   type DerivedPInner strategy (a :: S -> Type) :: S -> Type
   derivedPCon :: forall a s. (DerivePlutusType a, DPTStrat a ~ strategy) => a s -> Term s (DerivedPInner strategy a)
   derivedPMatch :: forall a s b. (DerivePlutusType a, DPTStrat a ~ strategy) => Term s (DerivedPInner strategy a) -> (a s -> Term s b) -> Term s b
 
+{-# DEPRECATED DerivePlutusType "Use the new mechanisms instead" #-}
 class
   ( PInner a ~ DerivedPInner (DPTStrat a) a
   , PlutusTypeStrat (DPTStrat a)

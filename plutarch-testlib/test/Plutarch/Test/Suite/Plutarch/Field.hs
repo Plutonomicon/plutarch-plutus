@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedRecordDot #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 -- TODO: Remove this module once old DataRepr stuff is fully gone
 

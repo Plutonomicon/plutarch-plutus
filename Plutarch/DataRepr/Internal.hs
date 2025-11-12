@@ -1,8 +1,10 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
-module Plutarch.DataRepr.Internal (
+module Plutarch.DataRepr.Internal
+  {-# DEPRECATED "Use the new mechanism instead" #-} (
   PDataSum (..),
   punDataSum,
   ptryIndexDataSum,
