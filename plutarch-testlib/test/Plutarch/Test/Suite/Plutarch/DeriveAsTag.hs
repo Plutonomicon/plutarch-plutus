@@ -12,8 +12,9 @@ import Plutarch.Internal.Lift (
   PLiftable,
   PLifted (PLifted),
  )
-import Plutarch.Prelude (PEq, PlutusType, S)
+import Plutarch.Prelude (PBool (PFalse, PTrue), PEq, PlutusType, S, pcon, pmatch)
 import Plutarch.Repr.Tag (DeriveAsTag (DeriveAsTag))
+import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import Plutarch.Test.Laws (checkPLiftableLaws, checkPLiftableLawsForDeriveTags, checkPlutusTypeLaws)
 import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck.Arbitrary (Arbitrary (arbitrary))
@@ -45,9 +46,15 @@ tests :: TestTree
 tests =
   testGroup
     "DeriveAsTag"
-    ( mconcat
+    [ testGroup "Laws" . mconcat $
         [ checkPLiftableLawsForDeriveTags @PFoo
         , checkPLiftableLaws @PFoo
         , checkPlutusTypeLaws @PFoo
         ]
-    )
+    , plutarchGolden
+        "Tag encoding and decoding"
+        "derive-as-tag"
+        [ goldenEval "pcon" (pcon C)
+        , goldenEval "pmatch" (pmatch (pcon D) (\x -> if x == D then pcon PTrue else pcon PFalse))
+        ]
+    ]
