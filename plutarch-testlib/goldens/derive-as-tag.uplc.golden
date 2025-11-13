@@ -1,2 +1,2 @@
 pcon program 1.1.0 2
-pmatch program 1.1.0 (case (equalsInteger 3 3) [False, True])
+pmatch program 1.1.0 (case 3 [False, False, False, True, False])
