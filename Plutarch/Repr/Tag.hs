@@ -38,9 +38,13 @@ import Plutarch.Internal.PlutusType (
   DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   PlutusType (PInner, pcon', pmatch'),
  )
-import Plutarch.Internal.Term (S, Term)
-import Plutarch.Repr.Internal (groupHandlers)
-import Plutarch.TermCont (pletC, unTermCont)
+import Plutarch.Internal.Term (
+  RawTerm (RCase),
+  S,
+  Term (Term),
+  TermResult (TermResult),
+  asRawTerm,
+ )
 
 -- | @since 1.10.0
 newtype PTag (struct :: [S -> Type]) (s :: S) = PTag
@@ -76,32 +80,27 @@ instance SOP.Generic (PFoo s)
 
 @since 1.10.0
 -}
-instance (forall s. TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a) where
+instance (forall (s :: S). TagTypeConstraints s a struct) => PlutusType (DeriveAsTag a) where
   type PInner (DeriveAsTag a) = PInteger
-  pcon' :: forall s. DeriveAsTag a s -> Term s (PInner (DeriveAsTag a))
-  pcon' (DeriveAsTag x) =
-    pconstant @PInteger $ toInteger $ SOP.hindex $ SOP.from x
-
-  pmatch' :: forall s b. Term s (PInner (DeriveAsTag a)) -> (DeriveAsTag a s -> Term s b) -> Term s b
-  pmatch' tag f = unTermCont $ do
-    -- plet here because tag might be a big computation
-    tag' <- pletC tag
-    let
-      g :: SOP I (Code (a s)) -> Term s b
-      g = f . DeriveAsTag . SOP.to
-
-      go :: forall x xs. IsEmpty x => TagMatchHandler s b xs -> TagMatchHandler s b (x ': xs)
-      go (TagMatchHandler rest) =
-        TagMatchHandler $ \idx handle ->
-          K (idx, handle $ SOP $ Z Nil) :* rest (idx + 1) (\(SOP x) -> handle $ SOP $ S x)
-
+  pcon' :: forall (s :: S). DeriveAsTag a s -> Term s PInteger
+  pcon' (DeriveAsTag x) = pconstant . toInteger . SOP.hindex . SOP.from $ x
+  pmatch' :: forall (s :: S) (b :: S -> Type). Term s PInteger -> (DeriveAsTag a s -> Term s b) -> Term s b
+  pmatch' tag f = Term $ \level -> do
+    TermResult rawTag depsTag <- asRawTerm tag level
+    rawHandlerTRs <- traverse (`asRawTerm` level) handlers
+    let (rawHandlers, depsHandlers) = unzip . fmap (\(TermResult x y) -> (x, y)) $ rawHandlerTRs
+    let allDeps = depsTag <> mconcat depsHandlers
+    pure . TermResult (RCase rawTag rawHandlers) $ allDeps
+    where
+      handlers :: [Term s b]
+      handlers = SOP.hcollapse . unTagMatchHandler handlers' $ toHandler
+      toHandler :: SOP I (Code (a s)) -> Term s b
+      toHandler = f . DeriveAsTag . SOP.to
       handlers' :: TagMatchHandler s b struct
-      handlers' = SOP.cpara_SList (Proxy @IsEmpty) (TagMatchHandler $ \_ _ -> Nil) go
-
-      handlers :: [(Integer, Term s b)]
-      handlers = SOP.hcollapse $ unTagMatchHandler handlers' 0 g
-
-    pure $ groupHandlers handlers tag'
+      handlers' = SOP.cpara_SList (Proxy @IsEmpty) (TagMatchHandler (const Nil)) go
+      go :: forall x xs. IsEmpty x => TagMatchHandler s b xs -> TagMatchHandler s b (x ': xs)
+      go (TagMatchHandler rest) = TagMatchHandler $ \handle ->
+        K (handle . SOP $ Z Nil) :* rest (\(SOP x) -> handle . SOP $ S x)
 
 -- | @since 1.10.0
 newtype TagLiftHelper r struct = TagLiftHelper
@@ -132,7 +131,7 @@ class (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, 
 instance (SOP.Generic (a s), TagTypePrettyError (Code (a s)), Code (a s) ~ struct, All IsEmpty struct) => TagTypeConstraints s a struct
 
 newtype TagMatchHandler s b struct = TagMatchHandler
-  { unTagMatchHandler :: Integer -> (SOP I struct -> Term s b) -> NP (K (Integer, Term s b)) struct
+  { unTagMatchHandler :: (SOP I struct -> Term s b) -> NP (K (Term s b)) struct
   }
 
 instance
@@ -161,7 +160,7 @@ instance
      in
       maybe (Left (OtherLiftError "Invalid index")) Right $ unTagLiftHelper helper 0 (Just <$> SOP.to)
 
-  -- NOTE: Do we need index boudns checking in these two?
+  -- NOTE: Do we need index bounds checking in these two?
 
   reprToPlut idx = PLifted $ popaque $ pconstant @PInteger idx
 

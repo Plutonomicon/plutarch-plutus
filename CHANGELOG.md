@@ -1,6 +1,11 @@
 # Revision history for plutarch
 
-# Unreleased
+# UNRELEASED
+
+## Changed
+
+* Bump `plutus-core` to 1.54.0.0
+* `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
 
 ## Changed
 

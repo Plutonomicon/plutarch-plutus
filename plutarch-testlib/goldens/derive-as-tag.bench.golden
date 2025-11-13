@@ -1,0 +1,2 @@
+pcon {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
+pmatch {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":15}

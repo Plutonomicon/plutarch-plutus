@@ -22,7 +22,7 @@ repository cardano-haskell-packages
     c00aae8461a256275598500ea0e187588c35a5d5d7454fb57eac18d9edb86a56
     d4a35cd3121aa00d18544bb0ac01c3e1691d618f462c46129271bccf39f7e8ee
 
-index-state: 2025-07-30T14:13:57Z
+index-state: 2025-09-22T06:47:49Z
 
 packages:
   ./.
@@ -45,13 +45,11 @@ allow-newer:
   , inline-r:bytestring
   , inline-r:containers
   , inline-r:primitive
-
-allow-newer:
   -- https://github.com/phadej/vec/issues/121
-  ral:QuickCheck,
-  fin:QuickCheck,
-  bin:QuickCheck,
+  , ral:QuickCheck
+  , fin:QuickCheck
+  , bin:QuickCheck
+  -- https://github.com/IntersectMBO/plutus/pull/7236
+  , turtle:optparse-applicative
 
--- https://github.com/IntersectMBO/plutus/pull/7236
 constraints: setup.optparse-applicative >=0.19.0.0
-allow-newer: turtle:optparse-applicative

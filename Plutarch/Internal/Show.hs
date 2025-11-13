@@ -30,7 +30,7 @@ import Generics.SOP (
   hmap,
  )
 import Generics.SOP.GGP (gdatatypeInfo)
-import Plutarch.Builtin.Bool (PBool, pif, pif')
+import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (
   PByte,
   PByteString,
@@ -95,10 +95,11 @@ import Plutarch.Maybe (PMaybe)
 import PlutusCore qualified as PLC
 
 class PShow t where
-  -- | Return the string representation of a Plutarch value
-  --
-  --  If the wrap argument is True, optionally wrap the output in `(..)` if it
-  --  represents multiple parameters.
+  {- | Return the string representation of a Plutarch value
+
+  If the wrap argument is True, optionally wrap the output in `(..)` if it
+  represents multiple parameters.
+  -}
   pshow' :: Bool -> Term s t -> Term s PString
   default pshow' :: (PGeneric t, PlutusType t, All2 PShow (PCode t)) => Bool -> Term s t -> Term s PString
   pshow' wrap x = gpshow wrap # x
@@ -194,7 +195,7 @@ productGroup wrap sep = \case
  Works for all types.
 -}
 pshowAndErr :: Term s a -> Term s b
-pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif' # punsafeCoerce x # x # x) # 0
+pshowAndErr x = punsafeCoerce $ pindexBS # punsafeCoerce (pif (punsafeCoerce x) x x) # 0
 
 --------------------------------------------------------------------------------
 

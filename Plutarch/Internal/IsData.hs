@@ -15,7 +15,7 @@ module Plutarch.Internal.IsData (
 import Data.Kind (Constraint, Type)
 import GHC.TypeError (ErrorMessage (ShowType, Text, (:$$:), (:<>:)), TypeError)
 import GHC.TypeLits (Symbol)
-import Plutarch.Builtin.Bool (PBool, pif')
+import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
   PAsData,
@@ -123,7 +123,7 @@ instance PIsData PBool where
       toData :: Term s PBool -> Term s PData
       toData b =
         punsafeBuiltin PLC.ConstrData
-          # (pif' # b # pconstantInteger 1 # (pconstantInteger 0 :: Term s PInteger))
+          # pif b (pconstantInteger 1) (pconstantInteger 0 :: Term s PInteger)
           # nil
 
       nil :: Term s (PBuiltinList PData)

@@ -1,10 +1,10 @@
-pnot.lam program 1.1.0 (\!0 -> case (constr 0 [!1, False, True]) [(force ifThenElse)])
+pnot.lam program 1.1.0 (\!0 -> case !1 [True, False])
 pnot.app program 1.1.0 False
 pand.tf program 1.1.0 False
 pand.ft program 1.1.0 False
 pand.tt program 1.1.0 True
 pand.ff program 1.1.0 False
-pand.laziness.pand program 1.1.0 (delay False)
+pand.laziness.pand program 1.1.0 (delay (case False [False, (force (delay error))]))
 pand.laziness.op program 1.1.0 False
 pand.laziness.pand.perror.op program 1.0.0 error
 por.tf program 1.1.0 True

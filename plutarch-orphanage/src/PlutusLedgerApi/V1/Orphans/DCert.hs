@@ -72,8 +72,7 @@ instance Function PLA.DCert where
                       PLA.StakingCredential
                       ( Either
                           (PLA.StakingCredential, PLA.PubKeyHash)
-                          ( Either (PLA.PubKeyHash, PLA.PubKeyHash) (PLA.PubKeyHash, Integer)
-                          )
+                          (Either (PLA.PubKeyHash, PLA.PubKeyHash) (PLA.PubKeyHash, Integer))
                       )
                   )
               )
@@ -95,8 +94,7 @@ instance Function PLA.DCert where
                       PLA.StakingCredential
                       ( Either
                           (PLA.StakingCredential, PLA.PubKeyHash)
-                          ( Either (PLA.PubKeyHash, PLA.PubKeyHash) (PLA.PubKeyHash, Integer)
-                          )
+                          (Either (PLA.PubKeyHash, PLA.PubKeyHash) (PLA.PubKeyHash, Integer))
                       )
                   )
               )

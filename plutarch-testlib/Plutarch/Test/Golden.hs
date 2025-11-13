@@ -57,15 +57,16 @@ by nested golden tests
 -}
 plutarchGolden ::
   TestName ->
-  -- | Base file name of golden file path.
-  --
-  -- e.g. @"foo"@ will result in goldens:
-  --
-  -- * @.//goldens//foo.bench.golden@ - With execution units and size
-  --
-  -- * @.//goldens//foo.uplc.eval.golden@ - With AST after evaluation
-  --
-  -- * @.//goldens//foo.uplc.golden@ - With AST before evaluation
+  {- | Base file name of golden file path.
+
+  e.g. @"foo"@ will result in goldens:
+
+  * @.//goldens//foo.bench.golden@ - With execution units and size
+
+  * @.//goldens//foo.uplc.eval.golden@ - With AST after evaluation
+
+  * @.//goldens//foo.uplc.golden@ - With AST before evaluation
+  -}
   FilePath ->
   [GoldenTestTree] ->
   TestTree

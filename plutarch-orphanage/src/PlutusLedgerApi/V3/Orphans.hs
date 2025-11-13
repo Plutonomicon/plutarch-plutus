@@ -263,8 +263,7 @@ instance Function PLA.TxCert where
                                       (PLA.PubKeyHash, PLA.PubKeyHash)
                                       ( Either
                                           (PLA.PubKeyHash, Integer)
-                                          ( Either (PLA.ColdCommitteeCredential, PLA.HotCommitteeCredential) PLA.ColdCommitteeCredential
-                                          )
+                                          (Either (PLA.ColdCommitteeCredential, PLA.HotCommitteeCredential) PLA.ColdCommitteeCredential)
                                       )
                                   )
                               )
@@ -315,8 +314,7 @@ instance Function PLA.TxCert where
                                       (PLA.PubKeyHash, PLA.PubKeyHash)
                                       ( Either
                                           (PLA.PubKeyHash, Integer)
-                                          ( Either (PLA.ColdCommitteeCredential, PLA.HotCommitteeCredential) PLA.ColdCommitteeCredential
-                                          )
+                                          (Either (PLA.ColdCommitteeCredential, PLA.HotCommitteeCredential) PLA.ColdCommitteeCredential)
                                       )
                                   )
                               )
@@ -649,8 +647,7 @@ instance Function PLA.GovernanceAction where
                       (PLA.Map PLA.Credential PLA.Lovelace, Maybe PLA.ScriptHash)
                       ( Either
                           (Maybe PLA.GovernanceActionId)
-                          ( Either (Maybe PLA.GovernanceActionId, [PLA.ColdCommitteeCredential], PLA.Map PLA.ColdCommitteeCredential Integer, Integer, Integer) (Maybe PLA.GovernanceActionId, PLA.Constitution)
-                          )
+                          (Either (Maybe PLA.GovernanceActionId, [PLA.ColdCommitteeCredential], PLA.Map PLA.ColdCommitteeCredential Integer, Integer, Integer) (Maybe PLA.GovernanceActionId, PLA.Constitution))
                       )
                   )
               )
@@ -675,8 +672,7 @@ instance Function PLA.GovernanceAction where
                       (PLA.Map PLA.Credential PLA.Lovelace, Maybe PLA.ScriptHash)
                       ( Either
                           (Maybe PLA.GovernanceActionId)
-                          ( Either (Maybe PLA.GovernanceActionId, [PLA.ColdCommitteeCredential], PLA.Map PLA.ColdCommitteeCredential Integer, Integer, Integer) (Maybe PLA.GovernanceActionId, PLA.Constitution)
-                          )
+                          (Either (Maybe PLA.GovernanceActionId, [PLA.ColdCommitteeCredential], PLA.Map PLA.ColdCommitteeCredential Integer, Integer, Integer) (Maybe PLA.GovernanceActionId, PLA.Constitution))
                       )
                   )
               )
@@ -793,8 +789,7 @@ instance Function PLA.ScriptPurpose where
                   PLA.Credential
                   ( Either
                       (Integer, PLA.TxCert)
-                      ( Either PLA.Voter (Integer, PLA.ProposalProcedure)
-                      )
+                      (Either PLA.Voter (Integer, PLA.ProposalProcedure))
                   )
               )
           )
@@ -814,8 +809,7 @@ instance Function PLA.ScriptPurpose where
                   PLA.Credential
                   ( Either
                       (Integer, PLA.TxCert)
-                      ( Either PLA.Voter (Integer, PLA.ProposalProcedure)
-                      )
+                      (Either PLA.Voter (Integer, PLA.ProposalProcedure))
                   )
               )
           ) ->

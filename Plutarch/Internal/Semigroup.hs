@@ -25,7 +25,6 @@ import Plutarch.Builtin.BLS (
 import Plutarch.Builtin.Bool (
   PBool (PFalse, PTrue),
   pif,
-  pif',
   pnot,
  )
 import Plutarch.Builtin.ByteString (
@@ -253,7 +252,7 @@ deriving via
 -- | @since 1.10.0
 instance PSemigroup (PAnd PBool) where
   {-# INLINEABLE (#<>) #-}
-  x #<> y = pif' # pto x # y # x
+  x #<> y = pif (pto x) y x
 
   -- \| 'PBool' is idempotent under AND.
   {-# INLINEABLE pstimes #-}
@@ -377,7 +376,7 @@ deriving via
 -- | @since 1.10.0
 instance PSemigroup (PXor PBool) where
   {-# INLINEABLE (#<>) #-}
-  x #<> y = pif' # pto x # (pcon . PXor $ pnot # pto y) # y
+  x #<> y = pif (pto x) (pcon . PXor $ pnot # pto y) y
 
   -- \| Because XOR is self-inverting, there are only two outcomes: either the
   -- argument (if the exponent is odd) or 'PFalse' (if it's even).
