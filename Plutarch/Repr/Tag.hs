@@ -34,10 +34,12 @@ import Plutarch.Internal.Lift (
   PLifted (PLifted),
   pconstant,
  )
-import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.PlutusType (
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
+  PlutusType (PInner, pcon', pmatch'),
+ )
 import Plutarch.Internal.Term (S, Term)
 import Plutarch.Repr.Internal (groupHandlers)
-import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import Plutarch.TermCont (pletC, unTermCont)
 
 -- | @since 1.10.0
