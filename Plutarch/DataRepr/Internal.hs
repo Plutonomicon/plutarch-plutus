@@ -61,12 +61,11 @@ import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasConstr,
   pchooseListBuiltin,
   pconstrBuiltin,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque, popaque)
@@ -347,15 +346,16 @@ instance
      in case handlers of
           DRHCons handler DRHNil -> handler $ punDataSum # (punsafeCoerce d :: Term _ (PDataSum defs))
           _ -> plet (pasConstr #$ d) $ \d' ->
-            plet (pfstBuiltin # d') $ \constr ->
-              plet (psndBuiltin # d') $ \args ->
-                let handlers' = applyHandlers args handlers
-                 in runTermCont (findCommon handlers') $ \common ->
-                      reprHandlersGo
-                        common
-                        0
-                        handlers'
-                        constr
+            pmatch d' $ \(PBuiltinPair constr' args') ->
+              plet constr' $ \constr ->
+                plet args' $ \args ->
+                  let handlers' = applyHandlers args handlers
+                   in runTermCont (findCommon handlers') $ \common ->
+                        reprHandlersGo
+                          common
+                          0
+                          handlers'
+                          constr
     where
       applyHandlers :: forall out s defs. Term s (PBuiltinList PData) -> DataReprHandlers out defs s -> [Term s out]
       applyHandlers _ DRHNil = []
@@ -394,19 +394,19 @@ instance All (Compose POrd PDataRecord) defs => POrd (PDataSum defs) where
 -- | If there is only a single variant, then we can safely extract it.
 punDataSum :: Term s (PDataSum '[def] :--> PDataRecord def)
 punDataSum = phoistAcyclic $
-  plam $ \t ->
-    (punsafeCoerce $ psndBuiltin # (pasConstr #$ pforgetData $ pdata t) :: Term _ (PDataRecord def))
+  plam $ \t -> pmatch (pasConstr #$ pforgetData $ pdata t) $ \(PBuiltinPair _ x) ->
+    punsafeCoerce x :: Term _ (PDataRecord def)
 
 -- | Try getting the nth variant. Errs if it's another variant.
 ptryIndexDataSum :: KnownNat n => Proxy n -> Term s (PDataSum (def ': defs) :--> PDataRecord (IndexList n (def ': defs)))
 ptryIndexDataSum n = phoistAcyclic $
   plam $ \t ->
     plet (pasConstr #$ pforgetData $ pdata t) $ \d ->
-      let i :: Term _ PInteger = pfstBuiltin # d
-       in pif
-            (i #== fromInteger (natVal n))
-            (punsafeCoerce $ psndBuiltin # d :: Term _ (PDataRecord _))
-            perror
+      pmatch d $ \(PBuiltinPair i x) ->
+        pif
+          (i #== fromInteger (natVal n))
+          (punsafeCoerce x :: Term _ (PDataRecord _))
+          perror
 
 -- | Safely index a 'PDataRecord'.
 pindexDataRecord :: KnownNat n => Proxy n -> Term s (PDataRecord as) -> Term s (PAsData (PUnLabel (IndexList n as)))
@@ -449,10 +449,10 @@ pmatchLT d1 d2 (DualRepr handler :* Nil) = handler (punDataSum # d1) (punDataSum
 pmatchLT d1 d2 handlers = unTermCont $ do
   a <- tcont . plet $ pasConstr #$ pforgetData $ pdata d1
   b <- tcont . plet $ pasConstr #$ pforgetData $ pdata d2
-
-  cid1 <- tcont . plet $ pfstBuiltin # a
-  cid2 <- tcont . plet $ pfstBuiltin # b
-
+  PBuiltinPair cid1' flds1' <- tcont . pmatch $ a
+  PBuiltinPair cid2' flds2' <- tcont . pmatch $ b
+  cid1 <- tcont . plet $ cid1'
+  cid2 <- tcont . plet $ cid2'
   pure
     $ pif
       (cid1 #< cid2)
@@ -462,8 +462,8 @@ pmatchLT d1 d2 handlers = unTermCont $ do
       (cid1 #== cid2)
       -- Matching constructors, compare fields now.
       ( unTermCont $ do
-          flds1 <- tcont . plet $ psndBuiltin # a
-          flds2 <- tcont . plet $ psndBuiltin # b
+          flds1 <- tcont . plet $ flds1'
+          flds2 <- tcont . plet $ flds2'
           let handlers' = applyHandlers flds1 flds2 handlers
           common <- findCommon handlers'
           pure $ reprHandlersGo common 0 (applyHandlers flds1 flds2 handlers) cid1
@@ -636,8 +636,9 @@ instance SumValidation 0 ys => PTryFrom PData (PDataSum ys) where
   type PTryFromExcess _ _ = Const ()
   ptryFrom' opq = runTermCont $ do
     x <- tcont $ plet $ pasConstr # opq
-    constr <- tcont $ plet $ pfstBuiltin # x
-    fields <- tcont $ plet $ psndBuiltin # x
+    PBuiltinPair constr' fields' <- tcont . pmatch $ x
+    constr <- tcont $ plet constr'
+    fields <- tcont $ plet fields'
     _ <- tcont $ plet $ validateSum (Proxy @0) (Proxy @ys) constr fields
     pure (punsafeCoerce opq, ())
 

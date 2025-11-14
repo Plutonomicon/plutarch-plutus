@@ -1,6 +1,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+-- Note (Koz, 14/11/2025: Needed for the PIsData constraints on the PBuiltinPair
+-- instance.
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Plutarch.Internal.TryFrom (
   PTryFrom,
@@ -20,15 +23,13 @@ import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasByteStr,
   pasConstr,
   pasInt,
   pasList,
-  pfstBuiltin,
   ppairDataBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (
   PInteger,
@@ -46,7 +47,7 @@ import Plutarch.Internal.ListLike (PListLike (pnull), pmap)
 import Plutarch.Internal.Numeric (PNatural, PPositive, ptryNatural, ptryPositive)
 import Plutarch.Internal.Other (Flip)
 import Plutarch.Internal.PLam (PLamN (plam))
-import Plutarch.Internal.PlutusType (PInner)
+import Plutarch.Internal.PlutusType (PInner, pmatch)
 import Plutarch.Internal.Subtype (
   PSubtype,
   PSubtype',
@@ -143,10 +144,9 @@ instance
   type PTryFromExcess PData (PAsData (PBuiltinPair a b)) = Flip Term (PBuiltinPair a b)
   ptryFrom' opq = runTermCont $ do
     tup <- tcont $ plet (pfromData $ punsafeCoerce opq)
-    let fst' :: Term _ a
-        fst' = unTermCont $ fst <$> tcont (ptryFrom @a $ pforgetData $ pfstBuiltin # tup)
-        snd' :: Term _ b
-        snd' = unTermCont $ fst <$> tcont (ptryFrom @b $ pforgetData $ psndBuiltin # tup)
+    PBuiltinPair x y <- tcont . pmatch $ tup
+    let fst' = unTermCont $ fst <$> tcont (ptryFrom @a $ pforgetData x)
+    let snd' = unTermCont $ fst <$> tcont (ptryFrom @b $ pforgetData y)
     ver <- tcont $ plet $ ppairDataBuiltin # fst' # snd'
     pure (punsafeCoerce opq, ver)
 
@@ -155,13 +155,12 @@ instance PTryFrom PData (PAsData PBool) where
   type PTryFromExcess PData (PAsData PBool) = Const ()
   ptryFrom' opq = runTermCont $ do
     asConstr <- tcont . plet $ pasConstr # opq
-    let ix = pfstBuiltin # asConstr
+    PBuiltinPair ix dat <- tcont . pmatch $ asConstr
     tcont $ \f ->
       pif
         ((peqInteger # ix # pconstantInteger 0) #|| (peqInteger # ix # pconstantInteger 1))
         (f ())
         (ptraceInfo "PTryFrom(PAsData PBool): invalid constructor tag" perror)
-    let dat = psndBuiltin # asConstr
     tcont $ \f ->
       pif
         (pnull # dat)

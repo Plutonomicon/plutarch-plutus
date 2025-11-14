@@ -171,8 +171,9 @@ deriving via
 instance PTryFrom PData (PAsData PRationalData) where
   ptryFrom' opq = runTermCont $ do
     opq' <- pletC $ pasConstr # opq
-    pguardC "ptryFrom(PRationalData): invalid constructor id" $ pfstBuiltin # opq' #== 0
-    flds <- pletC $ psndBuiltin # opq'
+    PBuiltinPair x y <- pmatchC opq'
+    pguardC "ptryFrom(PRationalData): invalid constructor id" $ x #== 0
+    flds <- pletC y
     numr <- pletC $ ptryFrom @(PAsData PInteger) (phead # flds) fst
     ratTail <- pletC $ ptail # flds
     denm <- pletC $ ptryFrom @(PAsData PPositive) (phead # ratTail) fst

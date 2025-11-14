@@ -175,17 +175,19 @@ zipWorker mergeHandler =
             PPrelude.pmap
               # plam
                 ( \entry -> P.do
-                    k <- plet $ pfstBuiltin # entry
-                    ppairDataBuiltin # k #$ handler # k #$ psndBuiltin # entry
+                    PBuiltinPair x y <- pmatch entry
+                    k <- plet x
+                    ppairDataBuiltin # k #$ handler # k # y
                 )
               # mapR
           HandleOrDropOne handler ->
             pmapDropNothing
               # plam
                 ( \entry -> P.do
-                    k <- plet $ pfstBuiltin # entry
-                    v <- plet $ psndBuiltin # entry
-                    pmapMaybe # plam (\x -> ppairDataBuiltin # k # x) # (handler # k # v)
+                    PBuiltinPair x y <- pmatch entry
+                    k <- plet x
+                    v <- plet y
+                    pmapMaybe # plam (\z -> ppairDataBuiltin # k # z) # (handler # k # v)
                 )
               # mapR
       PCons entryL restL ->
@@ -197,26 +199,30 @@ zipWorker mergeHandler =
                 PPrelude.pmap
                   # plam
                     ( \entry -> P.do
-                        k <- plet $ pfstBuiltin # entry
-                        ppairDataBuiltin # k #$ handler # k #$ psndBuiltin # entry
+                        PBuiltinPair x y <- pmatch entry
+                        k <- plet x
+                        ppairDataBuiltin # k #$ handler # k # y
                     )
                   # mapL
               HandleOrDropOne handler ->
                 pmapDropNothing
                   # plam
                     ( \entry -> P.do
-                        k <- plet $ pfstBuiltin # entry
-                        v <- plet $ psndBuiltin # entry
-                        pmapMaybe # plam (\x -> ppairDataBuiltin # k # x) # (handler # k # v)
+                        PBuiltinPair x y <- pmatch entry
+                        k <- plet x
+                        v <- plet y
+                        pmapMaybe # plam (\z -> ppairDataBuiltin # k # z) # (handler # k # v)
                     )
                   # mapL
           PCons entryR restR -> P.do
-            keyDataL <- plet $ pfstBuiltin # entryL
-            keyDataR <- plet $ pfstBuiltin # entryR
+            PBuiltinPair keyDataL' valL' <- pmatch entryL
+            PBuiltinPair keyDataR' valR' <- pmatch entryR
+            keyDataL <- plet keyDataL'
+            keyDataR <- plet keyDataR'
             keyL <- plet $ pfromData keyDataL
             keyR <- plet $ pfromData keyDataR
-            valL <- plet $ psndBuiltin # entryL
-            valR <- plet $ psndBuiltin # entryR
+            valL <- plet valL'
+            valR <- plet valR'
             pif
               (keyL #== keyR)
               ( let

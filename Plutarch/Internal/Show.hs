@@ -44,7 +44,7 @@ import Plutarch.Builtin.ByteString (
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasByteStr,
   pasConstr,
@@ -52,8 +52,6 @@ import Plutarch.Builtin.Data (
   pasList,
   pasMap,
   pchooseData,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.String (
@@ -302,18 +300,20 @@ instance PShow PData where
       go0 = phoistAcyclic $
         pfixHoisted #$ plam $ \go t ->
           let pshowConstr pp0 = plet pp0 $ \pp ->
-                "Constr "
-                  <> pshow' False (pfstBuiltin # pp)
-                  <> " "
-                  <> pshowListPString # (pmap # go # (psndBuiltin # pp))
+                pmatch pp $ \(PBuiltinPair pp1 pp2) ->
+                  "Constr "
+                    <> pshow' False pp1
+                    <> " "
+                    <> pshowListPString # (pmap # go # pp2)
               pshowMap pplist =
                 "Map " <> pshowListPString # (pmap # pshowPair # pplist)
               pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
-                "("
-                  <> (go # (pfstBuiltin # pp))
-                  <> ", "
-                  <> (go # (psndBuiltin # pp))
-                  <> ")"
+                pmatch pp $ \(PBuiltinPair pp1 pp2) ->
+                  "("
+                    <> (go # pp1)
+                    <> ", "
+                    <> (go # pp2)
+                    <> ")"
               pshowList xs = "List " <> pshowListPString # (pmap # go # xs)
               pshowListPString = phoistAcyclic $
                 plam $ \plist ->
@@ -346,7 +346,8 @@ instance
   pshow' _ x = pshowList @PBuiltinList @a # x
 
 instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
-  pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
+  pshow' _ pair = pmatch pair $ \(PBuiltinPair x y) ->
+    "(" <> pshow x <> "," <> pshow y <> ")"
 
 -- | @since 1.10.0
 instance PShow PPositive

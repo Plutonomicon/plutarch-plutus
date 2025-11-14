@@ -19,10 +19,8 @@ import Plutarch.Builtin.ByteString (
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
+  PBuiltinPair (PBuiltinPair),
   PData,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger, peqInteger)
 import Plutarch.Builtin.String (PString)
@@ -154,7 +152,9 @@ instance Fc (F a) a => PEq (PBuiltinList a) where
   (#==) = fc (Proxy @(F a))
 
 instance (PEq a, PEq b) => PEq (PBuiltinPair a b) where
-  p1 #== p2 = pfstBuiltin # p1 #== pfstBuiltin # p2 #&& psndBuiltin # p1 #== psndBuiltin # p2
+  p1 #== p2 = pmatch p1 $ \(PBuiltinPair p1x p1y) ->
+    pmatch p2 $ \(PBuiltinPair p2x p2y) ->
+      p1x #== p2x #&& p1y #== p2y
 
 instance PEq PByteString where
   x #== y = punsafeBuiltin PLC.EqualsByteString # x # y
