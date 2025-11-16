@@ -23,21 +23,32 @@ module Plutarch.Builtin.Data (
   PBuiltinList (PCons, PNil),
   pheadBuiltin,
   ptailBuiltin,
+  pheadTailBuiltin,
   pchooseListBuiltin,
   pnullBuiltin,
   pconsBuiltin,
 ) where
 
 import Data.Kind (Type)
-
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
-
-import Plutarch.Internal.Term (S, Term, pforce, phoistAcyclic, punsafeBuiltin, (:-->))
+import Plutarch.Internal.PLam (plam)
+import Plutarch.Internal.Term (
+  RawTerm (RCase),
+  S,
+  Term (Term),
+  TermResult (TermResult),
+  asRawTerm,
+  pforce,
+  phoistAcyclic,
+  punsafeBuiltin,
+  (:-->),
+ )
 import PlutusCore qualified as PLC
 
 newtype PData (s :: S) = PData (Term s PData)
+
 newtype PAsData (a :: S -> Type) (s :: S) = PAsData (Term s a)
 
 pchooseData :: Term s (PData :--> a :--> a :--> a :--> a :--> a :--> a)
@@ -102,6 +113,23 @@ pheadBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.HeadList
 
 ptailBuiltin :: Term s (PBuiltinList a :--> PBuiltinList a)
 ptailBuiltin = phoistAcyclic $ pforce $ punsafeBuiltin PLC.TailList
+
+{- | Use this in preference to 'pheadBuiltin' and 'ptailBuiltin' on the same
+'PBuiltinList', as this will be faster. This is also faster than a 'pmatch',
+as the 'PNil' case is omitted.
+
+@since wip
+-}
+pheadTailBuiltin ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s (PBuiltinList a) ->
+  (Term s a -> Term s (PBuiltinList a) -> Term s b) ->
+  Term s b
+pheadTailBuiltin ell handler = Term $ \level -> do
+  TermResult matchRaw matchDeps <- asRawTerm (plam handler) level
+  TermResult rawT depsT <- asRawTerm ell level
+  let allDeps = matchDeps <> depsT
+  pure . TermResult (RCase rawT [matchRaw]) $ allDeps
 
 pchooseListBuiltin :: Term s (PBuiltinList a :--> b :--> b :--> b)
 pchooseListBuiltin = phoistAcyclic $ pforce $ pforce $ punsafeBuiltin PLC.ChooseList

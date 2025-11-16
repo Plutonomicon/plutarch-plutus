@@ -55,6 +55,7 @@ module Plutarch.Prelude (
   pserialiseData,
   psndBuiltin,
   ptailBuiltin,
+  pheadTailBuiltin,
 
   -- * Integer
   PInteger,

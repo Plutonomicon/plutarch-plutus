@@ -2,6 +2,11 @@
 
 # UNRELEASED
 
+## Added
+
+* `pheadTailBuiltin`, for use when the list is known non-empty and both the head
+  and tail are needed
+
 ## Changed
 
 * Bump `plutus-core` to 1.54.0.0
