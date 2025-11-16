@@ -45,12 +45,16 @@ import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Ord ((#<), (#>=))
+
+-- import Plutarch.Internal.Ord ((#<), (#>=))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Internal.Term (
+  RawTerm (RCase),
   S,
-  Term,
+  Term (Term),
+  TermResult (TermResult),
+  asRawTerm,
   perror,
   phoistAcyclic,
   plet,
@@ -222,17 +226,12 @@ instance PValidateData a => PValidateData (PAsData a) where
 -}
 instance SOP.Generic (a Any) => PValidateData (DeriveAsTag a) where
   {-# INLINEABLE pwithValidated #-}
-  pwithValidated opq x = plet (pasInt # opq) $ \i ->
+  pwithValidated opq x =
     let len = SOP.lengthSList @_ @(SOP.Code (a Any)) Proxy
-     in plet (pconstant @PInteger . fromIntegral $ len) $ \plen ->
-          pif
-            (i #< 0)
-            perror
-            ( pif
-                (i #>= plen)
-                perror
-                x
-            )
+     in Term $ \level -> do
+          TermResult rawI depsI <- asRawTerm (pasInt # opq) level
+          TermResult rawX depsX <- asRawTerm x level
+          pure . TermResult (RCase rawI . replicate len $ rawX) $ depsI <> depsX
 
 {- | Checks that we have a @List@, that it has (at least) enough elements for
 each field of @a@, and that each of those elements, in order, validates as
