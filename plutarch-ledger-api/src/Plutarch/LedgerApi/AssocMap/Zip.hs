@@ -175,18 +175,15 @@ zipWorker mergeHandler =
             PPrelude.pmap
               # plam
                 ( \entry -> P.do
-                    PBuiltinPair x y <- pmatch entry
-                    k <- plet x
-                    ppairDataBuiltin # k #$ handler # k # y
+                    PBuiltinPair k v <- pmatch entry
+                    ppairDataBuiltin # k #$ handler # k # v
                 )
               # mapR
           HandleOrDropOne handler ->
             pmapDropNothing
               # plam
                 ( \entry -> P.do
-                    PBuiltinPair x y <- pmatch entry
-                    k <- plet x
-                    v <- plet y
+                    PBuiltinPair k v <- pmatch entry
                     pmapMaybe # plam (\z -> ppairDataBuiltin # k # z) # (handler # k # v)
                 )
               # mapR
@@ -199,30 +196,23 @@ zipWorker mergeHandler =
                 PPrelude.pmap
                   # plam
                     ( \entry -> P.do
-                        PBuiltinPair x y <- pmatch entry
-                        k <- plet x
-                        ppairDataBuiltin # k #$ handler # k # y
+                        PBuiltinPair k v <- pmatch entry
+                        ppairDataBuiltin # k #$ handler # k # v
                     )
                   # mapL
               HandleOrDropOne handler ->
                 pmapDropNothing
                   # plam
                     ( \entry -> P.do
-                        PBuiltinPair x y <- pmatch entry
-                        k <- plet x
-                        v <- plet y
+                        PBuiltinPair k v <- pmatch entry
                         pmapMaybe # plam (\z -> ppairDataBuiltin # k # z) # (handler # k # v)
                     )
                   # mapL
           PCons entryR restR -> P.do
-            PBuiltinPair keyDataL' valL' <- pmatch entryL
-            PBuiltinPair keyDataR' valR' <- pmatch entryR
-            keyDataL <- plet keyDataL'
-            keyDataR <- plet keyDataR'
+            PBuiltinPair keyDataL valL <- pmatch entryL
+            PBuiltinPair keyDataR valR <- pmatch entryR
             keyL <- plet $ pfromData keyDataL
             keyR <- plet $ pfromData keyDataR
-            valL <- plet valL'
-            valR <- plet valR'
             pif
               (keyL #== keyR)
               ( let
