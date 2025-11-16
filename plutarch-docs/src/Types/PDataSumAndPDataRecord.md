@@ -3,6 +3,7 @@
 <p>
 
 ```haskell
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Plutarch.Docs.PDataSumAndRecord (Foo (..), test) where
 import Plutarch.Prelude
 ```

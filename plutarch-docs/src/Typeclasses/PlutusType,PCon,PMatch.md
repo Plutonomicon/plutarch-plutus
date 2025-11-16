@@ -4,6 +4,7 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
 import Data.Kind (Type)

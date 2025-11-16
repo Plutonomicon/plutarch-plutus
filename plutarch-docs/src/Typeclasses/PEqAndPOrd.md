@@ -3,6 +3,7 @@
 <p>
 
 ```haskell
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where
 import GHC.Generics (Generic)
 import Plutarch.Prelude

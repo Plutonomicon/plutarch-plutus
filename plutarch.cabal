@@ -137,7 +137,6 @@ library
     Plutarch.Repr.Data
     Plutarch.Repr.Derive
     Plutarch.Repr.Internal
-    Plutarch.Repr.Newtype
     Plutarch.Repr.Scott
     Plutarch.Repr.SOP
     Plutarch.Repr.Tag

@@ -1,4 +1,7 @@
-module Plutarch.DataRepr (
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
+module Plutarch.DataRepr
+  {-# DEPRECATED "Use the new mechanism instead" #-} (
   -- * DataRepr
   I.PDataSum (PDataSum),
   I.punDataSum,

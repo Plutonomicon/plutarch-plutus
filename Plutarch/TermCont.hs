@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Plutarch.TermCont (
   TC.hashOpenTerm,
@@ -54,6 +55,7 @@ pletFieldsC ::
   Term s a ->
   TermCont @b s (HRec (BoundTerms ps bs s))
 pletFieldsC x = tcont $ pletFields @fs x
+{-# DEPRECATED pletFieldsC "Use the new mechanism instead" #-}
 
 {- | Like `ptrace` but works in a `TermCont` monad.
 
