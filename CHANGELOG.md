@@ -6,7 +6,7 @@
 
 * Bump `plutus-core` to 1.54.0.0
 * `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
-* `pheadBuiltin` and `ptailBuiltin` are now deprecated, as pattern matching on
+* `pfstBuiltin` and `psndBuiltin` are now deprecated, as pattern matching on
   `PBuiltinPair` outperforms it
 
 ## Changed
