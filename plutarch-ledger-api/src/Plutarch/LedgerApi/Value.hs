@@ -585,8 +585,8 @@ plovelaceValueOf = phoistAcyclic $
       PCons x _ -> pmatch x $ \(PBuiltinPair xFst xSnd) ->
         pif
           (xFst #== padaSymbolData)
-          ( pmatch (phead #$ pto $ pto $ pfromData xSnd) $ \(PBuiltinPair _ thing) ->
-              pfromData thing
+          ( pmatch (phead #$ pto $ pto $ pfromData xSnd) $ \(PBuiltinPair _ quantity) ->
+              pfromData quantity
           )
           0
 
@@ -609,8 +609,8 @@ pisAdaOnlyValue = phoistAcyclic $
           # (pnull # xs)
           # pmatch
             x
-            ( \(PBuiltinPair thing _) ->
-                thing #== padaSymbolData
+            ( \(PBuiltinPair cs _) ->
+                cs #== padaSymbolData
             )
 
 ----------------------------------------------------------------------
@@ -638,9 +638,9 @@ pinsertAdaEntry =
     plam $ \value ->
       pmatch (pto $ pto $ pto value) $ \case
         PNil -> psingletonSortedValue # padaSymbol # padaToken # 0
-        PCons x xs -> pmatch x $ \(PBuiltinPair xFst _) ->
+        PCons x xs -> pmatch x $ \(PBuiltinPair cs _) ->
           pif
-            (xFst #== padaSymbolData)
+            (cs #== padaSymbolData)
             value
             ( punsafeDowncast . punsafeDowncast . punsafeDowncast $
                 pcons
