@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
--- Note (Koz, 14/11/2025: Needed for the PIsData constraints on the PBuiltinPair
+-- Note (Koz, 14/11/2025): Needed for the PIsData constraints on the PBuiltinPair
 -- instance.
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
