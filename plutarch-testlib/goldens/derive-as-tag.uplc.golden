@@ -1,10 +1,21 @@
 pcon 1 program 1.1.0 0
 pmatch 1 program 1.1.0 (case 0 [True])
+pparseData 1 program 1.1.0 (case (unIData (iData 0)) [(iData 0)])
 pcon 2 program 1.1.0 1
 pmatch 2 program 1.1.0 (case 1 [False, True])
+pparseData 2 program 1.1.0 (case (unIData (iData 0)) [(iData 0), (iData 0)])
 pcon 3 program 1.1.0 2
 pmatch 3 program 1.1.0 (case 2 [False, False, True])
+pparseData 3 program 1.1.0 (case (unIData (iData 0)) [(iData 0), (iData 0), (iData 0)])
 pcon 4 program 1.1.0 2
 pmatch 4 program 1.1.0 (case 2 [False, False, True, False])
+pparseData 4 program
+  1.1.0
+  (case (unIData (iData 0)) [(iData 0), (iData 0), (iData 0), (iData 0)])
 pcon 5 program 1.1.0 2
 pmatch 5 program 1.1.0 (case 3 [False, False, False, True, False])
+pparseData 5 program
+  1.1.0
+  (case
+     (unIData (iData 0))
+     [(iData 0), (iData 0), (iData 0), (iData 0), (iData 0)])

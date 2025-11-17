@@ -1,10 +1,15 @@
 pcon 1 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
 pmatch 1 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":9}
+pparseData 1 {"exBudgetCPU":195442,"exBudgetMemory":1096,"scriptSizeBytes":15}
 pcon 2 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
 pmatch 2 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":10}
+pparseData 2 {"exBudgetCPU":195442,"exBudgetMemory":1096,"scriptSizeBytes":20}
 pcon 3 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
 pmatch 3 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":12}
+pparseData 3 {"exBudgetCPU":195442,"exBudgetMemory":1096,"scriptSizeBytes":24}
 pcon 4 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
 pmatch 4 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":13}
+pparseData 4 {"exBudgetCPU":195442,"exBudgetMemory":1096,"scriptSizeBytes":29}
 pcon 5 {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":7}
 pmatch 5 {"exBudgetCPU":48100,"exBudgetMemory":400,"scriptSizeBytes":15}
+pparseData 5 {"exBudgetCPU":195442,"exBudgetMemory":1096,"scriptSizeBytes":33}
