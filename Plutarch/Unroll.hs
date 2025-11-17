@@ -16,9 +16,8 @@ only tail-call recursion would perform fast enough to be used for large unrollin
 -}
 module Plutarch.Unroll (punrollBound, punrollBound', punrollUnbound, punrollUnboundWhole) where
 
-import Plutarch.Internal.Fix (pfixHoisted)
-import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.Term (Term, (#$), (:-->))
+import Plutarch.Internal.Fix (pfix)
+import Plutarch.Internal.Term (Term, (:-->))
 
 {- |
 This is simplified version of @punrollBound'@ without doing additional recursion on Haskell level value.
@@ -61,7 +60,7 @@ Unroll given amount of steps, and for rest, uses `pfix` to support unbound recur
 @since 1.10.0
 -}
 punrollUnbound :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
-punrollUnbound 0 f = pfixHoisted #$ plam f
+punrollUnbound 0 f = pfix f
 punrollUnbound d f = f (punrollUnbound (d - 1) f)
 
 {- |
@@ -73,4 +72,4 @@ This should perform better than @punrollUnbound@ when a function requires a larg
 @since 1.10.0
 -}
 punrollUnboundWhole :: forall a b s. Integer -> (Term s (a :--> b) -> Term s (a :--> b)) -> Term s (a :--> b)
-punrollUnboundWhole d f = pfixHoisted #$ plam $ \r -> punrollBound d r f
+punrollUnboundWhole d f = pfix $ \r -> punrollBound d r f

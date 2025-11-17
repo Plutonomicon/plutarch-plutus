@@ -28,12 +28,11 @@ import Generics.SOP qualified as SOP
 import Generics.SOP.Constraint (Head)
 import Plutarch.Builtin.Data (
   PBuiltinList,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasConstr,
   pconsBuiltin,
   pconstrBuiltin,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Internal.Eq (PEq, (#==))
 import Plutarch.Internal.IsData (PInnermostIsData, PIsData)
@@ -86,7 +85,7 @@ import Plutarch.Repr.Internal (
   UnTermStruct,
   groupHandlers,
  )
-import Plutarch.TermCont (pletC, unTermCont)
+import Plutarch.TermCont (pletC, pmatchC, unTermCont)
 import PlutusLedgerApi.V3 qualified as PLA
 
 -- Helper for working with SOP representations of `Data`-encoded records. If you
@@ -377,13 +376,13 @@ pmatchDataStruct (punsafeCoerce -> x) f = unTermCont $ do
     handlers :: Term s (PBuiltinList PData) -> [(Integer, Term s b)]
     handlers d = SOP.hcollapse $ unSBR handlers' 0 d f
 
-  case handlers (psndBuiltin #$ pasConstr # x) of
+  case handlers (pmatch (pasConstr # x) $ \(PBuiltinPair _ y) -> y) of
     [(_, h)] -> pure h
     _ -> do
       x' <- pletC $ pasConstr # x
-      idx <- pletC $ pfstBuiltin # x'
-      ds <- pletC $ psndBuiltin # x'
-
+      PBuiltinPair idx' ds' <- pmatchC x'
+      idx <- pletC idx'
+      ds <- pletC ds'
       pure $ groupHandlers (handlers ds) idx
 
 --------------------------------------------------------------------------------

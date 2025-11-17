@@ -16,9 +16,7 @@ int.0 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -32,7 +30,7 @@ int.0 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -114,9 +112,7 @@ int.5 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -130,7 +126,7 @@ int.5 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -212,9 +208,7 @@ int.-5 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -228,7 +222,7 @@ int.-5 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -310,9 +304,7 @@ int.10 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -326,7 +318,7 @@ int.10 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -408,9 +400,7 @@ int.-10 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -424,7 +414,7 @@ int.-10 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -506,9 +496,7 @@ int.14 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -522,7 +510,7 @@ int.14 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -604,9 +592,7 @@ int.-14 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -620,7 +606,7 @@ int.-14 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -702,9 +688,7 @@ int.102 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -718,7 +702,7 @@ int.102 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -800,9 +784,7 @@ int.-102 program
                                  (\!0 ->
                                     (\!0 ->
                                        (\!0 ->
-                                          (\!0 ->
-                                             (\!0 -> !2 (\!0 -> !2 !2 !1))
-                                               (\!0 -> !2 (\!0 -> !2 !2 !1)))
+                                          (\!0 -> !1 !1)
                                             (\!0 !0 ->
                                                appendString
                                                  (case
@@ -816,7 +798,7 @@ int.-102 program
                                                                 appendString
                                                                   !1
                                                                   (!6 !2))
-                                                               (!4 !2))
+                                                               (!4 !4 !2))
                                                           , (!5 !1) ])
                                                        (remainderInteger
                                                           (!15 !2)
@@ -904,17 +886,7 @@ bytestring.empty program
                                                    (\!0 ->
                                                       appendString
                                                         "0x"
-                                                        ((\!0 ->
-                                                            (\!0 ->
-                                                               !2
-                                                                 (\!0 ->
-                                                                    !2 !2 !1))
-                                                              (\!0 ->
-                                                                 !2
-                                                                   (\!0 ->
-                                                                      !2
-                                                                        !2
-                                                                        !1)))
+                                                        ((\!0 -> !1 !1)
                                                            (\!0 !0 ->
                                                               (\!0 ->
                                                                  (\!0 ->
@@ -956,7 +928,9 @@ bytestring.empty program
                                                                         (quotientInteger
                                                                            !2
                                                                            16))
-                                                                     (!4 !1)))
+                                                                     (!4
+                                                                        !4
+                                                                        !1)))
                                                            #))
                                                      (\!0 ->
                                                         case
@@ -1075,17 +1049,7 @@ bytestring.1 program
                                                    (\!0 ->
                                                       appendString
                                                         "0x"
-                                                        ((\!0 ->
-                                                            (\!0 ->
-                                                               !2
-                                                                 (\!0 ->
-                                                                    !2 !2 !1))
-                                                              (\!0 ->
-                                                                 !2
-                                                                   (\!0 ->
-                                                                      !2
-                                                                        !2
-                                                                        !1)))
+                                                        ((\!0 -> !1 !1)
                                                            (\!0 !0 ->
                                                               (\!0 ->
                                                                  (\!0 ->
@@ -1127,7 +1091,9 @@ bytestring.1 program
                                                                         (quotientInteger
                                                                            !2
                                                                            16))
-                                                                     (!4 !1)))
+                                                                     (!4
+                                                                        !4
+                                                                        !1)))
                                                            #14))
                                                      (\!0 ->
                                                         case
@@ -1246,17 +1212,7 @@ bytestring.2 program
                                                    (\!0 ->
                                                       appendString
                                                         "0x"
-                                                        ((\!0 ->
-                                                            (\!0 ->
-                                                               !2
-                                                                 (\!0 ->
-                                                                    !2 !2 !1))
-                                                              (\!0 ->
-                                                                 !2
-                                                                   (\!0 ->
-                                                                      !2
-                                                                        !2
-                                                                        !1)))
+                                                        ((\!0 -> !1 !1)
                                                            (\!0 !0 ->
                                                               (\!0 ->
                                                                  (\!0 ->
@@ -1298,7 +1254,9 @@ bytestring.2 program
                                                                         (quotientInteger
                                                                            !2
                                                                            16))
-                                                                     (!4 !1)))
+                                                                     (!4
+                                                                        !4
+                                                                        !1)))
                                                            #14af))
                                                      (\!0 ->
                                                         case
@@ -1417,17 +1375,7 @@ bytestring.3 program
                                                    (\!0 ->
                                                       appendString
                                                         "0x"
-                                                        ((\!0 ->
-                                                            (\!0 ->
-                                                               !2
-                                                                 (\!0 ->
-                                                                    !2 !2 !1))
-                                                              (\!0 ->
-                                                                 !2
-                                                                   (\!0 ->
-                                                                      !2
-                                                                        !2
-                                                                        !1)))
+                                                        ((\!0 -> !1 !1)
                                                            (\!0 !0 ->
                                                               (\!0 ->
                                                                  (\!0 ->
@@ -1469,7 +1417,9 @@ bytestring.3 program
                                                                         (quotientInteger
                                                                            !2
                                                                            16))
-                                                                     (!4 !1)))
+                                                                     (!4
+                                                                        !4
+                                                                        !1)))
                                                            #14af03))
                                                      (\!0 ->
                                                         case
@@ -1588,17 +1538,7 @@ bytestring.n program
                                                    (\!0 ->
                                                       appendString
                                                         "0x"
-                                                        ((\!0 ->
-                                                            (\!0 ->
-                                                               !2
-                                                                 (\!0 ->
-                                                                    !2 !2 !1))
-                                                              (\!0 ->
-                                                                 !2
-                                                                   (\!0 ->
-                                                                      !2
-                                                                        !2
-                                                                        !1)))
+                                                        ((\!0 -> !1 !1)
                                                            (\!0 !0 ->
                                                               (\!0 ->
                                                                  (\!0 ->
@@ -1640,7 +1580,9 @@ bytestring.n program
                                                                         (quotientInteger
                                                                            !2
                                                                            16))
-                                                                     (!4 !1)))
+                                                                     (!4
+                                                                        !4
+                                                                        !1)))
                                                            #ffffff))
                                                      (\!0 ->
                                                         case
@@ -1759,17 +1701,7 @@ bytestring.0 program
                                                    (\!0 ->
                                                       appendString
                                                         "0x"
-                                                        ((\!0 ->
-                                                            (\!0 ->
-                                                               !2
-                                                                 (\!0 ->
-                                                                    !2 !2 !1))
-                                                              (\!0 ->
-                                                                 !2
-                                                                   (\!0 ->
-                                                                      !2
-                                                                        !2
-                                                                        !1)))
+                                                        ((\!0 -> !1 !1)
                                                            (\!0 !0 ->
                                                               (\!0 ->
                                                                  (\!0 ->
@@ -1811,7 +1743,9 @@ bytestring.0 program
                                                                         (quotientInteger
                                                                            !2
                                                                            16))
-                                                                     (!4 !1)))
+                                                                     (!4
+                                                                        !4
+                                                                        !1)))
                                                            #000000))
                                                      (\!0 ->
                                                         case
@@ -1916,8 +1850,7 @@ str.empty program
         !1
         (appendString
            (decodeUtf8
-              ((\!0 ->
-                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              ((\!0 -> !1 !1)
                  (\!0 !0 ->
                     (\!0 ->
                        (\!0 ->
@@ -1935,8 +1868,10 @@ str.empty program
                       (\!0 !0 ->
                          case
                            (equalsInteger !2 34)
-                           [ (consByteString !2 (!4 !1))
-                           , (consByteString 92 (consByteString !2 (!4 !1))) ]))
+                           [ (consByteString !2 (!4 !4 !1))
+                           , (consByteString
+                                92
+                                (consByteString !2 (!4 !4 !1))) ]))
                  (encodeUtf8 "")))
            !1))
      "\"")
@@ -1947,8 +1882,7 @@ str.hello123 program
         !1
         (appendString
            (decodeUtf8
-              ((\!0 ->
-                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              ((\!0 -> !1 !1)
                  (\!0 !0 ->
                     (\!0 ->
                        (\!0 ->
@@ -1966,8 +1900,10 @@ str.hello123 program
                       (\!0 !0 ->
                          case
                            (equalsInteger !2 34)
-                           [ (consByteString !2 (!4 !1))
-                           , (consByteString 92 (consByteString !2 (!4 !1))) ]))
+                           [ (consByteString !2 (!4 !4 !1))
+                           , (consByteString
+                                92
+                                (consByteString !2 (!4 !4 !1))) ]))
                  (encodeUtf8 "hello123")))
            !1))
      "\"")
@@ -1978,8 +1914,7 @@ str.quoted program
         !1
         (appendString
            (decodeUtf8
-              ((\!0 ->
-                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              ((\!0 -> !1 !1)
                  (\!0 !0 ->
                     (\!0 ->
                        (\!0 ->
@@ -1997,8 +1932,10 @@ str.quoted program
                       (\!0 !0 ->
                          case
                            (equalsInteger !2 34)
-                           [ (consByteString !2 (!4 !1))
-                           , (consByteString 92 (consByteString !2 (!4 !1))) ]))
+                           [ (consByteString !2 (!4 !4 !1))
+                           , (consByteString
+                                92
+                                (consByteString !2 (!4 !4 !1))) ]))
                  (encodeUtf8 "hello\"123")))
            !1))
      "\"")
@@ -2009,8 +1946,7 @@ str.slash program
         !1
         (appendString
            (decodeUtf8
-              ((\!0 ->
-                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              ((\!0 -> !1 !1)
                  (\!0 !0 ->
                     (\!0 ->
                        (\!0 ->
@@ -2028,8 +1964,10 @@ str.slash program
                       (\!0 !0 ->
                          case
                            (equalsInteger !2 34)
-                           [ (consByteString !2 (!4 !1))
-                           , (consByteString 92 (consByteString !2 (!4 !1))) ]))
+                           [ (consByteString !2 (!4 !4 !1))
+                           , (consByteString
+                                92
+                                (consByteString !2 (!4 !4 !1))) ]))
                  (encodeUtf8 "foo\\bar")))
            !1))
      "\"")
@@ -2040,8 +1978,7 @@ str.unicode program
         !1
         (appendString
            (decodeUtf8
-              ((\!0 ->
-                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              ((\!0 -> !1 !1)
                  (\!0 !0 ->
                     (\!0 ->
                        (\!0 ->
@@ -2059,8 +1996,10 @@ str.unicode program
                       (\!0 !0 ->
                          case
                            (equalsInteger !2 34)
-                           [ (consByteString !2 (!4 !1))
-                           , (consByteString 92 (consByteString !2 (!4 !1))) ]))
+                           [ (consByteString !2 (!4 !4 !1))
+                           , (consByteString
+                                92
+                                (consByteString !2 (!4 !4 !1))) ]))
                  (encodeUtf8 "vis-à-vis")))
            !1))
      "\"")
@@ -2071,8 +2010,7 @@ str.unicode-quoted program
         !1
         (appendString
            (decodeUtf8
-              ((\!0 ->
-                  (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+              ((\!0 -> !1 !1)
                  (\!0 !0 ->
                     (\!0 ->
                        (\!0 ->
@@ -2090,8 +2028,10 @@ str.unicode-quoted program
                       (\!0 !0 ->
                          case
                            (equalsInteger !2 34)
-                           [ (consByteString !2 (!4 !1))
-                           , (consByteString 92 (consByteString !2 (!4 !1))) ]))
+                           [ (consByteString !2 (!4 !4 !1))
+                           , (consByteString
+                                92
+                                (consByteString !2 (!4 !4 !1))) ]))
                  (encodeUtf8 "vis-\"à\"-vis")))
            !1))
      "\"")
@@ -2118,17 +2058,7 @@ maybe.nothing program
                                                       "PJust"
                                                       (appendString
                                                          " "
-                                                         ((\!0 ->
-                                                             (\!0 ->
-                                                                !2
-                                                                  (\!0 ->
-                                                                     !2 !2 !1))
-                                                               (\!0 ->
-                                                                  !2
-                                                                    (\!0 ->
-                                                                       !2
-                                                                         !2
-                                                                         !1)))
+                                                         ((\!0 -> !1 !1)
                                                             (\!0 !0 ->
                                                                appendString
                                                                  (case
@@ -2148,6 +2078,7 @@ maybe.nothing program
                                                                                   (!8
                                                                                      !2))
                                                                                (!4
+                                                                                  !4
                                                                                   !2))
                                                                           , (!7
                                                                                !1) ])
@@ -2242,17 +2173,7 @@ maybe.just program
                                                       "PJust"
                                                       (appendString
                                                          " "
-                                                         ((\!0 ->
-                                                             (\!0 ->
-                                                                !2
-                                                                  (\!0 ->
-                                                                     !2 !2 !1))
-                                                               (\!0 ->
-                                                                  !2
-                                                                    (\!0 ->
-                                                                       !2
-                                                                         !2
-                                                                         !1)))
+                                                         ((\!0 -> !1 !1)
                                                             (\!0 !0 ->
                                                                appendString
                                                                  (case
@@ -2272,6 +2193,7 @@ maybe.just program
                                                                                   (!8
                                                                                      !2))
                                                                                (!4
+                                                                                  !4
                                                                                   !2))
                                                                           , (!7
                                                                                !1) ])
@@ -2371,19 +2293,7 @@ either.right program
                                                          "PRight"
                                                          (appendString
                                                             !3
-                                                            ((\!0 ->
-                                                                (\!0 ->
-                                                                   !2
-                                                                     (\!0 ->
-                                                                        !2
-                                                                          !2
-                                                                          !1))
-                                                                  (\!0 ->
-                                                                     !2
-                                                                       (\!0 ->
-                                                                          !2
-                                                                            !2
-                                                                            !1)))
+                                                            ((\!0 -> !1 !1)
                                                                (\!0 !0 ->
                                                                   appendString
                                                                     (case
@@ -2404,6 +2314,7 @@ either.right program
                                                                                      (!9
                                                                                         !2))
                                                                                   (!4
+                                                                                     !4
                                                                                      !2))
                                                                              , (!8
                                                                                   !1) ])
@@ -2513,18 +2424,8 @@ maybe.either program
                                                                                   (appendString
                                                                                      !18
                                                                                      ((\!0 ->
-                                                                                         (\!0 ->
-                                                                                            !2
-                                                                                              (\!0 ->
-                                                                                                 !2
-                                                                                                   !2
-                                                                                                   !1))
-                                                                                           (\!0 ->
-                                                                                              !2
-                                                                                                (\!0 ->
-                                                                                                   !2
-                                                                                                     !2
-                                                                                                     !1)))
+                                                                                         !1
+                                                                                           !1)
                                                                                         (\!0
                                                                                           !0 ->
                                                                                            appendString
@@ -2546,6 +2447,7 @@ maybe.either program
                                                                                                               (!9
                                                                                                                  !2))
                                                                                                            (!4
+                                                                                                              !4
                                                                                                               !2))
                                                                                                       , (!8
                                                                                                            !1) ])
@@ -2654,438 +2556,132 @@ list.nil program
                                              (\!0 ->
                                                 (\!0 ->
                                                    (\!0 ->
-                                                      (\!0 ->
-                                                         appendString
-                                                           "["
-                                                           (appendString
-                                                              (!18
-                                                                 (\!0 !0 ->
-                                                                    case
-                                                                      !1
-                                                                      [ (\!0
-                                                                          !0 ->
-                                                                           case
-                                                                             !1
-                                                                             [ (\!0
-                                                                                 !0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !4)
-                                                                                    (appendString
-                                                                                       ", "
-                                                                                       (!6
-                                                                                          !3)))
-                                                                             , (!6
-                                                                                  !2) ])
-                                                                      , !19 ])
-                                                                 !1)
-                                                              "]"))
-                                                        (!17
-                                                           (\!0 !0 ->
-                                                              case
-                                                                !1
-                                                                [ (\!0 !0 ->
-                                                                     (\!0 ->
-                                                                        constr 0
-                                                                          [ !3
-                                                                          , !1 ])
-                                                                       (!4 !1))
-                                                                , (constr 1
-                                                                     []) ])
-                                                           []))
-                                                     (!16
-                                                        (\!0 !0 ->
-                                                           appendString
-                                                             (case
-                                                                (lessThanInteger
+                                                      appendString
+                                                        "["
+                                                        (appendString
+                                                           ((\!0 -> !1 !1)
+                                                              (\!0 !0 ->
+                                                                 case
                                                                    !1
-                                                                   0)
-                                                                [!17, !3])
-                                                             ((\!0 ->
-                                                                 (\!0 ->
-                                                                    case
-                                                                      (equalsInteger
-                                                                         !2
-                                                                         0)
-                                                                      [ ((\!0 ->
-                                                                            appendString
-                                                                              !1
-                                                                              (!7
-                                                                                 !2))
-                                                                           (!4
-                                                                              !2))
-                                                                      , (!6
-                                                                           !1) ])
-                                                                   (remainderInteger
-                                                                      (!16 !2)
-                                                                      10))
-                                                                (quotientInteger
-                                                                   (!15 !1)
-                                                                   10)))))
-                                                  "-")
-                                               (\!0 ->
-                                                  case
-                                                    (equalsInteger !1 0)
-                                                    [ (case
-                                                         (equalsInteger !1 1)
-                                                         [ (case
-                                                              (equalsInteger
-                                                                 !1
-                                                                 2)
-                                                              [ (case
+                                                                   [ (\!0 !0 ->
+                                                                        case
+                                                                          !1
+                                                                          [ (\!0
+                                                                              !0 ->
+                                                                               appendString
+                                                                                 (!8
+                                                                                    !4)
+                                                                                 (appendString
+                                                                                    ", "
+                                                                                    (!6
+                                                                                       !6
+                                                                                       !3)))
+                                                                          , (!6
+                                                                               !2) ])
+                                                                   , !19 ])
+                                                              !1)
+                                                           "]"))
+                                                     ((\!0 -> !1 !1)
+                                                        (\!0 !0 ->
+                                                           case
+                                                             !1
+                                                             [ (\!0 !0 ->
+                                                                  (\!0 ->
+                                                                     constr 0
+                                                                       [!3, !1])
+                                                                    (!4 !4 !1))
+                                                             , (constr 1 []) ])
+                                                        []))
+                                                  ((\!0 -> !1 !1)
+                                                     (\!0 !0 ->
+                                                        appendString
+                                                          (case
+                                                             (lessThanInteger
+                                                                !1
+                                                                0)
+                                                             [!17, !3])
+                                                          ((\!0 ->
+                                                              (\!0 ->
+                                                                 case
                                                                    (equalsInteger
-                                                                      !1
-                                                                      3)
-                                                                   [ (case
-                                                                        (equalsInteger
+                                                                      !2
+                                                                      0)
+                                                                   [ ((\!0 ->
+                                                                         appendString
                                                                            !1
-                                                                           4)
-                                                                        [ (case
-                                                                             (equalsInteger
-                                                                                !1
-                                                                                5)
-                                                                             [ (case
-                                                                                  (equalsInteger
-                                                                                     !1
-                                                                                     6)
-                                                                                  [ (case
-                                                                                       (equalsInteger
-                                                                                          !1
-                                                                                          7)
-                                                                                       [ (case
-                                                                                            (equalsInteger
-                                                                                               !1
-                                                                                               8)
-                                                                                            [ (case
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    9)
-                                                                                                 [ error
-                                                                                                 , !2 ])
-                                                                                            , !3 ])
-                                                                                       , !4 ])
-                                                                                  , !5 ])
-                                                                             , !6 ])
-                                                                        , !7 ])
-                                                                   , !8 ])
-                                                              , !9 ])
-                                                         , !10 ])
-                                                    , !11 ]))
-                                            "9")
-                                         "8")
-                                      "7")
-                                   "6")
-                                "5")
-                             "4")
-                          "3")
-                       "2")
-                    "1")
-                 "0")
-              (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
-           (\!0 -> subtractInteger 0 !1))
-        "")
-     (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                                           (!7
+                                                                              !2))
+                                                                        (!4
+                                                                           !4
+                                                                           !2))
+                                                                   , (!6 !1) ])
+                                                                (remainderInteger
+                                                                   (!16 !2)
+                                                                   10))
+                                                             (quotientInteger
+                                                                (!15 !1)
+                                                                10)))))
+                                               "-")
+                                            (\!0 ->
+                                               case
+                                                 (equalsInteger !1 0)
+                                                 [ (case
+                                                      (equalsInteger !1 1)
+                                                      [ (case
+                                                           (equalsInteger !1 2)
+                                                           [ (case
+                                                                (equalsInteger
+                                                                   !1
+                                                                   3)
+                                                                [ (case
+                                                                     (equalsInteger
+                                                                        !1
+                                                                        4)
+                                                                     [ (case
+                                                                          (equalsInteger
+                                                                             !1
+                                                                             5)
+                                                                          [ (case
+                                                                               (equalsInteger
+                                                                                  !1
+                                                                                  6)
+                                                                               [ (case
+                                                                                    (equalsInteger
+                                                                                       !1
+                                                                                       7)
+                                                                                    [ (case
+                                                                                         (equalsInteger
+                                                                                            !1
+                                                                                            8)
+                                                                                         [ (case
+                                                                                              (equalsInteger
+                                                                                                 !1
+                                                                                                 9)
+                                                                                              [ error
+                                                                                              , !2 ])
+                                                                                         , !3 ])
+                                                                                    , !4 ])
+                                                                               , !5 ])
+                                                                          , !6 ])
+                                                                     , !7 ])
+                                                                , !8 ])
+                                                           , !9 ])
+                                                      , !10 ])
+                                                 , !11 ]))
+                                         "9")
+                                      "8")
+                                   "7")
+                                "6")
+                             "5")
+                          "4")
+                       "3")
+                    "2")
+                 "1")
+              "0")
+           (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
+        (\!0 -> subtractInteger 0 !1))
+     "")
 list.1 program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               (\!0 ->
-                  (\!0 ->
-                     (\!0 ->
-                        (\!0 ->
-                           (\!0 ->
-                              (\!0 ->
-                                 (\!0 ->
-                                    (\!0 ->
-                                       (\!0 ->
-                                          (\!0 ->
-                                             (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         appendString
-                                                           "["
-                                                           (appendString
-                                                              (!18
-                                                                 (\!0 !0 ->
-                                                                    case
-                                                                      !1
-                                                                      [ (\!0
-                                                                          !0 ->
-                                                                           case
-                                                                             !1
-                                                                             [ (\!0
-                                                                                 !0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !4)
-                                                                                    (appendString
-                                                                                       ", "
-                                                                                       (!6
-                                                                                          !3)))
-                                                                             , (!6
-                                                                                  !2) ])
-                                                                      , !19 ])
-                                                                 !1)
-                                                              "]"))
-                                                        (!17
-                                                           (\!0 !0 ->
-                                                              case
-                                                                !1
-                                                                [ (\!0 !0 ->
-                                                                     (\!0 ->
-                                                                        constr 0
-                                                                          [ !3
-                                                                          , !1 ])
-                                                                       (!4 !1))
-                                                                , (constr 1
-                                                                     []) ])
-                                                           [1]))
-                                                     (!16
-                                                        (\!0 !0 ->
-                                                           appendString
-                                                             (case
-                                                                (lessThanInteger
-                                                                   !1
-                                                                   0)
-                                                                [!17, !3])
-                                                             ((\!0 ->
-                                                                 (\!0 ->
-                                                                    case
-                                                                      (equalsInteger
-                                                                         !2
-                                                                         0)
-                                                                      [ ((\!0 ->
-                                                                            appendString
-                                                                              !1
-                                                                              (!7
-                                                                                 !2))
-                                                                           (!4
-                                                                              !2))
-                                                                      , (!6
-                                                                           !1) ])
-                                                                   (remainderInteger
-                                                                      (!16 !2)
-                                                                      10))
-                                                                (quotientInteger
-                                                                   (!15 !1)
-                                                                   10)))))
-                                                  "-")
-                                               (\!0 ->
-                                                  case
-                                                    (equalsInteger !1 0)
-                                                    [ (case
-                                                         (equalsInteger !1 1)
-                                                         [ (case
-                                                              (equalsInteger
-                                                                 !1
-                                                                 2)
-                                                              [ (case
-                                                                   (equalsInteger
-                                                                      !1
-                                                                      3)
-                                                                   [ (case
-                                                                        (equalsInteger
-                                                                           !1
-                                                                           4)
-                                                                        [ (case
-                                                                             (equalsInteger
-                                                                                !1
-                                                                                5)
-                                                                             [ (case
-                                                                                  (equalsInteger
-                                                                                     !1
-                                                                                     6)
-                                                                                  [ (case
-                                                                                       (equalsInteger
-                                                                                          !1
-                                                                                          7)
-                                                                                       [ (case
-                                                                                            (equalsInteger
-                                                                                               !1
-                                                                                               8)
-                                                                                            [ (case
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    9)
-                                                                                                 [ error
-                                                                                                 , !2 ])
-                                                                                            , !3 ])
-                                                                                       , !4 ])
-                                                                                  , !5 ])
-                                                                             , !6 ])
-                                                                        , !7 ])
-                                                                   , !8 ])
-                                                              , !9 ])
-                                                         , !10 ])
-                                                    , !11 ]))
-                                            "9")
-                                         "8")
-                                      "7")
-                                   "6")
-                                "5")
-                             "4")
-                          "3")
-                       "2")
-                    "1")
-                 "0")
-              (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
-           (\!0 -> subtractInteger 0 !1))
-        "")
-     (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
-list.1,2,3 program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               (\!0 ->
-                  (\!0 ->
-                     (\!0 ->
-                        (\!0 ->
-                           (\!0 ->
-                              (\!0 ->
-                                 (\!0 ->
-                                    (\!0 ->
-                                       (\!0 ->
-                                          (\!0 ->
-                                             (\!0 ->
-                                                (\!0 ->
-                                                   (\!0 ->
-                                                      (\!0 ->
-                                                         appendString
-                                                           "["
-                                                           (appendString
-                                                              (!18
-                                                                 (\!0 !0 ->
-                                                                    case
-                                                                      !1
-                                                                      [ (\!0
-                                                                          !0 ->
-                                                                           case
-                                                                             !1
-                                                                             [ (\!0
-                                                                                 !0 ->
-                                                                                  appendString
-                                                                                    (!8
-                                                                                       !4)
-                                                                                    (appendString
-                                                                                       ", "
-                                                                                       (!6
-                                                                                          !3)))
-                                                                             , (!6
-                                                                                  !2) ])
-                                                                      , !19 ])
-                                                                 !1)
-                                                              "]"))
-                                                        (!17
-                                                           (\!0 !0 ->
-                                                              case
-                                                                !1
-                                                                [ (\!0 !0 ->
-                                                                     (\!0 ->
-                                                                        constr 0
-                                                                          [ !3
-                                                                          , !1 ])
-                                                                       (!4 !1))
-                                                                , (constr 1
-                                                                     []) ])
-                                                           [1,2,3]))
-                                                     (!16
-                                                        (\!0 !0 ->
-                                                           appendString
-                                                             (case
-                                                                (lessThanInteger
-                                                                   !1
-                                                                   0)
-                                                                [!17, !3])
-                                                             ((\!0 ->
-                                                                 (\!0 ->
-                                                                    case
-                                                                      (equalsInteger
-                                                                         !2
-                                                                         0)
-                                                                      [ ((\!0 ->
-                                                                            appendString
-                                                                              !1
-                                                                              (!7
-                                                                                 !2))
-                                                                           (!4
-                                                                              !2))
-                                                                      , (!6
-                                                                           !1) ])
-                                                                   (remainderInteger
-                                                                      (!16 !2)
-                                                                      10))
-                                                                (quotientInteger
-                                                                   (!15 !1)
-                                                                   10)))))
-                                                  "-")
-                                               (\!0 ->
-                                                  case
-                                                    (equalsInteger !1 0)
-                                                    [ (case
-                                                         (equalsInteger !1 1)
-                                                         [ (case
-                                                              (equalsInteger
-                                                                 !1
-                                                                 2)
-                                                              [ (case
-                                                                   (equalsInteger
-                                                                      !1
-                                                                      3)
-                                                                   [ (case
-                                                                        (equalsInteger
-                                                                           !1
-                                                                           4)
-                                                                        [ (case
-                                                                             (equalsInteger
-                                                                                !1
-                                                                                5)
-                                                                             [ (case
-                                                                                  (equalsInteger
-                                                                                     !1
-                                                                                     6)
-                                                                                  [ (case
-                                                                                       (equalsInteger
-                                                                                          !1
-                                                                                          7)
-                                                                                       [ (case
-                                                                                            (equalsInteger
-                                                                                               !1
-                                                                                               8)
-                                                                                            [ (case
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    9)
-                                                                                                 [ error
-                                                                                                 , !2 ])
-                                                                                            , !3 ])
-                                                                                       , !4 ])
-                                                                                  , !5 ])
-                                                                             , !6 ])
-                                                                        , !7 ])
-                                                                   , !8 ])
-                                                              , !9 ])
-                                                         , !10 ])
-                                                    , !11 ]))
-                                            "9")
-                                         "8")
-                                      "7")
-                                   "6")
-                                "5")
-                             "4")
-                          "3")
-                       "2")
-                    "1")
-                 "0")
-              (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
-           (\!0 -> subtractInteger 0 !1))
-        "")
-     (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
-builtinlist.nil program
   1.1.0
   ((\!0 ->
       (\!0 ->
@@ -3107,7 +2703,7 @@ builtinlist.nil program
                                                       appendString
                                                         "["
                                                         (appendString
-                                                           (!2
+                                                           ((\!0 -> !1 !1)
                                                               (\!0 !0 ->
                                                                  case
                                                                    !1
@@ -3117,52 +2713,334 @@ builtinlist.nil program
                                                                           [ (\!0
                                                                               !0 ->
                                                                                appendString
-                                                                                 (!7
+                                                                                 (!8
                                                                                     !4)
                                                                                  (appendString
                                                                                     ", "
                                                                                     (!6
+                                                                                       !6
                                                                                        !3)))
-                                                                          , (!5
+                                                                          , (!6
                                                                                !2) ])
                                                                    , !19 ])
-                                                              [])
+                                                              !1)
                                                            "]"))
-                                                     (!1
+                                                     ((\!0 -> !1 !1)
                                                         (\!0 !0 ->
-                                                           appendString
-                                                             (case
-                                                                (lessThanInteger
-                                                                   !1
-                                                                   0)
-                                                                [!18, !4])
-                                                             ((\!0 ->
-                                                                 (\!0 ->
-                                                                    case
-                                                                      (equalsInteger
-                                                                         !2
-                                                                         0)
-                                                                      [ ((\!0 ->
-                                                                            appendString
-                                                                              !1
-                                                                              (!8
-                                                                                 !2))
-                                                                           (!4
+                                                           case
+                                                             !1
+                                                             [ (\!0 !0 ->
+                                                                  (\!0 ->
+                                                                     constr 0
+                                                                       [!3, !1])
+                                                                    (!4 !4 !1))
+                                                             , (constr 1 []) ])
+                                                        [1]))
+                                                  ((\!0 -> !1 !1)
+                                                     (\!0 !0 ->
+                                                        appendString
+                                                          (case
+                                                             (lessThanInteger
+                                                                !1
+                                                                0)
+                                                             [!17, !3])
+                                                          ((\!0 ->
+                                                              (\!0 ->
+                                                                 case
+                                                                   (equalsInteger
+                                                                      !2
+                                                                      0)
+                                                                   [ ((\!0 ->
+                                                                         appendString
+                                                                           !1
+                                                                           (!7
                                                                               !2))
-                                                                      , (!7
-                                                                           !1) ])
-                                                                   (remainderInteger
-                                                                      (!17 !2)
-                                                                      10))
-                                                                (quotientInteger
-                                                                   (!16 !1)
-                                                                   10)))))
-                                                  (\!0 ->
-                                                     (\!0 ->
-                                                        !2 (\!0 -> !2 !2 !1))
-                                                       (\!0 ->
-                                                          !2
-                                                            (\!0 -> !2 !2 !1))))
+                                                                        (!4
+                                                                           !4
+                                                                           !2))
+                                                                   , (!6 !1) ])
+                                                                (remainderInteger
+                                                                   (!16 !2)
+                                                                   10))
+                                                             (quotientInteger
+                                                                (!15 !1)
+                                                                10)))))
+                                               "-")
+                                            (\!0 ->
+                                               case
+                                                 (equalsInteger !1 0)
+                                                 [ (case
+                                                      (equalsInteger !1 1)
+                                                      [ (case
+                                                           (equalsInteger !1 2)
+                                                           [ (case
+                                                                (equalsInteger
+                                                                   !1
+                                                                   3)
+                                                                [ (case
+                                                                     (equalsInteger
+                                                                        !1
+                                                                        4)
+                                                                     [ (case
+                                                                          (equalsInteger
+                                                                             !1
+                                                                             5)
+                                                                          [ (case
+                                                                               (equalsInteger
+                                                                                  !1
+                                                                                  6)
+                                                                               [ (case
+                                                                                    (equalsInteger
+                                                                                       !1
+                                                                                       7)
+                                                                                    [ (case
+                                                                                         (equalsInteger
+                                                                                            !1
+                                                                                            8)
+                                                                                         [ (case
+                                                                                              (equalsInteger
+                                                                                                 !1
+                                                                                                 9)
+                                                                                              [ error
+                                                                                              , !2 ])
+                                                                                         , !3 ])
+                                                                                    , !4 ])
+                                                                               , !5 ])
+                                                                          , !6 ])
+                                                                     , !7 ])
+                                                                , !8 ])
+                                                           , !9 ])
+                                                      , !10 ])
+                                                 , !11 ]))
+                                         "9")
+                                      "8")
+                                   "7")
+                                "6")
+                             "5")
+                          "4")
+                       "3")
+                    "2")
+                 "1")
+              "0")
+           (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
+        (\!0 -> subtractInteger 0 !1))
+     "")
+list.1,2,3 program
+  1.1.0
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               (\!0 ->
+                  (\!0 ->
+                     (\!0 ->
+                        (\!0 ->
+                           (\!0 ->
+                              (\!0 ->
+                                 (\!0 ->
+                                    (\!0 ->
+                                       (\!0 ->
+                                          (\!0 ->
+                                             (\!0 ->
+                                                (\!0 ->
+                                                   (\!0 ->
+                                                      appendString
+                                                        "["
+                                                        (appendString
+                                                           ((\!0 -> !1 !1)
+                                                              (\!0 !0 ->
+                                                                 case
+                                                                   !1
+                                                                   [ (\!0 !0 ->
+                                                                        case
+                                                                          !1
+                                                                          [ (\!0
+                                                                              !0 ->
+                                                                               appendString
+                                                                                 (!8
+                                                                                    !4)
+                                                                                 (appendString
+                                                                                    ", "
+                                                                                    (!6
+                                                                                       !6
+                                                                                       !3)))
+                                                                          , (!6
+                                                                               !2) ])
+                                                                   , !19 ])
+                                                              !1)
+                                                           "]"))
+                                                     ((\!0 -> !1 !1)
+                                                        (\!0 !0 ->
+                                                           case
+                                                             !1
+                                                             [ (\!0 !0 ->
+                                                                  (\!0 ->
+                                                                     constr 0
+                                                                       [!3, !1])
+                                                                    (!4 !4 !1))
+                                                             , (constr 1 []) ])
+                                                        [1,2,3]))
+                                                  ((\!0 -> !1 !1)
+                                                     (\!0 !0 ->
+                                                        appendString
+                                                          (case
+                                                             (lessThanInteger
+                                                                !1
+                                                                0)
+                                                             [!17, !3])
+                                                          ((\!0 ->
+                                                              (\!0 ->
+                                                                 case
+                                                                   (equalsInteger
+                                                                      !2
+                                                                      0)
+                                                                   [ ((\!0 ->
+                                                                         appendString
+                                                                           !1
+                                                                           (!7
+                                                                              !2))
+                                                                        (!4
+                                                                           !4
+                                                                           !2))
+                                                                   , (!6 !1) ])
+                                                                (remainderInteger
+                                                                   (!16 !2)
+                                                                   10))
+                                                             (quotientInteger
+                                                                (!15 !1)
+                                                                10)))))
+                                               "-")
+                                            (\!0 ->
+                                               case
+                                                 (equalsInteger !1 0)
+                                                 [ (case
+                                                      (equalsInteger !1 1)
+                                                      [ (case
+                                                           (equalsInteger !1 2)
+                                                           [ (case
+                                                                (equalsInteger
+                                                                   !1
+                                                                   3)
+                                                                [ (case
+                                                                     (equalsInteger
+                                                                        !1
+                                                                        4)
+                                                                     [ (case
+                                                                          (equalsInteger
+                                                                             !1
+                                                                             5)
+                                                                          [ (case
+                                                                               (equalsInteger
+                                                                                  !1
+                                                                                  6)
+                                                                               [ (case
+                                                                                    (equalsInteger
+                                                                                       !1
+                                                                                       7)
+                                                                                    [ (case
+                                                                                         (equalsInteger
+                                                                                            !1
+                                                                                            8)
+                                                                                         [ (case
+                                                                                              (equalsInteger
+                                                                                                 !1
+                                                                                                 9)
+                                                                                              [ error
+                                                                                              , !2 ])
+                                                                                         , !3 ])
+                                                                                    , !4 ])
+                                                                               , !5 ])
+                                                                          , !6 ])
+                                                                     , !7 ])
+                                                                , !8 ])
+                                                           , !9 ])
+                                                      , !10 ])
+                                                 , !11 ]))
+                                         "9")
+                                      "8")
+                                   "7")
+                                "6")
+                             "5")
+                          "4")
+                       "3")
+                    "2")
+                 "1")
+              "0")
+           (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
+        (\!0 -> subtractInteger 0 !1))
+     "")
+builtinlist.nil program
+  1.1.0
+  ((\!0 ->
+      (\!0 ->
+         (\!0 ->
+            (\!0 ->
+               (\!0 ->
+                  (\!0 ->
+                     (\!0 ->
+                        (\!0 ->
+                           (\!0 ->
+                              (\!0 ->
+                                 (\!0 ->
+                                    (\!0 ->
+                                       (\!0 ->
+                                          (\!0 ->
+                                             (\!0 ->
+                                                (\!0 ->
+                                                   appendString
+                                                     "["
+                                                     (appendString
+                                                        ((\!0 -> !1 !1)
+                                                           (\!0 !0 ->
+                                                              case
+                                                                !1
+                                                                [ (\!0 !0 ->
+                                                                     case
+                                                                       !1
+                                                                       [ (\!0
+                                                                           !0 ->
+                                                                            appendString
+                                                                              (!7
+                                                                                 !4)
+                                                                              (appendString
+                                                                                 ", "
+                                                                                 (!6
+                                                                                    !6
+                                                                                    !3)))
+                                                                       , (!5
+                                                                            !2) ])
+                                                                , !18 ])
+                                                           [])
+                                                        "]"))
+                                                  ((\!0 -> !1 !1)
+                                                     (\!0 !0 ->
+                                                        appendString
+                                                          (case
+                                                             (lessThanInteger
+                                                                !1
+                                                                0)
+                                                             [!17, !3])
+                                                          ((\!0 ->
+                                                              (\!0 ->
+                                                                 case
+                                                                   (equalsInteger
+                                                                      !2
+                                                                      0)
+                                                                   [ ((\!0 ->
+                                                                         appendString
+                                                                           !1
+                                                                           (!7
+                                                                              !2))
+                                                                        (!4
+                                                                           !4
+                                                                           !2))
+                                                                   , (!6 !1) ])
+                                                                (remainderInteger
+                                                                   (!16 !2)
+                                                                   10))
+                                                             (quotientInteger
+                                                                (!15 !1)
+                                                                10)))))
                                                "-")
                                             (\!0 ->
                                                case
@@ -3241,66 +3119,60 @@ builtinlist.1,2,3 program
                                           (\!0 ->
                                              (\!0 ->
                                                 (\!0 ->
-                                                   (\!0 ->
-                                                      appendString
-                                                        "["
-                                                        (appendString
-                                                           (!2
-                                                              (\!0 !0 ->
-                                                                 case
-                                                                   !1
-                                                                   [ (\!0 !0 ->
-                                                                        case
-                                                                          !1
-                                                                          [ (\!0
-                                                                              !0 ->
-                                                                               appendString
-                                                                                 (!7
-                                                                                    !4)
-                                                                                 (appendString
-                                                                                    ", "
-                                                                                    (!6
-                                                                                       !3)))
-                                                                          , (!5
-                                                                               !2) ])
-                                                                   , !19 ])
-                                                              [1,2,3])
-                                                           "]"))
-                                                     (!1
-                                                        (\!0 !0 ->
-                                                           appendString
-                                                             (case
-                                                                (lessThanInteger
-                                                                   !1
-                                                                   0)
-                                                                [!18, !4])
-                                                             ((\!0 ->
-                                                                 (\!0 ->
-                                                                    case
-                                                                      (equalsInteger
-                                                                         !2
-                                                                         0)
-                                                                      [ ((\!0 ->
+                                                   appendString
+                                                     "["
+                                                     (appendString
+                                                        ((\!0 -> !1 !1)
+                                                           (\!0 !0 ->
+                                                              case
+                                                                !1
+                                                                [ (\!0 !0 ->
+                                                                     case
+                                                                       !1
+                                                                       [ (\!0
+                                                                           !0 ->
                                                                             appendString
-                                                                              !1
-                                                                              (!8
-                                                                                 !2))
-                                                                           (!4
+                                                                              (!7
+                                                                                 !4)
+                                                                              (appendString
+                                                                                 ", "
+                                                                                 (!6
+                                                                                    !6
+                                                                                    !3)))
+                                                                       , (!5
+                                                                            !2) ])
+                                                                , !18 ])
+                                                           [1,2,3])
+                                                        "]"))
+                                                  ((\!0 -> !1 !1)
+                                                     (\!0 !0 ->
+                                                        appendString
+                                                          (case
+                                                             (lessThanInteger
+                                                                !1
+                                                                0)
+                                                             [!17, !3])
+                                                          ((\!0 ->
+                                                              (\!0 ->
+                                                                 case
+                                                                   (equalsInteger
+                                                                      !2
+                                                                      0)
+                                                                   [ ((\!0 ->
+                                                                         appendString
+                                                                           !1
+                                                                           (!7
                                                                               !2))
-                                                                      , (!7
-                                                                           !1) ])
-                                                                   (remainderInteger
-                                                                      (!17 !2)
-                                                                      10))
-                                                                (quotientInteger
-                                                                   (!16 !1)
-                                                                   10)))))
-                                                  (\!0 ->
-                                                     (\!0 ->
-                                                        !2 (\!0 -> !2 !2 !1))
-                                                       (\!0 ->
-                                                          !2
-                                                            (\!0 -> !2 !2 !1))))
+                                                                        (!4
+                                                                           !4
+                                                                           !2))
+                                                                   , (!6 !1) ])
+                                                                (remainderInteger
+                                                                   (!16 !2)
+                                                                   10))
+                                                             (quotientInteger
+                                                                (!15 !1)
+                                                                10)))))
                                                "-")
                                             (\!0 ->
                                                case
@@ -3381,165 +3253,168 @@ pair.int-str program
                                           (\!0 ->
                                              (\!0 ->
                                                 (\!0 ->
-                                                   (\!0 ->
-                                                      case
-                                                        !1
-                                                        [ (\!0 !0 ->
-                                                             appendString
-                                                               "PPair"
+                                                   case
+                                                     !1
+                                                     [ (\!0 !0 ->
+                                                          appendString
+                                                            "PPair"
+                                                            (appendString
+                                                               !17
                                                                (appendString
-                                                                  !17
-                                                                  (appendString
-                                                                     (!18
-                                                                        (\!0
-                                                                          !0 ->
-                                                                           appendString
-                                                                             (case
-                                                                                (lessThanInteger
-                                                                                   !1
-                                                                                   0)
-                                                                                [ ""
-                                                                                , "-" ])
-                                                                             ((\!0 ->
-                                                                                 (\!0 ->
-                                                                                    case
-                                                                                      (equalsInteger
-                                                                                         !2
-                                                                                         0)
-                                                                                      [ ((\!0 ->
-                                                                                            appendString
-                                                                                              !1
-                                                                                              (!9
-                                                                                                 !2))
-                                                                                           (!4
+                                                                  ((\!0 ->
+                                                                      !1 !1)
+                                                                     (\!0 !0 ->
+                                                                        appendString
+                                                                          (case
+                                                                             (lessThanInteger
+                                                                                !1
+                                                                                0)
+                                                                             [ ""
+                                                                             , "-" ])
+                                                                          ((\!0 ->
+                                                                              (\!0 ->
+                                                                                 case
+                                                                                   (equalsInteger
+                                                                                      !2
+                                                                                      0)
+                                                                                   [ ((\!0 ->
+                                                                                         appendString
+                                                                                           !1
+                                                                                           (!9
                                                                                               !2))
-                                                                                      , (!8
-                                                                                           !1) ])
-                                                                                   (remainderInteger
-                                                                                      (!18
-                                                                                         !2)
-                                                                                      10))
-                                                                                (quotientInteger
-                                                                                   (!17
-                                                                                      !1)
-                                                                                   10)))
-                                                                        !2)
+                                                                                        (!4
+                                                                                           !4
+                                                                                           !2))
+                                                                                   , (!8
+                                                                                        !1) ])
+                                                                                (remainderInteger
+                                                                                   (!18
+                                                                                      !2)
+                                                                                   10))
+                                                                             (quotientInteger
+                                                                                (!17
+                                                                                   !1)
+                                                                                10)))
+                                                                     !2)
+                                                                  (appendString
+                                                                     !17
                                                                      (appendString
-                                                                        !17
+                                                                        !18
                                                                         (appendString
-                                                                           !19
-                                                                           (appendString
-                                                                              (decodeUtf8
-                                                                                 (!18
-                                                                                    (\!0
-                                                                                      !0 ->
+                                                                           (decodeUtf8
+                                                                              ((\!0 ->
+                                                                                  !1
+                                                                                    !1)
+                                                                                 (\!0
+                                                                                   !0 ->
+                                                                                    (\!0 ->
                                                                                        (\!0 ->
-                                                                                          (\!0 ->
-                                                                                             case
-                                                                                               (equalsInteger
-                                                                                                  !1
-                                                                                                  0)
-                                                                                               [ ((\!0 ->
-                                                                                                     (\!0 ->
-                                                                                                        !4
-                                                                                                          !2
-                                                                                                          !1)
-                                                                                                       (case
-                                                                                                          (constr 0
-                                                                                                             [ 1
-                                                                                                             , (subtractInteger
-                                                                                                                  !2
-                                                                                                                  1)
-                                                                                                             , !4 ])
-                                                                                                          [ sliceByteString ]))
-                                                                                                    (indexByteString
-                                                                                                       !3
-                                                                                                       0))
-                                                                                               , !3 ])
-                                                                                            (lengthOfByteString
-                                                                                               !2))
-                                                                                         (\!0
-                                                                                           !0 ->
-                                                                                            case
-                                                                                              (equalsInteger
-                                                                                                 !2
-                                                                                                 34)
-                                                                                              [ (consByteString
+                                                                                          case
+                                                                                            (equalsInteger
+                                                                                               !1
+                                                                                               0)
+                                                                                            [ ((\!0 ->
+                                                                                                  (\!0 ->
+                                                                                                     !4
+                                                                                                       !2
+                                                                                                       !1)
+                                                                                                    (case
+                                                                                                       (constr 0
+                                                                                                          [ 1
+                                                                                                          , (subtractInteger
+                                                                                                               !2
+                                                                                                               1)
+                                                                                                          , !4 ])
+                                                                                                       [ sliceByteString ]))
+                                                                                                 (indexByteString
+                                                                                                    !3
+                                                                                                    0))
+                                                                                            , !3 ])
+                                                                                         (lengthOfByteString
+                                                                                            !2))
+                                                                                      (\!0
+                                                                                        !0 ->
+                                                                                         case
+                                                                                           (equalsInteger
+                                                                                              !2
+                                                                                              34)
+                                                                                           [ (consByteString
+                                                                                                !2
+                                                                                                (!4
+                                                                                                   !4
+                                                                                                   !1))
+                                                                                           , (consByteString
+                                                                                                92
+                                                                                                (consByteString
                                                                                                    !2
                                                                                                    (!4
-                                                                                                      !1))
-                                                                                              , (consByteString
-                                                                                                   92
-                                                                                                   (consByteString
-                                                                                                      !2
-                                                                                                      (!4
-                                                                                                         !1))) ]))
-                                                                                    (encodeUtf8
-                                                                                       !1)))
-                                                                              !19)))))) ])
-                                                     (constr 0 [42, "hello"]))
-                                                  (\!0 ->
-                                                     case
-                                                       (equalsInteger !1 0)
-                                                       [ (case
-                                                            (equalsInteger !1 1)
-                                                            [ (case
-                                                                 (equalsInteger
-                                                                    !1
-                                                                    2)
-                                                                 [ (case
-                                                                      (equalsInteger
-                                                                         !1
-                                                                         3)
-                                                                      [ (case
-                                                                           (equalsInteger
-                                                                              !1
-                                                                              4)
-                                                                           [ (case
-                                                                                (equalsInteger
-                                                                                   !1
-                                                                                   5)
-                                                                                [ (case
-                                                                                     (equalsInteger
-                                                                                        !1
-                                                                                        6)
-                                                                                     [ (case
-                                                                                          (equalsInteger
-                                                                                             !1
-                                                                                             7)
-                                                                                          [ (case
-                                                                                               (equalsInteger
-                                                                                                  !1
-                                                                                                  8)
-                                                                                               [ (case
-                                                                                                    (equalsInteger
-                                                                                                       !1
-                                                                                                       9)
-                                                                                                    [ error
-                                                                                                    , !2 ])
-                                                                                               , !3 ])
-                                                                                          , !4 ])
-                                                                                     , !5 ])
-                                                                                , !6 ])
-                                                                           , !7 ])
-                                                                      , !8 ])
-                                                                 , !9 ])
-                                                            , !10 ])
-                                                       , !11 ]))
-                                               "9")
-                                            "8")
-                                         "7")
-                                      "6")
-                                   "5")
-                                "4")
-                             "3")
-                          "2")
-                       "1")
-                    "0")
-                 (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
-              (\!0 -> subtractInteger 0 !1))
-           " ")
-        (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                                                                      !4
+                                                                                                      !1))) ]))
+                                                                                 (encodeUtf8
+                                                                                    !1)))
+                                                                           !18)))))) ])
+                                                  (constr 0 [42, "hello"]))
+                                               (\!0 ->
+                                                  case
+                                                    (equalsInteger !1 0)
+                                                    [ (case
+                                                         (equalsInteger !1 1)
+                                                         [ (case
+                                                              (equalsInteger
+                                                                 !1
+                                                                 2)
+                                                              [ (case
+                                                                   (equalsInteger
+                                                                      !1
+                                                                      3)
+                                                                   [ (case
+                                                                        (equalsInteger
+                                                                           !1
+                                                                           4)
+                                                                        [ (case
+                                                                             (equalsInteger
+                                                                                !1
+                                                                                5)
+                                                                             [ (case
+                                                                                  (equalsInteger
+                                                                                     !1
+                                                                                     6)
+                                                                                  [ (case
+                                                                                       (equalsInteger
+                                                                                          !1
+                                                                                          7)
+                                                                                       [ (case
+                                                                                            (equalsInteger
+                                                                                               !1
+                                                                                               8)
+                                                                                            [ (case
+                                                                                                 (equalsInteger
+                                                                                                    !1
+                                                                                                    9)
+                                                                                                 [ error
+                                                                                                 , !2 ])
+                                                                                            , !3 ])
+                                                                                       , !4 ])
+                                                                                  , !5 ])
+                                                                             , !6 ])
+                                                                        , !7 ])
+                                                                   , !8 ])
+                                                              , !9 ])
+                                                         , !10 ])
+                                                    , !11 ]))
+                                            "9")
+                                         "8")
+                                      "7")
+                                   "6")
+                                "5")
+                             "4")
+                          "3")
+                       "2")
+                    "1")
+                 "0")
+              (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
+           (\!0 -> subtractInteger 0 !1))
+        " ")
      "\"")
 pair.int-list program
   1.1.0
@@ -3561,83 +3436,78 @@ pair.int-list program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
-                                                            case
-                                                              !1
-                                                              [ (\!0 !0 ->
-                                                                   appendString
-                                                                     "PPair"
+                                                         case
+                                                           !1
+                                                           [ (\!0 !0 ->
+                                                                appendString
+                                                                  "PPair"
+                                                                  (appendString
+                                                                     !4
                                                                      (appendString
-                                                                        !4
+                                                                        (!5 !2)
                                                                         (appendString
-                                                                           (!5
-                                                                              !2)
+                                                                           !4
                                                                            (appendString
-                                                                              !4
+                                                                              "["
                                                                               (appendString
-                                                                                 "["
-                                                                                 (appendString
-                                                                                    (!6
-                                                                                       (\!0
-                                                                                         !0 ->
-                                                                                          case
-                                                                                            !1
-                                                                                            [ (\!0
-                                                                                                !0 ->
-                                                                                                 case
-                                                                                                   !1
-                                                                                                   [ (\!0
-                                                                                                       !0 ->
-                                                                                                        appendString
-                                                                                                          (!11
-                                                                                                             !4)
-                                                                                                          (appendString
-                                                                                                             ", "
-                                                                                                             (!6
-                                                                                                                !3)))
-                                                                                                   , (!9
-                                                                                                        !2) ])
-                                                                                            , !23 ])
+                                                                                 ((\!0 ->
+                                                                                     !1
                                                                                        !1)
-                                                                                    "]")))))) ])
-                                                           (constr 0
-                                                              [42, [1,2,3]]))
-                                                        " ")
-                                                     (!1
-                                                        (\!0 !0 ->
-                                                           appendString
-                                                             (case
-                                                                (lessThanInteger
-                                                                   !1
-                                                                   0)
-                                                                [!18, !4])
-                                                             ((\!0 ->
-                                                                 (\!0 ->
-                                                                    case
-                                                                      (equalsInteger
-                                                                         !2
-                                                                         0)
-                                                                      [ ((\!0 ->
-                                                                            appendString
-                                                                              !1
-                                                                              (!8
-                                                                                 !2))
-                                                                           (!4
+                                                                                    (\!0
+                                                                                      !0 ->
+                                                                                       case
+                                                                                         !1
+                                                                                         [ (\!0
+                                                                                             !0 ->
+                                                                                              case
+                                                                                                !1
+                                                                                                [ (\!0
+                                                                                                    !0 ->
+                                                                                                     appendString
+                                                                                                       (!11
+                                                                                                          !4)
+                                                                                                       (appendString
+                                                                                                          ", "
+                                                                                                          (!6
+                                                                                                             !6
+                                                                                                             !3)))
+                                                                                                , (!9
+                                                                                                     !2) ])
+                                                                                         , !22 ])
+                                                                                    !1)
+                                                                                 "]")))))) ])
+                                                        (constr 0
+                                                           [42, [1,2,3]]))
+                                                     " ")
+                                                  ((\!0 -> !1 !1)
+                                                     (\!0 !0 ->
+                                                        appendString
+                                                          (case
+                                                             (lessThanInteger
+                                                                !1
+                                                                0)
+                                                             [!17, !3])
+                                                          ((\!0 ->
+                                                              (\!0 ->
+                                                                 case
+                                                                   (equalsInteger
+                                                                      !2
+                                                                      0)
+                                                                   [ ((\!0 ->
+                                                                         appendString
+                                                                           !1
+                                                                           (!7
                                                                               !2))
-                                                                      , (!7
-                                                                           !1) ])
-                                                                   (remainderInteger
-                                                                      (!17 !2)
-                                                                      10))
-                                                                (quotientInteger
-                                                                   (!16 !1)
-                                                                   10)))))
-                                                  (\!0 ->
-                                                     (\!0 ->
-                                                        !2 (\!0 -> !2 !2 !1))
-                                                       (\!0 ->
-                                                          !2
-                                                            (\!0 -> !2 !2 !1))))
+                                                                        (!4
+                                                                           !4
+                                                                           !2))
+                                                                   , (!6 !1) ])
+                                                                (remainderInteger
+                                                                   (!16 !2)
+                                                                   10))
+                                                             (quotientInteger
+                                                                (!15 !1)
+                                                                10)))))
                                                "-")
                                             (\!0 ->
                                                case
@@ -3718,177 +3588,172 @@ rational.1/2 program
                                                 (\!0 ->
                                                    (\!0 ->
                                                       (\!0 ->
-                                                         (\!0 ->
+                                                         case
+                                                           !1
+                                                           [ (\!0 !0 ->
+                                                                appendString
+                                                                  (!4 !2)
+                                                                  (appendString
+                                                                     "/"
+                                                                     (!4
+                                                                        !1))) ])
+                                                        ((\!0 !0 ->
                                                             case
-                                                              !1
+                                                              !2
                                                               [ (\!0 !0 ->
-                                                                   appendString
-                                                                     (!4 !2)
-                                                                     (appendString
-                                                                        "/"
-                                                                        (!4
-                                                                           !1))) ])
-                                                           ((\!0 !0 ->
-                                                               case
-                                                                 !2
-                                                                 [ (\!0 !0 ->
-                                                                      case
-                                                                        !3
-                                                                        [ (\!0
-                                                                            !0 ->
-                                                                             (\!0 ->
-                                                                                case
-                                                                                  (equalsInteger
-                                                                                     !1
-                                                                                     0)
-                                                                                  [ ((\!0 ->
-                                                                                        (\!0 ->
-                                                                                           case
-                                                                                             (lessThanEqualsInteger
-                                                                                                !3
-                                                                                                0)
-                                                                                             [ (constr 0
-                                                                                                  [ (divideInteger
+                                                                   case
+                                                                     !3
+                                                                     [ (\!0
+                                                                         !0 ->
+                                                                          (\!0 ->
+                                                                             case
+                                                                               (equalsInteger
+                                                                                  !1
+                                                                                  0)
+                                                                               [ ((\!0 ->
+                                                                                     (\!0 ->
+                                                                                        case
+                                                                                          (lessThanEqualsInteger
+                                                                                             !3
+                                                                                             0)
+                                                                                          [ (constr 0
+                                                                                               [ (divideInteger
+                                                                                                    !2
+                                                                                                    !1)
+                                                                                               , (divideInteger
+                                                                                                    !3
+                                                                                                    !1) ])
+                                                                                          , (constr 0
+                                                                                               [ (!26
+                                                                                                    (divideInteger
                                                                                                        !2
-                                                                                                       !1)
-                                                                                                  , (divideInteger
+                                                                                                       !1))
+                                                                                               , (!26
+                                                                                                    (divideInteger
                                                                                                        !3
-                                                                                                       !1) ])
-                                                                                             , (constr 0
-                                                                                                  [ (!27
-                                                                                                       (divideInteger
-                                                                                                          !2
-                                                                                                          !1))
-                                                                                                  , (!27
-                                                                                                       (divideInteger
-                                                                                                          !3
-                                                                                                          !1)) ]) ])
-                                                                                          ((\!0 ->
-                                                                                              (\!0 ->
-                                                                                                 case
-                                                                                                   (lessThanEqualsInteger
-                                                                                                      !2
-                                                                                                      !1)
-                                                                                                   [ (!25
-                                                                                                        !2
-                                                                                                        !1)
-                                                                                                   , (!25
-                                                                                                        !1
-                                                                                                        !2) ])
-                                                                                                (!26
-                                                                                                   !3))
+                                                                                                       !1)) ]) ])
+                                                                                       ((\!0 ->
+                                                                                           (\!0 ->
+                                                                                              case
+                                                                                                (lessThanEqualsInteger
+                                                                                                   !2
+                                                                                                   !1)
+                                                                                                [ (!25
+                                                                                                     !2
+                                                                                                     !1)
+                                                                                                , (!25
+                                                                                                     !1
+                                                                                                     !2) ])
                                                                                              (!25
-                                                                                                !1)))
-                                                                                       (multiplyInteger
-                                                                                          !5
-                                                                                          !2))
-                                                                                  , (force
-                                                                                       (force
-                                                                                          trace
-                                                                                          "Cannot divide by zero"
-                                                                                          (delay
-                                                                                             error))) ])
-                                                                               (multiplyInteger
-                                                                                  !3
-                                                                                  !2)) ]) ])
-                                                              (constr 0 [1, 1])
-                                                              (constr 0
-                                                                 [2, 1])))
-                                                        (!15
-                                                           (\!0 !0 ->
-                                                              appendString
-                                                                (case
-                                                                   (lessThanInteger
-                                                                      !1
-                                                                      0)
-                                                                   [!3, !4])
-                                                                ((\!0 ->
-                                                                    (\!0 ->
-                                                                       case
-                                                                         (equalsInteger
-                                                                            !2
-                                                                            0)
-                                                                         [ ((\!0 ->
-                                                                               appendString
-                                                                                 !1
-                                                                                 (!8
-                                                                                    !2))
-                                                                              (!4
+                                                                                                !3))
+                                                                                          (!24
+                                                                                             !1)))
+                                                                                    (multiplyInteger
+                                                                                       !5
+                                                                                       !2))
+                                                                               , (force
+                                                                                    (force
+                                                                                       trace
+                                                                                       "Cannot divide by zero"
+                                                                                       (delay
+                                                                                          error))) ])
+                                                                            (multiplyInteger
+                                                                               !3
+                                                                               !2)) ]) ])
+                                                           (constr 0 [1, 1])
+                                                           (constr 0 [2, 1])))
+                                                     ((\!0 -> !1 !1)
+                                                        (\!0 !0 ->
+                                                           appendString
+                                                             (case
+                                                                (lessThanInteger
+                                                                   !1
+                                                                   0)
+                                                                [!3, !4])
+                                                             ((\!0 ->
+                                                                 (\!0 ->
+                                                                    case
+                                                                      (equalsInteger
+                                                                         !2
+                                                                         0)
+                                                                      [ ((\!0 ->
+                                                                            appendString
+                                                                              !1
+                                                                              (!8
                                                                                  !2))
-                                                                         , (!7
-                                                                              !1) ])
-                                                                      (remainderInteger
-                                                                         (!19
-                                                                            !2)
-                                                                         10))
-                                                                   (quotientInteger
-                                                                      (!18 !1)
-                                                                      10)))))
-                                                     "")
-                                                  "-")
-                                               (\!0 ->
-                                                  case
-                                                    (equalsInteger !1 0)
-                                                    [ (case
-                                                         (equalsInteger !1 1)
-                                                         [ (case
-                                                              (equalsInteger
-                                                                 !1
-                                                                 2)
-                                                              [ (case
-                                                                   (equalsInteger
-                                                                      !1
-                                                                      3)
-                                                                   [ (case
-                                                                        (equalsInteger
-                                                                           !1
-                                                                           4)
-                                                                        [ (case
-                                                                             (equalsInteger
-                                                                                !1
-                                                                                5)
-                                                                             [ (case
-                                                                                  (equalsInteger
-                                                                                     !1
-                                                                                     6)
-                                                                                  [ (case
-                                                                                       (equalsInteger
-                                                                                          !1
-                                                                                          7)
-                                                                                       [ (case
-                                                                                            (equalsInteger
-                                                                                               !1
-                                                                                               8)
-                                                                                            [ (case
-                                                                                                 (equalsInteger
-                                                                                                    !1
-                                                                                                    9)
-                                                                                                 [ error
-                                                                                                 , !2 ])
-                                                                                            , !3 ])
-                                                                                       , !4 ])
-                                                                                  , !5 ])
-                                                                             , !6 ])
-                                                                        , !7 ])
-                                                                   , !8 ])
-                                                              , !9 ])
-                                                         , !10 ])
-                                                    , !11 ]))
-                                            "9")
-                                         "8")
-                                      "7")
-                                   "6")
-                                "5")
-                             "4")
-                          "3")
-                       "2")
-                    "1")
-                 "0")
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                                           (!4
+                                                                              !4
+                                                                              !2))
+                                                                      , (!7
+                                                                           !1) ])
+                                                                   (remainderInteger
+                                                                      (!18 !2)
+                                                                      10))
+                                                                (quotientInteger
+                                                                   (!17 !1)
+                                                                   10)))))
+                                                  "")
+                                               "-")
+                                            (\!0 ->
+                                               case
+                                                 (equalsInteger !1 0)
+                                                 [ (case
+                                                      (equalsInteger !1 1)
+                                                      [ (case
+                                                           (equalsInteger !1 2)
+                                                           [ (case
+                                                                (equalsInteger
+                                                                   !1
+                                                                   3)
+                                                                [ (case
+                                                                     (equalsInteger
+                                                                        !1
+                                                                        4)
+                                                                     [ (case
+                                                                          (equalsInteger
+                                                                             !1
+                                                                             5)
+                                                                          [ (case
+                                                                               (equalsInteger
+                                                                                  !1
+                                                                                  6)
+                                                                               [ (case
+                                                                                    (equalsInteger
+                                                                                       !1
+                                                                                       7)
+                                                                                    [ (case
+                                                                                         (equalsInteger
+                                                                                            !1
+                                                                                            8)
+                                                                                         [ (case
+                                                                                              (equalsInteger
+                                                                                                 !1
+                                                                                                 9)
+                                                                                              [ error
+                                                                                              , !2 ])
+                                                                                         , !3 ])
+                                                                                    , !4 ])
+                                                                               , !5 ])
+                                                                          , !6 ])
+                                                                     , !7 ])
+                                                                , !8 ])
+                                                           , !9 ])
+                                                      , !10 ])
+                                                 , !11 ]))
+                                         "9")
+                                      "8")
+                                   "7")
+                                "6")
+                             "5")
+                          "4")
+                       "3")
+                    "2")
+                 "1")
+              "0")
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))

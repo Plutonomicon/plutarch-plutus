@@ -8,7 +8,7 @@ import Data.Kind (Type)
 import Plutarch.Builtin.Bool (pif)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Numeric (PPositive, pone, (#+))
 import Plutarch.Internal.Ord (POrd)
 import Plutarch.Internal.Other (pto)
@@ -18,7 +18,6 @@ import Plutarch.Internal.Term (
   Term,
   phoistAcyclic,
   (#),
-  (#$),
   (:-->),
  )
 
@@ -61,7 +60,7 @@ class POrd a => PCountable (a :: S -> Type) where
         forall (s' :: S).
         Term s' PPositive ->
         Term s' (a :--> PPositive :--> a)
-      go limit = pfixHoisted #$ plam $ \self acc count ->
+      go limit = pfix $ \self -> plam $ \acc count ->
         pif
           (count #== limit)
           acc
@@ -119,7 +118,7 @@ class PCountable a => PEnumerable (a :: S -> Type) where
         forall (s' :: S).
         Term s' PPositive ->
         Term s' (a :--> PPositive :--> a)
-      go limit = pfixHoisted #$ plam $ \self acc count ->
+      go limit = pfix $ \self -> plam $ \acc count ->
         pif
           (count #== limit)
           acc

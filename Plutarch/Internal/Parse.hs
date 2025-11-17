@@ -28,25 +28,26 @@ import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasByteStr,
   pasConstr,
   pasInt,
   pasList,
   pchooseListBuiltin,
-  pfstBuiltin,
   pheadBuiltin,
-  psndBuiltin,
   ptailBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.PLam (plam)
-import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.PlutusType (
+  PlutusType (PInner, pcon', pmatch'),
+  pmatch,
+ )
 import Plutarch.Internal.Term (
   RawTerm (RCase),
   S,
@@ -155,15 +156,16 @@ second field of @Constr@ is not checked at all.
 @since 1.12.0
 -}
 instance PValidateData PBool where
-  pwithValidated opq x = plet (pfstBuiltin #$ pasConstr # opq) $ \i ->
-    pif
-      (i #== pconstantInteger 0)
-      x
-      ( pif
-          (i #== pconstantInteger 1)
-          x
-          perror
-      )
+  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair i' _) ->
+    plet i' $ \i ->
+      pif
+        (i #== pconstantInteger 0)
+        x
+        ( pif
+            (i #== pconstantInteger 1)
+            x
+            perror
+        )
 
 {- | Checks that we have a @Constr@ with a second field of at least length 2.
 Furthermore, checks that the first element validates as per @a@, while the
@@ -172,7 +174,7 @@ second element validates as per @b@. The @Constr@ tag is not checked at all.
 @since 1.12.0
 -}
 instance (PValidateData a, PValidateData b) => PValidateData (PBuiltinPair (PAsData a) (PAsData b)) where
-  pwithValidated opq x = plet (psndBuiltin #$ pasConstr # opq) $ \p ->
+  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair _ p) ->
     plet (pheadBuiltin # p) $ \fstOne ->
       plet (pheadBuiltin #$ ptailBuiltin # p) $ \sndOne ->
         pwithValidated @a fstOne . pwithValidated @b sndOne $ x
@@ -183,7 +185,7 @@ The @Constr@ tag, or the elements, are not checked at all.
 @since 1.12.0
 -}
 instance PValidateData (PBuiltinPair PData PData) where
-  pwithValidated opq x = plet (psndBuiltin #$ pasConstr # opq) $ \p ->
+  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair _ p) ->
     plet (pheadBuiltin # p) $ \_ ->
       plet (pheadBuiltin #$ ptailBuiltin # p) $ const x
 
@@ -194,7 +196,7 @@ validates as per @a@.
 -}
 instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
   pwithValidated opq x = plet (pasList # opq) $ \ell ->
-    phoistAcyclic (pfixHoisted #$ plam go) # ell # x
+    phoistAcyclic (pfix $ plam . go) # ell # x
     where
       go ::
         forall (r :: S -> Type) (s :: S).
@@ -288,16 +290,15 @@ instance
   where
   {-# INLINEABLE pwithValidated #-}
   pwithValidated opq x = plet (pasConstr # opq) $ \p ->
-    plet (pfstBuiltin # p) $ \ix ->
-      plet (psndBuiltin # p) $ \fields ->
-        case SOP.shape @[S -> Type] @struct of
-          outerShape ->
-            let numArms = SOP.lengthSList @[S -> Type] (Proxy @struct)
-                possibleMatches = pconstant @PInteger . fromIntegral <$> [0, 1 .. numArms - 1]
-             in goOuter ix fields outerShape possibleMatches x
+    pmatch p $ \(PBuiltinPair ix' fields') ->
+      plet ix' $ \ix ->
+        plet fields' $ \fields ->
+          case SOP.shape @[S -> Type] @struct of
+            outerShape ->
+              let numArms = SOP.lengthSList @[S -> Type] (Proxy @struct)
+                  possibleMatches = pconstant @PInteger . fromIntegral <$> [0, 1 .. numArms - 1]
+               in goOuter ix fields outerShape possibleMatches x
     where
-      -- outerShape -> goOuter ix fields outerShape x
-
       goOuter ::
         forall (wOuter :: [[S -> Type]]) (s :: S) (r :: S -> Type).
         (SOP.SListI2 wOuter, SOP.All2 PValidateData wOuter) =>
