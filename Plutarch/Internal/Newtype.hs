@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
-module Plutarch.Internal.Newtype (PlutusTypeNewtype) where
+module Plutarch.Internal.Newtype {-# DEPRECATED "Use the new mechanism instead" #-} (PlutusTypeNewtype) where
 
 import Data.Kind (Type)
 import Generics.SOP qualified as SOP

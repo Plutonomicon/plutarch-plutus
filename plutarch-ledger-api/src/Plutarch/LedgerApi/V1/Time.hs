@@ -78,10 +78,6 @@ instance PAdditiveGroup PPosixTime where
   {-# INLINEABLE (#-) #-}
   t1 #- t2 = pposixTime (unPPosixTime t1 #- unPPosixTime t2)
 
--- | @since 2.0.0
-instance DerivePlutusType PPosixTime where
-  type DPTStrat _ = PlutusTypeNewtype
-
 -- | @since 3.3.0
 deriving via
   DeriveNewtypePLiftable PPosixTime Plutus.POSIXTime

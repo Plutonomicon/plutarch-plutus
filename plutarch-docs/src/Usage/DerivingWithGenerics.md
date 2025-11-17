@@ -3,6 +3,7 @@
 <p>
 
 ```haskell
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Plutarch.Docs.DerivingGenerics (PMyType (..)) where
 import Plutarch.Prelude
 import Data.Kind (Type)

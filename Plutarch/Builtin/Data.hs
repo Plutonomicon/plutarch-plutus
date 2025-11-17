@@ -88,9 +88,11 @@ pconstrBuiltin = punsafeBuiltin PLC.ConstrData
 data PBuiltinPair (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PBuiltinPair (Term s a) (Term s b)
 
+{-# DEPRECATED pfstBuiltin "Use pmatch instead" #-}
 pfstBuiltin :: Term s (PBuiltinPair a b :--> a)
 pfstBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.FstPair
 
+{-# DEPRECATED psndBuiltin "Use pmatch instead" #-}
 psndBuiltin :: Term s (PBuiltinPair a b :--> b)
 psndBuiltin = phoistAcyclic $ pforce . pforce . punsafeBuiltin $ PLC.SndPair
 

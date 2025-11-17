@@ -1,8 +1,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
-module Plutarch.Internal.ScottEncoding (PlutusTypeScott, PScottEncoded (PScottEncoded)) where
+module Plutarch.Internal.ScottEncoding {-# DEPRECATED "Use the new mechanism instead" #-} (PlutusTypeScott, PScottEncoded (PScottEncoded)) where
 
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))

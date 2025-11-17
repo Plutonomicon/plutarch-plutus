@@ -50,7 +50,7 @@ import Plutarch.Builtin.Integer (
   pconstantInteger,
  )
 
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import {-# SOURCE #-} Plutarch.Internal.Lift (PlutusRepr)
 import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (pcon, pmatch)
@@ -122,10 +122,11 @@ pconvertLists ::
   (PIsListLike f a, PIsListLike g a) =>
   Term s (f a :--> g a)
 pconvertLists = phoistAcyclic $
-  pfixHoisted #$ plam $ \self ->
-    pelimList
-      (\x xs -> pcons # x #$ self # xs)
-      pnil
+  pfix $ \self ->
+    plam $
+      pelimList
+        (\x xs -> pcons # x #$ self # xs)
+        pnil
 
 -- | Like 'pelimList', but with a fixpoint recursion hatch.
 precList ::
@@ -134,10 +135,11 @@ precList ::
   (Term s (list a :--> r) -> Term s r) ->
   Term s (list a :--> r)
 precList mcons mnil =
-  pfixHoisted #$ plam $ \self ->
-    pelimList
-      (mcons self)
-      (mnil self)
+  pfix $ \self ->
+    plam $
+      pelimList
+        (mcons self)
+        (mnil self)
 
 --------------------------------------------------------------------------------
 -- Construction
@@ -154,7 +156,7 @@ plength :: PIsListLike list a => Term s (list a :--> PInteger)
 plength =
   phoistAcyclic $
     let go :: PIsListLike list a => Term s (PInteger :--> list a :--> PInteger)
-        go = pfixHoisted #$ plam $ \self n -> pelimList (\_ xs -> self # (paddInteger # n # pconstantInteger 1) # xs) n
+        go = pfix $ \self -> plam $ \n -> pelimList (\_ xs -> self # (paddInteger # n # pconstantInteger 1) # xs) n
      in go # pconstantInteger 0
 
 -- | Index a BuiltinList, throwing an error if the index is out of bounds.
@@ -182,7 +184,7 @@ pdrop n xs = pdrop' n # xs
 pfoldl :: PIsListLike list a => Term s ((b :--> a :--> b) :--> b :--> list a :--> b)
 pfoldl = phoistAcyclic $
   plam $ \f ->
-    pfixHoisted #$ plam $ \self z ->
+    pfix $ \self -> plam $ \z ->
       pelimList
         (\x xs -> self # (f # z # x) # xs)
         z
@@ -190,7 +192,7 @@ pfoldl = phoistAcyclic $
 -- | The same as 'pfoldl', but with Haskell-level reduction function.
 pfoldl' :: PIsListLike list a => (forall s. Term s b -> Term s a -> Term s b) -> Term s (b :--> list a :--> b)
 pfoldl' f = phoistAcyclic $
-  pfixHoisted #$ plam $ \self z ->
+  pfix $ \self -> plam $ \z ->
     pelimList
       (\x xs -> self # f z x # xs)
       z
@@ -290,7 +292,7 @@ pzipWith ::
 pzipWith =
   phoistAcyclic $
     plam $ \f ->
-      pfixHoisted #$ plam $ \self lx ly ->
+      pfix $ \self -> plam $ \lx ly ->
         pelimList
           ( \x xs ->
               pelimList
@@ -311,7 +313,7 @@ pzipWith' ::
   (Term s a -> Term s b -> Term s c) ->
   Term s (list a :--> list b :--> list c)
 pzipWith' f =
-  pfixHoisted #$ plam $ \self lx ly ->
+  pfix $ \self -> plam $ \lx ly ->
     pelimList
       ( \x xs ->
           pelimList

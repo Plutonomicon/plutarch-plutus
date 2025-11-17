@@ -32,6 +32,7 @@ import Plutarch.Internal.Ord (POrd ((#<)))
 import Plutarch.Internal.Other (pto)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   PlutusType,
   pcon,
  )
@@ -46,7 +47,6 @@ import Plutarch.Internal.Term (
   (:-->),
  )
 import Plutarch.Maybe (PMaybe (PJust, PNothing))
-import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 import PlutusCore qualified as PLC
 
 {- | A wrapper around 'PByteString' for CIP-122 and CIP-123 bitwise operations.

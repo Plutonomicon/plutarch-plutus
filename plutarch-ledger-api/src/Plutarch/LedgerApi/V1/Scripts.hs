@@ -73,18 +73,19 @@ newtype PDatum (s :: S) = PDatum (Term s PData)
     )
   deriving anyclass
     ( -- | @since 2.0.0
-      PlutusType
-    , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
       PEq
     , -- | @since 2.0.0
       PShow
+    , -- | @since wip
+      SOP.Generic
     )
-
--- | @since 2.0.0
-instance DerivePlutusType PDatum where
-  type DPTStrat _ = PlutusTypeNewtype
+  deriving
+    ( -- | @since 2.0.0
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PDatum)
 
 -- | @since 3.3.0
 deriving via
@@ -142,8 +143,8 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
       Generic
     )
   deriving anyclass
-    ( -- | @since 2.0.0
-      PlutusType
+    ( -- | @since wip
+      SOP.Generic
     , -- | @since 2.0.0
       PIsData
     , -- | @since 2.0.0
@@ -151,13 +152,14 @@ newtype PRedeemer (s :: S) = PRedeemer (Term s PData)
     , -- | @since 2.0.0
       PShow
     )
+  deriving
+    ( -- | @since 2.0.0
+      PlutusType
+    )
+    via (DeriveNewtypePlutusType PRedeemer)
 
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PRedeemer)
-
--- | @since 2.0.0
-instance DerivePlutusType PRedeemer where
-  type DPTStrat _ = PlutusTypeNewtype
 
 -- | @since 3.3.0
 deriving via

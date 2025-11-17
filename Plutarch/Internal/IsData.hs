@@ -20,15 +20,13 @@ import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasConstr,
   pasList,
   pconstrBuiltin,
-  pfstBuiltin,
   plistData,
   ppairDataBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Builtin.Unit (PUnit, punit)
@@ -41,6 +39,7 @@ import Plutarch.Internal.PLam (PLamN (plam))
 import Plutarch.Internal.PlutusType (
   PInnermost,
   PlutusType (PInner),
+  pmatch,
  )
 import Plutarch.Internal.Subtype (PSubtype, pupcast)
 import Plutarch.Internal.Term (
@@ -115,7 +114,8 @@ instance PIsData PBool where
     phoistAcyclic (plam toBool) # pforgetData x
     where
       toBool :: Term s PData -> Term s PBool
-      toBool d = pfstBuiltin # (pasConstr # d) #== pconstantInteger 1
+      toBool d = pmatch (pasConstr # d) $ \(PBuiltinPair x _) ->
+        x #== pconstantInteger 1
 
   pdataImpl x =
     phoistAcyclic (plam toData) # x
@@ -133,15 +133,15 @@ instance PIsData (PBuiltinPair (PAsData a) (PAsData b)) where
   pfromDataImpl x = f # x
     where
       f = phoistAcyclic $
-        plam $ \pairDat -> plet (psndBuiltin #$ pasConstr # pforgetData pairDat) $
-          \pd -> ppairDataBuiltin # punsafeCoerce (phead # pd) #$ punsafeCoerce (phead #$ ptail # pd)
+        plam $ \pairDat -> pmatch (pasConstr # pforgetData pairDat) $ \(PBuiltinPair _ y) ->
+          plet y $ \pd -> ppairDataBuiltin # punsafeCoerce (phead # pd) #$ punsafeCoerce (phead #$ ptail # pd)
   pdataImpl x = pupcast target
     where
       target :: Term _ (PAsData (PBuiltinPair PInteger (PBuiltinList PData)))
       target = f # punsafeCoerce x
       f = phoistAcyclic $
-        plam $
-          \pair -> pconstrBuiltin # pconstantInteger 0 #$ pcons # (pfstBuiltin # pair) #$ pcons # (psndBuiltin # pair) # pnil
+        plam $ \pair -> pmatch pair $ \(PBuiltinPair x y) ->
+          pconstrBuiltin # pconstantInteger 0 #$ pcons # x #$ pcons # y # pnil
 
 instance PIsData (PBuiltinPair PData PData) where
   pfromDataImpl = pfromDataImpl @(PBuiltinPair PData PData) . punsafeCoerce
@@ -150,7 +150,9 @@ instance PIsData (PBuiltinPair PData PData) where
 -- This instance is kind of useless. There's no safe way to use 'pdata'.
 instance PIsData (PBuiltinPair PInteger (PBuiltinList PData)) where
   pfromDataImpl x = pasConstr # pupcast x
-  pdataImpl x' = pupcast $ plet x' $ \x -> pconstrBuiltin # (pfstBuiltin # x) #$ psndBuiltin # x
+  pdataImpl x' = pupcast $ plet x' $ \x ->
+    pmatch x $ \(PBuiltinPair x1 x2) ->
+      pconstrBuiltin # x1 # x2
 
 instance PIsData PInteger where
   pfromDataImpl x = punsafeBuiltin PLC.UnIData # pforgetData x

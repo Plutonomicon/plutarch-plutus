@@ -39,11 +39,10 @@ import Plutarch.Builtin.Bool (
  )
 import Plutarch.Builtin.Data (
   PAsData,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasConstr,
   pconstrBuiltin,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.IsData (PIsData (pdataImpl, pfromDataImpl), pdata, pforgetData, pfromData)
@@ -233,11 +232,12 @@ instance PlutusType (PEitherData a b) where
       pforgetData $ pconstrBuiltin # 1 #$ pcons # pforgetData t # pnil
   {-# INLINEABLE pmatch' #-}
   pmatch' t f = plet (pasConstr # t) $ \asConstr ->
-    plet (phead #$ psndBuiltin # asConstr) $ \arg ->
-      pif
-        ((pfstBuiltin # asConstr) #== 0)
-        (f . PDLeft . punsafeCoerce $ arg)
-        (f . PDRight . punsafeCoerce $ arg)
+    pmatch asConstr $ \(PBuiltinPair tag dat) ->
+      plet (phead # dat) $ \arg ->
+        pif
+          (tag #== 0)
+          (f . PDLeft . punsafeCoerce $ arg)
+          (f . PDRight . punsafeCoerce $ arg)
 
 -- | @since 1.10.0
 deriving via

@@ -4,6 +4,7 @@
 
 ```haskell
 {-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Plutarch.Docs.PTryFrom (recoverListFromPData, theField, untrustedRecord, recoverListPartially, recoverAB) where 
 import Plutarch.Prelude
 import GHC.Generics (Generic)

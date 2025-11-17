@@ -248,8 +248,9 @@ tests =
           (\(k, v) m -> PlutusMap.insert k v m)
           ( plam
               ( \kv m ->
-                  AssocMap.pforgetSorted $
-                    AssocMap.pinsert # (pfstBuiltin # kv) # (psndBuiltin # kv) # m
+                  pmatch kv $ \(PBuiltinPair k v) ->
+                    AssocMap.pforgetSorted $
+                      AssocMap.pinsert # k # v # m
               )
           )
     , testProperty "delete = pdelete" $
