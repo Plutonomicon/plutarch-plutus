@@ -582,10 +582,12 @@ plovelaceValueOf = phoistAcyclic $
   plam $ \value ->
     pmatch (pto $ pto $ pto value) $ \case
       PNil -> 0
-      PCons x _ ->
+      PCons x _ -> pmatch x $ \(PBuiltinPair xFst xSnd) ->
         pif
-          (pfstBuiltin # x #== padaSymbolData)
-          (pfromData (psndBuiltin #$ phead #$ pto $ pto $ pfromData $ psndBuiltin # x))
+          (xFst #== padaSymbolData)
+          ( pmatch (phead #$ pto $ pto $ pfromData xSnd) $ \(PBuiltinPair _ quantity) ->
+              pfromData quantity
+          )
           0
 
 {- | Test if the 'PSortedValue' contains nothing except an Ada entry.
@@ -602,7 +604,14 @@ pisAdaOnlyValue = phoistAcyclic $
   plam $ \value ->
     pmatch (pto $ pto $ pto value) $ \case
       PNil -> pcon PTrue
-      PCons x xs -> pand' # (pnull # xs) # (pfstBuiltin # x #== padaSymbolData)
+      PCons x xs ->
+        pand'
+          # (pnull # xs)
+          # pmatch
+            x
+            ( \(PBuiltinPair cs _) ->
+                cs #== padaSymbolData
+            )
 
 ----------------------------------------------------------------------
 -- Helpers
@@ -629,9 +638,9 @@ pinsertAdaEntry =
     plam $ \value ->
       pmatch (pto $ pto $ pto value) $ \case
         PNil -> psingletonSortedValue # padaSymbol # padaToken # 0
-        PCons x xs ->
+        PCons x xs -> pmatch x $ \(PBuiltinPair cs _) ->
           pif
-            (pfstBuiltin # x #== padaSymbolData)
+            (cs #== padaSymbolData)
             value
             ( punsafeDowncast . punsafeDowncast . punsafeDowncast $
                 pcons

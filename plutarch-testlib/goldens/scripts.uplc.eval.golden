@@ -35,14 +35,15 @@ auth_policy.0 program
                                (force tailList
                                   (force tailList
                                      (force tailList
-                                        (force (force sndPair)
+                                        (case
                                            (unConstrData
                                               (force headList
-                                                 (force (force sndPair)
-                                                    (unConstrData
-                                                       !1))))))))))))))))
+                                                 (case
+                                                    (unConstrData !1)
+                                                    [(\!0 !0 -> !1)])))
+                                           [(\!0 !0 -> !1)]))))))))))))
        [error, ()])
-auth_policy.hash program 1.1.0 "581c0311b87c91bb013b9066bd10dda4632687cf8a07d33269dcb1b879b7"
+auth_policy.hash program 1.1.0 "581cd7508b02958be5e597278537d0d58a2cf63b059818a81385adc73488"
 auth_stake_validator.0 program
   1.1.0
   (\!0 !0 ->
@@ -68,11 +69,12 @@ auth_stake_validator.0 program
                                (force tailList
                                   (force tailList
                                      (force tailList
-                                        (force (force sndPair)
+                                        (case
                                            (unConstrData
                                               (force headList
-                                                 (force (force sndPair)
-                                                    (unConstrData
-                                                       !1))))))))))))))))
+                                                 (case
+                                                    (unConstrData !1)
+                                                    [(\!0 !0 -> !1)])))
+                                           [(\!0 !0 -> !1)]))))))))))))
        [error, ()])
-auth_stake_validator.hash program 1.1.0 "581c0311b87c91bb013b9066bd10dda4632687cf8a07d33269dcb1b879b7"
+auth_stake_validator.hash program 1.1.0 "581cd7508b02958be5e597278537d0d58a2cf63b059818a81385adc73488"
