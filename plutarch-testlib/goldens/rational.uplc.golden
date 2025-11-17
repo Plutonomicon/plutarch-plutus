@@ -9,66 +9,61 @@ ops.+ program
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              (\!0 !0 ->
-                                 case
-                                   !2
-                                   [ (\!0 !0 ->
-                                        case
-                                          !3
-                                          [ (\!0 !0 ->
-                                               !8
-                                                 (addInteger
-                                                    (multiplyInteger !4 !1)
-                                                    (multiplyInteger !2 !3))
-                                                 (multiplyInteger !3 !1)) ]) ])
-                                (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
-                                (!1 (constr 0 [1, 1]) (constr 0 [2, 1])))
-                             (\!0 !0 ->
-                                case
-                                  !2
-                                  [ (\!0 !0 ->
-                                       case
-                                         !3
-                                         [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                           (\!0 !0 ->
+                              case
+                                !2
+                                [ (\!0 !0 ->
+                                     case
+                                       !3
+                                       [ (\!0 !0 ->
+                                            !8
+                                              (addInteger
+                                                 (multiplyInteger !4 !1)
+                                                 (multiplyInteger !2 !3))
+                                              (multiplyInteger !3 !1)) ]) ])
+                             (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
+                             (!1 (constr 0 [1, 1]) (constr 0 [2, 1])))
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -83,66 +78,61 @@ ops.- program
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              (\!0 !0 ->
-                                 case
-                                   !2
-                                   [ (\!0 !0 ->
-                                        case
-                                          !3
-                                          [ (\!0 !0 ->
-                                               !8
-                                                 (subtractInteger
-                                                    (multiplyInteger !4 !1)
-                                                    (multiplyInteger !2 !3))
-                                                 (multiplyInteger !3 !1)) ]) ])
-                                (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
-                                (!1 (constr 0 [1, 1]) (constr 0 [3, 1])))
-                             (\!0 !0 ->
-                                case
-                                  !2
-                                  [ (\!0 !0 ->
-                                       case
-                                         !3
-                                         [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                           (\!0 !0 ->
+                              case
+                                !2
+                                [ (\!0 !0 ->
+                                     case
+                                       !3
+                                       [ (\!0 !0 ->
+                                            !8
+                                              (subtractInteger
+                                                 (multiplyInteger !4 !1)
+                                                 (multiplyInteger !2 !3))
+                                              (multiplyInteger !3 !1)) ]) ])
+                             (!1 (constr 0 [1, 1]) (constr 0 [2, 1]))
+                             (!1 (constr 0 [1, 1]) (constr 0 [3, 1])))
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -158,39 +148,22 @@ ops.* program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 (\!0 !0 ->
-                                    case
-                                      !2
-                                      [ (\!0 !0 ->
-                                           case
-                                             !3
-                                             [ (\!0 !0 ->
-                                                  !9
-                                                    (multiplyInteger !4 !2)
-                                                    (multiplyInteger
-                                                       !3
-                                                       !1)) ]) ])
-                                   (!1
-                                      (constr 0 [1, 1])
-                                      (!2 (constr 0 [3, 1]) (constr 0 [2, 1])))
-                                   (!1
-                                      (constr 0 [2, 1])
-                                      (!2 (constr 0 [5, 1]) (constr 0 [2, 1]))))
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 !8
-                                                   (subtractInteger
-                                                      (multiplyInteger !4 !1)
-                                                      (multiplyInteger !2 !3))
-                                                   (multiplyInteger
-                                                      !3
-                                                      !1)) ]) ]))
+                              (\!0 !0 ->
+                                 case
+                                   !2
+                                   [ (\!0 !0 ->
+                                        case
+                                          !3
+                                          [ (\!0 !0 ->
+                                               !9
+                                                 (multiplyInteger !4 !2)
+                                                 (multiplyInteger !3 !1)) ]) ])
+                                (!1
+                                   (constr 0 [1, 1])
+                                   (!2 (constr 0 [3, 1]) (constr 0 [2, 1])))
+                                (!1
+                                   (constr 0 [2, 1])
+                                   (!2 (constr 0 [5, 1]) (constr 0 [2, 1]))))
                              (\!0 !0 ->
                                 case
                                   !2
@@ -198,44 +171,52 @@ ops.* program
                                        case
                                          !3
                                          [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                                              !8
+                                                (subtractInteger
+                                                   (multiplyInteger !4 !1)
+                                                   (multiplyInteger !2 !3))
+                                                (multiplyInteger !3 !1)) ]) ]))
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -251,32 +232,13 @@ ops.harmonic-sum program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 !1
+                              !1
+                                (!1
                                    (!1
-                                      (!1
-                                         (!2
-                                            (constr 0 [1, 1])
-                                            (constr 0 [2, 1]))
-                                         (!2
-                                            (constr 0 [1, 1])
-                                            (constr 0 [3, 1])))
-                                      (!2 (constr 0 [1, 1]) (constr 0 [4, 1])))
-                                   (!2 (constr 0 [1, 1]) (constr 0 [5, 1])))
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 !8
-                                                   (addInteger
-                                                      (multiplyInteger !4 !1)
-                                                      (multiplyInteger !2 !3))
-                                                   (multiplyInteger
-                                                      !3
-                                                      !1)) ]) ]))
+                                      (!2 (constr 0 [1, 1]) (constr 0 [2, 1]))
+                                      (!2 (constr 0 [1, 1]) (constr 0 [3, 1])))
+                                   (!2 (constr 0 [1, 1]) (constr 0 [4, 1])))
+                                (!2 (constr 0 [1, 1]) (constr 0 [5, 1])))
                              (\!0 !0 ->
                                 case
                                   !2
@@ -284,44 +246,52 @@ ops.harmonic-sum program
                                        case
                                          !3
                                          [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                                              !8
+                                                (addInteger
+                                                   (multiplyInteger !4 !1)
+                                                   (multiplyInteger !2 !3))
+                                                (multiplyInteger !3 !1)) ]) ]))
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -337,38 +307,25 @@ ops.multi-product program
                      (\!0 ->
                         (\!0 ->
                            (\!0 ->
-                              (\!0 ->
-                                 !2
-                                   (!1
-                                      (!2
-                                         (!1
-                                            (!2
-                                               (!1
-                                                  (!2
-                                                     (!1
-                                                        (!2
-                                                           (constr 0 [1, 1])
-                                                           (constr 0 [2, 1]))
+                              !2
+                                (!1
+                                   (!2
+                                      (!1
+                                         (!2
+                                            (!1
+                                               (!2
+                                                  (!1
+                                                     (!2
+                                                        (constr 0 [1, 1])
                                                         (constr 0 [2, 1]))
-                                                     (constr 0 [3, 1]))
+                                                     (constr 0 [2, 1]))
                                                   (constr 0 [3, 1]))
-                                               (constr 0 [4, 1]))
+                                               (constr 0 [3, 1]))
                                             (constr 0 [4, 1]))
-                                         (constr 0 [5, 1]))
+                                         (constr 0 [4, 1]))
                                       (constr 0 [5, 1]))
-                                   (constr 0 [6, 1]))
-                                (\!0 !0 ->
-                                   case
-                                     !2
-                                     [ (\!0 !0 ->
-                                          case
-                                            !3
-                                            [ (\!0 !0 ->
-                                                 !8
-                                                   (multiplyInteger !4 !2)
-                                                   (multiplyInteger
-                                                      !3
-                                                      !1)) ]) ]))
+                                   (constr 0 [5, 1]))
+                                (constr 0 [6, 1]))
                              (\!0 !0 ->
                                 case
                                   !2
@@ -376,44 +333,50 @@ ops.multi-product program
                                        case
                                          !3
                                          [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                                              !8
+                                                (multiplyInteger !4 !2)
+                                                (multiplyInteger !3 !1)) ]) ]))
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -423,60 +386,54 @@ ops.abs program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 -> case !1 [(\!0 !0 -> constr 0 [(!6 !2), !1])])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+            (\!0 -> case !1 [(\!0 !0 -> constr 0 [(!5 !2), !1])])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [-1, 1])
-                    (constr 0 [2, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [-1, 1])
+                 (constr 0 [2, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 ops.signum program
@@ -485,68 +442,62 @@ ops.signum program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 ->
+               case
+                 !1
+                 [ (\!0 !0 ->
+                      case
+                        (equalsInteger !2 0)
+                        [ (case
+                             (lessThanEqualsInteger !2 0)
+                             [(constr 0 [1, 1]), (constr 0 [-1, 1])])
+                        , (constr 0 [0, 1]) ]) ])
+              ((\!0 !0 ->
                   case
-                    !1
+                    !2
                     [ (\!0 !0 ->
                          case
-                           (equalsInteger !2 0)
-                           [ (case
-                                (lessThanEqualsInteger !2 0)
-                                [(constr 0 [1, 1]), (constr 0 [-1, 1])])
-                           , (constr 0 [0, 1]) ]) ])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [-1, 1])
-                    (constr 0 [2, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [-1, 1])
+                 (constr 0 [2, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 compare program
@@ -559,64 +510,59 @@ compare program
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              (\!0 !0 ->
-                                 case
-                                   !2
-                                   [ (\!0 !0 ->
-                                        case
-                                          !3
-                                          [ (\!0 !0 ->
-                                               lessThanInteger
-                                                 (multiplyInteger !1 !4)
-                                                 (multiplyInteger !2 !3)) ]) ])
-                                (!1 (constr 0 [2, 1]) (constr 0 [9, 1]))
-                                (!1 (constr 0 [3, 1]) (constr 0 [10, 1])))
-                             (\!0 !0 ->
-                                case
-                                  !2
-                                  [ (\!0 !0 ->
-                                       case
-                                         !3
-                                         [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                           (\!0 !0 ->
+                              case
+                                !2
+                                [ (\!0 !0 ->
+                                     case
+                                       !3
+                                       [ (\!0 !0 ->
+                                            lessThanInteger
+                                              (multiplyInteger !1 !4)
+                                              (multiplyInteger !2 !3)) ]) ])
+                             (!1 (constr 0 [2, 1]) (constr 0 [9, 1]))
+                             (!1 (constr 0 [3, 1]) (constr 0 [10, 1])))
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -627,83 +573,75 @@ round.5/3 program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 ->
-                  case
-                    !1
-                    [ (\!0 !0 ->
+               case
+                 !1
+                 [ (\!0 !0 ->
+                      (\!0 ->
                          (\!0 ->
-                            (\!0 ->
-                               addInteger
-                                 !2
-                                 (case
-                                    (equalsInteger (modInteger !3 2) 1)
-                                    [ (case
-                                         (equalsInteger (divideInteger !3 2) !1)
-                                         [ (case
-                                              (lessThanInteger
-                                                 !1
-                                                 (divideInteger !3 2))
-                                              [1, 0])
-                                         , (modInteger !2 2) ])
-                                    , (case
-                                         (lessThanInteger
-                                            (divideInteger !3 2)
-                                            !1)
-                                         [0, 1]) ]))
-                              (modInteger !3 !2))
-                           (divideInteger !2 !1)) ])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+                            addInteger
+                              !2
+                              (case
+                                 (equalsInteger (modInteger !3 2) 1)
+                                 [ (case
+                                      (equalsInteger (divideInteger !3 2) !1)
+                                      [ (case
+                                           (lessThanInteger
+                                              !1
+                                              (divideInteger !3 2))
+                                           [1, 0])
+                                      , (modInteger !2 2) ])
+                                 , (case
+                                      (lessThanInteger (divideInteger !3 2) !1)
+                                      [0, 1]) ]))
+                           (modInteger !3 !2))
+                        (divideInteger !2 !1)) ])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [5, 1])
-                    (constr 0 [3, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [5, 1])
+                 (constr 0 [3, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 round.4/3 program
@@ -712,83 +650,75 @@ round.4/3 program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 ->
-                  case
-                    !1
-                    [ (\!0 !0 ->
+               case
+                 !1
+                 [ (\!0 !0 ->
+                      (\!0 ->
                          (\!0 ->
-                            (\!0 ->
-                               addInteger
-                                 !2
-                                 (case
-                                    (equalsInteger (modInteger !3 2) 1)
-                                    [ (case
-                                         (equalsInteger (divideInteger !3 2) !1)
-                                         [ (case
-                                              (lessThanInteger
-                                                 !1
-                                                 (divideInteger !3 2))
-                                              [1, 0])
-                                         , (modInteger !2 2) ])
-                                    , (case
-                                         (lessThanInteger
-                                            (divideInteger !3 2)
-                                            !1)
-                                         [0, 1]) ]))
-                              (modInteger !3 !2))
-                           (divideInteger !2 !1)) ])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+                            addInteger
+                              !2
+                              (case
+                                 (equalsInteger (modInteger !3 2) 1)
+                                 [ (case
+                                      (equalsInteger (divideInteger !3 2) !1)
+                                      [ (case
+                                           (lessThanInteger
+                                              !1
+                                              (divideInteger !3 2))
+                                           [1, 0])
+                                      , (modInteger !2 2) ])
+                                 , (case
+                                      (lessThanInteger (divideInteger !3 2) !1)
+                                      [0, 1]) ]))
+                           (modInteger !3 !2))
+                        (divideInteger !2 !1)) ])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [4, 1])
-                    (constr 0 [3, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [4, 1])
+                 (constr 0 [3, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 round.-5/2 program
@@ -797,83 +727,75 @@ round.-5/2 program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 ->
-                  case
-                    !1
-                    [ (\!0 !0 ->
+               case
+                 !1
+                 [ (\!0 !0 ->
+                      (\!0 ->
                          (\!0 ->
-                            (\!0 ->
-                               addInteger
-                                 !2
-                                 (case
-                                    (equalsInteger (modInteger !3 2) 1)
-                                    [ (case
-                                         (equalsInteger (divideInteger !3 2) !1)
-                                         [ (case
-                                              (lessThanInteger
-                                                 !1
-                                                 (divideInteger !3 2))
-                                              [1, 0])
-                                         , (modInteger !2 2) ])
-                                    , (case
-                                         (lessThanInteger
-                                            (divideInteger !3 2)
-                                            !1)
-                                         [0, 1]) ]))
-                              (modInteger !3 !2))
-                           (divideInteger !2 !1)) ])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+                            addInteger
+                              !2
+                              (case
+                                 (equalsInteger (modInteger !3 2) 1)
+                                 [ (case
+                                      (equalsInteger (divideInteger !3 2) !1)
+                                      [ (case
+                                           (lessThanInteger
+                                              !1
+                                              (divideInteger !3 2))
+                                           [1, 0])
+                                      , (modInteger !2 2) ])
+                                 , (case
+                                      (lessThanInteger (divideInteger !3 2) !1)
+                                      [0, 1]) ]))
+                           (modInteger !3 !2))
+                        (divideInteger !2 !1)) ])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [-5, 1])
-                    (constr 0 [2, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [-5, 1])
+                 (constr 0 [2, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 round.-1/4 program
@@ -882,83 +804,75 @@ round.-1/4 program
       (\!0 ->
          (\!0 ->
             (\!0 ->
-               (\!0 ->
-                  case
-                    !1
-                    [ (\!0 !0 ->
+               case
+                 !1
+                 [ (\!0 !0 ->
+                      (\!0 ->
                          (\!0 ->
-                            (\!0 ->
-                               addInteger
-                                 !2
-                                 (case
-                                    (equalsInteger (modInteger !3 2) 1)
-                                    [ (case
-                                         (equalsInteger (divideInteger !3 2) !1)
-                                         [ (case
-                                              (lessThanInteger
-                                                 !1
-                                                 (divideInteger !3 2))
-                                              [1, 0])
-                                         , (modInteger !2 2) ])
-                                    , (case
-                                         (lessThanInteger
-                                            (divideInteger !3 2)
-                                            !1)
-                                         [0, 1]) ]))
-                              (modInteger !3 !2))
-                           (divideInteger !2 !1)) ])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+                            addInteger
+                              !2
+                              (case
+                                 (equalsInteger (modInteger !3 2) 1)
+                                 [ (case
+                                      (equalsInteger (divideInteger !3 2) !1)
+                                      [ (case
+                                           (lessThanInteger
+                                              !1
+                                              (divideInteger !3 2))
+                                           [1, 0])
+                                      , (modInteger !2 2) ])
+                                 , (case
+                                      (lessThanInteger (divideInteger !3 2) !1)
+                                      [0, 1]) ]))
+                           (modInteger !3 !2))
+                        (divideInteger !2 !1)) ])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [-1, 1])
-                    (constr 0 [4, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [-1, 1])
+                 (constr 0 [4, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 truncate.5/4 program
@@ -966,60 +880,54 @@ truncate.5/4 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 -> case !1 [quotientInteger])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+            (\!0 -> case !1 [quotientInteger])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [5, 1])
-                    (constr 0 [4, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [5, 1])
+                 (constr 0 [4, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 truncate.7/4 program
@@ -1027,60 +935,54 @@ truncate.7/4 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 -> case !1 [quotientInteger])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+            (\!0 -> case !1 [quotientInteger])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [7, 1])
-                    (constr 0 [4, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [7, 1])
+                 (constr 0 [4, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 truncate.1/4 program
@@ -1088,60 +990,54 @@ truncate.1/4 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 -> case !1 [quotientInteger])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+            (\!0 -> case !1 [quotientInteger])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [1, 1])
-                    (constr 0 [4, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [1, 1])
+                 (constr 0 [4, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 truncate.-7/4 program
@@ -1149,60 +1045,54 @@ truncate.-7/4 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 -> case !1 [quotientInteger])
-                 ((\!0 !0 ->
-                     case
-                       !2
-                       [ (\!0 !0 ->
-                            case
-                              !3
-                              [ (\!0 !0 ->
-                                   (\!0 ->
-                                      case
-                                        (equalsInteger !1 0)
-                                        [ ((\!0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (lessThanEqualsInteger !3 0)
-                                                   [ (constr 0
-                                                        [ (divideInteger !2 !1)
-                                                        , (divideInteger
+            (\!0 -> case !1 [quotientInteger])
+              ((\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           !3
+                           [ (\!0 !0 ->
+                                (\!0 ->
+                                   case
+                                     (equalsInteger !1 0)
+                                     [ ((\!0 ->
+                                           (\!0 ->
+                                              case
+                                                (lessThanEqualsInteger !3 0)
+                                                [ (constr 0
+                                                     [ (divideInteger !2 !1)
+                                                     , (divideInteger !3 !1) ])
+                                                , (constr 0
+                                                     [ (!12
+                                                          (divideInteger !2 !1))
+                                                     , (!12
+                                                          (divideInteger
                                                              !3
-                                                             !1) ])
-                                                   , (constr 0
-                                                        [ (!13
-                                                             (divideInteger
-                                                                !2
-                                                                !1))
-                                                        , (!13
-                                                             (divideInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                                ((\!0 ->
-                                                    (\!0 ->
-                                                       case
-                                                         (lessThanEqualsInteger
-                                                            !2
-                                                            !1)
-                                                         [ (!11 !2 !1)
-                                                         , (!11 !1 !2) ])
-                                                      (!12 !3))
-                                                   (!11 !1)))
-                                             (multiplyInteger !5 !2))
-                                        , (force
-                                             (force trace
-                                                "Cannot divide by zero"
-                                                (delay error))) ])
-                                     (multiplyInteger !3 !2)) ]) ])
-                    (constr 0 [-7, 1])
-                    (constr 0 [4, 1])))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                                                             !1)) ]) ])
+                                             ((\!0 ->
+                                                 (\!0 ->
+                                                    case
+                                                      (lessThanEqualsInteger
+                                                         !2
+                                                         !1)
+                                                      [ (!11 !2 !1)
+                                                      , (!11 !1 !2) ])
+                                                   (!11 !3))
+                                                (!10 !1)))
+                                          (multiplyInteger !5 !2))
+                                     , (force
+                                          (force trace
+                                             "Cannot divide by zero"
+                                             (delay error))) ])
+                                  (multiplyInteger !3 !2)) ]) ])
+                 (constr 0 [-7, 1])
+                 (constr 0 [4, 1])))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 properFraction.-1/2 program
@@ -1215,100 +1105,95 @@ properFraction.-1/2 program
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              case
-                                ((\!0 ->
-                                    (\!0 ->
-                                       (\!0 -> constr 0 [!2, !1])
-                                         ((\!0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    case
-                                                      !3
-                                                      [ (\!0 !0 ->
-                                                           !9
-                                                             (subtractInteger
-                                                                (multiplyInteger
-                                                                   !4
-                                                                   !1)
-                                                                (multiplyInteger
-                                                                   !2
-                                                                   !3))
-                                                             (multiplyInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                            (constr 0 [!1, 1])))
-                                      (case !1 [quotientInteger]))
-                                   (!1 (constr 0 [-1, 1]) (constr 0 [2, 1])))
-                                [ (\!0 !0 ->
-                                     force
-                                       ((\!0 !0 ->
-                                           delay (case !2 [!2, (force !1)]))
-                                          (equalsInteger !2 0)
-                                          (delay
-                                             ((\!0 ->
+                           case
+                             ((\!0 ->
+                                 (\!0 ->
+                                    (\!0 -> constr 0 [!2, !1])
+                                      ((\!0 ->
+                                          case
+                                            !3
+                                            [ (\!0 !0 ->
                                                  case
-                                                   !2
+                                                   !3
                                                    [ (\!0 !0 ->
-                                                        case
-                                                          !3
-                                                          [ (\!0 !0 ->
-                                                               equalsInteger
-                                                                 (multiplyInteger
-                                                                    !1
-                                                                    !4)
-                                                                 (multiplyInteger
-                                                                    !2
-                                                                    !3)) ]) ])
-                                                (!3
-                                                   (constr 0 [-1, 1])
-                                                   (constr 0 [2, 1])))))) ])
-                             (\!0 !0 ->
-                                case
-                                  !2
-                                  [ (\!0 !0 ->
-                                       case
-                                         !3
-                                         [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                                                        !9
+                                                          (subtractInteger
+                                                             (multiplyInteger
+                                                                !4
+                                                                !1)
+                                                             (multiplyInteger
+                                                                !2
+                                                                !3))
+                                                          (multiplyInteger
+                                                             !3
+                                                             !1)) ]) ])
+                                         (constr 0 [!1, 1])))
+                                   (case !1 [quotientInteger]))
+                                (!1 (constr 0 [-1, 1]) (constr 0 [2, 1])))
+                             [ (\!0 !0 ->
+                                  force
+                                    ((\!0 !0 ->
+                                        delay (case !2 [!2, (force !1)]))
+                                       (equalsInteger !2 0)
+                                       (delay
+                                          ((\!0 ->
+                                              case
+                                                !2
+                                                [ (\!0 !0 ->
+                                                     case
+                                                       !3
+                                                       [ (\!0 !0 ->
+                                                            equalsInteger
+                                                              (multiplyInteger
+                                                                 !1
+                                                                 !4)
+                                                              (multiplyInteger
+                                                                 !2
+                                                                 !3)) ]) ])
+                                             (!3
+                                                (constr 0 [-1, 1])
+                                                (constr 0 [2, 1])))))) ])
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -1323,100 +1208,95 @@ properFraction.-3/2 program
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              case
-                                ((\!0 ->
-                                    (\!0 ->
-                                       (\!0 -> constr 0 [!2, !1])
-                                         ((\!0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    case
-                                                      !3
-                                                      [ (\!0 !0 ->
-                                                           !9
-                                                             (subtractInteger
-                                                                (multiplyInteger
-                                                                   !4
-                                                                   !1)
-                                                                (multiplyInteger
-                                                                   !2
-                                                                   !3))
-                                                             (multiplyInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                            (constr 0 [!1, 1])))
-                                      (case !1 [quotientInteger]))
-                                   (!1 (constr 0 [-3, 1]) (constr 0 [2, 1])))
-                                [ (\!0 !0 ->
-                                     force
-                                       ((\!0 !0 ->
-                                           delay (case !2 [!2, (force !1)]))
-                                          (equalsInteger !2 -1)
-                                          (delay
-                                             ((\!0 ->
+                           case
+                             ((\!0 ->
+                                 (\!0 ->
+                                    (\!0 -> constr 0 [!2, !1])
+                                      ((\!0 ->
+                                          case
+                                            !3
+                                            [ (\!0 !0 ->
                                                  case
-                                                   !2
+                                                   !3
                                                    [ (\!0 !0 ->
-                                                        case
-                                                          !3
-                                                          [ (\!0 !0 ->
-                                                               equalsInteger
-                                                                 (multiplyInteger
-                                                                    !1
-                                                                    !4)
-                                                                 (multiplyInteger
-                                                                    !2
-                                                                    !3)) ]) ])
-                                                (!3
-                                                   (constr 0 [-1, 1])
-                                                   (constr 0 [2, 1])))))) ])
-                             (\!0 !0 ->
-                                case
-                                  !2
-                                  [ (\!0 !0 ->
-                                       case
-                                         !3
-                                         [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                                                        !9
+                                                          (subtractInteger
+                                                             (multiplyInteger
+                                                                !4
+                                                                !1)
+                                                             (multiplyInteger
+                                                                !2
+                                                                !3))
+                                                          (multiplyInteger
+                                                             !3
+                                                             !1)) ]) ])
+                                         (constr 0 [!1, 1])))
+                                   (case !1 [quotientInteger]))
+                                (!1 (constr 0 [-3, 1]) (constr 0 [2, 1])))
+                             [ (\!0 !0 ->
+                                  force
+                                    ((\!0 !0 ->
+                                        delay (case !2 [!2, (force !1)]))
+                                       (equalsInteger !2 -1)
+                                       (delay
+                                          ((\!0 ->
+                                              case
+                                                !2
+                                                [ (\!0 !0 ->
+                                                     case
+                                                       !3
+                                                       [ (\!0 !0 ->
+                                                            equalsInteger
+                                                              (multiplyInteger
+                                                                 !1
+                                                                 !4)
+                                                              (multiplyInteger
+                                                                 !2
+                                                                 !3)) ]) ])
+                                             (!3
+                                                (constr 0 [-1, 1])
+                                                (constr 0 [2, 1])))))) ])
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -1431,100 +1311,95 @@ properFraction.-4/3 program
                   (\!0 ->
                      (\!0 ->
                         (\!0 ->
-                           (\!0 ->
-                              case
-                                ((\!0 ->
-                                    (\!0 ->
-                                       (\!0 -> constr 0 [!2, !1])
-                                         ((\!0 ->
-                                             case
-                                               !3
-                                               [ (\!0 !0 ->
-                                                    case
-                                                      !3
-                                                      [ (\!0 !0 ->
-                                                           !9
-                                                             (subtractInteger
-                                                                (multiplyInteger
-                                                                   !4
-                                                                   !1)
-                                                                (multiplyInteger
-                                                                   !2
-                                                                   !3))
-                                                             (multiplyInteger
-                                                                !3
-                                                                !1)) ]) ])
-                                            (constr 0 [!1, 1])))
-                                      (case !1 [quotientInteger]))
-                                   (!1 (constr 0 [-4, 1]) (constr 0 [3, 1])))
-                                [ (\!0 !0 ->
-                                     force
-                                       ((\!0 !0 ->
-                                           delay (case !2 [!2, (force !1)]))
-                                          (equalsInteger !2 -1)
-                                          (delay
-                                             ((\!0 ->
+                           case
+                             ((\!0 ->
+                                 (\!0 ->
+                                    (\!0 -> constr 0 [!2, !1])
+                                      ((\!0 ->
+                                          case
+                                            !3
+                                            [ (\!0 !0 ->
                                                  case
-                                                   !2
+                                                   !3
                                                    [ (\!0 !0 ->
-                                                        case
-                                                          !3
-                                                          [ (\!0 !0 ->
-                                                               equalsInteger
-                                                                 (multiplyInteger
-                                                                    !1
-                                                                    !4)
-                                                                 (multiplyInteger
-                                                                    !2
-                                                                    !3)) ]) ])
-                                                (!3
-                                                   (constr 0 [-1, 1])
-                                                   (constr 0 [3, 1])))))) ])
-                             (\!0 !0 ->
-                                case
-                                  !2
-                                  [ (\!0 !0 ->
-                                       case
-                                         !3
-                                         [ (\!0 !0 ->
-                                              (\!0 ->
-                                                 case
-                                                   (equalsInteger !1 0)
-                                                   [ (!8
-                                                        (multiplyInteger !5 !2)
-                                                        !1)
-                                                   , (force
-                                                        (!14
-                                                           !15
-                                                           (delay error))) ])
-                                                (multiplyInteger !3 !2)) ]) ]))
+                                                        !9
+                                                          (subtractInteger
+                                                             (multiplyInteger
+                                                                !4
+                                                                !1)
+                                                             (multiplyInteger
+                                                                !2
+                                                                !3))
+                                                          (multiplyInteger
+                                                             !3
+                                                             !1)) ]) ])
+                                         (constr 0 [!1, 1])))
+                                   (case !1 [quotientInteger]))
+                                (!1 (constr 0 [-4, 1]) (constr 0 [3, 1])))
+                             [ (\!0 !0 ->
+                                  force
+                                    ((\!0 !0 ->
+                                        delay (case !2 [!2, (force !1)]))
+                                       (equalsInteger !2 -1)
+                                       (delay
+                                          ((\!0 ->
+                                              case
+                                                !2
+                                                [ (\!0 !0 ->
+                                                     case
+                                                       !3
+                                                       [ (\!0 !0 ->
+                                                            equalsInteger
+                                                              (multiplyInteger
+                                                                 !1
+                                                                 !4)
+                                                              (multiplyInteger
+                                                                 !2
+                                                                 !3)) ]) ])
+                                             (!3
+                                                (constr 0 [-1, 1])
+                                                (constr 0 [3, 1])))))) ])
                           (\!0 !0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 0)
-                                  [ (constr 0
-                                       [ (divideInteger !3 !1)
-                                       , (divideInteger !2 !1) ])
-                                  , (constr 0
-                                       [ (!8 (divideInteger !3 !1))
-                                       , (!8 (divideInteger !2 !1)) ]) ])
-                               (!3 !2 !1)))
+                             case
+                               !2
+                               [ (\!0 !0 ->
+                                    case
+                                      !3
+                                      [ (\!0 !0 ->
+                                           (\!0 ->
+                                              case
+                                                (equalsInteger !1 0)
+                                                [ (!8
+                                                     (multiplyInteger !5 !2)
+                                                     !1)
+                                                , (force
+                                                     (!13 !14 (delay error))) ])
+                                             (multiplyInteger !3 !2)) ]) ]))
                        (\!0 !0 ->
                           (\!0 ->
-                             (\!0 ->
-                                case
-                                  (lessThanEqualsInteger !2 !1)
-                                  [(!5 !2 !1), (!5 !1 !2)])
-                               (!6 !2))
-                            (!5 !2)))
-                    (!1
-                       (\!0 !0 !0 ->
-                          case
-                            (equalsInteger !1 0)
-                            [(!3 !1 (modInteger !2 !1)), !2])))
-                 (\!0 ->
-                    (\!0 -> !2 (\!0 -> !2 !2 !1))
-                      (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                             case
+                               (lessThanEqualsInteger !2 0)
+                               [ (constr 0
+                                    [ (divideInteger !3 !1)
+                                    , (divideInteger !2 !1) ])
+                               , (constr 0
+                                    [ (!7 (divideInteger !3 !1))
+                                    , (!7 (divideInteger !2 !1)) ]) ])
+                            (!3 !2 !1)))
+                    (\!0 !0 ->
+                       (\!0 ->
+                          (\!0 ->
+                             case
+                               (lessThanEqualsInteger !2 !1)
+                               [(!5 !2 !1), (!5 !1 !2)])
+                            (!5 !2))
+                         (!4 !2)))
+                 ((\!0 -> !1 !1)
+                    (\!0 !0 !0 ->
+                       case
+                         (equalsInteger !1 0)
+                         [ (case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3])
+                         , !2 ])))
               (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
            (\!0 -> subtractInteger 0 !1))
         (force trace))
@@ -1536,55 +1411,49 @@ data.id.11/3 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 !0 ->
-                  case
-                    !2
-                    [ (\!0 !0 ->
-                         case
-                           !3
-                           [ (\!0 !0 ->
-                                (\!0 ->
-                                   case
-                                     (equalsInteger !1 0)
-                                     [ ((\!0 ->
-                                           (\!0 ->
-                                              case
-                                                (lessThanEqualsInteger !3 0)
-                                                [ (constr 0
-                                                     [ (divideInteger !2 !1)
-                                                     , (divideInteger !3 !1) ])
-                                                , (constr 0
-                                                     [ (!13
-                                                          (divideInteger !2 !1))
-                                                     , (!13
-                                                          (divideInteger
-                                                             !3
-                                                             !1)) ]) ])
-                                             ((\!0 ->
-                                                 (\!0 ->
-                                                    case
-                                                      (lessThanEqualsInteger
-                                                         !2
-                                                         !1)
-                                                      [ (!11 !2 !1)
-                                                      , (!11 !1 !2) ])
-                                                   (!12 !3))
-                                                (!11 !1)))
-                                          (multiplyInteger !5 !2))
-                                     , (force
-                                          (force trace
-                                             "Cannot divide by zero"
-                                             (delay error))) ])
-                                  (multiplyInteger !3 !2)) ]) ])
-                 (constr 0 [11, 1])
-                 (constr 0 [3, 1]))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+            (\!0 !0 ->
+               case
+                 !2
+                 [ (\!0 !0 ->
+                      case
+                        !3
+                        [ (\!0 !0 ->
+                             (\!0 ->
+                                case
+                                  (equalsInteger !1 0)
+                                  [ ((\!0 ->
+                                        (\!0 ->
+                                           case
+                                             (lessThanEqualsInteger !3 0)
+                                             [ (constr 0
+                                                  [ (divideInteger !2 !1)
+                                                  , (divideInteger !3 !1) ])
+                                             , (constr 0
+                                                  [ (!12 (divideInteger !2 !1))
+                                                  , (!12
+                                                       (divideInteger
+                                                          !3
+                                                          !1)) ]) ])
+                                          ((\!0 ->
+                                              (\!0 ->
+                                                 case
+                                                   (lessThanEqualsInteger !2 !1)
+                                                   [(!11 !2 !1), (!11 !1 !2)])
+                                                (!11 !3))
+                                             (!10 !1)))
+                                       (multiplyInteger !5 !2))
+                                  , (force
+                                       (force trace
+                                          "Cannot divide by zero"
+                                          (delay error))) ])
+                               (multiplyInteger !3 !2)) ]) ])
+              (constr 0 [11, 1])
+              (constr 0 [3, 1]))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 div by 0.1/0 program
@@ -1592,55 +1461,49 @@ div by 0.1/0 program
   ((\!0 ->
       (\!0 ->
          (\!0 ->
-            (\!0 ->
-               (\!0 !0 ->
-                  case
-                    !2
-                    [ (\!0 !0 ->
-                         case
-                           !3
-                           [ (\!0 !0 ->
-                                (\!0 ->
-                                   case
-                                     (equalsInteger !1 0)
-                                     [ ((\!0 ->
-                                           (\!0 ->
-                                              case
-                                                (lessThanEqualsInteger !3 0)
-                                                [ (constr 0
-                                                     [ (divideInteger !2 !1)
-                                                     , (divideInteger !3 !1) ])
-                                                , (constr 0
-                                                     [ (!13
-                                                          (divideInteger !2 !1))
-                                                     , (!13
-                                                          (divideInteger
-                                                             !3
-                                                             !1)) ]) ])
-                                             ((\!0 ->
-                                                 (\!0 ->
-                                                    case
-                                                      (lessThanEqualsInteger
-                                                         !2
-                                                         !1)
-                                                      [ (!11 !2 !1)
-                                                      , (!11 !1 !2) ])
-                                                   (!12 !3))
-                                                (!11 !1)))
-                                          (multiplyInteger !5 !2))
-                                     , (force
-                                          (force trace
-                                             "Cannot divide by zero"
-                                             (delay error))) ])
-                                  (multiplyInteger !3 !2)) ]) ])
-                 (constr 0 [1, 1])
-                 (constr 0 [0, 1]))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+            (\!0 !0 ->
+               case
+                 !2
+                 [ (\!0 !0 ->
+                      case
+                        !3
+                        [ (\!0 !0 ->
+                             (\!0 ->
+                                case
+                                  (equalsInteger !1 0)
+                                  [ ((\!0 ->
+                                        (\!0 ->
+                                           case
+                                             (lessThanEqualsInteger !3 0)
+                                             [ (constr 0
+                                                  [ (divideInteger !2 !1)
+                                                  , (divideInteger !3 !1) ])
+                                             , (constr 0
+                                                  [ (!12 (divideInteger !2 !1))
+                                                  , (!12
+                                                       (divideInteger
+                                                          !3
+                                                          !1)) ]) ])
+                                          ((\!0 ->
+                                              (\!0 ->
+                                                 case
+                                                   (lessThanEqualsInteger !2 !1)
+                                                   [(!11 !2 !1), (!11 !1 !2)])
+                                                (!11 !3))
+                                             (!10 !1)))
+                                       (multiplyInteger !5 !2))
+                                  , (force
+                                       (force trace
+                                          "Cannot divide by zero"
+                                          (delay error))) ])
+                               (multiplyInteger !3 !2)) ]) ])
+              (constr 0 [1, 1])
+              (constr 0 [0, 1]))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))
 div by 0.recip 0 program
@@ -1668,61 +1531,59 @@ div by 0.1/(1-1) program
          (\!0 ->
             (\!0 ->
                (\!0 ->
-                  (\!0 ->
-                     (\!0 !0 ->
+                  (\!0 !0 ->
+                     case
+                       !2
+                       [ (\!0 !0 ->
+                            case
+                              !3
+                              [ (\!0 !0 ->
+                                   (\!0 ->
+                                      case
+                                        (equalsInteger !1 0)
+                                        [ (!8 (multiplyInteger !5 !2) !1)
+                                        , (force
+                                             (force trace
+                                                "Cannot divide by zero"
+                                                (delay error))) ])
+                                     (multiplyInteger !3 !2)) ]) ])
+                    (constr 0 [1, 1])
+                    ((\!0 !0 ->
                         case
                           !2
                           [ (\!0 !0 ->
                                case
                                  !3
                                  [ (\!0 !0 ->
-                                      (\!0 ->
-                                         case
-                                           (equalsInteger !1 0)
-                                           [ (!8 (multiplyInteger !5 !2) !1)
-                                           , (force
-                                                (force trace
-                                                   "Cannot divide by zero"
-                                                   (delay error))) ])
-                                        (multiplyInteger !3 !2)) ]) ])
+                                      !7
+                                        (subtractInteger
+                                           (multiplyInteger !4 !1)
+                                           (multiplyInteger !2 !3))
+                                        (multiplyInteger !3 !1)) ]) ])
                        (constr 0 [1, 1])
-                       ((\!0 !0 ->
-                           case
-                             !2
-                             [ (\!0 !0 ->
-                                  case
-                                    !3
-                                    [ (\!0 !0 ->
-                                         !7
-                                           (subtractInteger
-                                              (multiplyInteger !4 !1)
-                                              (multiplyInteger !2 !3))
-                                           (multiplyInteger !3 !1)) ]) ])
-                          (constr 0 [1, 1])
-                          (constr 0 [1, 1])))
-                    (\!0 !0 ->
-                       (\!0 ->
-                          case
-                            (lessThanEqualsInteger !2 0)
-                            [ (constr 0
-                                 [(divideInteger !3 !1), (divideInteger !2 !1)])
-                            , (constr 0
-                                 [ (!8 (divideInteger !3 !1))
-                                 , (!8 (divideInteger !2 !1)) ]) ])
-                         (!3 !2 !1)))
+                       (constr 0 [1, 1])))
                  (\!0 !0 ->
                     (\!0 ->
-                       (\!0 ->
-                          case
-                            (lessThanEqualsInteger !2 !1)
-                            [(!5 !2 !1), (!5 !1 !2)])
-                         (!6 !2))
-                      (!5 !2)))
-              (!1
-                 (\!0 !0 !0 ->
-                    case
-                      (equalsInteger !1 0)
-                      [(!3 !1 (modInteger !2 !1)), !2])))
-           (\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1))))
+                       case
+                         (lessThanEqualsInteger !2 0)
+                         [ (constr 0
+                              [(divideInteger !3 !1), (divideInteger !2 !1)])
+                         , (constr 0
+                              [ (!7 (divideInteger !3 !1))
+                              , (!7 (divideInteger !2 !1)) ]) ])
+                      (!3 !2 !1)))
+              (\!0 !0 ->
+                 (\!0 ->
+                    (\!0 ->
+                       case
+                         (lessThanEqualsInteger !2 !1)
+                         [(!5 !2 !1), (!5 !1 !2)])
+                      (!5 !2))
+                   (!4 !2)))
+           ((\!0 -> !1 !1)
+              (\!0 !0 !0 ->
+                 case
+                   (equalsInteger !1 0)
+                   [(case (constr 0 [!3, !1, (modInteger !2 !1)]) [!3]), !2])))
         (\!0 -> case (lessThanEqualsInteger !1 0) [!1, (!2 !1)]))
      (\!0 -> subtractInteger 0 !1))

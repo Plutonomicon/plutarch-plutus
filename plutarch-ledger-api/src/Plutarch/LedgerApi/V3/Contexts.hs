@@ -799,7 +799,8 @@ pfindDatumHash = phoistAcyclic $ plam $ \d txI ->
     pmatch (pfromData (ptxInfo'data tx)) $ \(AssocMap.PUnsortedMap ell) ->
       pmatch (pfind # (matches # d) # pto ell) $ \case
         PNothing -> pcon PNothing
-        PJust p -> pcon . PJust . pfromData $ pfstBuiltin # p
+        PJust p -> pmatch p $ \(PBuiltinPair pFst _) ->
+          pcon . PJust . pfromData $ pFst
   where
     matches ::
       forall (s' :: S).
@@ -810,4 +811,5 @@ pfindDatumHash = phoistAcyclic $ plam $ \d txI ->
             :--> PBool
         )
     matches = phoistAcyclic $ plam $ \needle p ->
-      needle #== pfromData (psndBuiltin # p)
+      pmatch p $ \(PBuiltinPair _ thing) ->
+        needle #== pfromData thing

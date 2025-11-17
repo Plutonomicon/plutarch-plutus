@@ -44,7 +44,7 @@ import Plutarch.Builtin.ByteString (
 import Plutarch.Builtin.Data (
   PAsData,
   PBuiltinList,
-  PBuiltinPair,
+  PBuiltinPair (PBuiltinPair),
   PData,
   pasByteStr,
   pasConstr,
@@ -52,8 +52,6 @@ import Plutarch.Builtin.Data (
   pasList,
   pasMap,
   pchooseData,
-  pfstBuiltin,
-  psndBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.String (
@@ -63,7 +61,7 @@ import Plutarch.Builtin.String (
  )
 import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Eq (PEq ((#==)))
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.Generic (PCode, PGeneric, gpfrom)
 import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Lift (PlutusRepr, pconstant)
@@ -211,7 +209,7 @@ instance PShow PString where
           "\"" <> (pdecodeUtf8 #$ pshowUtf8Bytes #$ pencodeUtf8 # s) <> "\""
       pshowUtf8Bytes :: Term s (PByteString :--> PByteString)
       pshowUtf8Bytes = phoistAcyclic $
-        pfixHoisted #$ plam $ \self bs ->
+        pfix $ \self -> plam $ \bs ->
           pelimBS
             # bs
             # bs
@@ -242,7 +240,7 @@ instance PShow PInteger where
     where
       pshowInt :: Term s (PInteger :--> PString)
       pshowInt = phoistAcyclic $
-        pfixHoisted #$ plam $ \self n ->
+        pfix $ \self -> plam $ \n ->
           let sign = pif (n #< 0) "-" ""
            in sign
                 <> plet
@@ -272,7 +270,7 @@ instance PShow PByteString where
           "0x" <> showByteString' # bs
       showByteString' :: Term s (PByteString :--> PString)
       showByteString' = phoistAcyclic $
-        pfixHoisted #$ plam $ \self bs ->
+        pfix $ \self -> plam $ \bs ->
           pelimBS
             # bs
             # pconstant @PString ""
@@ -300,20 +298,22 @@ instance PShow PData where
       wrap s = pif (pconstant b) ("(" <> s <> ")") s
       go0 :: Term s (PData :--> PString)
       go0 = phoistAcyclic $
-        pfixHoisted #$ plam $ \go t ->
+        pfix $ \go -> plam $ \t ->
           let pshowConstr pp0 = plet pp0 $ \pp ->
-                "Constr "
-                  <> pshow' False (pfstBuiltin # pp)
-                  <> " "
-                  <> pshowListPString # (pmap # go # (psndBuiltin # pp))
+                pmatch pp $ \(PBuiltinPair pp1 pp2) ->
+                  "Constr "
+                    <> pshow' False pp1
+                    <> " "
+                    <> pshowListPString # (pmap # go # pp2)
               pshowMap pplist =
                 "Map " <> pshowListPString # (pmap # pshowPair # pplist)
               pshowPair = plam $ \pp0 -> plet pp0 $ \pp ->
-                "("
-                  <> (go # (pfstBuiltin # pp))
-                  <> ", "
-                  <> (go # (psndBuiltin # pp))
-                  <> ")"
+                pmatch pp $ \(PBuiltinPair pp1 pp2) ->
+                  "("
+                    <> (go # pp1)
+                    <> ", "
+                    <> (go # pp2)
+                    <> ")"
               pshowList xs = "List " <> pshowListPString # (pmap # go # xs)
               pshowListPString = phoistAcyclic $
                 plam $ \plist ->
@@ -346,7 +346,8 @@ instance
   pshow' _ x = pshowList @PBuiltinList @a # x
 
 instance (PShow a, PShow b) => PShow (PBuiltinPair a b) where
-  pshow' _ pair = "(" <> pshow (pfstBuiltin # pair) <> "," <> pshow (psndBuiltin # pair) <> ")"
+  pshow' _ pair = pmatch pair $ \(PBuiltinPair x y) ->
+    "(" <> pshow x <> "," <> pshow y <> ")"
 
 -- | @since 1.10.0
 instance PShow PPositive

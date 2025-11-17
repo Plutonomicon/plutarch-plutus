@@ -36,25 +36,31 @@ instance POrd PAssetClass where
   {-# INLINEABLE (#<=) #-}
   ac1 #<= ac2 = pmatch ac1 $ \(PAssetClass pair1) ->
     pmatch ac2 $ \(PAssetClass pair2) ->
-      plet (pfromData $ pfstBuiltin # pair1) $ \fst1 ->
-        plet (pfromData $ pfstBuiltin # pair2) $ \fst2 ->
-          (fst1 #< fst2)
-            #|| ( (fst1 #== fst2)
-                    #&& let snd1 = pfromData $ psndBuiltin # pair1
-                            snd2 = pfromData $ psndBuiltin # pair2
-                         in snd1 #<= snd2
-                )
+      pmatch pair1 $ \(PBuiltinPair fst1' snd1') ->
+        pmatch pair2 $ \(PBuiltinPair fst2' snd2') ->
+          plet (pfromData fst1') $ \fst1 ->
+            plet (pfromData fst2') $ \fst2 ->
+              (fst1 #< fst2)
+                #|| ( (fst1 #== fst2)
+                        #&& ( let snd1 = pfromData snd1'
+                                  snd2 = pfromData snd2'
+                               in snd1 #<= snd2
+                            )
+                    )
   {-# INLINEABLE (#<) #-}
   ac1 #< ac2 = pmatch ac1 $ \(PAssetClass pair1) ->
     pmatch ac2 $ \(PAssetClass pair2) ->
-      plet (pfromData $ pfstBuiltin # pair1) $ \fst1 ->
-        plet (pfromData $ pfstBuiltin # pair2) $ \fst2 ->
-          (fst1 #< fst2)
-            #|| ( (fst1 #== fst2)
-                    #&& let snd1 = pfromData $ psndBuiltin # pair1
-                            snd2 = pfromData $ psndBuiltin # pair2
-                         in snd1 #< snd2
-                )
+      pmatch pair1 $ \(PBuiltinPair fst1' snd1') ->
+        pmatch pair2 $ \(PBuiltinPair fst2' snd2') ->
+          plet (pfromData fst1') $ \fst1 ->
+            plet (pfromData fst2') $ \fst2 ->
+              (fst1 #< fst2)
+                #|| ( (fst1 #== fst2)
+                        #&& ( let snd1 = pfromData snd1'
+                                  snd2 = pfromData snd2'
+                               in snd1 #< snd2
+                            )
+                    )
 
 -- | @since 3.3.0
 deriving via
