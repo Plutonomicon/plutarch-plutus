@@ -27,14 +27,13 @@ import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
   PAsData,
-  PBuiltinList,
+  PBuiltinList (PCons, PNil),
   PBuiltinPair (PBuiltinPair),
   PData,
   pasByteStr,
   pasConstr,
   pasInt,
   pasList,
-  pchooseListBuiltin,
   pheadBuiltin,
   pheadTailBuiltin,
  )
@@ -56,7 +55,6 @@ import Plutarch.Internal.Term (
   phoistAcyclic,
   plet,
   (#),
-  (#$),
   (:-->),
  )
 import Plutarch.Repr.Data (
@@ -202,10 +200,13 @@ instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
         Term s (PBuiltinList PData) ->
         Term s r ->
         Term s r
-      go self ell done = pchooseListBuiltin # ell # done #$ pheadTailBuiltin ell $ \h' t' ->
-        plet h' $ \h ->
-          plet t' $ \t ->
-            self # t # pwithValidated @a h done
+      go self ell done = pmatch ell $ \case
+        PNil -> done
+        PCons h t -> self # t # pwithValidated @a h done
+
+{-
+go self ell done = pchooseListBuiltin # ell # done #$ pheadTailBuiltin ell $ \h t ->
+  self # t # pwithValidated @a h done -}
 
 {- | Checks that we have a @List@.
 
