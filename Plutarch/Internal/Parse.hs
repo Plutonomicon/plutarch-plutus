@@ -45,8 +45,6 @@ import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfixHoisted)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
-
--- import Plutarch.Internal.Ord ((#<), (#>=))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
 import Plutarch.Internal.Term (
