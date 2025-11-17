@@ -610,7 +610,7 @@ pcheckBinRel ::
     )
 pcheckBinRel = phoistAcyclic $
   plam $ \f z m1 m2 ->
-    let inner = pfixHoisted #$ plam $ \self l1 l2 ->
+    let inner = pfix $ \self -> plam $ \l1 l2 ->
           pelimList
             ( \x xs ->
                 pmatch x $ \(PBuiltinPair k1' v1') ->
@@ -682,7 +682,7 @@ pkeysEqual = phoistAcyclic $
             :--> PBool
         )
     go = phoistAcyclic $
-      pfixHoisted #$ plam $ \self ell ell' ->
+      pfix $ \self -> plam $ \ell ell' ->
         pmatch (PPrelude.puncons # ell) $ \case
           PNothing -> pmatch (PPrelude.puncons # ell') $ \case
             PNothing -> pcon PTrue -- no mismatches found
@@ -725,7 +725,7 @@ pkeysEqualUnsorted = phoistAcyclic $
             :--> PBool
         )
     go = phoistAcyclic $
-      pfixHoisted #$ plam $ \self kvs kvs' ell ell' ->
+      pfix $ \self -> plam $ \kvs kvs' ell ell' ->
         pmatch (PPrelude.puncons # ell) $ \case
           PNothing -> pmatch (PPrelude.puncons # ell') $ \case
             -- We reached the end, so we match

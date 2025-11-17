@@ -34,7 +34,10 @@ import Plutarch.Internal.Lift (
   PLifted (PLifted),
   pconstant,
  )
-import Plutarch.Internal.PlutusType (PlutusType (PInner, pcon', pmatch'))
+import Plutarch.Internal.PlutusType (
+  DeriveNewtypePlutusType (DeriveNewtypePlutusType),
+  PlutusType (PInner, pcon', pmatch'),
+ )
 import Plutarch.Internal.Term (
   RawTerm (RCase),
   S,
@@ -42,7 +45,6 @@ import Plutarch.Internal.Term (
   TermResult (TermResult),
   asRawTerm,
  )
-import Plutarch.Repr.Newtype (DeriveNewtypePlutusType (DeriveNewtypePlutusType))
 
 -- | @since 1.10.0
 newtype PTag (struct :: [S -> Type]) (s :: S) = PTag

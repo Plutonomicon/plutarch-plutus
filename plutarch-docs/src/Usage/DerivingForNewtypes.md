@@ -4,6 +4,7 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# LANGUAGE StandaloneDeriving, FlexibleInstances #-}
 
 module Plutarch.Docs.DerivingForNewtype (PPubKeyHash'(..), PPubKeyHash(..)) where

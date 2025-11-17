@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
 

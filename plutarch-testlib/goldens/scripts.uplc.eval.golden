@@ -14,7 +14,7 @@ auth_policy.0 program
   1.1.0
   (\!0 !0 ->
      case
-       ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+       ((\!0 -> !1 !1)
           (\!0 !0 ->
              case
                !1
@@ -23,7 +23,7 @@ auth_policy.0 program
                       (equalsData
                          !2
                          (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                      [(!4 !1), True])
+                      [(!4 !4 !1), True])
                , False ])
           (unListData
              (force headList
@@ -43,12 +43,12 @@ auth_policy.0 program
                                                     [(\!0 !0 -> !1)])))
                                            [(\!0 !0 -> !1)]))))))))))))
        [error, ()])
-auth_policy.hash program 1.1.0 "581cfcef39cee6e53a937fb35bfcb52bcd44a1162cbf9affedce165cf2b2"
+auth_policy.hash program 1.1.0 "581cd7508b02958be5e597278537d0d58a2cf63b059818a81385adc73488"
 auth_stake_validator.0 program
   1.1.0
   (\!0 !0 ->
      case
-       ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
+       ((\!0 -> !1 !1)
           (\!0 !0 ->
              case
                !1
@@ -57,7 +57,7 @@ auth_stake_validator.0 program
                       (equalsData
                          !2
                          (B #cc1360b04bdd0825e0c6552abb2af9b4df75b71f0c7cca20256b1f4f))
-                      [(!4 !1), True])
+                      [(!4 !4 !1), True])
                , False ])
           (unListData
              (force headList
@@ -77,4 +77,4 @@ auth_stake_validator.0 program
                                                     [(\!0 !0 -> !1)])))
                                            [(\!0 !0 -> !1)]))))))))))))
        [error, ()])
-auth_stake_validator.hash program 1.1.0 "581cfcef39cee6e53a937fb35bfcb52bcd44a1162cbf9affedce165cf2b2"
+auth_stake_validator.hash program 1.1.0 "581cd7508b02958be5e597278537d0d58a2cf63b059818a81385adc73488"

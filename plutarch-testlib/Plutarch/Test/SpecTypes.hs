@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 -- | Dummy types used in tests
 module Plutarch.Test.SpecTypes (Triplet (..), PTriplet (..)) where

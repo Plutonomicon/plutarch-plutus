@@ -13,6 +13,9 @@
 
 * `hrecField` has been made hidden. Not only should this not be used anymore, it
   was deprecated for a long time already.
+* Replaced all internal uses of `pfixHoisted` with `pfix` for improved
+  performance, at the cost of a negligible increase in script size in some
+  cases.
 
 ## Removed
 
