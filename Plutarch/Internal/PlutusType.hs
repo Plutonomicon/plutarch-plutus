@@ -43,9 +43,10 @@ import Plutarch.Builtin.Data (
   pconsBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
-import Plutarch.Builtin.Opaque (POpaque (POpaque))
+import Plutarch.Builtin.Opaque (POpaque (POpaque), popaque)
 import Plutarch.Builtin.String (PString, ptraceInfo)
 import Plutarch.Builtin.Unit (PUnit (PUnit), punit)
+import Plutarch.Internal.Case (punsafeCase)
 import Plutarch.Internal.PLam (plam)
 
 import Data.Kind (Constraint, Type)
@@ -74,14 +75,9 @@ import {-# SOURCE #-} Plutarch.Internal.Lift (
  )
 import Plutarch.Internal.Quantification (PFix (PFix), PForall (PForall), PSome (PSome))
 import Plutarch.Internal.Term (
-  RawTerm (RCase),
   S,
-  Term (Term),
-  TermResult (TermResult),
-  asRawTerm,
-  -- pdelay,
+  Term,
   perror,
-  -- pforce,
   plam',
   plet,
   punsafeCoerce,
@@ -251,18 +247,8 @@ instance PlutusType PBool where
   pcon' = \case
     PTrue -> ptrue
     PFalse -> pfalse
-
-  -- pcon' PTrue = ptrue
-  -- pcon' PFalse = pfalse
   {-# INLINEABLE pmatch' #-}
-  pmatch' b f = Term $ \level -> do
-    TermResult handleFalse depsFalse <- asRawTerm (f PFalse) level
-    TermResult handleTrue depsTrue <- asRawTerm (f PTrue) level
-    TermResult rawT depsT <- asRawTerm b level
-    let allDeps = depsFalse <> depsTrue <> depsT
-    pure . TermResult (RCase rawT [handleFalse, handleTrue]) $ allDeps
-
--- pmatch' b f = pforce $ pif' # b # pdelay (f PTrue) # pdelay (f PFalse)
+  pmatch' b f = punsafeCase b [popaque . f $ PFalse, popaque . f $ PTrue]
 
 instance PlutusType PData where
   type PInner PData = PData
@@ -281,22 +267,14 @@ you should /not/ use 'pcon' for 'PBuiltinPair'.
 instance PlutusType (PBuiltinPair a b) where
   type PInner (PBuiltinPair a b) = PBuiltinPair a b
   pcon' _ = ptraceInfo "Do not use pcon for PBuiltinPair; instead, use ppairDataBuiltin or pconstant" perror
-  pmatch' t f = Term $ \level -> do
-    TermResult handler depsHandler <- asRawTerm (plam $ \x y -> f (PBuiltinPair x y)) level
-    TermResult rawT depsT <- asRawTerm t level
-    let allDeps = depsHandler <> depsT
-    pure . TermResult (RCase rawT [handler]) $ allDeps
+  pmatch' t f = punsafeCase t [popaque . plam $ \x y -> f (PBuiltinPair x y)]
 
 instance PLC.Contains PLC.DefaultUni (PlutusRepr a) => PlutusType (PBuiltinList a) where
   type PInner (PBuiltinList a) = PBuiltinList a
-  pcon' (PCons x xs) = pconsBuiltin # x # xs
-  pcon' PNil = getPLifted $ unsafeHaskToUni @[PlutusRepr a] []
-  pmatch' xs f = Term $ \level -> do
-    TermResult handleCons depsCons <- asRawTerm (plam $ \y ys -> f (PCons y ys)) level
-    TermResult handleNil depsNil <- asRawTerm (f PNil) level
-    TermResult rawT depsT <- asRawTerm xs level
-    let allDeps = depsCons <> depsNil <> depsT
-    pure . TermResult (RCase rawT [handleCons, handleNil]) $ allDeps
+  pcon' = \case
+    PCons x xs -> pconsBuiltin # x # xs
+    PNil -> getPLifted $ unsafeHaskToUni @[PlutusRepr a] []
+  pmatch' xs f = punsafeCase xs [popaque . plam $ \y ys -> f (PCons y ys), popaque . f $ PNil]
 
 instance PIsData a => PlutusType (PAsData a) where
   type PInner (PAsData a) = PData
