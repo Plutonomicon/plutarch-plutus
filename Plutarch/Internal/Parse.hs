@@ -42,7 +42,7 @@ import Plutarch.Builtin.Data (
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq ((#==))
-import Plutarch.Internal.Fix (pfixHoisted)
+import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.Lift (pconstant)
 import Plutarch.Internal.Ord ((#<), (#>=))
@@ -192,7 +192,7 @@ validates as per @a@.
 -}
 instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
   pwithValidated opq x = plet (pasList # opq) $ \ell ->
-    phoistAcyclic (pfixHoisted #$ plam go) # ell # x
+    phoistAcyclic (pfix $ plam . go) # ell # x
     where
       go ::
         forall (r :: S -> Type) (s :: S).
