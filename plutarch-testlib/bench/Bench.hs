@@ -121,6 +121,26 @@ listMatchingBenches =
         ( precompileTerm (plam ptailPM)
             # pconstant @(PBuiltinList PInteger) [1, 2]
         )
+  , bench
+      "null builtin"
+      ( precompileTerm (plam $ \x -> pnullBuiltin # x)
+          # pconstant @(PBuiltinList PInteger) [1]
+      )
+  , bcompare "$(NF-1) == \"list matching\" && $NF == \"null builtin\"" $
+      bench
+        "null via pattern match"
+        ( precompileTerm (plam pnullPM)
+            # pconstant @(PBuiltinList PInteger) [1]
+        )
+  , bench
+      "head-tail via builtins"
+      ( precompileTerm (plam $ \x -> pcons # (pheadBuiltin # x) # (ptailBuiltin # x))
+          # pconstant @(PBuiltinList PInteger) [1]
+      )
+  , bcompare "$(NF-1) == \"list matching\" && $NF == \"head-tail via builtins\"" $
+      bench
+        "head-tail via pattern match"
+        (precompileTerm (plam pheadTailPM) # pconstant @(PBuiltinList PInteger) [1])
   ]
   where
     pheadPM ::
@@ -138,6 +158,24 @@ listMatchingBenches =
       Term s (PBuiltinList a)
     ptailPM t = Term $ \level -> do
       TermResult matchRaw matchDeps <- asRawTerm (plam $ \_ xs -> xs) level
+      TermResult rawT depsT <- asRawTerm t level
+      let allDeps = matchDeps <> depsT
+      pure . TermResult (RCase rawT [matchRaw]) $ allDeps
+    pnullPM ::
+      forall (a :: S -> Type) (s :: S).
+      Term s (PBuiltinList a) ->
+      Term s PBool
+    pnullPM t = Term $ \level -> do
+      TermResult nilRaw nilDeps <- asRawTerm (pcon PFalse) level
+      TermResult consRaw consDeps <- asRawTerm (plam $ \_ _ -> pcon PTrue) level
+      TermResult rawT depsT <- asRawTerm t level
+      let allDeps = nilDeps <> consDeps <> depsT
+      pure . TermResult (RCase rawT [consRaw, nilRaw]) $ allDeps
+    pheadTailPM ::
+      Term s (PBuiltinList PInteger) ->
+      Term s (PBuiltinList PInteger)
+    pheadTailPM t = Term $ \level -> do
+      TermResult matchRaw matchDeps <- asRawTerm (plam $ \x xs -> pcons @PBuiltinList @PInteger # x # xs) level
       TermResult rawT depsT <- asRawTerm t level
       let allDeps = matchDeps <> depsT
       pure . TermResult (RCase rawT [matchRaw]) $ allDeps

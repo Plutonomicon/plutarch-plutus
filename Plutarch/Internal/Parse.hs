@@ -27,16 +27,15 @@ import Plutarch.Builtin.Bool (PBool, pif)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Data (
   PAsData,
-  PBuiltinList,
+  PBuiltinList (PCons, PNil),
   PBuiltinPair (PBuiltinPair),
   PData,
   pasByteStr,
   pasConstr,
   pasInt,
   pasList,
-  pchooseListBuiltin,
   pheadBuiltin,
-  ptailBuiltin,
+  pheadTailBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq ((#==))
@@ -58,7 +57,6 @@ import Plutarch.Internal.Term (
   phoistAcyclic,
   plet,
   (#),
-  (#$),
   (:-->),
  )
 import Plutarch.Repr.Data (
@@ -175,8 +173,8 @@ second element validates as per @b@. The @Constr@ tag is not checked at all.
 -}
 instance (PValidateData a, PValidateData b) => PValidateData (PBuiltinPair (PAsData a) (PAsData b)) where
   pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair _ p) ->
-    plet (pheadBuiltin # p) $ \fstOne ->
-      plet (pheadBuiltin #$ ptailBuiltin # p) $ \sndOne ->
+    pheadTailBuiltin p $ \fstOne rest ->
+      plet (pheadBuiltin # rest) $ \sndOne ->
         pwithValidated @a fstOne . pwithValidated @b sndOne $ x
 
 {- | Checks that we have a @Constr@ with a second field of at least length 2.
@@ -186,8 +184,8 @@ The @Constr@ tag, or the elements, are not checked at all.
 -}
 instance PValidateData (PBuiltinPair PData PData) where
   pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair _ p) ->
-    plet (pheadBuiltin # p) $ \_ ->
-      plet (pheadBuiltin #$ ptailBuiltin # p) $ const x
+    pheadTailBuiltin p $ \_ rest ->
+      plet (pheadBuiltin # rest) $ const x
 
 {- | Checks that we have a @List@. Furthermore, checks that every element
 validates as per @a@.
@@ -204,9 +202,13 @@ instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
         Term s (PBuiltinList PData) ->
         Term s r ->
         Term s r
-      go self ell done = pchooseListBuiltin # ell # done #$ plet (pheadBuiltin # ell) $ \h ->
-        plet (ptailBuiltin # ell) $ \t ->
-          self # t # pwithValidated @a h done
+      go self ell done = pmatch ell $ \case
+        PNil -> done
+        PCons h t -> self # t # pwithValidated @a h done
+
+{-
+go self ell done = pchooseListBuiltin # ell # done #$ pheadTailBuiltin ell $ \h t ->
+  self # t # pwithValidated @a h done -}
 
 {- | Checks that we have a @List@.
 
@@ -264,12 +266,12 @@ instance
         SOP.Shape w ->
         Term s r ->
         Term s r
-      go ell aShape =
-        pwithValidated @a (pheadBuiltin # ell) . case aShape of
+      go ell aShape x = pheadTailBuiltin ell $ \h t ->
+        pwithValidated @a h $ case aShape of
           -- We don't have any more elements of `ell` we care about, so nothing
           -- else to do.
-          SOP.ShapeNil -> id
-          SOP.ShapeCons @ys @y restShape -> go @y (plet (ptailBuiltin # ell) id) restShape
+          SOP.ShapeNil -> x
+          SOP.ShapeCons @ys @y restShape -> go @y t restShape x
 
 {- | Checks that we have a @Constr@, that its tag is in the range @[0, n - 1]@
 (where @n@ is the number of \'arms\' in the encoded sum type), and that there
@@ -329,10 +331,11 @@ instance
         SOP.Shape wInner ->
         Term s r ->
         Term s r
-      goInner ell aShape =
-        pwithValidated @a (pheadBuiltin # ell) . case aShape of
-          SOP.ShapeNil -> id
-          SOP.ShapeCons @ys @y restShape -> goInner @y (plet (ptailBuiltin # ell) id) restShape
+      goInner ell aShape x =
+        pheadTailBuiltin ell $ \h t ->
+          pwithValidated @a h $ case aShape of
+            SOP.ShapeNil -> x
+            SOP.ShapeCons @ys @y restShape -> goInner @y t restShape x
 
 {- | Helper to define a do-nothing instance of 'PValidateData'. Useful when
 defining an instance for a complex type where we want to validate some parts,
