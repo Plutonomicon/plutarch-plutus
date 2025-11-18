@@ -2,15 +2,16 @@
 
 # UNRELEASED
 
+## Added
+
+* `punsafeCase`, to give access to the UPLC `Case` construct more conveniently
+
 ## Changed
 
 * Bump `plutus-core` to 1.54.0.0
 * `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
 * `pfstBuiltin` and `psndBuiltin` are now deprecated, as pattern matching on
   `PBuiltinPair` outperforms it
-
-## Changed
-
 * `hrecField` has been made hidden. Not only should this not be used anymore, it
   was deprecated for a long time already.
 * Replaced all internal uses of `pfixHoisted` with `pfix` for improved
