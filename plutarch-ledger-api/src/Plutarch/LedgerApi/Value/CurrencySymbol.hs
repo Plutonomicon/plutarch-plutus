@@ -51,6 +51,21 @@ instance PLiftable PCurrencySymbol where
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PCurrencySymbol)
 
+-- | @since wip
+instance PValidateData PCurrencySymbol where
+  pwithValidated opq x =
+    plet (plengthBS #$ pasByteStr # opq) $ \bsSize ->
+      pif
+        ((bsSize #== pnonAdaCurrencySymbolByteSize) #|| (bsSize #== padaCurrencySymbolByteSize))
+        x
+        perror
+
+pnonAdaCurrencySymbolByteSize :: forall (s :: S). Term s PInteger
+pnonAdaCurrencySymbolByteSize = 28
+
+padaCurrencySymbolByteSize :: forall (s :: S). Term s PInteger
+padaCurrencySymbolByteSize = 0
+
 {- | The 'PCurrencySymbol' of the Ada currency.
 
 @since 2.1.1

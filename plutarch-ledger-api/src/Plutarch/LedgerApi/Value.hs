@@ -103,6 +103,14 @@ newtype PRawValue (s :: S)
       PlutusType
     )
     via (DeriveNewtypePlutusType PRawValue)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via ( DeriveNewtypePValidateData
+            PRawValue
+            (AssocMap.PUnsortedMap PCurrencySymbol (AssocMap.PUnsortedMap PTokenName PInteger))
+        )
 
 -- | @since 3.5.0
 instance PTryFrom PData (PAsData PRawValue)
@@ -183,6 +191,13 @@ instance PTryFrom PData (PAsData PSortedValue) where
     (opq', _) <- tcont $ ptryFrom @(PAsData PRawValue) opq
     unwrapped <- tcont . plet . papp passertSorted . pfromData $ opq'
     pure (pdata unwrapped, ())
+
+-- | @since wip
+instance PValidateData PSortedValue where
+  pwithValidated opq x =
+    pwithValidated @PRawValue opq $
+      plet (passertSorted #$ pfromData $ punsafeCoerce @(PAsData PRawValue) opq) $ \_ ->
+        x
 
 ----------------------------------------------------------------------
 -- PLedgerValue

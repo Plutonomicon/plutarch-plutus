@@ -126,6 +126,19 @@ newtype PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
       PlutusType
     )
     via (DeriveNewtypePlutusType (PAssocMap k v))
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via ( DeriveNewtypePValidateData
+            (PAssocMap k v)
+            (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v)))
+        )
+
+-- | @since wip
+instance PIsData (PAssocMap k v) where
+  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.MapData # x
 
 ----------------------------------------------------------------------
 -- Unsorted Map
@@ -148,6 +161,11 @@ newtype PUnsortedMap (k :: S -> Type) (v :: S -> Type) (s :: S)
       PlutusType
     )
     via (DeriveNewtypePlutusType (PUnsortedMap k v))
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData (PUnsortedMap k v) (PAssocMap k v))
 
 -- | @since 3.5.0
 instance PIsData (PUnsortedMap k v) where
@@ -251,6 +269,14 @@ instance
     (opq', _) <- tcont $ ptryFrom @(PAsData (PUnsortedMap k v)) opq
     unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
     pure (pdata unwrapped, ())
+
+-- | @since wip
+instance (PValidateData k, PValidateData v, POrd k, PIsData k) => PValidateData (PSortedMap k v) where
+  pwithValidated opq x =
+    -- the PUnsortedMap validation should run before the sortedness check
+    pwithValidated @(PUnsortedMap k v) opq $
+      plet (passertSorted #$ pfromData $ punsafeCoerce @(PAsData (PUnsortedMap k v)) opq) $ \_ ->
+        x
 
 ----------------------------------------------------------------------
 -- Creation

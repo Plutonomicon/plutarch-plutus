@@ -7,7 +7,6 @@ module Plutarch.LedgerApi.V1.Address (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential, PStakingCredential)
 import Plutarch.Prelude

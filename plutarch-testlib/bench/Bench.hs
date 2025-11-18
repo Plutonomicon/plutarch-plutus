@@ -21,7 +21,6 @@ import Plutarch.Array (
   pzipWithArray,
  )
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData, OtherLiftError))
-import Plutarch.Internal.Parse (PValidateData (pwithValidated), pparseData)
 import Plutarch.Internal.Term (
   Config (NoTracing, Tracing),
   LogLevel (LogInfo),

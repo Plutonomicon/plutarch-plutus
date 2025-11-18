@@ -272,6 +272,12 @@ module Plutarch.Prelude (
   punrollBound',
   punrollUnbound,
   punrollUnboundWhole,
+
+  -- * Validation
+  PValidateData (..),
+  Don'tValidate (..),
+  DeriveNewtypePValidateData (..),
+  pparseData,
 ) where
 
 import Plutarch.Builtin.Array
@@ -296,6 +302,7 @@ import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
 import Plutarch.Internal.Other
 import Plutarch.Internal.PLam
+import Plutarch.Internal.Parse
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Quantification
 import Plutarch.Internal.ScottEncoding

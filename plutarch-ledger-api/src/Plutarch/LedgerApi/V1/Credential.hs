@@ -8,7 +8,6 @@ module Plutarch.LedgerApi.V1.Credential (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Prelude

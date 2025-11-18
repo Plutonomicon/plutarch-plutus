@@ -43,7 +43,6 @@ module Plutarch.LedgerApi.Utils (
 import Data.Kind (Type)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeCoerce)

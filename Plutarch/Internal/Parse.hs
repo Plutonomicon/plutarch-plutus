@@ -34,6 +34,7 @@ import Plutarch.Builtin.Data (
   pasConstr,
   pasInt,
   pasList,
+  pasMap,
   pchooseListBuiltin,
   pheadBuiltin,
   ptailBuiltin,
@@ -52,7 +53,9 @@ import Plutarch.Internal.PlutusType (
 import Plutarch.Internal.Term (
   S,
   Term,
+  pdelay,
   perror,
+  pforce,
   phoistAcyclic,
   plet,
   (#),
@@ -202,9 +205,24 @@ instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
         Term s (PBuiltinList PData) ->
         Term s r ->
         Term s r
-      go self ell done = pchooseListBuiltin # ell # done #$ plet (pheadBuiltin # ell) $ \h ->
+      go self ell done = pforce $ pchooseListBuiltin # ell # pdelay done #$ pdelay $ plet (pheadBuiltin # ell) $ \h ->
         plet (ptailBuiltin # ell) $ \t ->
           self # t # pwithValidated @a h done
+
+-- @since wip
+instance (PValidateData a, PValidateData b) => PValidateData (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))) where
+  pwithValidated opq x = plet (pasMap # opq) $ \mp ->
+    phoistAcyclic (pfix $ plam . go) # mp # x
+    where
+      go ::
+        forall (r :: S -> Type) (s :: S).
+        Term s (PBuiltinList (PBuiltinPair PData PData) :--> r :--> r) ->
+        Term s (PBuiltinList (PBuiltinPair PData PData)) ->
+        Term s r ->
+        Term s r
+      go self mp done = pforce $ pchooseListBuiltin # mp # pdelay done #$ pdelay $ pmatch (pheadBuiltin # mp) $ \(PBuiltinPair fst snd) ->
+        plet (ptailBuiltin # mp) $ \t ->
+          self # t # (pwithValidated @a fst . pwithValidated @b snd $ done)
 
 {- | Checks that we have a @List@.
 
