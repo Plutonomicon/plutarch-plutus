@@ -95,6 +95,7 @@ library
     Plutarch.Either
     Plutarch.Enum
     Plutarch.Evaluate
+    Plutarch.Internal.Case
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
     Plutarch.Internal.Fix
@@ -163,6 +164,7 @@ library
     , prettyprinter
     , QuickCheck
     , random
+    , semialign
     , sop-core
     , unordered-containers
     , vector

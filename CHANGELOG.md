@@ -6,6 +6,7 @@
 
 * `pheadTailBuiltin`, for use when the list is known non-empty and both the head
   and tail are needed
+* `punsafeCase`, to give access to the UPLC `Case` construct more conveniently
 
 ## Changed
 
@@ -13,9 +14,6 @@
 * `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
 * `pfstBuiltin` and `psndBuiltin` are now deprecated, as pattern matching on
   `PBuiltinPair` outperforms it
-
-## Changed
-
 * `hrecField` has been made hidden. Not only should this not be used anymore, it
   was deprecated for a long time already.
 * Replaced all internal uses of `pfixHoisted` with `pfix` for improved
