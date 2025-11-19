@@ -275,8 +275,9 @@ instance (PValidateData k, PValidateData v, POrd k, PIsData k) => PValidateData 
   pwithValidated opq x =
     -- the PUnsortedMap validation should run before the sortedness check
     pwithValidated @(PUnsortedMap k v) opq $
-      plet (passertSorted #$ pfromData $ punsafeCoerce @(PAsData (PUnsortedMap k v)) opq) $ \_ ->
-        x
+      plet
+        (passertSorted #$ pfromData $ punsafeCoerce @(PAsData (PUnsortedMap k v)) opq)
+        (const x)
 
 ----------------------------------------------------------------------
 -- Creation

@@ -35,11 +35,6 @@ newtype PPubKeyHash (s :: S) = PPubKeyHash (Term s PByteString)
       PlutusType
     )
     via (DeriveNewtypePlutusType PPubKeyHash)
-  deriving
-    ( -- | @since 3.5.0
-      PValidateData
-    )
-    via (DeriveNewtypePValidateData PPubKeyHash PByteString)
 
 -- | @since 3.3.0
 instance PLiftable PPubKeyHash where
@@ -56,3 +51,15 @@ instance PLiftable PPubKeyHash where
 
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PPubKeyHash)
+
+-- | @since 3.5.0
+instance PValidateData PPubKeyHash where
+  pwithValidated opq x =
+    plet (plengthBS #$ pfromData $ pparseData @PByteString opq) $ \bsSize ->
+      pif
+        (bsSize #== ppubKeyHashByteSize)
+        x
+        perror
+
+ppubKeyHashByteSize :: forall (s :: S). Term s PInteger
+ppubKeyHashByteSize = 28
