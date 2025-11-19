@@ -10,13 +10,16 @@ import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.Value (
   PSortedValue,
   pemptySortedValue,
+  pforgetSorted,
+  phasAdaEntry,
+  phasZeroTokenQuantities,
   pnormalizeNoAdaNonZeroTokens,
   psingletonSortedValue,
  )
 import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol, padaSymbol)
 import Plutarch.LedgerApi.Value.TokenName (PTokenName)
 import Plutarch.Prelude hiding (psingleton)
-import Plutarch.Unsafe (punsafeDowncast)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusTx.Prelude qualified as PlutusTx
 
 {- | Represents sorted, well-formed Values without an Ada entry, while all
@@ -83,6 +86,16 @@ instance PTryFrom PData (PAsData PMintValue) where
     (opq', _) <- tcont $ ptryFrom @(PAsData PSortedValue) opq
     unwrapped <- tcont . plet . papp ptoMintValue . pfromData $ opq'
     pure (pdata unwrapped, ())
+
+-- | @since wip
+instance PValidateData PMintValue where
+  pwithValidated opq x =
+    pwithValidated @PSortedValue opq $
+      plet (pfromData $ punsafeCoerce @(PAsData PSortedValue) opq) $ \value ->
+        pif
+          ((phasAdaEntry # value) #|| (phasZeroTokenQuantities # pforgetSorted value))
+          perror
+          x
 
 {- | Construct an empty 'PMintValue'.
 

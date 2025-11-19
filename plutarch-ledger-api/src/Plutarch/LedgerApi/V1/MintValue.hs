@@ -10,6 +10,9 @@ import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Value (
   PSortedValue,
+  pforgetSorted,
+  phasZeroAdaEntry,
+  phasZeroTokenQuantities,
   pinsertAdaEntry,
   pnormalizeNoAdaNonZeroTokens,
   psingletonSortedValue,
@@ -84,6 +87,15 @@ instance PTryFrom PData (PAsData PMintValue) where
     (opq', _) <- tcont $ ptryFrom @(PAsData PSortedValue) opq
     unwrapped <- tcont . plet . papp ptoMintValue . pfromData $ opq'
     pure (pdata unwrapped, ())
+
+-- | @since wip
+instance PValidateData PMintValue where
+  pwithValidated opq x =
+    plet (pfromData $ pparseData @PSortedValue opq) $ \value ->
+      pif
+        ((pnot #$ phasZeroAdaEntry # value) #|| (phasZeroTokenQuantities # pforgetSorted value))
+        perror
+        x
 
 {- | Construct an empty 'PMintValue' with a zero Ada entry.
 
