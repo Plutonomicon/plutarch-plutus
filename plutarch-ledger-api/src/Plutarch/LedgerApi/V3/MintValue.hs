@@ -1,7 +1,7 @@
 module Plutarch.LedgerApi.V3.MintValue (
   PMintValue,
-  pempty,
-  psingleton,
+  pemptyMintValue,
+  psingletonMintValue,
   ptoMintValue,
 ) where
 
@@ -65,11 +65,11 @@ instance PSemigroup PMintValue where
 
 -- | @since 3.5.0
 instance Monoid (Term s PMintValue) where
-  mempty = pempty
+  mempty = pemptyMintValue
 
 -- | @since 3.5.0
 instance PlutusTx.Monoid (Term s PMintValue) where
-  mempty = pempty
+  mempty = pemptyMintValue
 
 -- | @since 3.5.0
 instance PMonoid PMintValue where
@@ -99,10 +99,10 @@ instance PValidateData PMintValue where
 
 {- | Construct an empty 'PMintValue'.
 
-@since 3.5.0
+@since wip
 -}
-pempty :: forall (s :: S). Term s PMintValue
-pempty = punsafeDowncast pemptySortedValue
+pemptyMintValue :: forall (s :: S). Term s PMintValue
+pemptyMintValue = punsafeDowncast pemptySortedValue
 
 {- | Construct a singleton 'PMintValue' containing only the given quantity of
 the given currency.
@@ -112,12 +112,12 @@ the given currency.
 If the quantity is zero, or if the provided currency symbol is the Ada symbol,
 the result is an empty 'PMintValue'.
 
-@since 3.5.0
+@since wip
 -}
-psingleton ::
+psingletonMintValue ::
   forall (s :: S).
   Term s (PCurrencySymbol :--> PTokenName :--> PInteger :--> PMintValue)
-psingleton =
+psingletonMintValue =
   phoistAcyclic $
     plam $ \symbol token amount ->
       pif

@@ -52,6 +52,10 @@ module Plutarch.LedgerApi.V3 (
   Value.PCurrencySymbol (..),
   Value.PTokenName (..),
   Value.PLovelace (..),
+  MintValue.PMintValue,
+  MintValue.pemptyMintValue,
+  MintValue.psingletonMintValue,
+  MintValue.ptoMintValue,
 
   -- * Assoc map
 
@@ -138,6 +142,7 @@ import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
+import Plutarch.LedgerApi.V3.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Maybe (pmapMaybe)

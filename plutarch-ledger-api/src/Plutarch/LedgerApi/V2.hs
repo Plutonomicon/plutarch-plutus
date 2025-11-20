@@ -19,6 +19,10 @@ module Plutarch.LedgerApi.V2 (
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),
+  MintValue.PMintValue,
+  MintValue.pemptyMintValue,
+  MintValue.psingletonMintValue,
+  MintValue.ptoMintValue,
 
   -- * Time
   Time.PPosixTime (..),

@@ -1,7 +1,7 @@
 module Plutarch.LedgerApi.V1.MintValue (
   PMintValue,
-  pempty,
-  psingleton,
+  pemptyMintValue,
+  psingletonMintValue,
   ptoMintValue,
 ) where
 
@@ -66,11 +66,11 @@ instance PSemigroup PMintValue where
 
 -- | @since 3.5.0
 instance Monoid (Term s PMintValue) where
-  mempty = pempty
+  mempty = pemptyMintValue
 
 -- | @since 3.5.0
 instance PlutusTx.Monoid (Term s PMintValue) where
-  mempty = pempty
+  mempty = pemptyMintValue
 
 -- | @since 3.5.0
 instance PMonoid PMintValue where
@@ -93,16 +93,19 @@ instance PValidateData PMintValue where
   pwithValidated opq x =
     plet (pfromData $ pparseData @PSortedValue opq) $ \value ->
       pif
-        ((pnot #$ phasZeroAdaEntry # value) #|| (phasZeroTokenQuantities # pforgetSorted value))
+        ( (pnot #$ phasZeroAdaEntry # value)
+            -- TODO: rewrite this check without adding fake ADA
+            #|| (phasZeroTokenQuantities #$ pforgetSorted $ value <> (psingletonSortedValue # padaSymbol # padaToken # 1))
+        )
         perror
         x
 
 {- | Construct an empty 'PMintValue' with a zero Ada entry.
 
-@since 3.5.0
+@since wip
 -}
-pempty :: forall (s :: S). Term s PMintValue
-pempty = punsafeDowncast $ psingletonSortedValue # padaSymbol # padaToken # 0
+pemptyMintValue :: forall (s :: S). Term s PMintValue
+pemptyMintValue = punsafeDowncast $ psingletonSortedValue # padaSymbol # padaToken # 0
 
 {- | Construct a singleton 'PMintValue' containing only the given quantity of
 the given currency, together with a mandatory zero-Ada entry.
@@ -113,12 +116,12 @@ the given currency, together with a mandatory zero-Ada entry.
 If the quantity is zero, or if the provided currency symbol is the Ada symbol,
 the result is 'mempty' (i.e. a Value with a single zero-Ada entry).
 
-@since 3.5.0
+@since wip
 -}
-psingleton ::
+psingletonMintValue ::
   forall (s :: S).
   Term s (PCurrencySymbol :--> PTokenName :--> PInteger :--> PMintValue)
-psingleton =
+psingletonMintValue =
   phoistAcyclic $
     plam $ \symbol token amount ->
       pif
