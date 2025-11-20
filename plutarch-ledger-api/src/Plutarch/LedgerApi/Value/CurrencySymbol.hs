@@ -51,7 +51,12 @@ instance PLiftable PCurrencySymbol where
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PCurrencySymbol)
 
--- | @since wip
+{- | Checks that we have a 'PCurrencySymbol' of valid length. The underlying
+'PByteString' must be exactly 28 bytes, as Cardano minting policies are hashed
+with BLAKE2b-224.
+
+@since wip
+-}
 instance PValidateData PCurrencySymbol where
   pwithValidated opq x =
     plet (plengthBS #$ pasByteStr # opq) $ \bsSize ->

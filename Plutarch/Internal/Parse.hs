@@ -219,7 +219,12 @@ instance {-# OVERLAPPABLE #-} PValidateData a => PValidateData (PBuiltinList a) 
         plet (ptailBuiltin # ell) $ \t ->
           self # t # pwithValidated @a h done
 
--- @since wip
+{- | Checks that we have a @Map@. Furthermore, checks that every key-value pair
+validates as per @a@ and @b@. Takes precedence over the overlapping
+@PValidateData (PBuiltinList a)@ instance.
+
+@since wip
+-}
 instance {-# OVERLAPPING #-} (PValidateData a, PValidateData b) => PValidateData (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))) where
   pwithValidated opq x = plet (pasMap # opq) $ \mp ->
     phoistAcyclic (pfix $ plam . go) # mp # x

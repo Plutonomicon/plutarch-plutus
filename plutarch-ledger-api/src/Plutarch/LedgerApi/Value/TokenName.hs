@@ -52,7 +52,11 @@ instance PLiftable PTokenName where
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PTokenName)
 
--- | @since wip
+{- | Checks that we have a 'PTokenName' of valid length. The underlying
+'PByteString' must not exceed 32 bytes.
+
+@since wip
+-}
 instance PValidateData PTokenName where
   pwithValidated opq x =
     plet (plengthBS #$ pasByteStr # opq) $ \bsSize ->

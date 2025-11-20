@@ -49,7 +49,12 @@ deriving via
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxId)
 
--- | @since wip
+{- | Checks that we have a 'PTxId' of valid length. The underlying
+'PByteString' must be exactly 32 bytes, as Cardano transactions are hashed
+with BLAKE2b-256.
+
+@since wip
+-}
 instance PValidateData PTxId where
   pwithValidated opq x =
     -- FIXME: Why is it wrapped in Constr 0?
@@ -108,7 +113,12 @@ deriving via
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxOutRef)
 
--- | @since wip
+{- | Checks that we have a valid 'PTxOutRef'. The underlying 'PTxId' must be
+exactly 32 bytes, as Cardano transactions are hashed with BLAKE2b-256, and
+the output index must be a non-negative 'PInteger'.
+
+@since wip
+-}
 instance PValidateData PTxOutRef where
   pwithValidated opq x =
     pmatch (pasConstr # opq) $ \(PBuiltinPair constrIdx fields) ->

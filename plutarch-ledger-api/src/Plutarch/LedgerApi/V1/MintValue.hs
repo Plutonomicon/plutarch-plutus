@@ -88,7 +88,12 @@ instance PTryFrom PData (PAsData PMintValue) where
     unwrapped <- tcont . plet . papp ptoMintValue . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since wip
+{- | Checks that we have a valid 'PMintValue'. The underlying map must be
+sorted, include a zero ADA entry, and contain no empty token maps or non-ADA
+tokens with zero quantities.
+
+@since wip
+-}
 instance PValidateData PMintValue where
   pwithValidated opq x =
     plet (pfromData $ pparseData @PSortedValue opq) $ \value ->

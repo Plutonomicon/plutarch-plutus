@@ -270,7 +270,11 @@ instance
     unwrapped <- tcont $ plet . papp passertSorted . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since wip
+{- | Checks that we have a valid 'PSortedMap' with keys sorted in ascending
+order.
+
+@since wip
+-}
 instance (PValidateData k, PValidateData v, POrd k, PIsData k) => PValidateData (PSortedMap k v) where
   pwithValidated opq x =
     -- the PUnsortedMap validation should run before the sortedness check

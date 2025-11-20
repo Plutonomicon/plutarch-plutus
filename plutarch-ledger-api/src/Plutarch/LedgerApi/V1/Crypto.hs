@@ -52,7 +52,12 @@ instance PLiftable PPubKeyHash where
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PPubKeyHash)
 
--- | @since 3.5.0
+{- | Checks that we have a 'PPubKeyHash' of valid length. The underlying
+'PByteString' must be exactly 28 bytes, as Cardano public keys are hashed with
+BLAKE2b-224.
+
+@since 3.5.0
+-}
 instance PValidateData PPubKeyHash where
   pwithValidated opq x =
     plet (plengthBS #$ pfromData $ pparseData @PByteString opq) $ \bsSize ->

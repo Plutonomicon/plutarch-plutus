@@ -387,7 +387,12 @@ deriving via
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PGovernanceActionId)
 
--- | @since wip
+{- | Checks that we have a valid 'PGovernanceActionId'. The underlying 'PTxId'
+must be exactly 32 bytes, as Cardano transactions are hashed with BLAKE2b-256,
+and the action index must be a non-negative 'PInteger'.
+
+@since wip
+-}
 instance PValidateData PGovernanceActionId where
   pwithValidated opq x =
     pmatch (pasConstr # opq) $ \(PBuiltinPair constrIdx fields) ->

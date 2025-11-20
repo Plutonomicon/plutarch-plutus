@@ -195,7 +195,11 @@ instance PTryFrom PData (PAsData PSortedValue) where
     unwrapped <- tcont . plet . papp passertSorted . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since wip
+{- | Checks that we have a valid 'PSortedValue'. The underlying map must be
+sorted and contain no empty token maps.
+
+@since wip
+-}
 instance PValidateData PSortedValue where
   pwithValidated opq x =
     plet
@@ -273,7 +277,11 @@ instance PTryFrom PData (PAsData PLedgerValue) where
     unwrapped <- tcont . plet . papp ptoLedgerValue . pfromData $ opq'
     pure (pdata unwrapped, ())
 
--- | @since wip
+{- | Checks that we have a valid 'PLedgerValue'. The underlying map must be
+sorted, contain no empty token maps, and include an ADA entry.
+
+@since wip
+-}
 instance PValidateData PLedgerValue where
   pwithValidated opq x =
     pwithValidated @PSortedValue opq $
@@ -484,7 +492,7 @@ holds over 'PSortedValue's.
 
 = Important note
 
-This is intended for use with boolearison functions, which must define
+This is intended for use with boolean comparison functions, which must define
 at least a partial order (total orders and equivalences are acceptable as
 well). Use of this with anything else is not guaranteed to give anything
 resembling a sensible answer. Use with extreme care.
