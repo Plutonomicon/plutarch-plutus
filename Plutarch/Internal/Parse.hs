@@ -42,9 +42,10 @@ import Plutarch.Builtin.Data (
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.IsData (PIsData)
+import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Lift (pconstant)
-import Plutarch.Internal.Ord ((#<), (#>=))
+import Plutarch.Internal.Numeric (PPositive)
+import Plutarch.Internal.Ord ((#<), (#<=), (#>=))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PlutusType (PInner, pcon', pmatch'),
@@ -144,6 +145,15 @@ deriving via (Don'tValidate PData) instance PValidateData PData
 instance PValidateData PInteger where
   pwithValidated opq = plet (pasInt # opq) . const
 
+{- | Checks that we have a positive @I@.
+
+@since wip
+-}
+instance PValidateData PPositive where
+  pwithValidated opq x =
+    plet (pfromData $ pparseData @PInteger opq) $ \n ->
+      pif (n #<= 0) perror x
+
 {- | Checks that we have a @B@.
 
 @since 1.12.0
@@ -195,7 +205,7 @@ validates as per @a@.
 
 @since 1.12.0
 -}
-instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
+instance {-# OVERLAPPABLE #-} PValidateData a => PValidateData (PBuiltinList a) where
   pwithValidated opq x = plet (pasList # opq) $ \ell ->
     phoistAcyclic (pfix $ plam . go) # ell # x
     where
@@ -210,7 +220,7 @@ instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
           self # t # pwithValidated @a h done
 
 -- @since wip
-instance (PValidateData a, PValidateData b) => PValidateData (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))) where
+instance {-# OVERLAPPING #-} (PValidateData a, PValidateData b) => PValidateData (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))) where
   pwithValidated opq x = plet (pasMap # opq) $ \mp ->
     phoistAcyclic (pfix $ plam . go) # mp # x
     where

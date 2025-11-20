@@ -4,6 +4,7 @@
 module Plutarch.LedgerApi.V1.Tx (
   PTxId (..),
   PTxOutRef (..),
+  txIdByteSize,
 ) where
 
 import GHC.Generics (Generic)

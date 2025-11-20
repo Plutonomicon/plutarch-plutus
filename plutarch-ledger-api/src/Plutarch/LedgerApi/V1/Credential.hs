@@ -28,7 +28,8 @@ data PCredential (s :: S)
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- , -- | @since 2.0.0
+    , -- FIXME: figure out what's the deal here
+      -- , -- | @since 2.0.0
       --   POrd
 
       -- | @since 2.0.0

@@ -4,22 +4,43 @@ module Plutarch.Test.Suite.PlutarchLedgerApi.Parse (
 
 import Data.Kind (Type)
 import Data.String (IsString)
+import Plutarch.LedgerApi.AssocMap (PSortedMap)
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.V1 qualified as V1
 import Plutarch.LedgerApi.V2 qualified as V2
+import Plutarch.LedgerApi.V3 qualified as V3
 import Plutarch.Prelude
-import Plutarch.Test.Unit (testEval)
+import Plutarch.Test.Unit (testEval, testEvalEqual, testEvalFail)
 import PlutusLedgerApi.V1 qualified as PlutusV1
 import PlutusLedgerApi.V2 qualified as PlutusV2
+import PlutusLedgerApi.V3 qualified as PlutusV3
 import Test.Tasty (TestTree, testGroup)
 
 tests :: TestTree
 tests =
   testGroup
     "PValidateData"
-    [ testEval
+    [ testEvalEqual
+        "PTxId data repr"
+        (pforgetData $ pdata $ pconstant @V1.PTxId $ PlutusV1.TxId blake2b256HashFixture)
+        (pconstant $ PlutusV2.Constr 0 [PlutusV2.B blake2b256HashFixture])
+    , testGroup
         "PTxOutRef"
-        ( pparseDataSmokeTest @V1.PTxOutRef
-            (PlutusV1.TxOutRef blake2b256HashFixture 0)
+        [ testEval
+            "V1"
+            ( pparseDataSmokeTest @V1.PTxOutRef
+                (PlutusV1.TxOutRef blake2b256HashFixture 0)
+            )
+        , testEval
+            "V3"
+            ( pparseDataSmokeTest @V3.PTxOutRef
+                (PlutusV3.TxOutRef blake2b256HashFixture 0)
+            )
+        ]
+    , testEval
+        "PGovernanceActionId"
+        ( pparseDataSmokeTest @V3.PGovernanceActionId
+            (PlutusV3.GovernanceActionId blake2b256HashFixture 0)
         )
     , testEval
         "PPubKeyHash"
@@ -52,6 +73,25 @@ tests =
                       PlutusV2.BuiltinData $
                         PlutusV2.Constr 1 [PlutusV2.I 5, PlutusV2.B "deadbeef"]
                 )
+            )
+        ]
+    , testGroup
+        "PSortedMap"
+        [ testEval
+            "success"
+            ( pparseData @(PSortedMap PInteger PInteger) $
+                pforgetData $
+                  pdata $
+                    AssocMap.psortedMapFromFoldable @PInteger @PInteger @[]
+                      [(0, 1), (1, 2)]
+            )
+        , testEvalFail
+            "fails if map is unsorted"
+            ( pparseData @(PSortedMap PInteger PInteger) $
+                pforgetData $
+                  pdata $
+                    AssocMap.punsortedMapFromFoldable @PInteger @PInteger @[]
+                      [(0, 0), (1, 1), (3, 3), (2, 2)]
             )
         ]
     ]

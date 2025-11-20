@@ -61,6 +61,8 @@ data PInterval (a :: S -> Type) (s :: S) = PInterval
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct (PInterval a))
 
@@ -91,6 +93,8 @@ data PLowerBound (a :: S -> Type) (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct (PLowerBound a))
 
@@ -132,6 +136,8 @@ data PUpperBound (a :: S -> Type) (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct (PUpperBound a))
 
@@ -177,6 +183,8 @@ data PExtended (a :: S -> Type) (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct (PExtended a))
 

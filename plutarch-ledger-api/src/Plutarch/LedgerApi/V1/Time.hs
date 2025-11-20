@@ -38,6 +38,11 @@ newtype PPosixTime (s :: S) = PPosixTime (Term s PInteger)
       PlutusType
     )
     via (DeriveNewtypePlutusType PPosixTime)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PPosixTime PInteger)
 
 -- | @since 3.3.0
 instance PCountable PPosixTime where
