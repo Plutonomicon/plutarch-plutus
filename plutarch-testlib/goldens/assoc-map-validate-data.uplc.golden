@@ -3,25 +3,20 @@ PSortedMap program
   ((\!0 ->
       (\!0 -> !1 !1)
         (\!0 !0 !0 ->
-           force
-             (case
-                (constr 0
-                   [ !2
-                   , (delay !1)
-                   , (delay
-                        (case
-                           (force headList !2)
-                           [ (\!0 !0 ->
-                                (\!0 ->
-                                   case
-                                     (constr 0
-                                        [ !6
-                                        , !1
-                                        , ((\!0 -> (\!0 -> !6) (unIData !3))
-                                             (unIData !3)) ])
-                                     [!6])
-                                  (force tailList !4)) ])) ])
-                [(force (force chooseList))]))
+           case
+             !2
+             [ (\!0 !0 ->
+                  case
+                    !2
+                    [ (\!0 !0 ->
+                         case
+                           (constr 0
+                              [ !7
+                              , !3
+                              , ((\!0 -> (\!0 -> !7) (unIData !2))
+                                   (unIData !2)) ])
+                           [!7]) ])
+             , !1 ])
         !1
         ((\!0 ->
             (\!0 ->
