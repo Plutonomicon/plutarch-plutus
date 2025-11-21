@@ -38,6 +38,8 @@ data PDCert (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PDCert)
 

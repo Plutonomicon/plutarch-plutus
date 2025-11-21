@@ -128,6 +128,7 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.Unroll
     Plutarch.Test.Suite.Plutarch.Uplc
     Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap
+    Plutarch.Test.Suite.PlutarchLedgerApi.Parse
     Plutarch.Test.Suite.PlutarchLedgerApi.Regressions
     Plutarch.Test.Suite.PlutarchLedgerApi.Utils
     Plutarch.Test.Suite.PlutarchLedgerApi.V1

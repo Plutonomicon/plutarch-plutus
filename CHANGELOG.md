@@ -4,6 +4,7 @@
 
 ## Added
 
+* `PValidateData` instance for `PPositive`.
 * `pheadTailBuiltin`, for use when the list is known non-empty and both the head
   and tail are needed
 * `punsafeCase`, to give access to the UPLC `Case` construct more conveniently
@@ -19,6 +20,8 @@
 * Replaced all internal uses of `pfixHoisted` with `pfix` for improved
   performance, at the cost of a negligible increase in script size in some
   cases.
+* `Plutarch.Internal.Parse` definitions are now re-exported from
+  `Plutarch.Prelude`. 
 
 ## Removed
 

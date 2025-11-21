@@ -1,7 +1,7 @@
 module Plutarch.LedgerApi.V3.MintValue (
   PMintValue,
-  pempty,
-  psingleton,
+  pemptyMintValue,
+  psingletonMintValue,
   ptoMintValue,
 ) where
 
@@ -10,13 +10,16 @@ import Generics.SOP qualified as SOP
 import Plutarch.LedgerApi.Value (
   PSortedValue,
   pemptySortedValue,
+  pforgetSorted,
+  phasAdaEntry,
+  phasZeroTokenQuantities,
   pnormalizeNoAdaNonZeroTokens,
   psingletonSortedValue,
  )
 import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol, padaSymbol)
 import Plutarch.LedgerApi.Value.TokenName (PTokenName)
 import Plutarch.Prelude hiding (psingleton)
-import Plutarch.Unsafe (punsafeDowncast)
+import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
 import PlutusTx.Prelude qualified as PlutusTx
 
 {- | Represents sorted, well-formed Values without an Ada entry, while all
@@ -62,11 +65,11 @@ instance PSemigroup PMintValue where
 
 -- | @since 3.5.0
 instance Monoid (Term s PMintValue) where
-  mempty = pempty
+  mempty = pemptyMintValue
 
 -- | @since 3.5.0
 instance PlutusTx.Monoid (Term s PMintValue) where
-  mempty = pempty
+  mempty = pemptyMintValue
 
 -- | @since 3.5.0
 instance PMonoid PMintValue where
@@ -84,12 +87,27 @@ instance PTryFrom PData (PAsData PMintValue) where
     unwrapped <- tcont . plet . papp ptoMintValue . pfromData $ opq'
     pure (pdata unwrapped, ())
 
+{- | Checks that we have a valid 'PMintValue'. The underlying map must be
+sorted, must not include an ADA entry, and must not contain any empty token maps
+or tokens with zero quantities.
+
+@since wip
+-}
+instance PValidateData PMintValue where
+  pwithValidated opq x =
+    pwithValidated @PSortedValue opq $
+      plet (pfromData $ punsafeCoerce @(PAsData PSortedValue) opq) $ \value ->
+        pif
+          ((phasAdaEntry # value) #|| (phasZeroTokenQuantities # pforgetSorted value))
+          perror
+          x
+
 {- | Construct an empty 'PMintValue'.
 
-@since 3.5.0
+@since wip
 -}
-pempty :: forall (s :: S). Term s PMintValue
-pempty = punsafeDowncast pemptySortedValue
+pemptyMintValue :: forall (s :: S). Term s PMintValue
+pemptyMintValue = punsafeDowncast pemptySortedValue
 
 {- | Construct a singleton 'PMintValue' containing only the given quantity of
 the given currency.
@@ -99,12 +117,12 @@ the given currency.
 If the quantity is zero, or if the provided currency symbol is the Ada symbol,
 the result is an empty 'PMintValue'.
 
-@since 3.5.0
+@since wip
 -}
-psingleton ::
+psingletonMintValue ::
   forall (s :: S).
   Term s (PCurrencySymbol :--> PTokenName :--> PInteger :--> PMintValue)
-psingleton =
+psingletonMintValue =
   phoistAcyclic $
     plam $ \symbol token amount ->
       pif

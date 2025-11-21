@@ -8,7 +8,6 @@ module Plutarch.LedgerApi.V1.Credential (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.Internal.Parse (PValidateData)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.Prelude
@@ -29,7 +28,8 @@ data PCredential (s :: S)
       PIsData
     , -- | @since 2.0.0
       PEq
-    , -- , -- | @since 2.0.0
+    , -- FIXME: figure out what's the deal here
+      -- , -- | @since 2.0.0
       --   POrd
 
       -- | @since 2.0.0

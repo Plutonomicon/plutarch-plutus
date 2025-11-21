@@ -19,6 +19,10 @@ module Plutarch.LedgerApi.V1 (
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),
+  MintValue.PMintValue,
+  MintValue.pemptyMintValue,
+  MintValue.psingletonMintValue,
+  MintValue.ptoMintValue,
 
   -- * Time
   Time.PPosixTime (..),
@@ -79,7 +83,7 @@ import Plutarch.LedgerApi.V1.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.DCert qualified as DCert
-import Plutarch.LedgerApi.V1.MintValue qualified as MintValue (PMintValue)
+import Plutarch.LedgerApi.V1.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V1.Tx qualified as Tx
@@ -110,6 +114,8 @@ data PTxOut (s :: S) = PTxOut
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxOut)
 
@@ -144,6 +150,8 @@ data PTxInInfo (s :: S) = PTxInInfo
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxInInfo)
 
@@ -186,6 +194,8 @@ data PTxInfo (s :: S) = PTxInfo
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxInfo)
 
@@ -220,6 +230,8 @@ data PScriptContext (s :: S) = PScriptContext
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PScriptContext)
 

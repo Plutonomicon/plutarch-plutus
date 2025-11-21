@@ -52,6 +52,19 @@ instance PLiftable PTokenName where
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PTokenName)
 
+{- | Checks that we have a 'PTokenName' of valid length. The underlying
+'PByteString' must not exceed 32 bytes.
+
+@since wip
+-}
+instance PValidateData PTokenName where
+  pwithValidated opq x =
+    plet (plengthBS #$ pasByteStr # opq) $ \bsSize ->
+      pif (bsSize #<= ptokenNameByteSizeLimit) x perror
+
+ptokenNameByteSizeLimit :: forall (s :: S). Term s PInteger
+ptokenNameByteSizeLimit = 32
+
 {- | The 'PTokenName' of the Ada currency.
 
 @since 2.1.1

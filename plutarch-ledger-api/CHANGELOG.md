@@ -9,12 +9,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 * `SOP.Generic` derivations for `PDatum`, `PRedeemer`.
+* Missing `PValidateData` instances for plutarch-ledger-api types.
+* `phasZeroTokenQuantities`, `phasAdaEntry`, and `phasZeroAdaEntry` functions
+  to `Plutarch.LedgerApi.Value`. 
 
 ### Changed
 
 * Replaced all internal uses of `pfixHoisted` with `pfix` for improved
   performance, at the cost of a negligible increase in script size in some
   cases.
+* Exposed definitions from the `Plutarch.LedgerApi.V1.MintValue` and
+  `Plutarch.LedgerApi.V3.MintValue` modules.
 
 ### Removed
 

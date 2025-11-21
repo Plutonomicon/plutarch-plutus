@@ -80,6 +80,11 @@ newtype PColdCommitteeCredential (s :: S) = PColdCommitteeCredential (Term s PCr
       PlutusType
     )
     via (DeriveNewtypePlutusType PColdCommitteeCredential)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PColdCommitteeCredential PCredential)
 
 -- | @since 3.3.0
 deriving via
@@ -111,6 +116,11 @@ newtype PHotCommitteeCredential (s :: S) = PHotCommitteeCredential (Term s PCred
       PlutusType
     )
     via (DeriveNewtypePlutusType PHotCommitteeCredential)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PHotCommitteeCredential PCredential)
 
 -- | @since 3.3.0
 deriving via
@@ -142,6 +152,11 @@ newtype PDRepCredential (s :: S) = PDRepCredential (Term s PCredential)
       PlutusType
     )
     via (DeriveNewtypePlutusType PDRepCredential)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PDRepCredential PCredential)
 
 -- | @since 3.3.0
 deriving via
@@ -174,6 +189,8 @@ data PDRep (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PDRep)
 
@@ -208,6 +225,8 @@ data PDelegatee (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PDelegatee)
 
@@ -250,6 +269,8 @@ data PTxCert (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxCert)
 
@@ -284,6 +305,8 @@ data PVoter (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PVoter)
 
@@ -318,6 +341,8 @@ data PVote (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PVote)
 
@@ -362,6 +387,26 @@ deriving via
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PGovernanceActionId)
 
+{- | Checks that we have a valid 'PGovernanceActionId'. The underlying 'PTxId'
+must be exactly 32 bytes, as Cardano transactions are hashed with BLAKE2b-256,
+and the action index must be a non-negative 'PInteger'.
+
+@since wip
+-}
+instance PValidateData PGovernanceActionId where
+  pwithValidated opq x =
+    pmatch (pasConstr # opq) $ \(PBuiltinPair constrIdx fields) ->
+      pif
+        ((constrIdx #== 0) #&& ((plength # fields) #== 2))
+        ( pwithValidated @PTxId (ptryIndex 0 fields) $
+            plet (pasInt # ptryIndex 1 fields) $ \outIdx ->
+              pif
+                (outIdx #< 0)
+                perror
+                x
+        )
+        perror
+
 -- TODO: Investigate what guarantees this provides on the Map, if any
 
 -- | @since 3.1.0
@@ -386,6 +431,8 @@ data PCommittee (s :: S) = PCommittee
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PCommittee)
 
@@ -420,6 +467,8 @@ newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PConstitution)
 
@@ -454,6 +503,8 @@ data PProtocolVersion (s :: S) = PProtocolVersion
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PProtocolVersion)
 
@@ -488,6 +539,11 @@ newtype PChangedParameters (s :: S)
       PlutusType
     )
     via (DeriveNewtypePlutusType PChangedParameters)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via (DeriveNewtypePValidateData PChangedParameters PData)
 
 -- | @since 3.3.0
 deriving via
@@ -530,6 +586,8 @@ data PGovernanceAction (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PGovernanceAction)
 
@@ -565,6 +623,8 @@ data PProposalProcedure (s :: S) = PProposalProcedure
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PProposalProcedure)
 
@@ -605,6 +665,8 @@ data PScriptPurpose (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PScriptPurpose)
 
@@ -642,6 +704,8 @@ data PScriptInfo (s :: S)
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PScriptInfo)
 
@@ -679,6 +743,8 @@ data PTxInInfo (s :: S) = PTxInInfo
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxInInfo)
 
@@ -729,6 +795,8 @@ data PTxInfo (s :: S) = PTxInfo
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxInfo)
 
@@ -764,6 +832,8 @@ data PScriptContext (s :: S) = PScriptContext
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PScriptContext)
 

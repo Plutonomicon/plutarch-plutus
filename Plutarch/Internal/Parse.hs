@@ -34,14 +34,17 @@ import Plutarch.Builtin.Data (
   pasConstr,
   pasInt,
   pasList,
+  pasMap,
   pheadBuiltin,
   pheadTailBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
-import Plutarch.Internal.IsData (PIsData)
+import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Lift (pconstant)
+import Plutarch.Internal.Numeric (PPositive)
+import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
   PlutusType (PInner, pcon', pmatch'),
@@ -141,6 +144,15 @@ deriving via (Don'tValidate PData) instance PValidateData PData
 instance PValidateData PInteger where
   pwithValidated opq = plet (pasInt # opq) . const
 
+{- | Checks that we have a positive @I@.
+
+@since wip
+-}
+instance PValidateData PPositive where
+  pwithValidated opq x =
+    plet (pfromData $ pparseData @PInteger opq) $ \n ->
+      pif (n #<= 0) perror x
+
 {- | Checks that we have a @B@.
 
 @since 1.12.0
@@ -192,7 +204,7 @@ validates as per @a@.
 
 @since 1.12.0
 -}
-instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
+instance {-# OVERLAPPABLE #-} PValidateData a => PValidateData (PBuiltinList a) where
   pwithValidated opq x = plet (pasList # opq) $ \ell ->
     phoistAcyclic (pfix $ plam . go) # ell # x
     where
@@ -209,6 +221,33 @@ instance PValidateData a => PValidateData (PBuiltinList (PAsData a)) where
 {-
 go self ell done = pchooseListBuiltin # ell # done #$ pheadTailBuiltin ell $ \h t ->
   self # t # pwithValidated @a h done -}
+
+{- | Checks that we have a @Map@. Furthermore, checks that every key-value pair
+validates as per @a@ and @b@. Takes precedence over the overlapping
+@PValidateData (PBuiltinList a)@ instance.
+
+@since wip
+-}
+instance {-# OVERLAPPING #-} (PValidateData a, PValidateData b) => PValidateData (PBuiltinList (PBuiltinPair (PAsData a) (PAsData b))) where
+  pwithValidated opq x = plet (pasMap # opq) $ \mp ->
+    phoistAcyclic (pfix $ plam . go) # mp # x
+    where
+      go ::
+        forall (r :: S -> Type) (s :: S).
+        Term s (PBuiltinList (PBuiltinPair PData PData) :--> r :--> r) ->
+        Term s (PBuiltinList (PBuiltinPair PData PData)) ->
+        Term s r ->
+        Term s r
+      go self mp done = pmatch mp $ \case
+        PNil -> done
+        PCons h t ->
+          pmatch h $ \(PBuiltinPair fst snd) ->
+            self # t # (pwithValidated @a fst . pwithValidated @b snd $ done)
+
+{-
+go self mp done = pforce $ pchooseListBuiltin # mp # pdelay done #$ pdelay $ pmatch (pheadBuiltin # mp) $ \(PBuiltinPair fst snd) ->
+  plet (ptailBuiltin # mp) $ \t ->
+    self # t # (pwithValidated @a fst . pwithValidated @b snd $ done) -}
 
 {- | Checks that we have a @List@.
 

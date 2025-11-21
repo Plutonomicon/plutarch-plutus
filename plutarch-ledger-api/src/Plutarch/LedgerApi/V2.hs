@@ -19,6 +19,10 @@ module Plutarch.LedgerApi.V2 (
   Value.PLovelace (..),
   Value.PTokenName (..),
   Value.PCurrencySymbol (..),
+  MintValue.PMintValue,
+  MintValue.pemptyMintValue,
+  MintValue.psingletonMintValue,
+  MintValue.ptoMintValue,
 
   -- * Time
   Time.PPosixTime (..),
@@ -111,6 +115,8 @@ data PTxInInfo (s :: S) = PTxInInfo
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxInInfo)
 
@@ -155,6 +161,8 @@ data PTxInfo (s :: S) = PTxInfo
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PTxInfo)
 
@@ -189,6 +197,8 @@ data PScriptContext (s :: S) = PScriptContext
   deriving
     ( -- | @since 3.3.0
       PlutusType
+    , -- | @since wip
+      PValidateData
     )
     via (DeriveAsDataStruct PScriptContext)
 

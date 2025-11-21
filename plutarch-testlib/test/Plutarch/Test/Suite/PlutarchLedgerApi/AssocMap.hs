@@ -21,10 +21,11 @@ import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.Maybe (pjust, pmapMaybe, pnothing)
 import Plutarch.Prelude
 import Plutarch.Test.Bench (bcompareWithin, bench)
+import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, propEvalEqual)
 import Plutarch.Test.Unit (testEvalEqual)
-import Plutarch.Test.Utils (fewerTests, prettyEquals, prettyShow)
+import Plutarch.Test.Utils (fewerTests, precompileTerm, prettyEquals, prettyShow)
 import Plutarch.Unsafe (punsafeCoerce)
 import PlutusLedgerApi.V1.Orphans (UnsortedAssocMap, getUnsortedAssocMap)
 import PlutusTx.AssocMap qualified as PlutusMap
@@ -168,6 +169,17 @@ tests =
   testGroup
     "AssocMap"
     [ checkLedgerPropertiesAssocMap
+    , plutarchGolden
+        "PValidateData"
+        "assoc-map-validate-data"
+        [ goldenEval "PSortedMap" $
+            pparseData @(PSortedMap PInteger PInteger) $
+              precompileTerm $
+                pforgetData $
+                  pdata $
+                    AssocMap.psortedMapFromFoldable @PInteger @PInteger @[]
+                      [(0, 1), (1, 2)]
+        ]
     , testGroup
         "pcheckBinRel"
         [ testEvalEqual

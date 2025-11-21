@@ -30,6 +30,14 @@ newtype PAssetClass (s :: S) = PAssetClass (Term s (PBuiltinPair (PAsData PCurre
       PlutusType
     )
     via (DeriveNewtypePlutusType PAssetClass)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via ( DeriveNewtypePValidateData
+            PAssetClass
+            (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+        )
 
 -- | @since 3.3.0
 instance POrd PAssetClass where

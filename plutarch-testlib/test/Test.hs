@@ -25,6 +25,7 @@ import Plutarch.Test.Suite.Plutarch.Unit qualified as Unit
 import Plutarch.Test.Suite.Plutarch.Unroll qualified as Unroll
 import Plutarch.Test.Suite.Plutarch.Uplc qualified as Uplc
 import Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap qualified as AssocMap
+import Plutarch.Test.Suite.PlutarchLedgerApi.Parse qualified as Parse
 import Plutarch.Test.Suite.PlutarchLedgerApi.Regressions qualified as Regressions
 import Plutarch.Test.Suite.PlutarchLedgerApi.Utils qualified as Utils
 import Plutarch.Test.Suite.PlutarchLedgerApi.V1 qualified as V1
@@ -75,6 +76,7 @@ main = do
             , V1.tests
             , V2.tests
             , V3.tests
+            , Parse.tests
             ]
         , testGroup "Regressions" Regressions.tests
         ]

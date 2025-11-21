@@ -54,6 +54,9 @@ module Plutarch.LedgerApi.Value (
   pvalueOf,
   plovelaceValueOf,
   pisAdaOnlyValue,
+  phasZeroTokenQuantities,
+  phasAdaEntry,
+  phasZeroAdaEntry,
 
   -- ** Misc (internal use)
   pinsertAdaEntry,
@@ -103,6 +106,14 @@ newtype PRawValue (s :: S)
       PlutusType
     )
     via (DeriveNewtypePlutusType PRawValue)
+  deriving
+    ( -- | @since wip
+      PValidateData
+    )
+    via ( DeriveNewtypePValidateData
+            PRawValue
+            (AssocMap.PUnsortedMap PCurrencySymbol (AssocMap.PUnsortedMap PTokenName PInteger))
+        )
 
 -- | @since 3.5.0
 instance PTryFrom PData (PAsData PRawValue)
@@ -184,6 +195,17 @@ instance PTryFrom PData (PAsData PSortedValue) where
     unwrapped <- tcont . plet . papp passertSorted . pfromData $ opq'
     pure (pdata unwrapped, ())
 
+{- | Checks that we have a valid 'PSortedValue'. The underlying map must be
+sorted and contain no empty token maps.
+
+@since wip
+-}
+instance PValidateData PSortedValue where
+  pwithValidated opq x =
+    plet
+      (passertSorted #$ pfromData $ pparseData @PRawValue opq)
+      (const x)
+
 ----------------------------------------------------------------------
 -- PLedgerValue
 
@@ -254,6 +276,19 @@ instance PTryFrom PData (PAsData PLedgerValue) where
     (opq', _) <- tcont $ ptryFrom @(PAsData PSortedValue) opq
     unwrapped <- tcont . plet . papp ptoLedgerValue . pfromData $ opq'
     pure (pdata unwrapped, ())
+
+{- | Checks that we have a valid 'PLedgerValue'. The underlying map must be
+sorted, contain no empty token maps, and include an ADA entry.
+
+@since wip
+-}
+instance PValidateData PLedgerValue where
+  pwithValidated opq x =
+    pwithValidated @PSortedValue opq $
+      pif
+        (phasAdaEntry #$ pfromData $ punsafeCoerce @(PAsData PSortedValue) opq)
+        x
+        perror
 
 ----------------------------------------------------------------------
 -- Creation
@@ -613,6 +648,54 @@ pisAdaOnlyValue = phoistAcyclic $
                 cs #== padaSymbolData
             )
 
+{- | Check if the given Value contains zero token quantities.
+
+@since wip
+-}
+phasZeroTokenQuantities :: forall (s :: S). Term s (PRawValue :--> PBool)
+phasZeroTokenQuantities =
+  plam $ \value ->
+    AssocMap.pany
+      # plam (AssocMap.pany # plam (0 #==) #)
+      # pto value
+
+{- | Check if the given 'PSortedValue' contains a valid ADA entry.
+
+@since wip
+-}
+phasAdaEntry :: forall (s :: S). Term s (PSortedValue :--> PBool)
+phasAdaEntry =
+  phoistAcyclic $
+    plam $ \value ->
+      pmatch (pto $ pto $ pto value) $ \case
+        PNil -> pcon PFalse
+        PCons x _ ->
+          pmatch x $ \(PBuiltinPair cs tokenMap) ->
+            -- TODO: Should we allow duplicates in the token map?
+            (cs #== padaSymbolData)
+              #&& ( pall
+                      # plam
+                        ( \p ->
+                            pmatch p $ \(PBuiltinPair token _) ->
+                              token #== pdata padaToken
+                        )
+                      # pto (pto $ pfromData tokenMap)
+                  )
+
+{- | Check if the given 'PSortedValue' has a zero ADA entry.
+
+@since wip
+-}
+phasZeroAdaEntry :: forall (s :: S). Term s (PSortedValue :--> PBool)
+phasZeroAdaEntry =
+  plam $ \value ->
+    pmatch (pto $ pto $ pto value) $ \case
+      PNil -> pcon PFalse
+      PCons x _ ->
+        pmatch x $ \(PBuiltinPair cs tokenMap) ->
+          (cs #== padaSymbolData)
+            #&& (tokenMap #== pdata (AssocMap.psingleton # padaToken # 0))
+
 ----------------------------------------------------------------------
 -- Helpers
 
@@ -636,17 +719,14 @@ pinsertAdaEntry :: forall (s :: S). Term s (PSortedValue :--> PSortedValue)
 pinsertAdaEntry =
   phoistAcyclic $
     plam $ \value ->
-      pmatch (pto $ pto $ pto value) $ \case
-        PNil -> psingletonSortedValue # padaSymbol # padaToken # 0
-        PCons x xs -> pmatch x $ \(PBuiltinPair cs _) ->
-          pif
-            (cs #== padaSymbolData)
-            value
-            ( punsafeDowncast . punsafeDowncast . punsafeDowncast $
-                pcons
-                  # (ppairDataBuiltin # padaSymbolData # pdata (AssocMap.psingleton # padaToken # 0))
-                  # (pcons # x # xs)
-            )
+      pif
+        (phasAdaEntry # value)
+        value
+        ( punsafeDowncast . punsafeDowncast . punsafeDowncast $
+            pcons
+              # (ppairDataBuiltin # padaSymbolData # pdata (AssocMap.psingleton # padaToken # 0))
+              # pto (pto $ pto value)
+        )
 
 {- | Normalize the argument to contain no Ada entries and no zero token
 quantities.

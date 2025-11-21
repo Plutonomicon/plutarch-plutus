@@ -8,6 +8,7 @@ module Plutarch.LedgerApi.V3.Tx (
 import Data.ByteString (ByteString)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.LedgerApi.V1.Tx (txIdByteSize)
 import Plutarch.Prelude
 import PlutusLedgerApi.V3 qualified as Plutus
 import PlutusTx.Builtins.Internal qualified as PlutusTx
@@ -55,6 +56,20 @@ instance PLiftable PTxId where
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxId)
 
+{- | Checks that we have a 'PTxId' of valid length. The underlying
+'PByteString' must be exactly 32 bytes, as Cardano transactions are hashed
+with BLAKE2b-256.
+
+@since wip
+-}
+instance PValidateData PTxId where
+  pwithValidated opq x =
+    plet (plengthBS #$ pfromData $ pparseData @PByteString opq) $ \bsSize ->
+      pif
+        (bsSize #== txIdByteSize)
+        x
+        perror
+
 -- | @since 3.1.0
 data PTxOutRef (s :: S) = PTxOutRef
   { ptxOutRef'id :: Term s (PAsData PTxId)
@@ -91,3 +106,23 @@ deriving via
 
 -- | @since 3.4.0
 instance PTryFrom PData (PAsData PTxOutRef)
+
+{- | Checks that we have a valid 'PTxOutRef'. The underlying 'PTxId' must be
+exactly 32 bytes, as Cardano transactions are hashed with BLAKE2b-256, and
+the output index must be a non-negative 'PInteger'.
+
+@since wip
+-}
+instance PValidateData PTxOutRef where
+  pwithValidated opq x =
+    pmatch (pasConstr # opq) $ \(PBuiltinPair constrIdx fields) ->
+      pif
+        ((constrIdx #== 0) #&& ((plength # fields) #== 2))
+        ( pwithValidated @PTxId (ptryIndex 0 fields) $
+            plet (pasInt # ptryIndex 1 fields) $ \outIdx ->
+              pif
+                (outIdx #< 0)
+                perror
+                x
+        )
+        perror
