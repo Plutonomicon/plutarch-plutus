@@ -23,14 +23,13 @@ module Plutarch.Builtin.Bool (
 ) where
 
 import Data.Kind (Type)
+import Plutarch.Builtin.Opaque (popaque)
+import Plutarch.Internal.Case (punsafeCase)
 import {-# SOURCE #-} Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
   PDelayed,
-  RawTerm (RCase),
   S,
-  Term (Term),
-  TermResult (TermResult),
-  asRawTerm,
+  Term,
   pdelay,
   pforce,
   phoistAcyclic,
@@ -83,12 +82,7 @@ pif ::
   Term s a ->
   Term s a ->
   Term s a
-pif cond ifT ifF = Term $ \level -> do
-  TermResult condRaw depsCond <- asRawTerm cond level
-  TermResult handleFalse depsFalse <- asRawTerm ifF level
-  TermResult handleTrue depsTrue <- asRawTerm ifT level
-  let allDeps = depsCond <> depsFalse <> depsTrue
-  pure . TermResult (RCase condRaw [handleFalse, handleTrue]) $ allDeps
+pif cond ifT ifF = punsafeCase cond [popaque ifF, popaque ifT]
 
 {- | Boolean negation.
 
