@@ -74,7 +74,7 @@ library
     , plutarch
     , plutarch-ledger-api
     , plutarch-orphanage
-    , plutus-core
+    , plutus-core          ==1.51.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter

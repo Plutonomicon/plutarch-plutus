@@ -73,7 +73,7 @@ library
     , generics-sop
     , memory
     , plutarch
-    , plutus-core
+    , plutus-core        ==1.51.0.0
     , plutus-ledger-api
     , plutus-tx
     , serialise
