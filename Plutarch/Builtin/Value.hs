@@ -1,7 +1,7 @@
 -- | @since wip
 module Plutarch.Builtin.Value (
   -- * Type
-  PBuiltinValue,
+  PBuiltinValue (..),
 
   -- * Functions
   pinsertCoin,
