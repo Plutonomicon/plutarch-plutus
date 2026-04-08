@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 * `Plutarch.LedgerApi.V3.Value` module, containing compatibility functionality
   between various @Value@ representations and 'PBuiltinValue'
+* `PLiftable` instance for `PAsData PMintValue` by way of `MintValue`
 
 ## 3.6.0 -- 04/03/2025 
 
