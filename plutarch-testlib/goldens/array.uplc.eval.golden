@@ -1,107 +1,88 @@
-piota program 1.1.0 (\!0 -> !1 10 (\!0 -> !1))
-pgenerate program 1.1.0 (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-pfromArray program
-  1.1.0
-  (\!0 ->
-     !1
-       (force lengthOfArray [1,2,3,4,5,6,7,8,9,10])
-       (force indexArray [1,2,3,4,5,6,7,8,9,10]))
-pfromList program
-  1.1.0
-  (\!0 ->
-     !1
-       (force lengthOfArray (force listToArray [1,2,3,4,5,6,7,8,9,10]))
-       (force indexArray (force listToArray [1,2,3,4,5,6,7,8,9,10])))
-pmapArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 -> !3 !2 ((\!0 !0 -> !2 (!3 !1)) (\!0 -> addInteger !1 10))))
-pimapArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 -> !3 !2 (\!0 -> multiplyInteger !1 (!2 !1))))
-ptakeArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 -> !3 (case (lessThanEqualsInteger 4 !2) [!2, 4]) !1))
-pdropArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          !3
-            ((\!0 -> case (lessThanEqualsInteger !1 -1) [!1, 0])
-               (subtractInteger !2 4))
-            (\!0 -> !2 (addInteger !1 4))))
-pzipWithArray (different) program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-            (\!0 !0 ->
-               !5
-                 (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                 ((\!0 !0 -> !2 (!5 !1) (!3 !1))
-                    (\!0 !0 -> multiplyInteger !1 !2)))))
-pzipWithArray (same, no plet) program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          (\!0 -> !1 10 (\!0 -> !1))
-            (\!0 !0 ->
-               !5
-                 (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                 (\!0 -> multiplyInteger (!4 !1) (!2 !1)))))
-pzipWithArray (same, plet) program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          (\!0 -> !1 10 (\!0 -> !1))
-            (\!0 !0 ->
-               !5
-                 (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                 (\!0 -> multiplyInteger (!4 !1) (!2 !1)))))
-pizipWithArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-            (\!0 !0 ->
-               !5
-                 (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                 ((\!0 !0 -> case (constr 0 [!1, (!5 !1), (!3 !1)]) [!2])
-                    (\!0 !0 !0 -> multiplyInteger (addInteger !1 !3) !2)))))
-pfoldArray program 1.1.0 -90
-prfoldArray program 1.1.0 -90
-ppullArrayToList program 1.1.0 [0,1,2,3,4,5,6,7,8,9]
-ppullArrayToSOPList program
-  1.1.0
-  (constr 0
-     [ 0
-     , (constr 0
-          [ 1
-          , (constr 0
-               [ 2
-               , (constr 0
-                    [ 3
-                    , (constr 0
-                         [ 4
-                         , (constr 0
-                              [ 5
-                              , (constr 0
-                                   [ 6
-                                   , (constr 0
-                                        [ 7
-                                        , (constr 0
-                                             [ 8
-                                             , (constr 0
-                                                  [ 9
-                                                  , (constr 1
-                                                       [  ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+piota \i-0 -> i-0 10 (\i-1 -> i-1)
+pgenerate \i-0 -> i-0 10 (\i-1 -> multiplyInteger i-1 2)
+pfromArray \i-0 ->
+  i-0
+    (force lengthOfArray [1,2,3,4,5,6,7,8,9,10])
+    (force indexArray [1,2,3,4,5,6,7,8,9,10])
+pfromList \i-0 ->
+  i-0
+    (force lengthOfArray (force listToArray [1,2,3,4,5,6,7,8,9,10]))
+    (force indexArray (force listToArray [1,2,3,4,5,6,7,8,9,10]))
+pmapArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       i-0 i-3 ((\i-5 i-6 -> i-5 (i-4 i-6)) (\i-7 -> addInteger i-7 10)))
+pimapArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 -> i-0 i-3 (\i-5 -> multiplyInteger i-5 (i-4 i-5)))
+ptakeArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 -> i-0 (case (lessThanEqualsInteger 4 i-3) [i-3, 4]) i-4)
+pdropArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       i-0
+         ((\i-5 -> case (lessThanEqualsInteger i-5 -1) [i-5, 0])
+            (subtractInteger i-3 4))
+         (\i-6 -> i-4 (addInteger i-6 4)))
+pzipWithArray (different) \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       (\i-5 -> i-5 10 (\i-6 -> multiplyInteger i-6 2))
+         (\i-7 i-8 ->
+            i-0
+              (case (lessThanEqualsInteger i-3 i-7) [i-7, i-3])
+              ((\i-9 i-10 -> i-9 (i-4 i-10) (i-8 i-10))
+                 (\i-11 i-12 -> multiplyInteger i-12 i-11))))
+pzipWithArray (same, no plet) \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       (\i-5 -> i-5 10 (\i-6 -> i-6))
+         (\i-7 i-8 ->
+            i-0
+              (case (lessThanEqualsInteger i-3 i-7) [i-7, i-3])
+              (\i-9 -> multiplyInteger (i-4 i-9) (i-8 i-9))))
+pzipWithArray (same, plet) \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       (\i-5 -> i-5 10 (\i-6 -> i-6))
+         (\i-7 i-8 ->
+            i-0
+              (case (lessThanEqualsInteger i-3 i-7) [i-7, i-3])
+              (\i-9 -> multiplyInteger (i-4 i-9) (i-8 i-9))))
+pizipWithArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       (\i-5 -> i-5 10 (\i-6 -> multiplyInteger i-6 2))
+         (\i-7 i-8 ->
+            i-0
+              (case (lessThanEqualsInteger i-3 i-7) [i-7, i-3])
+              ((\i-9 i-10 ->
+                  case (constr 0 [i-10, (i-4 i-10), (i-8 i-10)]) [i-9])
+                 (\i-11 i-12 i-13 ->
+                    multiplyInteger (addInteger i-13 i-11) i-12))))
+pfoldArray -90
+prfoldArray -90
+ppullArrayToList [0,1,2,3,4,5,6,7,8,9]
+ppullArrayToSOPList constr 0
+  [ 0
+  , (constr 0
+       [ 1
+       , (constr 0
+            [ 2
+            , (constr 0
+                 [ 3
+                 , (constr 0
+                      [ 4
+                      , (constr 0
+                           [ 5
+                           , (constr 0
+                                [ 6
+                                , (constr 0
+                                     [ 7
+                                     , (constr 0
+                                          [ 8
+                                          , (constr 0
+                                               [ 9
+                                               , (constr 1
+                                                    [  ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]

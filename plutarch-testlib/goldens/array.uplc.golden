@@ -1,155 +1,131 @@
-piota program 1.1.0 (\!0 -> !1 10 (\!0 -> !1))
-pgenerate program 1.1.0 (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-pfromArray program
-  1.1.0
-  ((\!0 !0 -> !1 (force lengthOfArray !2) (force indexArray !2))
-     [1,2,3,4,5,6,7,8,9,10])
-pfromList program
-  1.1.0
-  ((\!0 ->
-      (\!0 !0 -> !1 (force lengthOfArray (!2 !3)) (force indexArray (!2 !3)))
-        (force listToArray))
-     [1,2,3,4,5,6,7,8,9,10])
-pmapArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 -> !3 !2 ((\!0 !0 -> !2 (!3 !1)) (\!0 -> addInteger !1 10))))
-pimapArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 -> !3 !2 (\!0 -> multiplyInteger !1 (!2 !1))))
-ptakeArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 -> !3 (case (lessThanEqualsInteger 4 !2) [!2, 4]) !1))
-pdropArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          !3
-            ((\!0 -> case (lessThanEqualsInteger !1 -1) [!1, 0])
-               (subtractInteger !2 4))
-            (\!0 -> !2 (addInteger !1 4))))
-pzipWithArray (different) program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-            (\!0 !0 ->
-               !5
-                 (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                 ((\!0 !0 -> !2 (!5 !1) (!3 !1))
-                    (\!0 !0 -> multiplyInteger !1 !2)))))
-pzipWithArray (same, no plet) program
-  1.1.0
-  ((\!0 !0 ->
-      (\!0 -> !1 10 !3)
-        (\!0 !0 ->
-           (\!0 -> !1 10 !5)
-             (\!0 !0 ->
-                !5
-                  (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                  (\!0 -> multiplyInteger (!4 !1) (!2 !1)))))
-     (\!0 -> !1))
-pzipWithArray (same, plet) program
-  1.1.0
-  ((\!0 !0 ->
-      !2
-        (\!0 !0 ->
-           !4
-             (\!0 !0 ->
-                !5
-                  (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                  (\!0 -> multiplyInteger (!4 !1) (!2 !1)))))
-     (\!0 -> !1 10 (\!0 -> !1)))
-pizipWithArray program
-  1.1.0
-  (\!0 ->
-     (\!0 -> !1 10 (\!0 -> !1))
-       (\!0 !0 ->
-          (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-            (\!0 !0 ->
-               !5
-                 (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                 ((\!0 !0 -> case (constr 0 [!1, (!5 !1), (!3 !1)]) [!2])
-                    (\!0 !0 !0 -> multiplyInteger (addInteger !1 !3) !2)))))
-pfoldArray program
-  1.1.0
-  ((\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-     (\!0 !0 ->
-        case
-          (constr 0 [subtractInteger, !1, !2, 0, 0])
-          [ ((\!0 -> !1 !1)
-               (\!0 !0 !0 !0 !0 !0 ->
-                  case
-                    (equalsInteger !1 !3)
-                    [ (case
-                         (constr 0
-                            [ !6
-                            , !5
-                            , !4
-                            , !3
-                            , (!5 !2 (!4 !1))
-                            , (addInteger !1 1) ])
-                         [!6])
-                    , !2 ])) ]))
-prfoldArray program
-  1.1.0
-  ((\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-     (\!0 !0 ->
-        case
-          (constr 0 [subtractInteger, !1, 0, (subtractInteger !2 1)])
-          [ ((\!0 -> !1 !1)
-               (\!0 !0 !0 !0 !0 ->
-                  case
-                    (equalsInteger !1 -1)
-                    [ (case
-                         (constr 0
-                            [ !5
-                            , !4
-                            , !3
-                            , (!4 !2 (!3 !1))
-                            , (subtractInteger !1 1) ])
-                         [!5])
-                    , !2 ])) ]))
-ppullArrayToList program
-  1.1.0
-  ((\!0 -> !1 10 (\!0 -> !1))
-     (\!0 !0 ->
-        case
-          (constr 0 [!1, [], (subtractInteger !2 1)])
-          [ ((\!0 -> !1 !1)
-               (\!0 !0 !0 !0 ->
-                  case
-                    (equalsInteger !1 -1)
-                    [ (case
-                         (constr 0
-                            [ !4
-                            , !3
-                            , (force mkCons (!3 !1) !2)
-                            , (subtractInteger !1 1) ])
-                         [!4])
-                    , !2 ])) ]))
-ppullArrayToSOPList program
-  1.1.0
-  ((\!0 -> !1 10 (\!0 -> !1))
-     (\!0 !0 ->
-        case
-          (constr 0 [!1, (constr 1 []), (subtractInteger !2 1)])
-          [ ((\!0 -> !1 !1)
-               (\!0 !0 !0 !0 ->
-                  case
-                    (equalsInteger !1 -1)
-                    [ (case
-                         (constr 0
-                            [ !4
-                            , !3
-                            , ((\!0 -> constr 0 [!1, !3]) (!3 !1))
-                            , (subtractInteger !1 1) ])
-                         [!4])
-                    , !2 ])) ]))
+piota \i-0 -> i-0 10 (\i-1 -> i-1)
+pgenerate \i-0 -> i-0 10 (\i-1 -> multiplyInteger i-1 2)
+pfromArray (\i-0 i-1 -> i-1 (force lengthOfArray i-0) (force indexArray i-0))
+  [1,2,3,4,5,6,7,8,9,10]
+pfromList (\i-0 ->
+   (\i-1 i-2 ->
+      i-2 (force lengthOfArray (i-1 i-0)) (force indexArray (i-1 i-0)))
+     (force listToArray))
+  [1,2,3,4,5,6,7,8,9,10]
+pmapArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       i-0 i-3 ((\i-5 i-6 -> i-5 (i-4 i-6)) (\i-7 -> addInteger i-7 10)))
+pimapArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 -> i-0 i-3 (\i-5 -> multiplyInteger i-5 (i-4 i-5)))
+ptakeArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 -> i-0 (case (lessThanEqualsInteger 4 i-3) [i-3, 4]) i-4)
+pdropArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       i-0
+         ((\i-5 -> case (lessThanEqualsInteger i-5 -1) [i-5, 0])
+            (subtractInteger i-3 4))
+         (\i-6 -> i-4 (addInteger i-6 4)))
+pzipWithArray (different) \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       (\i-5 -> i-5 10 (\i-6 -> multiplyInteger i-6 2))
+         (\i-7 i-8 ->
+            i-0
+              (case (lessThanEqualsInteger i-3 i-7) [i-7, i-3])
+              ((\i-9 i-10 -> i-9 (i-4 i-10) (i-8 i-10))
+                 (\i-11 i-12 -> multiplyInteger i-12 i-11))))
+pzipWithArray (same, no plet) (\i-0 i-1 ->
+   (\i-2 -> i-2 10 i-0)
+     (\i-3 i-4 ->
+        (\i-5 -> i-5 10 i-0)
+          (\i-6 i-7 ->
+             i-1
+               (case (lessThanEqualsInteger i-3 i-6) [i-6, i-3])
+               (\i-8 -> multiplyInteger (i-4 i-8) (i-7 i-8)))))
+  (\i-9 -> i-9)
+pzipWithArray (same, plet) (\i-0 i-1 ->
+   i-0
+     (\i-2 i-3 ->
+        i-0
+          (\i-4 i-5 ->
+             i-1
+               (case (lessThanEqualsInteger i-2 i-4) [i-4, i-2])
+               (\i-6 -> multiplyInteger (i-3 i-6) (i-5 i-6)))))
+  (\i-7 -> i-7 10 (\i-8 -> i-8))
+pizipWithArray \i-0 ->
+  (\i-1 -> i-1 10 (\i-2 -> i-2))
+    (\i-3 i-4 ->
+       (\i-5 -> i-5 10 (\i-6 -> multiplyInteger i-6 2))
+         (\i-7 i-8 ->
+            i-0
+              (case (lessThanEqualsInteger i-3 i-7) [i-7, i-3])
+              ((\i-9 i-10 ->
+                  case (constr 0 [i-10, (i-4 i-10), (i-8 i-10)]) [i-9])
+                 (\i-11 i-12 i-13 ->
+                    multiplyInteger (addInteger i-13 i-11) i-12))))
+pfoldArray (\i-0 -> i-0 10 (\i-1 -> multiplyInteger i-1 2))
+  (\i-2 i-3 ->
+     case
+       (constr 0 [subtractInteger, i-3, i-2, 0, 0])
+       [ ((\i-4 -> i-4 i-4)
+            (\i-5 i-6 i-7 i-8 i-9 i-10 ->
+               case
+                 (equalsInteger i-10 i-8)
+                 [ (case
+                      (constr 0
+                         [ i-5
+                         , i-6
+                         , i-7
+                         , i-8
+                         , (i-6 i-9 (i-7 i-10))
+                         , (addInteger i-10 1) ])
+                      [i-5])
+                 , i-9 ])) ])
+prfoldArray (\i-0 -> i-0 10 (\i-1 -> multiplyInteger i-1 2))
+  (\i-2 i-3 ->
+     case
+       (constr 0 [subtractInteger, i-3, 0, (subtractInteger i-2 1)])
+       [ ((\i-4 -> i-4 i-4)
+            (\i-5 i-6 i-7 i-8 i-9 ->
+               case
+                 (equalsInteger i-9 -1)
+                 [ (case
+                      (constr 0
+                         [ i-5
+                         , i-6
+                         , i-7
+                         , (i-6 i-8 (i-7 i-9))
+                         , (subtractInteger i-9 1) ])
+                      [i-5])
+                 , i-8 ])) ])
+ppullArrayToList (\i-0 -> i-0 10 (\i-1 -> i-1))
+  (\i-2 i-3 ->
+     case
+       (constr 0 [i-3, [], (subtractInteger i-2 1)])
+       [ ((\i-4 -> i-4 i-4)
+            (\i-5 i-6 i-7 i-8 ->
+               case
+                 (equalsInteger i-8 -1)
+                 [ (case
+                      (constr 0
+                         [ i-5
+                         , i-6
+                         , (force mkCons (i-6 i-8) i-7)
+                         , (subtractInteger i-8 1) ])
+                      [i-5])
+                 , i-7 ])) ])
+ppullArrayToSOPList (\i-0 -> i-0 10 (\i-1 -> i-1))
+  (\i-2 i-3 ->
+     case
+       (constr 0 [i-3, (constr 1 []), (subtractInteger i-2 1)])
+       [ ((\i-4 -> i-4 i-4)
+            (\i-5 i-6 i-7 i-8 ->
+               case
+                 (equalsInteger i-8 -1)
+                 [ (case
+                      (constr 0
+                         [ i-5
+                         , i-6
+                         , ((\i-9 -> constr 0 [i-9, i-7]) (i-6 i-8))
+                         , (subtractInteger i-8 1) ])
+                      [i-5])
+                 , i-7 ])) ])

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE NoPartialTypeSignatures #-}
 
 module Plutarch.Internal.Other (
   printTerm,
@@ -6,6 +7,7 @@ module Plutarch.Internal.Other (
   Flip,
 ) where
 
+import Control.Monad.State.Strict (evalStateT)
 import Data.Kind (Type)
 import Data.Text qualified as T
 import GHC.Generics (Generic)
@@ -17,11 +19,34 @@ import Plutarch.Internal.Term (
   compile,
  )
 import Plutarch.Script (Script (Script))
+import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
+import Prettyprinter (defaultLayoutOptions, layoutSmart)
+import Prettyprinter.Render.String (renderString)
+import UntypedPlutusCore qualified as UPLC
 
 -- | Prettyprint a compiled Script via the PLC pretty printer
 printScript :: Script -> String
-printScript = show . prettyPlcReadable . (\(Script s) -> s)
+printScript =
+  renderString
+    . layoutSmart defaultLayoutOptions
+    . prettyPlcReadable
+    . mkNames
+    . UPLC.termMapNames UPLC.fakeNameDeBruijn
+    . programToTerm
+    . (\(Script s) -> s)
+  where
+    programToTerm ::
+      UPLC.Program UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+    programToTerm (UPLC.Program _ _ t) = t
+    mkNames ::
+      UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Term PLC.Name UPLC.DefaultUni UPLC.DefaultFun ()
+    mkNames t = case flip evalStateT UPLC.initSimplifierTrace . PLC.runQuoteT . UPLC.unDeBruijnTerm $ t of
+      -- This is essentially impossible
+      Left _ -> error "printScript: could not generate names. This should never happen."
+      Right res -> res
 
 {- | Prettyprint a Term via the PLC pretty printer
 

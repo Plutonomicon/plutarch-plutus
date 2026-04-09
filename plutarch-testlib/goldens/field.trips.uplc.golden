@@ -1,86 +1,72 @@
-lam.tripSum program
-  1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         (\!0 ->
-            (\!0 ->
-               addInteger
-                 (addInteger (unIData (!4 !2)) (unIData (!4 !1)))
-                 (unIData (!4 (!5 !1))))
-              (!4 !1))
-           (case (unConstrData !1) [(\!0 !0 -> !1)]))
+lam.tripSum (\i-0 ->
+   (\i-1 i-2 ->
+      (\i-3 ->
+         (\i-4 ->
+            addInteger
+              (addInteger (unIData (i-1 i-3)) (unIData (i-1 i-4)))
+              (unIData (i-1 (i-0 i-4))))
+           (i-0 i-3))
+        (case (unConstrData i-2) [(\i-5 i-6 -> i-6)]))
+     (force headList))
+  (force tailList)
+lam.getY \i-0 ->
+  force headList (force tailList (case (unConstrData i-0) [(\i-1 i-2 -> i-2)]))
+lam.tripYZ (\i-0 ->
+   (\i-1 i-2 ->
+      (\i-3 -> addInteger (unIData (i-1 i-3)) (unIData (i-1 (i-0 i-3))))
+        (i-0 (case (unConstrData i-2) [(\i-4 i-5 -> i-5)])))
+     (force headList))
+  (force tailList)
+tripSum.A (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
+         (\i-3 ->
+            (\i-4 ->
+               (\i-5 ->
+                  addInteger
+                    (addInteger (unIData (i-2 i-4)) (unIData (i-2 i-5)))
+                    (unIData (i-2 (i-1 i-5))))
+                 (i-1 i-4))
+              (case (unConstrData i-3) [(\i-6 i-7 -> i-7)]))
+           (constrData
+              0
+              (i-0 (iData 150) (i-0 (iData 750) (i-0 (iData 100) [])))))
         (force headList))
      (force tailList))
-lam.getY program
-  1.1.0
-  (\!0 ->
-     force headList (force tailList (case (unConstrData !1) [(\!0 !0 -> !1)])))
-lam.tripYZ program
-  1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
-           (!3 (case (unConstrData !1) [(\!0 !0 -> !1)])))
+  (force mkCons)
+tripSum.B (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
+         (\i-3 ->
+            (\i-4 ->
+               (\i-5 ->
+                  addInteger
+                    (addInteger (unIData (i-2 i-4)) (unIData (i-2 i-5)))
+                    (unIData (i-2 (i-1 i-5))))
+                 (i-1 i-4))
+              (case (unConstrData i-3) [(\i-6 i-7 -> i-7)]))
+           (constrData 0 (i-0 (iData 50) (i-0 (iData 10) (i-0 (iData 40) [])))))
         (force headList))
      (force tailList))
-tripSum.A program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               (\!0 ->
-                  (\!0 ->
-                     addInteger
-                       (addInteger (unIData (!4 !2)) (unIData (!4 !1)))
-                       (unIData (!4 (!5 !1))))
-                    (!4 !1))
-                 (case (unConstrData !1) [(\!0 !0 -> !1)]))
-              (constrData
-                 0
-                 (!3 (iData 150) (!3 (iData 750) (!3 (iData 100) [])))))
-           (force headList))
-        (force tailList))
-     (force mkCons))
-tripSum.B program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               (\!0 ->
-                  (\!0 ->
-                     addInteger
-                       (addInteger (unIData (!4 !2)) (unIData (!4 !1)))
-                       (unIData (!4 (!5 !1))))
-                    (!4 !1))
-                 (case (unConstrData !1) [(\!0 !0 -> !1)]))
-              (constrData 0 (!3 (iData 50) (!3 (iData 10) (!3 (iData 40) [])))))
-           (force headList))
-        (force tailList))
-     (force mkCons))
-tripSum.C program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               (\!0 ->
-                  (\!0 ->
-                     addInteger
-                       (addInteger (unIData (!4 !2)) (unIData (!4 !1)))
-                       (unIData (!4 (!5 !1))))
-                    (!4 !1))
-                 (case (unConstrData !1) [(\!0 !0 -> !1)]))
-              (constrData 0 (!3 (iData 1) (!3 (iData 8) (!3 (iData 1) [])))))
-           (force headList))
-        (force tailList))
-     (force mkCons))
-tripYZ=tripZY program
-  1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         (\!0 -> addInteger (unIData (!3 !1)) (unIData (!3 (!4 !1))))
-           (!3 (case (unConstrData !1) [(\!0 !0 -> !1)])))
+  (force mkCons)
+tripSum.C (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
+         (\i-3 ->
+            (\i-4 ->
+               (\i-5 ->
+                  addInteger
+                    (addInteger (unIData (i-2 i-4)) (unIData (i-2 i-5)))
+                    (unIData (i-2 (i-1 i-5))))
+                 (i-1 i-4))
+              (case (unConstrData i-3) [(\i-6 i-7 -> i-7)]))
+           (constrData 0 (i-0 (iData 1) (i-0 (iData 8) (i-0 (iData 1) [])))))
         (force headList))
      (force tailList))
+  (force mkCons)
+tripYZ=tripZY (\i-0 ->
+   (\i-1 i-2 ->
+      (\i-3 -> addInteger (unIData (i-1 i-3)) (unIData (i-1 (i-0 i-3))))
+        (i-0 (case (unConstrData i-2) [(\i-4 i-5 -> i-5)])))
+     (force headList))
+  (force tailList)

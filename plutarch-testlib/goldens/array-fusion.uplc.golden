@@ -1,52 +1,47 @@
-pmap then pimap program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        (\!0 -> !1 10 (\!0 -> !1))
-          (\!0 !0 -> !3 !2 ((\!0 !0 -> !2 (!3 !1)) (\!0 -> addInteger !1 10))))
-       (\!0 !0 -> !3 !2 (\!0 -> multiplyInteger !1 (!2 !1))))
-pmap then ptake program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        (\!0 -> !1 10 (\!0 -> !1))
-          (\!0 !0 -> !3 !2 ((\!0 !0 -> !2 (!3 !1)) (\!0 -> addInteger !1 10))))
-       (\!0 !0 -> !3 (case (lessThanEqualsInteger 4 !2) [!2, 4]) !1))
-pmap then pzipWith program
-  1.1.0
-  ((\!0 !0 ->
-      (\!0 ->
-         (\!0 -> !1 10 (\!0 -> !1))
-           (\!0 !0 -> !3 !2 (!5 (\!0 -> addInteger !1 10) !1)))
-        (\!0 !0 ->
-           (\!0 ->
-              (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-                (\!0 !0 -> !3 !2 (!7 (\!0 -> addInteger !1 10) !1)))
-             (\!0 !0 ->
-                !5
-                  (case (lessThanEqualsInteger !4 !2) [!2, !4])
-                  ((\!0 !0 -> !2 (!5 !1) (!3 !1))
-                     (\!0 !0 -> multiplyInteger !1 !2)))))
-     (\!0 !0 !0 -> !3 (!2 !1)))
-pmap then pfold program
-  1.1.0
-  ((\!0 ->
-      (\!0 -> !1 10 (\!0 -> multiplyInteger !1 2))
-        (\!0 !0 -> !3 !2 ((\!0 !0 -> !2 (!3 !1)) (\!0 -> addInteger !1 10))))
-     (\!0 !0 ->
-        case
-          (constr 0 [subtractInteger, !1, !2, 0, 0])
-          [ ((\!0 -> !1 !1)
-               (\!0 !0 !0 !0 !0 !0 ->
-                  case
-                    (equalsInteger !1 !3)
-                    [ (case
-                         (constr 0
-                            [ !6
-                            , !5
-                            , !4
-                            , !3
-                            , (!5 !2 (!4 !1))
-                            , (addInteger !1 1) ])
-                         [!6])
-                    , !2 ])) ]))
+pmap then pimap \i-0 ->
+  (\i-1 ->
+     (\i-2 -> i-2 10 (\i-3 -> i-3))
+       (\i-4 i-5 ->
+          i-1 i-4 ((\i-6 i-7 -> i-6 (i-5 i-7)) (\i-8 -> addInteger i-8 10))))
+    (\i-9 i-10 -> i-0 i-9 (\i-11 -> multiplyInteger i-11 (i-10 i-11)))
+pmap then ptake \i-0 ->
+  (\i-1 ->
+     (\i-2 -> i-2 10 (\i-3 -> i-3))
+       (\i-4 i-5 ->
+          i-1 i-4 ((\i-6 i-7 -> i-6 (i-5 i-7)) (\i-8 -> addInteger i-8 10))))
+    (\i-9 i-10 -> i-0 (case (lessThanEqualsInteger 4 i-9) [i-9, 4]) i-10)
+pmap then pzipWith (\i-0 i-1 ->
+   (\i-2 ->
+      (\i-3 -> i-3 10 (\i-4 -> i-4))
+        (\i-5 i-6 -> i-2 i-5 (i-0 (\i-7 -> addInteger i-7 10) i-6)))
+     (\i-8 i-9 ->
+        (\i-10 ->
+           (\i-11 -> i-11 10 (\i-12 -> multiplyInteger i-12 2))
+             (\i-13 i-14 -> i-10 i-13 (i-0 (\i-15 -> addInteger i-15 10) i-14)))
+          (\i-16 i-17 ->
+             i-1
+               (case (lessThanEqualsInteger i-8 i-16) [i-16, i-8])
+               ((\i-18 i-19 -> i-18 (i-9 i-19) (i-17 i-19))
+                  (\i-20 i-21 -> multiplyInteger i-21 i-20)))))
+  (\i-22 i-23 i-24 -> i-22 (i-23 i-24))
+pmap then pfold (\i-0 ->
+   (\i-1 -> i-1 10 (\i-2 -> multiplyInteger i-2 2))
+     (\i-3 i-4 ->
+        i-0 i-3 ((\i-5 i-6 -> i-5 (i-4 i-6)) (\i-7 -> addInteger i-7 10))))
+  (\i-8 i-9 ->
+     case
+       (constr 0 [subtractInteger, i-9, i-8, 0, 0])
+       [ ((\i-10 -> i-10 i-10)
+            (\i-11 i-12 i-13 i-14 i-15 i-16 ->
+               case
+                 (equalsInteger i-16 i-14)
+                 [ (case
+                      (constr 0
+                         [ i-11
+                         , i-12
+                         , i-13
+                         , i-14
+                         , (i-12 i-15 (i-13 i-16))
+                         , (addInteger i-16 1) ])
+                      [i-11])
+                 , i-15 ])) ])

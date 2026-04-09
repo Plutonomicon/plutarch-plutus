@@ -1,15 +1,12 @@
-lam program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        addInteger
-          (unIData (force headList !1))
-          (unIData (force headList (force tailList !1))))
+lam \i-0 ->
+  (\i-1 ->
+     addInteger
+       (unIData (force headList i-1))
+       (unIData (force headList (force tailList i-1))))
+    (force tailList
        (force tailList
           (force tailList
              (force tailList
                 (force tailList
-                   (force tailList
-                      (force tailList
-                         (force tailList (force tailList !1)))))))))
-app program 1.1.0 17
+                   (force tailList (force tailList (force tailList i-0))))))))
+app 17

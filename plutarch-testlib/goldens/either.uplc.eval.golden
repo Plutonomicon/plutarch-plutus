@@ -1,5 +1,5 @@
-eq.true.left program 1.1.0 True
-eq.true.right program 1.1.0 True
-eq.false.left-right program 1.1.0 False
-eq.false.left-left program 1.1.0 False
-eq.false.right-right program 1.1.0 False
+eq.true.left True
+eq.true.right True
+eq.false.left-right False
+eq.false.left-left False
+eq.false.right-right False
