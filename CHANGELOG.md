@@ -5,6 +5,7 @@
 ## Added
 
 * `PBuiltinValue`, and bindings to primitive functions for this
+* Support for CIP-133 multi-scalar multiplications of BLS primitives
 
 # 1.13.0 -- 04-03-2026
 
