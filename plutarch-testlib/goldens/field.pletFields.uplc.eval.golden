@@ -1,38 +1,32 @@
-letSomeFields.lam program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        (\!0 ->
-           addInteger
-             (addInteger
-                (unIData (force headList !2))
-                (unIData (force headList !1)))
-             (unIData
-                (force headList
-                   ((\!0 -> force tailList (force tailList !1))
-                      (force tailList !1)))))
-          (force tailList !1))
-       (force tailList ((\!0 -> force tailList (force tailList !1)) !1)))
-letSomeFields.order program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        (\!0 ->
-           addInteger
-             (addInteger
-                (unIData (force headList !2))
-                (unIData (force headList !1)))
-             (unIData
-                (force headList
-                   ((\!0 -> force tailList (force tailList !1))
-                      (force tailList !1)))))
-          (force tailList !1))
-       (force tailList ((\!0 -> force tailList (force tailList !1)) !1)))
-letSomeFields.app program 1.1.0 14
-nFields.lam program
-  1.1.0
-  (\!0 ->
-     addInteger
-       (unIData (force headList !1))
-       (unIData (force headList (force tailList !1))))
-nFields.app program 1.1.0 1
+letSomeFields.lam \i-0 ->
+  (\i-1 ->
+     (\i-2 ->
+        addInteger
+          (addInteger
+             (unIData (force headList i-1))
+             (unIData (force headList i-2)))
+          (unIData
+             (force headList
+                ((\i-3 -> force tailList (force tailList i-3))
+                   (force tailList i-2)))))
+       (force tailList i-1))
+    (force tailList ((\i-4 -> force tailList (force tailList i-4)) i-0))
+letSomeFields.order \i-0 ->
+  (\i-1 ->
+     (\i-2 ->
+        addInteger
+          (addInteger
+             (unIData (force headList i-1))
+             (unIData (force headList i-2)))
+          (unIData
+             (force headList
+                ((\i-3 -> force tailList (force tailList i-3))
+                   (force tailList i-2)))))
+       (force tailList i-1))
+    (force tailList ((\i-4 -> force tailList (force tailList i-4)) i-0))
+letSomeFields.app 14
+nFields.lam \i-0 ->
+  addInteger
+    (unIData (force headList i-0))
+    (unIData (force headList (force tailList i-0)))
+nFields.app 1

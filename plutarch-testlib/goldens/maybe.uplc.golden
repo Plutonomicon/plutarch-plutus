@@ -1,36 +1,28 @@
-eq.true.nothing program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), False])
-        , (case !1 [(\!0 -> False), True]) ])
-     (constr 1 [])
-     (constr 1 []))
-eq.true.just program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), False])
-        , (case !1 [(\!0 -> False), True]) ])
-     (constr 0 [42])
-     (constr 0 [42]))
-eq.false.nothing-just program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), False])
-        , (case !1 [(\!0 -> False), True]) ])
-     (constr 1 [])
-     (constr 0 [42]))
-eq.false.just-just program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), False])
-        , (case !1 [(\!0 -> False), True]) ])
-     (constr 0 [24])
-     (constr 0 [42]))
+eq.true.nothing (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), False])
+     , (case i-1 [(\i-4 -> False), True]) ])
+  (constr 1 [])
+  (constr 1 [])
+eq.true.just (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), False])
+     , (case i-1 [(\i-4 -> False), True]) ])
+  (constr 0 [42])
+  (constr 0 [42])
+eq.false.nothing-just (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), False])
+     , (case i-1 [(\i-4 -> False), True]) ])
+  (constr 1 [])
+  (constr 0 [42])
+eq.false.just-just (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), False])
+     , (case i-1 [(\i-4 -> False), True]) ])
+  (constr 0 [24])
+  (constr 0 [42])

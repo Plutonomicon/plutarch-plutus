@@ -1,4 +1,4 @@
-lte program 1.1.0 True
-lt program 1.1.0 True
-pmax program 1.1.0 (Constr 1 [B #666f6f])
-pmin program 1.1.0 (Constr 0 [I 10])
+lte True
+lt True
+pmax Constr 1 [B #666f6f]
+pmin Constr 0 [I 10]
