@@ -1,485 +1,473 @@
-pmatch program
-  1.1.0
-  (case
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
-           case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        [1,3,1])
-     [(\!0 !0 -> error), error])
-phead program
-  1.1.0
-  (equalsInteger
-     1
-     ((\!0 -> case !1 [(\!0 !0 -> !2), error])
-        ((\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1))
-                , (constr 1 []) ])
-           [1,2,3,4,5,6,7,8,9,10])))
-ptail program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 -> !1 !1)
-           (\!0 !0 !0 ->
-              case
-                !2
-                [ (\!0 !0 ->
-                     case
-                       !3
-                       [ (\!0 !0 ->
-                            case
-                              (equalsInteger !4 !2)
-                              [False, (case (constr 0 [!7, !3, !1]) [!7])])
-                       , False ])
-                , (case !1 [(\!0 !0 -> False), True]) ])
-           (!1 [2,3,4,5,6,7,8,9,10])
-           ((\!0 -> case !1 [(\!0 !0 -> !1), error])
-              (!1 [1,2,3,4,5,6,7,8,9,10])))
-        ((\!0 -> !1 !1)
-           (\!0 !0 -> case !1 [(\!0 !0 -> !5 !2 (!4 !4 !1)), (constr 1 [])])))
-     (\!0 !0 -> constr 0 [!2, !1]))
-pnull.empty program
-  1.1.0
-  ((\!0 -> case !1 [(\!0 !0 -> False), True])
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
-           case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        []))
-pnull.nonempty program
-  1.1.0
-  ((\!0 -> case !1 [True, False])
-     ((\!0 -> case !1 [(\!0 !0 -> False), True])
-        ((\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1))
-                , (constr 1 []) ])
-           [1,2,3,4,5,6,7,8,9,10])))
-pconcat.identity program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               (\!0 ->
-                  force
-                    ((\!0 !0 -> delay (case !2 [!2, (force !1)]))
-                       (!1
-                          (!2 (!3 !5) (constr 1 []))
-                          (!2 (constr 1 []) (!3 !5)))
-                       (delay (!1 (!2 (constr 1 []) (!3 !5)) (!3 !5)))))
-                 ((\!0 -> !1 !1)
-                    (\!0 !0 !0 ->
-                       case
-                         !2
-                         [ (\!0 !0 ->
-                              case
-                                !3
-                                [ (\!0 !0 ->
-                                     case
-                                       (equalsInteger !4 !2)
-                                       [ False
-                                       , (case (constr 0 [!7, !3, !1]) [!7]) ])
-                                , False ])
-                         , (case !1 [(\!0 !0 -> False), True]) ])))
-              (\!0 !0 ->
-                 (\!0 -> !1 !1)
-                   (\!0 !0 -> case !1 [(\!0 !0 -> !8 !2 (!4 !4 !1)), !3])
-                   !2))
-           ((\!0 -> !1 !1)
-              (\!0 !0 ->
-                 case !1 [(\!0 !0 -> !5 !2 (!4 !4 !1)), (constr 1 [])])))
-        (\!0 !0 -> constr 0 [!2, !1]))
-     [1,2,3,4,5,6,7,8,9,10])
-pmap.eg program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 -> !1 !1)
-           (\!0 !0 !0 ->
-              case
-                !2
-                [ (\!0 !0 ->
-                     case
-                       !3
-                       [ (\!0 !0 ->
-                            case
-                              (equalsInteger !4 !2)
-                              [False, (case (constr 0 [!7, !3, !1]) [!7])])
-                       , False ])
-                , (case !1 [(\!0 !0 -> False), True]) ])
-           ((\!0 ->
-               (\!0 -> !1 !1)
-                 (\!0 !0 ->
-                    case !1 [(\!0 !0 -> !7 (!5 !2) (!4 !4 !1)), (constr 1 [])]))
-              (\!0 -> addInteger !1 !1)
-              (!1 [1,2,3,4,5,6,7,8,9,10]))
-           (!1 [2,4,6,8,10,12,14,16,18,20]))
-        ((\!0 -> !1 !1)
-           (\!0 !0 -> case !1 [(\!0 !0 -> !5 !2 (!4 !4 !1)), (constr 1 [])])))
-     (\!0 !0 -> constr 0 [!2, !1]))
-pmap.identity program
-  1.1.0
-  ((\!0 -> !1 !1)
-     (\!0 !0 !0 ->
+pmatch case
+  ((\i-0 -> i-0 i-0)
+     (\i-1 i-2 ->
         case
-          !2
-          [ (\!0 !0 ->
-               case
-                 !3
-                 [ (\!0 !0 ->
-                      case
-                        (equalsInteger !4 !2)
-                        [False, (case (constr 0 [!7, !3, !1]) [!7])])
-                 , False ])
-          , (case !1 [(\!0 !0 -> False), True]) ])
-     ((\!0 ->
-         (\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 !0 -> constr 0 [!2, !1]) (!5 !2) (!4 !4 !1))
-                , (constr 1 []) ]))
-        (\!0 -> !1)
-        (constr 1 []))
-     (constr 1 []))
-pfilter.evens program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 -> !1 !1)
-           (\!0 !0 !0 ->
-              case
-                !2
-                [ (\!0 !0 ->
-                     case
-                       !3
-                       [ (\!0 !0 ->
-                            case
-                              (equalsInteger !4 !2)
-                              [False, (case (constr 0 [!7, !3, !1]) [!7])])
-                       , False ])
-                , (case !1 [(\!0 !0 -> False), True]) ])
-           ((\!0 ->
-               (\!0 -> !1 !1)
-                 (\!0 !0 ->
-                    case
-                      !1
-                      [ (\!0 !0 ->
-                           case (!5 !2) [(!4 !4 !1), (!7 !2 (!4 !4 !1))])
-                      , (constr 1 []) ]))
-              (\!0 -> equalsInteger (modInteger !1 2) 0)
-              (!1 [1,2,3,4,5,6,7,8,9,10]))
-           (!1 [2,4,6,8,10]))
-        ((\!0 -> !1 !1)
-           (\!0 !0 -> case !1 [(\!0 !0 -> !5 !2 (!4 !4 !1)), (constr 1 [])])))
-     (\!0 !0 -> constr 0 [!2, !1]))
-pfilter.gt5 program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 -> !1 !1)
-           (\!0 !0 !0 ->
-              case
-                !2
-                [ (\!0 !0 ->
-                     case
-                       !3
-                       [ (\!0 !0 ->
-                            case
-                              (equalsInteger !4 !2)
-                              [False, (case (constr 0 [!7, !3, !1]) [!7])])
-                       , False ])
-                , (case !1 [(\!0 !0 -> False), True]) ])
-           ((\!0 ->
-               (\!0 -> !1 !1)
-                 (\!0 !0 ->
-                    case
-                      !1
-                      [ (\!0 !0 ->
-                           case (!5 !2) [(!4 !4 !1), (!7 !2 (!4 !4 !1))])
-                      , (constr 1 []) ]))
-              (\!0 -> lessThanInteger 5 !1)
-              (!1 [1,2,3,4,5,6,7,8,9,10]))
-           (!1 [6,7,8,9,10]))
-        ((\!0 -> !1 !1)
-           (\!0 !0 -> case !1 [(\!0 !0 -> !5 !2 (!4 !4 !1)), (constr 1 [])])))
-     (\!0 !0 -> constr 0 [!2, !1]))
-pzipWith.double program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 -> !1 !1)
-              (\!0 !0 !0 ->
-                 case
-                   !2
-                   [ (\!0 !0 ->
-                        case
-                          !3
-                          [ (\!0 !0 ->
-                               case
-                                 (equalsInteger !4 !2)
-                                 [False, (case (constr 0 [!7, !3, !1]) [!7])])
-                          , False ])
-                   , (case !1 [(\!0 !0 -> False), True]) ])
-              (case
-                 (constr 0
-                    [ (\!0 !0 !0 ->
+          i-2
+          [ (\i-3 i-4 -> (\i-5 -> constr 0 [i-3, i-5]) (i-1 i-1 i-4))
+          , (constr 1 []) ])
+     [1,3,1])
+  [(\i-6 i-7 -> error), error]
+phead equalsInteger
+  1
+  ((\i-0 -> case i-0 [(\i-1 i-2 -> i-1), error])
+     ((\i-3 -> i-3 i-3)
+        (\i-4 i-5 ->
+           case
+             i-5
+             [ (\i-6 i-7 -> (\i-8 -> constr 0 [i-6, i-8]) (i-4 i-4 i-7))
+             , (constr 1 []) ])
+        [1,2,3,4,5,6,7,8,9,10]))
+ptail (\i-0 ->
+   (\i-1 ->
+      (\i-2 -> i-2 i-2)
+        (\i-3 i-4 i-5 ->
+           case
+             i-4
+             [ (\i-6 i-7 ->
+                  case
+                    i-5
+                    [ (\i-8 i-9 ->
                          case
-                           !2
-                           [ (\!0 !0 ->
-                                case
-                                  !3
-                                  [ (\!0 !0 ->
-                                       !10
-                                         (addInteger !4 !2)
-                                         (case (constr 0 [!7, !3, !1]) [!7]))
-                                  , (constr 1 []) ])
-                           , (constr 1 []) ])
-                    , (!2 !1)
-                    , (!2 !1) ])
-                 [(\!0 -> !1 !1)])
-              (!2 [2,4,6,8,10,12,14,16,18,20]))
-           [1,2,3,4,5,6,7,8,9,10])
-        ((\!0 -> !1 !1)
-           (\!0 !0 -> case !1 [(\!0 !0 -> !5 !2 (!4 !4 !1)), (constr 1 [])])))
-     (\!0 !0 -> constr 0 [!2, !1]))
-pfoldl.nonempty program
-  1.1.0
-  (equalsInteger
-     ((\!0 -> !1 !1)
-        (\!0 !0 !0 ->
+                           (equalsInteger i-6 i-8)
+                           [False, (case (constr 0 [i-3, i-7, i-9]) [i-3])])
+                    , False ])
+             , (case i-5 [(\i-10 i-11 -> False), True]) ])
+        (i-1 [2,3,4,5,6,7,8,9,10])
+        ((\i-12 -> case i-12 [(\i-13 i-14 -> i-14), error])
+           (i-1 [1,2,3,4,5,6,7,8,9,10])))
+     ((\i-15 -> i-15 i-15)
+        (\i-16 i-17 ->
            case
-             !1
-             [ (\!0 !0 ->
-                  case (constr 0 [!5, (subtractInteger !4 !2), !1]) [!5])
-             , !2 ])
-        0
-        ((\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1))
-                , (constr 1 []) ])
-           [1,2,3,4,5,6,7,8,9,10]))
-     -55)
-pfoldl.nonempty-primed program
-  1.1.0
-  (equalsInteger
-     ((\!0 -> !1 !1)
-        (\!0 !0 !0 ->
-           case
-             !1
-             [ (\!0 !0 ->
-                  case (constr 0 [!5, (subtractInteger !4 !2), !1]) [!5])
-             , !2 ])
-        0
-        ((\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1))
-                , (constr 1 []) ])
-           [1,2,3,4,5,6,7,8,9,10]))
-     -55)
-pfoldl.empty program
-  1.1.0
-  (equalsInteger
-     ((\!0 -> !1 !1)
-        (\!0 !0 !0 ->
-           case
-             !1
-             [ (\!0 !0 ->
-                  case (constr 0 [!5, (subtractInteger !4 !2), !1]) [!5])
-             , !2 ])
-        0
-        ((\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1))
-                , (constr 1 []) ])
-           []))
-     0)
-pfoldl.empty-primed program
-  1.1.0
-  (equalsInteger
-     ((\!0 -> !1 !1)
-        (\!0 !0 !0 ->
-           case
-             !1
-             [ (\!0 !0 ->
-                  case (constr 0 [!5, (subtractInteger !4 !2), !1]) [!5])
-             , !2 ])
-        0
-        ((\!0 -> !1 !1)
-           (\!0 !0 ->
-              case
-                !1
-                [ (\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1))
-                , (constr 1 []) ])
-           []))
-     0)
-elemAt.elemAt_3_[1..10] program
-  1.1.0
-  ((\!0 ->
-      case
-        (lessThanInteger 3 0)
-        [ ((\!0 -> !1 !1)
-             (\!0 !0 !0 ->
-                case
-                  (equalsInteger !2 0)
-                  [ (case
-                       (constr 0
-                          [ !3
-                          , (subtractInteger !2 1)
-                          , (case !1 [(\!0 !0 -> !1), error]) ])
-                       [!3])
-                  , (case !1 [(\!0 !0 -> !2), error]) ])
-             3
-             !1)
-        , (force (force trace "pelemAt: negative index" (delay error))) ])
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
-           case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        [1,2,3,4,5,6,7,8,9,10]))
-elemAt.elemAt_0_[1..10] program
-  1.1.0
-  ((\!0 ->
-      case
-        (lessThanInteger 0 0)
-        [ ((\!0 -> !1 !1)
-             (\!0 !0 !0 ->
-                case
-                  (equalsInteger !2 0)
-                  [ (case
-                       (constr 0
-                          [ !3
-                          , (subtractInteger !2 1)
-                          , (case !1 [(\!0 !0 -> !1), error]) ])
-                       [!3])
-                  , (case !1 [(\!0 !0 -> !2), error]) ])
-             0
-             !1)
-        , (force (force trace "pelemAt: negative index" (delay error))) ])
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
-           case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        [1,2,3,4,5,6,7,8,9,10]))
-elemAt.elemAt_9_[1..10] program
-  1.1.0
-  ((\!0 ->
-      case
-        (lessThanInteger 9 0)
-        [ ((\!0 -> !1 !1)
-             (\!0 !0 !0 ->
-                case
-                  (equalsInteger !2 0)
-                  [ (case
-                       (constr 0
-                          [ !3
-                          , (subtractInteger !2 1)
-                          , (case !1 [(\!0 !0 -> !1), error]) ])
-                       [!3])
-                  , (case !1 [(\!0 !0 -> !2), error]) ])
-             9
-             !1)
-        , (force (force trace "pelemAt: negative index" (delay error))) ])
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
-           case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        [1,2,3,4,5,6,7,8,9,10]))
-find.find_(==3)_[1..4] program
-  1.1.0
-  ((\!0 -> !1 !1)
-     (\!0 !0 !0 ->
+             i-17
+             [(\i-18 i-19 -> i-0 i-18 (i-16 i-16 i-19)), (constr 1 [])])))
+  (\i-20 i-21 -> constr 0 [i-20, i-21])
+pnull.empty (\i-0 -> case i-0 [(\i-1 i-2 -> False), True])
+  ((\i-3 -> i-3 i-3)
+     (\i-4 i-5 ->
         case
-          !1
-          [ (\!0 !0 ->
-               case
-                 (!4 !2)
-                 [(case (constr 0 [!5, !4, !1]) [!5]), (constr 0 [!2])])
+          i-5
+          [ (\i-6 i-7 -> (\i-8 -> constr 0 [i-6, i-8]) (i-4 i-4 i-7))
           , (constr 1 []) ])
-     (\!0 -> equalsInteger !1 3)
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
+     [])
+pnull.nonempty (\i-0 -> case i-0 [True, False])
+  ((\i-1 -> case i-1 [(\i-2 i-3 -> False), True])
+     ((\i-4 -> i-4 i-4)
+        (\i-5 i-6 ->
            case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        [1,2,3,4]))
-find.find_(==5)_[1..4] program
-  1.1.0
-  ((\!0 -> !1 !1)
-     (\!0 !0 !0 ->
+             i-6
+             [ (\i-7 i-8 -> (\i-9 -> constr 0 [i-7, i-9]) (i-5 i-5 i-8))
+             , (constr 1 []) ])
+        [1,2,3,4,5,6,7,8,9,10]))
+pconcat.identity (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
+         (\i-3 ->
+            (\i-4 ->
+               force
+                 ((\i-5 i-6 -> delay (case i-5 [i-5, (force i-6)]))
+                    (i-4
+                       (i-3 (i-2 i-0) (constr 1 []))
+                       (i-3 (constr 1 []) (i-2 i-0)))
+                    (delay (i-4 (i-3 (constr 1 []) (i-2 i-0)) (i-2 i-0)))))
+              ((\i-7 -> i-7 i-7)
+                 (\i-8 i-9 i-10 ->
+                    case
+                      i-9
+                      [ (\i-11 i-12 ->
+                           case
+                             i-10
+                             [ (\i-13 i-14 ->
+                                  case
+                                    (equalsInteger i-11 i-13)
+                                    [ False
+                                    , (case
+                                         (constr 0 [i-8, i-12, i-14])
+                                         [i-8]) ])
+                             , False ])
+                      , (case i-10 [(\i-15 i-16 -> False), True]) ])))
+           (\i-17 i-18 ->
+              (\i-19 -> i-19 i-19)
+                (\i-20 i-21 ->
+                   case i-21 [(\i-22 i-23 -> i-1 i-22 (i-20 i-20 i-23)), i-18])
+                i-17))
+        ((\i-24 -> i-24 i-24)
+           (\i-25 i-26 ->
+              case
+                i-26
+                [(\i-27 i-28 -> i-1 i-27 (i-25 i-25 i-28)), (constr 1 [])])))
+     (\i-29 i-30 -> constr 0 [i-29, i-30]))
+  [1,2,3,4,5,6,7,8,9,10]
+pmap.eg (\i-0 ->
+   (\i-1 ->
+      (\i-2 -> i-2 i-2)
+        (\i-3 i-4 i-5 ->
+           case
+             i-4
+             [ (\i-6 i-7 ->
+                  case
+                    i-5
+                    [ (\i-8 i-9 ->
+                         case
+                           (equalsInteger i-6 i-8)
+                           [False, (case (constr 0 [i-3, i-7, i-9]) [i-3])])
+                    , False ])
+             , (case i-5 [(\i-10 i-11 -> False), True]) ])
+        ((\i-12 ->
+            (\i-13 -> i-13 i-13)
+              (\i-14 i-15 ->
+                 case
+                   i-15
+                   [ (\i-16 i-17 -> i-0 (i-12 i-16) (i-14 i-14 i-17))
+                   , (constr 1 []) ]))
+           (\i-18 -> addInteger i-18 i-18)
+           (i-1 [1,2,3,4,5,6,7,8,9,10]))
+        (i-1 [2,4,6,8,10,12,14,16,18,20]))
+     ((\i-19 -> i-19 i-19)
+        (\i-20 i-21 ->
+           case
+             i-21
+             [(\i-22 i-23 -> i-0 i-22 (i-20 i-20 i-23)), (constr 1 [])])))
+  (\i-24 i-25 -> constr 0 [i-24, i-25])
+pmap.identity (\i-0 -> i-0 i-0)
+  (\i-1 i-2 i-3 ->
+     case
+       i-2
+       [ (\i-4 i-5 ->
+            case
+              i-3
+              [ (\i-6 i-7 ->
+                   case
+                     (equalsInteger i-4 i-6)
+                     [False, (case (constr 0 [i-1, i-5, i-7]) [i-1])])
+              , False ])
+       , (case i-3 [(\i-8 i-9 -> False), True]) ])
+  ((\i-10 ->
+      (\i-11 -> i-11 i-11)
+        (\i-12 i-13 ->
+           case
+             i-13
+             [ (\i-14 i-15 ->
+                  (\i-16 i-17 -> constr 0 [i-16, i-17])
+                    (i-10 i-14)
+                    (i-12 i-12 i-15))
+             , (constr 1 []) ]))
+     (\i-18 -> i-18)
+     (constr 1 []))
+  (constr 1 [])
+pfilter.evens (\i-0 ->
+   (\i-1 ->
+      (\i-2 -> i-2 i-2)
+        (\i-3 i-4 i-5 ->
+           case
+             i-4
+             [ (\i-6 i-7 ->
+                  case
+                    i-5
+                    [ (\i-8 i-9 ->
+                         case
+                           (equalsInteger i-6 i-8)
+                           [False, (case (constr 0 [i-3, i-7, i-9]) [i-3])])
+                    , False ])
+             , (case i-5 [(\i-10 i-11 -> False), True]) ])
+        ((\i-12 ->
+            (\i-13 -> i-13 i-13)
+              (\i-14 i-15 ->
+                 case
+                   i-15
+                   [ (\i-16 i-17 ->
+                        case
+                          (i-12 i-16)
+                          [(i-14 i-14 i-17), (i-0 i-16 (i-14 i-14 i-17))])
+                   , (constr 1 []) ]))
+           (\i-18 -> equalsInteger (modInteger i-18 2) 0)
+           (i-1 [1,2,3,4,5,6,7,8,9,10]))
+        (i-1 [2,4,6,8,10]))
+     ((\i-19 -> i-19 i-19)
+        (\i-20 i-21 ->
+           case
+             i-21
+             [(\i-22 i-23 -> i-0 i-22 (i-20 i-20 i-23)), (constr 1 [])])))
+  (\i-24 i-25 -> constr 0 [i-24, i-25])
+pfilter.gt5 (\i-0 ->
+   (\i-1 ->
+      (\i-2 -> i-2 i-2)
+        (\i-3 i-4 i-5 ->
+           case
+             i-4
+             [ (\i-6 i-7 ->
+                  case
+                    i-5
+                    [ (\i-8 i-9 ->
+                         case
+                           (equalsInteger i-6 i-8)
+                           [False, (case (constr 0 [i-3, i-7, i-9]) [i-3])])
+                    , False ])
+             , (case i-5 [(\i-10 i-11 -> False), True]) ])
+        ((\i-12 ->
+            (\i-13 -> i-13 i-13)
+              (\i-14 i-15 ->
+                 case
+                   i-15
+                   [ (\i-16 i-17 ->
+                        case
+                          (i-12 i-16)
+                          [(i-14 i-14 i-17), (i-0 i-16 (i-14 i-14 i-17))])
+                   , (constr 1 []) ]))
+           (\i-18 -> lessThanInteger 5 i-18)
+           (i-1 [1,2,3,4,5,6,7,8,9,10]))
+        (i-1 [6,7,8,9,10]))
+     ((\i-19 -> i-19 i-19)
+        (\i-20 i-21 ->
+           case
+             i-21
+             [(\i-22 i-23 -> i-0 i-22 (i-20 i-20 i-23)), (constr 1 [])])))
+  (\i-24 i-25 -> constr 0 [i-24, i-25])
+pzipWith.double (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
+         (\i-3 -> i-3 i-3)
+           (\i-4 i-5 i-6 ->
+              case
+                i-5
+                [ (\i-7 i-8 ->
+                     case
+                       i-6
+                       [ (\i-9 i-10 ->
+                            case
+                              (equalsInteger i-7 i-9)
+                              [False, (case (constr 0 [i-4, i-8, i-10]) [i-4])])
+                       , False ])
+                , (case i-6 [(\i-11 i-12 -> False), True]) ])
+           (case
+              (constr 0
+                 [ (\i-13 i-14 i-15 ->
+                      case
+                        i-14
+                        [ (\i-16 i-17 ->
+                             case
+                               i-15
+                               [ (\i-18 i-19 ->
+                                    i-0
+                                      (addInteger i-16 i-18)
+                                      (case
+                                         (constr 0 [i-13, i-17, i-19])
+                                         [i-13]))
+                               , (constr 1 []) ])
+                        , (constr 1 []) ])
+                 , (i-1 i-2)
+                 , (i-1 i-2) ])
+              [(\i-20 -> i-20 i-20)])
+           (i-1 [2,4,6,8,10,12,14,16,18,20]))
+        [1,2,3,4,5,6,7,8,9,10])
+     ((\i-21 -> i-21 i-21)
+        (\i-22 i-23 ->
+           case
+             i-23
+             [(\i-24 i-25 -> i-0 i-24 (i-22 i-22 i-25)), (constr 1 [])])))
+  (\i-26 i-27 -> constr 0 [i-26, i-27])
+pfoldl.nonempty equalsInteger
+  ((\i-0 -> i-0 i-0)
+     (\i-1 i-2 i-3 ->
         case
-          !1
-          [ (\!0 !0 ->
-               case
-                 (!4 !2)
-                 [(case (constr 0 [!5, !4, !1]) [!5]), (constr 0 [!2])])
-          , (constr 1 []) ])
-     (\!0 -> equalsInteger !1 5)
-     ((\!0 -> !1 !1)
-        (\!0 !0 ->
+          i-3
+          [ (\i-4 i-5 ->
+               case (constr 0 [i-1, (subtractInteger i-2 i-4), i-5]) [i-1])
+          , i-2 ])
+     0
+     ((\i-6 -> i-6 i-6)
+        (\i-7 i-8 ->
            case
-             !1
-             [(\!0 !0 -> (\!0 -> constr 0 [!3, !1]) (!4 !4 !1)), (constr 1 [])])
-        [1,2,3,4]))
-x1+x2.builtin program
-  1.1.0
-  ((\!0 ->
-      (\!0 -> addInteger (!1 (force tailList !2)) (!1 !2)) (force headList))
-     [1,2,3,4,5])
-x1+x2.pmatch program
-  1.1.0
-  (case
-     [1,2,3,4,5]
-     [(\!0 !0 -> case !1 [(\!0 !0 -> addInteger !4 !2), error]), error])
-uncons.ChooseList program 1.1.0 (case [1,2,3,4,5] [(\!0 !0 -> !1), error])
-uncons.head-and-tail program
-  1.1.0
-  ((\!0 -> (\!0 -> force tailList !2) (force headList !1)) [1,2,3,4,5])
-uncons.head-and-tail-and-null program
-  1.1.0
-  ((\!0 ->
-      (\!0 -> case !1 [((\!0 -> force tailList !3) (force headList !2)), error])
-        (force nullList !1))
-     [1,2,3,4,5])
-pmatchList.match-nothing program 1.1.0 [1,2,3,4,5,6,7,8,9,10]
-pmatchList.rest-unused program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 -> addInteger (!2 !1) (!2 (!3 (!3 !1))))
-           (!2 [1,2,3,4,5,6,7,8,9,10]))
+             i-8
+             [ (\i-9 i-10 -> (\i-11 -> constr 0 [i-9, i-11]) (i-7 i-7 i-10))
+             , (constr 1 []) ])
+        [1,2,3,4,5,6,7,8,9,10]))
+  -55
+pfoldl.nonempty-primed equalsInteger
+  ((\i-0 -> i-0 i-0)
+     (\i-1 i-2 i-3 ->
+        case
+          i-3
+          [ (\i-4 i-5 ->
+               case (constr 0 [i-1, (subtractInteger i-2 i-4), i-5]) [i-1])
+          , i-2 ])
+     0
+     ((\i-6 -> i-6 i-6)
+        (\i-7 i-8 ->
+           case
+             i-8
+             [ (\i-9 i-10 -> (\i-11 -> constr 0 [i-9, i-11]) (i-7 i-7 i-10))
+             , (constr 1 []) ])
+        [1,2,3,4,5,6,7,8,9,10]))
+  -55
+pfoldl.empty equalsInteger
+  ((\i-0 -> i-0 i-0)
+     (\i-1 i-2 i-3 ->
+        case
+          i-3
+          [ (\i-4 i-5 ->
+               case (constr 0 [i-1, (subtractInteger i-2 i-4), i-5]) [i-1])
+          , i-2 ])
+     0
+     ((\i-6 -> i-6 i-6)
+        (\i-7 i-8 ->
+           case
+             i-8
+             [ (\i-9 i-10 -> (\i-11 -> constr 0 [i-9, i-11]) (i-7 i-7 i-10))
+             , (constr 1 []) ])
+        []))
+  0
+pfoldl.empty-primed equalsInteger
+  ((\i-0 -> i-0 i-0)
+     (\i-1 i-2 i-3 ->
+        case
+          i-3
+          [ (\i-4 i-5 ->
+               case (constr 0 [i-1, (subtractInteger i-2 i-4), i-5]) [i-1])
+          , i-2 ])
+     0
+     ((\i-6 -> i-6 i-6)
+        (\i-7 i-8 ->
+           case
+             i-8
+             [ (\i-9 i-10 -> (\i-11 -> constr 0 [i-9, i-11]) (i-7 i-7 i-10))
+             , (constr 1 []) ])
+        []))
+  0
+elemAt.elemAt_3_[1..10] (\i-0 ->
+   case
+     (lessThanInteger 3 0)
+     [ ((\i-1 -> i-1 i-1)
+          (\i-2 i-3 i-4 ->
+             case
+               (equalsInteger i-3 0)
+               [ (case
+                    (constr 0
+                       [ i-2
+                       , (subtractInteger i-3 1)
+                       , (case i-4 [(\i-5 i-6 -> i-6), error]) ])
+                    [i-2])
+               , (case i-4 [(\i-7 i-8 -> i-7), error]) ])
+          3
+          i-0)
+     , (force (force trace "pelemAt: negative index" (delay error))) ])
+  ((\i-9 -> i-9 i-9)
+     (\i-10 i-11 ->
+        case
+          i-11
+          [ (\i-12 i-13 -> (\i-14 -> constr 0 [i-12, i-14]) (i-10 i-10 i-13))
+          , (constr 1 []) ])
+     [1,2,3,4,5,6,7,8,9,10])
+elemAt.elemAt_0_[1..10] (\i-0 ->
+   case
+     (lessThanInteger 0 0)
+     [ ((\i-1 -> i-1 i-1)
+          (\i-2 i-3 i-4 ->
+             case
+               (equalsInteger i-3 0)
+               [ (case
+                    (constr 0
+                       [ i-2
+                       , (subtractInteger i-3 1)
+                       , (case i-4 [(\i-5 i-6 -> i-6), error]) ])
+                    [i-2])
+               , (case i-4 [(\i-7 i-8 -> i-7), error]) ])
+          0
+          i-0)
+     , (force (force trace "pelemAt: negative index" (delay error))) ])
+  ((\i-9 -> i-9 i-9)
+     (\i-10 i-11 ->
+        case
+          i-11
+          [ (\i-12 i-13 -> (\i-14 -> constr 0 [i-12, i-14]) (i-10 i-10 i-13))
+          , (constr 1 []) ])
+     [1,2,3,4,5,6,7,8,9,10])
+elemAt.elemAt_9_[1..10] (\i-0 ->
+   case
+     (lessThanInteger 9 0)
+     [ ((\i-1 -> i-1 i-1)
+          (\i-2 i-3 i-4 ->
+             case
+               (equalsInteger i-3 0)
+               [ (case
+                    (constr 0
+                       [ i-2
+                       , (subtractInteger i-3 1)
+                       , (case i-4 [(\i-5 i-6 -> i-6), error]) ])
+                    [i-2])
+               , (case i-4 [(\i-7 i-8 -> i-7), error]) ])
+          9
+          i-0)
+     , (force (force trace "pelemAt: negative index" (delay error))) ])
+  ((\i-9 -> i-9 i-9)
+     (\i-10 i-11 ->
+        case
+          i-11
+          [ (\i-12 i-13 -> (\i-14 -> constr 0 [i-12, i-14]) (i-10 i-10 i-13))
+          , (constr 1 []) ])
+     [1,2,3,4,5,6,7,8,9,10])
+find.find_(==3)_[1..4] (\i-0 -> i-0 i-0)
+  (\i-1 i-2 i-3 ->
+     case
+       i-3
+       [ (\i-4 i-5 ->
+            case
+              (i-2 i-4)
+              [(case (constr 0 [i-1, i-2, i-5]) [i-1]), (constr 0 [i-4])])
+       , (constr 1 []) ])
+  (\i-6 -> equalsInteger i-6 3)
+  ((\i-7 -> i-7 i-7)
+     (\i-8 i-9 ->
+        case
+          i-9
+          [ (\i-10 i-11 -> (\i-12 -> constr 0 [i-10, i-12]) (i-8 i-8 i-11))
+          , (constr 1 []) ])
+     [1,2,3,4])
+find.find_(==5)_[1..4] (\i-0 -> i-0 i-0)
+  (\i-1 i-2 i-3 ->
+     case
+       i-3
+       [ (\i-4 i-5 ->
+            case
+              (i-2 i-4)
+              [(case (constr 0 [i-1, i-2, i-5]) [i-1]), (constr 0 [i-4])])
+       , (constr 1 []) ])
+  (\i-6 -> equalsInteger i-6 5)
+  ((\i-7 -> i-7 i-7)
+     (\i-8 i-9 ->
+        case
+          i-9
+          [ (\i-10 i-11 -> (\i-12 -> constr 0 [i-10, i-12]) (i-8 i-8 i-11))
+          , (constr 1 []) ])
+     [1,2,3,4])
+x1+x2.builtin (\i-0 ->
+   (\i-1 -> addInteger (i-1 (force tailList i-0)) (i-1 i-0)) (force headList))
+  [1,2,3,4,5]
+x1+x2.pmatch case
+  [1,2,3,4,5]
+  [(\i-0 i-1 -> case i-1 [(\i-2 i-3 -> addInteger i-0 i-2), error]), error]
+uncons.ChooseList case [1,2,3,4,5] [(\i-0 i-1 -> i-1), error]
+uncons.head-and-tail (\i-0 -> (\i-1 -> force tailList i-0) (force headList i-0)) [1,2,3,4,5]
+uncons.head-and-tail-and-null (\i-0 ->
+   (\i-1 ->
+      case i-1 [((\i-2 -> force tailList i-0) (force headList i-0)), error])
+     (force nullList i-0))
+  [1,2,3,4,5]
+pmatchList.match-nothing [1,2,3,4,5,6,7,8,9,10]
+pmatchList.rest-unused (\i-0 ->
+   (\i-1 ->
+      (\i-2 -> addInteger (i-1 i-2) (i-1 (i-0 (i-0 i-2))))
+        (i-0 [1,2,3,4,5,6,7,8,9,10]))
+     (force headList))
+  (force tailList)
+pmatchList.rest-used (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
+         (\i-3 ->
+            addInteger
+              (addInteger (i-2 i-0) (i-2 i-3))
+              (i-2 (i-1 (i-1 (i-1 i-3)))))
+           (i-1 (i-1 i-0)))
         (force headList))
      (force tailList))
-pmatchList.rest-used program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            (\!0 ->
-               addInteger (addInteger (!2 !4) (!2 !1)) (!2 (!3 (!3 (!3 !1)))))
-              (!2 (!2 !3)))
-           (force headList))
-        (force tailList))
-     [1,2,3,4,5,6,7,8,9,10])
-pmatchList.use-only-rest(drop N) program
-  1.1.0
-  ((\!0 -> !1 (!1 (!1 (!1 (!1 [1,2,3,4,5,6,7,8,9,10]))))) (force tailList))
+  [1,2,3,4,5,6,7,8,9,10]
+pmatchList.use-only-rest(drop N) (\i-0 -> i-0 (i-0 (i-0 (i-0 (i-0 [1,2,3,4,5,6,7,8,9,10]))))) (force tailList)

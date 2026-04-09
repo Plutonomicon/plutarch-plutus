@@ -7,6 +7,10 @@
 * `PBuiltinValue`, and bindings to primitive functions for this
 * Support for CIP-133 multi-scalar multiplications of BLS primitives
 
+## Changed
+
+* `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
+
 # 1.13.0 -- 04-03-2026
 
 ## Added

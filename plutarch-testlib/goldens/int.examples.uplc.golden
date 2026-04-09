@@ -1,37 +1,31 @@
-add1 program 1.1.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
-add1Hoisted program 1.1.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
-example1 program
-  1.1.0
-  ((\!0 -> addInteger (!1 12 32) (!1 5 4))
-     (\!0 !0 -> addInteger (addInteger !2 !1) 1))
-example2 program
-  1.1.0
-  (\!0 -> case !1 [(\!0 -> addInteger !1 1), (\!0 -> subtractInteger !1 1)])
-fib.lam program
-  1.1.0
-  ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
-     (\!0 !0 ->
-        case
-          (equalsInteger !1 0)
-          [ (case
-               (equalsInteger !1 1)
-               [ (addInteger
-                    (!2 (subtractInteger !1 1))
-                    (!2 (subtractInteger !1 2)))
-               , 1 ])
-          , 0 ]))
-fib.app.9 program
-  1.1.0
-  ((\!0 -> (\!0 -> !2 (\!0 -> !2 !2 !1)) (\!0 -> !2 (\!0 -> !2 !2 !1)))
-     (\!0 !0 ->
-        case
-          (equalsInteger !1 0)
-          [ (case
-               (equalsInteger !1 1)
-               [ (addInteger
-                    (!2 (subtractInteger !1 1))
-                    (!2 (subtractInteger !1 2)))
-               , 1 ])
-          , 0 ])
-     9)
-uglyDouble program 1.1.0 (\!0 -> addInteger !1 !1)
+add1 \i-0 i-1 -> addInteger (addInteger i-0 i-1) 1
+add1Hoisted \i-0 i-1 -> addInteger (addInteger i-0 i-1) 1
+example1 (\i-0 -> addInteger (i-0 12 32) (i-0 5 4))
+  (\i-1 i-2 -> addInteger (addInteger i-1 i-2) 1)
+example2 \i-0 -> case i-0 [(\i-1 -> addInteger i-1 1), (\i-2 -> subtractInteger i-2 1)]
+fib.lam (\i-0 ->
+   (\i-1 -> i-0 (\i-2 -> i-1 i-1 i-2)) (\i-3 -> i-0 (\i-4 -> i-3 i-3 i-4)))
+  (\i-5 i-6 ->
+     case
+       (equalsInteger i-6 0)
+       [ (case
+            (equalsInteger i-6 1)
+            [ (addInteger
+                 (i-5 (subtractInteger i-6 1))
+                 (i-5 (subtractInteger i-6 2)))
+            , 1 ])
+       , 0 ])
+fib.app.9 (\i-0 ->
+   (\i-1 -> i-0 (\i-2 -> i-1 i-1 i-2)) (\i-3 -> i-0 (\i-4 -> i-3 i-3 i-4)))
+  (\i-5 i-6 ->
+     case
+       (equalsInteger i-6 0)
+       [ (case
+            (equalsInteger i-6 1)
+            [ (addInteger
+                 (i-5 (subtractInteger i-6 1))
+                 (i-5 (subtractInteger i-6 2)))
+            , 1 ])
+       , 0 ])
+  9
+uglyDouble \i-0 -> addInteger i-0 i-0

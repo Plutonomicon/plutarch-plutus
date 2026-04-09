@@ -1,45 +1,35 @@
-eq.true.left program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
-        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
-     (constr 0 [42])
-     (constr 0 [42]))
-eq.true.right program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
-        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
-     (constr 1 [42])
-     (constr 1 [42]))
-eq.false.left-right program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
-        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
-     (constr 0 [42])
-     (constr 1 [42]))
-eq.false.left-left program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
-        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
-     (constr 0 [24])
-     (constr 0 [42]))
-eq.false.right-right program
-  1.1.0
-  ((\!0 !0 ->
-      case
-        !2
-        [ (\!0 -> case !2 [(\!0 -> equalsInteger !2 !1), (\!0 -> False)])
-        , (\!0 -> case !2 [(\!0 -> False), (\!0 -> equalsInteger !2 !1)]) ])
-     (constr 1 [24])
-     (constr 1 [42]))
+eq.true.left (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), (\i-4 -> False)])
+     , (\i-5 -> case i-1 [(\i-6 -> False), (\i-7 -> equalsInteger i-5 i-7)]) ])
+  (constr 0 [42])
+  (constr 0 [42])
+eq.true.right (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), (\i-4 -> False)])
+     , (\i-5 -> case i-1 [(\i-6 -> False), (\i-7 -> equalsInteger i-5 i-7)]) ])
+  (constr 1 [42])
+  (constr 1 [42])
+eq.false.left-right (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), (\i-4 -> False)])
+     , (\i-5 -> case i-1 [(\i-6 -> False), (\i-7 -> equalsInteger i-5 i-7)]) ])
+  (constr 0 [42])
+  (constr 1 [42])
+eq.false.left-left (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), (\i-4 -> False)])
+     , (\i-5 -> case i-1 [(\i-6 -> False), (\i-7 -> equalsInteger i-5 i-7)]) ])
+  (constr 0 [24])
+  (constr 0 [42])
+eq.false.right-right (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 -> case i-1 [(\i-3 -> equalsInteger i-2 i-3), (\i-4 -> False)])
+     , (\i-5 -> case i-1 [(\i-6 -> False), (\i-7 -> equalsInteger i-5 i-7)]) ])
+  (constr 1 [24])
+  (constr 1 [42])

@@ -1,144 +1,134 @@
-lte program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         case
-           !1
-           [ (\!0 !0 ->
-                case
-                  !2
-                  [ ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ (lessThanEqualsInteger
-                                      (unIData (!7 !4))
-                                      (unIData (!7 !1)))
-                                 , True ]) ])
-                       (unConstrData (Constr 1 [B #666f6f])))
-                  , ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ False
-                                 , (lessThanEqualsByteString
-                                      (unBData (!7 !4))
-                                      (unBData (!7 !1))) ]) ])
-                       (unConstrData (Constr 1 [B #666f6f]))) ]) ])
-        (unConstrData (Constr 0 [I 10])))
-     (force headList))
-lt program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         case
-           !1
-           [ (\!0 !0 ->
-                case
-                  !2
-                  [ ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ (lessThanInteger
-                                      (unIData (!7 !4))
-                                      (unIData (!7 !1)))
-                                 , True ]) ])
-                       (unConstrData (Constr 1 [B #666f6f])))
-                  , ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ False
-                                 , (lessThanByteString
-                                      (unBData (!7 !4))
-                                      (unBData (!7 !1))) ]) ])
-                       (unConstrData (Constr 1 [B #666f6f]))) ]) ])
-        (unConstrData (Constr 0 [I 10])))
-     (force headList))
-pmax program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         case
-           !1
-           [ (\!0 !0 ->
-                case
-                  !2
-                  [ ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ (case
-                                      (lessThanEqualsInteger
-                                         (unIData (!7 !4))
-                                         (unIData (!7 !1)))
-                                      [ (Constr 0 [I 10])
-                                      , (Constr 1 [B #666f6f]) ])
-                                 , (Constr 1 [B #666f6f]) ]) ])
-                       (unConstrData (Constr 1 [B #666f6f])))
-                  , ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ (Constr 0 [I 10])
-                                 , (case
-                                      (lessThanEqualsByteString
-                                         (unBData (!7 !4))
-                                         (unBData (!7 !1)))
-                                      [ (Constr 0 [I 10])
-                                      , (Constr 1 [B #666f6f]) ]) ]) ])
-                       (unConstrData (Constr 1 [B #666f6f]))) ]) ])
-        (unConstrData (Constr 0 [I 10])))
-     (force headList))
-pmin program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         case
-           !1
-           [ (\!0 !0 ->
-                case
-                  !2
-                  [ ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ (case
-                                      (lessThanEqualsInteger
-                                         (unIData (!7 !4))
-                                         (unIData (!7 !1)))
-                                      [ (Constr 1 [B #666f6f])
-                                      , (Constr 0 [I 10]) ])
-                                 , (Constr 0 [I 10]) ]) ])
-                       (unConstrData (Constr 1 [B #666f6f])))
-                  , ((\!0 ->
-                        case
-                          !1
-                          [ (\!0 !0 ->
-                               case
-                                 !2
-                                 [ (Constr 1 [B #666f6f])
-                                 , (case
-                                      (lessThanEqualsByteString
-                                         (unBData (!7 !4))
-                                         (unBData (!7 !1)))
-                                      [ (Constr 1 [B #666f6f])
-                                      , (Constr 0 [I 10]) ]) ]) ])
-                       (unConstrData (Constr 1 [B #666f6f]))) ]) ])
-        (unConstrData (Constr 0 [I 10])))
-     (force headList))
+lte (\i-0 ->
+   (\i-1 ->
+      case
+        i-1
+        [ (\i-2 i-3 ->
+             case
+               i-2
+               [ ((\i-4 ->
+                     case
+                       i-4
+                       [ (\i-5 i-6 ->
+                            case
+                              i-5
+                              [ (lessThanEqualsInteger
+                                   (unIData (i-0 i-3))
+                                   (unIData (i-0 i-6)))
+                              , True ]) ])
+                    (unConstrData (Constr 1 [B #666f6f])))
+               , ((\i-7 ->
+                     case
+                       i-7
+                       [ (\i-8 i-9 ->
+                            case
+                              i-8
+                              [ False
+                              , (lessThanEqualsByteString
+                                   (unBData (i-0 i-3))
+                                   (unBData (i-0 i-9))) ]) ])
+                    (unConstrData (Constr 1 [B #666f6f]))) ]) ])
+     (unConstrData (Constr 0 [I 10])))
+  (force headList)
+lt (\i-0 ->
+   (\i-1 ->
+      case
+        i-1
+        [ (\i-2 i-3 ->
+             case
+               i-2
+               [ ((\i-4 ->
+                     case
+                       i-4
+                       [ (\i-5 i-6 ->
+                            case
+                              i-5
+                              [ (lessThanInteger
+                                   (unIData (i-0 i-3))
+                                   (unIData (i-0 i-6)))
+                              , True ]) ])
+                    (unConstrData (Constr 1 [B #666f6f])))
+               , ((\i-7 ->
+                     case
+                       i-7
+                       [ (\i-8 i-9 ->
+                            case
+                              i-8
+                              [ False
+                              , (lessThanByteString
+                                   (unBData (i-0 i-3))
+                                   (unBData (i-0 i-9))) ]) ])
+                    (unConstrData (Constr 1 [B #666f6f]))) ]) ])
+     (unConstrData (Constr 0 [I 10])))
+  (force headList)
+pmax (\i-0 ->
+   (\i-1 ->
+      case
+        i-1
+        [ (\i-2 i-3 ->
+             case
+               i-2
+               [ ((\i-4 ->
+                     case
+                       i-4
+                       [ (\i-5 i-6 ->
+                            case
+                              i-5
+                              [ (case
+                                   (lessThanEqualsInteger
+                                      (unIData (i-0 i-3))
+                                      (unIData (i-0 i-6)))
+                                   [(Constr 0 [I 10]), (Constr 1 [B #666f6f])])
+                              , (Constr 1 [B #666f6f]) ]) ])
+                    (unConstrData (Constr 1 [B #666f6f])))
+               , ((\i-7 ->
+                     case
+                       i-7
+                       [ (\i-8 i-9 ->
+                            case
+                              i-8
+                              [ (Constr 0 [I 10])
+                              , (case
+                                   (lessThanEqualsByteString
+                                      (unBData (i-0 i-3))
+                                      (unBData (i-0 i-9)))
+                                   [ (Constr 0 [I 10])
+                                   , (Constr 1 [B #666f6f]) ]) ]) ])
+                    (unConstrData (Constr 1 [B #666f6f]))) ]) ])
+     (unConstrData (Constr 0 [I 10])))
+  (force headList)
+pmin (\i-0 ->
+   (\i-1 ->
+      case
+        i-1
+        [ (\i-2 i-3 ->
+             case
+               i-2
+               [ ((\i-4 ->
+                     case
+                       i-4
+                       [ (\i-5 i-6 ->
+                            case
+                              i-5
+                              [ (case
+                                   (lessThanEqualsInteger
+                                      (unIData (i-0 i-3))
+                                      (unIData (i-0 i-6)))
+                                   [(Constr 1 [B #666f6f]), (Constr 0 [I 10])])
+                              , (Constr 0 [I 10]) ]) ])
+                    (unConstrData (Constr 1 [B #666f6f])))
+               , ((\i-7 ->
+                     case
+                       i-7
+                       [ (\i-8 i-9 ->
+                            case
+                              i-8
+                              [ (Constr 1 [B #666f6f])
+                              , (case
+                                   (lessThanEqualsByteString
+                                      (unBData (i-0 i-3))
+                                      (unBData (i-0 i-9)))
+                                   [ (Constr 1 [B #666f6f])
+                                   , (Constr 0 [I 10]) ]) ]) ])
+                    (unConstrData (Constr 1 [B #666f6f]))) ]) ])
+     (unConstrData (Constr 0 [I 10])))
+  (force headList)
