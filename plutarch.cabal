@@ -86,6 +86,7 @@ library
     Plutarch.Builtin.Opaque
     Plutarch.Builtin.String
     Plutarch.Builtin.Unit
+    Plutarch.Builtin.Value
     Plutarch.DataRepr
     Plutarch.DataRepr.Internal
     Plutarch.DataRepr.Internal.Field

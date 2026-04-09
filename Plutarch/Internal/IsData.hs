@@ -30,6 +30,11 @@ import Plutarch.Builtin.Data (
  )
 import Plutarch.Builtin.Integer (PInteger, pconstantInteger)
 import Plutarch.Builtin.Unit (PUnit, punit)
+import Plutarch.Builtin.Value (
+  PBuiltinValue,
+  punValueData,
+  pvalueData,
+ )
 import Plutarch.Internal.Eq (PEq ((#==)))
 import Plutarch.Internal.ListLike (
   PListLike (pcons, phead, pnil, ptail),
@@ -178,3 +183,8 @@ instance
   where
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
   pdataImpl x = plistData # punsafeCoerce x
+
+-- | @since wip
+instance PIsData PBuiltinValue where
+  pfromDataImpl d = punValueData # pforgetData d
+  pdataImpl x = pvalueData # x
