@@ -12,6 +12,8 @@ import Plutarch.LedgerApi.V3.Value (
   preplaceAmountNegative,
   preplaceAmountPositive,
   psingletonBuiltinValue,
+  ptoLedgerValue,
+  ptoMintValue,
   ptoSortedValue,
   pvalueOf,
  )
@@ -30,10 +32,13 @@ import Plutarch.Prelude (
   pcon,
   pconstant,
   pfromData,
+  pif,
   plam,
   plet,
   plift,
   pnegate,
+  pnot,
+  pone,
   (#),
   (#$),
   (#==),
@@ -65,9 +70,37 @@ tests =
     , testProperty "preplaceAmountNegative replaces correctly" propReplaceNegative
     , testProperty "pdeleteAmount removes the amount" propDeleteAmount
     , testProperty "plovelaceValueOf = pvalueOf padaSymbol padaTokenName" propLovelaceValueOf
+    , testProperty "ptoLedgerValue works correctly" propToLedgerValue
+    , testProperty "ptoMintValue works correctly" propToMintValue
     ]
 
 -- Properties
+
+propToMintValue :: Property
+propToMintValue = forAllShrinkShow arbitrary shrink show $ \(v, coin) ->
+  plift (precompileTerm (plam go) # pconstant v # pconstant coin)
+  where
+    go ::
+      forall (s :: S).
+      Term s PBuiltinValue ->
+      Term s PBool ->
+      Term s PBool
+    go v hasAdaEntry =
+      plet (pif hasAdaEntry (preplaceAmountPositive # padaSymbol # padaToken # pone # v) (pdeleteAmount # padaSymbol # padaToken # v)) $ \v' ->
+        plet (ptoMintValue v' hasAdaEntry (plam $ const (pnot # hasAdaEntry))) id
+
+propToLedgerValue :: Property
+propToLedgerValue = forAllShrinkShow arbitrary shrink show $ \(v, coin) ->
+  plift (precompileTerm (plam go) # pconstant v # pconstant coin)
+  where
+    go ::
+      forall (s :: S).
+      Term s PBuiltinValue ->
+      Term s PBool ->
+      Term s PBool
+    go v hasAdaEntry =
+      plet (pif hasAdaEntry (preplaceAmountPositive # padaSymbol # padaToken # pone # v) (pdeleteAmount # padaSymbol # padaToken # v)) $ \v' ->
+        plet (ptoLedgerValue v' (pnot # hasAdaEntry) (plam $ const hasAdaEntry)) id
 
 propEmptyNoContents :: Property
 propEmptyNoContents = forAllShrinkShow arbitrary shrink show $ \(cs, tn) ->
