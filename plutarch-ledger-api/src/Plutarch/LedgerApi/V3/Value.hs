@@ -68,11 +68,15 @@ module Plutarch.LedgerApi.V3.Value (
   -- * Construction
   pemptyBuiltinValue,
   psingletonBuiltinValue,
-  padjustAmount,
 
   -- * Queries
   pvalueOf,
   plovelaceValueOf,
+
+  -- * Updates
+  preplaceAmountPositive,
+  preplaceAmountNegative,
+  pdeleteAmount,
 ) where
 
 import Data.Kind (Type)
@@ -95,6 +99,7 @@ import Plutarch.Prelude (
   PBuiltinList (PCons, PNil),
   PBuiltinPair (PBuiltinPair),
   PInteger,
+  PPositive,
   S,
   Term,
   pcon,
@@ -108,6 +113,7 @@ import Plutarch.Prelude (
   plam,
   plet,
   pmatch,
+  pnegate,
   pto,
   pupcast,
   (#),
@@ -291,26 +297,53 @@ plovelaceValueOf ::
 plovelaceValueOf = phoistAcyclic $ plam $ \v ->
   plookupCoin # pconstant "" # pconstant "" # v
 
-{- | Given a 'PCurrencySymbol', a 'PTokenName' and a 'PBuiltinValue', adjust the
-amount associated with the combination of the given 'PCurrencySymbol' and
-'PTokenName' in the given 'PBuiltinValue' by the 'PInteger' argument.
-Specifically, a negative 'PInteger' argument will adjust the amount down,
-while a positive 'PInteger' argument will adjust it up. If the (effective)
-amount would become @0@, the given combination will be removed.
+{- | Replace the amount at the given currency-token name combination in the
+given 'PBuiltinValue' with the given amount. The new amount will be positive.
+If the given currency-token name combination does not exist, create it.
 
 = Note
 
 A 'PBuiltinValue' cannot store an amount that would not fit into a 128-bit
-signed integer. This function will error if the result would store an amount
-that exceeds this.
+signed integer. This function will error if the result would be forced to
+store such an amount.
 
 @since wip
 -}
-padjustAmount ::
+preplaceAmountPositive ::
   forall (s :: S).
-  Term s (PCurrencySymbol :--> PTokenName :--> PInteger :--> PBuiltinValue :--> PBuiltinValue)
-padjustAmount = phoistAcyclic $ plam $ \cs tn delta v ->
-  pinsertCoin # pupcast cs # pupcast tn # delta # v
+  Term s (PCurrencySymbol :--> PTokenName :--> PPositive :--> PBuiltinValue :--> PBuiltinValue)
+preplaceAmountPositive = phoistAcyclic $ plam $ \cs tn amount v ->
+  pinsertCoin # pupcast cs # pupcast tn # pupcast amount # v
+
+{- | Replace the amount at the given currency-token name combination in the
+given 'PBuiltinValue' with the given amount. The new amount will be negative.
+If the given currency-token name combination does not exist, create it.
+
+= Note
+
+A 'PBuiltinValue' cannot store an amount that would not fit into a 128-bit
+signed integer. This function will error if the result would be forced to
+store such an amount.
+
+@since wip
+-}
+preplaceAmountNegative ::
+  forall (s :: S).
+  Term s (PCurrencySymbol :--> PTokenName :--> PPositive :--> PBuiltinValue :--> PBuiltinValue)
+preplaceAmountNegative = phoistAcyclic $ plam $ \cs tn amount v ->
+  pinsertCoin # pupcast cs # pupcast tn # (pnegate # pupcast amount) # v
+
+{- | Remove any amount associated with the given currency-token name combination
+in the given 'PBuiltinValue'. If there is no such combination in the given
+'PBuiltinValue', this does nothing.
+
+@since wip
+-}
+pdeleteAmount ::
+  forall (s :: S).
+  Term s (PCurrencySymbol :--> PTokenName :--> PBuiltinValue :--> PBuiltinValue)
+pdeleteAmount = phoistAcyclic $ plam $ \cs tn v ->
+  pinsertCoin # pupcast cs # pupcast tn # 0 # v
 
 -- Helpers
 
