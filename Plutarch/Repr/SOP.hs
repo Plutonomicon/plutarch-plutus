@@ -195,8 +195,8 @@ type family PCaseTy r (struct :: [[S -> Type]]) :: [S -> Type] where
 
 pconSOPRec ::
   forall (struct :: [S -> Type]) (s :: S). SListI struct => PRec struct s -> Term s (PSOPRec struct)
-pconSOPRec (PRec xs) = Term $ \i -> do
-  ts <- SOP.hcollapse <$> SOP.htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) xs
+pconSOPRec (PRec xs) = Term $ do
+  ts <- SOP.hcollapse <$> SOP.htraverse' (fmap (K . (getTerm &&& getDeps)) . asRawTerm) xs
   let
     term = RConstr 0 $ fst <$> ts
     deps = mconcat $ snd <$> ts
@@ -222,15 +222,15 @@ sopHandler f =
 
 pmatchSOPRec ::
   forall (struct :: [S -> Type]) (r :: S -> Type) (s :: S). SListI struct => Term s (PSOPRec struct) -> (PRec struct s -> Term s r) -> Term s r
-pmatchSOPRec xs f = Term $ \i -> do
-  (term, deps) <- (getTerm &&& getDeps) <$> asRawTerm xs i
-  (handlerTerm, handlerDeps) <- (getTerm &&& getDeps) <$> asRawTerm (sopHandler f) i
+pmatchSOPRec xs f = Term $ do
+  (term, deps) <- (getTerm &&& getDeps) <$> asRawTerm xs
+  (handlerTerm, handlerDeps) <- (getTerm &&& getDeps) <$> asRawTerm (sopHandler f)
   pure $ TermResult (RCase term (pure handlerTerm)) (deps <> handlerDeps)
 
 pconSOPStruct ::
   forall (struct :: [[S -> Type]]) (s :: S). SListI2 struct => PStruct struct s -> Term s (PSOPStruct struct)
-pconSOPStruct (PStruct xs') = pletL xs' $ \xs -> Term $ \i -> do
-  ts <- SOP.hcollapse <$> SOP.htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) xs
+pconSOPStruct (PStruct xs') = pletL xs' $ \xs -> Term $ do
+  ts <- SOP.hcollapse <$> SOP.htraverse' (fmap (K . (getTerm &&& getDeps)) . asRawTerm) xs
   let
     idx = SOP.hindex xs
     term = RConstr (fromIntegral idx) $ fst <$> ts
@@ -247,8 +247,8 @@ pmatchSOPStruct ::
   Term s (PSOPStruct struct) ->
   (PStruct struct s -> Term s r) ->
   Term s r
-pmatchSOPStruct xs h = Term $ \i -> do
-  (term, deps) <- (getTerm &&& getDeps) <$> asRawTerm xs i
+pmatchSOPStruct xs h = Term $ do
+  (term, deps) <- (getTerm &&& getDeps) <$> asRawTerm xs
 
   let
     go :: forall y ys r s. SListI y => MSS s r ys -> MSS s r (y ': ys)
@@ -262,7 +262,7 @@ pmatchSOPStruct xs h = Term $ \i -> do
     handlers' :: NP (Term s) (PCaseTy r struct)
     handlers' = unMSS (SOP.cpara_SList (Proxy @SListI) (MSS $ const Nil) go) h
 
-  handlers <- SOP.hcollapse <$> SOP.htraverse' (\x -> K . (getTerm &&& getDeps) <$> asRawTerm x i) handlers'
+  handlers <- SOP.hcollapse <$> SOP.htraverse' (fmap (K . (getTerm &&& getDeps)) . asRawTerm) handlers'
   let
     handlerTerms = fst <$> handlers
     handlerDeps = mconcat $ snd <$> handlers

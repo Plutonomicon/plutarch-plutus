@@ -79,4 +79,4 @@ precompileTerm t =
 
 unsafeTermFromScript :: forall (p :: S -> Type). Script -> (forall (s :: S). Term s p)
 unsafeTermFromScript (Script script) =
-  Term $ const $ pure $ TermResult (RCompiled $ _progTerm script) []
+  Term $ pure $ TermResult (RCompiled $ _progTerm script) []

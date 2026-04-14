@@ -147,36 +147,36 @@ listMatchingBenches =
       forall (a :: S -> Type) (s :: S).
       Term s (PBuiltinList a) ->
       Term s a
-    pheadPM t = Term $ \level -> do
-      TermResult matchRaw matchDeps <- asRawTerm (plam const) level
-      TermResult rawT depsT <- asRawTerm t level
+    pheadPM t = Term $ do
+      TermResult matchRaw matchDeps <- asRawTerm (plam const)
+      TermResult rawT depsT <- asRawTerm t
       let allDeps = matchDeps <> depsT
       pure . TermResult (RCase rawT [matchRaw]) $ allDeps
     ptailPM ::
       forall (a :: S -> Type) (s :: S).
       Term s (PBuiltinList a) ->
       Term s (PBuiltinList a)
-    ptailPM t = Term $ \level -> do
-      TermResult matchRaw matchDeps <- asRawTerm (plam $ \_ xs -> xs) level
-      TermResult rawT depsT <- asRawTerm t level
+    ptailPM t = Term $ do
+      TermResult matchRaw matchDeps <- asRawTerm (plam $ \_ xs -> xs)
+      TermResult rawT depsT <- asRawTerm t
       let allDeps = matchDeps <> depsT
       pure . TermResult (RCase rawT [matchRaw]) $ allDeps
     pnullPM ::
       forall (a :: S -> Type) (s :: S).
       Term s (PBuiltinList a) ->
       Term s PBool
-    pnullPM t = Term $ \level -> do
-      TermResult nilRaw nilDeps <- asRawTerm (pcon PFalse) level
-      TermResult consRaw consDeps <- asRawTerm (plam $ \_ _ -> pcon PTrue) level
-      TermResult rawT depsT <- asRawTerm t level
+    pnullPM t = Term $ do
+      TermResult nilRaw nilDeps <- asRawTerm (pcon PFalse)
+      TermResult consRaw consDeps <- asRawTerm (plam $ \_ _ -> pcon PTrue)
+      TermResult rawT depsT <- asRawTerm t
       let allDeps = nilDeps <> consDeps <> depsT
       pure . TermResult (RCase rawT [consRaw, nilRaw]) $ allDeps
     pheadTailPM ::
       Term s (PBuiltinList PInteger) ->
       Term s (PBuiltinList PInteger)
-    pheadTailPM t = Term $ \level -> do
-      TermResult matchRaw matchDeps <- asRawTerm (plam $ \x xs -> pcons @PBuiltinList @PInteger # x # xs) level
-      TermResult rawT depsT <- asRawTerm t level
+    pheadTailPM t = Term $ do
+      TermResult matchRaw matchDeps <- asRawTerm (plam $ \x xs -> pcons @PBuiltinList @PInteger # x # xs)
+      TermResult rawT depsT <- asRawTerm t
       let allDeps = matchDeps <> depsT
       pure . TermResult (RCase rawT [matchRaw]) $ allDeps
 
