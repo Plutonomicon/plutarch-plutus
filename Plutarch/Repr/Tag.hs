@@ -28,6 +28,7 @@ import Generics.SOP (
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (popaque)
+import Plutarch.Internal.Case (punsafeCase)
 import Plutarch.Internal.Lift (
   LiftError (OtherLiftError),
   PLiftable (AsHaskell, PlutusRepr, haskToRepr, plutToRepr, reprToHask, reprToPlut),
@@ -38,13 +39,7 @@ import Plutarch.Internal.PlutusType (
   DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   PlutusType (PInner, pcon', pmatch'),
  )
-import Plutarch.Internal.Term (
-  RawTerm (RCase),
-  S,
-  Term (Term),
-  TermResult (TermResult),
-  asRawTerm,
- )
+import Plutarch.Internal.Term (S, Term)
 
 -- | @since 1.10.0
 newtype PTag (struct :: [S -> Type]) (s :: S) = PTag
@@ -85,12 +80,7 @@ instance (forall (s :: S). TagTypeConstraints s a struct) => PlutusType (DeriveA
   pcon' :: forall (s :: S). DeriveAsTag a s -> Term s PInteger
   pcon' (DeriveAsTag x) = pconstant . toInteger . SOP.hindex . SOP.from $ x
   pmatch' :: forall (s :: S) (b :: S -> Type). Term s PInteger -> (DeriveAsTag a s -> Term s b) -> Term s b
-  pmatch' tag f = Term $ \level -> do
-    TermResult rawTag depsTag <- asRawTerm tag level
-    rawHandlerTRs <- traverse (`asRawTerm` level) handlers
-    let (rawHandlers, depsHandlers) = unzip . fmap (\(TermResult x y) -> (x, y)) $ rawHandlerTRs
-    let allDeps = depsTag <> mconcat depsHandlers
-    pure . TermResult (RCase rawTag rawHandlers) $ allDeps
+  pmatch' t f = punsafeCase t . fmap popaque $ handlers
     where
       handlers :: [Term s b]
       handlers = SOP.hcollapse . unTagMatchHandler handlers' $ toHandler

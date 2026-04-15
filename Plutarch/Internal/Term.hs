@@ -1,5 +1,4 @@
 {-# LANGUAGE RoleAnnotations #-}
-{-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
 module Plutarch.Internal.Term (
@@ -8,7 +7,6 @@ module Plutarch.Internal.Term (
   PDelayed,
   -- | \$term
   Term (..),
-  asClosedRawTerm,
   Script (Script),
   mapTerm,
   plam',
@@ -42,12 +40,18 @@ module Plutarch.Internal.Term (
   pgetConfig,
   pgetInternalConfig,
   pwithInternalConfig,
-  TermMonad (..),
   (#),
   (#$),
 ) where
 
-import Control.Monad.Reader (ReaderT (ReaderT), ask, local)
+import Control.Monad.Reader (
+  ReaderT,
+  ask,
+  asks,
+  lift,
+  local,
+  runReaderT,
+ )
 import Control.Monad.State.Strict (evalStateT)
 import Data.Aeson (
   FromJSON (parseJSON),
@@ -406,10 +410,11 @@ data InternalConfig = InternalConfig
 defaultInternalConfig :: InternalConfig
 defaultInternalConfig = InternalConfig True True
 
-newtype TermMonad m = TermMonad {runTermMonad :: ReaderT (InternalConfig, Config) (Either Text) m}
-  deriving newtype (Functor, Applicative, Monad)
-
-type role Term nominal nominal
+data TermEnv = TermEnv
+  { teDeBruijnDepth :: Word64
+  , teInternalConfig :: InternalConfig
+  , teConfig :: Config
+  }
 
 {- $term
  Source: Unembedding Domain-Specific Languages by Robert Atkey, Sam Lindley, Jeremy Yallop
@@ -425,7 +430,11 @@ type role Term nominal nominal
  de-Bruijn index needed to reach its own level given the level it itself is
  instantiated with.
 -}
-newtype Term (s :: S) (a :: S -> Type) = Term {asRawTerm :: Word64 -> TermMonad TermResult}
+newtype Term (s :: S) (a :: S -> Type) = Term
+  { asRawTerm :: ReaderT TermEnv (Either Text) TermResult
+  }
+
+type role Term nominal nominal
 
 newtype (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
   = PLam (Term s a -> Term s b)
@@ -440,118 +449,184 @@ data PDelayed (a :: S -> Type) (s :: S)
   Use 'plam' instead, to support currying.
 -}
 plam' :: (Term s a -> Term s b) -> Term s (a :--> b)
-plam' f = Term \i ->
-  let v = Term \j -> pure $ mkTermRes $ RVar (j - (i + 1))
-   in flip fmap (asRawTerm (f v) (i + 1)) \case
-        -- eta-reduce for arity 1
-        t@(getTerm -> RApply t'@(getArity -> Just _) [RVar 0]) -> t {getTerm = t'}
-        -- eta-reduce for arity 2 + n
-        t@(getTerm -> RLamAbs n (RApply t'@(getArity -> Just n') args))
-          | (== Just [0 .. n + 1]) (traverse (\case RVar n -> Just n; _ -> Nothing) args)
-              && n' >= n + 1 ->
-              t {getTerm = t'}
-        -- increment arity
-        t@(getTerm -> RLamAbs n t') -> t {getTerm = RLamAbs (n + 1) t'}
-        -- new lambda
-        t -> mapTerm (RLamAbs 0) t
+plam' f = Term $ do
+  i <- asks teDeBruijnDepth
+  let v = Term $ do
+        j <- asks teDeBruijnDepth
+        pure . mkTermRes $ RVar (j - (i + 1))
+  originalEnv <- ask
+  let newEnv = originalEnv {teDeBruijnDepth = i + 1}
+  lift . fmap go . runReaderT (asRawTerm (f v)) $ newEnv
   where
-    -- 0 is 1
+    go :: TermResult -> TermResult
+    go res@(TermResult t _) =
+      let newLambda = mapTerm (RLamAbs 0) res
+       in case t of
+            -- eta-reduce for arity 1
+            RApply t' [RVar 0] -> case getArity t' of
+              Nothing -> newLambda
+              Just _ -> res {getTerm = t'}
+            -- eta-reduce for arity 2 + n
+            RLamAbs n (RApply t' args) -> case getArity t' of
+              Nothing -> newLambda
+              Just n' -> case unpackArgs args of
+                Just args' ->
+                  if args' == [0 .. n + 1] && n' >= n + 1
+                    then res {getTerm = t'}
+                    else newLambda
+                _ -> newLambda
+            -- increment arity
+            RLamAbs n t' -> res {getTerm = RLamAbs (n + 1) t'}
+            -- New lambda
+            _ -> newLambda
+    -- Arities are one less than they should be. Thus, 'Nothing' means 'arity
+    -- 0', 'Just 0' means 'arity 1', etc.
     getArity :: RawTerm -> Maybe Word64
-    -- We only do this if it's hoisted, since it's only safe if it doesn't
-    -- refer to any of the variables in the wrapping lambda.
-    getArity (RHoisted (HoistedTerm _ (RLamAbs n _))) = Just n
-    getArity (RHoisted (HoistedTerm _ t)) = getArityBuiltin t
-    getArity t = getArityBuiltin t
-
+    getArity = \case
+      RHoisted (HoistedTerm _ (RLamAbs n _)) -> Just n
+      RHoisted (HoistedTerm _ t) -> getArityBuiltin t
+      t -> getArityBuiltin t
+    unpackArgs :: [RawTerm] -> Maybe [Word64]
+    unpackArgs = traverse (\case RVar n -> Just n; _ -> Nothing)
+    -- Note (Koz, 14/04/2026): It is essential that _all_ Plutus Core builtins
+    -- are given arities here. Thus, we keep them in a similar order to
+    -- PlutusCore.Default.Builtins. However, as some of these builtins are
+    -- polymorphic, we have to look inside an `RForce` to 'see' them. Thus,
+    -- these get put in their own case branch, but in the same order as they
+    -- would appear otherwise.
     getArityBuiltin :: RawTerm -> Maybe Word64
-    getArityBuiltin (RBuiltin PLC.AddInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.SubtractInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.MultiplyInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.DivideInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.QuotientInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.RemainderInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.ModInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.ExpModInteger) = Just 2
-    getArityBuiltin (RBuiltin PLC.EqualsInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanEqualsInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.AppendByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.ConsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.SliceByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.LengthOfByteString) = Just 0
-    getArityBuiltin (RBuiltin PLC.IndexByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.LessThanEqualsByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.IntegerToByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.ByteStringToInteger) = Just 1
-    getArityBuiltin (RBuiltin PLC.AndByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.OrByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.XorByteString) = Just 2
-    getArityBuiltin (RBuiltin PLC.ComplementByteString) = Just 0
-    getArityBuiltin (RBuiltin PLC.ReadBit) = Just 1
-    getArityBuiltin (RBuiltin PLC.WriteBits) = Just 1
-    getArityBuiltin (RBuiltin PLC.ReplicateByte) = Just 1
-    getArityBuiltin (RBuiltin PLC.ShiftByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.RotateByteString) = Just 1
-    getArityBuiltin (RBuiltin PLC.CountSetBits) = Just 0
-    getArityBuiltin (RBuiltin PLC.FindFirstSetBit) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_add) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_neg) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_scalarMul) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_equal) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_hashToGroup) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_compress) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G1_uncompress) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_add) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_neg) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_scalarMul) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_equal) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_hashToGroup) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_compress) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_G2_uncompress) = Just 0
-    getArityBuiltin (RBuiltin PLC.Bls12_381_millerLoop) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_mulMlResult) = Just 1
-    getArityBuiltin (RBuiltin PLC.Bls12_381_finalVerify) = Just 1
-    getArityBuiltin (RBuiltin PLC.Sha2_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Sha3_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Blake2b_224) = Just 0
-    getArityBuiltin (RBuiltin PLC.Blake2b_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Keccak_256) = Just 0
-    getArityBuiltin (RBuiltin PLC.Ripemd_160) = Just 0
-    getArityBuiltin (RBuiltin PLC.VerifyEd25519Signature) = Just 2
-    getArityBuiltin (RBuiltin PLC.VerifyEcdsaSecp256k1Signature) = Just 2
-    getArityBuiltin (RBuiltin PLC.VerifySchnorrSecp256k1Signature) = Just 2
-    getArityBuiltin (RBuiltin PLC.AppendString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EqualsString) = Just 1
-    getArityBuiltin (RBuiltin PLC.EncodeUtf8) = Just 0
-    getArityBuiltin (RBuiltin PLC.DecodeUtf8) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.IfThenElse)) = Just 2
-    getArityBuiltin (RForce (RBuiltin PLC.ChooseUnit)) = Just 1
-    getArityBuiltin (RForce (RBuiltin PLC.Trace)) = Just 1
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.FstPair))) = Just 0
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.SndPair))) = Just 0
-    getArityBuiltin (RForce (RForce (RBuiltin PLC.ChooseList))) = Just 2
-    getArityBuiltin (RForce (RBuiltin PLC.MkCons)) = Just 1
-    getArityBuiltin (RForce (RBuiltin PLC.HeadList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.TailList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.NullList)) = Just 0
-    getArityBuiltin (RForce (RBuiltin PLC.ChooseData)) = Just 5
-    getArityBuiltin (RBuiltin PLC.ConstrData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MapData) = Just 0
-    getArityBuiltin (RBuiltin PLC.ListData) = Just 0
-    getArityBuiltin (RBuiltin PLC.IData) = Just 0
-    getArityBuiltin (RBuiltin PLC.BData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnConstrData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnMapData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnListData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnIData) = Just 0
-    getArityBuiltin (RBuiltin PLC.UnBData) = Just 0
-    getArityBuiltin (RBuiltin PLC.EqualsData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MkPairData) = Just 1
-    getArityBuiltin (RBuiltin PLC.MkNilData) = Just 0
-    getArityBuiltin (RBuiltin PLC.MkNilPairData) = Just 0
-    getArityBuiltin _ = Nothing
+    getArityBuiltin = \case
+      RBuiltin t -> case t of
+        -- Integers
+        PLC.AddInteger -> Just 1
+        PLC.SubtractInteger -> Just 1
+        PLC.MultiplyInteger -> Just 1
+        PLC.DivideInteger -> Just 1
+        PLC.QuotientInteger -> Just 1
+        PLC.RemainderInteger -> Just 1
+        PLC.ModInteger -> Just 1
+        PLC.EqualsInteger -> Just 1
+        PLC.LessThanEqualsInteger -> Just 1
+        -- Bytestrings
+        PLC.AppendByteString -> Just 1
+        PLC.ConsByteString -> Just 1
+        PLC.SliceByteString -> Just 2
+        PLC.LengthOfByteString -> Just 0
+        PLC.IndexByteString -> Just 1
+        PLC.EqualsByteString -> Just 1
+        PLC.LessThanByteString -> Just 1
+        PLC.LessThanEqualsByteString -> Just 1
+        -- Cryptography and hashes
+        PLC.Sha2_256 -> Just 0
+        PLC.Sha3_256 -> Just 0
+        PLC.Blake2b_256 -> Just 0
+        PLC.VerifyEd25519Signature -> Just 2
+        PLC.VerifyEcdsaSecp256k1Signature -> Just 2
+        PLC.VerifySchnorrSecp256k1Signature -> Just 2
+        -- Strings
+        PLC.AppendString -> Just 1
+        PLC.EqualsString -> Just 1
+        PLC.EncodeUtf8 -> Just 0
+        PLC.DecodeUtf8 -> Just 0
+        -- Data
+        PLC.ConstrData -> Just 1
+        PLC.MapData -> Just 0
+        PLC.ListData -> Just 0
+        PLC.IData -> Just 0
+        PLC.BData -> Just 0
+        PLC.UnConstrData -> Just 0
+        PLC.UnMapData -> Just 0
+        PLC.UnListData -> Just 0
+        PLC.UnIData -> Just 0
+        PLC.UnBData -> Just 0
+        PLC.EqualsData -> Just 1
+        PLC.SerialiseData -> Just 0
+        -- Misc monomorphized constructors
+        PLC.MkPairData -> Just 1
+        PLC.MkNilData -> Just 0
+        PLC.MkNilPairData -> Just 0
+        -- BLS operations
+        -- G1
+        PLC.Bls12_381_G1_add -> Just 1
+        PLC.Bls12_381_G1_neg -> Just 0
+        PLC.Bls12_381_G1_scalarMul -> Just 1
+        PLC.Bls12_381_G1_equal -> Just 1
+        PLC.Bls12_381_G1_hashToGroup -> Just 1
+        PLC.Bls12_381_G1_compress -> Just 0
+        PLC.Bls12_381_G1_uncompress -> Just 0
+        -- G2
+        PLC.Bls12_381_G2_add -> Just 1
+        PLC.Bls12_381_G2_neg -> Just 0
+        PLC.Bls12_381_G2_scalarMul -> Just 1
+        PLC.Bls12_381_G2_equal -> Just 1
+        PLC.Bls12_381_G2_hashToGroup -> Just 1
+        PLC.Bls12_381_G2_compress -> Just 0
+        PLC.Bls12_381_G2_uncompress -> Just 0
+        -- Pairing
+        PLC.Bls12_381_millerLoop -> Just 1
+        PLC.Bls12_381_mulMlResult -> Just 1
+        PLC.Bls12_381_finalVerify -> Just 1
+        -- Keccak, Blake
+        PLC.Keccak_256 -> Just 0
+        PLC.Blake2b_224 -> Just 0
+        -- Conversions
+        PLC.IntegerToByteString -> Just 2
+        PLC.ByteStringToInteger -> Just 1
+        -- Logical
+        PLC.AndByteString -> Just 2
+        PLC.OrByteString -> Just 2
+        PLC.XorByteString -> Just 2
+        PLC.ComplementByteString -> Just 0
+        PLC.ReadBit -> Just 1
+        PLC.WriteBits -> Just 2
+        PLC.ReplicateByte -> Just 1
+        -- Bitwise
+        PLC.ShiftByteString -> Just 1
+        PLC.RotateByteString -> Just 1
+        PLC.CountSetBits -> Just 0
+        PLC.FindFirstSetBit -> Just 0
+        -- Ripemd
+        PLC.Ripemd_160 -> Just 0
+        -- Expmod
+        PLC.ExpModInteger -> Just 2
+        -- Multi-scalar mult
+        PLC.Bls12_381_G1_multiScalarMul -> Just 1
+        PLC.Bls12_381_G2_multiScalarMul -> Just 1
+        -- Value
+        PLC.InsertCoin -> Just 3
+        PLC.LookupCoin -> Just 2
+        PLC.UnionValue -> Just 1
+        PLC.ValueContains -> Just 1
+        PLC.ValueData -> Just 0
+        PLC.UnValueData -> Just 0
+        PLC.ScaleValue -> Just 1
+        _ -> Nothing
+      RForce (RBuiltin t) -> case t of
+        -- Bool
+        PLC.IfThenElse -> Just 2
+        -- Unit
+        PLC.ChooseUnit -> Just 1
+        -- Tracing
+        PLC.Trace -> Just 1
+        -- Pairs
+        PLC.FstPair -> Just 0
+        PLC.SndPair -> Just 0
+        -- Lists
+        PLC.ChooseList -> Just 2
+        PLC.MkCons -> Just 1
+        PLC.HeadList -> Just 0
+        PLC.TailList -> Just 0
+        PLC.NullList -> Just 0
+        -- Data
+        PLC.ChooseData -> Just 5
+        -- Drop
+        PLC.DropList -> Just 1
+        -- Arrays
+        PLC.LengthOfArray -> Just 0
+        PLC.ListToArray -> Just 0
+        PLC.IndexArray -> Just 1
+        _ -> Nothing
+      _ -> Nothing
 
 {- |
   Let bindings.
@@ -563,57 +638,62 @@ plam' f = Term \i ->
   But sufficiently small terms in WHNF may be inlined for efficiency.
 -}
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
-plet v f = Term \i ->
-  asRawTerm v i >>= \case
-    -- Inline sufficiently small terms in WHNF
-    (getTerm -> RVar _) -> asRawTerm (f v) i
-    (getTerm -> RBuiltin _) -> asRawTerm (f v) i
-    (getTerm -> RHoisted _) -> asRawTerm (f v) i
-    _ -> asRawTerm (papp (plam' f) v) i
-
-pthrow' :: HasCallStack => Text -> TermMonad a
-pthrow' msg = TermMonad $ ReaderT $ const $ Left (fromString (prettyCallStack callStack) <> "\n\n" <> msg)
+plet v f = Term $ do
+  env <- ask
+  let res = runReaderT (asRawTerm v) env
+  case res of
+    Left _ -> lift res
+    Right (TermResult t _) -> case t of
+      -- Inline sufficiently small terms in WHNF
+      RVar _ -> asRawTerm (f v)
+      RBuiltin _ -> asRawTerm (f v)
+      RHoisted _ -> asRawTerm (f v)
+      -- Do the lambda transform as normal
+      _ -> asRawTerm (papp (plam' f) v)
 
 pthrow :: HasCallStack => Text -> Term s a
-pthrow = Term . pure . pthrow'
+pthrow msg = Term . lift . Left $ fromString (prettyCallStack callStack) <> "\n\n" <> msg
 
 -- | Lambda Application.
 papp :: Term s (a :--> b) -> Term s a -> Term s b
-papp x y = Term \i ->
-  (,) <$> asRawTerm x i <*> asRawTerm y i >>= \case
-    -- Applying anything to an error is an error.
-    (getTerm -> RError, _) -> pure $ mkTermRes RError
-    -- Applying an error to anything is an error.
-    (_, getTerm -> RError) -> pure $ mkTermRes RError
-    -- Applying to `id` changes nothing.
-    (getTerm -> RLamAbs 0 (RVar 0), y') -> pure y'
-    (getTerm -> RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), y') -> pure y'
-    -- append argument
-    (x'@(getTerm -> RApply x'l x'r), y') -> pure $ TermResult (RApply x'l (getTerm y' : x'r)) (getDeps x' <> getDeps y')
-    -- new RApply
-    (x', y') -> pure $ TermResult (RApply (getTerm x') [getTerm y']) (getDeps x' <> getDeps y')
+papp x y = Term $ do
+  env <- ask
+  let yRaw = asRawTerm y
+  let fRes = runReaderT (asRawTerm x) env
+  let xRes = runReaderT yRaw env
+  case (,) <$> fRes <*> xRes of
+    Left msg -> lift . Left $ msg
+    Right (TermResult ft fDeps, TermResult xt xDeps) -> case (ft, xt) of
+      -- Applying anything to an error is an error.
+      (RError, _) -> pure . mkTermRes $ RError
+      -- Applying an error to anything is an error.
+      (_, RError) -> pure . mkTermRes $ RError
+      -- Applying anything to `id` does nothing.
+      (RLamAbs 0 (RVar 0), _) -> yRaw
+      (RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), _) -> yRaw
+      -- Append an argument to an existing application.
+      (RApply x'l x'r, _) -> pure . TermResult (RApply x'l (xt : x'r)) $ fDeps <> xDeps
+      -- New application.
+      _ -> pure . TermResult (RApply ft [xt]) $ fDeps <> xDeps
 
 {- |
   Plutus \'delay\', used for laziness.
 -}
 pdelay :: Term s a -> Term s (PDelayed a)
-pdelay x = Term (fmap (mapTerm RDelay) . asRawTerm x)
+pdelay = Term . fmap (mapTerm RDelay) . asRawTerm
 
 {- |
   Plutus \'force\',
   used to force evaluation of 'PDelayed' terms.
 -}
 pforce :: Term s (PDelayed a) -> Term s a
-pforce x =
-  Term
-    ( fmap
-        ( \case
-            -- A force cancels a delay
-            t@(getTerm -> RDelay t') -> t {getTerm = t'}
-            t -> mapTerm RForce t
-        )
-        . asRawTerm x
-    )
+pforce = Term . fmap go . asRawTerm
+  where
+    go :: TermResult -> TermResult
+    go res@(TermResult t deps) = case t of
+      -- `force` cancels `delay`
+      RDelay t' -> TermResult t' deps
+      _ -> mapTerm RForce res
 
 {- |
   Plutus \'error\'.
@@ -622,7 +702,7 @@ pforce x =
   the containing term is delayed, avoiding premature evaluation.
 -}
 perror :: Term s a
-perror = Term \_ -> pure $ mkTermRes RError
+perror = Term . pure . mkTermRes $ RError
 
 {- |
 Same as @perror@ except this holds integer id for AST look-ahead.
@@ -631,23 +711,20 @@ This can be used to "tag" branch and generate AST first to see if that branch is
 allowing optimization cutting unused branches. For more detailed uscases, check @pmatchDataRec@.
 -}
 pplaceholder :: Integer -> Term s a
-pplaceholder x = Term \_ -> pure $ mkTermRes $ RPlaceHolder x
+pplaceholder = Term . pure . mkTermRes . RPlaceHolder
 
 pgetConfig :: (Config -> Term s a) -> Term s a
-pgetConfig f = Term \lvl -> TermMonad $ do
-  config <- ask
-  runTermMonad $ asRawTerm (f $ snd config) lvl
+pgetConfig f = Term $ do
+  conf <- asks teConfig
+  asRawTerm (f conf)
 
 pgetInternalConfig :: (InternalConfig -> Term s a) -> Term s a
-pgetInternalConfig f = Term \lvl -> TermMonad $ do
-  config <- ask
-  runTermMonad $ asRawTerm (f $ fst config) lvl
+pgetInternalConfig f = Term $ do
+  iconf <- asks teInternalConfig
+  asRawTerm (f iconf)
 
 pwithInternalConfig :: InternalConfig -> Term s a -> Term s a
-pwithInternalConfig cfg t = Term \lvl -> TermMonad $ do
-  local (\(_, c) -> (cfg, c)) $
-    runTermMonad $
-      asRawTerm t lvl
+pwithInternalConfig cfg t = Term $ local (\env -> env {teInternalConfig = cfg}) (asRawTerm t)
 
 {- |
   Unsafely coerce the type-tag of a Term.
@@ -659,30 +736,33 @@ punsafeCoerce :: forall b a s. Term s a -> Term s b
 punsafeCoerce (Term x) = Term x
 
 punsafeBuiltin :: UPLC.DefaultFun -> Term s a
-punsafeBuiltin f = Term \_ -> pure $ mkTermRes $ RBuiltin f
+punsafeBuiltin = Term . pure . mkTermRes . RBuiltin
 
 punsafeConstantInternal :: Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal c = Term \_ ->
-  let hoisted = HoistedTerm (hash $ RConstant c) (RConstant c)
+punsafeConstantInternal c = Term $ do
+  let hoisted = HoistedTerm (hash . RConstant $ c) (RConstant c)
    in pure $ TermResult (RHoisted hoisted) [hoisted]
 
-asClosedRawTerm :: forall (a :: S -> Type). (forall (s :: S). Term s a) -> TermMonad TermResult
-asClosedRawTerm t = asRawTerm t 0
-
--- FIXME: Give proper error message when mutually recursive.
+-- TODO: Give proper error message when mutually recursive.
 phoistAcyclic :: forall (a :: S -> Type) (s :: S). HasCallStack => (forall (s' :: S). Term s' a) -> Term s a
-phoistAcyclic t = pgetInternalConfig $ \InternalConfig {internalConfig'phoistAcyclicEvalCheck = chk} -> Term \_ ->
-  asRawTerm t 0 >>= \case
-    -- Built-ins are smaller than variable references
-    t'@(getTerm -> RBuiltin _) -> pure t'
-    t' | chk -> case evalScript . Script . UPLC.Program () uplcVersion $ compile' t' of
-      (Right _, _, _) ->
-        let hoisted = HoistedTerm (hash . getTerm $ t') (getTerm t')
-         in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
-      (Left e, _, _) -> pthrow' $ "Hoisted term errs! " <> fromString (show e)
-    t' ->
-      let hoisted = HoistedTerm (hash . getTerm $ t') (getTerm t')
-       in pure $ TermResult (RHoisted hoisted) (hoisted : getDeps t')
+phoistAcyclic t = pgetInternalConfig $ \InternalConfig {internalConfig'phoistAcyclicEvalCheck = chk} ->
+  Term $ do
+    env <- ask
+    let res = runReaderT (asRawTerm t) env {teDeBruijnDepth = 0}
+    case res of
+      Left _ -> lift res
+      Right res'@(TermResult t' deps) -> case t' of
+        RBuiltin _ -> lift res
+        _ ->
+          if chk
+            then case evalScript . Script . UPLC.Program () uplcVersion $ compile' res' of
+              (Left e, _, _) -> asRawTerm . pthrow $ "Hoisted term errors! " <> fromString (show e)
+              (Right _, _, _) ->
+                let hoisted = HoistedTerm (hash t') t'
+                 in pure . TermResult (RHoisted hoisted) $ hoisted : deps
+            else
+              let hoisted = HoistedTerm (hash t') t'
+               in pure . TermResult (RHoisted hoisted) $ hoisted : deps
 
 -- Couldn't find a definition for this in plutus-core
 subst ::
@@ -811,9 +891,11 @@ compile = compileWithInternalConfig defaultInternalConfig
 
 @since 1.12.0
 -}
-compileWithInternalConfig :: forall (a :: S -> Type). InternalConfig -> Config -> (forall (s :: S). Term s a) -> Either Text Script
-compileWithInternalConfig internalConfig config t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> Script . UPLC.Program () uplcVersion . compile' <$> t' (internalConfig, config)
+compileWithInternalConfig ::
+  forall (a :: S -> Type).
+  InternalConfig -> Config -> (forall (s :: S). Term s a) -> Either Text Script
+compileWithInternalConfig iconf conf t = case runReaderT (asRawTerm t) (TermEnv 0 iconf conf) of
+  res -> Script . UPLC.Program () uplcVersion . compile' <$> res
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -835,13 +917,13 @@ compileOptimizedWithInternalConfig ::
   InternalConfig ->
   (forall (s :: S). Term s a) ->
   Either Text Script
-compileOptimizedWithInternalConfig internalConfig t = case asClosedRawTerm t of
-  TermMonad (ReaderT t') -> do
-    configured <- t' (internalConfig, NoTracing)
-    let compiled = compile' configured
-    case go compiled of
-      Left err -> Left . Text.pack . show $ err
-      Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
+compileOptimizedWithInternalConfig internalConfig t = do
+  let env = TermEnv 0 internalConfig NoTracing
+  built <- runReaderT (asRawTerm t) env
+  let compiled = compile' built
+  case go compiled of
+    Left err -> Left . Text.pack . show $ err
+    Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
   where
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
@@ -877,14 +959,15 @@ optimizeTerm ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
   (forall (s :: S). Term s a)
-optimizeTerm (Term raw) = Term $ \w64 ->
-  let TermMonad (ReaderT comp) = raw w64
-   in TermMonad $ ReaderT $ \conf -> do
-        res <- comp conf
-        let compiled = compile' res
-        case go compiled of
-          Left err -> Left . Text.pack . show $ err
-          Right simplified -> pure . TermResult (RCompiled simplified) $ []
+optimizeTerm (Term raw) = Term $ do
+  env <- ask
+  let res = runReaderT raw env
+  let compiled = compile' <$> res
+  case compiled of
+    Left err -> lift . Left $ err
+    Right compiled' -> case go compiled' of
+      Left err -> lift . Left . Text.pack . show $ err
+      Right simplified -> pure . TermResult (RCompiled simplified) $ []
   where
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->

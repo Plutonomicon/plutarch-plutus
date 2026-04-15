@@ -33,13 +33,12 @@ import Data.Kind (Type)
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
 import Plutarch.Builtin.Integer (PInteger)
+import Plutarch.Builtin.Opaque (popaque)
+import Plutarch.Internal.Case (punsafeCase)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
-  RawTerm (RCase),
   S,
-  Term (Term),
-  TermResult (TermResult),
-  asRawTerm,
+  Term,
   pforce,
   phoistAcyclic,
   punsafeBuiltin,
@@ -127,11 +126,7 @@ pheadTailBuiltin ::
   Term s (PBuiltinList a) ->
   (Term s a -> Term s (PBuiltinList a) -> Term s b) ->
   Term s b
-pheadTailBuiltin ell handler = Term $ \level -> do
-  TermResult matchRaw matchDeps <- asRawTerm (plam handler) level
-  TermResult rawT depsT <- asRawTerm ell level
-  let allDeps = matchDeps <> depsT
-  pure . TermResult (RCase rawT [matchRaw]) $ allDeps
+pheadTailBuiltin ell handler = punsafeCase ell [popaque . plam $ handler]
 
 pchooseListBuiltin :: Term s (PBuiltinList a :--> b :--> b :--> b)
 pchooseListBuiltin = phoistAcyclic $ pforce $ pforce $ punsafeBuiltin PLC.ChooseList

@@ -37,16 +37,14 @@ evalTerm ::
   Config ->
   (forall (s0 :: S). Term s0 a) ->
   Either Text (Either (Cek.CekEvaluationException PLC.NamedDeBruijn PLC.DefaultUni PLC.DefaultFun) (forall (s1 :: S). Term s1 a), ExBudget, [Text])
-evalTerm config term =
-  case compile config term of
-    Right script ->
-      let (s, b, t) = E.evalScriptHuge script
-       in Right (fromScript <$> s, b, t)
-    Left a -> Left a
+evalTerm config t = case compile config t of
+  Left err -> Left err
+  Right script ->
+    let (s, b, t) = E.evalScriptHuge script
+     in Right (fromScript <$> s, b, t)
   where
     fromScript :: Script -> (forall (s2 :: S). Term s2 a)
-    fromScript (Script script) =
-      Term $ const $ pure $ TermResult (RCompiled $ UPLC._progTerm script) []
+    fromScript (Script script) = Term . pure . TermResult (RCompiled . UPLC._progTerm $ script) $ []
 
 -- | Same as `evalTerm` but without error handling
 evalTerm' :: forall (a :: S -> Type). Config -> (forall (s0 :: S). Term s0 a) -> (forall (s1 :: S). Term s1 a)
