@@ -155,7 +155,7 @@ pfromRawValue ::
   Term s (PBuiltinValue :--> r) ->
   Term s r
 pfromRawValue x whenFail whenSucceed =
-  pif (pcanBeBuiltinValue # x) whenFail (whenSucceed #$ punValueData # pforgetData (pdata x))
+  pif (pcanBeBuiltinValue # x) (whenSucceed #$ punValueData # pforgetData (pdata x)) whenFail
 
 {- | Convert the @Data@ representation of a 'PRawValue' into a 'PBuiltinValue'
 while not doing any checks.
