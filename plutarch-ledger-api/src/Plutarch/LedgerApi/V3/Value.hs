@@ -189,7 +189,7 @@ caveats apply.
 
 @since wip
 -}
-punsafeFromSortedValue :: forall (s :: S). Term s (PAsData PRawValue) -> Term s PBuiltinValue
+punsafeFromSortedValue :: forall (s :: S). Term s (PAsData PSortedValue) -> Term s PBuiltinValue
 punsafeFromSortedValue x = punValueData # pforgetData x
 
 {- | Convert a 'PBuiltinValue' into the @Data@ representation of a
