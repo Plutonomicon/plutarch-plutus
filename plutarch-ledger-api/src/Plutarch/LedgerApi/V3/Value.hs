@@ -57,6 +57,7 @@ module Plutarch.LedgerApi.V3.Value (
   pfromMintValue,
   ptoSortedValue,
   ptoLedgerValue,
+  ptoLedgerValue',
   ptoMintValue,
 
   -- ** Unsafe
@@ -90,7 +91,12 @@ import Plutarch.Builtin.Value (
 import Plutarch.LedgerApi.AssocMap (PUnsortedMap)
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.V3.MintValue (PMintValue)
-import Plutarch.LedgerApi.Value (PLedgerValue, PRawValue, PSortedValue)
+import Plutarch.LedgerApi.Value (
+  PLedgerValue,
+  PRawValue,
+  PSortedValue,
+  pinsertAdaEntry,
+ )
 import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol)
 import Plutarch.LedgerApi.Value.TokenName (PTokenName)
 import Plutarch.Prelude (
@@ -218,6 +224,24 @@ ptoLedgerValue ::
   Term s r
 ptoLedgerValue v whenInvalid whenValid =
   pif (plovelaceValueOf # v #== 0) whenInvalid (whenValid # punsafeCoerce (pvalueData # v))
+
+{- | As 'ptoLedgerValue', but \'fills in\' a zero ADA entry if one is missing.
+This is a costly operation, as it must be done /after/ conversion. Use with
+care.
+
+@since wip
+-}
+ptoLedgerValue' ::
+  forall (s :: S).
+  Term s PBuiltinValue ->
+  Term s (PAsData PLedgerValue)
+ptoLedgerValue' v = plet (punsafeCoerce (pvalueData # v)) $ \asLedgerValue ->
+  pif
+    (plovelaceValueOf # v #== 0)
+    ( plet (pupcast $ pfromData asLedgerValue) $ \asSortedValue ->
+        pdata . punsafeCoerce $ pinsertAdaEntry # asSortedValue
+    )
+    asLedgerValue
 
 {- | As 'ptoLedgerValue', except the check is for the /absence/ of an Ada entry,
 and the third argument is called with a 'PAsData' 'PMintValue' instead when
