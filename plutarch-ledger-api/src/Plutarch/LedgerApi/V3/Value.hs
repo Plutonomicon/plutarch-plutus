@@ -234,14 +234,8 @@ care.
 ptoLedgerValue' ::
   forall (s :: S).
   Term s PBuiltinValue ->
-  Term s (PAsData PLedgerValue)
-ptoLedgerValue' v = plet (punsafeCoerce (pvalueData # v)) $ \asLedgerValue ->
-  pif
-    (plovelaceValueOf # v #== 0)
-    ( plet (pupcast $ pfromData asLedgerValue) $ \asSortedValue ->
-        pdata . punsafeCoerce $ pinsertAdaEntry # asSortedValue
-    )
-    asLedgerValue
+  Term s PLedgerValue
+ptoLedgerValue' v = punsafeCoerce $ pinsertAdaEntry # (pfromData . ptoSortedValue $ v)
 
 {- | As 'ptoLedgerValue', except the check is for the /absence/ of an Ada entry,
 and the third argument is called with a 'PAsData' 'PMintValue' instead when
