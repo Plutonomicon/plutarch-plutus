@@ -182,7 +182,7 @@ pfromSortedValue ::
   Term s (PBuiltinValue :--> r) ->
   Term s r
 pfromSortedValue x whenFail whenSucceed =
-  pif (pnoZeroAmounts # x) whenFail (whenSucceed #$ punValueData # pforgetData (pdata x))
+  pif (pnoZeroAmounts # x) (whenSucceed #$ punValueData # pforgetData (pdata x)) whenFail
 
 {- | As 'punsafeFromRawValue', except for 'PSortedValue's instead. The same
 caveats apply.
