@@ -20,6 +20,7 @@ import Plutarch.LedgerApi.Value.CurrencySymbol (PCurrencySymbol, padaSymbol)
 import Plutarch.LedgerApi.Value.TokenName (PTokenName)
 import Plutarch.Prelude hiding (psingleton)
 import Plutarch.Unsafe (punsafeCoerce, punsafeDowncast)
+import PlutusLedgerApi.V3 qualified as PLA
 import PlutusTx.Prelude qualified as PlutusTx
 
 {- | Represents sorted, well-formed Values without an Ada entry, while all
@@ -104,6 +105,12 @@ instance PValidateData PMintValue where
           ((phasAdaEntry # value) #|| (phasZeroTokenQuantities # pforgetSorted value))
           perror
           x
+
+-- | @since wip
+deriving via
+  DeriveDataPLiftable (PAsData PMintValue) PLA.MintValue
+  instance
+    PLiftable PMintValue
 
 {- | Construct an empty 'PMintValue'.
 
