@@ -259,7 +259,9 @@ ptoMintValue v whenInvalid whenValid =
   pif (plovelaceValueOf # v #== 0) (whenValid # punsafeCoerce (pvalueData # v)) whenInvalid
 
 {- | Convert a 'PBuiltinValue' into a 'PAsData' 'PLedgerValue' without checking
-anything. This will error if the input does not contain an Ada entry.
+anything. Only use this if you are certain that the 'PBuiltinValue' does not
+violate any internal invariants of 'PLedgerValue'. In particular, there /must/
+be an Ada amount in the argument 'PMintValue'.
 
 @since wip
 -}
@@ -269,7 +271,9 @@ punsafeToLedgerValue ::
 punsafeToLedgerValue v = punsafeCoerce $ pvalueData # v
 
 {- | Convert a 'PBuiltinValue' into a 'PAsData' 'PLedgerValue' without checking
-anything. This will error if the input contains an Ada entry.
+anything. Only use this if you are certain that the 'PBuiltinValue' does not
+violate any internal invariants of 'PMintValue'. In particular, there should
+/not/ be an Ada amount in the argument 'PMintValue'.
 
 @since wip
 -}
