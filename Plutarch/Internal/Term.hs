@@ -670,13 +670,19 @@ plet v f = Term $ do
     Left msg -> lift . Left $ "plet failed: " <> msg
     Right (TermResult vt _vDeps) -> do
       let doInline (TermResult apT _) = TermResult (RLet vt $ Right apT) []
-          noInline (TermResult ft _) = TermResult (RLet vt $ Left ft) []
+          noInline (TermResult ft _fDeps) = case ft of
+            RError -> pure $ mkTermRes RError
+            RLamAbs 0 (RVar 0) -> asRawTerm v
+            RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))) -> asRawTerm v
+            RApply xl xr -> pure . TermResult (RApply xl (vt : xr)) $ _fDeps <> _vDeps
+            _ -> pure $ TermResult (RLet vt $ Left ft) (_fDeps <> _vDeps)
       case vt of
         -- Inline sufficiently small terms in WHNF
         RVar _ -> doInline <$> asRawTerm (f v)
         RBuiltin _ -> doInline <$> asRawTerm (f v)
         RHoisted _ -> doInline <$> asRawTerm (f v)
-        _ -> noInline <$> asRawTerm (plam' f)
+        RError -> pure . mkTermRes $ RError
+        _ -> noInline =<< asRawTerm (plam' f)
 
 pthrow :: HasCallStack => Text -> Term s a
 pthrow msg = Term . lift . Left $ fromString (prettyCallStack callStack) <> "\n\n" <> msg
