@@ -271,11 +271,12 @@ plift t = case plutToRepr @a $ mkPLifted t of
                OtherLiftError err -> "other error: " <> Text.unpack err
            )
   Right res -> case reprToHask @a res of
-    Left _ ->
+    Left _err ->
       -- FIXME
       error $
         "plift failed: "
           <> "Plutus representation does not correspond to a Haskell value"
+    -- <> "\n  error message: " <> show err
     Right res' -> res'
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent

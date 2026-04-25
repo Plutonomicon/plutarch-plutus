@@ -83,6 +83,8 @@ import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
 
+-- import Debug.Trace (traceM)
+
 {- $hoisted
  __Explanation for hoisted terms:__
  Hoisting is a convenient way of importing terms without duplicating them
@@ -138,6 +140,10 @@ data RawTerm
   | RPlaceHolder Integer
   | RConstr Word64 [RawTerm]
   | RCase RawTerm [RawTerm]
+  | -- @since WIP
+    -- Left is a plam'd function, right is an inlined result (we shouldn't need the fn to pretty print since it's already been applied, I think? ugh)
+    -- We need to avoid looking at the fn part if we don't need to, it seems that's what breaks things unexpectedly
+    RLet RawTerm (Either RawTerm RawTerm)
   deriving stock (Show, Eq)
 
 -- | A very cheap hash which cheapens equality, but is also needed for using an unordered container.
@@ -158,12 +164,14 @@ instance Hashable RawTerm where
     RPlaceHolder x -> hash (10 :: Int, x)
     RConstr x y -> hash (11 :: Int, x, y)
     RCase x y -> hash (12 :: Int, x, y)
+    RLet x y -> hash (13 :: Int, x, y)
   {-# INLINE hash #-}
 
 data TermResult = TermResult
   { getTerm :: RawTerm
   , getDeps :: [HoistedTerm]
   }
+  deriving stock (Show)
 
 mapTerm :: (RawTerm -> RawTerm) -> TermResult -> TermResult
 mapTerm f (TermResult t d) = TermResult (f t) d
@@ -637,6 +645,8 @@ plam' f = Term $ do
 
   But sufficiently small terms in WHNF may be inlined for efficiency.
 -}
+
+{-
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ do
   env <- ask
@@ -650,6 +660,23 @@ plet v f = Term $ do
       RHoisted _ -> asRawTerm (f v)
       -- Do the lambda transform as normal
       _ -> asRawTerm (papp (plam' f) v)
+-}
+
+plet :: Term s a -> (Term s a -> Term s b) -> Term s b
+plet v f = Term $ do
+  env <- ask
+  let vRes = runReaderT (asRawTerm v) env
+  case vRes of
+    Left msg -> lift . Left $ "plet failed: " <> msg
+    Right (TermResult vt _vDeps) -> do
+      let doInline (TermResult apT _) = TermResult (RLet vt $ Right apT) []
+          noInline (TermResult ft _) = TermResult (RLet vt $ Left ft) []
+      case vt of
+        -- Inline sufficiently small terms in WHNF
+        RVar _ -> doInline <$> asRawTerm (f v)
+        RBuiltin _ -> doInline <$> asRawTerm (f v)
+        RHoisted _ -> doInline <$> asRawTerm (f v)
+        _ -> noInline <$> asRawTerm (plam' f)
 
 pthrow :: HasCallStack => Text -> Term s a
 pthrow msg = Term . lift . Left $ fromString (prettyCallStack callStack) <> "\n\n" <> msg
@@ -833,6 +860,9 @@ rawTermToUPLC m l (RConstr i xs) = UPLC.Constr () i (rawTermToUPLC m l <$> xs)
 rawTermToUPLC m l (RCase x xs) = UPLC.Case () (rawTermToUPLC m l x) $ V.fromList (rawTermToUPLC m l <$> xs)
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
+-- The second part of a let bind is the "function part" (to follow ordinary `let` semantics from Haskell & etc)
+rawTermToUPLC m l (RLet v (Left f)) = rawTermToUPLC m l (RApply f [v])
+rawTermToUPLC m l (RLet _ (Right t3)) = rawTermToUPLC m l t3
 
 smallEnoughToInline :: RawTerm -> Bool
 smallEnoughToInline = \case
