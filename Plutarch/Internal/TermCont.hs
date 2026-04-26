@@ -6,7 +6,6 @@ module Plutarch.Internal.TermCont (
   runTermCont,
   unTermCont,
   tcont,
-  pfindPlaceholder,
   pfindAllPlaceholders,
 ) where
 
@@ -73,31 +72,6 @@ hashOpenTerm x = TermCont $ \f -> Term $ do
 -- If term is pre-evaluated (via `evalTerm`), RawTerm will no longer hold
 -- tagged RPlaceholder.
 
-{- | Given a term, and an integer tag, this function checks if the term holds and
-@PPlaceholder@ with the given integer tag.
--}
-pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
-pfindPlaceholder idx x = TermCont $ \f -> Term $ do
-  y@(TermResult _yRaw _) <- asRawTerm x
-  asRawTerm (f . findPlaceholder . getTerm $ y)
-  where
-    findPlaceholder :: RawTerm -> Bool
-    findPlaceholder = \case
-      RLamAbs _ x -> findPlaceholder x
-      RApply x xs -> any findPlaceholder (x : xs)
-      RForce x -> findPlaceholder x
-      RDelay x -> findPlaceholder x
-      RHoisted (HoistedTerm _ x) -> findPlaceholder x
-      RPlaceHolder idx' -> idx == idx'
-      RConstr _ xs -> any findPlaceholder xs
-      RCase x xs -> any findPlaceholder (x : xs)
-      RVar _ -> False
-      RConstant _ -> False
-      RBuiltin _ -> False
-      RCompiled _ -> False
-      RError -> False
-      RLet {} -> False -- findPlaceholder t2 || findPlaceholder t1
-
 -- | Finds all placeholder ids and returns it
 pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
 pfindAllPlaceholders x = TermCont $ \f -> Term $ do
@@ -119,6 +93,4 @@ pfindAllPlaceholders x = TermCont $ \f -> Term $ do
       RBuiltin _ -> []
       RCompiled _ -> []
       RError -> []
-      RLet v mF -> case mF of
-        Left f -> findPlaceholder t v <> findPlaceholder t f
-        Right res -> findPlaceholder t res
+      RLet v f -> findPlaceholder t v <> findPlaceholder t f

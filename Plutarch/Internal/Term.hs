@@ -141,9 +141,8 @@ data RawTerm
   | RConstr Word64 [RawTerm]
   | RCase RawTerm [RawTerm]
   | -- @since WIP
-    -- Left is a plam'd function, right is an inlined result (we shouldn't need the fn to pretty print since it's already been applied, I think? ugh)
-    -- We need to avoid looking at the fn part if we don't need to, it seems that's what breaks things unexpectedly
-    RLet RawTerm (Either RawTerm RawTerm)
+    -- Let x (\x' -> ...)
+    RLet RawTerm RawTerm
   deriving stock (Show, Eq)
 
 -- | A very cheap hash which cheapens equality, but is also needed for using an unordered container.
@@ -669,18 +668,18 @@ plet v f = Term $ do
   case vRes of
     Left msg -> lift . Left $ "plet failed: " <> msg
     Right (TermResult vt _vDeps) -> do
-      let doInline (TermResult apT _) = TermResult (RLet vt $ Right apT) []
+      let doInline = asRawTerm (f v)
           noInline (TermResult ft _fDeps) = case ft of
             RError -> pure $ mkTermRes RError
             RLamAbs 0 (RVar 0) -> asRawTerm v
             RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))) -> asRawTerm v
             RApply xl xr -> pure . TermResult (RApply xl (vt : xr)) $ _fDeps <> _vDeps
-            _ -> pure $ TermResult (RLet vt $ Left ft) (_fDeps <> _vDeps)
+            _ -> pure $ TermResult (RLet vt ft) (_fDeps <> _vDeps)
       case vt of
         -- Inline sufficiently small terms in WHNF
-        RVar _ -> doInline <$> asRawTerm (f v)
-        RBuiltin _ -> doInline <$> asRawTerm (f v)
-        RHoisted _ -> doInline <$> asRawTerm (f v)
+        RVar _ -> doInline
+        RBuiltin _ -> doInline
+        RHoisted _ -> doInline
         RError -> pure . mkTermRes $ RError
         _ -> noInline =<< asRawTerm (plam' f)
 
@@ -867,8 +866,7 @@ rawTermToUPLC m l (RCase x xs) = UPLC.Case () (rawTermToUPLC m l x) $ V.fromList
 -- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
 rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
 -- The second part of a let bind is the "function part" (to follow ordinary `let` semantics from Haskell & etc)
-rawTermToUPLC m l (RLet v (Left f)) = rawTermToUPLC m l (RApply f [v])
-rawTermToUPLC m l (RLet _ (Right t3)) = rawTermToUPLC m l t3
+rawTermToUPLC m l (RLet v f) = rawTermToUPLC m l (RApply f [v])
 
 smallEnoughToInline :: RawTerm -> Bool
 smallEnoughToInline = \case
