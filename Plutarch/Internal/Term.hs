@@ -83,8 +83,6 @@ import PlutusCore.DeBruijn (DeBruijn (DeBruijn), Index (Index))
 import Prettyprinter (Pretty (pretty), (<+>))
 import UntypedPlutusCore qualified as UPLC
 
--- import Debug.Trace (traceM)
-
 {- $hoisted
  __Explanation for hoisted terms:__
  Hoisting is a convenient way of importing terms without duplicating them
@@ -140,8 +138,7 @@ data RawTerm
   | RPlaceHolder Integer
   | RConstr Word64 [RawTerm]
   | RCase RawTerm [RawTerm]
-  | -- @since WIP
-    -- Let x (\x' -> ...)
+  | -- Let x (\x' -> ...)
     RLet RawTerm RawTerm
   deriving stock (Show, Eq)
 
@@ -644,23 +641,6 @@ plam' f = Term $ do
 
   But sufficiently small terms in WHNF may be inlined for efficiency.
 -}
-
-{-
-plet :: Term s a -> (Term s a -> Term s b) -> Term s b
-plet v f = Term $ do
-  env <- ask
-  let res = runReaderT (asRawTerm v) env
-  case res of
-    Left _ -> lift res
-    Right (TermResult t _) -> case t of
-      -- Inline sufficiently small terms in WHNF
-      RVar _ -> asRawTerm (f v)
-      RBuiltin _ -> asRawTerm (f v)
-      RHoisted _ -> asRawTerm (f v)
-      -- Do the lambda transform as normal
-      _ -> asRawTerm (papp (plam' f) v)
--}
-
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ do
   env <- ask

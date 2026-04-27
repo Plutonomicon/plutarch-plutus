@@ -11,6 +11,10 @@
 
 * `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
 
+## Removed 
+
+* Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for anything (though the `findAllPlaceholders` version is)
+
 # 1.13.0 -- 04-03-2026
 
 ## Added
