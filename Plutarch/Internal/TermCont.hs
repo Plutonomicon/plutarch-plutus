@@ -6,7 +6,6 @@ module Plutarch.Internal.TermCont (
   runTermCont,
   unTermCont,
   tcont,
-  pfindPlaceholder,
   pfindAllPlaceholders,
 ) where
 
@@ -73,48 +72,25 @@ hashOpenTerm x = TermCont $ \f -> Term $ do
 -- If term is pre-evaluated (via `evalTerm`), RawTerm will no longer hold
 -- tagged RPlaceholder.
 
-{- | Given a term, and an integer tag, this function checks if the term holds and
-@PPlaceholder@ with the given integer tag.
--}
-pfindPlaceholder :: Integer -> Term s a -> TermCont s Bool
-pfindPlaceholder idx x = TermCont $ \f -> Term $ do
-  y <- asRawTerm x
-  asRawTerm (f . findPlaceholder . getTerm $ y)
-  where
-    findPlaceholder :: RawTerm -> Bool
-    findPlaceholder = \case
-      RLamAbs _ x -> findPlaceholder x
-      RApply x xs -> any findPlaceholder (x : xs)
-      RForce x -> findPlaceholder x
-      RDelay x -> findPlaceholder x
-      RHoisted (HoistedTerm _ x) -> findPlaceholder x
-      RPlaceHolder idx' -> idx == idx'
-      RConstr _ xs -> any findPlaceholder xs
-      RCase x xs -> any findPlaceholder (x : xs)
-      RVar _ -> False
-      RConstant _ -> False
-      RBuiltin _ -> False
-      RCompiled _ -> False
-      RError -> False
-
 -- | Finds all placeholder ids and returns it
 pfindAllPlaceholders :: Term s a -> TermCont s [Integer]
 pfindAllPlaceholders x = TermCont $ \f -> Term $ do
-  y <- asRawTerm x
-  asRawTerm (f . nub . findPlaceholder . getTerm $ y)
+  y@(TermResult yRaw _) <- asRawTerm x
+  asRawTerm (f . nub . findPlaceholder yRaw . getTerm $ y)
   where
-    findPlaceholder :: RawTerm -> [Integer]
-    findPlaceholder = \case
-      RLamAbs _ x -> findPlaceholder x
-      RApply x xs -> findPlaceholder x <> foldMap findPlaceholder xs
-      RForce x -> findPlaceholder x
-      RDelay x -> findPlaceholder x
-      RHoisted (HoistedTerm _ x) -> findPlaceholder x
+    findPlaceholder :: RawTerm -> RawTerm -> [Integer]
+    findPlaceholder t = \case
+      RLamAbs _ x -> findPlaceholder t x
+      RApply x xs -> findPlaceholder t x <> foldMap (findPlaceholder t) xs
+      RForce x -> findPlaceholder t x
+      RDelay x -> findPlaceholder t x
+      RHoisted (HoistedTerm _ x) -> findPlaceholder t x
       RPlaceHolder idx -> [idx]
-      RConstr _ xs -> foldMap findPlaceholder xs
-      RCase x xs -> findPlaceholder x <> foldMap findPlaceholder xs
+      RConstr _ xs -> foldMap (findPlaceholder t) xs
+      RCase x xs -> findPlaceholder t x <> foldMap (findPlaceholder t) xs
       RVar _ -> []
       RConstant _ -> []
       RBuiltin _ -> []
       RCompiled _ -> []
       RError -> []
+      RLet v f -> findPlaceholder t v <> findPlaceholder t f
