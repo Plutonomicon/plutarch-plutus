@@ -194,16 +194,12 @@ instance PIsData a => PlutusType (PMaybeData a) where
   type PInner (PMaybeData a) = PData
   pcon' (PDJust x) = pforgetData $ pconstrBuiltin # 0 #$ psingleton # pforgetData (pdata x)
   pcon' PDNothing = pforgetData $ pconstrBuiltin # 1 # pnil
-  pmatch' x f = (`runTermCont` f) $ do
-    constrPair <- TermCont $ plet (pasConstr # x)
-    indexNum <- TermCont $ plet (pfstBuiltin # constrPair)
-    TermCont $ \g -> pif (indexNum #== 0)
-        (g $ PDJust $ punsafeCoerce $ phead # (psndBuiltin # constrPair))
-        (pif (indexNum #== 1)
-          (g PDNothing)
-          perror
-        )
-
+  pmatch' x f = pmatch (pasConstr # x) $ \case
+    PBuiltinPair ix fields -> pif (ix #== 0)
+                           (f $ PDJust $ punsafeCoerce $ phead # fields)
+                           (pif (ix #== 1)
+                               (f PDNothing)
+                               perror)
 ```
 
 ### Generic derivation of PCon/PMatch

@@ -89,7 +89,6 @@ main =
       , testGroup "Array" arrayBenches
       , testGroup "PValidateData" pvalidateDataBenches
       , testGroup "AssocMap" assocMapBenches
-      , testGroup "PBuiltinPair" pbuiltinPairBenches
       , testGroup "pfix" pfixBenches
       , testGroup "list matching" listMatchingBenches
       ]
@@ -194,13 +193,6 @@ pfixBenches =
     pfac = pfix $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
     pfacInline :: forall (s :: S). Term s (PInteger :--> PInteger)
     pfacInline = pfixInline $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
-
-pbuiltinPairBenches :: [TestTree]
-pbuiltinPairBenches =
-  [ bench "manual fst" (precompileTerm (plam $ \x -> pfstBuiltin # x) # pconstant @(PBuiltinPair PInteger PInteger) (42, 12))
-  , bcompare "$(NF-1) == \"PBuiltinPair\" && $NF == \"manual fst\"" $
-      bench "with pmatch" (precompileTerm (plam $ \x -> pmatch x $ \(PBuiltinPair y _) -> y) # pconstant @(PBuiltinPair PInteger PInteger) (42, 12))
-  ]
 
 arrayBenches :: [TestTree]
 arrayBenches =

@@ -48,13 +48,11 @@ module Plutarch.Prelude (
   pchooseListBuiltin,
   pconsBuiltin,
   pconstrBuiltin,
-  pfstBuiltin,
   pheadBuiltin,
   plistData,
   pnullBuiltin,
   ppairDataBuiltin,
   pserialiseData,
-  psndBuiltin,
   ptailBuiltin,
   pheadTailBuiltin,
 
