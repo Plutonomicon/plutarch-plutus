@@ -6,7 +6,6 @@ module Plutarch.Prelude (
   pand',
   pcond,
   pif,
-  pif',
   pnot,
   por',
   (#&&),

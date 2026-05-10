@@ -11,6 +11,10 @@
 
 * `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
 
+## Removed
+
+* `pif'`, as there's no reason to use it any more
+
 # 1.13.0 -- 04-03-2026
 
 ## Added
