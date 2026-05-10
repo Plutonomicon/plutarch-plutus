@@ -15,6 +15,7 @@
 
 * `pif'`, as there's no reason to use it any more
 * `pfstBuiltin` and `psndBuiltin`, as `pmatch` is more efficient
+* `pletFieldsC`, as it is no longer needed
 
 # 1.13.0 -- 04-03-2026
 

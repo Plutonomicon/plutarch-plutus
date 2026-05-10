@@ -239,7 +239,6 @@ module Plutarch.Prelude (
   pguardC,
   pguardC',
   pletC,
-  pletFieldsC,
   pmatchC,
   ptraceC,
   ptryFromC,
