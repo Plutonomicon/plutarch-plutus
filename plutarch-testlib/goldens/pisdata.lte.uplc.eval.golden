@@ -1,9 +1,3 @@
 PCredential.pmatch.true.eq True
 PCredential.pmatch.true.less True
 PCredential.pmatch.false False
-PTriplet.derived.true.eq True
-PTriplet.derived.true.less True
-PTriplet.derived.false False
-PTriplet.pmatch.true.eq True
-PTriplet.pmatch.true.less True
-PTriplet.pmatch.false False
