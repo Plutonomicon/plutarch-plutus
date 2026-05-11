@@ -78,7 +78,6 @@ library
     , plutarch-orphanage
     , plutus-core
     , plutus-ledger-api
-    , plutus-tx
     , prettyprinter
     , QuickCheck
     , tagged
@@ -94,7 +93,6 @@ library
     Plutarch.Test.Laws
     Plutarch.Test.Methods
     Plutarch.Test.QuickCheck
-    Plutarch.Test.SpecTypes
     Plutarch.Test.Unit
     Plutarch.Test.Utils
 
@@ -110,7 +108,6 @@ test-suite tests
     Plutarch.Test.Suite.Plutarch.ByteString
     Plutarch.Test.Suite.Plutarch.DeriveAsTag
     Plutarch.Test.Suite.Plutarch.Either
-    Plutarch.Test.Suite.Plutarch.Field
     Plutarch.Test.Suite.Plutarch.Integer
     Plutarch.Test.Suite.Plutarch.List
     Plutarch.Test.Suite.Plutarch.Maybe

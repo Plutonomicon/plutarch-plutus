@@ -1,1 +1,0 @@
-../../../src/Usage/DerivingWithGenerics.md
