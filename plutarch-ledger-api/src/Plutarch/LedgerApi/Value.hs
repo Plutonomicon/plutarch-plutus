@@ -35,7 +35,6 @@ module Plutarch.LedgerApi.Value (
   padaToken,
 
   -- ** Transformation
-  passertSorted,
   ppromoteToSortedValue,
   pforgetSorted,
   ptoLedgerValue,
@@ -441,11 +440,10 @@ psingletonLedgerValueData =
 The conversion succeeds only if the input Value is already sorted and does not
 contain empty token maps. Otherwise, the function fails with an error.
 
-@since 2.1.1
+@since 3.6.0
 -}
-{-# DEPRECATED passertSorted "Use ppromoteToSortedValue instead" #-}
-passertSorted :: forall (s :: S). Term s (PRawValue :--> PSortedValue)
-passertSorted = phoistAcyclic $
+ppromoteToSortedValue :: forall (s :: S). Term s (PRawValue :--> PSortedValue)
+ppromoteToSortedValue = phoistAcyclic $
   plam $ \value ->
     pif
       ( AssocMap.pany
@@ -461,16 +459,6 @@ passertSorted = phoistAcyclic $
           -- punsafeCoerce since we know that the token maps are sorted at this point
           (AssocMap.ppromoteToSortedMap #$ punsafeCoerce $ pto value)
       )
-
-{- | Attempt to promote a 'PRawValue' to 'PSortedValue'.
-
-The conversion succeeds only if the input Value is already sorted and does not
-contain empty token maps. Otherwise, the function fails with an error.
-
-@since 3.6.0
--}
-ppromoteToSortedValue :: forall (s :: S). Term s (PRawValue :--> PSortedValue)
-ppromoteToSortedValue = passertSorted
 
 {- | Safely demote a 'PSortedValue' to a 'PRawValue'.
 
