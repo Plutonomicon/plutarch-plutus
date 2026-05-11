@@ -48,7 +48,7 @@ except as follows:
   (nonzero) amount.
 * If the argument 'PBuiltinValue' already contains the given currency-token
   name entry, the new 'PBuiltinValue' will have that currency-token name
-  entry modified by the amount by the given (nonzero) amount.
+  entry replaced with the given (nonzero) amount.
 * Otherwise, the new 'PBuiltinValue' will contain a new currency-token name
   entry, with the given (nonzero) amount.
 

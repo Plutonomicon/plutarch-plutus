@@ -17,6 +17,8 @@
 * `pfstBuiltin` and `psndBuiltin`, as `pmatch` is more efficient
 * `pletFieldsC`, as it is no longer needed
 * The entire old derivation mechanism
+* `pfindPlaceholder` from `Internal.TermCont`, as it is unused (though the 
+  `findAllPlaceholders` version is)
 
 # 1.13.0 -- 04-03-2026
 
