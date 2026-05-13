@@ -802,51 +802,72 @@ rawTermToUPLC ::
   Word64 ->
   RawTerm ->
   UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
-rawTermToUPLC _ _ (RVar i) = UPLC.Var () (DeBruijn . Index $ i + 1) -- Why the fuck does it start from 1 and not 0?
-rawTermToUPLC m l (RLamAbs n t) =
-  foldr ($) (rawTermToUPLC m (l + n + 1) t) (replicate (fromIntegral $ n + 1) $ UPLC.LamAbs () (DeBruijn . Index $ 0))
-rawTermToUPLC m l (RApply x y) =
-  let
+rawTermToUPLC resolveHoist level = \case
+  -- Variable DeBruijn indices begin from 1
+  RVar i -> UPLC.Var () (DeBruijn . Index $ i + 1)
+  RDelay t -> UPLC.Delay () (rawTermToUPLC resolveHoist level t)
+  RForce t -> UPLC.Force () (rawTermToUPLC resolveHoist level t)
+  RBuiltin f -> UPLC.Builtin () f
+  RConstant c -> UPLC.Constant () c
+  RCompiled code -> code
+  RPlaceHolder _ -> UPLC.Error ()
+  RError -> UPLC.Error ()
+  RConstr i xs -> UPLC.Constr () i (rawTermToUPLC resolveHoist level <$> xs)
+  RCase scrutinee cases ->
+    let compiledCases = V.fromList (rawTermToUPLC resolveHoist level <$> cases)
+     in UPLC.Case () (rawTermToUPLC resolveHoist level scrutinee) compiledCases
+  RHoisted hoisted -> resolveHoist hoisted level
+  -- The second part of a `let` bind is the 'function part (to follow ordinary
+  -- `let` structure from Haskell etc)
+  RLet v f -> rawTermToUPLC resolveHoist level (RApply f [v])
+  RApply f xs ->
+    let fAsRaw = rawTermToUPLC resolveHoist level f
+        xsAsRaw = rawTermToUPLC resolveHoist level <$> xs
+        -- Some cases are worth inlining
+        (body, args) = inline' 0 fAsRaw (reverse xsAsRaw)
+     in -- Note (Koz, 13/05/2026): As `UPLC.Apply` is single-arity,
+        -- when we need to apply `n` arguments, we have to have `n`
+        -- `UPLC.Apply` nodes. This is fine for a small number, but
+        -- for a large number, we take a linear blowout to AST size.
+        -- In such cases, it is more efficient to do the following:
+        --
+        -- 1. Temporarily 'wrap up' our arguments in a SOP `Constr`.
+        -- 2. Make a single-handler `Case` that's just the body of
+        --    whatever we want to apply.
+        --
+        -- This changes the cost from `n` nodes to just 2, without
+        -- changing the semantics.
+        if length args <= 2
+          then foldl' (UPLC.Apply ()) body args
+          else UPLC.Case () (UPLC.Constr () 0 args) (V.singleton body)
+  RLamAbs n t ->
+    let deAritiedBody = rawTermToUPLC resolveHoist (level + n + 1) t
+     in foldr (\_ -> UPLC.LamAbs () (DeBruijn . Index $ 0)) deAritiedBody ([0, 1 .. n] :: [Word64])
+  where
     inline' ::
       Word64 ->
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       [UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()] ->
       (UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun (), [UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()])
-    inline' _ func [] = (func, [])
-    inline' target (UPLC.LamAbs () _ body) ((UPLC.Var () (DeBruijn (Index idx))) : args) =
-      inline' target (subst 1 (\lvl -> UPLC.Var () (DeBruijn (Index $ idx + lvl - 1 + target))) body) args
-    inline' target (UPLC.LamAbs () _ body) (arg@UPLC.Builtin {} : args) =
-      inline' target (subst 1 (const arg) body) args
-    inline' target (UPLC.LamAbs () _ body) (arg@UPLC.Constant {} : args) =
-      inline' target (subst 1 (const arg) body) args
-    -- inline' _ func@(UPLC.LamAbs () _ _ ) args = (func, args) -- This will skip inlining after first encounter of non-inlinable term
-    inline' target (UPLC.LamAbs () x body) (arg : args) =
-      let (func', args') = inline' (target + 1) body args
-       in (UPLC.LamAbs () x func', arg : args')
-    inline' target func (arg : args) =
-      let (func', args') = inline' target func args
-       in (func', arg : args')
-
-    (body, args) = inline' 0 (rawTermToUPLC m l x) (reverse $ rawTermToUPLC m l <$> y)
-
-    applied
-      | length args <= 2 = foldl (UPLC.Apply ()) body args
-      | otherwise = UPLC.Case () (UPLC.Constr () 0 args) (V.singleton body)
-   in
-    applied
-rawTermToUPLC m l (RDelay t) = UPLC.Delay () (rawTermToUPLC m l t)
-rawTermToUPLC m l (RForce t) = UPLC.Force () (rawTermToUPLC m l t)
-rawTermToUPLC _ _ (RBuiltin f) = UPLC.Builtin () f
-rawTermToUPLC _ _ (RConstant c) = UPLC.Constant () c
-rawTermToUPLC _ _ (RCompiled code) = code
-rawTermToUPLC _ _ (RPlaceHolder _) = UPLC.Error ()
-rawTermToUPLC _ _ RError = UPLC.Error ()
-rawTermToUPLC m l (RConstr i xs) = UPLC.Constr () i (rawTermToUPLC m l <$> xs)
-rawTermToUPLC m l (RCase x xs) = UPLC.Case () (rawTermToUPLC m l x) $ V.fromList (rawTermToUPLC m l <$> xs)
--- rawTermToUPLC m l (RHoisted hoisted) = UPLC.Var () . DeBruijn . Index $ l - m hoisted
-rawTermToUPLC m l (RHoisted hoisted) = m hoisted l -- UPLC.Var () . DeBruijn . Index $ l - m hoisted
--- The second part of a let bind is the "function part" (to follow ordinary `let` semantics from Haskell & etc)
-rawTermToUPLC m l (RLet v f) = rawTermToUPLC m l (RApply f [v])
+    inline' target func = \case
+      -- If there are no arguments at all, there's nothing to inline
+      [] -> (func, [])
+      (arg : args) -> case func of
+        UPLC.LamAbs () x body -> case arg of
+          -- If something we're applying is a variable, constant or builtin,
+          -- inlining it is cheaper than another `Apply` node.
+          UPLC.Var () (DeBruijn (Index idx)) ->
+            inline' target (subst 1 (\lvl -> UPLC.Var () (DeBruijn (Index $ idx + lvl - 1 + target))) body) args
+          UPLC.Builtin {} -> inline' target (subst 1 (const arg) body) args
+          UPLC.Constant {} -> inline' target (subst 1 (const arg) body) args
+          -- Skip for now, but there might be something worthwhile later
+          _ ->
+            let (func', args') = inline' (target + 1) body args
+             in (UPLC.LamAbs () x func', arg : args')
+        -- Skip for now, but there might be something worthwhile later
+        _ ->
+          let (func', args') = inline' target func args
+           in (func', arg : args')
 
 smallEnoughToInline :: RawTerm -> Bool
 smallEnoughToInline = \case
