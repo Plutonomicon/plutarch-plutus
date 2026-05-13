@@ -140,6 +140,8 @@ data RawTerm
   | RCase RawTerm [RawTerm]
   | -- Let x (\x' -> ...)
     RLet RawTerm RawTerm
+  | -- Fixed point
+    RFix RawTerm
   deriving stock (Show, Eq)
 
 -- | A very cheap hash which cheapens equality, but is also needed for using an unordered container.
@@ -161,6 +163,7 @@ instance Hashable RawTerm where
     RConstr x y -> hash (11 :: Int, x, y)
     RCase x y -> hash (12 :: Int, x, y)
     RLet x y -> hash (13 :: Int, x, y)
+    RFix x -> hash (14 :: Int, x)
   {-# INLINE hash #-}
 
 data TermResult = TermResult
@@ -843,7 +846,20 @@ rawTermToUPLC resolveHoist level = \case
   RLamAbs n t ->
     let deAritiedBody = rawTermToUPLC resolveHoist (level + n + 1) t
      in foldr (\_ -> UPLC.LamAbs () (DeBruijn . Index $ 0)) deAritiedBody ([0, 1 .. n] :: [Word64])
+  RFix t ->
+    let compiled = rawTermToUPLC resolveHoist level t
+        ownArg = UPLC.Var () . DeBruijn . Index $ 1
+        parentArg = UPLC.Var () . DeBruijn . Index $ 2
+        -- M = \y -> y y
+        mCombinator = rawLam . UPLC.Apply () ownArg $ ownArg
+        -- \x -> t (\v -> x (x v))
+        functional = rawLam . UPLC.Apply () compiled . rawLam . UPLC.Apply () parentArg . UPLC.Apply () parentArg $ ownArg
+     in UPLC.Apply () mCombinator functional
   where
+    rawLam ::
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun ()
+    rawLam = UPLC.LamAbs () (DeBruijn . Index $ 0)
     inline' ::
       Word64 ->
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->

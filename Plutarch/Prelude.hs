@@ -102,6 +102,7 @@ module Plutarch.Prelude (
   pfixHoisted,
   pfix,
   pfixInline,
+  pfixNew,
 
   -- * IsData
   PIsData (..),

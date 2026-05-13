@@ -94,3 +94,4 @@ pfindAllPlaceholders x = TermCont $ \f -> Term $ do
       RCompiled _ -> []
       RError -> []
       RLet v f -> findPlaceholder t v <> findPlaceholder t f
+      RFix x -> findPlaceholder t x

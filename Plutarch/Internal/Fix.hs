@@ -1,11 +1,20 @@
-module Plutarch.Internal.Fix (pfixHoisted, pfix, pfixInline) where
+module Plutarch.Internal.Fix (
+  pfixHoisted,
+  pfix,
+  pfixInline,
+  pfixNew,
+) where
 
+import Control.Monad.Reader (ask, lift, runReaderT)
 import Data.Kind (Type)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
+  RawTerm (RFix),
   S,
-  Term,
+  Term (Term),
+  TermResult (TermResult),
+  asRawTerm,
   phoistAcyclic,
   plam',
   punsafeCoerce,
@@ -76,3 +85,15 @@ pfixInline ::
 pfixInline f =
   plam (\r -> f (punsafeCoerce r # r))
     # plam (\r -> f (punsafeCoerce r # r))
+
+-- | @since wip
+pfixNew ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  Term s ((a :--> b) :--> a :--> b) ->
+  Term s (a :--> b)
+pfixNew t = Term $ do
+  env <- ask
+  let tRes = runReaderT (asRawTerm t) env
+  case tRes of
+    Left msg -> lift . Left $ "pfixNew failed: " <> msg
+    Right (TermResult tt tDeps) -> pure . TermResult (RFix tt) $ tDeps
