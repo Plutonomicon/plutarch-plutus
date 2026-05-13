@@ -852,8 +852,8 @@ rawTermToUPLC resolveHoist level = \case
         parentArg = UPLC.Var () . DeBruijn . Index $ 2
         -- M = \y -> y y
         mCombinator = rawLam . UPLC.Apply () ownArg $ ownArg
-        -- \x -> t (\v -> x (x v))
-        functional = rawLam . UPLC.Apply () compiled . rawLam . UPLC.Apply () parentArg . UPLC.Apply () parentArg $ ownArg
+        -- \x -> t (\v -> (x x) v)
+        functional = rawLam . UPLC.Apply () compiled . rawLam . UPLC.Apply () (UPLC.Apply () parentArg parentArg) $ ownArg
      in UPLC.Apply () mCombinator functional
   where
     rawLam ::

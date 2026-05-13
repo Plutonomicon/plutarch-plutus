@@ -206,6 +206,8 @@ pfixBenches =
       bench "pfix" (precompileTerm pfac # pconstant @PInteger 80)
   , bcompare "$(NF-1) == \"pfix\" && $NF == \"pfixHoisted\"" $
       bench "pfixInline" (precompileTerm pfacInline # pconstant @PInteger 80)
+  , bcompare "$(NF-1) == \"pfix\" && $NF == \"pfixHoisted\"" $
+      bench "pfixNew" (precompileTerm pfacNew # pconstant @PInteger 80)
   ]
   where
     pfacHoisted :: forall (s :: S). Term s (PInteger :--> PInteger)
@@ -214,6 +216,8 @@ pfixBenches =
     pfac = pfix $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
     pfacInline :: forall (s :: S). Term s (PInteger :--> PInteger)
     pfacInline = pfixInline $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
+    pfacNew :: forall (s :: S). Term s (PInteger :--> PInteger)
+    pfacNew = pfixNew $ plam $ \self n -> pif (n #== 1) n $ n * (self #$ n - 1)
 
 pbuiltinPairBenches :: [TestTree]
 pbuiltinPairBenches =
