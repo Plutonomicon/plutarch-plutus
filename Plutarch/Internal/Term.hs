@@ -27,6 +27,7 @@ module Plutarch.Internal.Term (
   compile',
   optimizeTerm,
   RawTerm (..),
+  FixType (..),
   HoistedTerm (..),
   TermResult (TermResult, getDeps, getTerm),
   S (SI),
@@ -124,6 +125,18 @@ instance Eq HoistedTerm where
       && htRawTerm l == htRawTerm r
   {-# INLINE (==) #-}
 
+-- Throughout, let F be the functional (the thing being fixpointed)
+data FixType
+  = -- M (\x -> F (\v -> (x x) v))
+    FixHoisted
+  deriving stock (Eq, Show)
+
+instance Hashable FixType where
+  {-# INLINE hashWithSalt #-}
+  hashWithSalt = defaultHashWithSalt
+  hash = \case
+    FixHoisted -> hash (1 :: Int)
+
 data RawTerm
   = RVar Word64
   | RLamAbs Word64 RawTerm
@@ -141,7 +154,7 @@ data RawTerm
   | -- Let x (\x' -> ...)
     RLet RawTerm RawTerm
   | -- Fixed point
-    RFix RawTerm
+    RFix FixType RawTerm
   deriving stock (Show, Eq)
 
 -- | A very cheap hash which cheapens equality, but is also needed for using an unordered container.
@@ -163,7 +176,7 @@ instance Hashable RawTerm where
     RConstr x y -> hash (11 :: Int, x, y)
     RCase x y -> hash (12 :: Int, x, y)
     RLet x y -> hash (13 :: Int, x, y)
-    RFix x -> hash (14 :: Int, x)
+    RFix ty x -> hash (14 :: Int, ty, x)
   {-# INLINE hash #-}
 
 data TermResult = TermResult
@@ -846,7 +859,7 @@ rawTermToUPLC resolveHoist level = \case
   RLamAbs n t ->
     let deAritiedBody = rawTermToUPLC resolveHoist (level + n + 1) t
      in foldr (\_ -> UPLC.LamAbs () (DeBruijn . Index $ 0)) deAritiedBody ([0, 1 .. n] :: [Word64])
-  RFix t ->
+  RFix _ t ->
     let compiled = rawTermToUPLC resolveHoist level t
         ownArg = UPLC.Var () . DeBruijn . Index $ 1
         parentArg = UPLC.Var () . DeBruijn . Index $ 2
@@ -854,7 +867,8 @@ rawTermToUPLC resolveHoist level = \case
         mCombinator = rawLam . UPLC.Apply () ownArg $ ownArg
         -- \x -> t (\v -> (x x) v)
         functional = rawLam . UPLC.Apply () compiled . rawLam . UPLC.Apply () (UPLC.Apply () parentArg parentArg) $ ownArg
-     in UPLC.Apply () mCombinator functional
+        (body, args) = inline' 0 mCombinator [functional]
+     in foldl' (UPLC.Apply ()) body args
   where
     rawLam ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->

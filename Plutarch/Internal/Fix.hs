@@ -10,6 +10,7 @@ import Data.Kind (Type)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
+  FixType (FixHoisted),
   RawTerm (RFix),
   S,
   Term (Term),
@@ -96,4 +97,4 @@ pfixNew t = Term $ do
   let tRes = runReaderT (asRawTerm t) env
   case tRes of
     Left msg -> lift . Left $ "pfixNew failed: " <> msg
-    Right (TermResult tt tDeps) -> pure . TermResult (RFix tt) $ tDeps
+    Right (TermResult tt tDeps) -> pure . TermResult (RFix FixHoisted tt) $ tDeps
