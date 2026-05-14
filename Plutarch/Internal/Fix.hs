@@ -1,3 +1,5 @@
+{-# LANGUAGE NoPartialTypeSignatures #-}
+
 module Plutarch.Internal.Fix (
   pfixHoisted,
   pfix,
@@ -10,7 +12,6 @@ import Data.Kind (Type)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.Term (
-  FixType (FixHoisted),
   RawTerm (RFix),
   S,
   Term (Term),
@@ -70,9 +71,7 @@ pfix ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (Term s (a :--> b) -> Term s (a :--> b)) ->
   Term s (a :--> b)
-pfix f =
-  plam (\r -> punsafeCoerce r # r)
-    # plam (\r -> f (punsafeCoerce r # r))
+pfix f = plam (\r -> punsafeCoerce r # r) # plam (\r -> f (punsafeCoerce r # r))
 
 {- | As 'pfix', but we perform some additional inlining into the function
 argument. This allows for even more speed, but at the cost of larger scripts.
@@ -90,11 +89,10 @@ pfixInline f =
 -- | @since wip
 pfixNew ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  Term s ((a :--> b) :--> a :--> b) ->
+  (Term s (a :--> b) -> Term s (a :--> b)) ->
   Term s (a :--> b)
-pfixNew t = Term $ do
+pfixNew f = Term $ do
   env <- ask
-  let tRes = runReaderT (asRawTerm t) env
-  case tRes of
-    Left msg -> lift . Left $ "pfixNew failed: " <> msg
-    Right (TermResult tt tDeps) -> pure . TermResult (RFix FixHoisted tt) $ tDeps
+  case runReaderT (asRawTerm $ plam $ \r -> f (punsafeCoerce r # r)) env of
+    Left err -> lift . Left $ "pfixNew failed: " <> err
+    Right (TermResult tt tDeps) -> pure . TermResult (RFix tt) $ tDeps

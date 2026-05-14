@@ -217,7 +217,7 @@ pfixBenches =
     pfacInline :: forall (s :: S). Term s (PInteger :--> PInteger)
     pfacInline = pfixInline $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
     pfacNew :: forall (s :: S). Term s (PInteger :--> PInteger)
-    pfacNew = pfixNew $ plam $ \self n -> pif (n #== 1) n $ n * (self #$ n - 1)
+    pfacNew = pfixNew $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
 
 pbuiltinPairBenches :: [TestTree]
 pbuiltinPairBenches =
