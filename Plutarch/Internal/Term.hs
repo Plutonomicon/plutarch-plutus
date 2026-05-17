@@ -851,7 +851,9 @@ rawTermToUPLC resolveHoist level = \case
         -- M = \x -> x x
         mCombinator = rawLam . UPLC.Apply () ownArg $ ownArg
         (body, args) = inline' 0 mCombinator [compiled]
-     in foldl' (UPLC.Apply ()) body args
+     in if length args <= 2
+          then foldl' (UPLC.Apply ()) body args
+          else UPLC.Case () (UPLC.Constr () 0 args) (V.singleton body)
   where
     {-
       case ty of

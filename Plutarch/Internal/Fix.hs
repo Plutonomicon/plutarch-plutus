@@ -71,7 +71,9 @@ pfix ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (Term s (a :--> b) -> Term s (a :--> b)) ->
   Term s (a :--> b)
-pfix f = plam (\r -> punsafeCoerce r # r) # plam (\r -> f (punsafeCoerce r # r))
+pfix = pfixNew
+
+-- pfix f = plam (\r -> punsafeCoerce r # r) # plam (\r -> f (punsafeCoerce r # r))
 
 {- | As 'pfix', but we perform some additional inlining into the function
 argument. This allows for even more speed, but at the cost of larger scripts.
