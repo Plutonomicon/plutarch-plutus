@@ -44,14 +44,9 @@ module Plutarch.Internal.Term (
   (#$),
 ) where
 
-import Control.Monad.Reader (
-  ReaderT,
-  ask,
-  asks,
-  lift,
-  local,
-  runReaderT,
- )
+import Control.Monad.Except (Except, runExcept, throwError)
+import Control.Monad.RWS.CPS (RWST, evalRWST)
+import Control.Monad.Reader (ask, asks, lift, local)
 import Control.Monad.State.Strict (evalStateT)
 import Data.Aeson (
   FromJSON (parseJSON),
@@ -435,7 +430,7 @@ data TermEnv = TermEnv
  instantiated with.
 -}
 newtype Term (s :: S) (a :: S -> Type) = Term
-  { asRawTerm :: ReaderT TermEnv (Either Text) TermResult
+  { asRawTerm :: RWST TermEnv () () (Except Text) TermResult
   }
 
 type role Term nominal nominal
@@ -460,7 +455,7 @@ plam' f = Term $ do
         pure . mkTermRes $ RVar (j - (i + 1))
   originalEnv <- ask
   let newEnv = originalEnv {teDeBruijnDepth = i + 1}
-  lift . fmap go . runReaderT (asRawTerm (f v)) $ newEnv
+  lift . fmap (go . fst) . evalRWST (asRawTerm (f v)) newEnv $ ()
   where
     go :: TermResult -> TermResult
     go res@(TermResult t _) =
@@ -644,10 +639,10 @@ plam' f = Term $ do
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ do
   env <- ask
-  let vRes = runReaderT (asRawTerm v) env
+  let vRes = runExcept . evalRWST (asRawTerm v) env $ ()
   case vRes of
-    Left msg -> lift . Left $ "plet failed: " <> msg
-    Right (TermResult vt _vDeps) -> do
+    Left msg -> throwError $ "plet failed: " <> msg
+    Right (TermResult vt _vDeps, ()) -> do
       let doInline = asRawTerm (f v)
           noInline (TermResult ft _fDeps) = case ft of
             RError -> pure $ mkTermRes RError
@@ -664,18 +659,18 @@ plet v f = Term $ do
         _ -> noInline =<< asRawTerm (plam' f)
 
 pthrow :: HasCallStack => Text -> Term s a
-pthrow msg = Term . lift . Left $ fromString (prettyCallStack callStack) <> "\n\n" <> msg
+pthrow msg = Term . throwError $ fromString (prettyCallStack callStack) <> "\n\n" <> msg
 
 -- | Lambda Application.
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ do
   env <- ask
   let yRaw = asRawTerm y
-  let fRes = runReaderT (asRawTerm x) env
-  let xRes = runReaderT yRaw env
+  let fRes = runExcept . evalRWST (asRawTerm x) env $ ()
+  let xRes = runExcept . evalRWST yRaw env $ ()
   case (,) <$> fRes <*> xRes of
-    Left msg -> lift . Left $ msg
-    Right (TermResult ft fDeps, TermResult xt xDeps) -> case (ft, xt) of
+    Left msg -> throwError msg
+    Right ((TermResult ft fDeps, ()), (TermResult xt xDeps, ())) -> case (ft, xt) of
       -- Applying anything to an error is an error.
       (RError, _) -> pure . mkTermRes $ RError
       -- Applying an error to anything is an error.
@@ -760,14 +755,14 @@ phoistAcyclic :: forall (a :: S -> Type) (s :: S). HasCallStack => (forall (s' :
 phoistAcyclic t = pgetInternalConfig $ \InternalConfig {internalConfig'phoistAcyclicEvalCheck = chk} ->
   Term $ do
     env <- ask
-    let res = runReaderT (asRawTerm t) env {teDeBruijnDepth = 0}
+    let res = runExcept . evalRWST (asRawTerm t) env {teDeBruijnDepth = 0} $ ()
     case res of
-      Left _ -> lift res
-      Right res'@(TermResult t' deps) -> case t' of
-        RBuiltin _ -> lift res
+      Left err -> throwError err
+      Right (tr@(TermResult t' deps), ()) -> case t' of
+        RBuiltin _ -> lift . pure $ tr
         _ ->
           if chk
-            then case evalScript . Script . UPLC.Program () uplcVersion $ compile' res' of
+            then case evalScript . Script . UPLC.Program () uplcVersion $ compile' tr of
               (Left e, _, _) -> asRawTerm . pthrow $ "Hoisted term errors! " <> fromString (show e)
               (Right _, _, _) ->
                 let hoisted = HoistedTerm (hash t') t'
@@ -908,8 +903,9 @@ compile = compileWithInternalConfig defaultInternalConfig
 compileWithInternalConfig ::
   forall (a :: S -> Type).
   InternalConfig -> Config -> (forall (s :: S). Term s a) -> Either Text Script
-compileWithInternalConfig iconf conf t = case runReaderT (asRawTerm t) (TermEnv 0 iconf conf) of
-  res -> Script . UPLC.Program () uplcVersion . compile' <$> res
+compileWithInternalConfig iconf conf t = case runExcept . evalRWST (asRawTerm t) (TermEnv 0 iconf conf) $ () of
+  Left err -> Left err
+  Right (res, ()) -> pure . Script . UPLC.Program () uplcVersion . compile' $ res
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -931,12 +927,12 @@ compileOptimizedWithInternalConfig ::
   InternalConfig ->
   (forall (s :: S). Term s a) ->
   Either Text Script
-compileOptimizedWithInternalConfig internalConfig t = do
+compileOptimizedWithInternalConfig internalConfig t = runExcept $ do
   let env = TermEnv 0 internalConfig NoTracing
-  built <- runReaderT (asRawTerm t) env
+  (built, ()) <- evalRWST (asRawTerm t) env ()
   let compiled = compile' built
   case go compiled of
-    Left err -> Left . Text.pack . show $ err
+    Left err -> throwError . Text.pack . show $ err
     Right simplified -> pure . Script . UPLC.Program () uplcVersion $ simplified
   where
     go ::
@@ -975,12 +971,12 @@ optimizeTerm ::
   (forall (s :: S). Term s a)
 optimizeTerm (Term raw) = Term $ do
   env <- ask
-  let res = runReaderT raw env
-  let compiled = compile' <$> res
+  let res = runExcept . evalRWST raw env $ ()
+  let compiled = (\(t, _) -> compile' t) <$> res
   case compiled of
-    Left err -> lift . Left $ err
+    Left err -> throwError err
     Right compiled' -> case go compiled' of
-      Left err -> lift . Left . Text.pack . show $ err
+      Left err -> throwError . Text.pack . show $ err
       Right simplified -> pure . TermResult (RCompiled simplified) $ []
   where
     go ::
