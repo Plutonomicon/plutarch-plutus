@@ -1,8 +1,5 @@
 module Plutarch.Internal.Case (punsafeCase) where
 
-import Control.Monad.Except (runExcept, throwError)
-import Control.Monad.RWS.CPS (evalRWST)
-import Control.Monad.Reader (ask)
 import Data.Kind (Type)
 import Data.Semialign (unzipWith)
 import Plutarch.Builtin.Opaque (POpaque)
@@ -32,14 +29,7 @@ punsafeCase ::
   [Term s POpaque] ->
   Term s b
 punsafeCase scrutinee handlers = Term $ do
-  env <- ask
-  let scrutinee' = runExcept . evalRWST (asRawTerm scrutinee) env $ ()
-  case scrutinee' of
-    Left err -> throwError err
-    Right (TermResult rawScrutinee depsScrutinee, ()) -> do
-      let handlers' = unzipWith (\(TermResult x y, _) -> (x, y)) <$> traverse (\t -> runExcept . evalRWST (asRawTerm t) env $ ()) handlers
-      case handlers' of
-        Left err -> throwError err
-        Right (rawHandlers, depsHandlers) -> do
-          let allDeps = depsScrutinee <> mconcat depsHandlers
-          pure . TermResult (RCase rawScrutinee rawHandlers) $ allDeps
+  TermResult rawScrutinee depsScrutinee <- asRawTerm scrutinee
+  (rawHandlers, depsHandlers) <- unzipWith (\(TermResult x y) -> (x, y)) <$> traverse asRawTerm handlers
+  let allDeps = depsScrutinee <> mconcat depsHandlers
+  pure . TermResult (RCase rawScrutinee rawHandlers) $ allDeps

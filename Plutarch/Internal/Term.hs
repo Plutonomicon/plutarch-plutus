@@ -44,9 +44,13 @@ module Plutarch.Internal.Term (
   (#$),
 ) where
 
-import Control.Monad.Except (Except, runExcept, throwError)
-import Control.Monad.RWS.CPS (RWST, evalRWST)
-import Control.Monad.Reader (ask, asks, lift, local)
+import Control.Monad.Except (
+  ExceptT,
+  runExceptT,
+  throwError,
+ )
+import Control.Monad.RWS.CPS (RWS, evalRWS)
+import Control.Monad.Reader (ask, asks, local)
 import Control.Monad.State.Strict (evalStateT)
 import Data.Aeson (
   FromJSON (parseJSON),
@@ -430,7 +434,7 @@ data TermEnv = TermEnv
  instantiated with.
 -}
 newtype Term (s :: S) (a :: S -> Type) = Term
-  { asRawTerm :: RWST TermEnv () () (Except Text) TermResult
+  { asRawTerm :: ExceptT Text (RWS TermEnv () ()) TermResult
   }
 
 type role Term nominal nominal
@@ -455,7 +459,8 @@ plam' f = Term $ do
         pure . mkTermRes $ RVar (j - (i + 1))
   originalEnv <- ask
   let newEnv = originalEnv {teDeBruijnDepth = i + 1}
-  lift . fmap (go . fst) . evalRWST (asRawTerm (f v)) newEnv $ ()
+  res <- local (const newEnv) (asRawTerm (f v))
+  pure . go $ res
   where
     go :: TermResult -> TermResult
     go res@(TermResult t _) =
@@ -638,25 +643,21 @@ plam' f = Term $ do
 -}
 plet :: Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ do
-  env <- ask
-  let vRes = runExcept . evalRWST (asRawTerm v) env $ ()
-  case vRes of
-    Left msg -> throwError $ "plet failed: " <> msg
-    Right (TermResult vt _vDeps, ()) -> do
-      let doInline = asRawTerm (f v)
-          noInline (TermResult ft _fDeps) = case ft of
-            RError -> pure $ mkTermRes RError
-            RLamAbs 0 (RVar 0) -> asRawTerm v
-            RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))) -> asRawTerm v
-            RApply xl xr -> pure . TermResult (RApply xl (vt : xr)) $ _fDeps <> _vDeps
-            _ -> pure $ TermResult (RLet vt ft) (_fDeps <> _vDeps)
-      case vt of
-        -- Inline sufficiently small terms in WHNF
-        RVar _ -> doInline
-        RBuiltin _ -> doInline
-        RHoisted _ -> doInline
+  TermResult vt vDeps <- asRawTerm v
+  let doInline = asRawTerm (f v)
+      noInline (TermResult ft fDeps) = case ft of
         RError -> pure . mkTermRes $ RError
-        _ -> noInline =<< asRawTerm (plam' f)
+        RLamAbs 0 (RVar 0) -> asRawTerm v
+        RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))) -> asRawTerm v
+        RApply xl xr -> pure . TermResult (RApply xl (vt : xr)) $ fDeps <> vDeps
+        _ -> pure $ TermResult (RLet vt ft) (fDeps <> vDeps)
+  case vt of
+    -- Inline sufficiently small terms in WHNF
+    RVar _ -> doInline
+    RBuiltin _ -> doInline
+    RHoisted _ -> doInline
+    RError -> pure . mkTermRes $ RError
+    _ -> asRawTerm (plam' f) >>= noInline
 
 pthrow :: HasCallStack => Text -> Term s a
 pthrow msg = Term . throwError $ fromString (prettyCallStack callStack) <> "\n\n" <> msg
@@ -664,24 +665,20 @@ pthrow msg = Term . throwError $ fromString (prettyCallStack callStack) <> "\n\n
 -- | Lambda Application.
 papp :: Term s (a :--> b) -> Term s a -> Term s b
 papp x y = Term $ do
-  env <- ask
-  let yRaw = asRawTerm y
-  let fRes = runExcept . evalRWST (asRawTerm x) env $ ()
-  let xRes = runExcept . evalRWST yRaw env $ ()
-  case (,) <$> fRes <*> xRes of
-    Left msg -> throwError msg
-    Right ((TermResult ft fDeps, ()), (TermResult xt xDeps, ())) -> case (ft, xt) of
-      -- Applying anything to an error is an error.
-      (RError, _) -> pure . mkTermRes $ RError
-      -- Applying an error to anything is an error.
-      (_, RError) -> pure . mkTermRes $ RError
-      -- Applying anything to `id` does nothing.
-      (RLamAbs 0 (RVar 0), _) -> yRaw
-      (RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), _) -> yRaw
-      -- Append an argument to an existing application.
-      (RApply x'l x'r, _) -> pure . TermResult (RApply x'l (xt : x'r)) $ fDeps <> xDeps
-      -- New application.
-      _ -> pure . TermResult (RApply ft [xt]) $ fDeps <> xDeps
+  TermResult ft fDeps <- asRawTerm x
+  TermResult xt xDeps <- asRawTerm y
+  case (ft, xt) of
+    -- Applying anything to an error is an error.
+    (RError, _) -> pure . mkTermRes $ RError
+    -- Applying an error to anything is an error.
+    (_, RError) -> pure . mkTermRes $ RError
+    -- Applying anything to `id` does nothing.
+    (RLamAbs 0 (RVar 0), _) -> asRawTerm y
+    (RHoisted (HoistedTerm _ (RLamAbs 0 (RVar 0))), _) -> asRawTerm y
+    -- Append an argument to an existing application.
+    (RApply func args, _) -> pure . TermResult (RApply func (xt : args)) $ fDeps <> xDeps
+    -- New application.
+    _ -> pure . TermResult (RApply ft [xt]) $ fDeps <> xDeps
 
 {- |
   Plutus \'delay\', used for laziness.
@@ -754,22 +751,19 @@ punsafeConstantInternal c = Term $ do
 phoistAcyclic :: forall (a :: S -> Type) (s :: S). HasCallStack => (forall (s' :: S). Term s' a) -> Term s a
 phoistAcyclic t = pgetInternalConfig $ \InternalConfig {internalConfig'phoistAcyclicEvalCheck = chk} ->
   Term $ do
-    env <- ask
-    let res = runExcept . evalRWST (asRawTerm t) env {teDeBruijnDepth = 0} $ ()
-    case res of
-      Left err -> throwError err
-      Right (tr@(TermResult t' deps), ()) -> case t' of
-        RBuiltin _ -> lift . pure $ tr
-        _ ->
-          if chk
-            then case evalScript . Script . UPLC.Program () uplcVersion $ compile' tr of
-              (Left e, _, _) -> asRawTerm . pthrow $ "Hoisted term errors! " <> fromString (show e)
-              (Right _, _, _) ->
-                let hoisted = HoistedTerm (hash t') t'
-                 in pure . TermResult (RHoisted hoisted) $ hoisted : deps
-            else
+    tr@(TermResult t' deps) <- local (\e -> e {teDeBruijnDepth = 0}) (asRawTerm t)
+    case t' of
+      RBuiltin _ -> pure tr
+      _ ->
+        if chk
+          then case evalScript . Script . UPLC.Program () uplcVersion . compile' $ tr of
+            (Left e, _, _) -> asRawTerm . pthrow $ "Hoisted term errors! " <> fromString (show e)
+            (Right _, _, _) ->
               let hoisted = HoistedTerm (hash t') t'
                in pure . TermResult (RHoisted hoisted) $ hoisted : deps
+          else
+            let hoisted = HoistedTerm (hash t') t'
+             in pure . TermResult (RHoisted hoisted) $ hoisted : deps
 
 -- Couldn't find a definition for this in plutus-core
 subst ::
@@ -903,9 +897,10 @@ compile = compileWithInternalConfig defaultInternalConfig
 compileWithInternalConfig ::
   forall (a :: S -> Type).
   InternalConfig -> Config -> (forall (s :: S). Term s a) -> Either Text Script
-compileWithInternalConfig iconf conf t = case runExcept . evalRWST (asRawTerm t) (TermEnv 0 iconf conf) $ () of
-  Left err -> Left err
-  Right (res, ()) -> pure . Script . UPLC.Program () uplcVersion . compile' $ res
+compileWithInternalConfig iconf conf t =
+  case fst . evalRWS (runExceptT . asRawTerm $ t) (TermEnv 0 iconf conf) $ () of
+    Left err -> Left err
+    Right res -> pure . Script . UPLC.Program () uplcVersion . compile' $ res
 
 {- | As 'compile', but performs UPLC optimizations. Furthermore, this will
 always elide tracing (as if with 'NoTracing').
@@ -927,9 +922,9 @@ compileOptimizedWithInternalConfig ::
   InternalConfig ->
   (forall (s :: S). Term s a) ->
   Either Text Script
-compileOptimizedWithInternalConfig internalConfig t = runExcept $ do
+compileOptimizedWithInternalConfig internalConfig t = do
   let env = TermEnv 0 internalConfig NoTracing
-  (built, ()) <- evalRWST (asRawTerm t) env ()
+  built <- fst . evalRWS (runExceptT . asRawTerm $ t) env $ ()
   let compiled = compile' built
   case go compiled of
     Left err -> throwError . Text.pack . show $ err
@@ -970,14 +965,10 @@ optimizeTerm ::
   (forall (s :: S). Term s a) ->
   (forall (s :: S). Term s a)
 optimizeTerm (Term raw) = Term $ do
-  env <- ask
-  let res = runExcept . evalRWST raw env $ ()
-  let compiled = (\(t, _) -> compile' t) <$> res
-  case compiled of
-    Left err -> throwError err
-    Right compiled' -> case go compiled' of
-      Left err -> throwError . Text.pack . show $ err
-      Right simplified -> pure . TermResult (RCompiled simplified) $ []
+  res <- raw
+  case go . compile' $ res of
+    Left err -> throwError . Text.pack . show $ err
+    Right simplified -> pure . TermResult (RCompiled simplified) $ []
   where
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
