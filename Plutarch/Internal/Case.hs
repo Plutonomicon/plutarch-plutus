@@ -1,6 +1,5 @@
 module Plutarch.Internal.Case (punsafeCase) where
 
-import Control.Monad.Reader (ReaderT (ReaderT), runReaderT)
 import Data.Kind (Type)
 import Data.Semialign (unzipWith)
 import Plutarch.Builtin.Opaque (POpaque)
@@ -29,8 +28,8 @@ punsafeCase ::
   Term s a ->
   [Term s POpaque] ->
   Term s b
-punsafeCase scrutinee handlers = Term . ReaderT $ \env -> do
-  TermResult rawScrutinee depsScrutinee <- runReaderT (asRawTerm scrutinee) env
-  (rawHandlers, depsHandlers) <- unzipWith (\(TermResult x y) -> (x, y)) <$> traverse (\t -> runReaderT (asRawTerm t) env) handlers
+punsafeCase scrutinee handlers = Term $ do
+  TermResult rawScrutinee depsScrutinee <- asRawTerm scrutinee
+  (rawHandlers, depsHandlers) <- unzipWith (\(TermResult x y) -> (x, y)) <$> traverse asRawTerm handlers
   let allDeps = depsScrutinee <> mconcat depsHandlers
   pure . TermResult (RCase rawScrutinee rawHandlers) $ allDeps
