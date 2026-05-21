@@ -75,6 +75,9 @@ library
   import:          c
   exposed-modules:
     Plutarch.Array
+    Plutarch.Backend.Arity
+    Plutarch.Backend.Term
+    Plutarch.Backend.UPLC
     Plutarch.BitString
     Plutarch.Builtin.Array
     Plutarch.Builtin.BLS
@@ -159,6 +162,7 @@ library
     , hashable
     , lens
     , mtl
+    , nonempty-vector
     , plutus-core           ==1.60.0.0
     , plutus-ledger-api
     , plutus-tx
