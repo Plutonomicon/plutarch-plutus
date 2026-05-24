@@ -76,8 +76,11 @@ library
   exposed-modules:
     Plutarch.Array
     Plutarch.Backend.Arity
+    Plutarch.Backend.PosTree
+    Plutarch.Backend.RawTerm
     Plutarch.Backend.Term
     Plutarch.Backend.UPLC
+    Plutarch.Backend.VarMap
     Plutarch.BitString
     Plutarch.Builtin.Array
     Plutarch.Builtin.BLS
