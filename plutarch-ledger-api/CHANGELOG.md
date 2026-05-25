@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## Unreleased
 
+## 3.7.0 -- 26/05/2026
+
 ### Added
 
 * `Plutarch.LedgerApi.V3.Value` module, containing compatibility functionality
