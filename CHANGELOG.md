@@ -9,6 +9,7 @@
 
 ## Changed
 
+* Bump `plutus-core` to 1.64.0.0
 * `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
 
 ## Removed 

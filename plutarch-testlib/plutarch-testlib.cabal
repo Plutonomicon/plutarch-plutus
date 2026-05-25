@@ -162,7 +162,6 @@ test-suite tests
     , serialise
     , sop-core
     , tasty
-    , tasty-expected-failure
     , tasty-hunit
     , tasty-quickcheck
     , text

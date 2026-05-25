@@ -51,7 +51,6 @@ import Control.Monad.Except (
  )
 import Control.Monad.RWS.CPS (RWS, evalRWS)
 import Control.Monad.Reader (ask, asks, local)
-import Control.Monad.State.Strict (evalStateT)
 import Data.Aeson (
   FromJSON (parseJSON),
   ToJSON (toEncoding, toJSON),
@@ -933,10 +932,10 @@ compileOptimizedWithInternalConfig internalConfig t = do
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either UPLC.FreeVariableError (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = flip evalStateT UPLC.initSimplifierTrace . PLC.runQuoteT $ do
+    go compiled = PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
-      simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
-      debruijnd <- UPLC.deBruijnTerm simplified
+      optimized <- UPLC.optimizeTerm UPLC.defaultOptimizeOpts def unDB
+      debruijnd <- UPLC.deBruijnTerm optimized
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 {- | Given a closed 'Term', run the UPLC optimizer on it.
@@ -973,10 +972,10 @@ optimizeTerm (Term raw) = Term $ do
     go ::
       UPLC.Term UPLC.DeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       Either UPLC.FreeVariableError (UPLC.Term DeBruijn UPLC.DefaultUni UPLC.DefaultFun ())
-    go compiled = flip evalStateT UPLC.initSimplifierTrace . PLC.runQuoteT $ do
+    go compiled = PLC.runQuoteT $ do
       unDB <- UPLC.unDeBruijnTerm . UPLC.termMapNames UPLC.fakeNameDeBruijn $ compiled
-      simplified <- UPLC.simplifyTerm UPLC.defaultSimplifyOpts def unDB
-      debruijnd <- UPLC.deBruijnTerm simplified
+      optimized <- UPLC.optimizeTerm UPLC.defaultOptimizeOpts def unDB
+      debruijnd <- UPLC.deBruijnTerm optimized
       pure . UPLC.termMapNames UPLC.unNameDeBruijn $ debruijnd
 
 {- |
