@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## UNRELEASED
 
+## 1.3.0 -- 26-05-2026
+
 ### Added
 
 * `Arbitrary`, `CoArbitrary` and `Function` instances for types from
