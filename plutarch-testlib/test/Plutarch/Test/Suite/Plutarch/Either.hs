@@ -9,7 +9,6 @@ import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.Test.Methods (pmaxDefaultBetter, pminDefaultBetter)
 import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.ExpectedFailure (expectFailBecause)
 
 tests :: TestTree
 tests =
@@ -36,8 +35,8 @@ tests =
     , testGroup
         "PEitherData"
         [ checkLedgerProperties @(PEitherData PPosixTime PPosixTime)
-        , expectFailBecause "40 script bytes is worth the other benefits" $ pmaxDefaultBetter pdleft pdright
-        , expectFailBecause "40 script bytes is worth the other benefits" $ pminDefaultBetter pdleft pdright
+        , pmaxDefaultBetter pdleft pdright
+        , pminDefaultBetter pdleft pdright
         , plutarchGolden
             "Goldens"
             "either-data"

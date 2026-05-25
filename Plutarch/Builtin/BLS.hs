@@ -195,7 +195,7 @@ pbls12_381_finalVerify = punsafeBuiltin PLC.Bls12_381_finalVerify
 [CIP-133](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0133/README.md)
 for more information on how this function works.
 
-@since wip
+@since 1.14.0
 -}
 pbls12_381_G1_multiScalarMul ::
   Term
@@ -210,7 +210,7 @@ pbls12_381_G1_multiScalarMul = punsafeBuiltin PLC.Bls12_381_G1_multiScalarMul
 [CIP-133](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0133/README.md)
 for more information on how this function works.
 
-@since wip
+@since 1.14.0
 -}
 pbls12_381_G2_multiScalarMul ::
   Term

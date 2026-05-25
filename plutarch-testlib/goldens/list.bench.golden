@@ -6,7 +6,7 @@ pnull.nonempty {"exBudgetCPU":2784100,"exBudgetMemory":17500,"scriptSizeBytes":5
 pconcat.identity {"exBudgetCPU":24582760,"exBudgetMemory":147220,"scriptSizeBytes":151}
 pmap.eg {"exBudgetCPU":15663510,"exBudgetMemory":88430,"scriptSizeBytes":132}
 pmap.identity {"exBudgetCPU":496100,"exBudgetMemory":3200,"scriptSizeBytes":76}
-pfilter.evens {"exBudgetCPU":13352395,"exBudgetMemory":70425,"scriptSizeBytes":140}
+pfilter.evens {"exBudgetCPU":13356505,"exBudgetMemory":70425,"scriptSizeBytes":140}
 pfilter.gt5 {"exBudgetCPU":11322665,"exBudgetMemory":66415,"scriptSizeBytes":135}
 pzipWith.double {"exBudgetCPU":19135510,"exBudgetMemory":110130,"scriptSizeBytes":144}
 pfoldl.nonempty {"exBudgetCPU":6504513,"exBudgetMemory":34121,"scriptSizeBytes":73}

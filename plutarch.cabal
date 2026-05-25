@@ -166,7 +166,7 @@ library
     , lens
     , mtl
     , nonempty-vector
-    , plutus-core           ==1.60.0.0
+    , plutus-core           ==1.64.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
