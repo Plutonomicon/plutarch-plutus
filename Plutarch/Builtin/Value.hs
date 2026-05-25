@@ -1,4 +1,4 @@
--- | @since wip
+-- | @since 1.14.0
 module Plutarch.Builtin.Value (
   -- * Type
   PBuiltinValue (..),
@@ -25,15 +25,15 @@ import PlutusCore qualified as PLC
 
 {- | A builtin Plutus @Value@.
 
-@since wip
+@since 1.14.0
 -}
 newtype PBuiltinValue (s :: S) = PBuiltinValue (Term s POpaque)
   deriving stock
-    ( -- | @since wip
+    ( -- | @since 1.14.0
       Generic
     )
   deriving anyclass
-    ( -- | @since wip
+    ( -- | @since 1.14.0
       SOP.Generic
     )
 
@@ -56,7 +56,7 @@ except as follows:
 
 If given a currency name, or a token name, that isn't valid, this will error.
 
-@since wip
+@since 1.14.0
 -}
 pinsertCoin ::
   forall (s :: S).
@@ -79,7 +79,7 @@ entry, the result is @0@.
 If given a currency name, or token name, that isn't valid, this will produce
 @0@.
 
-@since wip
+@since 1.14.0
 -}
 plookupCoin ::
   forall (s :: S).
@@ -104,7 +104,7 @@ addition.
 signed integer. If any amount produced by this operation would fall outside
 of this range, this function will error.
 
-@since wip
+@since 1.14.0
 -}
 punionValue ::
   forall (s :: S).
@@ -124,7 +124,7 @@ punionValue = punsafeBuiltin PLC.UnionValue
 Neither argument can contain any negative entries. If either argument has a
 negative entry, this will error.
 
-@since wip
+@since 1.14.0
 -}
 pvalueContains ::
   forall (s :: S).
@@ -138,7 +138,7 @@ pvalueContains = punsafeBuiltin PLC.ValueContains
 
 {- | Converts a 'PBuiltinValue' into its @Data@ encoding.
 
-@since wip
+@since 1.14.0
 -}
 pvalueData ::
   forall (s :: S).
@@ -148,7 +148,7 @@ pvalueData = punsafeBuiltin PLC.ValueData
 {- | Converts a valid @Data@ encoding of a 'PBuiltinValue' into the
 'PBuiltinValue' it represents, and errors otherwise.
 
-@since wip
+@since 1.14.0
 -}
 punValueData ::
   forall (s :: S).
@@ -159,7 +159,7 @@ punValueData = punsafeBuiltin PLC.UnValueData
 all amounts multiplied by that scalar. Note that if the scalar is @0@, then
 the result will be an empty 'PBuiltinValue'.
 
-@since wip
+@since 1.14.0
 -}
 pscaleValue ::
   forall (s :: S).

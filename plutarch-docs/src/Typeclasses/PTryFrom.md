@@ -92,7 +92,7 @@ carries a `PSomething`, i.e. the type that has been proven equality for but with
 the excess type is just an empty `HRec`.
 
 In case of the recovered type being a record or anything that contains a record, the excess type is more interesting: 
-It contains an `HRec`, that has all the fields that have been recoverd and all *their* excess stored. If you recover a `PAsData (PDataRecord xs)` from `PData`, there is another field under the accessor `"unwrapped"` that contains the unwrapped record, which representation wise is just a `PBuiltinList
+It contains an `HRec`, that has all the fields that have been recovered and all *their* excess stored. If you recover a `PAsData (PDataRecord xs)` from `PData`, there is another field under the accessor `"unwrapped"` that contains the unwrapped record, which representation wise is just a `PBuiltinList
 PData`, of course. 
 
 Generally, when recovering a `PDataRecord`, the procedure is as follows

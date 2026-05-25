@@ -184,7 +184,7 @@ instance
   pfromDataImpl x = punsafeCoerce $ pasList # pforgetData x
   pdataImpl x = plistData # punsafeCoerce x
 
--- | @since wip
+-- | @since 1.14.0
 instance PIsData PBuiltinValue where
   pfromDataImpl d = punValueData # pforgetData d
   pdataImpl x = pvalueData # x

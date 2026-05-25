@@ -7,7 +7,6 @@ module Plutarch.Internal.Other (
   Flip,
 ) where
 
-import Control.Monad.State.Strict (evalStateT)
 import Data.Kind (Type)
 import Data.Text qualified as T
 import GHC.Generics (Generic)
@@ -43,7 +42,7 @@ printScript =
     mkNames ::
       UPLC.Term UPLC.NamedDeBruijn UPLC.DefaultUni UPLC.DefaultFun () ->
       UPLC.Term PLC.Name UPLC.DefaultUni UPLC.DefaultFun ()
-    mkNames t = case flip evalStateT UPLC.initSimplifierTrace . PLC.runQuoteT . UPLC.unDeBruijnTerm $ t of
+    mkNames t = case PLC.runQuoteT . UPLC.unDeBruijnTerm $ t of
       -- This is essentially impossible
       Left _ -> error "printScript: could not generate names. This should never happen."
       Right res -> res

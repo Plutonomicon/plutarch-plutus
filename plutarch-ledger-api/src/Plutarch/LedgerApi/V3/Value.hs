@@ -46,7 +46,7 @@ Thus, this module provides clearly labelled conversions, safe and unsafe, as
 well as some helper wrapper functions to make 'PBuiltinValue' easier to use
 with other types provided by @plutarch-ledger-api@.
 
-@since wip
+@since 3.7.0
 -}
 module Plutarch.LedgerApi.V3.Value (
   -- * Conversions
@@ -134,7 +134,7 @@ import PlutusCore.Value qualified as PlutusCore
 {- | Convert the @Data@ representation of a 'PMintValue' to a 'PBuiltinValue'.
 This is done via a builtin (thus efficient), and is safe.
 
-@since wip
+@since 3.7.0
 -}
 pfromMintValue ::
   forall (s :: S).
@@ -152,7 +152,7 @@ written in a continuation-passing style:
 
 This operation is slow, as it has to check the entire input.
 
-@since wip
+@since 3.7.0
 -}
 pfromRawValue ::
   forall (r :: S -> Type) (s :: S).
@@ -169,7 +169,7 @@ while not doing any checks.
 This is /not/ safe, and will error if any of the invariants of
 'PBuiltinValue' are violated. Use with care.
 
-@since wip
+@since 3.7.0
 -}
 punsafeFromRawValue ::
   forall (s :: S).
@@ -179,7 +179,7 @@ punsafeFromRawValue x = punValueData # pforgetData x
 {- | As 'pfromRawValue', except for 'PSortedValue's instead. This is more
 efficient, as we only need to check for the absence of zero amounts.
 
-@since wip
+@since 3.7.0
 -}
 pfromSortedValue ::
   forall (r :: S -> Type) (s :: S).
@@ -193,7 +193,7 @@ pfromSortedValue x whenFail whenSucceed =
 {- | As 'punsafeFromRawValue', except for 'PSortedValue's instead. The same
 caveats apply.
 
-@since wip
+@since 3.7.0
 -}
 punsafeFromSortedValue :: forall (s :: S). Term s (PAsData PSortedValue) -> Term s PBuiltinValue
 punsafeFromSortedValue x = punValueData # pforgetData x
@@ -203,7 +203,7 @@ punsafeFromSortedValue x = punValueData # pforgetData x
 
 If you need to convert to something less specific, use 'pupcast'.
 
-@since wip
+@since 3.7.0
 -}
 ptoSortedValue ::
   forall (s :: S).
@@ -214,7 +214,7 @@ ptoSortedValue v = punsafeCoerce $ pvalueData # v
 produce the second argument; otherwise, convert the 'PBuiltinValue' into a
 'PAsData' 'PLedgerValue' and call the third argument with it.
 
-@since wip
+@since 3.7.0
 -}
 ptoLedgerValue ::
   forall (r :: S -> Type) (s :: S).
@@ -229,7 +229,7 @@ ptoLedgerValue v whenInvalid whenValid =
 This is a costly operation, as it must be done /after/ conversion. Use with
 care.
 
-@since wip
+@since 3.7.0
 -}
 ptoLedgerValue' ::
   forall (s :: S).
@@ -241,7 +241,7 @@ ptoLedgerValue' v = punsafeCoerce $ pinsertAdaEntry # (pfromData . ptoSortedValu
 and the third argument is called with a 'PAsData' 'PMintValue' instead when
 appropriate.
 
-@since wip
+@since 3.7.0
 -}
 ptoMintValue ::
   forall (r :: S -> Type) (s :: S).
@@ -257,7 +257,7 @@ anything. Only use this if you are certain that the 'PBuiltinValue' does not
 violate any internal invariants of 'PLedgerValue'. In particular, there /must/
 be an Ada amount in the argument 'PMintValue'.
 
-@since wip
+@since 3.7.0
 -}
 punsafeToLedgerValue ::
   forall (s :: S).
@@ -269,7 +269,7 @@ anything. Only use this if you are certain that the 'PBuiltinValue' does not
 violate any internal invariants of 'PMintValue'. In particular, there should
 /not/ be an Ada amount in the argument 'PMintValue'.
 
-@since wip
+@since 3.7.0
 -}
 punsafeToMintValue ::
   forall (s :: S).
@@ -278,7 +278,7 @@ punsafeToMintValue v = punsafeCoerce $ pvalueData # v
 
 {- | The 'PBuiltinValue' without any amounts.
 
-@since wip
+@since 3.7.0
 -}
 pemptyBuiltinValue :: forall (s :: S). Term s PBuiltinValue
 pemptyBuiltinValue = pconstant PlutusCore.empty
@@ -287,7 +287,7 @@ pemptyBuiltinValue = pconstant PlutusCore.empty
 combination. If the 'PInteger' argument is @0@, this will be identical to
 'pemptyBuiltinValue'.
 
-@since wip
+@since 3.7.0
 -}
 psingletonBuiltinValue ::
   forall (s :: S).
@@ -301,7 +301,7 @@ store zero amounts, if this returns @0@, it means that no amount is
 associated with the given combination of 'PCurrencySymbol' and 'PTokenName'
 in this 'PBuiltinValue.
 
-@since wip
+@since 3.7.0
 -}
 pvalueOf ::
   forall (s :: S).
@@ -311,7 +311,7 @@ pvalueOf = phoistAcyclic $ plam $ \cs tn v ->
 
 {- | As 'pvalueOf', but for Lovelace specifically. The same caveats apply.
 
-@since wip
+@since 3.7.0
 -}
 plovelaceValueOf ::
   forall (s :: S).
@@ -329,7 +329,7 @@ A 'PBuiltinValue' cannot store an amount that would not fit into a 128-bit
 signed integer. This function will error if the result would be forced to
 store such an amount.
 
-@since wip
+@since 3.7.0
 -}
 preplaceAmountPositive ::
   forall (s :: S).
@@ -347,7 +347,7 @@ A 'PBuiltinValue' cannot store an amount that would not fit into a 128-bit
 signed integer. This function will error if the result would be forced to
 store such an amount.
 
-@since wip
+@since 3.7.0
 -}
 preplaceAmountNegative ::
   forall (s :: S).
@@ -359,7 +359,7 @@ preplaceAmountNegative = phoistAcyclic $ plam $ \cs tn amount v ->
 in the given 'PBuiltinValue'. If there is no such combination in the given
 'PBuiltinValue', this does nothing.
 
-@since wip
+@since 3.7.0
 -}
 pdeleteAmount ::
   forall (s :: S).

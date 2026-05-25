@@ -106,7 +106,7 @@ instance PValidateData PMintValue where
           perror
           x
 
--- | @since wip
+-- | @since 3.7.0
 deriving via
   DeriveDataPLiftable (PAsData PMintValue) PLA.MintValue
   instance

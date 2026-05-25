@@ -602,7 +602,7 @@ instance
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
 
--- | @since wip
+-- | @since 1.14.0
 deriving via
   (DeriveBuiltinPLiftable PBuiltinValue PlutusCore.Value)
   instance
