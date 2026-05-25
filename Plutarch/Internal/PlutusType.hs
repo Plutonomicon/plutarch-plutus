@@ -317,7 +317,7 @@ instance PlutusType (PArray a) where
   pcon' (PArray t) = t
   pmatch' x f = f (PArray x)
 
--- | @since wip
+-- | @since 1.14.0
 instance PlutusType PBuiltinValue where
   type PInner PBuiltinValue = PBuiltinValue
   pcon' (PBuiltinValue t) = punsafeCoerce t
