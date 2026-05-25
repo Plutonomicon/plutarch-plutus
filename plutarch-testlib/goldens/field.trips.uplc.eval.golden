@@ -1,35 +1,27 @@
-lam.tripSum program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        (\!0 ->
-           addInteger
-             (addInteger
-                (unIData (force headList !2))
-                (unIData (force headList !1)))
-             (unIData (force headList (force tailList !1))))
-          (force tailList !1))
-       (case (unConstrData !1) [(\!0 !0 -> !1)]))
-lam.getY program
-  1.1.0
-  (\!0 ->
-     force headList (force tailList (case (unConstrData !1) [(\!0 !0 -> !1)])))
-lam.tripYZ program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
+lam.tripSum \i-0 ->
+  (\i-1 ->
+     (\i-2 ->
         addInteger
-          (unIData (force headList !1))
-          (unIData (force headList (force tailList !1))))
-       (force tailList (case (unConstrData !1) [(\!0 !0 -> !1)])))
-tripSum.A program 1.1.0 1000
-tripSum.B program 1.1.0 100
-tripSum.C program 1.1.0 10
-tripYZ=tripZY program
-  1.1.0
-  (\!0 ->
-     (\!0 ->
-        addInteger
-          (unIData (force headList !1))
-          (unIData (force headList (force tailList !1))))
-       (force tailList (case (unConstrData !1) [(\!0 !0 -> !1)])))
+          (addInteger
+             (unIData (force headList i-1))
+             (unIData (force headList i-2)))
+          (unIData (force headList (force tailList i-2))))
+       (force tailList i-1))
+    (case (unConstrData i-0) [(\i-3 i-4 -> i-4)])
+lam.getY \i-0 ->
+  force headList (force tailList (case (unConstrData i-0) [(\i-1 i-2 -> i-2)]))
+lam.tripYZ \i-0 ->
+  (\i-1 ->
+     addInteger
+       (unIData (force headList i-1))
+       (unIData (force headList (force tailList i-1))))
+    (force tailList (case (unConstrData i-0) [(\i-2 i-3 -> i-3)]))
+tripSum.A 1000
+tripSum.B 100
+tripSum.C 10
+tripYZ=tripZY \i-0 ->
+  (\i-1 ->
+     addInteger
+       (unIData (force headList i-1))
+       (unIData (force headList (force tailList i-1))))
+    (force tailList (case (unConstrData i-0) [(\i-2 i-3 -> i-3)]))

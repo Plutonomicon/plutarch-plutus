@@ -337,8 +337,8 @@ pmatchDataRec (punsafeCoerce -> x) f = pgetInternalConfig $ \cfg -> unTermCont $
 
     record :: Term s (PBuiltinList PData) -> (PRec struct s -> Term s r) -> Term s r
     record ds = (unH $ SOP.para_SList (H $ \_ _ _ g -> g $ PRec Nil) go) 0 ds (0, ds)
-
-  pure $ record x f
+  let result = record x f
+  pure result
 
 newtype StructureHandler s r struct = StructureHandler
   { unSBR ::

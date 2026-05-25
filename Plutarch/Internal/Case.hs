@@ -28,8 +28,8 @@ punsafeCase ::
   Term s a ->
   [Term s POpaque] ->
   Term s b
-punsafeCase scrutinee handlers = Term $ \level -> do
-  TermResult rawScrutinee depsScrutinee <- asRawTerm scrutinee level
-  (rawHandlers, depsHandlers) <- fmap (unzipWith (\(TermResult x y) -> (x, y))) . traverse (`asRawTerm` level) $ handlers
+punsafeCase scrutinee handlers = Term $ do
+  TermResult rawScrutinee depsScrutinee <- asRawTerm scrutinee
+  (rawHandlers, depsHandlers) <- unzipWith (\(TermResult x y) -> (x, y)) <$> traverse asRawTerm handlers
   let allDeps = depsScrutinee <> mconcat depsHandlers
   pure . TermResult (RCase rawScrutinee rawHandlers) $ allDeps

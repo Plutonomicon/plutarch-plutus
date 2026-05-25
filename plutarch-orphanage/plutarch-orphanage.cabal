@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               plutarch-orphanage
-version:            1.2.0
+version:            1.3.0
 author:
   Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>
 
@@ -50,6 +50,7 @@ common lang
 library
   import:          lang
   exposed-modules:
+    PlutusCore.Value.Orphans
     PlutusLedgerApi.QuickCheck.Utils
     PlutusLedgerApi.V1.Orphans
     PlutusLedgerApi.V2.Orphans

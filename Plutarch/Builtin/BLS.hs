@@ -21,12 +21,15 @@ module Plutarch.Builtin.BLS (
   pbls12_381_millerLoop,
   pbls12_381_mulMlResult,
   pbls12_381_finalVerify,
+  pbls12_381_G1_multiScalarMul,
+  pbls12_381_G2_multiScalarMul,
 ) where
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
+import Plutarch.Builtin.Data (PBuiltinList)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Term (Term, punsafeBuiltin, punsafeConstantInternal, (:-->))
@@ -187,3 +190,33 @@ pbls12_381_mulMlResult = punsafeBuiltin PLC.Bls12_381_mulMlResult
 -}
 pbls12_381_finalVerify :: Term s (PBuiltinBLS12_381_MlResult :--> PBuiltinBLS12_381_MlResult :--> PBool)
 pbls12_381_finalVerify = punsafeBuiltin PLC.Bls12_381_finalVerify
+
+{- | See
+[CIP-133](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0133/README.md)
+for more information on how this function works.
+
+@since 1.14.0
+-}
+pbls12_381_G1_multiScalarMul ::
+  Term
+    s
+    ( PBuiltinList PInteger
+        :--> PBuiltinList PBuiltinBLS12_381_G1_Element
+        :--> PBuiltinBLS12_381_G1_Element
+    )
+pbls12_381_G1_multiScalarMul = punsafeBuiltin PLC.Bls12_381_G1_multiScalarMul
+
+{- | See
+[CIP-133](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0133/README.md)
+for more information on how this function works.
+
+@since 1.14.0
+-}
+pbls12_381_G2_multiScalarMul ::
+  Term
+    s
+    ( PBuiltinList PInteger
+        :--> PBuiltinList PBuiltinBLS12_381_G2_Element
+        :--> PBuiltinBLS12_381_G2_Element
+    )
+pbls12_381_G2_multiScalarMul = punsafeBuiltin PLC.Bls12_381_G2_multiScalarMul

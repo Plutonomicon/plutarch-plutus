@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-ledger-api
-version:       3.6.0
+version:       3.7.0
 
 common common-lang
   default-language:   Haskell2010
@@ -53,6 +53,7 @@ library
     Plutarch.LedgerApi.V2
     Plutarch.LedgerApi.V3
     Plutarch.LedgerApi.V3.Contexts
+    Plutarch.LedgerApi.V3.Value
     Plutarch.LedgerApi.Value
 
   other-modules:

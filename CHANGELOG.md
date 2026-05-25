@@ -2,6 +2,22 @@
 
 # UNRELEASED
 
+# 1.14.0 -- 26-05-2026
+
+## Added
+
+* `PBuiltinValue`, and bindings to primitive functions for this
+* Support for CIP-133 multi-scalar multiplications of BLS primitives
+
+## Changed
+
+* Bump `plutus-core` to 1.64.0.0
+* `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
+
+## Removed 
+
+* Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for anything (though the `findAllPlaceholders` version is)
+
 # 1.13.0 -- 04-03-2026
 
 ## Added

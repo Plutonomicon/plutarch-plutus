@@ -46,6 +46,7 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque (POpaque), popaque)
 import Plutarch.Builtin.String (PString, ptraceInfo)
 import Plutarch.Builtin.Unit (PUnit (PUnit), punit)
+import Plutarch.Builtin.Value (PBuiltinValue (PBuiltinValue))
 import Plutarch.Internal.Case (punsafeCase)
 import Plutarch.Internal.PLam (plam)
 
@@ -315,3 +316,9 @@ instance PlutusType (PArray a) where
   type PInner (PArray a) = PArray a
   pcon' (PArray t) = t
   pmatch' x f = f (PArray x)
+
+-- | @since 1.14.0
+instance PlutusType PBuiltinValue where
+  type PInner PBuiltinValue = PBuiltinValue
+  pcon' (PBuiltinValue t) = punsafeCoerce t
+  pmatch' x f = f (PBuiltinValue (punsafeCoerce x))

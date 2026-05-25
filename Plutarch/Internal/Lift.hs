@@ -69,6 +69,7 @@ import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque, popaque)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Builtin.Value (PBuiltinValue)
 import Plutarch.Internal.Evaluate (evalScriptHuge)
 import {-# SOURCE #-} Plutarch.Internal.IsData (PIsData)
 import Plutarch.Internal.PlutusType (DeriveFakePlutusType (DeriveFakePlutusType), PlutusType (PInner))
@@ -93,6 +94,7 @@ import PlutusCore.Builtin (
 import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS12_381.G1
 import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS12_381.G2
 import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS12_381.Pairing
+import PlutusCore.Value as PlutusCore
 import PlutusTx qualified as PTx
 import Universe (Includes)
 import UntypedPlutusCore qualified as UPLC
@@ -269,11 +271,12 @@ plift t = case plutToRepr @a $ mkPLifted t of
                OtherLiftError err -> "other error: " <> Text.unpack err
            )
   Right res -> case reprToHask @a res of
-    Left _ ->
+    Left _err ->
       -- FIXME
       error $
         "plift failed: "
           <> "Plutus representation does not correspond to a Haskell value"
+    -- <> "\n  error message: " <> show err
     Right res' -> res'
 
 {- | @via@-deriving helper, indicating that @a@ has a Haskell-level equivalent
@@ -598,3 +601,9 @@ instance
   reprToPlut = reprToPlutUni
   {-# INLINEABLE plutToRepr #-}
   plutToRepr = plutToReprUni
+
+-- | @since 1.14.0
+deriving via
+  (DeriveBuiltinPLiftable PBuiltinValue PlutusCore.Value)
+  instance
+    PLiftable PBuiltinValue

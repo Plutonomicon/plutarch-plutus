@@ -1,72 +1,68 @@
-add1 program 1.1.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
-add1Hoisted program 1.1.0 (\!0 !0 -> addInteger (addInteger !2 !1) 1)
-example1 program 1.1.0 55
-example2 program
-  1.1.0
-  (\!0 -> case !1 [(\!0 -> addInteger !1 1), (\!0 -> subtractInteger !1 1)])
-fib.lam program
-  1.1.0
-  (\!0 ->
-     case
-       (equalsInteger !1 0)
-       [ (case
-            (equalsInteger !1 1)
-            [ (addInteger
-                 ((\!0 ->
-                     (\!0 ->
-                        (\!0 !0 ->
-                           case
-                             (equalsInteger !1 0)
-                             [ (case
-                                  (equalsInteger !1 1)
-                                  [ (addInteger
-                                       (!2 (subtractInteger !1 1))
-                                       (!2 (subtractInteger !1 2)))
-                                  , 1 ])
-                             , 0 ])
-                          (\!0 -> !2 !2 !1))
-                       (\!0 ->
-                          (\!0 !0 ->
-                             case
-                               (equalsInteger !1 0)
-                               [ (case
-                                    (equalsInteger !1 1)
-                                    [ (addInteger
-                                         (!2 (subtractInteger !1 1))
-                                         (!2 (subtractInteger !1 2)))
-                                    , 1 ])
-                               , 0 ])
-                            (\!0 -> !2 !2 !1))
-                       !1)
-                    (subtractInteger !1 1))
-                 ((\!0 ->
-                     (\!0 ->
-                        (\!0 !0 ->
-                           case
-                             (equalsInteger !1 0)
-                             [ (case
-                                  (equalsInteger !1 1)
-                                  [ (addInteger
-                                       (!2 (subtractInteger !1 1))
-                                       (!2 (subtractInteger !1 2)))
-                                  , 1 ])
-                             , 0 ])
-                          (\!0 -> !2 !2 !1))
-                       (\!0 ->
-                          (\!0 !0 ->
-                             case
-                               (equalsInteger !1 0)
-                               [ (case
-                                    (equalsInteger !1 1)
-                                    [ (addInteger
-                                         (!2 (subtractInteger !1 1))
-                                         (!2 (subtractInteger !1 2)))
-                                    , 1 ])
-                               , 0 ])
-                            (\!0 -> !2 !2 !1))
-                       !1)
-                    (subtractInteger !1 2)))
-            , 1 ])
-       , 0 ])
-fib.app.9 program 1.1.0 34
-uglyDouble program 1.1.0 (\!0 -> addInteger !1 !1)
+add1 \i-0 i-1 -> addInteger (addInteger i-0 i-1) 1
+add1Hoisted \i-0 i-1 -> addInteger (addInteger i-0 i-1) 1
+example1 55
+example2 \i-0 -> case i-0 [(\i-1 -> addInteger i-1 1), (\i-2 -> subtractInteger i-2 1)]
+fib.lam \i-0 ->
+  case
+    (equalsInteger i-0 0)
+    [ (case
+         (equalsInteger i-0 1)
+         [ (addInteger
+              ((\i-1 ->
+                  (\i-2 ->
+                     (\i-3 i-4 ->
+                        case
+                          (equalsInteger i-4 0)
+                          [ (case
+                               (equalsInteger i-4 1)
+                               [ (addInteger
+                                    (i-3 (subtractInteger i-4 1))
+                                    (i-3 (subtractInteger i-4 2)))
+                               , 1 ])
+                          , 0 ])
+                       (\i-5 -> i-2 i-2 i-5))
+                    (\i-6 ->
+                       (\i-7 i-8 ->
+                          case
+                            (equalsInteger i-8 0)
+                            [ (case
+                                 (equalsInteger i-8 1)
+                                 [ (addInteger
+                                      (i-7 (subtractInteger i-8 1))
+                                      (i-7 (subtractInteger i-8 2)))
+                                 , 1 ])
+                            , 0 ])
+                         (\i-9 -> i-6 i-6 i-9))
+                    i-1)
+                 (subtractInteger i-0 1))
+              ((\i-10 ->
+                  (\i-11 ->
+                     (\i-12 i-13 ->
+                        case
+                          (equalsInteger i-13 0)
+                          [ (case
+                               (equalsInteger i-13 1)
+                               [ (addInteger
+                                    (i-12 (subtractInteger i-13 1))
+                                    (i-12 (subtractInteger i-13 2)))
+                               , 1 ])
+                          , 0 ])
+                       (\i-14 -> i-11 i-11 i-14))
+                    (\i-15 ->
+                       (\i-16 i-17 ->
+                          case
+                            (equalsInteger i-17 0)
+                            [ (case
+                                 (equalsInteger i-17 1)
+                                 [ (addInteger
+                                      (i-16 (subtractInteger i-17 1))
+                                      (i-16 (subtractInteger i-17 2)))
+                                 , 1 ])
+                            , 0 ])
+                         (\i-18 -> i-15 i-15 i-18))
+                    i-10)
+                 (subtractInteger i-0 2)))
+         , 1 ])
+    , 0 ]
+fib.app.9 34
+uglyDouble \i-0 -> addInteger i-0 i-0

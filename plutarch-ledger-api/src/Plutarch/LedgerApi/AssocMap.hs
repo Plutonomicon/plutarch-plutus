@@ -23,7 +23,6 @@ module Plutarch.LedgerApi.AssocMap (
   psortedMapFromFoldable,
 
   -- ** Transformation
-  passertSorted,
   ppromoteToSortedMap,
   punsafeCoerceToSortedMap,
   pforgetSorted,
@@ -407,16 +406,15 @@ psortedMapFromFoldable = foldl' go pempty
 that the keys in the input map are in strictly ascending order and fails with
 an error if they are not. Duplicate keys are not allowed.
 
-@since 2.0.0
+@since 3.6.0
 -}
-{-# DEPRECATED passertSorted "Use ppromoteToSortedMap instead" #-}
-passertSorted ::
+ppromoteToSortedMap ::
   forall (k :: S -> Type) (v :: S -> Type) (s :: S).
   ( POrd k
   , PIsData k
   ) =>
   Term s (PUnsortedMap k v :--> PSortedMap k v)
-passertSorted =
+ppromoteToSortedMap =
   let _ = witness (Proxy :: Proxy (k ~ k))
    in phoistAcyclic $
         plam $ \m ->
@@ -435,20 +433,6 @@ passertSorted =
             (const . plam . const . punsafeDowncast $ pto m)
             # pto (pto m)
             # plam (const $ pcon PFalse)
-
-{- | Attempt to promote `PUnsortedMap` to `PSortedMap`. This function checks
-that the keys in the input map are in strictly ascending order and fails with
-an error if they are not. Duplicate keys are not allowed.
-
-@since 3.6.0
--}
-ppromoteToSortedMap ::
-  forall (k :: S -> Type) (v :: S -> Type) (s :: S).
-  ( POrd k
-  , PIsData k
-  ) =>
-  Term s (PUnsortedMap k v :--> PSortedMap k v)
-ppromoteToSortedMap = passertSorted
 
 {- | Coerce 'PUnsortedMap' to 'PSortedMap'. Unsafe.
 

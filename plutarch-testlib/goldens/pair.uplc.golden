@@ -1,64 +1,56 @@
-eq.true program
-  1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         case
-           !2
-           [ (\!0 !0 ->
-                case
-                  !3
-                  [ (\!0 !0 ->
-                       force
-                         ((\!0 !0 -> delay (case !2 [!2, (force !1)]))
-                            (equalsInteger !4 !2)
-                            (delay (equalsString !3 !1)))) ]) ])
-        (constr 0 [42, !1])
-        (constr 0 [42, !1]))
-     "Hello")
-eq.false.fst program
-  1.1.0
-  ((\!0 ->
-      (\!0 !0 ->
-         case
-           !2
-           [ (\!0 !0 ->
-                case
-                  !3
-                  [ (\!0 !0 ->
-                       force
-                         ((\!0 !0 -> delay (case !2 [!2, (force !1)]))
-                            (equalsInteger !4 !2)
-                            (delay (equalsString !3 !1)))) ]) ])
-        (constr 0 [42, !1])
-        (constr 0 [24, !1]))
-     "Hello")
-eq.false.snd program
-  1.1.0
-  ((\!0 !0 ->
+eq.true (\i-0 ->
+   (\i-1 i-2 ->
       case
-        !2
-        [ (\!0 !0 ->
+        i-1
+        [ (\i-3 i-4 ->
              case
-               !3
-               [ (\!0 !0 ->
+               i-2
+               [ (\i-5 i-6 ->
                     force
-                      ((\!0 !0 -> delay (case !2 [!2, (force !1)]))
-                         (equalsInteger !4 !2)
-                         (delay (equalsString !3 !1)))) ]) ])
-     (constr 0 [42, "Hello"])
-     (constr 0 [42, "World"]))
-eq.false.both program
-  1.1.0
-  ((\!0 !0 ->
+                      ((\i-7 i-8 -> delay (case i-7 [i-7, (force i-8)]))
+                         (equalsInteger i-3 i-5)
+                         (delay (equalsString i-4 i-6)))) ]) ])
+     (constr 0 [42, i-0])
+     (constr 0 [42, i-0]))
+  "Hello"
+eq.false.fst (\i-0 ->
+   (\i-1 i-2 ->
       case
-        !2
-        [ (\!0 !0 ->
+        i-1
+        [ (\i-3 i-4 ->
              case
-               !3
-               [ (\!0 !0 ->
+               i-2
+               [ (\i-5 i-6 ->
                     force
-                      ((\!0 !0 -> delay (case !2 [!2, (force !1)]))
-                         (equalsInteger !4 !2)
-                         (delay (equalsString !3 !1)))) ]) ])
-     (constr 0 [42, "Hello"])
-     (constr 0 [24, "World"]))
+                      ((\i-7 i-8 -> delay (case i-7 [i-7, (force i-8)]))
+                         (equalsInteger i-3 i-5)
+                         (delay (equalsString i-4 i-6)))) ]) ])
+     (constr 0 [42, i-0])
+     (constr 0 [24, i-0]))
+  "Hello"
+eq.false.snd (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 i-3 ->
+          case
+            i-1
+            [ (\i-4 i-5 ->
+                 force
+                   ((\i-6 i-7 -> delay (case i-6 [i-6, (force i-7)]))
+                      (equalsInteger i-2 i-4)
+                      (delay (equalsString i-3 i-5)))) ]) ])
+  (constr 0 [42, "Hello"])
+  (constr 0 [42, "World"])
+eq.false.both (\i-0 i-1 ->
+   case
+     i-0
+     [ (\i-2 i-3 ->
+          case
+            i-1
+            [ (\i-4 i-5 ->
+                 force
+                   ((\i-6 i-7 -> delay (case i-6 [i-6, (force i-7)]))
+                      (equalsInteger i-2 i-4)
+                      (delay (equalsString i-3 i-5)))) ]) ])
+  (constr 0 [42, "Hello"])
+  (constr 0 [24, "World"])

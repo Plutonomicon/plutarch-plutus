@@ -1,41 +1,35 @@
-newtype program
-  1.1.0
-  ((\!0 -> (\!0 -> !2) (unBData !1))
-     (B #646561646265656664656164626565666465616462656566))
-record program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
+newtype (\i-0 -> (\i-1 -> i-0) (unBData i-0))
+  (B #646561646265656664656164626565666465616462656566)
+record (\i-0 ->
+   (\i-1 ->
+      case
+        i-1
+        [ (\i-2 i-3 ->
+             (\i-4 ->
+                case
+                  i-3
+                  [ (\i-5 i-6 ->
+                       (\i-7 -> (\i-8 -> i-0) (unIData (force headList i-6)))
+                         (unIData i-5)) ])
+               (unBData i-2)) ])
+     (unListData i-0))
+  (List [B #646561646265656664656164626565666465616462656566, I 42, I 42])
+sum (\i-0 ->
+   (\i-1 ->
+      (\i-2 ->
          case
-           !1
-           [ (\!0 !0 ->
-                (\!0 ->
-                   case
-                     !2
-                     [ (\!0 !0 ->
-                          (\!0 -> (\!0 -> !9) (unIData (force headList !2)))
-                            (unIData !2)) ])
-                  (unBData !2)) ])
-        (unListData !1))
-     (List [B #646561646265656664656164626565666465616462656566, I 42, I 42]))
-sum program
-  1.1.0
-  ((\!0 ->
-      (\!0 ->
-         (\!0 ->
-            case
-              !1
-              [ (\!0 !0 ->
-                   case
-                     !2
-                     [ ((\!0 -> !6) (unBData (!4 !1)))
-                     , ((\!0 -> !6) (unIData (!4 !1)))
-                     , (case
-                          !1
-                          [ (\!0 !0 ->
-                               (\!0 -> (\!0 -> !9) (unIData (!7 !2)))
-                                 (unBData !2)) ]) ]) ])
-           (unConstrData !2))
-        (force headList))
-     (Constr 2 [B #646561646265656664656164626565666465616462656566, I 42]))
-tag program 1.1.0 ((\!0 -> case (unIData !1) [!1, !1, !1]) (I 2))
+           i-2
+           [ (\i-3 i-4 ->
+                case
+                  i-3
+                  [ ((\i-5 -> i-0) (unBData (i-1 i-4)))
+                  , ((\i-6 -> i-0) (unIData (i-1 i-4)))
+                  , (case
+                       i-4
+                       [ (\i-7 i-8 ->
+                            (\i-9 -> (\i-10 -> i-0) (unIData (i-1 i-8)))
+                              (unBData i-7)) ]) ]) ])
+        (unConstrData i-0))
+     (force headList))
+  (Constr 2 [B #646561646265656664656164626565666465616462656566, I 42])
+tag (\i-0 -> case (unIData i-0) [i-0, i-0, i-0]) (I 2)

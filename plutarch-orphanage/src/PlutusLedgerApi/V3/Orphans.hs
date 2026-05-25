@@ -8,6 +8,7 @@ import Data.ByteString qualified as BS
 import Data.Coerce (coerce)
 import Data.Kind (Type)
 import Data.Set qualified as Set
+import PlutusCore.Value.Orphans ()
 import PlutusLedgerApi.Orphans.Common (
   Blake2b256Hash (Blake2b256Hash),
   getBlake2b244Hash,
