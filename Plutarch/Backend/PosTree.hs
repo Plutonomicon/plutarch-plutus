@@ -12,8 +12,11 @@ import Data.Vector.NonEmpty qualified as NEVector
 data PosTree
   = PHere
   | POne PosTree
+  | PLeft PosTree
+  | PRight PosTree
+  | PBoth PosTree PosTree
   | PMany (Vector (Maybe PosTree))
-  | PApply (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
+  | PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
   | PLet (Maybe PosTree) (Maybe PosTree)
   deriving stock (Show, Eq)
 
@@ -21,12 +24,15 @@ isLinear :: PosTree -> Bool
 isLinear = \case
   PHere -> True
   POne t -> isLinear t
+  PLeft t -> isLinear t
+  PRight t -> isLinear t
+  PBoth _ _ -> False
   PMany ts -> case Vector.uncons ts of
     Nothing -> True
     Just (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
       Nothing -> False -- impossible
       Just linearity -> linearity
-  PApply t ts -> case fmap isLinear t of
+  PCase t ts -> case fmap isLinear t of
     Nothing -> case NEVector.uncons ts of
       (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
         Nothing -> False -- impossible

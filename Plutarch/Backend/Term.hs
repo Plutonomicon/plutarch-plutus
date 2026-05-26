@@ -33,10 +33,18 @@ import Control.Monad.RWS.CPS (
  )
 import Data.Kind (Type)
 import Data.Text (Text)
-import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import GHC.Stack (CallStack, HasCallStack, callStack)
-import Plutarch.Backend.PosTree (PosTree (PApply, PHere, PLet, POne))
+import Plutarch.Backend.PosTree (
+  PosTree (
+    PBoth,
+    PHere,
+    PLeft,
+    PLet,
+    POne,
+    PRight
+  ),
+ )
 import Plutarch.Backend.RawTerm (
   RawTerm (
     RApply,
@@ -95,9 +103,7 @@ plam' f = Term $ do
   let vm = getRawTermAnn t
   let (mpt, vm') = vmDelete fresh vm
   let vmExtended = vmMap POne vm'
-  pure $ case t of
-    RLamAbs _ paramTrees t' -> RLamAbs vmExtended (NEVector.cons mpt paramTrees) t'
-    _ -> RLamAbs vmExtended (NEVector.singleton mpt) t
+  pure . RLamAbs vmExtended mpt $ t
 
 plet ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -148,22 +154,14 @@ papp f x = Term $ do
   let fvm = getRawTermAnn ft
   xt <- asRawTerm x
   let xvm = getRawTermAnn xt
-  let fvmExtended = vmMap (\pt -> PApply (Just pt) (NEVector.singleton Nothing)) fvm
-  let xvmExtended = vmMap (PApply Nothing . NEVector.singleton . Just) xvm
-  pure $ case ft of
-    RApply _ func args ->
-      let merged = vmMerge mergeExtend fvmExtended xvmExtended
-       in RApply merged func . NEVector.snoc args $ xt
-    _ ->
-      let merged = vmMerge mergeApply fvmExtended xvmExtended
-       in RApply merged ft . NEVector.singleton $ xt
+  let fvmExtended = vmMap PLeft fvm
+  let xvmExtended = vmMap PRight xvm
+  let merged = vmMerge mergeApply fvmExtended xvmExtended
+  pure . RApply merged ft $ xt
   where
     mergeApply :: PosTree -> PosTree -> PosTree
-    mergeApply (PApply f1 xs1) (PApply f2 xs2) = PApply (f1 <|> f2) (NEVector.zipWith (<|>) xs1 xs2)
+    mergeApply (PLeft t1) (PRight t2) = PBoth t1 t2
     mergeApply x _ = x
-    mergeExtend :: PosTree -> PosTree -> PosTree
-    mergeExtend (PApply f1 xs1) (PApply f2 xs2) = PApply (f1 <|> f2) (xs1 <> xs2)
-    mergeExtend x _ = x
 
 pdelay ::
   forall (a :: S -> Type) (s :: S).

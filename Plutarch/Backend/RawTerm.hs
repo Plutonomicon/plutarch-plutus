@@ -21,8 +21,8 @@ data VarTag
 
 data RawTerm (ann :: Type)
   = RVar ann VarTag
-  | RLamAbs ann (NonEmptyVector (Maybe PosTree)) (RawTerm ann)
-  | RApply ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
+  | RLamAbs ann (Maybe PosTree) (RawTerm ann)
+  | RApply ann (RawTerm ann) (RawTerm ann)
   | RForce ann (RawTerm ann)
   | RDelay ann (RawTerm ann)
   | RConstant ann (Some (ValueOf PLC.DefaultUni))
