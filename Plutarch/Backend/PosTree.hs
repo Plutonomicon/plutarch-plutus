@@ -4,6 +4,7 @@ module Plutarch.Backend.PosTree (
 ) where
 
 import Data.Foldable (sequenceA_)
+import Data.These (These (That, These, This))
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
@@ -12,21 +13,19 @@ import Data.Vector.NonEmpty qualified as NEVector
 data PosTree
   = PHere
   | POne PosTree
-  | PLeft PosTree
-  | PRight PosTree
-  | PBoth PosTree PosTree
+  | PTwo (These PosTree PosTree)
   | PMany (Vector (Maybe PosTree))
   | PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
-  | PLet (Maybe PosTree) (Maybe PosTree)
   deriving stock (Show, Eq)
 
 isLinear :: PosTree -> Bool
 isLinear = \case
   PHere -> True
   POne t -> isLinear t
-  PLeft t -> isLinear t
-  PRight t -> isLinear t
-  PBoth _ _ -> False
+  PTwo ts -> case ts of
+    This t -> isLinear t
+    That t -> isLinear t
+    These _ _ -> False
   PMany ts -> case Vector.uncons ts of
     Nothing -> True
     Just (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
@@ -39,13 +38,6 @@ isLinear = \case
         Just linearity -> linearity
     Just tLinearity -> case sequenceA_ ts of
       Nothing -> tLinearity
-      Just _ -> False
-  PLet t1 t2 -> case fmap isLinear t1 of
-    Nothing -> case fmap isLinear t2 of
-      Nothing -> False -- impossible
-      Just t2Linearity -> t2Linearity
-    Just t1Linearity -> case fmap isLinear t2 of
-      Nothing -> t1Linearity
       Just _ -> False
   where
     go :: Maybe Bool -> Maybe PosTree -> Maybe Bool

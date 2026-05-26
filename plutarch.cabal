@@ -175,5 +175,6 @@ library
     , random
     , semialign
     , sop-core
+    , these
     , unordered-containers
     , vector

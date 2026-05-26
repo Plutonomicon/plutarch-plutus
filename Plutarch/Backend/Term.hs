@@ -23,7 +23,6 @@ module Plutarch.Backend.Term (
   pfix,
 ) where
 
-import Control.Applicative ((<|>))
 import Control.Monad.Except (ExceptT, throwError)
 import Control.Monad.RWS.CPS (
   MonadState,
@@ -33,16 +32,14 @@ import Control.Monad.RWS.CPS (
  )
 import Data.Kind (Type)
 import Data.Text (Text)
+import Data.These (These (That, These, This))
 import Data.Word (Word64)
 import GHC.Stack (CallStack, HasCallStack, callStack)
 import Plutarch.Backend.PosTree (
   PosTree (
-    PBoth,
     PHere,
-    PLeft,
-    PLet,
     POne,
-    PRight
+    PTwo
   ),
  )
 import Plutarch.Backend.RawTerm (
@@ -60,7 +57,6 @@ import Plutarch.Backend.RawTerm (
     RVar
   ),
   VarTag (Argument, LetBinding, Self),
-  getRawTermAnn,
  )
 import Plutarch.Backend.VarMap (
   VarMap,
@@ -82,7 +78,7 @@ data TermError
   | UserSpecified CallStack Text
 
 newtype Term (s :: S) (a :: S -> Type)
-  = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (RawTerm VarMap)}
+  = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
 type role Term nominal nominal
 
@@ -98,32 +94,24 @@ plam' ::
   (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ do
   fresh <- freshAndIncrement
-  let varTerm = Term . pure . RVar (vmSingleton fresh PHere) $ Argument
-  t <- asRawTerm (f varTerm)
-  let vm = getRawTermAnn t
+  let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Argument)
+  (vm, t) <- asRawTerm (f varTerm)
   let (mpt, vm') = vmDelete fresh vm
-  let vmExtended = vmMap POne vm'
-  pure . RLamAbs vmExtended mpt $ t
+  pure (vmMap POne vm', RLamAbs () mpt t)
 
 plet ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ do
   fresh <- freshAndIncrement
-  let varTerm = Term . pure . RVar (vmSingleton fresh PHere) $ LetBinding
-  ft <- asRawTerm (f varTerm)
-  let fvm = getRawTermAnn ft
-  vt <- asRawTerm v
-  let vvm = getRawTermAnn vt
+  let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () LetBinding)
+  (fvm, ft) <- asRawTerm (f varTerm)
+  (vvm, vt) <- asRawTerm v
   let (fpt, fvm') = vmDelete fresh fvm
-  let fvmExtended = vmMap (PLet Nothing . Just) fvm'
-  let vvmExtended = vmMap (\pt -> PLet (Just pt) Nothing) vvm
-  let vm = vmMerge mergeLet fvmExtended vvmExtended
-  pure . RLet vm fpt vt $ ft
-  where
-    mergeLet :: PosTree -> PosTree -> PosTree
-    mergeLet (PLet v1 f1) (PLet v2 f2) = PLet (v1 <|> v2) (f1 <|> f2)
-    mergeLet x _ = x
+  let fvmExtended = vmMap (PTwo . This) fvm'
+  let vvmExtended = vmMap (PTwo . That) vvm
+  let vm = vmMerge mergeTwo fvmExtended vvmExtended
+  pure (vm, RLet () fpt vt ft)
 
 pfix ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -131,15 +119,12 @@ pfix ::
   Term s (a :--> b)
 pfix f = Term $ do
   fresh <- freshAndIncrement
-  let varTerm = Term . pure . RVar (vmSingleton fresh PHere) $ Self
-  t <- asRawTerm (f varTerm)
-  let vm = getRawTermAnn t
+  let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Self)
+  (vm, t) <- asRawTerm (f varTerm)
   let (mpt, vm') = vmDelete fresh vm
   case mpt of
     Nothing -> throwError UnusedSelfArgument
-    Just pt -> do
-      let vmExtended = vmMap POne vm'
-      pure . RFix vmExtended pt $ t
+    Just pt -> pure (vmMap POne vm', RFix () pt t)
 
 pthrow ::
   forall (a :: S -> Type) (s :: S).
@@ -150,42 +135,34 @@ papp ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s (a :--> b) -> Term s a -> Term s b
 papp f x = Term $ do
-  ft <- asRawTerm f
-  let fvm = getRawTermAnn ft
-  xt <- asRawTerm x
-  let xvm = getRawTermAnn xt
-  let fvmExtended = vmMap PLeft fvm
-  let xvmExtended = vmMap PRight xvm
-  let merged = vmMerge mergeApply fvmExtended xvmExtended
-  pure . RApply merged ft $ xt
-  where
-    mergeApply :: PosTree -> PosTree -> PosTree
-    mergeApply (PLeft t1) (PRight t2) = PBoth t1 t2
-    mergeApply x _ = x
+  (fvm, ft) <- asRawTerm f
+  (xvm, xt) <- asRawTerm x
+  let fvmExtended = vmMap (PTwo . This) fvm
+  let xvmExtended = vmMap (PTwo . That) xvm
+  let merged = vmMerge mergeTwo fvmExtended xvmExtended
+  pure (merged, RApply () ft xt)
 
 pdelay ::
   forall (a :: S -> Type) (s :: S).
   Term s a -> Term s (PDelayed a)
 pdelay t = Term $ do
-  t' <- asRawTerm t
-  let vm = getRawTermAnn t'
-  pure . RDelay (vmMap POne vm) $ t'
+  (vm, t') <- asRawTerm t
+  pure (vmMap POne vm, RDelay () t')
 
 pforce ::
   forall (a :: S -> Type) (s :: S).
   Term s (PDelayed a) -> Term s a
 pforce t = Term $ do
-  t' <- asRawTerm t
-  let vm = getRawTermAnn t'
-  pure . RForce (vmMap POne vm) $ t'
+  (vm, t') <- asRawTerm t
+  pure (vmMap POne vm, RForce () t')
 
 perror :: forall (a :: S -> Type) (s :: S). Term s a
-perror = Term . pure . RError $ vmEmpty
+perror = Term . pure $ (vmEmpty, RError ())
 
 pplaceholder ::
   forall (a :: S -> Type) (s :: S).
   Integer -> Term s a
-pplaceholder = Term . pure . RPlaceholder vmEmpty
+pplaceholder i = Term . pure $ (vmEmpty, RPlaceholder () i)
 
 punsafeCoerce ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
@@ -195,14 +172,18 @@ punsafeCoerce = Term . asRawTerm
 punsafeBuiltin ::
   forall (a :: S -> Type) (s :: S).
   PLC.DefaultFun -> Term s a
-punsafeBuiltin = Term . pure . RBuiltin vmEmpty
+punsafeBuiltin f = Term . pure $ (vmEmpty, RBuiltin () f)
 
 punsafeConstantInternal ::
   forall (a :: S -> Type) (s :: S).
   Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal = Term . pure . RConstant vmEmpty
+punsafeConstantInternal c = Term . pure $ (vmEmpty, RConstant () c)
 
 -- Helpers
+
+mergeTwo :: PosTree -> PosTree -> PosTree
+mergeTwo (PTwo (This t1)) (PTwo (That t2)) = PTwo . These t1 $ t2
+mergeTwo x _ = x
 
 freshAndIncrement ::
   forall (m :: Type -> Type) (a :: Type).
