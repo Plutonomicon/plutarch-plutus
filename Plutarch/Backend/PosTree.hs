@@ -15,7 +15,7 @@ data PosTree
   | POne PosTree
   | PTwo (These PosTree PosTree)
   | PMany (Vector (Maybe PosTree))
-  | PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
+  | PApplyCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
   deriving stock (Show, Eq)
 
 isLinear :: PosTree -> Bool
@@ -31,7 +31,7 @@ isLinear = \case
     Just (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
       Nothing -> False -- impossible
       Just linearity -> linearity
-  PCase t ts -> case fmap isLinear t of
+  PApplyCase t ts -> case fmap isLinear t of
     Nothing -> case NEVector.uncons ts of
       (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
         Nothing -> False -- impossible
