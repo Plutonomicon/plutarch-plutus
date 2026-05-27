@@ -108,8 +108,14 @@ plam' f = Term $ do
   fresh <- freshAndIncrement
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Argument)
   (vm, t) <- asRawTerm (f varTerm)
-  let (mpt, vm') = vmDelete fresh vm
-  pure (vmMap POne vm', RLamAbs () mpt t)
+  case t of
+    RLamAbs () paramTrees body -> do
+      let vmPeeled = vmMap (\case POne t -> t; x -> x) vm
+      let (mpt, vm') = vmDelete fresh vmPeeled
+      pure (vmMap POne vm', RLamAbs () (NEVector.cons mpt paramTrees) body)
+    _ -> do
+      let (mpt, vm') = vmDelete fresh vm
+      pure (vmMap POne vm', RLamAbs () (NEVector.singleton mpt) t)
 
 plet ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).

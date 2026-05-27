@@ -22,7 +22,7 @@ isLinear :: PosTree -> Bool
 isLinear = \case
   PHere -> True
   POne t -> isLinear t
-  PTwo ts -> case ts of
+  PTwo these -> case these of
     This t -> isLinear t
     That t -> isLinear t
     These _ _ -> False
