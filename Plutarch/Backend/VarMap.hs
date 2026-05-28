@@ -1,3 +1,5 @@
+{-# LANGUAGE NoPartialTypeSignatures #-}
+
 module Plutarch.Backend.VarMap (
   VarMap,
   vmEmpty,
@@ -5,8 +7,11 @@ module Plutarch.Backend.VarMap (
   vmDelete,
   vmMap,
   vmMerge,
+  vmMergeM,
 ) where
 
+import Data.Kind (Type)
+import Data.Map.Merge.Strict (WhenMatched, mergeA, preserveMissing)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Word (Word64)
@@ -30,3 +35,10 @@ vmMap f (VarMap m) = VarMap . fmap f $ m
 
 vmMerge :: (PosTree -> PosTree -> PosTree) -> VarMap -> VarMap -> VarMap
 vmMerge f (VarMap m1) (VarMap m2) = VarMap . Map.unionWith f m1 $ m2
+
+vmMergeM ::
+  forall (f :: Type -> Type).
+  Applicative f =>
+  WhenMatched f Word64 PosTree PosTree PosTree -> VarMap -> VarMap -> f VarMap
+vmMergeM f (VarMap m1) (VarMap m2) =
+  VarMap <$> mergeA preserveMissing preserveMissing f m1 m2
