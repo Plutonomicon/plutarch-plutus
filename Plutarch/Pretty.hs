@@ -13,7 +13,7 @@ import Data.Text qualified as Txt
 import Data.Traversable (for)
 import Plutarch.Evaluate (evalTerm)
 import Plutarch.Internal.Term (ClosedTerm, Config, compile)
-import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant)
+import Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant, prettySum)
 import Plutarch.Pretty.Internal.Config (indentWidth)
 import Plutarch.Pretty.Internal.Name (freshVarName, smartName)
 import Plutarch.Pretty.Internal.TermUtils (
@@ -316,12 +316,19 @@ prettyUPLC uplc = runST $ do
           PP.sep $
             functionDoc : argsDoc
     go (Constr _ i args) = do
-      vals <- traverse go args
-      pure $ PP.parens $ "Constr" <+> PP.pretty i <+> PP.parens (PP.hsep vals)
+      PrettyState {ps'cursor} <- get
+      prettyArgs <- traverse go args
+      pure . parensOnCursor ps'cursor $ prettySum ":" i prettyArgs
     go (Case _ x handlers) = do
+      PrettyState {ps'cursor} <- get
       val <- go x
-      handlers <- map PP.parens . toList <$> traverse go handlers
-      pure $ PP.parens $ "Case" <+> PP.hang -3 (PP.parens (PP.vsep (val : handlers)))
+      branches <- fmap PP.vsep . for (zip [(0 :: Int)..] $ toList handlers) $ \(ix, handler) -> do
+        branch <- go handler
+        pure $ PP.pretty ix <+> "->" <+> branch
+      pure $ parensOnCursor ps'cursor
+        $ "case" <+> val <+> "of"
+        <> PP.line
+        <> PP.indent indentWidth (PP.align branches)
 
 prettyIfThenElse ::
   (t -> PrettyMonad s (PP.Doc ann)) ->

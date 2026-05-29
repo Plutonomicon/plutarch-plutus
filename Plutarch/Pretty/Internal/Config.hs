@@ -12,7 +12,7 @@ import PlutusCore qualified as PLC
 keywords :: Set Text
 keywords =
   Set.fromList $
-    ["let", "in"]
+    ["let", "in", "case"]
       <> fmap (fromString . show . PP.pretty) [(minBound @PLC.DefaultFun) .. maxBound]
 
 indentWidth :: Int

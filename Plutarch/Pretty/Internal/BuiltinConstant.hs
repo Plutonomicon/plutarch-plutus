@@ -1,4 +1,4 @@
-module Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant) where
+module Plutarch.Pretty.Internal.BuiltinConstant (prettyConstant, prettySum) where
 
 import Data.ByteString (ByteString)
 import Data.ByteString.Builder qualified as BSB
@@ -30,10 +30,7 @@ prettyConstant (PLC.Some (PLC.ValueOf (PLC.DefaultUniPair a b) ~(x, y))) =
   PP.tupled
     [prettyConstant . PLC.Some $ PLC.ValueOf a x, prettyConstant . PLC.Some $ PLC.ValueOf b y]
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Constr ix dl))) =
-  "Σ"
-    <> PP.pretty ix
-    <> "."
-    <> PP.list (prettyConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData <$> dl)
+  prettySum "." ix $ prettyConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniData <$> dl
 prettyConstant (PLC.Some (PLC.ValueOf PLC.DefaultUniData (Plutus.Map ascList))) =
   PP.group
     . PP.encloseSep (PP.flatAlt "{ " "{") (PP.flatAlt " }" "}") ", "
@@ -57,3 +54,14 @@ prettyConstant (PLC.Some (PLC.ValueOf uni _)) =
 
 encodeHex :: ByteString -> Text
 encodeHex = ("0x" <>) . TxtEnc.decodeUtf8 . LBS.toStrict . BSB.toLazyByteString . BSB.byteStringHex
+
+-- | Helper to prettyify sum-of-product values such as `Constr` and `ConstrData`.
+-- To differentiate between the two, pass a different separator for each.
+prettySum :: Integral a => PP.Doc () -> a -> [PP.Doc ()] -> PP.Doc ()
+prettySum sep sumIx prettyArgs =
+  "Σ"
+    <> PP.pretty (toInteger sumIx)
+    <> sep
+    <> PP.lbracket
+    <> PP.group (PP.align . PP.vsep $ PP.punctuate ", " prettyArgs)
+    <> PP.rbracket
