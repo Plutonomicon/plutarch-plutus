@@ -183,6 +183,21 @@ Application is, simply, a space - just like haskell. `f x`.
 
 Multi arg applications to the same function are detected and simplified: `f x y`.
 
+=== Case ===
+
+Pattern matching via the `Case` constructor is prettified similar to Haskell's pattern matching:
+
+```
+case ... of
+  0 -> ...
+  1 -> ...
+```
+
+=== Constr ===
+
+The SOP type `Constr` is printed similarly to `ConstrData`. Except that it uses a colon instead of a period
+as separator between the index and the arguments: `Σ1:[42]`
+
 === Error term ===
 
 `perror` is represented by the literal `ERROR`.
