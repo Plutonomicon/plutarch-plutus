@@ -76,6 +76,7 @@ library
   exposed-modules:
     Plutarch.Array
     Plutarch.Backend.Arity
+    Plutarch.Backend.AST
     Plutarch.Backend.PosTree
     Plutarch.Backend.RawTerm
     Plutarch.Backend.Term
@@ -157,6 +158,7 @@ library
 
   build-depends:
     , aeson
+    , bimap
     , bytestring
     , constraints
     , containers

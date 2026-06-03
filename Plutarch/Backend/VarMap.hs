@@ -8,8 +8,11 @@ module Plutarch.Backend.VarMap (
   vmMap,
   vmMerge,
   vmMergeM,
+  vmExtend,
+  vmFold,
 ) where
 
+import Data.Hashable (Hashable)
 import Data.Kind (Type)
 import Data.Map.Merge.Strict (WhenMatched, mergeA, preserveMissing)
 import Data.Map.Strict (Map)
@@ -18,7 +21,7 @@ import Data.Word (Word64)
 import Plutarch.Backend.PosTree (PosTree)
 
 newtype VarMap = VarMap (Map Word64 PosTree)
-  deriving (Eq) via (Map Word64 PosTree)
+  deriving (Eq, Hashable) via (Map Word64 PosTree)
   deriving stock (Show)
 
 vmEmpty :: VarMap
@@ -36,9 +39,20 @@ vmMap f (VarMap m) = VarMap . fmap f $ m
 vmMerge :: (PosTree -> PosTree -> PosTree) -> VarMap -> VarMap -> VarMap
 vmMerge f (VarMap m1) (VarMap m2) = VarMap . Map.unionWith f m1 $ m2
 
+vmExtend :: Word64 -> PosTree -> VarMap -> VarMap
+vmExtend k v (VarMap m) = VarMap . Map.insert k v $ m
+
 vmMergeM ::
   forall (f :: Type -> Type).
   Applicative f =>
   WhenMatched f Word64 PosTree PosTree PosTree -> VarMap -> VarMap -> f VarMap
 vmMergeM f (VarMap m1) (VarMap m2) =
   VarMap <$> mergeA preserveMissing preserveMissing f m1 m2
+
+vmFold ::
+  forall (a :: Type).
+  (a -> Word64 -> PosTree -> a) ->
+  a ->
+  VarMap ->
+  a
+vmFold f x (VarMap m) = Map.foldlWithKey' f x m

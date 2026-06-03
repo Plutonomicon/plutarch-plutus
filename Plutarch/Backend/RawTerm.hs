@@ -4,6 +4,10 @@ module Plutarch.Backend.RawTerm (
   getRawTermAnn,
 ) where
 
+import Data.Hashable (
+  Hashable (hash, hashWithSalt),
+  defaultHashWithSalt,
+ )
 import Data.Kind (Type)
 import Data.Vector (Vector)
 import Data.Vector.NonEmpty (NonEmptyVector)
@@ -18,6 +22,16 @@ data VarTag
   | LetBinding
   | Self
   deriving stock (Show, Eq)
+
+instance Hashable VarTag where
+  {-# INLINEABLE hashWithSalt #-}
+  hashWithSalt = defaultHashWithSalt
+  {-# INLINEABLE hash #-}
+  hash =
+    hash @Int . \case
+      Argument -> 0
+      LetBinding -> 1
+      Self -> 2
 
 data RawTerm (ann :: Type)
   = RVar ann VarTag
