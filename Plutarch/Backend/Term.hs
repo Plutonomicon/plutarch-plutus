@@ -3,7 +3,6 @@
 {-# LANGUAGE TypeData #-}
 
 module Plutarch.Backend.Term (
-  RawTerm (..),
   TermEnv (..),
   Term (..),
   TermError (..),
@@ -97,6 +96,7 @@ data TermError
   | BadMergeApplyExtend Word64 PosTree PosTree
   | BadMergeApplyCase Word64 PosTree PosTree
   | BadMergeConstr Word64 PosTree PosTree
+  deriving stock (Show)
 
 newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}

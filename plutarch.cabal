@@ -54,10 +54,7 @@ common c
     UnliftedNewtypes
     ViewPatterns
 
-  build-depends:
-    , base  >=4.9 && <5
-    , text
-
+  build-depends:      base >=4.9 && <5
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
     -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
@@ -178,6 +175,20 @@ library
     , semialign
     , smash
     , sop-core
+    , text
     , these
     , unordered-containers
     , vector
+
+test-suite tests
+  import:         c
+  type:           exitcode-stdio-1.0
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  main-is:        Main.hs
+  hs-source-dirs: test
+  build-depends:
+    , mtl
+    , plutarch
+    , pretty-show
+    , tasty
+    , tasty-hunit

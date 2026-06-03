@@ -76,12 +76,15 @@ import PlutusCore qualified as PLC
 
 newtype Hash = Hash Int
   deriving (Eq, Ord) via Int
+  deriving stock (Show)
 
 data Multiplicity
   = MultiplicityOne Hash
   | MultiplicityMany Hash
+  deriving stock (Show)
 
 data Liftability = Trivial | NonTrivial
+  deriving stock (Show)
 
 data Leaf (ann :: Type)
   = LVar ann Hash
@@ -89,7 +92,7 @@ data Leaf (ann :: Type)
   | LBuiltin ann PLC.DefaultFun
   | LCompiled ann UPLCTerm
   | LError ann
-  deriving stock (Functor)
+  deriving stock (Functor, Show)
 
 data AST (ann :: Type)
   = ASTLeaf (Leaf ann)
@@ -100,10 +103,11 @@ data AST (ann :: Type)
   | ASTApply ann (AST ann) (NonEmptyVector (AST ann))
   | ASTConstr ann Word64 (Vector (AST ann))
   | ASTCase ann (AST ann) (NonEmptyVector (AST ann))
-  deriving stock (Functor)
+  deriving stock (Functor, Show)
 
 newtype Id = Id Int
   deriving (Eq, Ord) via Int
+  deriving stock (Show)
 
 data ANFBind (ann :: Type)
   = ANFLeaf (Leaf ann)
@@ -114,6 +118,7 @@ data ANFBind (ann :: Type)
   | ANFApply ann Id (NonEmptyVector Id)
   | ANFConstr ann Word64 (Vector Id)
   | ANFCase ann Id (NonEmptyVector Id)
+  deriving stock (Show)
 
 data ANF (ann :: Type) = ANF (Bimap Id Hash) (NonEmptyVector (ANFBind ann))
 
