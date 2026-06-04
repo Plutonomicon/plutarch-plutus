@@ -5,13 +5,15 @@ module Plutarch.Backend.AST (
   Hash (..),
   Multiplicity (..),
   Liftability (..),
-  Leaf (..),
 
   -- * AST
+  Leaf (..),
   AST (..),
   fromRawTerm,
 
   -- * ANF
+  LeafNV (..),
+  Ref (..),
   ANFBind (..),
   ANF (..),
   fromHashedAST,
@@ -109,15 +111,27 @@ newtype Id = Id Int
   deriving (Eq, Ord) via Int
   deriving stock (Show)
 
+data LeafNV (ann :: Type)
+  = LNVConstant ann (Some (ValueOf PLC.DefaultUni))
+  | LNVBuiltin ann PLC.DefaultFun
+  | LNVCompiled ann UPLCTerm
+  | LNVError ann
+  deriving stock (Functor, Show)
+
+data Ref
+  = AVar Hash
+  | AnId Id
+  deriving stock (Show)
+
 data ANFBind (ann :: Type)
-  = ANFLeaf (Leaf ann)
-  | ANFForce ann Id
-  | ANFDelay ann Id
-  | ANFLam ann (NonEmptyVector (Maybe Multiplicity)) Liftability Id
-  | ANFFix ann Multiplicity Liftability Id
-  | ANFApply ann Id (NonEmptyVector Id)
-  | ANFConstr ann Word64 (Vector Id)
-  | ANFCase ann Id (NonEmptyVector Id)
+  = ANFLeaf (LeafNV ann)
+  | ANFForce ann Ref
+  | ANFDelay ann Ref
+  | ANFLam ann (NonEmptyVector (Maybe Multiplicity)) Liftability Ref
+  | ANFFix ann Multiplicity Liftability Ref
+  | ANFApply ann Ref (NonEmptyVector Ref)
+  | ANFConstr ann Word64 (Vector Ref)
+  | ANFCase ann Ref (NonEmptyVector Ref)
   deriving stock (Show)
 
 data ANF (ann :: Type) = ANF (Bimap Id Hash) (NonEmptyVector (ANFBind ann))
@@ -126,52 +140,52 @@ fromHashedAST :: AST Hash -> ANF ()
 fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
   (_, (bm, im)) -> ANF bm . NEVector.generate1 (IntMap.size im) $ \i -> fromJust . IntMap.lookup i $ im
   where
-    go :: AST Hash -> State (Bimap Id Hash, IntMap (ANFBind ())) Id
+    go :: AST Hash -> State (Bimap Id Hash, IntMap (ANFBind ())) Ref
     go = \case
       ASTLeaf ell -> doLeaf ell
       ASTForce h body -> withLookup h $ do
-        bodyId <- go body
-        newBind h (ANFForce () bodyId)
+        bodyRef <- go body
+        newBind h (ANFForce () bodyRef)
       ASTDelay h body -> withLookup h $ do
-        bodyId <- go body
-        newBind h (ANFDelay () bodyId)
+        bodyRef <- go body
+        newBind h (ANFDelay () bodyRef)
       ASTLam h mults liftability body -> withLookup h $ do
-        bodyId <- go body
-        newBind h (ANFLam () mults liftability bodyId)
+        bodyRef <- go body
+        newBind h (ANFLam () mults liftability bodyRef)
       ASTFix h mult liftability body -> withLookup h $ do
-        bodyId <- go body
-        newBind h (ANFFix () mult liftability bodyId)
+        bodyRef <- go body
+        newBind h (ANFFix () mult liftability bodyRef)
       ASTApply h f xs -> withLookup h $ do
-        fId <- go f
-        xsIds <- traverse go xs
-        newBind h (ANFApply () fId xsIds)
+        fRef <- go f
+        xsRefs <- traverse go xs
+        newBind h (ANFApply () fRef xsRefs)
       ASTConstr h tag fields -> withLookup h $ do
-        fieldsIds <- traverse go fields
-        newBind h (ANFConstr () tag fieldsIds)
+        fieldsRefs <- traverse go fields
+        newBind h (ANFConstr () tag fieldsRefs)
       ASTCase h scrut handlers -> withLookup h $ do
-        scrutId <- go scrut
-        handlersIds <- traverse go handlers
-        newBind h (ANFCase () scrutId handlersIds)
-    doLeaf :: Leaf Hash -> State (Bimap Id Hash, IntMap (ANFBind ())) Id
+        scrutRef <- go scrut
+        handlersRefs <- traverse go handlers
+        newBind h (ANFCase () scrutRef handlersRefs)
+    doLeaf :: Leaf Hash -> State (Bimap Id Hash, IntMap (ANFBind ())) Ref
     doLeaf = \case
-      LVar _ h -> withLookup h $ newBind h (ANFLeaf (LVar () h))
-      LConstant h c -> withLookup h $ newBind h (ANFLeaf (LConstant () c))
-      LBuiltin h f -> withLookup h $ newBind h (ANFLeaf (LBuiltin () f))
-      LCompiled h code -> withLookup h $ newBind h (ANFLeaf (LCompiled () code))
-      LError h -> withLookup h $ newBind h (ANFLeaf (LError ()))
+      LVar _ h -> pure . AVar $ h
+      LConstant h c -> withLookup h $ newBind h (ANFLeaf (LNVConstant () c))
+      LBuiltin h f -> withLookup h $ newBind h (ANFLeaf (LNVBuiltin () f))
+      LCompiled h code -> withLookup h $ newBind h (ANFLeaf (LNVCompiled () code))
+      LError h -> withLookup h $ newBind h (ANFLeaf (LNVError ()))
     withLookup ::
       Hash ->
-      State (Bimap Id Hash, IntMap (ANFBind ())) Id ->
-      State (Bimap Id Hash, IntMap (ANFBind ())) Id
+      State (Bimap Id Hash, IntMap (ANFBind ())) Ref ->
+      State (Bimap Id Hash, IntMap (ANFBind ())) Ref
     withLookup h act = do
-      mref <- gets (Bimap.lookupR h . fst)
-      maybe act pure mref
-    newBind :: Hash -> ANFBind () -> State (Bimap Id Hash, IntMap (ANFBind ())) Id
+      mId <- gets (Bimap.lookupR h . fst)
+      maybe act (pure . AnId) mId
+    newBind :: Hash -> ANFBind () -> State (Bimap Id Hash, IntMap (ANFBind ())) Ref
     newBind h bind = do
       firstAvailable <- gets (maybe 0 ((+ 1) . fst) . IntMap.lookupMax . snd)
       let asId = Id firstAvailable
       modify (bimap (Bimap.insert asId h) (IntMap.insert firstAvailable bind))
-      pure asId
+      pure . AnId $ asId
 
 fromRawTerm :: RawTerm () -> AST Hash
 fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
