@@ -17,6 +17,7 @@ module Plutarch.Backend.AST (
   ANFBind (..),
   ANF (..),
   fromHashedAST,
+  toUPLCTerm,
 ) where
 
 import Control.Applicative ((<|>))
@@ -28,7 +29,8 @@ import Control.Monad.RWS.CPS (
   evalRWS,
   modify,
  )
-import Control.Monad.State.Strict (State, gets, runState)
+import Control.Monad.Reader (Reader, runReader)
+import Control.Monad.State.Strict (State, evalState, gets, runState)
 import Data.Bifunctor (bimap)
 import Data.Bimap (Bimap)
 import Data.Bimap qualified as Bimap
@@ -38,13 +40,23 @@ import Data.IntMap (IntMap)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Kind (Type)
 import Data.Maybe (fromJust)
+import Data.Set (Set)
+import Data.Set qualified as Set
 import Data.These (These (That, These, This))
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
-import Plutarch.Backend.PosTree (PosTree (PApplyCase, PHere, PMany, POne, PTwo))
+import Plutarch.Backend.PosTree (
+  PosTree (
+    PApplyCase,
+    PHere,
+    PMany,
+    POne,
+    PTwo
+  ),
+ )
 import Plutarch.Backend.RawTerm (
   RawTerm (
     RApply,
@@ -63,7 +75,20 @@ import Plutarch.Backend.RawTerm (
     RVar
   ),
  )
-import Plutarch.Backend.UPLC (UPLCTerm)
+import Plutarch.Backend.UPLC (
+  UPLCTerm,
+  uplcApply,
+  uplcBuiltin,
+  uplcCase,
+  uplcConstant,
+  uplcConstr,
+  uplcDelay,
+  uplcError,
+  uplcForce,
+  uplcLam,
+  uplcLet,
+  uplcVar,
+ )
 import Plutarch.Backend.VarMap (
   VarMap,
   vmEmpty,
@@ -135,6 +160,77 @@ data ANFBind (ann :: Type)
   deriving stock (Show)
 
 data ANF (ann :: Type) = ANF (Bimap Id Hash) (NonEmptyVector (ANFBind ann))
+
+toUPLCTerm :: forall (ann :: Type). ANF ann -> UPLCTerm
+toUPLCTerm (ANF _ binds) =
+  let allVarNames = NEVector.foldl' collectVarName Set.empty binds
+      (rest, last) = NEVector.unsnoc binds
+      -- We start with 1, because then 0 can be used for the 'I am unused'
+      -- argument
+      named = evalState (Vector.mapM (withGeneratedName allVarNames) rest) 1
+      onlyNames = Vector.map fst named
+   in runReader (compile last >>= \code -> Vector.foldM go code named) onlyNames
+  where
+    collectVarName :: Set Int -> ANFBind ann -> Set Int
+    collectVarName acc = \case
+      ANFLeaf _ -> acc
+      ANFForce _ r -> addVar acc r
+      ANFDelay _ r -> addVar acc r
+      ANFLam _ _ _ r -> addVar acc r
+      ANFFix _ _ _ r -> addVar acc r
+      ANFApply _ fR xsRs -> addVar (NEVector.foldl' addVar acc xsRs) fR
+      ANFConstr _ _ fieldsRs -> Vector.foldl' addVar acc fieldsRs
+      ANFCase _ scrutR handlersRs -> addVar (NEVector.foldl' addVar acc handlersRs) scrutR
+    addVar :: Set Int -> Ref -> Set Int
+    addVar ess = \case
+      AVar (Hash h) -> Set.insert h ess
+      _ -> ess
+    withGeneratedName :: Set Int -> ANFBind ann -> State Int (PLC.Name, ANFBind ann)
+    withGeneratedName used bind = do
+      fresh <- untilM getFresh (`Set.notMember` used)
+      pure (PLC.Name "v" . PLC.Unique $ fresh, bind)
+    compile :: ANFBind ann -> Reader (Vector PLC.Name) UPLCTerm
+    compile = \case
+      ANFLeaf ell -> pure $ case ell of
+        LNVConstant _ c -> uplcConstant c
+        LNVBuiltin _ f -> uplcBuiltin f
+        LNVCompiled _ code -> code
+        LNVError _ -> uplcError
+      ANFForce _ r -> uplcForce <$> resolveRef r
+      ANFDelay _ r -> uplcDelay <$> resolveRef r
+      ANFLam _ mults _ r -> do
+        let asNames = fmap toNamedArg mults
+        uplcLam asNames <$> resolveRef r
+      ANFFix {} -> error "FIXME"
+      ANFApply _ fR xsRs -> do
+        let len = NEVector.length xsRs
+        if
+          | len == 1 -> do
+              let arg = xsRs NEVector.! 0
+              uplcApply <$> resolveRef fR <*> resolveRef arg
+          | len == 2 -> do
+              let arg1 = xsRs NEVector.! 0
+              let arg2 = xsRs NEVector.! 1
+              uplcApply <$> (uplcApply <$> resolveRef fR <*> resolveRef arg1) <*> resolveRef arg2
+          | otherwise -> do
+              let xsRs' = NEVector.toVector xsRs
+              handler <- resolveRef fR
+              (uplcCase . uplcConstr 0 <$> traverse resolveRef xsRs') <*> pure (NEVector.singleton handler)
+      ANFConstr _ tag fieldsRs -> uplcConstr tag <$> traverse resolveRef fieldsRs
+      ANFCase _ scrutR handlersRs -> uplcCase <$> resolveRef scrutR <*> traverse resolveRef handlersRs
+    go :: UPLCTerm -> (PLC.Name, ANFBind ann) -> Reader (Vector PLC.Name) UPLCTerm
+    go body (ourName, ourBind) = uplcLet ourName <$> compile ourBind <*> pure body
+    resolveRef :: Ref -> Reader (Vector PLC.Name) UPLCTerm
+    resolveRef =
+      fmap uplcVar . \case
+        AVar (Hash h) -> pure . PLC.Name "v" . PLC.Unique $ h
+        AnId (Id i) -> asks (Vector.! i)
+    toNamedArg :: Maybe Multiplicity -> PLC.Name
+    toNamedArg = \case
+      -- Since we set 0 as reserved for unused, we can use that here.
+      Nothing -> PLC.Name "u" . PLC.Unique $ 0
+      Just (MultiplicityOne (Hash h)) -> PLC.Name "v" . PLC.Unique $ h
+      Just (MultiplicityMany (Hash h)) -> PLC.Name "v" . PLC.Unique $ h
 
 fromHashedAST :: AST Hash -> ANF ()
 fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
@@ -324,9 +420,9 @@ separateApplyCase acc@(scrutVM, handlerVMs) k = \case
       Just t -> vmExtend k t vm
 
 getFresh ::
-  forall (m :: Type -> Type).
-  MonadState Word64 m =>
-  m Word64
+  forall (a :: Type) (m :: Type -> Type).
+  (MonadState a m, Num a) =>
+  m a
 getFresh = do
   fresh <- get
   modify (+ 1)
@@ -377,3 +473,11 @@ findVarUsage name mpt t = case mpt of
         Nothing -> acc
         Just _ -> Just (h, True)
       Just (_, True) -> acc
+
+untilM ::
+  forall (a :: Type) (m :: Type -> Type).
+  Monad m =>
+  m a ->
+  (a -> Bool) ->
+  m a
+untilM act cond = act >>= \x -> if cond x then pure x else untilM act cond

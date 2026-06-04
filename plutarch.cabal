@@ -189,6 +189,8 @@ test-suite tests
   build-depends:
     , mtl
     , plutarch
+    , plutus-core
     , pretty-show
+    , prettyprinter
     , tasty
     , tasty-hunit

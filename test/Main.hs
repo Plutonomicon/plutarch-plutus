@@ -3,7 +3,12 @@ module Main (main) where
 import Control.Monad.Except (runExceptT)
 import Control.Monad.RWS.CPS (runRWS)
 import Data.Kind (Type)
-import Plutarch.Backend.AST (ANF (ANF), fromHashedAST, fromRawTerm)
+import Plutarch.Backend.AST (
+  ANF (ANF),
+  fromHashedAST,
+  fromRawTerm,
+  toUPLCTerm,
+ )
 import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
 import Plutarch.Backend.Term (
   S,
@@ -14,7 +19,11 @@ import Plutarch.Backend.Term (
   plam',
   (:-->),
  )
+import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
+import PlutusCore.Pretty (prettyPlcReadable)
+import Prettyprinter (defaultLayoutOptions, layoutSmart)
+import Prettyprinter.Render.String (renderString)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertBool, assertFailure, testCaseSteps)
 import Text.Show.Pretty (ppShow)
@@ -41,9 +50,12 @@ main =
                 let asAST = fromRawTerm t
                 step $ "AST: \n" <> ppShow asAST
                 step "Converting to ANF"
-                let (ANF bm bindings) = fromHashedAST asAST
+                let anf@(ANF bm bindings) = fromHashedAST asAST
                 step $ "ANF bimap:\n" <> ppShow bm
                 step $ "ANF bindings:\n" <> ppShow bindings
+                step "Converting to UPLC"
+                let (UPLCTerm t) = toUPLCTerm anf
+                step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
                 pure ()
               _ -> assertFailure $ "Unexpected top node: \n" <> ppShow t
     ]
