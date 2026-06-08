@@ -89,9 +89,7 @@ main =
       , testGroup "Array" arrayBenches
       , testGroup "PValidateData" pvalidateDataBenches
       , testGroup "AssocMap" assocMapBenches
-      , testGroup "PBuiltinPair" pbuiltinPairBenches
       , testGroup "pfix" pfixBenches
-      , testGroup "pif" pifBenches
       , testGroup "list matching" listMatchingBenches
       ]
 
@@ -180,25 +178,6 @@ listMatchingBenches =
       let allDeps = matchDeps <> depsT
       pure . TermResult (RCase rawT [matchRaw]) $ allDeps
 
-pifBenches :: [TestTree]
-pifBenches =
-  [ bench
-      "pif lazy"
-      ( precompileTerm (plam $ \c x y -> pif c x y)
-          # pconstant @PBool True
-          # pconstant @PInteger 1
-          # pconstant @PInteger 2
-      )
-  , bcompare "$(NF-1) == \"pif\" && $NF == \"pif lazy\"" $
-      bench
-        "pif strict"
-        ( precompileTerm (plam $ \c x y -> pif' # c # x # y)
-            # pconstant @PBool True
-            # pconstant @PInteger 1
-            # pconstant @PInteger 2
-        )
-  ]
-
 pfixBenches :: [TestTree]
 pfixBenches =
   [ bench "pfixHoisted" (precompileTerm pfacHoisted # pconstant @PInteger 80)
@@ -214,13 +193,6 @@ pfixBenches =
     pfac = pfix $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
     pfacInline :: forall (s :: S). Term s (PInteger :--> PInteger)
     pfacInline = pfixInline $ \self -> plam $ \n -> pif (n #== 1) n $ n * (self #$ n - 1)
-
-pbuiltinPairBenches :: [TestTree]
-pbuiltinPairBenches =
-  [ bench "manual fst" (precompileTerm (plam $ \x -> pfstBuiltin # x) # pconstant @(PBuiltinPair PInteger PInteger) (42, 12))
-  , bcompare "$(NF-1) == \"PBuiltinPair\" && $NF == \"manual fst\"" $
-      bench "with pmatch" (precompileTerm (plam $ \x -> pmatch x $ \(PBuiltinPair y _) -> y) # pconstant @(PBuiltinPair PInteger PInteger) (42, 12))
-  ]
 
 arrayBenches :: [TestTree]
 arrayBenches =

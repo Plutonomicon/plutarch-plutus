@@ -50,8 +50,6 @@ The [Usage section](./Usage.md) fills in the gaps left by the previous. It illus
 - [Using the Plutarch Prelude](./Usage/PreludeMixin.md)
 - [Do syntax with `TermCont`](./Usage/DoSyntaxWithTermCont.md)
 - [Do syntax with `QualifiedDo` and `Plutarch.Monadic`](./Usage/DoSyntaxWithQualifiedDo.md)
-- [Deriving typeclasses for `newtype`s](./Usage/DerivingForNewtypes.md)
-- [Deriving typeclasses with generics](./Usage/DerivingWithGenerics.md)
 - [`plet` to avoid work duplication](./Usage/AvoidWorkDuplicationUsingPlet.md)
 - [Tracing](./Usage/Tracing.md)
 - [Raising errors](./Usage/RaisingErrors.md)
@@ -104,7 +102,6 @@ The [Types section](./Types.md) discusses the core types of Plutarch.
 - [`PList`](./Types/PList.md)
 - [`PBuiltinPair`](./Types/PBuiltinPair.md)
 - [`PAsData`](./Types/PAsData.md)
-- [`PDataSum` & `PDataRecord`](./Types/PDataSumAndPDataRecord.md)
 - [`PData`](./Types/PData.md)
 
 # Examples

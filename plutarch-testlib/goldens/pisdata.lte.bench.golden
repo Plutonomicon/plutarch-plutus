@@ -1,9 +1,3 @@
 PCredential.pmatch.true.eq {"exBudgetCPU":1189599,"exBudgetMemory":5295,"scriptSizeBytes":92}
 PCredential.pmatch.true.less {"exBudgetCPU":761942,"exBudgetMemory":3966,"scriptSizeBytes":100}
 PCredential.pmatch.false {"exBudgetCPU":761942,"exBudgetMemory":3966,"scriptSizeBytes":100}
-PTriplet.derived.true.eq {"exBudgetCPU":3206375,"exBudgetMemory":12981,"scriptSizeBytes":128}
-PTriplet.derived.true.less {"exBudgetCPU":2243091,"exBudgetMemory":9687,"scriptSizeBytes":134}
-PTriplet.derived.false {"exBudgetCPU":2391424,"exBudgetMemory":10288,"scriptSizeBytes":134}
-PTriplet.pmatch.true.eq {"exBudgetCPU":3830375,"exBudgetMemory":16881,"scriptSizeBytes":146}
-PTriplet.pmatch.true.less {"exBudgetCPU":2803091,"exBudgetMemory":13187,"scriptSizeBytes":152}
-PTriplet.pmatch.false {"exBudgetCPU":3079424,"exBudgetMemory":14588,"scriptSizeBytes":152}

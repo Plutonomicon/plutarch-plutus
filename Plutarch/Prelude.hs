@@ -6,7 +6,6 @@ module Plutarch.Prelude (
   pand',
   pcond,
   pif,
-  pif',
   pnot,
   por',
   (#&&),
@@ -49,13 +48,11 @@ module Plutarch.Prelude (
   pchooseListBuiltin,
   pconsBuiltin,
   pconstrBuiltin,
-  pfstBuiltin,
   pheadBuiltin,
   plistData,
   pnullBuiltin,
   ppairDataBuiltin,
   pserialiseData,
-  psndBuiltin,
   ptailBuiltin,
   pheadTailBuiltin,
 
@@ -73,17 +70,6 @@ module Plutarch.Prelude (
 
   -- * Unit
   PUnit (..),
-
-  -- * DataRepr
-  PDataFields,
-  PDataRecord,
-  PDataSum,
-  PLabeledType ((:=)),
-  PlutusTypeData,
-  pdcons,
-  pdnil,
-  pfield,
-  pletFields,
 
   -- * Either
   PEither (..),
@@ -168,8 +154,6 @@ module Plutarch.Prelude (
   PlutusType (PInner),
   pcon,
   pmatch,
-  PlutusTypeNewtype,
-  PlutusTypeScott,
   DeriveNewtypePlutusType (DeriveNewtypePlutusType),
   DeriveFakePlutusType (DeriveFakePlutusType),
 
@@ -242,7 +226,6 @@ module Plutarch.Prelude (
   pguardC,
   pguardC',
   pletC,
-  pletFieldsC,
   pmatchC,
   ptraceC,
   ptryFromC,
@@ -290,7 +273,6 @@ import Plutarch.Builtin.Integer
 import Plutarch.Builtin.Opaque
 import Plutarch.Builtin.String
 import Plutarch.Builtin.Unit
-import Plutarch.DataRepr
 import Plutarch.Either
 import Plutarch.Enum
 import Plutarch.Internal.Eq
@@ -298,14 +280,12 @@ import Plutarch.Internal.Fix
 import Plutarch.Internal.IsData
 import Plutarch.Internal.Lift
 import Plutarch.Internal.ListLike
-import Plutarch.Internal.Newtype
 import Plutarch.Internal.Numeric
 import Plutarch.Internal.Ord
 import Plutarch.Internal.PLam
 import Plutarch.Internal.Parse
 import Plutarch.Internal.PlutusType
 import Plutarch.Internal.Quantification
-import Plutarch.Internal.ScottEncoding
 import Plutarch.Internal.Semigroup
 import Plutarch.Internal.Show
 import Plutarch.Internal.Subtype

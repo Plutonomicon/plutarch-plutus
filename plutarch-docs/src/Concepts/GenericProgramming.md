@@ -3,14 +3,8 @@
 <p>
 
 ```haskell
-{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
-module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where
-import Plutarch.Prelude
-import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
-import Data.Kind (Type)
-import GHC.Generics (Generic)
-import Plutarch.Unsafe (punsafeCoerce)
+module Plutarch.Docs.PMatch (Tree(..), TreeRepr) where
 ```
 
 </p>
@@ -25,18 +19,6 @@ import Plutarch.Unsafe (punsafeCoerce)
 A `Term` represents Plutus Lambda Calculus expression in Plutarch world.
 Allows for additional checks and safety compared to UPLC.
 See more: [Plutarch Terms](../Introduction/PlutarchTerms.md).
-
-### Data and Scott encoding
-
-Datatypes can be encoded using Scott and `Data` encoding.
-These concepts are well explained in Plutonomicon:
-[Data encoding](../Concepts/DataAndScottEncoding.md#data-encoding)
-and [Scott encoding](../Concepts/DataAndScottEncoding.md#scott-encoding).
-
-### `anyclass` deriving strategy
-
-`anyclass` derivation strategy uses default implementation of given typeclass to derive an instance of it.
-Usually depends that given datatype derives `Generic` typeclass also or some other too.
 
 ### generics-sop
 
@@ -105,8 +87,8 @@ Manipulating ADTs can be done in terms of `pcon` and `pmatch` which belong to a 
 How this class is implemented is not that important but can be looked up in `Plutarch/Internal/PlutusType.hs`
 by the interested reader.
 
-These typeclass methods could be written manually, but is a bit tedious and error-prone, thus the generic
-representation from `GHC.Generics` is used.
+These typeclass methods could be written manually, but is a bit tedious and
+error-prone, thus a generic method is also available.
 Under the hood all necessary transformations are done to be able to access the data on Haskell level.
 
 Also - as parsing data costs computation resources, it is common to pass tagged raw data until it's really needed to parse.
@@ -116,109 +98,9 @@ Also - as parsing data costs computation resources, it is common to pass tagged 
 2. Manipulates given `S -> Type` on its internal representation (provided as type `PInner`), 
   rather than parsing/constructing the datatype back and forth.
 
-Examples on how to derive `PlutusType` to either Data or Scott encoding:
-
-```haskell
-data MyType (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = One (Term s a)
-  | Two (Term s b)
-  deriving stock Generic
-  deriving anyclass PlutusType
-instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
-
--- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
-
-data MyTypeD (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
-  | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
-  deriving stock Generic
-  deriving anyclass PlutusType
-instance DerivePlutusType (MyTypeD a b) where type DPTStrat _ = PlutusTypeData
-
--- Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
--- Sum type as an Enum via PInteger:
-
-data AB (s :: S) = A | B
-
-instance PlutusType AB where
-  type PInner AB = PInteger
-
-  pcon' A = 0
-  pcon' B = 1
-
-  pmatch' x f =
-    pif (x #== 0) (f A) (f B)
-
-
--- instead of using `pcon'` and `pmatch'` directly,
--- use 'pcon' and 'pmatch', to hide the `PInner` type:
-
-swap :: Term s AB -> Term s AB
-swap x = pmatch x $ \case
-  A -> pcon B
-  B -> pcon A
-```
-
-`Maybe` manually encoded in both ways:
-
-```haskell
--- | Scott
-data PSMaybe a s = PSJust (Term s a) | PSNothing
-
--- | Newtype wrapper around function that represents Scott encoding,
--- | Plutarch uses generic one for deriving.
-newtype ScottEncodedMaybe a b s = ScottEncodedMaybe (Term s ((a :--> b) :--> PDelayed b :--> b))
-
-instance PlutusType (ScottEncodedMaybe a r) where
-  type PInner (ScottEncodedMaybe a r) = (a :--> r) :--> PDelayed r :--> r
-  pcon' (ScottEncodedMaybe x) = x
-  pmatch' x f = f (ScottEncodedMaybe x)
-
-instance PlutusType (PSMaybe a) where
-  -- The resulting type of pattern matching on Maybe is quantified via `PForall`
-  type PInner (PSMaybe a) = PForall (ScottEncodedMaybe a)
-  pcon' (PSJust x) = pcon $ PForall $ pcon $ ScottEncodedMaybe $ plam $ \f _ -> f # x
-  pcon' PSNothing = pcon $ PForall $ pcon $ ScottEncodedMaybe $ plam $ \_ g -> pforce g
-  pmatch' x' f =
-    pmatch x' $ \(PForall sem) ->
-      pmatch sem $ \(ScottEncodedMaybe x) ->
-        x # plam (f . PSJust) # pdelay (f PSNothing)
-
--- | Maybe encoded using Constr
-data PMaybeData a (s :: S)
-  = PDJust (Term s a)
-  | PDNothing
-
--- | Note - thing hold in PMaybeData must be able to be represented as Data too, not needed in case of Scott version
-instance PIsData a => PlutusType (PMaybeData a) where
-  type PInner (PMaybeData a) = PData
-  pcon' (PDJust x) = pforgetData $ pconstrBuiltin # 0 #$ psingleton # pforgetData (pdata x)
-  pcon' PDNothing = pforgetData $ pconstrBuiltin # 1 # pnil
-  pmatch' x f = (`runTermCont` f) $ do
-    constrPair <- TermCont $ plet (pasConstr # x)
-    indexNum <- TermCont $ plet (pfstBuiltin # constrPair)
-    TermCont $ \g -> pif (indexNum #== 0)
-        (g $ PDJust $ punsafeCoerce $ phead # (psndBuiltin # constrPair))
-        (pif (indexNum #== 1)
-          (g PDNothing)
-          perror
-        )
-
-```
-
-### Generic derivation of PCon/PMatch
-
-The mechanism of `PlutusType` derivation relies heavily on generic representation of ADT as sum-of-products.
-Very high level overview:
-For `pmatch`:
-
-- Scott encoding - for each `sum` branch, create a corresponding `plam` handler
-- Data encoding - for each `sum` branch, apply each element of list in `Constr` to a handler
-
-For `pcon`:
-
-- Scott encoding - encode data type as lambda
-- Data encoding - create a `Constr` with corresponding number of constructor
+For a fuller explanation, and several examples, please see [the MLabs blog
+article](https://www.mlabs.city/blog/from-term-to-script-how-plutustype-drives-plutarch)
+on `PlutusType`.
 
 ## Recommended patterns when working with pcon/pmatch
 

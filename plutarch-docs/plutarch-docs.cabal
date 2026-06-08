@@ -72,8 +72,6 @@ executable plutarch-docs
     Plutarch.Docs.Conditionals
     Plutarch.Docs.DataAndScottEncoding
     Plutarch.Docs.DelayAndForce
-    Plutarch.Docs.DerivingForNewtype
-    Plutarch.Docs.DerivingGenerics
     Plutarch.Docs.DifferencePconPconstant
     Plutarch.Docs.Hoisting
     Plutarch.Docs.Introduction
@@ -85,7 +83,6 @@ executable plutarch-docs
     Plutarch.Docs.PBuiltinPair
     Plutarch.Docs.PByteString
     Plutarch.Docs.PData
-    Plutarch.Docs.PDataSumAndRecord
     Plutarch.Docs.PEqAndPOrd
     Plutarch.Docs.PInteger
     Plutarch.Docs.PList

@@ -93,12 +93,6 @@ library
     Plutarch.Builtin.String
     Plutarch.Builtin.Unit
     Plutarch.Builtin.Value
-    Plutarch.DataRepr
-    Plutarch.DataRepr.Internal
-    Plutarch.DataRepr.Internal.Field
-    Plutarch.DataRepr.Internal.FromData
-    Plutarch.DataRepr.Internal.HList
-    Plutarch.DataRepr.Internal.HList.Utils
     Plutarch.Either
     Plutarch.Enum
     Plutarch.Evaluate
@@ -110,7 +104,6 @@ library
     Plutarch.Internal.IsData
     Plutarch.Internal.Lift
     Plutarch.Internal.ListLike
-    Plutarch.Internal.Newtype
     Plutarch.Internal.Numeric
     Plutarch.Internal.Ord
     Plutarch.Internal.Other
@@ -119,7 +112,6 @@ library
     Plutarch.Internal.PlutusType
     Plutarch.Internal.PrettyStack
     Plutarch.Internal.Quantification
-    Plutarch.Internal.ScottEncoding
     Plutarch.Internal.Semigroup
     Plutarch.Internal.Show
     Plutarch.Internal.Subtype

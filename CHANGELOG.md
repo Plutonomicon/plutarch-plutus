@@ -14,9 +14,14 @@
 * Bump `plutus-core` to 1.64.0.0
 * `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
 
-## Removed 
+## Removed
 
-* Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for anything (though the `findAllPlaceholders` version is)
+* `pif'`, as there's no reason to use it any more
+* `pfstBuiltin` and `psndBuiltin`, as `pmatch` is more efficient
+* `pletFieldsC`, as it is no longer needed
+* The entire old derivation mechanism
+* `pfindPlaceholder` from `Internal.TermCont`, as it is unused (though the 
+  `findAllPlaceholders` version is)
 
 # 1.13.0 -- 04-03-2026
 

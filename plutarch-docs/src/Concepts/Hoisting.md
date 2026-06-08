@@ -3,9 +3,7 @@
 <p>
 
 ```haskell
-{-# OPTIONS_GHC -Wno-deprecations #-}
-module Plutarch.Docs.Hoisting (hor, (#||)) where
-import Plutarch.Prelude hiding ((#||))
+module Plutarch.Docs.Hoisting () where
 ```
 
 </p>
@@ -43,23 +41,6 @@ As long as the Plutarch lambda you're hoisting does not have [free variables](ht
 For the sake of convenience, you often would want to use operators - which must be Haskell level functions. This is the case for `+`, `-`, `#==` and many more.
 
 Choosing convenience over efficiency is difficult, but if you notice that your operator uses complex logic and may end up creating big terms - you can trivially factor out the logic into a Plutarch level function, hoist it, and simply apply that function within the operator.
-
-Consider "boolean or":
-
-```haskell
-hor :: Term s PBool -> Term s PBool -> Term s PBool
-x `hor` y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
-```
-
-You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition:
-
-```haskell
-(#||) :: Term s PBool -> Term s PBool -> Term s PBool
-x #|| y = pforce $ por # x # pdelay y
-
-por :: Term s (PBool :--> PDelayed PBool :--> PDelayed PBool)
-por = phoistAcyclic $ plam $ \x y -> pif' # x # pdelay (pconstant True) # y
-```
 
 In general the pattern goes like this:
 

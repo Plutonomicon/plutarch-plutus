@@ -4,9 +4,7 @@
 
 ```haskell
 {-# OPTIONS_GHC -Wno-deprecations #-}
-module Plutarch.Docs.PEqAndPOrd (PMaybe'(..)) where
-import GHC.Generics (Generic)
-import Plutarch.Prelude
+module Plutarch.Docs.PEqAndPOrd () where
 ```
 
 </p>
@@ -45,35 +43,6 @@ pif (1 #< 7) "indeed" "what"
 
 evaluates to `"indeed"` - of type `Term s PString`.
 
-For scott encoded types, you can easily derive `PEq` via generic deriving:
-
-```haskell
-data PMaybe' a s
-  = PNothing'
-  | PJust' (Term s a)
-  deriving stock Generic
-  deriving anyclass (PlutusType, PEq)
-instance DerivePlutusType (PMaybe' a) where type DPTStrat _ = PlutusTypeScott
-```
-
-For data encoded types, you can derive `PEq` and `POrd` via their data representation:
-
-```haskell
-newtype PTriplet a s
-  = PTriplet
-      ( Term
-          s
-          ( PDataRecord
-              '[ "x" ':= a
-               , "y" ':= a
-               , "z" ':= a
-               ]
-          )
-      )
-  deriving stock Generic
-  deriving anyclass (PlutusType, PEq)
-
-instance DerivePlutusType (PTriplet a) where type DPTStrat _ = PlutusTypeData
-```
+You can automatically derive `PEq` for anything with a `PlutusType` instance.
 
 > Aside: `PEq` derivation for data encoded types uses "Data equality". It simply ensures the structure (as represented through [data encoding](../Concepts/DataAndScottEncoding.md#data-encoding)) of both values are _exactly_ the same. It does not take into account any custom `PEq` instances for the individual fields within.

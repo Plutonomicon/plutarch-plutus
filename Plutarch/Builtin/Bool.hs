@@ -8,7 +8,6 @@ module Plutarch.Builtin.Bool (
   pbuiltinIfThenElse,
 
   -- * Functions
-  pif',
   pif,
   pnot,
   (#&&),
@@ -61,16 +60,6 @@ pbuiltinIfThenElse ::
   forall (a :: S -> Type) (s :: S).
   Term s (PBool :--> a :--> a :--> PDelayed a)
 pbuiltinIfThenElse = punsafeBuiltin PLC.IfThenElse
-
-{- | Strict if-then-else. Emits slightly less code than the lazy version.
-
-@since 1.10.0
--}
-{-# DEPRECATED pif' "Use pif instead" #-}
-pif' ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (PBool :--> a :--> a :--> a)
-pif' = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IfThenElse
 
 {- | Lazy if-then-else.
 
