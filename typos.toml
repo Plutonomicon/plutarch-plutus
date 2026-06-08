@@ -14,7 +14,9 @@ frst = "frst"
 PN = "PN"
 anc = "anc"
 bimap = "bimap"
+fpt = "fpt"
 iof = "iof"
+ANF = "ANF"
 
 [type.pdf]
 extend-glob = ["*.pdf"]

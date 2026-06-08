@@ -54,10 +54,7 @@ common c
     UnliftedNewtypes
     ViewPatterns
 
-  build-depends:
-    , base  >=4.9 && <5
-    , text
-
+  build-depends:      base >=4.9 && <5
   ghc-options:
     -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
     -Wno-partial-type-signatures -Werror -Wno-implicit-prelude
@@ -75,6 +72,15 @@ library
   import:          c
   exposed-modules:
     Plutarch.Array
+    Plutarch.Backend.ANF
+    Plutarch.Backend.Arity
+    Plutarch.Backend.AST
+    Plutarch.Backend.Compile
+    Plutarch.Backend.PosTree
+    Plutarch.Backend.RawTerm
+    Plutarch.Backend.Term
+    Plutarch.Backend.UPLC
+    Plutarch.Backend.VarMap
     Plutarch.BitString
     Plutarch.Builtin.Array
     Plutarch.Builtin.BLS
@@ -151,6 +157,7 @@ library
 
   build-depends:
     , aeson
+    , bimap
     , bytestring
     , constraints
     , containers
@@ -159,6 +166,7 @@ library
     , hashable
     , lens
     , mtl
+    , nonempty-vector
     , plutus-core           ==1.64.0.0
     , plutus-ledger-api
     , plutus-tx
@@ -167,6 +175,25 @@ library
     , quickcheck-instances
     , random
     , semialign
+    , smash
     , sop-core
+    , text
+    , these
     , unordered-containers
     , vector
+
+test-suite tests
+  import:         c
+  type:           exitcode-stdio-1.0
+  ghc-options:    -threaded -rtsopts -with-rtsopts=-N
+  main-is:        Main.hs
+  hs-source-dirs: test
+  build-depends:
+    , mtl
+    , nonempty-vector
+    , plutarch
+    , plutus-core
+    , pretty-show
+    , prettyprinter
+    , tasty
+    , tasty-hunit
