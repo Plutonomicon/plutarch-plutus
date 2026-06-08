@@ -3,14 +3,16 @@ module Main (main) where
 import Control.Monad.Except (runExceptT)
 import Control.Monad.RWS.CPS (runRWS)
 import Data.Kind (Type)
+import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.ANF (
   ANF (ANF),
+  ANFBind (ANFLam),
   fromHashedAST,
-  toUPLCTerm,
  )
 import Plutarch.Backend.AST (
   fromRawTerm,
  )
+import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
 import Plutarch.Backend.Term (
   S,
@@ -18,6 +20,8 @@ import Plutarch.Backend.Term (
   TermEnv (TermEnv),
   TermError,
   papp,
+  pdelay,
+  pforce,
   plam',
   (:-->),
  )
@@ -60,15 +64,38 @@ main =
                 step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
                 pure ()
               _ -> assertFailure $ "Unexpected top node: \n" <> ppShow t
+    , testCaseSteps "Case 2" $ \step -> do
+        step "Case: \\x -> force (delay x)"
+        step "1. Does Case 2 compile?"
+        let compiled = compileTerm case2
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            let asAST = fromRawTerm t
+            step $ "AST: \n" <> ppShow asAST
+            let ANF bm binds = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF bindings:\n" <> ppShow binds
+            step "2. Is there one bind exactly?"
+            assertBool "Too many binds" (NEVector.length binds == 1)
+            step "Exactly one bind!"
+            step "3. Is that bind an ANFLam?"
+            let soleBind = binds NEVector.! 0
+            case soleBind of
+              ANFLam {} -> step "The bind is ANFLam!"
+              _ -> assertFailure $ "Unexpected bind: " <> ppShow soleBind
     ]
 
 -- Cases
 
--- Case 1
-
--- \x -> (\y -> y) ((\z -> z) x)
+-- Case 1: \x -> (\y -> y) ((\z -> z) x)
 case1 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
 case1 = plam' $ \x -> papp (plam' id) (papp (plam' id) x)
+
+-- Case2: \x -> force (delay x)
+case2 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
+case2 = plam' $ \x -> pforce (pdelay x)
 
 -- Helpers
 
