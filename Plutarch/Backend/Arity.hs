@@ -1,3 +1,9 @@
+{- | Some helpers for arities of builtins. Needed because UPLC builtins (unlike
+UPLC lambdas more generally) possess a specific arity. We also provide a
+helper datatype more informative than 'Maybe' for getting arities.
+
+@since wip
+-}
 module Plutarch.Backend.Arity (
   Arity (..),
   getBuiltinArity,
@@ -5,9 +11,22 @@ module Plutarch.Backend.Arity (
 
 import PlutusCore qualified as PLC
 
-data Arity = NoArity | Arity Word
-  deriving stock (Eq, Show)
+{- | Isomorphic to @'Maybe Word'@, but with more useful names.
 
+@since wip
+-}
+data Arity = NoArity | Arity Word
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+{- | Maps builtins to their arities.
+
+@since wip
+-}
 getBuiltinArity :: PLC.DefaultFun -> Arity
 getBuiltinArity =
   Arity . \case

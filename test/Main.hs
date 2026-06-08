@@ -3,11 +3,13 @@ module Main (main) where
 import Control.Monad.Except (runExceptT)
 import Control.Monad.RWS.CPS (runRWS)
 import Data.Kind (Type)
-import Plutarch.Backend.AST (
+import Plutarch.Backend.ANF (
   ANF (ANF),
   fromHashedAST,
-  fromRawTerm,
   toUPLCTerm,
+ )
+import Plutarch.Backend.AST (
+  fromRawTerm,
  )
 import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
 import Plutarch.Backend.Term (

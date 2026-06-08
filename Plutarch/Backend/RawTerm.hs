@@ -1,3 +1,18 @@
+{- | An 'in-construction' abstract syntax tree for Plutarch. This is designed to
+be easy to work with at the front end, specifically for tasks like
+prettyprinting.
+
+More specifically, this corresponds to the @Structure@ described in the
+/Hashing Modulo Alpha-Equivalence/ paper. Specifically, variables are all
+anonymous in this representation, and any variables bound are tracked by
+means of 'PosTree's.
+
+= Links
+
+- [The original paper](https://arxiv.org/pdf/2105.02856)
+
+@since wip
+-}
 module Plutarch.Backend.RawTerm (
   VarTag (..),
   RawTerm (..),
@@ -17,12 +32,28 @@ import Plutarch.Backend.UPLC (UPLCTerm)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
 
+{- | Represents how a variable is used. The options are:
+
+- As an argument to a lambda;
+- As the name of a @let@ binding;
+- As a recursive \'self\' argument in a fixpoint functional.
+
+These are only for prettyprinting and code analysis.
+
+@since wip
+-}
 data VarTag
   = Argument
   | LetBinding
   | Self
-  deriving stock (Show, Eq)
+  deriving stock
+    ( -- | @since wip
+      Show
+    , -- | @since wip
+      Eq
+    )
 
+-- | @since wip
 instance Hashable VarTag where
   {-# INLINEABLE hashWithSalt #-}
   hashWithSalt = defaultHashWithSalt
@@ -33,23 +64,105 @@ instance Hashable VarTag where
       LetBinding -> 1
       Self -> 2
 
-data RawTerm (ann :: Type)
-  = RVar ann VarTag
-  | RLamAbs ann (NonEmptyVector (Maybe PosTree)) (RawTerm ann)
-  | RApply ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
-  | RForce ann (RawTerm ann)
-  | RDelay ann (RawTerm ann)
-  | RConstant ann (Some (ValueOf PLC.DefaultUni))
-  | RBuiltin ann PLC.DefaultFun
-  | RCompiled ann UPLCTerm
-  | RError ann
-  | RPlaceholder ann Integer
-  | RConstr ann Word64 (Vector (RawTerm ann))
-  | RCase ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
-  | RLet ann (Maybe PosTree) (RawTerm ann) (RawTerm ann)
-  | RFix ann PosTree (RawTerm ann)
-  deriving stock (Eq, Show)
+{- | Plutarch-specific version of the @Structure@ definition from the paper
+_Hashing Modulo Alpha-Equivalence_. We provide the ability to annotate these.
 
+@since wip
+-}
+data RawTerm (ann :: Type)
+  = {- | A variable of some kind.
+
+    @since wip
+    -}
+    RVar ann VarTag
+  | {- | A lambda, which has a known arity (not curried).
+
+    @since
+    -}
+    RLamAbs ann (NonEmptyVector (Maybe PosTree)) (RawTerm ann)
+  | {- | An application of known arity.
+
+    @since wip
+    -}
+    RApply ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
+  | {- | A UPLC @force@.
+
+    @since wip
+    -}
+    RForce ann (RawTerm ann)
+  | {- | A UPLC @delay@.
+
+    @since wip
+    -}
+    RDelay ann (RawTerm ann)
+  | {- | A constant of something from the Plutus default universe.
+
+    @since wip
+    -}
+    RConstant ann (Some (ValueOf PLC.DefaultUni))
+  | {- | A Plutus Core builtin.
+
+    @since wip
+    -}
+    RBuiltin ann PLC.DefaultFun
+  | {- | A chunk of opaque, already-compiled code. This is
+    essentially ignored by most analysis and optimization, and exists
+    mainly to support precompilation for testing.
+
+    @since wip
+    -}
+    RCompiled ann UPLCTerm
+  | {- | The canonical UPLC @error@.
+
+    @since wip
+    -}
+    RError ann
+  | {- | A placeholder, used exclusively for record encodings.
+
+    @since wip
+    -}
+    RPlaceholder ann Integer
+  | {- | A UPLC @constr@.
+
+    @since wip
+    -}
+    RConstr ann Word64 (Vector (RawTerm ann))
+  | {- | A UPLC @case@.
+
+    @since wip
+    -}
+    RCase ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
+  | {- | An explicit @let@ binding. These do not directly translate to UPLC,
+    but exist to aid prettyprinting and code analysis.
+
+    @Structure@-ally speaking, this is a hybrid between a lambda and an
+    application, both arity 1.
+
+    @since wip
+    -}
+    RLet ann (Maybe PosTree) (RawTerm ann) (RawTerm ann)
+  | {- | An explicit fixpoint of a functional. This does not directly translate
+    to UPLC, but exists to aid prettyprinting, code analysis and generation.
+
+    @Structure@-ally speaking, this is a hybrid between a lambda and an
+    application, though the fixpoint combinator is implicit.
+
+    @since wip
+    -}
+    RFix ann PosTree (RawTerm ann)
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    , -- | @since wip
+      Functor
+    )
+
+{- | Get the annotation for any 'RawTerm'.
+
+@since wip
+-}
 getRawTermAnn ::
   forall (ann :: Type).
   RawTerm ann -> ann

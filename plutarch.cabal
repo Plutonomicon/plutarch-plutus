@@ -72,6 +72,7 @@ library
   import:          c
   exposed-modules:
     Plutarch.Array
+    Plutarch.Backend.ANF
     Plutarch.Backend.Arity
     Plutarch.Backend.AST
     Plutarch.Backend.PosTree
