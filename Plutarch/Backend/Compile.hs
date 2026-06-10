@@ -332,7 +332,19 @@ doFixpointAnalysis = NEVector.ifoldl' go Set.empty
 
 -- Maybe (Int, Word64), but with more indicative names
 --
--- Used for demand analysis
+-- Used for demand analysis. Specifically, it allows us, for each bind `b` in an
+-- ANF, to check the following:
+--
+
+-- * The last ANF bind (thus, the first evaluation site) that requires `b` as a
+
+-- direct dependency; and
+
+-- * How many times _any_ ANF bind requires `b` as a direct dependency.
+
+--
+-- By using this pair of monoids, we can do this in a single pass, instead of
+-- needing two.
 data Demand
   = NeverDemanded
   | Demanded Id Word64
@@ -346,11 +358,6 @@ instance Semigroup Demand where
 instance Monoid Demand where
   mempty = NeverDemanded
 
--- For each bind, check:
---
--- - How many times it is required as a direct dependency and
--- - Which bind that requires it is highest-up the dependency chain (that is,
---   closest to the toplevel computation)
 doDemandAnalysis ::
   forall (ann :: Type).
   NonEmptyVector (ANFBind ann) -> NonEmptyVector Demand
