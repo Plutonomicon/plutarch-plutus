@@ -8,7 +8,7 @@ module Plutarch.Backend.Compile (
   toUPLCTerm,
 ) where
 
-import Control.Monad (foldM, guard)
+import Control.Monad (foldM, guard, when)
 import Control.Monad.RWS.CPS (
   MonadState (get),
   RWS,
@@ -76,6 +76,7 @@ import Plutarch.Backend.UPLC (
   uplcMCombinator,
   uplcVar,
  )
+import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 
 {- | Given an ANF, compile it into UPLC. This compilation also applies automatic
@@ -258,6 +259,7 @@ compile = do
       -- later. We can determine this from its use count alone.
       (firstDemanded, mName) <- case demand of
         NeverDemanded -> pure (-1, Nothing)
+        TrivialConstant -> pure (-1, Nothing)
         Demanded (Id j) useCount ->
           if useCount <= 1
             then pure (j, Nothing)
@@ -330,30 +332,25 @@ doFixpointAnalysis = NEVector.ifoldl' go Set.empty
       ANFFix {} -> Set.insert pos acc
       _ -> acc
 
--- Maybe (Int, Word64), but with more indicative names
---
--- Used for demand analysis. Specifically, it allows us, for each bind `b` in an
--- ANF, to check the following:
---
-
--- * The last ANF bind (thus, the first evaluation site) that requires `b` as a
-
--- direct dependency; and
-
--- * How many times _any_ ANF bind requires `b` as a direct dependency.
-
---
--- By using this pair of monoids, we can do this in a single pass, instead of
--- needing two.
+-- Used for demand analysis per bind.
 data Demand
-  = NeverDemanded
-  | Demanded Id Word64
+  = -- The 'default' starting point
+    NeverDemanded
+  | -- `Id` determines first evaluation site that requires us as a direct
+    -- dependency (which means we should `let`-bind there), `Word64` is how many
+    -- times anyone requires us as direct dependency
+    Demanded Id Word64
+  | -- Trivial constants should always be inlined. Thus, tracking their demand
+    -- analysis is pointless.
+    TrivialConstant
   deriving stock (Eq)
 
 instance Semigroup Demand where
   NeverDemanded <> x = x
   x <> NeverDemanded = x
   Demanded (Id i) count1 <> Demanded (Id j) count2 = Demanded (Id $ max i j) (count1 + count2)
+  TrivialConstant <> _ = TrivialConstant
+  _ <> TrivialConstant = TrivialConstant
 
 instance Monoid Demand where
   mempty = NeverDemanded
@@ -367,7 +364,9 @@ doDemandAnalysis binds = runST $ do
   -- here as currently, there is no way to 'freeze' a mutable non-empty vector.
   mv <- MVector.replicate len mempty
   for_ [0, 1 .. len - 1] $ \i -> case binds NEVector.! i of
-    ANFLeaf _ -> pure ()
+    ANFLeaf ell -> case ell of
+      LConstant _ c -> when (isTrivialConstant c) (MVector.write mv i TrivialConstant)
+      _ -> pure ()
     ANFForce _ r -> updateWithRef mv i r
     ANFDelay _ r -> updateWithRef mv i r
     ANFLam _ _ r -> updateWithRef mv i r
@@ -386,6 +385,12 @@ doDemandAnalysis binds = runST $ do
     updateWithRef mv i = \case
       AnId (Id j) -> MVector.modify mv (Demanded (Id i) 1 <>) j
       _ -> pure ()
+    isTrivialConstant :: Some (ValueOf PLC.DefaultUni) -> Bool
+    isTrivialConstant = \case
+      Some (ValueOf PLC.DefaultUniBool _) -> True
+      Some (ValueOf PLC.DefaultUniUnit _) -> True
+      Some (ValueOf PLC.DefaultUniInteger n) -> n < 256
+      _ -> False
 
 mkFixpointNames ::
   Map Int (PLC.Name, PLC.Name) ->

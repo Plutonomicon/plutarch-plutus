@@ -140,6 +140,7 @@ library
     Plutarch.Pretty.Internal.Name
     Plutarch.Pretty.Internal.TermUtils
     Plutarch.Pretty.Internal.Types
+    Plutarch.Primitive.Bool
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Repr.Data
