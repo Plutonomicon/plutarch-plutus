@@ -41,7 +41,7 @@ module Plutarch.Backend.Term (
   pplaceholder,
   punsafeCoerce,
   punsafeBuiltin,
-  punsafeConstantInternal,
+  punsafeConstant,
   punsafeConstr,
   punsafeCase,
   pfix,
@@ -396,10 +396,10 @@ plan to use this directly.
 
 @since wip
 -}
-punsafeConstantInternal ::
+punsafeConstant ::
   forall (a :: S -> Type) (s :: S).
   Some (ValueOf PLC.DefaultUni) -> Term s a
-punsafeConstantInternal c = Term . pure $ (vmEmpty, RConstant () c)
+punsafeConstant c = Term . pure $ (vmEmpty, RConstant () c)
 
 {- | Given a tag, and an existentially-erased 'Vector' of fields, construct a
 @constr@ term producing an SOP with the given tag and the stated fields.
