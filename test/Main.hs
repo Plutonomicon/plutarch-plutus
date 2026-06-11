@@ -27,6 +27,7 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
+import Plutarch.Primitive.Bool (PBool, pnot, por)
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.String (renderString)
@@ -58,7 +59,7 @@ main =
                 step "Converting to ANF"
                 let anf@(ANF bm bindings) = fromHashedAST asAST
                 step $ "ANF bimap:\n" <> ppShow bm
-                step $ "ANF bindings:\n" <> ppShow bindings
+                step $ "ANF binds:\n" <> ppShow bindings
                 step "Converting to UPLC"
                 let (UPLCTerm t) = toUPLCTerm anf
                 step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
@@ -76,7 +77,7 @@ main =
             step $ "AST: \n" <> ppShow asAST
             let ANF bm binds = fromHashedAST asAST
             step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF bindings:\n" <> ppShow binds
+            step $ "ANF binds:\n" <> ppShow binds
             step "2. Is there one bind exactly?"
             assertBool "Too many binds" (NEVector.length binds == 1)
             step "Exactly one bind!"
@@ -85,6 +86,26 @@ main =
             case soleBind of
               ANFLam {} -> step "The bind is ANFLam!"
               _ -> assertFailure $ "Unexpected bind: " <> ppShow soleBind
+    , testCaseSteps "Case 3" $ \step -> do
+        step "Case: \\x y -> or (not x) y"
+        step "1. Does Case 3 compile?"
+        let compiled = compileTerm case3
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            step "2. Are there 5 binds?"
+            let len = NEVector.length binds
+            assertBool ("Too many binds: " <> show len) (len == 5)
+            step "5 binds exactly!"
+            let (UPLCTerm t) = toUPLCTerm anf
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
     ]
 
 -- Cases
@@ -93,9 +114,13 @@ main =
 case1 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
 case1 = plam' $ \x -> papp (plam' id) (papp (plam' id) x)
 
--- Case2: \x -> force (delay x)
+-- Case 2: \x -> force (delay x)
 case2 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
 case2 = plam' $ \x -> pforce (pdelay x)
+
+-- Case 3: \x y -> por (pnot x) y
+case3 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool)
+case3 = plam' $ \x -> plam' $ \y -> por (pnot x) y
 
 -- Helpers
 

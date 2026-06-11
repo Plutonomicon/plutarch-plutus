@@ -3,6 +3,7 @@ module Plutarch.Primitive.Bool (
   pfalse,
   ptrue,
   pif,
+  pnot,
   pand,
   por,
   pcond,
@@ -40,6 +41,12 @@ pif cond ifT ifF =
       -- This is backwards in UPLC `case`s: false first.
       handlers = NEVector.cons fAsSome $ NEVector.singleton tAsSome
    in punsafeCase cond handlers
+
+pnot ::
+  forall (s :: S).
+  Term s PBool ->
+  Term s PBool
+pnot x = pif x pfalse ptrue
 
 pand ::
   forall (s :: S).
