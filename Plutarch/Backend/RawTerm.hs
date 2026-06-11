@@ -75,16 +75,16 @@ data RawTerm (ann :: Type)
     @since wip
     -}
     RVar ann VarTag
-  | {- | A lambda, which has a known arity (not curried).
+  | {- | A (possibly curried) lambda.
 
     @since
     -}
-    RLamAbs ann (NonEmptyVector (Maybe PosTree)) (RawTerm ann)
-  | {- | An application of known arity.
+    RLamAbs ann (Maybe PosTree) (RawTerm ann)
+  | {- | An (possibly curried) application.
 
     @since wip
     -}
-    RApply ann (RawTerm ann) (NonEmptyVector (RawTerm ann))
+    RApply ann (RawTerm ann) (RawTerm ann)
   | {- | A UPLC @force@.
 
     @since wip

@@ -118,8 +118,8 @@ toUPLCTerm (ANF _ binds) =
       ANFLeaf _ -> acc
       ANFForce _ r -> addVar acc r
       ANFDelay _ r -> addVar acc r
-      ANFLam _ _ _ r -> addVar acc r
-      ANFFix _ _ _ r -> addVar acc r
+      ANFLam _ _ r -> addVar acc r
+      ANFFix _ _ r -> addVar acc r
       ANFApply _ fR xsRs -> addVar (NEVector.foldl' addVar acc xsRs) fR
       ANFConstr _ _ fieldsRs -> Vector.foldl' addVar acc fieldsRs
       ANFCase _ scrutR handlersRs -> addVar (NEVector.foldl' addVar acc handlersRs) scrutR
@@ -183,7 +183,7 @@ compile = do
               let delayBody = uplcDelay . uplcVar $ nameBody
               let delayBinds = [(nameBody, codeBody) | firstDemandedBody == i]
               pure (delayBinds, delayBody)
-        ANFFix _ _ _ body -> do
+        ANFFix _ _ body -> do
           (firstDemandedBody, mNameBody, codeBody) <- checkCache compiled body
           -- For fixed points, given the body `F`, we want to produce `M
           -- (\r -> F (r r))`. To enable this, we've set aside two
@@ -244,7 +244,7 @@ compile = do
               let constrCall = uplcConstr 0 . NEVector.toVector $ xsArgs
               let soleHandler = NEVector.singleton fArg
               pure (applyBinds, uplcCase constrCall soleHandler)
-        ANFLam _ params _ body -> do
+        ANFLam _ params body -> do
           (firstDemandedBody, mNameBody, codeBody) <- checkCache compiled body
           asParamNames <- NEVector.mapM multToName params
           case mNameBody of
@@ -370,8 +370,8 @@ doDemandAnalysis binds = runST $ do
     ANFLeaf _ -> pure ()
     ANFForce _ r -> updateWithRef mv i r
     ANFDelay _ r -> updateWithRef mv i r
-    ANFLam _ _ _ r -> updateWithRef mv i r
-    ANFFix _ _ _ r -> updateWithRef mv i r
+    ANFLam _ _ r -> updateWithRef mv i r
+    ANFFix _ _ r -> updateWithRef mv i r
     ANFApply _ f xs -> do
       updateWithRef mv i f
       traverse_ (updateWithRef mv i) xs

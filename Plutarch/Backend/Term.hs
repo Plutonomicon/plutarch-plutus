@@ -1,6 +1,7 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
 {-# LANGUAGE TypeData #-}
+{-# LANGUAGE NoPartialTypeSignatures #-}
 
 {- | The full definition of Plutarch 'Term's, as well as eDSL primitives which
 everything else is built from.
@@ -69,7 +70,7 @@ import Data.Word (Word64)
 import GHC.Stack (CallStack, HasCallStack, callStack)
 import Plutarch.Backend.PosTree (
   PosTree (
-    PApplyCase,
+    PCase,
     PHere,
     PMany,
     POne,
@@ -151,14 +152,14 @@ data TermError
 
     @since wip
     -}
-    BadMergeApplyExtend Word64 PosTree PosTree
+    BadMergeApply Word64 PosTree PosTree
   | {- | An @apply@ or @case@ construction caused a bad position tree merge.
     This is something that should not happen normally, and is /definitely/
     a bug!
 
     @since wip
     -}
-    BadMergeApplyCase Word64 PosTree PosTree
+    BadMergeCase Word64 PosTree PosTree
   | {- | A @constr@ construction caused a bad position tree merge. This is
     something that should not happen normally, and is /definitely/ a bug!
 
@@ -219,14 +220,8 @@ plam' f = Term $ do
   fresh <- freshAndIncrement
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Argument)
   (vm, t) <- asRawTerm (f varTerm)
-  case t of
-    RLamAbs () paramTrees body -> do
-      let vmPeeled = vmMap (\case POne t -> t; x -> x) vm
-      let (mpt, vm') = vmDelete fresh vmPeeled
-      pure (vmMap POne vm', RLamAbs () (NEVector.cons mpt paramTrees) body)
-    _ -> do
-      let (mpt, vm') = vmDelete fresh vm
-      pure (vmMap POne vm', RLamAbs () (NEVector.singleton mpt) t)
+  let (mpt, vm') = vmDelete fresh vm
+  pure (vmMap POne vm', RLamAbs () mpt t)
 
 {- | Given a piece of code and a code transformation, use this to build a
 @let@-binding.
@@ -251,7 +246,7 @@ plet v f = Term $ do
   let (fpt, fvm') = vmDelete fresh fvm
   let vvmExtended = vmMap (PTwo . This) vvm
   let fvmExtended = vmMap (PTwo . That) fvm'
-  vm <- vmMergeM mergeTwo vvmExtended fvmExtended
+  vm <- vmMergeM (mergeTwo BadMergeLet) vvmExtended fvmExtended
   pure (vm, RLet () fpt vt ft)
 
 {- | Given a code transformation that takes the code for a \'self\' argument and
@@ -293,15 +288,10 @@ papp ::
 papp f x = Term $ do
   (fvm, ft) <- asRawTerm f
   (xvm, xt) <- asRawTerm x
-  case ft of
-    RApply () func args -> do
-      merged <- vmMergeM mergeExtendApply fvm xvm
-      pure (merged, RApply () func . NEVector.snoc args $ xt)
-    _ -> do
-      let fvmExtended = vmMap (\pt -> PApplyCase (Just pt) (NEVector.singleton Nothing)) fvm
-      let xvmExtended = vmMap (PApplyCase Nothing . NEVector.singleton . Just) xvm
-      merged <- vmMergeM mergeApplyCase fvmExtended xvmExtended
-      pure (merged, RApply () ft . NEVector.singleton $ xt)
+  let fvmExtended = vmMap (PTwo . This) fvm
+  let xvmExtended = vmMap (PTwo . That) xvm
+  merged <- vmMergeM (mergeTwo BadMergeApply) fvmExtended xvmExtended
+  pure (merged, RApply () ft xt)
 
 {- | Given the code for @a@, construct code that delays its evaluation.
 
@@ -437,20 +427,20 @@ punsafeCase scrut handlers = Term $ do
   -- `asRawTerm` can't solve for the existential for some reason.
   handlers' <- traverse (\(Term t) -> t) handlers
   let len = NEVector.length handlers
-  let vmScrutExtended = vmMap (\pt -> PApplyCase (Just pt) . NEVector.replicate1 len $ Nothing) vmScrut
+  let vmScrutExtended = vmMap (\pt -> PCase (Just pt) . NEVector.replicate1 len $ Nothing) vmScrut
   vm <- NEVector.ifoldM (go len) vmScrutExtended . fmap fst $ handlers'
   pure (vm, RCase () tscrut . fmap snd $ handlers')
   where
     go ::
       forall (m :: Type -> Type).
       MonadError TermError m => Int -> VarMap -> Int -> VarMap -> m VarMap
-    go len acc ix = vmMergeM mergeApplyCase acc . vmMap (toCase len ix)
+    go len acc ix = vmMergeM mergeCase acc . vmMap (toCase len ix)
 
 -- Helpers
 
 -- Helper for extending position trees for `case`s
 toCase :: Int -> Int -> PosTree -> PosTree
-toCase len ix pt = PApplyCase Nothing . NEVector.generate1 len $ \ix' -> if ix == ix' then Just pt else Nothing
+toCase len ix pt = PCase Nothing . NEVector.generate1 len $ \ix' -> if ix == ix' then Just pt else Nothing
 
 -- Helper for extending position trees for `constr`s
 toConstr :: Int -> Int -> PosTree -> PosTree
@@ -473,37 +463,29 @@ mergeConstr = zipWithAMatched $ \k v1 v2 -> case v1 of
 mergeTwo ::
   forall (m :: Type -> Type).
   MonadError TermError m =>
+  (Word64 -> PosTree -> PosTree -> TermError) ->
   WhenMatched m Word64 PosTree PosTree PosTree
-mergeTwo = zipWithAMatched $ \k v1 v2 -> case v1 of
+mergeTwo mkErr = zipWithAMatched $ \k v1 v2 -> case v1 of
   PTwo (This t1) -> case v2 of
     PTwo (That t2) -> pure . PTwo . These t1 $ t2
-    _ -> throwError . BadMergeLet k v1 $ v2
-  _ -> throwError . BadMergeLet k v1 $ v2
+    _ -> throwError . mkErr k v1 $ v2
+  _ -> throwError . mkErr k v1 $ v2
 
--- Handler for combining position trees for applications and `case`s
-mergeApplyCase ::
+-- Handler for combining position trees for `case`s
+mergeCase ::
   forall (m :: Type -> Type).
   MonadError TermError m =>
   WhenMatched m Word64 PosTree PosTree PosTree
-mergeApplyCase = zipWithAMatched $ \k v1 v2 -> case v1 of
-  PApplyCase func1 args1 -> case v2 of
-    PApplyCase func2 args2 -> do
+mergeCase = zipWithAMatched $ \k v1 v2 -> case v1 of
+  PCase func1 args1 -> case v2 of
+    PCase func2 args2 -> do
       let funcs = maybeToCan func1 func2
       let args = NEVector.zipWith maybeToCan args1 args2
-      func <- mergeCanM (BadMergeApplyCase k v1 v2) funcs
-      args' <- traverse (mergeCanM (BadMergeApplyCase k v1 v2)) args
-      pure . PApplyCase func $ args'
-    _ -> throwError . BadMergeApplyCase k v1 $ v2
-  _ -> throwError . BadMergeApplyCase k v1 $ v2
-
--- Handler for combining position trees in applications
-mergeExtendApply ::
-  forall (m :: Type -> Type).
-  MonadError TermError m =>
-  WhenMatched m Word64 PosTree PosTree PosTree
-mergeExtendApply = zipWithAMatched $ \k v1 v2 -> case v1 of
-  PApplyCase func args -> pure . PApplyCase func . NEVector.snoc args . Just $ v2
-  _ -> throwError . BadMergeApplyExtend k v1 $ v2
+      func <- mergeCanM (BadMergeCase k v1 v2) funcs
+      args' <- traverse (mergeCanM (BadMergeCase k v1 v2)) args
+      pure . PCase func $ args'
+    _ -> throwError . BadMergeCase k v1 $ v2
+  _ -> throwError . BadMergeCase k v1 $ v2
 
 freshAndIncrement ::
   forall (m :: Type -> Type) (a :: Type).

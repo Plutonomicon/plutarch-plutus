@@ -59,16 +59,16 @@ data PosTree
     @since wip
     -}
     PMany (Vector (Maybe PosTree))
-  | {- | The variable of interest occurs in an application or @case@,
-    in either the function (scrutinee) subtree, one or more of the argument
-    (handler) subtrees, or both.
+  | {- | The variable of interest occurs in a @case@,
+    in either the scrutinee subtree, one or more of the handler subtrees, or
+    both.
 
     = Note
 
     This structure must maintain the implicit invariant that at least one of
     the following always holds:
 
-    - The function (scrutinee) 'PosTree' is not 'Nothing'; or
+    - The scrutinee 'PosTree' is not 'Nothing'; or
     - At least one of the 'NonEmptyVector' entries is not 'Nothing'.
 
     All operations we provide over 'PosTree' maintain this invariant, but if
@@ -76,7 +76,7 @@ data PosTree
 
     @since wip
     -}
-    PApplyCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
+    PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
   deriving stock
     ( -- | @since wip
       Show
@@ -94,7 +94,7 @@ instance Hashable PosTree where
     POne t -> hash (1 :: Int, t)
     PTwo ts -> hash (2 :: Int, ts)
     PMany ts -> hash (3 :: Int, Vector.toList ts)
-    PApplyCase t ts -> hash (4 :: Int, t, NEVector.toList ts)
+    PCase t ts -> hash (4 :: Int, t, NEVector.toList ts)
 
 {- | Checks if a 'PosTree' corresponds to a non-branching path. In the context
 of variables, checks whether the variable's use is linear (no more than
@@ -115,7 +115,7 @@ isLinear = \case
     Just (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
       Nothing -> False -- impossible
       Just linearity -> linearity
-  PApplyCase t ts -> case fmap isLinear t of
+  PCase t ts -> case fmap isLinear t of
     Nothing -> case NEVector.uncons ts of
       (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
         Nothing -> False -- impossible
