@@ -49,7 +49,6 @@ import Plutarch.Backend.AST (
     ASTLeaf
   ),
   Hash,
-  Liftability,
   Multiplicity,
  )
 import Plutarch.Backend.AST qualified as AST
@@ -113,8 +112,8 @@ data ANFBind (ann :: Type)
   = ANFLeaf (Leaf ann)
   | ANFForce ann Ref
   | ANFDelay ann Ref
-  | ANFLam ann (NonEmptyVector (Maybe Multiplicity)) Liftability Ref
-  | ANFFix ann Multiplicity Liftability Ref
+  | ANFLam ann (NonEmptyVector (Maybe Multiplicity)) Ref
+  | ANFFix ann Multiplicity Ref
   | ANFApply ann Ref (NonEmptyVector Ref)
   | ANFConstr ann Word64 (Vector Ref)
   | ANFCase ann Ref (NonEmptyVector Ref)
@@ -156,12 +155,12 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
       ASTDelay h body -> withLookup h $ do
         bodyRef <- go body
         newBind h (ANFDelay () bodyRef)
-      ASTLam h mults liftability body -> withLookup h $ do
+      ASTLam h mults body -> withLookup h $ do
         bodyRef <- go body
-        newBind h (ANFLam () mults liftability bodyRef)
-      ASTFix h mult liftability body -> withLookup h $ do
+        newBind h (ANFLam () mults bodyRef)
+      ASTFix h mult body -> withLookup h $ do
         bodyRef <- go body
-        newBind h (ANFFix () mult liftability bodyRef)
+        newBind h (ANFFix () mult bodyRef)
       ASTApply h f xs -> withLookup h $ do
         fRef <- go f
         xsRefs <- traverse go xs

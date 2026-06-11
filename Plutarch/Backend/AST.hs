@@ -23,7 +23,6 @@ module Plutarch.Backend.AST (
   -- * Common
   Hash (..),
   Multiplicity (..),
-  Liftability (..),
 
   -- * AST
   Leaf (..),
@@ -52,7 +51,7 @@ import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import Plutarch.Backend.PosTree (
   PosTree (
-    PApplyCase,
+    PCase,
     PHere,
     PMany,
     POne,
@@ -115,18 +114,6 @@ data Multiplicity
       Show
     )
 
-{- | A marker whether a lambda has any free (relative the lambda's body)
-variable occurrences or not. If the lambda has no free variables in its body,
-it is trivially liftable; otherwise, its lifting is not trivial.
-
-@since wip
--}
-data Liftability = Trivial | NonTrivial
-  deriving stock
-    ( -- | @since wip
-      Show
-    )
-
 {- | A leaf computation (namely, one that cannot have dependencies).
 
 @since wip
@@ -151,6 +138,7 @@ and thus be easier to prettyprint and generate.
 More precisely, this closely follows 'RawTerm', except that:
 
 - 'RLet' nodes have been removed
+- Lambdas and applications have been uncurried
 - Position trees have been replaced by 'Multiplicity', whose hashes are
   hashes of the corresponding position tree
 - Lambdas and fixpoints have been annotated with their 'Liftability'
@@ -161,8 +149,8 @@ data AST (ann :: Type)
   = ASTLeaf (Leaf ann)
   | ASTForce ann (AST ann)
   | ASTDelay ann (AST ann)
-  | ASTLam ann (NonEmptyVector (Maybe Multiplicity)) Liftability (AST ann)
-  | ASTFix ann Multiplicity Liftability (AST ann)
+  | ASTLam ann (NonEmptyVector (Maybe Multiplicity)) (AST ann)
+  | ASTFix ann Multiplicity (AST ann)
   | ASTApply ann (AST ann) (NonEmptyVector (AST ann))
   | ASTConstr ann Word64 (Vector (AST ann))
   | ASTCase ann (AST ann) (NonEmptyVector (AST ann))
@@ -218,16 +206,15 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
         let mult = case fromJust . findVarUsage fresh (Just pt) $ body of
               (h, False) -> MultiplicityOne h
               (h, True) -> MultiplicityMany h
-        liftability <- asks (bool NonTrivial Trivial . (vmEmpty ==))
         (structuralHashBody, body') <- local (vmExtend fresh pt . vmMap stepDownOne) (go body)
         let structuralHash = hash (7 :: Int, structuralHashBody)
-        mkHashed structuralHash (\h -> ASTFix h mult liftability body')
+        mkHashed structuralHash (\h -> ASTFix h mult body')
       RLet _ mpt v f -> do
-        let node = RApply () (RLamAbs () (NEVector.singleton mpt) f) . NEVector.singleton $ v
+        let node = RApply () (RLamAbs () mpt f) v
         (vmv, vmf) <- asks (vmFold separateTwo (vmEmpty, vmEmpty))
         let vmf' = vmMap POne vmf
-        let extendedVMV = vmMap (PApplyCase Nothing . NEVector.singleton . Just) vmv
-        let extendedVMF = vmMap (\pt -> PApplyCase (Just pt) (NEVector.singleton Nothing)) vmf'
+        let extendedVMV = vmMap (PTwo . That) vmv
+        let extendedVMF = vmMap (PTwo . This) vmf'
         let vm' = vmMerge mergeLet extendedVMF extendedVMV
         local (const vm') (go node)
       RConstr _ tag fields -> do
@@ -239,35 +226,48 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
         mkHashed structuralHash (\h -> ASTConstr h tag fields')
       RCase _ scrut handlers -> do
         let len = NEVector.length handlers
-        (scrutVM, handlerVMs) <- asks (vmFold separateApplyCase (vmEmpty, NEVector.replicate1 len vmEmpty))
+        (scrutVM, handlerVMs) <- asks (vmFold separateCase (vmEmpty, NEVector.replicate1 len vmEmpty))
         (structuralHashScrut, scrut') <- local (const scrutVM) (go scrut)
         let descendCase i rt = local (const (handlerVMs NEVector.! i)) (go rt)
         (structuralHashesHandlers, handlers') <- NEVector.unzip <$> NEVector.imapM descendCase handlers
         let structuralHash = hash (9 :: Int, structuralHashScrut, NEVector.toVector structuralHashesHandlers)
         mkHashed structuralHash (\h -> ASTCase h scrut' handlers')
-      RApply _ f xs -> do
-        let len = NEVector.length xs
-        (fVM, xsVMs) <- asks (vmFold separateApplyCase (vmEmpty, NEVector.replicate1 len vmEmpty))
+      RApply _ f x -> do
+        (fVM, xVM) <- asks (vmFold separateTwo (vmEmpty, vmEmpty))
         (structuralHashF, f') <- local (const fVM) (go f)
-        let descendApply i rt = local (const (xsVMs NEVector.! i)) (go rt)
-        (structuralHashesXs, xs') <- NEVector.unzip <$> NEVector.imapM descendApply xs
-        let structuralHash = hash (10 :: Int, structuralHashF, NEVector.toVector structuralHashesXs)
-        mkHashed structuralHash (\h -> ASTApply h f' xs')
-      RLamAbs _ mpts body -> do
-        let len = NEVector.length mpts
-        withFreshes <- NEVector.zip <$> NEVector.replicate1M len getFresh <*> pure mpts
-        let multiplicities = fmap (\(name, mpt) -> (\(h, b) -> bool MultiplicityOne MultiplicityMany b h) <$> findVarUsage name mpt body) withFreshes
-        liftability <- asks (bool NonTrivial Trivial . (vmEmpty ==))
+        (structuralHashX, x') <- local (const xVM) (go x)
+        case f' of
+          -- We're part of a curried apply. We need to add one more argument.
+          ASTApply _ g ys -> do
+            let structuralHash = hash (structuralHashF, structuralHashX)
+            mkHashed structuralHash (\h -> ASTApply h g . NEVector.snoc ys $ x')
+          _ -> do
+            let structuralHash = hash (10 :: Int, structuralHashF, structuralHashX)
+            mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
+      RLamAbs _ mpt body -> do
+        fresh <- getFresh
+        let multiplicity = case findVarUsage fresh mpt body of
+              Nothing -> Nothing
+              Just (h, b) -> Just . bool MultiplicityOne MultiplicityMany b $ h
         vm' <- asks (vmMap stepDownOne)
-        let bodyVM = NEVector.foldl' (\acc (k, mv) -> case mv of Nothing -> acc; Just v -> vmExtend k v acc) vm' withFreshes
-        (structuralHashBody, body') <- local (const bodyVM) (go body)
-        let structuralHash = hash (11 :: Int, NEVector.toVector mpts, structuralHashBody)
-        mkHashed structuralHash (\h -> ASTLam h multiplicities liftability body')
+        let extendedVM = case mpt of
+              Nothing -> vm'
+              Just pt -> vmExtend fresh pt vm'
+        (structuralHashBody, body') <- local (const extendedVM) (go body)
+        case body' of
+          -- We're part of a curried lambda. We need to add one more
+          -- multiplicity.
+          ASTLam _ mults body'' -> do
+            let structuralHash = hash (structuralHashBody, mpt)
+            mkHashed structuralHash (\h -> ASTLam h (NEVector.cons multiplicity mults) body'')
+          _ -> do
+            let structuralHash = hash (11 :: Int, mpt, structuralHashBody)
+            mkHashed structuralHash (\h -> ASTLam h (NEVector.singleton multiplicity) body')
 
 -- Helpers
 
 mergeLet :: PosTree -> PosTree -> PosTree
-mergeLet (PApplyCase f1 xs1) (PApplyCase f2 xs2) = PApplyCase (f1 <|> f2) (NEVector.zipWith (<|>) xs1 xs2)
+mergeLet (PCase f1 xs1) (PCase f2 xs2) = PCase (f1 <|> f2) (NEVector.zipWith (<|>) xs1 xs2)
 mergeLet x _ = x -- impossible
 
 mkHashed ::
@@ -302,9 +302,9 @@ separateConstr acc k = \case
       Nothing -> vm
       Just t -> vmExtend k t vm
 
-separateApplyCase :: (VarMap, NonEmptyVector VarMap) -> Word64 -> PosTree -> (VarMap, NonEmptyVector VarMap)
-separateApplyCase acc@(scrutVM, handlerVMs) k = \case
-  PApplyCase mpt mpts -> case mpt of
+separateCase :: (VarMap, NonEmptyVector VarMap) -> Word64 -> PosTree -> (VarMap, NonEmptyVector VarMap)
+separateCase acc@(scrutVM, handlerVMs) k = \case
+  PCase mpt mpts -> case mpt of
     Nothing -> (scrutVM, NEVector.zipWith go handlerVMs mpts)
     Just pt -> (vmExtend k pt scrutVM, NEVector.zipWith go handlerVMs mpts)
   _ -> acc
@@ -343,22 +343,23 @@ findVarUsage name mpt t = case mpt of
     RLet _ _ v f -> case pts of
       This pt -> findVarUsage name (Just pt) v
       That pt -> findVarUsage name (Just pt) f
+      -- Bind is likely to be smaller, so we'll search there.
       These ptv _ -> (\(h, _) -> (h, True)) <$> findVarUsage name (Just ptv) v
+    RApply _ f x -> case pts of
+      This pt -> findVarUsage name (Just pt) f
+      That pt -> findVarUsage name (Just pt) x
+      -- Argument is likely to be smaller, so we'll search there.
+      These _ ptv -> (\(h, _) -> (h, True)) <$> findVarUsage name (Just ptv) x
     _ -> Nothing
   Just (PMany pts) -> case t of
     RConstr _ _ fields -> Vector.foldl' go Nothing . Vector.zip pts $ fields
     _ -> Nothing
-  Just (PApplyCase pt pts) -> case t of
+  Just (PCase pt pts) -> case t of
     RCase _ scrut handlers ->
       let resScrut = findVarUsage name pt scrut
        in case resScrut of
             Just (_, True) -> resScrut
             _ -> NEVector.foldl' go resScrut . NEVector.zip pts $ handlers
-    RApply _ f xs ->
-      let resF = findVarUsage name pt f
-       in case resF of
-            Just (_, True) -> resF
-            _ -> NEVector.foldl' go resF . NEVector.zip pts $ xs
     _ -> Nothing
   where
     go :: Maybe (Hash, Bool) -> (Maybe PosTree, RawTerm ()) -> Maybe (Hash, Bool)
