@@ -25,6 +25,8 @@ which describes the \'@ST@ trick\'
 module Plutarch.Backend.Term (
   TermEnv (..),
   Term (..),
+  SomeTerm,
+  toSomeTerm,
   TermError (..),
   PDelayed,
   S,
@@ -182,6 +184,24 @@ newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
 type role Term nominal nominal
+
+{- | A 'Term' whose result has been forgotten. Useful mainly together with
+'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of
+heterogenous types to be used in both.
+
+@since wip
+-}
+data SomeTerm (s :: S) where
+  SomeTerm :: Term s a -> SomeTerm s
+
+{- | \'Forgets\' the result of a computation represented by a 'Term'.
+
+@since wip
+-}
+toSomeTerm ::
+  forall (a :: S -> Type) (s :: S).
+  Term s a -> SomeTerm s
+toSomeTerm = SomeTerm
 
 {- | The type of a Plutarch lambda. To be specific, @'Term' s (a :--> b)@
 corresponds to the code of a computation that, when run, will produce a UPLC
@@ -396,12 +416,12 @@ SOP you're trying to construct.
 punsafeConstr ::
   forall (a :: S -> Type) (s :: S).
   Word64 ->
-  Vector (forall (b :: S -> Type). Term s b) ->
+  Vector (SomeTerm s) ->
   Term s a
 punsafeConstr ix fields = Term $ do
   -- Note (Koz, 28/05/2026): We need to use the constructor explicitly here, as
   -- `asRawTerm` can't solve for the existential for some reason.
-  fields' <- traverse (\(Term t) -> t) fields
+  fields' <- traverse (\(SomeTerm (Term t)) -> t) fields
   let len = Vector.length fields
   vm <- Vector.ifoldM (go len) vmEmpty . fmap fst $ fields'
   pure (vm, RConstr () ix . fmap snd $ fields')
@@ -429,13 +449,13 @@ using.
 punsafeCase ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s a ->
-  NonEmptyVector (forall (c :: S -> Type). Term s c) ->
+  NonEmptyVector (SomeTerm s) ->
   Term s b
 punsafeCase scrut handlers = Term $ do
   (vmScrut, tscrut) <- asRawTerm scrut
   -- Note (Koz, 28/05/2026): We need to use the constructor explicitly here, as
   -- `asRawTerm` can't solve for the existential for some reason.
-  handlers' <- traverse (\(Term t) -> t) handlers
+  handlers' <- traverse (\(SomeTerm (Term t)) -> t) handlers
   let len = NEVector.length handlers
   let vmScrutExtended = vmMap (\pt -> PApplyCase (Just pt) . NEVector.replicate1 len $ Nothing) vmScrut
   vm <- NEVector.ifoldM (go len) vmScrutExtended . fmap fst $ handlers'
