@@ -141,6 +141,7 @@ library
     Plutarch.Pretty.Internal.TermUtils
     Plutarch.Pretty.Internal.Types
     Plutarch.Primitive.Bool
+    Plutarch.Primitive.Integer
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Repr.Data

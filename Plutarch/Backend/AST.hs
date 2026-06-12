@@ -31,6 +31,7 @@ module Plutarch.Backend.AST (
 ) where
 
 import Control.Applicative ((<|>))
+import Control.Monad (guard)
 import Control.Monad.RWS.CPS (
   MonadReader (ask, local),
   MonadState (get),
@@ -137,11 +138,13 @@ and thus be easier to prettyprint and generate.
 
 More precisely, this closely follows 'RawTerm', except that:
 
-- 'RLet' nodes have been removed
-- Lambdas and applications have been uncurried
-- Position trees have been replaced by 'Multiplicity', whose hashes are
+* 'RLet' nodes have been removed
+* Lambdas and applications have been uncurried
+* Position trees have been replaced by 'Multiplicity', whose hashes are
   hashes of the corresponding position tree
-- Lambdas and fixpoints have been annotated with their 'Liftability'
+* Lambdas and fixpoints have been annotated with their 'Liftability'
+* Lambdas that do nothing but forward their arguments (in the same order) to
+  a builtin are erased and replaced with that builtin.
 
 @since wip
 -}
@@ -254,17 +257,77 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
               Nothing -> vm'
               Just pt -> vmExtend fresh pt vm'
         (structuralHashBody, body') <- local (const extendedVM) (go body)
-        case body' of
-          -- We're part of a curried lambda. We need to add one more
-          -- multiplicity.
-          ASTLam _ mults body'' -> do
-            let structuralHash = hash (structuralHashBody, mpt)
-            mkHashed structuralHash (\h -> ASTLam h (NEVector.cons multiplicity mults) body'')
-          _ -> do
-            let structuralHash = hash (11 :: Int, mpt, structuralHashBody)
-            mkHashed structuralHash (\h -> ASTLam h (NEVector.singleton multiplicity) body')
+        let (structuralHashAll, fullMults, fullBody) = case body' of
+              -- We're part of a curried lambda. We need to add one more
+              -- multiplicity.
+              ASTLam _ mults body'' ->
+                let structuralHash = hash (structuralHashBody, mpt)
+                 in (structuralHash, NEVector.cons multiplicity mults, body'')
+              _ ->
+                let structuralHash = hash (11 :: Int, mpt, structuralHashBody)
+                 in (structuralHash, NEVector.singleton multiplicity, body')
+        case fullBody of
+          -- If our body is an application, we want to check that the arguments
+          -- are being forwarded directly to a builtin. If they are, we should
+          -- eliminate the lambda entirely in favour of that builtin.
+          ASTApply _ f xs -> case alignMultsArgs fullMults xs of
+            Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+            Just () -> case getBuiltinStructure f of
+              Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+              -- If we've made it here, we know that we have a lambda body that
+              -- just forwards the lambda's arguments, in the same order, to a
+              -- builtin, possibly with some `force`s in the way. Since such a
+              -- term is closed by definition, we can built its AST using the
+              -- empty variable map.
+              Just structure -> local (const vmEmpty) (go structure)
+          _ -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
 
 -- Helpers
+
+-- Tries to 'dig out' a builtin, possibly wrapped in some number of `force`s. As
+-- we know such terms must be closed, we can just 'rebuild' them as `RawTerm` to
+-- make it easier to deal with their hashes.
+getBuiltinStructure :: AST Hash -> Maybe (RawTerm ())
+getBuiltinStructure = \case
+  ASTLeaf (LBuiltin _ f) -> pure . RBuiltin () $ f
+  ASTForce _ body -> RForce () <$> getBuiltinStructure body
+  _ -> Nothing
+
+-- Check that the arguments of a lambda align exactly with some arguments to an
+-- application. This means they must:
+--
+
+-- * Have the same number;
+
+-- * All be variables;
+
+-- * Correspond positionally to the lambda's arguments
+alignMultsArgs :: NonEmptyVector (Maybe Multiplicity) -> NonEmptyVector (AST Hash) -> Maybe ()
+alignMultsArgs mults args =
+  let (mult, mults') = NEVector.uncons mults
+      (arg, args') = NEVector.uncons args
+   in go mult arg mults' args'
+  where
+    go ::
+      Maybe Multiplicity ->
+      AST Hash ->
+      Vector (Maybe Multiplicity) ->
+      Vector (AST Hash) ->
+      Maybe ()
+    go mMult arg restMult restArgs = do
+      mult <- mMult
+      case arg of
+        ASTLeaf (LVar _ varHash) -> do
+          let multHash = case mult of MultiplicityOne h -> h; MultiplicityMany h -> h
+          guard (multHash == varHash)
+          case Vector.uncons restMult of
+            Nothing -> case Vector.uncons restArgs of
+              Nothing -> pure ()
+              _ -> Nothing
+            Just (mMult', restMult') -> do
+              (arg', restArgs') <- Vector.uncons restArgs
+              go mMult' arg' restMult' restArgs'
+        _ -> Nothing
 
 mergeLet :: PosTree -> PosTree -> PosTree
 mergeLet (PCase f1 xs1) (PCase f2 xs2) = PCase (f1 <|> f2) (NEVector.zipWith (<|>) xs1 xs2)
