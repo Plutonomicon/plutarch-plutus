@@ -7,6 +7,7 @@ import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.ANF (
   ANF (ANF),
   ANFBind (ANFLam),
+  analyzeDemand,
   fromHashedAST,
  )
 import Plutarch.Backend.AST (
@@ -57,11 +58,15 @@ main =
                 let asAST = fromRawTerm t
                 step $ "AST: \n" <> ppShow asAST
                 step "Converting to ANF"
-                let anf@(ANF bm bindings) = fromHashedAST asAST
+                let anf@(ANF bm binds) = fromHashedAST asAST
                 step $ "ANF bimap:\n" <> ppShow bm
-                step $ "ANF binds:\n" <> ppShow bindings
+                step $ "ANF binds:\n" <> ppShow binds
+                step "Demand analysis"
+                let anf'@(ANF bm' binds') = analyzeDemand anf
+                step $ "ANF bimap:\n" <> ppShow bm'
+                step $ "ANF binds:\n" <> ppShow binds'
                 step "Converting to UPLC"
-                let (UPLCTerm t) = toUPLCTerm anf
+                let (UPLCTerm t) = toUPLCTerm anf'
                 step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
                 pure ()
               _ -> assertFailure $ "Unexpected top node: \n" <> ppShow t
@@ -103,7 +108,11 @@ main =
             let len = NEVector.length binds
             assertBool ("Too many binds: " <> show len) (len == 5)
             step "5 binds exactly!"
-            let (UPLCTerm t) = toUPLCTerm anf
+            step "Demand analysis"
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
     ]
