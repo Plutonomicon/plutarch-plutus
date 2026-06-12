@@ -124,6 +124,27 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
+    , testCaseSteps "Case 5" $ \step -> do
+        step "Case: \\x' y' -> (\\x y -> addInteger x y) x' y'"
+        step "1. Does Case 5 compile?"
+        let compiled = compileTerm case5
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
             let anf@(ANF bm binds) = fromHashedAST asAST
@@ -154,6 +175,10 @@ case3 = plam' $ \x -> plam' $ \y -> por (pnot x) y
 -- Case 4: \x y -> addInteger x y
 case4 :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 case4 = plam' $ \x -> plam' $ papp (papp paddInteger x)
+
+-- Case 5: (\x y -> (\x' y' -> addInteger x' y') x y)
+case5 :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+case5 = plam' $ \x -> plam' $ \y -> papp (papp case4 x) y
 
 -- Helpers
 
