@@ -129,7 +129,10 @@ main =
             let anf@(ANF bm binds) = fromHashedAST asAST
             step $ "ANF bimap:\n" <> ppShow bm
             step $ "ANF binds:\n" <> ppShow binds
-            let (UPLCTerm t) = toUPLCTerm anf
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
     ]
