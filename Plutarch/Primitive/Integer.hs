@@ -10,10 +10,14 @@ module Plutarch.Primitive.Integer (
 ) where
 
 import Plutarch.Backend.Term (S, Term, punsafeBuiltin, (:-->))
+import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
 
 -- | @since wip
 data PInteger (s :: S)
+
+-- | @since wip
+type instance PRepresentation PInteger = PInteger
 
 -- | @since wip
 paddInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
