@@ -183,7 +183,7 @@ rewriteUniques (UPLCTerm code) used = case runState (go code) (used, Map.empty) 
             if clashes
               then do
                 -- Rehash the current 'unique' until it no longer clashes
-                uniq' <- doUntilM uniq (pure . hash) (\hash' -> gets (Set.notMember hash' . fst))
+                uniq' <- doUntilM uniq (\x -> pure . hash $ (1 :: Int, x)) (\hash' -> gets (Set.notMember hash' . fst))
                 -- Store the rewrite, and note that the new unique is used
                 modify (bimap (Set.insert uniq') (Map.insert uniq uniq'))
                 -- Apply the rewrite
