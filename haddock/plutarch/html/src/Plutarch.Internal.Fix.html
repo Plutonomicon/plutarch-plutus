@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Internal.Fix</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Fix.html#pfixHoisted"><span class="hs-identifier">pfixHoisted</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Fix.html#pfix"><span class="hs-identifier">pfix</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Fix.html#pfixInline"><span class="hs-identifier">pfixInline</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html"><span class="hs-identifier">Plutarch.Builtin.Opaque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.PLam.html"><span class="hs-identifier">Plutarch.Internal.PLam</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier">plam</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html"><span class="hs-identifier">Plutarch.Internal.Term</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#phoistAcyclic"><span class="hs-identifier">phoistAcyclic</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#plam%27"><span class="hs-identifier">plam'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#punsafeCoerce"><span class="hs-identifier">punsafeCoerce</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator">(#)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="annot"><span class="hs-comment">{- | Fixpoint recursion, used to encode recursive functions.
+
+= Note
+
+This fixpoint combinator is /hoisted/, which allows for the smallest code
+size. However, in terms of execution units, 'pfixHoisted' is the least
+efficient.
+
+'pfixHoisted' used to be the default fixpoint combinator in Plutarch. If you
+used 'pfix' before, and want to maintain identical behaviour, use this
+function.
+
+= Example
+
+Additional examples can be found in @examples/Recursion.hs@.
+
+&gt; iterateN' ::
+&gt;  Term s (PInteger :--&gt; (a :--&gt; a) :--&gt; a :--&gt; a) -&gt;
+&gt;  Term s PInteger -&gt;
+&gt;  Term s (a :--&gt; a) -&gt;
+&gt;  Term s a
+&gt; iterateN' self n f x =
+&gt;    pif (n #== 0)
+&gt;        x
+&gt;        (self # n - 1 #$ f x)
+&gt;
+&gt; iterateN :: Term s (PInteger :--&gt; (a :--&gt; a) :--&gt; a :--&gt; a)
+&gt; iterateN = pfixHoisted #$ plam iterateN'
+
+@since 1.12.0
+-}</span></span><span>
+</span><span id="line-47"></span><span id="local-6989586621679692443"><span id="local-6989586621679692444"><span id="local-6989586621679692445"><span class="annot"><a href="Plutarch.Internal.Fix.html#pfixHoisted"><span class="hs-identifier hs-type">pfixHoisted</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692443"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692444"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692445"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692444"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692445"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692444"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692445"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-48"></span><span id="pfixHoisted"><span class="annot"><span class="annottext">pfixHoisted :: forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+</span><a href="Plutarch.Internal.Fix.html#pfixHoisted"><span class="hs-identifier hs-var hs-var">pfixHoisted</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s' :: S).
+ Term s' (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b)))
+-&gt; Term s (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall (a :: S -&gt; Type) (s :: S).
+HasCallStack =&gt;
+(forall (s' :: S). Term s' a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#phoistAcyclic"><span class="hs-identifier hs-var">phoistAcyclic</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (s' :: S).
+  Term s' (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b)))
+ -&gt; Term s (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b)))
+-&gt; (forall (s' :: S).
+    Term s' (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b)))
+-&gt; Term s (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-49"></span><span>  </span><span class="annot"><span class="annottext">Term
+  s'
+  (((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+   :--&gt; Any @(S -&gt; Type))
+-&gt; Term s' (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall (b :: S -&gt; Type) (a :: S -&gt; Type) (s :: S).
+Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#punsafeCoerce"><span class="hs-identifier hs-var">punsafeCoerce</span></a></span><span> </span><span class="annot"><span class="annottext">(Term
+   s'
+   (((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+    :--&gt; Any @(S -&gt; Type))
+ -&gt; Term s' (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b)))
+-&gt; Term
+     s'
+     (((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+      :--&gt; Any @(S -&gt; Type))
+-&gt; Term s' (((a :--&gt; b) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span class="annot"><span class="annottext">(Term s' ((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+ -&gt; Term s' (Any @(S -&gt; Type)))
+-&gt; Term
+     s'
+     (((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+      :--&gt; Any @(S -&gt; Type))
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+(Term s a -&gt; Term s b) -&gt; Term s (a :--&gt; b)
+</span><a href="Plutarch.Internal.Term.html#plam%27"><span class="hs-identifier hs-var">plam'</span></a></span><span> </span><span class="annot"><span class="annottext">((Term s' ((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+  -&gt; Term s' (Any @(S -&gt; Type)))
+ -&gt; Term
+      s'
+      (((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+       :--&gt; Any @(S -&gt; Type)))
+-&gt; (Term s' ((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+    -&gt; Term s' (Any @(S -&gt; Type)))
+-&gt; Term
+     s'
+     (((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+      :--&gt; Any @(S -&gt; Type))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679692500"><span class="annot"><span class="annottext">Term s' ((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+</span><a href="#local-6989586621679692500"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-51"></span><span>      </span><span class="annot"><span class="annottext">(Term s' POpaque -&gt; Term s' (Any @(S -&gt; Type)))
+-&gt; Term s' (POpaque :--&gt; Any @(S -&gt; Type))
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+(Term s a -&gt; Term s b) -&gt; Term s (a :--&gt; b)
+</span><a href="Plutarch.Internal.Term.html#plam%27"><span class="hs-identifier hs-var">plam'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679692501"><span id="local-6989586621679692502"><span class="annot"><span class="annottext">Term s' POpaque
+</span><a href="#local-6989586621679692502"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692501"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s' ((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+</span><a href="#local-6989586621679692500"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' ((POpaque :--&gt; Any @(S -&gt; Type)) :--&gt; Any @(S -&gt; Type))
+-&gt; Term s' (POpaque :--&gt; Any @(S -&gt; Type))
+-&gt; Term s' (Any @(S -&gt; Type))
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s' POpaque -&gt; Term s' (Any @(S -&gt; Type)))
+-&gt; Term s' (POpaque :--&gt; Any @(S -&gt; Type))
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+(Term s a -&gt; Term s b) -&gt; Term s (a :--&gt; b)
+</span><a href="Plutarch.Internal.Term.html#plam%27"><span class="hs-identifier hs-var">plam'</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679692503"><span class="annot"><span class="annottext">Term s' POpaque
+</span><a href="#local-6989586621679692503"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692501"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s' POpaque
+-&gt; Term s' (POpaque :--&gt; (POpaque :--&gt; Any @(S -&gt; Type)))
+forall (b :: S -&gt; Type) (a :: S -&gt; Type) (s :: S).
+Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#punsafeCoerce"><span class="hs-identifier hs-var">punsafeCoerce</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' POpaque
+</span><a href="#local-6989586621679692502"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (POpaque :--&gt; (POpaque :--&gt; Any @(S -&gt; Type)))
+-&gt; Term s' POpaque -&gt; Term s' (POpaque :--&gt; Any @(S -&gt; Type))
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' POpaque
+</span><a href="#local-6989586621679692502"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (POpaque :--&gt; Any @(S -&gt; Type))
+-&gt; Term s' POpaque -&gt; Term s' (Any @(S -&gt; Type))
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' POpaque
+</span><a href="#local-6989586621679692503"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-cpp">
+        # punsafeCoerce (plam' $ \(x :: Term s POpaque) -&gt; f # plam' (\(v :: Term s POpaque) -&gt; punsafeCoerce x # x # v))
+</span><span>
+</span><span id="line-54"></span><span class="annot"><span class="hs-comment">{- | As 'pfixHoisted', but not hoisted. This is more efficient in terms of
+execution units, but takes up more script space.
+
+@since 1.12.0
+-}</span></span><span>
+</span><span id="line-59"></span><span class="annot"><a href="Plutarch.Internal.Fix.html#pfix"><span class="hs-identifier hs-type">pfix</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679692471"><span class="annot"><a href="#local-6989586621679692471"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679692472"><span class="annot"><a href="#local-6989586621679692472"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679692470"><span class="annot"><a href="#local-6989586621679692470"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692470"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692471"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692472"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692470"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692471"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692472"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-62"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692470"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692471"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692472"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span id="pfix"><span class="annot"><span class="annottext">pfix :: forall (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S).
+(Term s (a :--&gt; b) -&gt; Term s (a :--&gt; b)) -&gt; Term s (a :--&gt; b)
+</span><a href="Plutarch.Internal.Fix.html#pfix"><span class="hs-identifier hs-var hs-var">pfix</span></a></span></span><span> </span><span id="local-6989586621679692516"><span class="annot"><span class="annottext">Term s (a :--&gt; b) -&gt; Term s (a :--&gt; b)
+</span><a href="#local-6989586621679692516"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-64"></span><span>  </span><span class="annot"><span class="annottext">(Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) -&gt; Term s (a :--&gt; b))
+-&gt; Term s ((Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall a (b :: S -&gt; Type) (s :: S) (c :: S -&gt; Type).
+(PLamN a b s, HasCallStack) =&gt;
+(Term s c -&gt; a) -&gt; Term s (c :--&gt; b)
+forall (c :: S -&gt; Type).
+HasCallStack =&gt;
+(Term s c -&gt; Term s (a :--&gt; b)) -&gt; Term s (c :--&gt; (a :--&gt; b))
+</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679692517"><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+</span><a href="#local-6989586621679692517"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+-&gt; Term s ((Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall (b :: S -&gt; Type) (a :: S -&gt; Type) (s :: S).
+Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#punsafeCoerce"><span class="hs-identifier hs-var">punsafeCoerce</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+</span><a href="#local-6989586621679692517"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Term s ((Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+-&gt; Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) -&gt; Term s (a :--&gt; b)
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+</span><a href="#local-6989586621679692517"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+    # plam (\r -&gt; f (punsafeCoerce r # r))
+</span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">{- | As 'pfix', but we perform some additional inlining into the function
+argument. This allows for even more speed, but at the cost of larger scripts.
+
+@since 1.12.0
+-}</span></span><span>
+</span><span id="line-72"></span><span class="annot"><a href="Plutarch.Internal.Fix.html#pfixInline"><span class="hs-identifier hs-type">pfixInline</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679692519"><span class="annot"><a href="#local-6989586621679692519"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679692520"><span class="annot"><a href="#local-6989586621679692520"><span class="hs-identifier hs-type">b</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679692521"><span class="annot"><a href="#local-6989586621679692521"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692521"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692519"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692520"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692521"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692519"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692520"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-75"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692521"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692519"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679692520"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span id="pfixInline"><span class="annot"><span class="annottext">pfixInline :: forall (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S).
+(Term s (a :--&gt; b) -&gt; Term s (a :--&gt; b)) -&gt; Term s (a :--&gt; b)
+</span><a href="Plutarch.Internal.Fix.html#pfixInline"><span class="hs-identifier hs-var hs-var">pfixInline</span></a></span></span><span> </span><span id="local-6989586621679692530"><span class="annot"><span class="annottext">Term s (a :--&gt; b) -&gt; Term s (a :--&gt; b)
+</span><a href="#local-6989586621679692530"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-77"></span><span>  </span><span class="annot"><span class="annottext">(Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) -&gt; Term s (a :--&gt; b))
+-&gt; Term s ((Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall a (b :: S -&gt; Type) (s :: S) (c :: S -&gt; Type).
+(PLamN a b s, HasCallStack) =&gt;
+(Term s c -&gt; a) -&gt; Term s (c :--&gt; b)
+forall (c :: S -&gt; Type).
+HasCallStack =&gt;
+(Term s c -&gt; Term s (a :--&gt; b)) -&gt; Term s (c :--&gt; (a :--&gt; b))
+</span><a href="Plutarch.Internal.PLam.html#plam"><span class="hs-identifier hs-var">plam</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679692531"><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+</span><a href="#local-6989586621679692531"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s (a :--&gt; b) -&gt; Term s (a :--&gt; b)
+</span><a href="#local-6989586621679692530"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+-&gt; Term s ((Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+forall (b :: S -&gt; Type) (a :: S -&gt; Type) (s :: S).
+Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#punsafeCoerce"><span class="hs-identifier hs-var">punsafeCoerce</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+</span><a href="#local-6989586621679692531"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Term s ((Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) :--&gt; (a :--&gt; b))
+-&gt; Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b)) -&gt; Term s (a :--&gt; b)
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
+</span><a href="Plutarch.Internal.Term.html#%23"><span class="hs-operator hs-var">#</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (Any @(S -&gt; Type) :--&gt; (a :--&gt; b))
+</span><a href="#local-6989586621679692531"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-cpp">
+    # plam (\r -&gt; f (punsafeCoerce r # r))
+</span></pre></body></html>

@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Generic Programming</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <details>
+<summary> imports </summary>
+<p>
+<pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+module Plutarch.Docs.PMatch (Tree(..), swap, TreeRepr) where
+import Plutarch.Prelude
+import Plutarch.Internal.PlutusType (PlutusType (pcon', pmatch'))
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import Plutarch.Unsafe (punsafeCoerce)
+</code></pre>
+</p>
+</details>
+<h1 id="generic-programming-over-plutarch-types"><a class="header" href="#generic-programming-over-plutarch-types">Generic programming over Plutarch types</a></h1>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<h3 id="term"><a class="header" href="#term"><code>Term</code></a></h3>
+<p>A <code>Term</code> represents Plutus Lambda Calculus expression in Plutarch world.
+Allows for additional checks and safety compared to UPLC.
+See more: <a href="../Introduction/PlutarchTerms.html">Plutarch Terms</a>.</p>
+<h3 id="data-and-scott-encoding"><a class="header" href="#data-and-scott-encoding">Data and Scott encoding</a></h3>
+<p>Datatypes can be encoded using Scott and <code>Data</code> encoding.
+These concepts are well explained in Plutonomicon:
+<a href="../Concepts/DataAndScottEncoding.html#data-encoding">Data encoding</a>
+and <a href="../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding</a>.</p>
+<h3 id="anyclass-deriving-strategy"><a class="header" href="#anyclass-deriving-strategy"><code>anyclass</code> deriving strategy</a></h3>
+<p><code>anyclass</code> derivation strategy uses default implementation of given typeclass to derive an instance of it.
+Usually depends that given datatype derives <code>Generic</code> typeclass also or some other too.</p>
+<h3 id="generics-sop"><a class="header" href="#generics-sop">generics-sop</a></h3>
+<p>A really good introduction to <code>generics-sop</code> by the maker of the library, Andres Löh, can be found
+<a href="https://www.youtube.com/watch?v=pwnrfREbhWY">in this YouTube video recorded at the 2020 ZuriHac</a></p>
+<p>Overall image of <a href="https://github.com/well-typed/generics-sop">generics-sop</a> package.</p>
+<p><a href="https://srid.ca/generics-sop-intro">Introduction by srid</a>.</p>
+<p>Why is sum-of-products considered? It's very close to what developers think JSON is.</p>
+<p>Generic representation of ADTs as sum of products, which can be automatically derived.
+Some commonly used types/functions:</p>
+<pre><code>I - Identity functor (`newtype I a = I a`)
+K - Constant functor (`newtype K a b = K a`)
+
+Z - zero (as in Peano numbers)
+S - successor (as in Peano numbers)
+
+&lt;https://hackage.haskell.org/package/generics-sop-0.5.1.2/docs/Generics-SOP.html#t:NS&gt;
+NS - n-ary Sum
+Picking nth element of sum comes from composing Z and S
+
+&lt;https://hackage.haskell.org/package/generics-sop-0.5.1.2/docs/Generics-SOP.html#t:NP&gt;
+NP - n-ary Product
+Value level witness for a list of types parametrized by some functor f.
+
+SOP - sum of products
+`SOP I` corresponds to haskell's structure of given SOP encoded datatype.
+`SOP (Term s)` corresponds to Plutarch structure of given SOP encoded datatype.
+
+`Code a`
+The code of a datatype.
+
+This is a list of lists of its components. The outer list contains one element per constructor. The inner list contains one element per constructor argument (field).
+</code></pre>
+<pre><code class="language-haskell">data Tree = Leaf Int | Node Tree Tree
+</code></pre>
+<p>is supposed to have the following Representation:</p>
+<pre><code class="language-haskell">type TreeRepr =
+  '[ '[ Int ]
+   , '[ Tree, Tree ]
+   ]
+</code></pre>
+<pre><code class="language-hs">-- Generic representation of given Haskell datatype
+type Rep a = SOP I (Code a)
+</code></pre>
+<p>This mechanism allows for generic programming over Haskell types and Plutarch types</p>
+<h2 id="intro"><a class="header" href="#intro">Intro</a></h2>
+<p>As Plutarch is an eDSL in Haskell, it does not allow us to work on Plutus-level variables directly.
+Manipulating ADTs can be done in terms of <code>pcon</code> and <code>pmatch</code> which belong to a class called <code>PlutusType</code>.</p>
+<p>How this class is implemented is not that important but can be looked up in <code>Plutarch/Internal/PlutusType.hs</code>
+by the interested reader.</p>
+<p>These typeclass methods could be written manually, but is a bit tedious and error-prone, thus the generic
+representation from <code>GHC.Generics</code> is used.
+Under the hood all necessary transformations are done to be able to access the data on Haskell level.</p>
+<p>Also - as parsing data costs computation resources, it is common to pass tagged raw data until it's really needed to parse.
+<code>PlutusType</code> typeclass serves 2 purposes:</p>
+<ol>
+<li>Adds derivation via anyclass for Haskell ADTs</li>
+<li>Manipulates given <code>S -&gt; Type</code> on its internal representation (provided as type <code>PInner</code>),
+rather than parsing/constructing the datatype back and forth.</li>
+</ol>
+<p>Examples on how to derive <code>PlutusType</code> to either Data or Scott encoding:</p>
+<pre><code class="language-haskell">data MyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
+  = One (Term s a)
+  | Two (Term s b)
+  deriving stock Generic
+  deriving anyclass PlutusType
+instance DerivePlutusType (MyType a b) where type DPTStrat _ = PlutusTypeScott
+
+-- If you instead want to use data encoding, you should derive 'PlutusType' and provide data strategy:
+
+data MyTypeD (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
+  = OneD (Term s (PDataRecord '[ "_0" ':= a ]))
+  | TwoD (Term s (PDataRecord '[ "_0" ':= b ]))
+  deriving stock Generic
+  deriving anyclass PlutusType
+instance DerivePlutusType (MyTypeD a b) where type DPTStrat _ = PlutusTypeData
+
+-- Alternatively, you may derive 'PlutusType' by hand as well. A simple example, encoding a
+-- Sum type as an Enum via PInteger:
+
+data AB (s :: S) = A | B
+
+instance PlutusType AB where
+  type PInner AB = PInteger
+
+  pcon' A = 0
+  pcon' B = 1
+
+  pmatch' x f =
+    pif (x #== 0) (f A) (f B)
+
+
+-- instead of using `pcon'` and `pmatch'` directly,
+-- use 'pcon' and 'pmatch', to hide the `PInner` type:
+
+swap :: Term s AB -&gt; Term s AB
+swap x = pmatch x $ \case
+  A -&gt; pcon B
+  B -&gt; pcon A
+</code></pre>
+<p><code>Maybe</code> manually encoded in both ways:</p>
+<pre><code class="language-haskell">-- | Scott
+data PSMaybe a s = PSJust (Term s a) | PSNothing
+
+-- | Newtype wrapper around function that represents Scott encoding,
+-- | Plutarch uses generic one for deriving.
+newtype ScottEncodedMaybe a b s = ScottEncodedMaybe (Term s ((a :--&gt; b) :--&gt; PDelayed b :--&gt; b))
+
+instance PlutusType (ScottEncodedMaybe a r) where
+  type PInner (ScottEncodedMaybe a r) = (a :--&gt; r) :--&gt; PDelayed r :--&gt; r
+  pcon' (ScottEncodedMaybe x) = x
+  pmatch' x f = f (ScottEncodedMaybe x)
+
+instance PlutusType (PSMaybe a) where
+  -- The resulting type of pattern matching on Maybe is quantified via `PForall`
+  type PInner (PSMaybe a) = PForall (ScottEncodedMaybe a)
+  pcon' (PSJust x) = pcon $ PForall $ pcon $ ScottEncodedMaybe $ plam $ \f _ -&gt; f # x
+  pcon' PSNothing = pcon $ PForall $ pcon $ ScottEncodedMaybe $ plam $ \_ g -&gt; pforce g
+  pmatch' x' f =
+    pmatch x' $ \(PForall sem) -&gt;
+      pmatch sem $ \(ScottEncodedMaybe x) -&gt;
+        x # plam (f . PSJust) # pdelay (f PSNothing)
+
+-- | Maybe encoded using Constr
+data PMaybeData a (s :: S)
+  = PDJust (Term s a)
+  | PDNothing
+
+-- | Note - thing hold in PMaybeData must be able to be represented as Data too, not needed in case of Scott version
+instance PIsData a =&gt; PlutusType (PMaybeData a) where
+  type PInner (PMaybeData a) = PData
+  pcon' (PDJust x) = pforgetData $ pconstrBuiltin # 0 #$ psingleton # pforgetData (pdata x)
+  pcon' PDNothing = pforgetData $ pconstrBuiltin # 1 # pnil
+  pmatch' x f = (`runTermCont` f) $ do
+    constrPair &lt;- TermCont $ plet (pasConstr # x)
+    indexNum &lt;- TermCont $ plet (pfstBuiltin # constrPair)
+    TermCont $ \g -&gt; pif (indexNum #== 0)
+        (g $ PDJust $ punsafeCoerce $ phead # (psndBuiltin # constrPair))
+        (pif (indexNum #== 1)
+          (g PDNothing)
+          perror
+        )
+
+</code></pre>
+<h3 id="generic-derivation-of-pconpmatch"><a class="header" href="#generic-derivation-of-pconpmatch">Generic derivation of PCon/PMatch</a></h3>
+<p>The mechanism of <code>PlutusType</code> derivation relies heavily on generic representation of ADT as sum-of-products.
+Very high level overview:
+For <code>pmatch</code>:</p>
+<ul>
+<li>Scott encoding - for each <code>sum</code> branch, create a corresponding <code>plam</code> handler</li>
+<li>Data encoding - for each <code>sum</code> branch, apply each element of list in <code>Constr</code> to a handler</li>
+</ul>
+<p>For <code>pcon</code>:</p>
+<ul>
+<li>Scott encoding - encode data type as lambda</li>
+<li>Data encoding - create a <code>Constr</code> with corresponding number of constructor</li>
+</ul>
+<h2 id="recommended-patterns-when-working-with-pconpmatch"><a class="header" href="#recommended-patterns-when-working-with-pconpmatch">Recommended patterns when working with pcon/pmatch</a></h2>
+<ul>
+<li><a href="../../Tricks/PreferMatchingOnPmatchResultImmediately.html">Tricks - Prefer matching on pmatch result immediately</a></li>
+<li><a href="../../Typeclasses/PlutusType,PCon,PMatch.html">Typeclasses - PlutusType, PCon, and PMatch - derive instances automatically</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Concepts/DataAndScottEncoding.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Concepts/HaskellSynonym.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Concepts/DataAndScottEncoding.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Concepts/HaskellSynonym.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,6 +1,0 @@
-result*
-/dist-*
-.direnv
-.pre-commit-config.yaml
-.nvimrc
-plutarch-docs/book

@@ -1,0 +1,317 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>PlutusType, PCon, and PMatch</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <details>
+<summary> imports </summary>
+<p>
+<pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
+{-# LANGUAGE UndecidableInstances #-}
+module Plutarch.Docs.PlutusTypePConAndPMatch (PMyType(..), PMyTypeData(..)) where
+import Data.Kind (Type)
+import GHC.Generics (Generic)
+import Generics.SOP qualified as SOP
+import Plutarch.Prelude
+</code></pre>
+</p>
+</details>
+<h1 id="plutustype"><a class="header" href="#plutustype"><code>PlutusType</code></a></h1>
+<p><code>PlutusType</code> is the primary typeclass that determines the underlying representation for a Plutarch type. It lets you construct and deconstruct Plutus Core constants from a Plutarch type's constructors
+(possibly containing other Plutarch terms).</p>
+<blockquote>
+<p>NOTE: It's essentially a combination of <code>PCon</code> (for term construction) and <code>PMatch</code> (for term deconstruction). Nowadays, <code>PCon</code> and <code>PMatch</code> are actually both
+just an alias for <code>PlutusType</code> and you'll get a deprecation warning if you use them.</p>
+</blockquote>
+<pre><code class="language-hs">class PlutusType (a :: S -&gt; Type) where
+  {-
+    snip
+  -}
+  pcon' :: forall s. a s -&gt; Term s (PInner a)
+  default pcon' :: DerivePlutusType a =&gt; forall s. a s -&gt; Term s (PInner a)
+  pcon' = let _ = witness (Proxy @(PlutusType a)) in derivedPCon
+
+  pmatch' :: forall s b. Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b
+  default pmatch' :: DerivePlutusType a =&gt; forall s b. Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b
+  pmatch' = derivedPMatch
+
+</code></pre>
+<blockquote>
+<p>Note: You don't need to look too much into the types! After all, you'll be using <code>pcon</code> and <code>pmatch</code>, rather than <code>pcon'</code> and <code>pmatch'</code>.
+<code>PInner</code> is meant to represent the "inner" type of <code>a</code> - the Plutarch type representing the Plutus Core constant used to represent <code>a</code>.</p>
+</blockquote>
+<p>You should always use <code>pcon</code> and <code>pmatch</code> instead of <code>pcon'</code> and <code>pmatch'</code> - these are provided by the <code>PCon</code> and <code>PMatch</code> typeclasses:</p>
+<p>Another feature of <code>PlutusType</code> instances is that you can extract out the <em>inner</em> type of any <code>PlutusType</code> instance! Above, the inner type
+(or representation) of <code>PMaybe</code> was a function. You can use <code>pto</code> to safely take this inner type out-</p>
+<pre><code class="language-hs">pto :: Term s a -&gt; Term s (PInner a)
+</code></pre>
+<p>This is quite useful when working with <code>newtype</code>s. Notice how <code>PCurrencySymbol</code>, for example, is simply a newtype to a <code>PByteString</code>. Its
+<code>PInner</code> is also <code>PByteString</code>. To be able to use functions that operate on <code>PByteString</code>s with your <code>PCurrencySymbol</code>, you can simply take
+out the <code>PByteString</code> using <code>pto</code>!</p>
+<h2 id="implementing-plutustype-for-your-own-types-scott-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-scott-encoding">Implementing <code>PlutusType</code> for your own types (Scott Encoding)</a></h2>
+<p>If you want to represent your data type with <a href="./../Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding</a> (and therefore
+don't need to make it <code>Data</code> encoded), you should simply derive it generically:</p>
+<pre><code class="language-haskell">data PMyType (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
+  = POne (Term s a)
+  | PTwo (Term s b)
+  deriving stock (Generic)
+  deriving anyclass PlutusType
+
+instance DerivePlutusType (PMyType a b) where type DPTStrat _ = PlutusTypeScott
+</code></pre>
+<blockquote>
+<p>NOTE: you can derive PlutusType for all types you defined a <code>DerivePlutusType</code> instance for. The strategy it uses is determined by the
+type that you put after <code>DPTStrat _ =</code>, in this case Scottencoding</p>
+</blockquote>
+<h2 id="implementing-plutustype-for-your-own-types-data-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-data-encoding">Implementing <code>PlutusType</code> for your own types (<code>Data</code> Encoding)</a></h2>
+<p>If your type is supposed to be represented using <a href="./../Concepts/DataAndScottEncoding.html#data-encoding"><code>Data</code> encoding</a> instead,
+you can derive <code>PlutusType</code> via <code>PlutusTypeData</code>:</p>
+<pre><code class="language-haskell">data PMyTypeData (a :: S -&gt; Type) (b :: S -&gt; Type) (s :: S)
+  = POneD (Term s (PDataRecord '[ "_0" ':= a ]))
+  | PTwoD (Term s (PDataRecord '[ "_0" ':= b ]))
+  deriving stock Generic
+  deriving anyclass (PlutusType)
+
+instance DerivePlutusType (PMyTypeData a b) where type DPTStrat _ = PlutusTypeData
+</code></pre>
+<h2 id="implementing-plutustype-for-your-own-types-sop-encoding"><a class="header" href="#implementing-plutustype-for-your-own-types-sop-encoding">Implementing <code>PlutusType</code> for your own types (SoP Encoding)</a></h2>
+<p>Mechanism is the same as in Scott encoding case but using <code>DeriveAsSOPStruct</code> instead.</p>
+<blockquote>
+<p>NOTE: You must import <code>DeriveAsSOPStruct</code> with constructor (like imports at the top of this page do) for GHC to see that the helper is coercible to your own type.</p>
+</blockquote>
+<pre><code class="language-haskell">data PMaybeSoP (a :: S -&gt; Type) (s :: S)
+  = PJustSoP (Term s a)
+  | PNothingSoP
+  deriving stock (Generic)
+  deriving anyclass (SOP.Generic, PEq, PShow)
+
+deriving via DeriveAsSOPStruct (PMaybeSoP a) instance PlutusType (PMaybeSoP a)
+</code></pre>
+<h2 id="implementing-plutustype-for-your-own-types-newtype"><a class="header" href="#implementing-plutustype-for-your-own-types-newtype">Implementing <code>PlutusType</code> for your own types (<code>newtype</code>)</a></h2>
+<p>See: <a href="./../Usage/DerivingForNewtypes.html"><code>DPTStrat PlutusTypeNewtype</code></a>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Typeclasses/PListLike.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Typeclasses/PTryFrom.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Typeclasses/PListLike.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Typeclasses/PTryFrom.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

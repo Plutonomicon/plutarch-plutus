@@ -1,4 +1,0 @@
-pmap then pimap {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":46}
-pmap then ptake {"exBudgetCPU":16100,"exBudgetMemory":200,"scriptSizeBytes":49}
-pmap then pzipWith {"exBudgetCPU":64100,"exBudgetMemory":500,"scriptSizeBytes":99}
-pmap then pfold {"exBudgetCPU":12457533,"exBudgetMemory":49791,"scriptSizeBytes":90}

@@ -1,0 +1,457 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Dev Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>Looking to contribute to Plutarch? Looking for functionalities that are not currently provided by Plutarch from a safe interface? You've come to the right place!</p>
+<blockquote>
+<p>Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch developers!</p>
+</blockquote>
+<details>
+<summary> Table of Contents </summary>
+<ul>
+<li><a href="#code-style">Code Style</a></li>
+<li><a href="#pre-commit-checks">Pre-commit checks</a></li>
+<li><a href="#updating-changelog">Updating Changelog</a></li>
+<li><a href="#targeting-branch-for-pr">Targeting branch for PR</a></li>
+<li><a href="#concepts">Concepts</a>
+<ul>
+<li><a href="#plutus-core-constants-unsafe">Plutus Core constants (UNSAFE)</a></li>
+<li><a href="#plutus-core-builtin-functions">Plutus core builtin functions</a></li>
+<li><a href="#working-with-builtindatadatapdata">Working with BuiltinData/Data/PData</a></li>
+</ul>
+</li>
+<li><a href="#lower-level-examples">Lower Level Examples</a>
+<ul>
+<li><a href="#extracting-txinfoinputs-from-scriptcontext-manually-untyped">Extracting <code>txInfoInputs</code> from <code>ScriptContext</code> manually (UNTYPED)</a></li>
+</ul>
+</li>
+<li><a href="#useful-links">Useful Links</a></li>
+<li><a href="#how-to-build-docs">How to build docs</a></li>
+</ul>
+</details>
+<h1 id="code-style"><a class="header" href="#code-style">Code Style</a></h1>
+<p>You should generally follow the <a href="https://github.com/mlabs-haskell/styleguide">MLabs style guide</a>, credit to <a href="https://github.com/kozross">@Koz Ross</a>.</p>
+<p><strong>Discouraged Extensions</strong></p>
+<ul>
+<li><code>ImportQualifiedPost</code></li>
+<li><code>RecordWildCards</code></li>
+</ul>
+<h1 id="pre-commit-checks"><a class="header" href="#pre-commit-checks">Pre-commit checks</a></h1>
+<p>Remember to run <code>./bin/format</code> to format your code and <code>cabal test</code>, alongside <code>cabal test -f development</code>, to make sure all the tests pass prior to making a PR!</p>
+<h1 id="updating-changelog"><a class="header" href="#updating-changelog">Updating Changelog</a></h1>
+<p>If your PR makes a change to some user facing functionality - please summarize the change(s) and add it to <code>CHANGELOG.md</code>.</p>
+<h1 id="targeting-branch-for-pr"><a class="header" href="#targeting-branch-for-pr">Targeting branch for PR</a></h1>
+<p>More often than not, you'll be making PRs directly to <code>master</code>.</p>
+<p>However, sometimes, there is a release cycle going on and the state of the repository is in flux. There will usually be a <code>master &lt;- staging</code> PR open during this time. As long as the <code>staging</code> PR is open, you should base most new branches on top of it and merge back into it. Bug fixes, for bugs present in <code>master</code>, are exempt from this requirement.</p>
+<h1 id="concepts"><a class="header" href="#concepts">Concepts</a></h1>
+<p>Even if certain functionalities are absent from the public facing API - you can always implement them using functions like <code>punsafeConstant</code> and <code>punsafeBuiltin</code> - these allow you to walk the lines between Plutus core and Plutarch.</p>
+<p>A general familiarity with Plutus core is important. You can learn all of that through the following documents:</p>
+<ul>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md">Builtin lists</a></li>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md">Builtin pairs</a></li>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md">Builtin functions</a></li>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md">Builtin data</a></li>
+</ul>
+<p>Parts of the <a href="https://github.com/Plutonomicon/pluto/blob/main/GUIDE.md">Pluto guide</a> may also prove useful.</p>
+<h2 id="plutus-core-constants-unsafe"><a class="header" href="#plutus-core-constants-unsafe">Plutus Core constants (UNSAFE)</a></h2>
+<blockquote>
+<p><strong>NOTE</strong>: The following information is almost never necessary with the existence of <code>pconstant</code>. Refer to <a href="./Introduction/PlutarchTerms/PlutarchConstants.html">constant building</a> and <a href="./Typeclasses/PLiftable.html"><code>PLiftable</code></a> section of the Plutarch user guide.</p>
+</blockquote>
+<p>Often, you will need to build a Plutus core constant. You can do this using <code>Some</code> and <code>ValueOf</code>. Here's how <code>pcon PTrue</code> creates a Plutarch term that actually evaluates to a Plutus core constant representing a boolean:</p>
+<pre><code class="language-haskell">import qualified PlutusCore as PLC
+
+pcon' PTrue = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
+pcon' PFalse = punsafeConstant . PLC.Some $ PLC.ValueOf PLC.DefaultUniBool False
+</code></pre>
+<p>There's a lot to unpack here - but the general pattern is always the same. First step is to construct the Plutus core constant:</p>
+<pre><code class="language-haskell">PLC.Some $ PLC.ValueOf PLC.DefaultUniBool True
+</code></pre>
+<p>The only parts that you will need to change when creating other constants, are the type and the value. Here the type is <code>DefaultUniBool</code>. This means the next argument must be a <code>Bool</code>. Ensured by the type system - don't you worry :)</p>
+<p>You can glance at the other types in the default universe (what you will be working with). Can you guess how to make a Plutus core string from a Haskell string, and represent it as a Plutarch term?</p>
+<pre><code class="language-haskell">import qualified Data.Text as Txt
+import qualified PlutusCore as PLC
+
+punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniString . Txt.pack
+</code></pre>
+<p>(it's even pointfree!)</p>
+<p>And that's <em>essentially</em> what the <code>IsString</code> implementation of <code>Term s PString</code> does. That is how your string literals end up as plutus core built in strings.</p>
+<p>One more, how about something complex - <code>DefaultUniProtoList</code>. This is a builtin list. But what is the element type? Well, you'll have to specify that yourself! You use <code>DefaultUniApply</code> to "apply" a type (from the default universe) over <code>DefaultUniProtoList</code>:</p>
+<pre><code class="language-haskell">import qualified PlutusCore as PLC
+
+PLC.Some . PLC.ValueOf (PLC.DefaultUniProtoList `PLC.DefaultUniApply` PLC.DefaultUniInteger)
+</code></pre>
+<p>That right there converts a <code>[Integer]</code> into a Plutus core builtin list of builtin integers. Convenient!</p>
+<p>Actually, there's a convenient <code>pattern</code> synonym for <code>DefaultUniProtoList `DefaultUniApply` a</code>- <code>DefaultUniList a</code>. Using that, you can simplify the above to:</p>
+<pre><code class="language-haskell">PLC.Some . PLC.ValueOf (PLC.DefaultUniList PLC.DefaultUniInteger)
+</code></pre>
+<p>Note that you will have to provide the correct type annotations yourself, as <code>punsafeConstant</code> just infers to a <code>Term s a</code>. That's why it's unsafe! Make sure to provide the correct annotations when using this unsafe function:</p>
+<pre><code class="language-haskell">foo :: Bool -&gt; Term s PBool
+foo = punsafeConstant . PLC.Some . PLC.ValueOf PLC.DefaultUniBool
+</code></pre>
+<p>Of course, we represent Plutus core booleans as <code>Term s PBool</code> in Plutarch - so that's its type!</p>
+<h2 id="plutus-core-builtin-functions"><a class="header" href="#plutus-core-builtin-functions">Plutus core builtin functions</a></h2>
+<p>This is what you will be wrangling with the most. Builtin functions are going to be the foundation of <em>everything</em> you do. And the documentation on them is….. sparse.</p>
+<p>You create Plutarch synonyms to Plutus core builtin functions using <code>punsafeBuiltin</code>. It creates a Plutarch level function from a Plutus core builtin functions.</p>
+<p>Let's try making one, how about <code>AddInteger</code>?</p>
+<pre><code class="language-haskell">import qualified PlutusCore as PLC
+
+addI :: Term s (PInteger :--&gt; PInteger :--&gt; PInteger)
+addI = punsafeBuiltin PLC.AddInteger
+</code></pre>
+<p>Just like <code>punsafeConstant</code>, you have to provide the right annotation yourself. We know that <code>AddInteger</code> takes two Plutus core builtin integers and returns another one. We represent these integers in Plutarch using <code>PInteger</code> terms - so there we go!</p>
+<p>You can use and apply this Plutarch function just like any other.</p>
+<p>Now here's where this goes off the rails, some builtin functions require <em>forces</em> to be used. These builtin functions have inherent polymorphic type variables. The number of times you need to force them, depends on the number of type variables they have.</p>
+<p>Let's look at an example- <code>HeadList</code>. It's type can be thought of as - <code>forall a. [a] -&gt; a</code>. It has one type variable, so it needs to be forced once:</p>
+<pre><code class="language-haskell">pheadBuiltin :: Term s (PBuiltinList a :--&gt; a)
+pheadBuiltin = pforce $ punsafeBuiltin PLC.HeadList
+</code></pre>
+<p>We force a Plutarch term using <code>pforce</code>, recall that <code>punsafeBuiltin</code> returns a term. You need to type it all yourself of course. <code>pforce</code> doesn't mean you need to get rid of the type variable in your Plutarch level type. It'll still work with any <code>a</code> - the forcing just has to happen at call site.</p>
+<p>You can sort of do this blindly, <code>HeadList</code> takes 1 force, so just <code>pforce</code> once. <code>TailList</code> also takes 1 force. <code>ChooseList</code> takes 2 forces (<code>forall a b. [a] -&gt; b -&gt; b -&gt; b</code>). Here's how you would implement a Plutarch synonym for it:</p>
+<pre><code class="language-haskell">pchooseList :: Term s (PBuiltinList a :--&gt; b -&gt; b -&gt; b)
+pchooseList = pforce $ pforce $ punsafeBuiltin PLC.ChooseList
+</code></pre>
+<blockquote>
+<p>Aside: You should also hoist the synonyms here that take one or more forces!</p>
+</blockquote>
+<p>We have a <a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md">Plutus Core builtin functions reference</a> for everything you need to know about them. Including types, usage, and forcing.</p>
+<h2 id="working-with-builtindatadatapdata"><a class="header" href="#working-with-builtindatadatapdata">Working with BuiltinData/Data/PData</a></h2>
+<p>Most of the time, you'll be working with <code>BuiltinData</code>/<code>Data</code> - this is the type of the arguments that will be passed onto your script from the outside. This is the type of the datum, the redeemer and the script context. This is also the type of arguments you will be able to pass to a <code>Script</code>.</p>
+<p>Plutarch aims to hide these low level details from the user. Ideally, you will be using <code>PDataSum</code>/<code>PDataList</code> and <code>PAsData</code> - these are essentially just <code>BuiltinData</code>, but it is typed at the Plutarch level.</p>
+<p>If you want to work with <code>BuiltinData</code> directly however, which you may have to do during developing Plutarch, you can find all that you need to know at <a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md">Plutonomicon</a>.</p>
+<h1 id="lower-level-examples"><a class="header" href="#lower-level-examples">Lower Level Examples</a></h1>
+<h2 id="extracting-txinfoinputs-from-scriptcontext-manually-untyped"><a class="header" href="#extracting-txinfoinputs-from-scriptcontext-manually-untyped">Extracting <code>txInfoInputs</code> from <code>ScriptContext</code> manually (UNTYPED)</a></h2>
+<p>Here's a quick refresher on what <code>ScriptContext</code> looks like:</p>
+<pre><code class="language-haskell">data ScriptContext = ScriptContext
+  { scriptContextTxInfo :: TxInfo
+  , scriptContextPurpose :: ScriptPurpose
+  }
+</code></pre>
+<p>We are interested in <code>txInfoInputs</code>, which has type <code>TxInInfo</code>. It is the first field within <code>TxInfo</code>. If you have read <a href="#working-with-builtindatadatapdata">Working with <code>BuiltinData</code></a> already - you know that a <code>ScriptContext</code> translates to a <code>Data</code> value similar to:</p>
+<pre><code class="language-haskell">Constr 0 [PlutusTx.toData txInfo, PlutusTx.toData txPurpose]
+</code></pre>
+<p>Where <code>txInfo</code> and <code>txPurpose</code> are values of type <code>TxInfo</code> and <code>ScriptPurpose</code> respectively.</p>
+<p>We are interested in that first field. That's easy, we do the following actions in sequence:</p>
+<ul>
+<li><code>pasConstr</code> - yields a <code>PBuiltinPair PInteger (PBuiltinList PData)</code>. We know the constructor id is <code>0</code>. It doesn't matter, there's only one constructor.</li>
+<li><code>psndBuiltin</code> - yields <code>PBuiltinList PData</code>, the second element of the pair. These are the fields within <code>ScriptContext</code>.</li>
+<li><code>phead</code> - yields <code>PData</code>, the first field. We know this is our <code>TxInfo</code>.</li>
+</ul>
+<p>Combining that all up would give you:</p>
+<pre><code class="language-haskell">import Plutarch.Prelude
+import Plutarch.Builtin
+
+f :: Term s (PData :--&gt; PData)
+f = plam $ \x -&gt; phead #$ psndBuiltin #$ pasConstr # x
+</code></pre>
+<p>And if you test it with a mock context value, it does work:</p>
+<pre><code class="language-haskell">{-# LANGUAGE OverloadedStrings #-}
+
+import Plutus.V1.Ledger.Api
+import Plutus.V1.Ledger.Interval
+import qualified PlutusTx
+
+mockCtx :: ScriptContext
+mockCtx =
+  ScriptContext
+    (TxInfo
+      [ TxInInfo
+          (TxOutRef "" 1)
+          (TxOut (Address (PubKeyCredential "0123") Nothing) mempty Nothing)
+      ]
+      mempty
+      mempty
+      mempty
+      mempty
+      mempty
+      (interval (POSIXTime 1) (POSIXTime 2))
+      mempty
+      mempty
+      ""
+    )
+    (Minting (CurrencySymbol ""))
+
+&gt;  f `evalWithArgsT` [PlutusTx.toData mockCtx]
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf data (Constr 0 [List [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]],List [],Map [],Map [],List [],List [],Constr 0 [Constr 0 [Constr 1 [I 1],Constr 1 []],Constr 0 [Constr 1 [I 2],Constr 1 []]],List [],List [],Constr 0 [B ""]])))))
+</code></pre>
+<blockquote>
+<p>Aside: You can find the definition of <code>evalWithArgsT</code> above - <a href="./Overview.html#compiling-and-running">Compiling and Running</a>.</p>
+</blockquote>
+<p>But we're not done yet! We want <code>txInfoInputs</code>. You may have noticed where exactly it is located on the above output. See that <code>List …</code>? Inside the outermost <code>Constr</code>'s fields? That's our <code>txInfoInputs</code>!</p>
+<blockquote>
+<p>Aside: Recall that <code>List</code> data values are simply wrappers around lists. Also recall that the fields in a <code>Constr</code> value must be all of type <code>Data</code>. So any of your list fields get translated to <code>List</code> data. Just remember not to confuse these with builtin lists (<code>PBuiltinList</code>)! Functions like <code>pheadBuiltin</code> don't work on <code>List</code> data values.</p>
+</blockquote>
+<p>To obtain <code>txInfoInputs</code> from here, we do the following actions in sequence:</p>
+<ul>
+<li><code>pasConstr</code> - unpacks the <code>TxInfo</code>. There's only one constructor, <code>TxInfo</code> - we don't care about that. We need the fields.</li>
+<li><code>psndBuiltin</code> - extracts the second member of the pair, the fields of <code>TxInfo</code>.</li>
+<li><code>phead</code> - extracts the first element of the list. This is our field, <code>txInfoInputs</code>.</li>
+<li>(optional) <code>pasList</code> - takes out the builtin list from the <code>List</code> data value.</li>
+</ul>
+<p>And that's it! Putting it all together:</p>
+<pre><code class="language-haskell">f :: Term s (PData :--&gt; PBuiltinList PData)
+f = plam $ \x -&gt;
+  let txInfo = phead #$ psndBuiltin #$ pasConstr # x
+  in pasList #$ phead #$ psndBuiltin #$ pasConstr # txInfo
+</code></pre>
+<p>Trying it on the same <code>mockCtx</code> yields:</p>
+<pre><code class="language-haskell">&gt; f `evalWithArgsT` [PlutusTx.toData mockCtx]
+Right (Program () (Version () 1 0 0) (Constant () (Some (ValueOf list (data) [Constr 0 [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]]))))
+</code></pre>
+<p>Getting some of the boilerplate out of the way, this is what the value looks like:</p>
+<pre><code class="language-haskell">Some
+  (ValueOf list (data)
+    [Constr 0
+        [Constr 0 [Constr 0 [B ""],I 1],Constr 0 [Constr 0 [Constr 0 [B "\SOH#"],Constr 1 []],Map [],Constr 1 []]]
+    ]
+  )
+</code></pre>
+<p>There's just one element in <code>txInfoInputs</code> in this example, and there it is. Of course <code>TxInInfo</code>, the element type of this list, also gets translated to a <code>Constr</code> data with further fields. And that's what you see above.</p>
+<h1 id="useful-links"><a class="header" href="#useful-links">Useful Links</a></h1>
+<ul>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-lists.md">Builtin lists</a></li>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-pairs.md">Builtin pairs</a></li>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-functions.md">Builtin functions</a></li>
+<li><a href="https://github.com/Plutonomicon/plutonomicon/blob/main/builtin-data.md">Builtin data</a></li>
+<li><a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-tx/html/PlutusTx-Builtins-Internal.html#v:error">Plutus builtin functions and types</a></li>
+<li><a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/UntypedPlutusCore.html#t:DefaultFun">Plutus Core builtin function identifiers, aka <code>DefaultFun</code></a></li>
+<li><a href="https://plutonomicon.github.io/plutarch-plutus/haddock/plutus-core/html/PlutusCore-Default.html#t:DefaultUni">Plutus Core types, aka <code>DefaultUni</code></a></li>
+</ul>
+<h1 id="how-to-build-docs"><a class="header" href="#how-to-build-docs">How to build docs</a></h1>
+<p>To run the docs locally from the Git working copy (useful when editing them), from nix development shell,</p>
+<pre><code class="language-sh-session"># in plutarch-docs directory
+mdbook serve .
+</code></pre>
+<p>When you add new file that is compilable, please run <code>./createSymlinks</code> script. This will generate symbolic links to
+<code>./compilable</code> directory which cabal will build. Don't forget to add the name of the module new file defines to <code>plutarch-docs.cabal</code> at <code>other-modules</code> section so that it will actually build.</p>
+<p>To build the static HTML site,</p>
+<pre><code class="language-sh-session">mdbook build .
+</code></pre>
+<p>To run the docs directly without cloning the Git repo,</p>
+<pre><code class="language-sh-session">nix run github:Plutonomicon/plutarch#combined-docs
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="Introduction/UntypedPlutusCore.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="Run.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="Introduction/UntypedPlutusCore.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="Run.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

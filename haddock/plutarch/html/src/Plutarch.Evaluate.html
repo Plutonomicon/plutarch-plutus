@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE ImpredicativeTypes #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Evaluate</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScript"><span class="hs-identifier">E.evalScript</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScriptHuge"><span class="hs-identifier">E.evalScriptHuge</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier">E.evalScript'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html#evalScriptUnlimited"><span class="hs-identifier">E.evalScriptUnlimited</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.Evaluate.html#evalTerm"><span class="hs-identifier">evalTerm</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.Evaluate.html#evalTerm%27"><span class="hs-identifier">evalTerm'</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.Evaluate.html#unsafeEvalTerm"><span class="hs-identifier">unsafeEvalTerm</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Evaluate.html#applyArguments"><span class="hs-identifier">applyArguments</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Lens.Combinators</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">over</span></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.html"><span class="hs-identifier">Data.Text</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier">Text</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Evaluate.html"><span class="hs-identifier">Plutarch.Internal.Evaluate</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">E</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html"><span class="hs-identifier">Plutarch.Internal.Term</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Config"><span class="hs-identifier">Config</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#RawTerm"><span class="hs-identifier">RawTerm</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#RCompiled"><span class="hs-identifier">RCompiled</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier">Term</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-23"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#TermResult"><span class="hs-identifier">TermResult</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#TermResult"><span class="hs-identifier">TermResult</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-24"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#compile"><span class="hs-identifier">compile</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-25"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Script.html"><span class="hs-identifier">Plutarch.Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier">Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier">Script</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">DefaultFun</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">DefaultUni</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">NamedDeBruijn</span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Evaluation.Machine.ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ExBudget</span></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.MkPlc</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mkConstant</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mkIterAppNoAnn</span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.Common</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Data</span></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UntypedPlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">UPLC</span></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">UntypedPlutusCore.Evaluation.Machine.Cek</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Cek</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">CekEvaluationException</span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="annot"><span class="hs-comment">-- | Compile and evaluate term.</span></span><span>
+</span><span id="line-35"></span><span class="annot"><a href="Plutarch.Evaluate.html#evalTerm"><span class="hs-identifier hs-type">evalTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707622"><span class="annot"><a href="#local-6989586621679707622"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-37"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Config"><span class="hs-identifier hs-type">Config</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707621"><span class="annot"><a href="#local-6989586621679707621"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707621"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707622"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-39"></span><span>  </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.CekEvaluationException</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.NamedDeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultFun</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707732"><span class="annot"><a href="#local-6989586621679707732"><span class="hs-identifier hs-type">s1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707732"><span class="hs-identifier hs-type">s1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707622"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span id="evalTerm"><span class="annot"><span class="annottext">evalTerm :: forall (a :: S -&gt; Type).
+Config
+-&gt; (forall (s0 :: S). Term s0 a)
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+</span><a href="Plutarch.Evaluate.html#evalTerm"><span class="hs-identifier hs-var hs-var">evalTerm</span></a></span></span><span> </span><span id="local-6989586621679707735"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679707735"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span id="local-6989586621679707736"><span class="annot"><span class="annottext">forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707736"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config -&gt; (forall (s0 :: S). Term s0 a) -&gt; Either Text Script
+forall (a :: S -&gt; Type).
+Config -&gt; (forall (s :: S). Term s a) -&gt; Either Text Script
+</span><a href="Plutarch.Internal.Term.html#compile"><span class="hs-identifier hs-var">compile</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679707735"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term s a
+forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707736"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-42"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679707737"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679707737"><span class="hs-identifier hs-var">script</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-43"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707738"><span class="annot"><span class="annottext">Either
+  (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
+</span><a href="#local-6989586621679707738"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679707739"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679707739"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679707740"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679707740"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Script
+-&gt; (Either
+      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+      Script,
+    ExBudget, [Text])
+</span><a href="Plutarch.Internal.Evaluate.html#evalScriptHuge"><span class="hs-identifier hs-var">E.evalScriptHuge</span></a></span><span> </span><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679707737"><span class="hs-identifier hs-var">script</span></a></span><span>
+</span><span id="line-44"></span><span>       </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">(Either
+   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+   (forall (s0 :: S). Term s0 a),
+ ExBudget, [Text])
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script -&gt; forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707741"><span class="hs-identifier hs-var">fromScript</span></a></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; forall (s0 :: S). Term s0 a)
+-&gt; Either
+     (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
+-&gt; Either
+     (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+     (forall (s0 :: S). Term s0 a)
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Either
+  (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
+</span><a href="#local-6989586621679707738"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679707739"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679707740"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679707743"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679707743"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679707743"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>    </span><span class="annot"><a href="#local-6989586621679707741"><span class="hs-identifier hs-type">fromScript</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707744"><span class="annot"><a href="#local-6989586621679707744"><span class="hs-identifier hs-type">s2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707744"><span class="hs-identifier hs-type">s2</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707622"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>    </span><span id="local-6989586621679707741"><span class="annot"><span class="annottext">fromScript :: Script -&gt; forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707741"><span class="hs-identifier hs-var hs-var">fromScript</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span id="local-6989586621679707749"><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707749"><span class="hs-identifier hs-var">script</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-49"></span><span>      </span><span class="annot"><span class="annottext">(Word64 -&gt; TermMonad TermResult) -&gt; Term s2 a
+forall (s :: S) (a :: S -&gt; Type).
+(Word64 -&gt; TermMonad TermResult) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-var">Term</span></a></span><span> </span><span class="annot"><span class="annottext">((Word64 -&gt; TermMonad TermResult) -&gt; Term s2 a)
+-&gt; (Word64 -&gt; TermMonad TermResult) -&gt; Term s2 a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">TermMonad TermResult -&gt; Word64 -&gt; TermMonad TermResult
+forall a b. a -&gt; b -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#const"><span class="hs-identifier hs-var">const</span></a></span><span> </span><span class="annot"><span class="annottext">(TermMonad TermResult -&gt; Word64 -&gt; TermMonad TermResult)
+-&gt; TermMonad TermResult -&gt; Word64 -&gt; TermMonad TermResult
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">TermResult -&gt; TermMonad TermResult
+forall a. a -&gt; TermMonad a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(TermResult -&gt; TermMonad TermResult)
+-&gt; TermResult -&gt; TermMonad TermResult
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">RawTerm -&gt; [HoistedTerm] -&gt; TermResult
+</span><a href="Plutarch.Internal.Term.html#TermResult"><span class="hs-identifier hs-var">TermResult</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun () -&gt; RawTerm
+</span><a href="Plutarch.Internal.Term.html#RCompiled"><span class="hs-identifier hs-var">RCompiled</span></a></span><span> </span><span class="annot"><span class="annottext">(Term DeBruijn DefaultUni DefaultFun () -&gt; RawTerm)
+-&gt; Term DeBruijn DefaultUni DefaultFun () -&gt; RawTerm
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun ()
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+forall name (uni :: Type -&gt; Type) fun ann.
+Program name uni fun ann -&gt; Term name uni fun ann
+</span><span class="hs-identifier hs-var">UPLC._progTerm</span></span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707749"><span class="hs-identifier hs-var">script</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | Same as `evalTerm` but without error handling</span></span><span>
+</span><span id="line-52"></span><span class="annot"><a href="Plutarch.Evaluate.html#evalTerm%27"><span class="hs-identifier hs-type">evalTerm'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707661"><span class="annot"><a href="#local-6989586621679707661"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Config"><span class="hs-identifier hs-type">Config</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707660"><span class="annot"><a href="#local-6989586621679707660"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707660"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707661"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707753"><span class="annot"><a href="#local-6989586621679707753"><span class="hs-identifier hs-type">s1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707753"><span class="hs-identifier hs-type">s1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707661"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span id="evalTerm%27"><span class="annot"><span class="annottext">evalTerm' :: forall (a :: S -&gt; Type).
+Config
+-&gt; (forall (s0 :: S). Term s0 a) -&gt; forall (s0 :: S). Term s0 a
+</span><a href="Plutarch.Evaluate.html#evalTerm%27"><span class="hs-identifier hs-var hs-var">evalTerm'</span></a></span></span><span> </span><span id="local-6989586621679707766"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679707766"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span id="local-6989586621679707767"><span class="annot"><span class="annottext">forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707767"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; (forall (s0 :: S). Term s0 a)
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+forall (a :: S -&gt; Type).
+Config
+-&gt; (forall (s0 :: S). Term s0 a)
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+</span><a href="Plutarch.Evaluate.html#evalTerm"><span class="hs-identifier hs-var">evalTerm</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679707766"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term s0 a
+forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707767"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-55"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679707768"><span class="annot"><span class="annottext">forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707768"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Term s1 a
+forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707768"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-56"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621679707769"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679707769"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Term s1 a
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; Term s1 a) -&gt; [Char] -&gt; Term s1 a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;evalTerm' failed: &quot;</span></span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Char] -&gt; [Char]
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Text -&gt; [Char]
+forall a. Show a =&gt; a -&gt; [Char]
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679707769"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">Either
+  Text
+  (Either
+     (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+     (forall (s0 :: S). Term s0 a),
+   ExBudget, [Text])
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Term s1 a
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;evalTerm' failed&quot;</span></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="annot"><span class="hs-comment">{- | Compile and evaluate a closed term
+Useful for pre-evaluating terms so that they can be used as constants in
+an onchain script. Consider the following:
+ _________________________________________________________________________
+     term :: Term _ PInteger
+     term = unsafeEvalTerm NoTracing foo
+
+     foo :: Term s PInteger
+     foo = (pconstant 1 #+ pconstant 5) #* pconstant 3
+
+     bar :: Term s (PInteger :--&gt; PInteger)
+     bar = plam \x -&gt;
+       x + foo
+
+     bar2 :: Term s (PInteger :--&gt; PInteger)
+     bar2 = plam \x -&gt;
+       x + term
+
+
+    PI.compile PI.NoTracing bar
+    Right (Script {unScript = Program {_progAnn = (), _progVer = Version {_versionMajor = 1, _versionMinor = 0, _versionPatch = 0}, _progTerm = LamAbs () (DeBruijn {dbnIndex = 0}) (Apply () (Apply () (Builtin () AddInteger) (Var () (DeBruijn {dbnIndex = 1}))) (Apply () (Apply () (Builtin () MultiplyInteger) (Apply () (Apply () (Builtin () AddInteger) (Constant () (Some (ValueOf DefaultUniInteger 1)))) (Constant () (Some (ValueOf DefaultUniInteger 5))))) (Constant () (Some (ValueOf DefaultUniInteger 3)))))}})
+    PI.compile PI.NoTracing bar2
+    Right (Script {unScript = Program {_progAnn = (), _progVer = Version {_versionMajor = 1, _versionMinor = 0, _versionPatch = 0}, _progTerm = LamAbs () (DeBruijn {dbnIndex = 0}) (Apply () (Apply () (Builtin () AddInteger) (Var () (DeBruijn {dbnIndex = 1}))) (Constant () (Some (ValueOf DefaultUniInteger 18))))}})
+ _________________________________________________________________________
+
+In bar, foo is an unevaluated term and thus must be evaluated. In bar2, foo has been
+pre-evaluated with `unsafeEvalTerm` and thus appears as a constant.
+
+Error if the compilation or evaluation fails.
+-}</span></span><span>
+</span><span id="line-89"></span><span class="annot"><a href="Plutarch.Evaluate.html#unsafeEvalTerm"><span class="hs-identifier hs-type">unsafeEvalTerm</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707772"><span class="annot"><a href="#local-6989586621679707772"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Config"><span class="hs-identifier hs-type">Config</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707675"><span class="annot"><a href="#local-6989586621679707675"><span class="hs-identifier hs-type">s0</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707675"><span class="hs-identifier hs-type">s0</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707772"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707773"><span class="annot"><a href="#local-6989586621679707773"><span class="hs-identifier hs-type">s1</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707773"><span class="hs-identifier hs-type">s1</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707772"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span id="unsafeEvalTerm"><span class="annot"><span class="annottext">unsafeEvalTerm :: forall (a :: S -&gt; Type).
+Config
+-&gt; (forall (s0 :: S). Term s0 a) -&gt; forall (s0 :: S). Term s0 a
+</span><a href="Plutarch.Evaluate.html#unsafeEvalTerm"><span class="hs-identifier hs-var hs-var">unsafeEvalTerm</span></a></span></span><span> </span><span id="local-6989586621679707774"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679707774"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679707775"><span class="annot"><span class="annottext">forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707775"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either
+  Text
+  (Either
+     (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+     (forall (s0 :: S). Term s0 a),
+   ExBudget, [Text])
+-&gt; forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707776"><span class="hs-identifier hs-var">extractResult</span></a></span><span> </span><span class="annot"><span class="annottext">(Either
+   Text
+   (Either
+      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+      (forall (s0 :: S). Term s0 a),
+    ExBudget, [Text])
+ -&gt; forall (s0 :: S). Term s0 a)
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+-&gt; forall (s0 :: S). Term s0 a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; (forall (s0 :: S). Term s0 a)
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+forall (a :: S -&gt; Type).
+Config
+-&gt; (forall (s0 :: S). Term s0 a)
+-&gt; Either
+     Text
+     (Either
+        (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+        (forall (s0 :: S). Term s0 a),
+      ExBudget, [Text])
+</span><a href="Plutarch.Evaluate.html#evalTerm"><span class="hs-identifier hs-var">evalTerm</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679707774"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Term s0 a
+forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707775"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-91"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-92"></span><span>    </span><span class="annot"><a href="#local-6989586621679707776"><span class="hs-identifier hs-type">extractResult</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.CekEvaluationException</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.NamedDeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLC.DefaultFun</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707777"><span class="annot"><a href="#local-6989586621679707777"><span class="hs-identifier hs-type">s2</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707777"><span class="hs-identifier hs-type">s2</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707772"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679707778"><span class="annot"><a href="#local-6989586621679707778"><span class="hs-identifier hs-type">s3</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707778"><span class="hs-identifier hs-type">s3</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679707772"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span>    </span><span id="local-6989586621679707776"><span class="annot"><span class="annottext">extractResult :: Either
+  Text
+  (Either
+     (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+     (forall (s0 :: S). Term s0 a),
+   ExBudget, [Text])
+-&gt; forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707776"><span class="hs-identifier hs-var hs-var">extractResult</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621679707783"><span class="annot"><span class="annottext">forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707783"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s3 a
+forall (s0 :: S). Term s0 a
+</span><a href="#local-6989586621679707783"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><span id="line-94"></span><span>    </span><span class="annot"><a href="#local-6989586621679707776"><span class="hs-identifier hs-var">extractResult</span></a></span><span> </span><span class="annot"><span class="annottext">Either
+  Text
+  (Either
+     (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
+     (forall (s0 :: S). Term s0 a),
+   ExBudget, [Text])
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Term s3 a
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;unsafeEvalTerm: failed to evaluate or compile the term.&quot;</span></span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span class="annot"><span class="hs-comment">{- | Given a compiled 'Script' representing a function that takes arguments, and
+a list of those 'Data'-encoded arguments, produce a new script with those
+arguments applied.
+
+@since 1.8.1
+-}</span></span><span>
+</span><span id="line-102"></span><span class="annot"><a href="Plutarch.Evaluate.html#applyArguments"><span class="hs-identifier hs-type">applyArguments</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Data</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span>
+</span><span id="line-103"></span><span id="applyArguments"><span class="annot"><span class="annottext">applyArguments :: Script -&gt; [Data] -&gt; Script
+</span><a href="Plutarch.Evaluate.html#applyArguments"><span class="hs-identifier hs-var hs-var">applyArguments</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span id="local-6989586621679707784"><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707784"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679707785"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679707785"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679707786"><span class="annot"><span class="annottext">termArgs :: [Term DeBruijn DefaultUni DefaultFun ()]
+</span><a href="#local-6989586621679707786"><span class="hs-identifier hs-var hs-var">termArgs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; Data -&gt; Term DeBruijn DefaultUni DefaultFun ()
+forall a (uni :: Type -&gt; Type) fun (term :: Type -&gt; Type) tyname
+       name ann.
+(TermLike term tyname name uni fun, HasTermLevel @Type uni a) =&gt;
+ann -&gt; a -&gt; term ann
+</span><span class="hs-identifier hs-var">mkConstant</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Data -&gt; Term DeBruijn DefaultUni DefaultFun ())
+-&gt; [Data] -&gt; [Term DeBruijn DefaultUni DefaultFun ()]
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679707785"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><span id="line-105"></span><span>      </span><span id="local-6989586621679707787"><span class="annot"><span class="annottext">applied :: Term DeBruijn DefaultUni DefaultFun ()
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707787"><span class="hs-identifier hs-var hs-var">applied</span></a></span></span><span> </span><span id="local-6989586621679707788"><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707788"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+-&gt; [Term DeBruijn DefaultUni DefaultFun ()]
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+forall (term :: Type -&gt; Type) tyname name (uni :: Type -&gt; Type)
+       fun.
+TermLike term tyname name uni fun =&gt;
+term () -&gt; [term ()] -&gt; term ()
+</span><span class="hs-identifier hs-var">mkIterAppNoAnn</span></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707788"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">[Term DeBruijn DefaultUni DefaultFun ()]
+</span><a href="#local-6989586621679707786"><span class="hs-identifier hs-var">termArgs</span></a></span><span>
+</span><span id="line-106"></span><span>   </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; Script
+</span><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-var">Script</span></a></span><span> </span><span class="annot"><span class="annottext">(Program DeBruijn DefaultUni DefaultFun () -&gt; Script)
+-&gt; Program DeBruijn DefaultUni DefaultFun () -&gt; Script
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ASetter
+  (Program DeBruijn DefaultUni DefaultFun ())
+  (Program DeBruijn DefaultUni DefaultFun ())
+  (Term DeBruijn DefaultUni DefaultFun ())
+  (Term DeBruijn DefaultUni DefaultFun ())
+-&gt; (Term DeBruijn DefaultUni DefaultFun ()
+    -&gt; Term DeBruijn DefaultUni DefaultFun ())
+-&gt; Program DeBruijn DefaultUni DefaultFun ()
+-&gt; Program DeBruijn DefaultUni DefaultFun ()
+forall s t a b. ASetter s t a b -&gt; (a -&gt; b) -&gt; s -&gt; t
+</span><span class="hs-identifier hs-var">over</span></span><span> </span><span class="annot"><span class="annottext">ASetter
+  (Program DeBruijn DefaultUni DefaultFun ())
+  (Program DeBruijn DefaultUni DefaultFun ())
+  (Term DeBruijn DefaultUni DefaultFun ())
+  (Term DeBruijn DefaultUni DefaultFun ())
+forall name1 (uni1 :: Type -&gt; Type) fun1 ann name2
+       (uni2 :: Type -&gt; Type) fun2 (f :: Type -&gt; Type).
+Functor f =&gt;
+(Term name1 uni1 fun1 ann -&gt; f (Term name2 uni2 fun2 ann))
+-&gt; Program name1 uni1 fun1 ann -&gt; f (Program name2 uni2 fun2 ann)
+</span><span class="hs-identifier hs-var">UPLC.progTerm</span></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+-&gt; Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707787"><span class="hs-identifier hs-var">applied</span></a></span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679707784"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-107"></span></pre></body></html>

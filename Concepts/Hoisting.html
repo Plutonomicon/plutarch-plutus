@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Hoisting</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <details>
+<summary> imports </summary>
+<p>
+<pre><code class="language-haskell">{-# OPTIONS_GHC -Wno-deprecations #-}
+module Plutarch.Docs.Hoisting (hor, (#||)) where
+import Plutarch.Prelude hiding ((#||))
+</code></pre>
+</p>
+</details>
+<h1 id="hoisting-metaprogramming-and-fundamentals"><a class="header" href="#hoisting-metaprogramming-and-fundamentals">Hoisting, metaprogramming, and fundamentals</a></h1>
+<p>Plutarch has a two-stage compilation process. First GHC compiles our code, then our code generates an <em>AST</em> of our Plutus script, which is then serialized using <code>compile</code>.</p>
+<p>The important thing to note, is that when you have a definition like:</p>
+<pre><code class="language-hs">x :: Term s PInteger
+x = something complex
+</code></pre>
+<p>Any use of <code>x</code> will inline the <strong>full definition</strong> of <code>x</code>. <code>x + x</code> will duplicate <code>something complex</code> in the AST. To avoid this, you should <a href="./../Tricks/DontDuplicateWork.html">use <code>plet</code> in order to avoid duplicate work</a>. Do note that this is <strong>strictly evaluated, and hence isn't always the best solution.</strong></p>
+<p>There is however still a problem: what about top-level functions like <code>fib</code>, <code>sum</code>, <code>filter</code>, and such? We can use <code>plet</code> to avoid duplicating the definition, but this is error-prone. To do this perfectly means that each function that generates part of the AST would need to have access to the <code>plet</code>'ed definitions, meaning that we'd likely have to put it into a record or typeclass.</p>
+<p>To solve this problem, Plutarch supports <em>hoisting</em>. Hoisting only works for <em>closed terms</em>, that is, terms that don't reference any free variables (introduced by <code>plam</code>).</p>
+<p>Hoisted terms are essentially moved to a top-level <code>plet</code>, i.e. it's essentially common sub-expression elimination. Do note that because of this, your hoisted term is <strong>also strictly evaluated</strong>, meaning that you <em>shouldn't</em> hoist non-lazy complex computations (use <a href="./../Introduction/DelayAndForce.html"><code>pdelay</code></a> to avoid this).</p>
+<p>In general, you should use <code>phoistAcyclic</code> on every top level function:</p>
+<pre><code class="language-hs">foo = phoistAcyclic $ plam $ \x -&gt; &lt;something complex&gt;
+</code></pre>
+<p>As long as the Plutarch lambda you're hoisting does not have <a href="https://wiki.haskell.org/Free_variable">free variables</a> (as Plutarch terms), you will be able to hoist it!</p>
+<h2 id="hoisting-operators"><a class="header" href="#hoisting-operators">Hoisting Operators</a></h2>
+<p>For the sake of convenience, you often would want to use operators - which must be Haskell level functions. This is the case for <code>+</code>, <code>-</code>, <code>#==</code> and many more.</p>
+<p>Choosing convenience over efficiency is difficult, but if you notice that your operator uses complex logic and may end up creating big terms - you can trivially factor out the logic into a Plutarch level function, hoist it, and simply apply that function within the operator.</p>
+<p>Consider "boolean or":</p>
+<pre><code class="language-haskell">hor :: Term s PBool -&gt; Term s PBool -&gt; Term s PBool
+x `hor` y = pif x (pconstant True) $ pif y (pconstant True) $ pconstant False
+</code></pre>
+<p>You can factor out most of the logic to a Plutarch level function, and apply that in the operator definition:</p>
+<pre><code class="language-haskell">(#||) :: Term s PBool -&gt; Term s PBool -&gt; Term s PBool
+x #|| y = pforce $ por # x # pdelay y
+
+por :: Term s (PBool :--&gt; PDelayed PBool :--&gt; PDelayed PBool)
+por = phoistAcyclic $ plam $ \x y -&gt; pif' # x # pdelay (pconstant True) # y
+</code></pre>
+<p>In general the pattern goes like this:</p>
+<pre><code class="language-hs">(&lt;//&gt;) :: Term s x -&gt; Term s y -&gt; Term s z
+x &lt;//&gt; y = f # x # y
+
+f :: Term s (x :--&gt; y :--&gt; z)
+f = phoistAcyclic $ plam $ \x y -&gt; &lt;complex computation&gt;
+</code></pre>
+<p>(OR, simply inlined)</p>
+<pre><code class="language-hs">(&lt;//&gt;) :: Term s x -&gt; Term s y -&gt; Term s z
+x &lt;//&gt; y = (\f -&gt; f # x # y) $ phoistAcyclic $ plam $ \x y -&gt; &lt;complex computation&gt;
+</code></pre>
+<blockquote>
+<p>Note: You don't even need to export the Plutarch level function or anything! You can simply have that complex logic factored out into a <em>hoisted, internal Plutarch function</em> and everything will work just fine!</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Concepts/HaskellSynonym.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Concepts/WhatIsTheS.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Concepts/HaskellSynonym.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Concepts/WhatIsTheS.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

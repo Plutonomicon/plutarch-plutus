@@ -1,3 +1,0 @@
-iterateN.lam {"exBudgetCPU":160100,"exBudgetMemory":1100,"scriptSizeBytes":50}
-iterateN.app.succ {"exBudgetCPU":8407923,"exBudgetMemory":36451,"scriptSizeBytes":63}
-iterateN.app.double {"exBudgetCPU":8305373,"exBudgetMemory":36451,"scriptSizeBytes":63}

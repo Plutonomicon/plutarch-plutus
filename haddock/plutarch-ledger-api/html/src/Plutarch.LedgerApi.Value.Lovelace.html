@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.LedgerApi.Value.Lovelace</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier">PLovelace</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V3</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="annot"><span class="hs-comment">-- | @since 2.2.0</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">newtype</span><span> </span><span id="PLovelace"><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-var">PLovelace</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679379117"><span class="annot"><a href="#local-6989586621679379117"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PLovelace"><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-var">PLovelace</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679379117"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-13"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.2.0</span></span><span>
+</span><span id="line-14"></span><span>      </span><span id="local-6989586621679379120"><span id="local-6989586621679379122"><span class="annot"><span class="annottext">(forall x. PLovelace s -&gt; Rep (PLovelace s) x)
+-&gt; (forall x. Rep (PLovelace s) x -&gt; PLovelace s)
+-&gt; Generic (PLovelace s)
+forall x. Rep (PLovelace s) x -&gt; PLovelace s
+forall x. PLovelace s -&gt; Rep (PLovelace s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PLovelace s) x -&gt; PLovelace s
+forall (s :: S) x. PLovelace s -&gt; Rep (PLovelace s) x
+$cfrom :: forall (s :: S) x. PLovelace s -&gt; Rep (PLovelace s) x
+from :: forall x. PLovelace s -&gt; Rep (PLovelace s) x
+$cto :: forall (s :: S) x. Rep (PLovelace s) x -&gt; PLovelace s
+to :: forall x. Rep (PLovelace s) x -&gt; PLovelace s
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-18"></span><span>      </span><span id="local-6989586621679379129"><span id="local-6989586621679379138"><span class="annot"><span class="annottext">All SListI (Code (PLovelace s))
+All SListI (Code (PLovelace s)) =&gt;
+(PLovelace s -&gt; Rep (PLovelace s))
+-&gt; (Rep (PLovelace s) -&gt; PLovelace s) -&gt; Generic (PLovelace s)
+Rep (PLovelace s) -&gt; PLovelace s
+PLovelace s -&gt; Rep (PLovelace s)
+forall a.
+All SListI (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S). All SListI (Code (PLovelace s))
+forall (s :: S). Rep (PLovelace s) -&gt; PLovelace s
+forall (s :: S). PLovelace s -&gt; Rep (PLovelace s)
+$cfrom :: forall (s :: S). PLovelace s -&gt; Rep (PLovelace s)
+from :: PLovelace s -&gt; Rep (PLovelace s)
+$cto :: forall (s :: S). Rep (PLovelace s) -&gt; PLovelace s
+to :: Rep (PLovelace s) -&gt; PLovelace s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.2.0</span></span><span>
+</span><span id="line-20"></span><span>      </span><span id="local-6989586621679379168"><span id="local-6989586621679379174"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PLovelace) -&gt; Term s PLovelace)
+-&gt; (forall (s :: S). Term s PLovelace -&gt; Term s PData)
+-&gt; PIsData PLovelace
+forall (s :: S). Term s (PAsData PLovelace) -&gt; Term s PLovelace
+forall (s :: S). Term s PLovelace -&gt; Term s PData
+forall (a :: S -&gt; Type).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PLovelace) -&gt; Term s PLovelace
+pfromDataImpl :: forall (s :: S). Term s (PAsData PLovelace) -&gt; Term s PLovelace
+$cpdataImpl :: forall (s :: S). Term s PLovelace -&gt; Term s PData
+pdataImpl :: forall (s :: S). Term s PLovelace -&gt; Term s PData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.2.0</span></span><span>
+</span><span id="line-22"></span><span>      </span><span id="local-6989586621679379181"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool)
+-&gt; PEq PLovelace
+forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+forall (t :: S -&gt; Type).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+$c#== :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+#== :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-24"></span><span>      </span><span id="local-6989586621679379200"><span id="local-6989586621679379206"><span id="local-6989586621679379211"><span id="local-6989586621679379214"><span class="annot"><span class="annottext">PEq PLovelace
+PEq PLovelace =&gt;
+(forall (s :: S).
+ Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool)
+-&gt; (forall (s :: S).
+    Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace)
+-&gt; (forall (s :: S).
+    Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace)
+-&gt; POrd PLovelace
+forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace
+forall (t :: S -&gt; Type).
+PEq t =&gt;
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; (forall (s :: S). Term s t -&gt; Term s t -&gt; Term s t)
+-&gt; POrd t
+$c#&lt;= :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+#&lt;= :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+$c#&lt; :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+#&lt; :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PBool
+$cpmax :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace
+pmax :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace
+$cpmin :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace
+pmin :: forall (s :: S).
+Term s PLovelace -&gt; Term s PLovelace -&gt; Term s PLovelace
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
+</span><span id="line-25"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.2.0</span></span><span>
+</span><span id="line-26"></span><span>      </span><span id="local-6989586621679379219"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PLovelace -&gt; Term s PString)
+-&gt; PShow PLovelace
+forall (s :: S). Bool -&gt; Term s PLovelace -&gt; Term s PString
+forall (t :: S -&gt; Type).
+(forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
+$cpshow' :: forall (s :: S). Bool -&gt; Term s PLovelace -&gt; Term s PString
+pshow' :: forall (s :: S). Bool -&gt; Term s PLovelace -&gt; Term s PString
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-30"></span><span>      </span><span id="local-6989586621679379234"><span id="local-6989586621679379242"><span class="annot"><span class="annottext">(forall (s :: S). PLovelace s -&gt; Term s (PInner PLovelace))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner PLovelace) -&gt; (PLovelace s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PLovelace
+forall (s :: S). PLovelace s -&gt; Term s (PInner PLovelace)
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PLovelace) -&gt; (PLovelace s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PLovelace s -&gt; Term s (PInner PLovelace)
+pcon' :: forall (s :: S). PLovelace s -&gt; Term s (PInner PLovelace)
+$cpmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PLovelace) -&gt; (PLovelace s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PLovelace) -&gt; (PLovelace s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-type">PLovelace</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.6.0</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679379252"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData PLovelace
+forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+forall (a :: S -&gt; Type).
+(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData a
+$cpwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+pwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PValidateData</span></span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePValidateData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-type">PLovelace</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-40"></span><span id="local-6989586621679379263"><span id="local-6989586621679379273"><span id="local-6989586621679379282"><span id="local-6989586621679379291"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-41"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-type">PLovelace</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Lovelace</span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-43"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-type">PLovelace</span></a></span></span></span></span></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="annot"><span class="hs-comment">-- | @since 3.4.0</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679379364"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.Lovelace.html#PLovelace"><span class="hs-identifier hs-type">PLovelace</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-47"></span></pre></body></html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.LedgerApi.Value.AssetClass</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier">PAssetClass</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html"><span class="hs-identifier">Plutarch.LedgerApi.Value.CurrencySymbol</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier">PCurrencySymbol</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html"><span class="hs-identifier">Plutarch.LedgerApi.Value.TokenName</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html#PTokenName"><span class="hs-identifier">PTokenName</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V1.Value</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusValue</span></span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">newtype</span><span> </span><span id="PAssetClass"><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-var">PAssetClass</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679379981"><span class="annot"><a href="#local-6989586621679379981"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PAssetClass"><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-var">PAssetClass</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679379981"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinPair</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html#PTokenName"><span class="hs-identifier hs-type">PTokenName</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-16"></span><span>      </span><span id="local-6989586621679379984"><span id="local-6989586621679379986"><span class="annot"><span class="annottext">(forall x. PAssetClass s -&gt; Rep (PAssetClass s) x)
+-&gt; (forall x. Rep (PAssetClass s) x -&gt; PAssetClass s)
+-&gt; Generic (PAssetClass s)
+forall x. Rep (PAssetClass s) x -&gt; PAssetClass s
+forall x. PAssetClass s -&gt; Rep (PAssetClass s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PAssetClass s) x -&gt; PAssetClass s
+forall (s :: S) x. PAssetClass s -&gt; Rep (PAssetClass s) x
+$cfrom :: forall (s :: S) x. PAssetClass s -&gt; Rep (PAssetClass s) x
+from :: forall x. PAssetClass s -&gt; Rep (PAssetClass s) x
+$cto :: forall (s :: S) x. Rep (PAssetClass s) x -&gt; PAssetClass s
+to :: forall x. Rep (PAssetClass s) x -&gt; PAssetClass s
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-20"></span><span>      </span><span id="local-6989586621679379993"><span id="local-6989586621679380002"><span class="annot"><span class="annottext">All SListI (Code (PAssetClass s))
+All SListI (Code (PAssetClass s)) =&gt;
+(PAssetClass s -&gt; Rep (PAssetClass s))
+-&gt; (Rep (PAssetClass s) -&gt; PAssetClass s)
+-&gt; Generic (PAssetClass s)
+Rep (PAssetClass s) -&gt; PAssetClass s
+PAssetClass s -&gt; Rep (PAssetClass s)
+forall a.
+All SListI (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S). All SListI (Code (PAssetClass s))
+forall (s :: S). Rep (PAssetClass s) -&gt; PAssetClass s
+forall (s :: S). PAssetClass s -&gt; Rep (PAssetClass s)
+$cfrom :: forall (s :: S). PAssetClass s -&gt; Rep (PAssetClass s)
+from :: PAssetClass s -&gt; Rep (PAssetClass s)
+$cto :: forall (s :: S). Rep (PAssetClass s) -&gt; PAssetClass s
+to :: Rep (PAssetClass s) -&gt; PAssetClass s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-22"></span><span>      </span><span id="local-6989586621679380032"><span id="local-6989586621679380038"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s (PAsData PAssetClass) -&gt; Term s PAssetClass)
+-&gt; (forall (s :: S). Term s PAssetClass -&gt; Term s PData)
+-&gt; PIsData PAssetClass
+forall (s :: S). Term s (PAsData PAssetClass) -&gt; Term s PAssetClass
+forall (s :: S). Term s PAssetClass -&gt; Term s PData
+forall (a :: S -&gt; Type).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PAssetClass) -&gt; Term s PAssetClass
+pfromDataImpl :: forall (s :: S). Term s (PAsData PAssetClass) -&gt; Term s PAssetClass
+$cpdataImpl :: forall (s :: S). Term s PAssetClass -&gt; Term s PData
+pdataImpl :: forall (s :: S). Term s PAssetClass -&gt; Term s PData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-24"></span><span>      </span><span id="local-6989586621679380045"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PAssetClass -&gt; Term s PAssetClass -&gt; Term s PBool)
+-&gt; PEq PAssetClass
+forall (s :: S).
+Term s PAssetClass -&gt; Term s PAssetClass -&gt; Term s PBool
+forall (t :: S -&gt; Type).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+$c#== :: forall (s :: S).
+Term s PAssetClass -&gt; Term s PAssetClass -&gt; Term s PBool
+#== :: forall (s :: S).
+Term s PAssetClass -&gt; Term s PAssetClass -&gt; Term s PBool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
+</span><span id="line-25"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-26"></span><span>      </span><span id="local-6989586621679380065"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PAssetClass -&gt; Term s PString)
+-&gt; PShow PAssetClass
+forall (s :: S). Bool -&gt; Term s PAssetClass -&gt; Term s PString
+forall (t :: S -&gt; Type).
+(forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
+$cpshow' :: forall (s :: S). Bool -&gt; Term s PAssetClass -&gt; Term s PString
+pshow' :: forall (s :: S). Bool -&gt; Term s PAssetClass -&gt; Term s PString
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-30"></span><span>      </span><span id="local-6989586621679380091"><span id="local-6989586621679380099"><span class="annot"><span class="annottext">(forall (s :: S). PAssetClass s -&gt; Term s (PInner PAssetClass))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner PAssetClass)
+    -&gt; (PAssetClass s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PAssetClass
+forall (s :: S). PAssetClass s -&gt; Term s (PInner PAssetClass)
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAssetClass)
+-&gt; (PAssetClass s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PAssetClass s -&gt; Term s (PInner PAssetClass)
+pcon' :: forall (s :: S). PAssetClass s -&gt; Term s (PInner PAssetClass)
+$cpmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAssetClass)
+-&gt; (PAssetClass s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAssetClass)
+-&gt; (PAssetClass s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.6.0</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679380109"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData PAssetClass
+forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+forall (a :: S -&gt; Type).
+(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData a
+$cpwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+pwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PValidateData</span></span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePValidateData</span></span><span>
+</span><span id="line-38"></span><span>            </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span>
+</span><span id="line-39"></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinPair</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html#PTokenName"><span class="hs-identifier hs-type">PTokenName</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>        </span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679380126"><span id="local-6989586621679380130"><span class="annot"><span class="hs-identifier hs-type">POrd</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#&lt;=</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679380149"><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380149"><span class="hs-identifier hs-var">ac1</span></a></span></span><span> </span><span id="local-6989586621679380150"><span class="annot"><span class="annottext">#&lt;= :: forall (s :: S).
+Term s PAssetClass -&gt; Term s PAssetClass -&gt; Term s PBool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">#&lt;=</span></span></span><span> </span><span id="local-6989586621679380151"><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380151"><span class="hs-identifier hs-var">ac2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PAssetClass
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380149"><span class="hs-identifier hs-var">ac1</span></a></span><span> </span><span class="annot"><span class="annottext">((PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span> </span><span id="local-6989586621679380153"><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380153"><span class="hs-identifier hs-var">pair1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-46"></span><span>    </span><span class="annot"><span class="annottext">Term s PAssetClass
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380151"><span class="hs-identifier hs-var">ac2</span></a></span><span> </span><span class="annot"><span class="annottext">((PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span> </span><span id="local-6989586621679380154"><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380154"><span class="hs-identifier hs-var">pair2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-47"></span><span>      </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380153"><span class="hs-identifier hs-var">pair1</span></a></span><span> </span><span class="annot"><span class="annottext">((PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+  -&gt; Term s PBool)
+ -&gt; Term s PBool)
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinPair</span></span><span> </span><span id="local-6989586621679380156"><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380156"><span class="hs-identifier hs-var">fst1'</span></a></span></span><span> </span><span id="local-6989586621679380157"><span class="annot"><span class="annottext">Term s (PAsData PTokenName)
+</span><a href="#local-6989586621679380157"><span class="hs-identifier hs-var">snd1'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-48"></span><span>        </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380154"><span class="hs-identifier hs-var">pair2</span></a></span><span> </span><span class="annot"><span class="annottext">((PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+  -&gt; Term s PBool)
+ -&gt; Term s PBool)
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinPair</span></span><span> </span><span id="local-6989586621679380158"><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380158"><span class="hs-identifier hs-var">fst2'</span></a></span></span><span> </span><span id="local-6989586621679380159"><span class="annot"><span class="annottext">Term s (PAsData PTokenName)
+</span><a href="#local-6989586621679380159"><span class="hs-identifier hs-var">snd2'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-49"></span><span>          </span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">plet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol) -&gt; Term s PCurrencySymbol
+forall (a :: S -&gt; Type) (s :: S).
+PIsData a =&gt;
+Term s (PAsData a) -&gt; Term s a
+</span><span class="hs-identifier hs-var">pfromData</span></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380156"><span class="hs-identifier hs-var">fst1'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679380162"><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380162"><span class="hs-identifier hs-var">fst1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-50"></span><span>            </span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">plet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol) -&gt; Term s PCurrencySymbol
+forall (a :: S -&gt; Type) (s :: S).
+PIsData a =&gt;
+Term s (PAsData a) -&gt; Term s a
+</span><span class="hs-identifier hs-var">pfromData</span></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380158"><span class="hs-identifier hs-var">fst2'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679380163"><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380163"><span class="hs-identifier hs-var">fst2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-51"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380162"><span class="hs-identifier hs-var">fst1</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
+forall (s :: S).
+Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
+forall (t :: S -&gt; Type) (s :: S).
+POrd t =&gt;
+Term s t -&gt; Term s t -&gt; Term s PBool
+</span><span class="hs-operator hs-var">#&lt;</span></span><span> </span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380163"><span class="hs-identifier hs-var">fst2</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+                #|| ( (fst1 #== fst2)
+</span><span class="hs-cpp">                        #&amp;&amp; ( let snd1 = pfromData snd1'
+</span><span>                                  </span><span class="hs-identifier">snd2</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">pfromData</span><span> </span><span class="hs-identifier">snd2'</span><span>
+</span><span id="line-55"></span><span>                               </span><span class="hs-keyword">in</span><span> </span><span class="hs-identifier">snd1</span><span> </span><span class="hs-operator">#&lt;=</span><span> </span><span class="hs-identifier">snd2</span><span>
+</span><span id="line-56"></span><span>                            </span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>                    </span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#&lt;</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-59"></span><span>  </span><span id="local-6989586621679380181"><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380181"><span class="hs-identifier hs-var">ac1</span></a></span></span><span> </span><span id="local-6989586621679380182"><span class="annot"><span class="annottext">#&lt; :: forall (s :: S).
+Term s PAssetClass -&gt; Term s PAssetClass -&gt; Term s PBool
+</span><span class="hs-operator hs-var hs-var hs-var hs-var">#&lt;</span></span></span><span> </span><span id="local-6989586621679380183"><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380183"><span class="hs-identifier hs-var">ac2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PAssetClass
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380181"><span class="hs-identifier hs-var">ac1</span></a></span><span> </span><span class="annot"><span class="annottext">((PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span> </span><span id="local-6989586621679380184"><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380184"><span class="hs-identifier hs-var">pair1</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="annottext">Term s PAssetClass
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term s PAssetClass
+</span><a href="#local-6989586621679380183"><span class="hs-identifier hs-var">ac2</span></a></span><span> </span><span class="annot"><span class="annottext">((PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (PAssetClass s -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span> </span><span id="local-6989586621679380185"><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380185"><span class="hs-identifier hs-var">pair2</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-61"></span><span>      </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380184"><span class="hs-identifier hs-var">pair1</span></a></span><span> </span><span class="annot"><span class="annottext">((PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+  -&gt; Term s PBool)
+ -&gt; Term s PBool)
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinPair</span></span><span> </span><span id="local-6989586621679380186"><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380186"><span class="hs-identifier hs-var">fst1'</span></a></span></span><span> </span><span id="local-6989586621679380187"><span class="annot"><span class="annottext">Term s (PAsData PTokenName)
+</span><a href="#local-6989586621679380187"><span class="hs-identifier hs-var">snd1'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-62"></span><span>        </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall (a :: S -&gt; Type) (s :: S) (b :: S -&gt; Type).
+PlutusType a =&gt;
+Term s a -&gt; (a s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">pmatch</span></span><span> </span><span class="annot"><span class="annottext">Term
+  s (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName))
+</span><a href="#local-6989586621679380185"><span class="hs-identifier hs-var">pair2</span></a></span><span> </span><span class="annot"><span class="annottext">((PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+  -&gt; Term s PBool)
+ -&gt; Term s PBool)
+-&gt; (PBuiltinPair (PAsData PCurrencySymbol) (PAsData PTokenName) s
+    -&gt; Term s PBool)
+-&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinPair</span></span><span> </span><span id="local-6989586621679380188"><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380188"><span class="hs-identifier hs-var">fst2'</span></a></span></span><span> </span><span id="local-6989586621679380189"><span class="annot"><span class="annottext">Term s (PAsData PTokenName)
+</span><a href="#local-6989586621679380189"><span class="hs-identifier hs-var">snd2'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-63"></span><span>          </span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">plet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol) -&gt; Term s PCurrencySymbol
+forall (a :: S -&gt; Type) (s :: S).
+PIsData a =&gt;
+Term s (PAsData a) -&gt; Term s a
+</span><span class="hs-identifier hs-var">pfromData</span></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380186"><span class="hs-identifier hs-var">fst1'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679380190"><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380190"><span class="hs-identifier hs-var">fst1</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-64"></span><span>            </span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var">plet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol) -&gt; Term s PCurrencySymbol
+forall (a :: S -&gt; Type) (s :: S).
+PIsData a =&gt;
+Term s (PAsData a) -&gt; Term s a
+</span><span class="hs-identifier hs-var">pfromData</span></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PCurrencySymbol)
+</span><a href="#local-6989586621679380188"><span class="hs-identifier hs-var">fst2'</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool)
+-&gt; (Term s PCurrencySymbol -&gt; Term s PBool) -&gt; Term s PBool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679380191"><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380191"><span class="hs-identifier hs-var">fst2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-65"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380190"><span class="hs-identifier hs-var">fst1</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
+forall (s :: S).
+Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
+forall (t :: S -&gt; Type) (s :: S).
+POrd t =&gt;
+Term s t -&gt; Term s t -&gt; Term s PBool
+</span><span class="hs-operator hs-var">#&lt;</span></span><span> </span><span class="annot"><span class="annottext">Term s PCurrencySymbol
+</span><a href="#local-6989586621679380191"><span class="hs-identifier hs-var">fst2</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+                #|| ( (fst1 #== fst2)
+</span><span class="hs-cpp">                        #&amp;&amp; ( let snd1 = pfromData snd1'
+</span><span>                                  </span><span class="hs-identifier">snd2</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-identifier">pfromData</span><span> </span><span class="hs-identifier">snd2'</span><span>
+</span><span id="line-69"></span><span>                               </span><span class="hs-keyword">in</span><span> </span><span class="hs-identifier">snd1</span><span> </span><span class="hs-operator">#&lt;</span><span> </span><span class="hs-identifier">snd2</span><span>
+</span><span id="line-70"></span><span>                            </span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>                    </span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
+</span><span id="line-74"></span><span id="local-6989586621679380197"><span id="local-6989586621679380207"><span id="local-6989586621679380216"><span id="local-6989586621679380225"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-75"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusValue.AssetClass</span></span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-77"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span></span></span></span></span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="annot"><span class="hs-comment">-- | @since 3.4.0</span></span><span>
+</span><span id="line-80"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679380409"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.AssetClass.html#PAssetClass"><span class="hs-identifier hs-type">PAssetClass</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-81"></span></pre></body></html>

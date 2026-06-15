@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Working with Bound Fields</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <details>
+<summary> imports </summary>
+<p>
+<pre><code class="language-haskell">module Plutarch.Docs.WorkingWithBoundFields (foo, foo', coreValidator) where
+
+import GHC.Records (getField)
+import GHC.Generics (Generic)
+import Plutarch.Prelude
+import Plutarch.DataRepr (HRec, HRecOf, PMemberFields)
+import Plutarch.LedgerApi.V3 (PTxInfo, PScriptContext)
+</code></pre>
+</p>
+</details>
+<h1 id="pdatarecord-is-deprecated-in-favor-of-plutarchreprdata-this-documentation-is-unmaintained"><a class="header" href="#pdatarecord-is-deprecated-in-favor-of-plutarchreprdata-this-documentation-is-unmaintained">PDataRecord is deprecated in favor of <code>Plutarch.Repr.Data</code>. This documentation is unmaintained.</a></h1>
+<h1 id="working-with-bound-fields-yielded-by-pletfields"><a class="header" href="#working-with-bound-fields-yielded-by-pletfields">Working with bound fields yielded by <code>pletFields</code></a></h1>
+<p>You may have noticed that <code>pletFields</code> actually returns a Haskell level heterogenous list, with all the interesting fields
+"bound" to it. Only the fields you actually use from these bindings are extracted and put into the resulting script. Therefore,
+you <em>only pay for what you use</em>.</p>
+<pre><code class="language-hs">pletFields ::
+  forall fs a s b ps bs.
+  ( PDataFields a
+  , ps ~ (PFields a)
+  , bs ~ (Bindings ps fs)
+  , BindFields ps bs
+  ) =&gt;
+  Term s a -&gt;
+  (HRecOf a fs s -&gt; Term s b) -&gt;
+  Term s b
+</code></pre>
+<p>The real juice of that massive type is the <code>HRecOf</code>, which is a utility type alias you can use in functions that operate on the return value of <code>pletFields</code>:</p>
+<pre><code class="language-haskell">newtype PFooType s
+  = PFooType (Term s (PDataRecord '["frst" ':= PInteger, "scnd" ':= PBool, "thrd" ':= PString]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PDataFields)
+instance DerivePlutusType PFooType where type DPTStrat _ = PlutusTypeData
+
+foo :: HRecOf (PAsData PFooType) '[ "frst", "scnd" ] s -&gt; Term s PInteger
+foo h = pif (getField @"scnd" h) (getField @"frst" h) 0
+</code></pre>
+<blockquote>
+<p>Note: Be careful to derive <code>PDataFields</code> on your type if it has only one constructor</p>
+</blockquote>
+<p>This is very useful for single use functions that you use as "branches" in your validators - they work more like macros or templates rather than real functions. For example, you might have different branches for different constructors of a redeemer, but all branches end up needing to do common field extraction. You could abstract it out using:</p>
+<pre><code class="language-haskell">data PSomeRedm s
+  = FirstRedm (Term s (PDataRecord '[]))
+  | SecondRedm (Term s (PDataRecord '[]))
+  deriving stock (Generic)
+  deriving anyclass (PlutusType, PIsData)
+instance DerivePlutusType PSomeRedm where type DPTStrat _ = PlutusTypeData
+
+firstRedmCheck ::
+  HRecOf PTxInfo '[ "inputs", "outputs", "mint", "datums" ] s
+  -&gt; TermCont s (Term s PUnit)
+firstRedmCheck _info = do
+  -- Do checks with info fields here.
+  pure $ pconstant ()
+
+secondRedmCheck ::
+  HRecOf PTxInfo '[ "inputs", "outputs", "mint", "datums" ] s
+  -&gt; TermCont s (Term s PUnit)
+secondRedmCheck _info = do
+  -- Do checks with info fields here.
+  pure $ pconstant ()
+
+coreValidator :: Term s (PData :--&gt; PAsData PSomeRedm :--&gt; PScriptContext :--&gt; PUnit)
+coreValidator = plam $ \_ (pfromData -&gt; redm) ctx' -&gt; unTermCont $ do
+  ctx &lt;- tcont $ pletFields @'["txInfo", "purpose"] ctx'
+  info &lt;- tcont $ pletFields @'["inputs", "outputs", "mint", "datums"] $ getField @"txInfo" ctx
+  pmatchC redm &gt;&gt;= \case
+    FirstRedm _ -&gt; firstRedmCheck info
+    SecondRedm _ -&gt; secondRedmCheck info
+</code></pre>
+<p>Without it, you may have to fallback to deconstructing <code>info</code> with <code>pletFields</code> in every single branch.</p>
+<p>However, this is rather <em>nominal</em>. What if you don't need the exact same fields in all
+branches? Let's go back to the example with <code>foo</code> and <code>FooType</code>. What if someone has:</p>
+<pre><code class="language-hs">fooTypeHrec &lt;- tcont $ pletFields @'["frst", "scnd", "thrd"] fooTypeValue
+foo fooTypeHrec
+-- uh oh
+</code></pre>
+<p>The type required by <code>foo</code> should <em>morally</em> work just fine with <code>fooTypeHrec</code>, but it won't!
+What we really want, is some sort of row polymorphism. This is where the <code>PMemberFields</code> type
+from <code>Plutarch.DataRepr</code> comes in:</p>
+<pre><code class="language-haskell">foo' :: PMemberFields PFooType '["scnd", "frst"] s as =&gt; HRec as -&gt; Term s PInteger
+foo' h = pif (getField @"scnd" h) (getField @"frst" h) 0
+</code></pre>
+<p>Now <code>foo</code> merely requires the <code>HRec</code> to have the <code>"scnd"</code> and <code>"frst"</code> fields from <code>PFooType</code>, more fields are allowed just fine!</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../Tricks/UsingHaskellLevelFunctions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../Tricks/UsingHaskellLevelFunctions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,1 +1,0 @@
-../../../src/examples/BASIC.md

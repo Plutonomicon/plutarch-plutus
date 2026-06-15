@@ -1,4 +1,0 @@
-normal {"exBudgetCPU":2720100,"exBudgetMemory":17100,"scriptSizeBytes":50}
-do {"exBudgetCPU":2832100,"exBudgetMemory":17800,"scriptSizeBytes":114}
-cont {"exBudgetCPU":2720100,"exBudgetMemory":17100,"scriptSizeBytes":50}
-termcont {"exBudgetCPU":2832100,"exBudgetMemory":17800,"scriptSizeBytes":104}

@@ -1,0 +1,390 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Overview</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>The Plutarch guide is your one-stop shop for getting up to speed on Plutarch!</p>
+<blockquote>
+<p>Note: If you spot any mistakes/have any related questions that this guide lacks the answer to, please don't hesitate to raise an issue. The goal is to have high quality documentation for Plutarch users!</p>
+</blockquote>
+<blockquote>
+<p>Aside: Not interested in the details? Skip straight to <a href="#examples">examples</a>!</p>
+</blockquote>
+<h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
+<h2 id="haddock"><a class="header" href="#haddock">Haddock</a></h2>
+<p>Haddock documentation of <code>plutus-core</code>, <code>plutus-ledger-api</code>, <code>plutus-tx</code>, and few other upstream library with correctly matched version to latest Plutarch is available:</p>
+<p><a href="https://plutonomicon.github.io/plutarch-plutus/haddock/">Go to Haddock</a></p>
+<h2 id="compiling-and-running"><a class="header" href="#compiling-and-running">Compiling and Running</a></h2>
+<ul>
+<li><a href="./Run.html#common-extensions-and-ghc-options">Common Extensions and GHC options</a></li>
+<li><a href="./Run.html#evaluation">Evaluation</a></li>
+<li>Nix binary cache is recommended. Otherwise nix will build from GHC itself.</li>
+</ul>
+<p>Use Plutonomicon binary cache via cachix: https://plutonomicon.cachix.org</p>
+<p>DO NOT add your user to <code>trusted-users</code> as <code>cachix use</code> suggests because this is
+<a href="https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-trusted-users">insecure</a>.</p>
+<h2 id="introduction-and-basic-syntax"><a class="header" href="#introduction-and-basic-syntax">Introduction and Basic Syntax</a></h2>
+<p>The <a href="./Introduction.html">Introduction section</a> serves as a introduction to Plutarch's basic concepts and core syntactic constructs. It will help build a mental model of Plutarch, but is insufficient to write production-ready code.</p>
+<ul>
+<li><a href="./Introduction.html#overview">Overview</a></li>
+<li><a href="./Introduction/UntypedPlutusCore.html">Untyped Plutus Core (UPLC)</a></li>
+<li><a href="./Introduction/PlutarchTypes.html">Plutarch Types</a></li>
+<li><a href="./Introduction/PlutarchTerms.html">Plutarch <code>Term</code>s</a>
+<ul>
+<li><a href="./Introduction/PlutarchTerms/PlutarchConstants.html">Plutarch Constant <code>Term</code>s</a>
+<ul>
+<li><a href="./Introduction/PlutarchTerms/PlutarchConstants.html#static-building-of-constant-terms-with-pconstant">Static building of constant <code>Term</code>s with <code>pconstant</code></a></li>
+<li><a href="./Introduction/PlutarchTerms/PlutarchConstants.html#dynamic-building-of-constant-terms-with-pcon">Dynamic building of constant <code>Term</code>s with <code>pcon</code></a></li>
+<li><a href="./Introduction/PlutarchTerms/PlutarchConstants.html#overloaded-literals">Overloaded literals</a></li>
+<li><a href="./Introduction/PlutarchTerms/PlutarchConstants.html#helper-functions">Helper functions</a></li>
+</ul>
+</li>
+<li><a href="./Introduction/PlutarchTerms/PlutarchLambdas.html#lambdas-plutarch-level-function-terms">Lambdas; Plutarch-level Function <code>Term</code>s.</a>
+<ul>
+<li><a href="./Introduction/PlutarchTerms/PlutarchLambdas.html#function-application">Function Application</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="./Introduction/Patternmatching.html">Pattern matching constant <code>Term</code>s with <code>pmatch</code>.</a></li>
+<li><a href="./Introduction/DelayAndForce.html">Strictness and Laziness; Delayed Terms and Forcing</a></li>
+<li><a href="./Introduction.html#references">References</a></li>
+</ul>
+<h2 id="practical-usage"><a class="header" href="#practical-usage">Practical Usage</a></h2>
+<p>The <a href="./Usage.html">Usage section</a> fills in the gaps left by the previous. It illustrates techniques that make Plutarch easier to work with.</p>
+<ul>
+<li><a href="./Usage/Conditionals.html">Conditionals</a></li>
+<li><a href="./Usage/Recursion.html">Recursion</a></li>
+<li><a href="./Usage/PreludeMixin.html">Using the Plutarch Prelude</a></li>
+<li><a href="./Usage/DoSyntaxWithTermCont.html">Do syntax with <code>TermCont</code></a></li>
+<li><a href="./Usage/DoSyntaxWithQualifiedDo.html">Do syntax with <code>QualifiedDo</code> and <code>Plutarch.Monadic</code></a></li>
+<li><a href="./Usage/DerivingForNewtypes.html">Deriving typeclasses for <code>newtype</code>s</a></li>
+<li><a href="./Usage/DerivingWithGenerics.html">Deriving typeclasses with generics</a></li>
+<li><a href="./Usage/AvoidWorkDuplicationUsingPlet.html"><code>plet</code> to avoid work duplication</a></li>
+<li><a href="./Usage/Tracing.html">Tracing</a></li>
+<li><a href="./Usage/RaisingErrors.html">Raising errors</a></li>
+<li><a href="./Usage/UnsafeFunctions.html">Unsafe functions</a></li>
+</ul>
+<h2 id="concepts"><a class="header" href="#concepts">Concepts</a></h2>
+<p>The <a href="./Concepts.html">Concepts section</a> details additional concepts.</p>
+<ul>
+<li><a href="./Concepts/Hoisting.html">Hoisting, metaprogramming, and fundamentals</a>
+<ul>
+<li><a href="./Concepts/Hoisting.html#hoisting-operators">Hoisting Operators</a></li>
+</ul>
+</li>
+<li><a href="./Concepts/WhatIsTheS.html#what-is-the-s">What is the <code>s</code>?</a></li>
+<li><a href="./Concepts/DataAndScottEncoding.html">Data encoding and Scott encoding</a>
+<ul>
+<li><a href="./Concepts/DataAndScottEncoding.html#data-encoding">Data encoding</a></li>
+<li><a href="./Concepts/DataAndScottEncoding.html#scott-encoding">Scott encoding</a></li>
+</ul>
+</li>
+<li><a href="./Concepts/HaskellSynonym.html">Haskell synonym of Plutarch types</a></li>
+</ul>
+<h2 id="typeclasses"><a class="header" href="#typeclasses">Typeclasses</a></h2>
+<p>The <a href="./Typeclasses.html">Typeclasses section</a> discusses the primary typeclasses related to Plutarch.</p>
+<ul>
+<li><a href="./Typeclasses/PEqAndPOrd.html"><code>PEq</code> &amp; <code>POrd</code></a></li>
+<li><a href="./Typeclasses/PIntegral.html"><code>PIntegral</code></a></li>
+<li><a href="./Typeclasses/PIsData.html"><code>PIsData</code></a></li>
+<li><a href="./Typeclasses/PlutusType,PCon,PMatch.html"><code>PlutusType</code>, <code>PCon</code>, and <code>PMatch</code></a>
+<ul>
+<li><a href="./Typeclasses/PlutusType,PCon,PMatch.html#implementing-plutustype-for-your-own-types-scott-encoding">Implementing <code>PlutusType</code> for your own types (Scott Encoding)</a></li>
+<li><a href="./Typeclasses/PlutusType,PCon,PMatch.html#implementing-plutustype-for-your-own-types-data-encoding">Implementing <code>PlutusType</code> for your own types (<code>Data</code> Encoding)</a></li>
+<li><a href="./Typeclasses/PlutusType,PCon,PMatch.html#implementing-plutustype-for-your-own-types-newtype">Implementing <code>PlutusType</code> for your own types (<code>newtype</code>)</a></li>
+</ul>
+</li>
+<li><a href="./Typeclasses/PListLike.html"><code>PListLike</code></a></li>
+<li><a href="./Typeclasses/PIsDataReprAndPDataFields.html"><code>PIsDataRepr</code> &amp; <code>PDataFields</code></a>
+<ul>
+<li><a href="./Typeclasses/PIsDataReprAndPDataFields.html#all-about-extracting-fields">All about extracting fields</a>
+<ul>
+<li><a href="./Typeclasses/PIsDataReprAndPDataFields.html#alternatives-to-overloadedrecorddot">Alternatives to <code>OverloadedRecordDot</code></a></li>
+</ul>
+</li>
+<li><a href="./Typeclasses/PIsDataReprAndPDataFields.html#all-about-constructing-data-values">All about constructing data values</a></li>
+</ul>
+</li>
+<li><a href="./Typeclasses/PTryFrom.html"><code>PTryFrom</code></a>
+<ul>
+<li><a href="./Typeclasses/PTryFrom.html#laws">Laws</a></li>
+<li><a href="./Typeclasses/PTryFrom.html#implementing-ptryfrom">Implementing <code>PTryFrom</code></a></li>
+<li><a href="./Typeclasses/PTryFrom.html#ptryfromexcess"><code>PTryFromExcess</code></a></li>
+<li><a href="./Typeclasses/PTryFrom.html#recovering-only-partially">Recovering only partially</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="working-with-types"><a class="header" href="#working-with-types">Working with Types</a></h2>
+<p>The <a href="./Types.html">Types section</a> discusses the core types of Plutarch.</p>
+<ul>
+<li><a href="./Types/PInteger.html"><code>PInteger</code></a></li>
+<li><a href="./Types/PBool.html"><code>PBool</code></a></li>
+<li><a href="./Types/PString.html"><code>PString</code></a></li>
+<li><a href="./Types/PByteString.html"><code>PByteString</code></a></li>
+<li><a href="./Types/PUnit.html"><code>PUnit</code></a></li>
+<li><a href="./Types/PBuiltinList.html"><code>PBuiltinList</code></a></li>
+<li><a href="./Types/PList.html"><code>PList</code></a></li>
+<li><a href="./Types/PBuiltinPair.html"><code>PBuiltinPair</code></a></li>
+<li><a href="./Types/PAsData.html"><code>PAsData</code></a></li>
+<li><a href="./Types/PDataSumAndPDataRecord.html"><code>PDataSum</code> &amp; <code>PDataRecord</code></a></li>
+<li><a href="./Types/PData.html"><code>PData</code></a></li>
+</ul>
+<h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
+<ul>
+<li><a href="./examples/BASIC.html">Basic examples</a></li>
+<li><a href="./examples/VALIDATOR.html">Validator &amp; Minting policies</a></li>
+</ul>
+<h1 id="rules-of-thumb-tips-and-tricks"><a class="header" href="#rules-of-thumb-tips-and-tricks">Rules of thumb, Tips, and Tricks</a></h1>
+<p>Outside of the fundamental user guide, there are rules of thumb and general guidelines you can follow to improve your Plutarch experience. The <a href="./Tricks.html">Tricks section</a> discusses ways of writing efficient and high quality Plutarch code, as well as rules that can help auditing Plutarch easier.</p>
+<ul>
+<li><a href="./Tricks/PlutarchFunctionsStrict.html">Plutarch functions are strict</a></li>
+<li><a href="./Tricks/DontDuplicateWork.html">Don't duplicate work</a>
+<ul>
+<li><a href="./Tricks/DontDuplicateWork.html#where-should-arguments-be-pleted">Where should arguments be <code>plet</code>ed?</a></li>
+</ul>
+</li>
+<li><a href="./Tricks/PreferPlutarchfunctions.html">Prefer Plutarch level functions</a></li>
+<li><a href="./Tricks/UsingHaskellLevelfunctions.html">When to use Haskell level functions?</a></li>
+<li><a href="./Tricks/DifferenceBetweenPconAndPconstant.html">The difference between <code>PlutusType</code>/<code>PCon</code> and <code>PLift</code>'s <code>pconstant</code></a></li>
+<li><a href="./Tricks/ResponsibilityOfEvaluationInHaskellFunctions.html">Let Haskell level functions take responsibility of evaluation</a></li>
+<li><a href="./Tricks/makeIsDataIndexed,HaskellADTs,PIsDataRepr.html">The isomorphism between <code>makeIsDataIndexed</code>, Haskell ADTs, and <code>PIsDataRepr</code></a></li>
+<li><a href="./Tricks/PreferStaticallyBuildingConstants.html">Prefer statically building constants whenever possible</a></li>
+<li><a href="./Tricks/RepresentationOfPlutarchType.html">Figuring out the representation of a Plutarch type</a></li>
+<li><a href="./Tricks/PreferMatchingOnPmatchResultImmediately.html">Prefer pattern matching on the result of <code>pmatch</code> immediately</a></li>
+<li><a href="./Tricks/WorkingWithBoundFields.html">Working with bound fields yielded by <code>pletFields</code></a></li>
+</ul>
+<h1 id="common-issues-and-troubleshooting"><a class="header" href="#common-issues-and-troubleshooting">Common Issues and Troubleshooting</a></h1>
+<p>Due to the highly abstracted nature of Plutarch and its utilization of advanced type level concepts, you might face unfamiliar errors. Don't worry, the guide is here to help!</p>
+<ul>
+<li><a href="./Troubleshooting.html#no-instance-for-punsafeliftdecl-a">No instance for <code>PUnsafeLiftDecl a</code></a></li>
+<li><a href="./Troubleshooting.html#couldnt-match-representation-of-type--arising-from-the-deriving-clause">Couldn't match representation of type: ... arising from the 'deriving' clause</a></li>
+<li><a href="./Troubleshooting.html#infinite-loop--infinite-ast">Infinite loop / Infinite AST</a></li>
+<li><a href="./Troubleshooting.html#couldnt-match-type-plutarchdatareprinternalpunlabel--arising-from-a-use-of-pfield-or-getField-or-pletfields">Couldn't match type <code>Plutarch.DataRepr.Internal.PUnLabel ...</code> arising from a use of <code>pfield</code> (or <code>getField</code>, or <code>pletFields</code>)</a></li>
+<li><a href="./Troubleshooting.html#expected-a-type-but-fieldname-has-kind-ghctypessymbol">Expected a type, but "fieldName" has kind <code>GHC.Types.Symbol</code></a></li>
+<li><a href="./Troubleshooting.html#lifting-pasdata">Lifting <code>PAsData</code></a></li>
+<li><a href="./Troubleshooting.html#type-match-errors-when-using-pfieldgetField-or-overloadedrecorddot-to-access-field">Type match errors when using <code>pfield</code>/<code>getField</code> (or <code>OverloadedRecordDot</code> to access field)</a></li>
+</ul>
+<h1 id="useful-links"><a class="header" href="#useful-links">Useful Links</a></h1>
+<ul>
+<li><a href="https://github.com/Plutonomicon/plutonomicon">Plutonomicon</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="Introduction.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="Introduction.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Builtin.Array</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-2"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier">PArray</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier">PArray</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-3"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Array.html#plengthOfArray"><span class="hs-identifier">plengthOfArray</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Array.html#plistToArray"><span class="hs-identifier">plistToArray</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Array.html#pindexArray"><span class="hs-identifier">pindexArray</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-6"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Data.html"><span class="hs-identifier">Plutarch.Builtin.Data</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Data.html#PBuiltinList"><span class="hs-identifier">PBuiltinList</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html"><span class="hs-identifier">Plutarch.Builtin.Integer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html"><span class="hs-identifier">Plutarch.Internal.Term</span></a></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#pforce"><span class="hs-identifier">pforce</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#phoistAcyclic"><span class="hs-identifier">phoistAcyclic</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier">punsafeBuiltin</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="annot"><span class="hs-comment">{- | A packed collection of values.
+
+@since 1.11.0
+-}</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">newtype</span><span> </span><span id="PArray"><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier hs-var">PArray</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693201"><span class="annot"><a href="#local-6989586621679693201"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693202"><span class="annot"><a href="#local-6989586621679693202"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="PArray"><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier hs-var">PArray</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693202"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier hs-type">PArray</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693201"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.11.0</span></span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679693204"><span id="local-6989586621679693206"><span class="annot"><span class="annottext">(forall x. PArray a s -&gt; Rep (PArray a s) x)
+-&gt; (forall x. Rep (PArray a s) x -&gt; PArray a s)
+-&gt; Generic (PArray a s)
+forall x. Rep (PArray a s) x -&gt; PArray a s
+forall x. PArray a s -&gt; Rep (PArray a s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (a :: S -&gt; Type) (s :: S) x.
+Rep (PArray a s) x -&gt; PArray a s
+forall (a :: S -&gt; Type) (s :: S) x.
+PArray a s -&gt; Rep (PArray a s) x
+$cfrom :: forall (a :: S -&gt; Type) (s :: S) x.
+PArray a s -&gt; Rep (PArray a s) x
+from :: forall x. PArray a s -&gt; Rep (PArray a s) x
+$cto :: forall (a :: S -&gt; Type) (s :: S) x.
+Rep (PArray a s) x -&gt; PArray a s
+to :: forall x. Rep (PArray a s) x -&gt; PArray a s
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.11.0</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679693213"><span id="local-6989586621679693222"><span class="annot"><span class="annottext">All @[Type] (SListI @Type) (Code (PArray a s))
+All @[Type] (SListI @Type) (Code (PArray a s)) =&gt;
+(PArray a s -&gt; Rep (PArray a s))
+-&gt; (Rep (PArray a s) -&gt; PArray a s) -&gt; Generic (PArray a s)
+Rep (PArray a s) -&gt; PArray a s
+PArray a s -&gt; Rep (PArray a s)
+forall a.
+All @[Type] (SListI @Type) (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (a :: S -&gt; Type) (s :: S).
+All @[Type] (SListI @Type) (Code (PArray a s))
+forall (a :: S -&gt; Type) (s :: S). Rep (PArray a s) -&gt; PArray a s
+forall (a :: S -&gt; Type) (s :: S). PArray a s -&gt; Rep (PArray a s)
+$cfrom :: forall (a :: S -&gt; Type) (s :: S). PArray a s -&gt; Rep (PArray a s)
+from :: PArray a s -&gt; Rep (PArray a s)
+$cto :: forall (a :: S -&gt; Type) (s :: S). Rep (PArray a s) -&gt; PArray a s
+to :: Rep (PArray a s) -&gt; PArray a s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="annot"><span class="hs-comment">{- | Get the length of an array, as per
+[CIP-138](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0138).
+
+@since 1.11.0
+-}</span></span><span>
+</span><span id="line-43"></span><span class="annot"><a href="Plutarch.Builtin.Array.html#plengthOfArray"><span class="hs-identifier hs-type">plengthOfArray</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693163"><span class="annot"><a href="#local-6989586621679693163"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693162"><span class="annot"><a href="#local-6989586621679693162"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-45"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693162"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier hs-type">PArray</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693163"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span id="plengthOfArray"><span class="annot"><span class="annottext">plengthOfArray :: forall (a :: S -&gt; Type) (s :: S). Term s (PArray a :--&gt; PInteger)
+</span><a href="Plutarch.Builtin.Array.html#plengthOfArray"><span class="hs-identifier hs-var hs-var">plengthOfArray</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s' :: S). Term s' (PArray a :--&gt; PInteger))
+-&gt; Term s (PArray a :--&gt; PInteger)
+forall (a :: S -&gt; Type) (s :: S).
+HasCallStack =&gt;
+(forall (s' :: S). Term s' a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#phoistAcyclic"><span class="hs-identifier hs-var">phoistAcyclic</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (s' :: S). Term s' (PArray a :--&gt; PInteger))
+ -&gt; Term s (PArray a :--&gt; PInteger))
+-&gt; (forall (s' :: S). Term s' (PArray a :--&gt; PInteger))
+-&gt; Term s (PArray a :--&gt; PInteger)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PDelayed (PArray a :--&gt; PInteger))
+-&gt; Term s' (PArray a :--&gt; PInteger)
+forall (s :: S) (a :: S -&gt; Type). Term s (PDelayed a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#pforce"><span class="hs-identifier hs-var">pforce</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s' (PDelayed (PArray a :--&gt; PInteger))
+ -&gt; Term s' (PArray a :--&gt; PInteger))
+-&gt; Term s' (PDelayed (PArray a :--&gt; PInteger))
+-&gt; Term s' (PArray a :--&gt; PInteger)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s' (PDelayed (PArray a :--&gt; PInteger))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.LengthOfArray</span></span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="annot"><span class="hs-comment">{- | Convert a (builtin) list to an array with the same contents in the same
+order, as per
+[CIP-138](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0138).
+
+@since 1.11.0
+-}</span></span><span>
+</span><span id="line-54"></span><span class="annot"><a href="Plutarch.Builtin.Array.html#plistToArray"><span class="hs-identifier hs-type">plistToArray</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693184"><span class="annot"><a href="#local-6989586621679693184"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693183"><span class="annot"><a href="#local-6989586621679693183"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-56"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693183"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Data.html#PBuiltinList"><span class="hs-identifier hs-type">PBuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693184"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier hs-type">PArray</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693184"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span id="plistToArray"><span class="annot"><span class="annottext">plistToArray :: forall (a :: S -&gt; Type) (s :: S).
+Term s (PBuiltinList a :--&gt; PArray a)
+</span><a href="Plutarch.Builtin.Array.html#plistToArray"><span class="hs-identifier hs-var hs-var">plistToArray</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s' :: S). Term s' (PBuiltinList a :--&gt; PArray a))
+-&gt; Term s (PBuiltinList a :--&gt; PArray a)
+forall (a :: S -&gt; Type) (s :: S).
+HasCallStack =&gt;
+(forall (s' :: S). Term s' a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#phoistAcyclic"><span class="hs-identifier hs-var">phoistAcyclic</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (s' :: S). Term s' (PBuiltinList a :--&gt; PArray a))
+ -&gt; Term s (PBuiltinList a :--&gt; PArray a))
+-&gt; (forall (s' :: S). Term s' (PBuiltinList a :--&gt; PArray a))
+-&gt; Term s (PBuiltinList a :--&gt; PArray a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PDelayed (PBuiltinList a :--&gt; PArray a))
+-&gt; Term s' (PBuiltinList a :--&gt; PArray a)
+forall (s :: S) (a :: S -&gt; Type). Term s (PDelayed a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#pforce"><span class="hs-identifier hs-var">pforce</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s' (PDelayed (PBuiltinList a :--&gt; PArray a))
+ -&gt; Term s' (PBuiltinList a :--&gt; PArray a))
+-&gt; Term s' (PDelayed (PBuiltinList a :--&gt; PArray a))
+-&gt; Term s' (PBuiltinList a :--&gt; PArray a)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s' (PDelayed (PBuiltinList a :--&gt; PArray a))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ListToArray</span></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="annot"><span class="hs-comment">{- | Index an array, as per
+[CIP-138](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0138).
+
+@since 1.11.0
+-}</span></span><span>
+</span><span id="line-64"></span><span class="annot"><a href="Plutarch.Builtin.Array.html#pindexArray"><span class="hs-identifier hs-type">pindexArray</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-65"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693190"><span class="annot"><a href="#local-6989586621679693190"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679693189"><span class="annot"><a href="#local-6989586621679693189"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-66"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693189"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Array.html#PArray"><span class="hs-identifier hs-type">PArray</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693190"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679693190"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span id="pindexArray"><span class="annot"><span class="annottext">pindexArray :: forall (a :: S -&gt; Type) (s :: S).
+Term s (PArray a :--&gt; (PInteger :--&gt; a))
+</span><a href="Plutarch.Builtin.Array.html#pindexArray"><span class="hs-identifier hs-var hs-var">pindexArray</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s' :: S). Term s' (PArray a :--&gt; (PInteger :--&gt; a)))
+-&gt; Term s (PArray a :--&gt; (PInteger :--&gt; a))
+forall (a :: S -&gt; Type) (s :: S).
+HasCallStack =&gt;
+(forall (s' :: S). Term s' a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#phoistAcyclic"><span class="hs-identifier hs-var">phoistAcyclic</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (s' :: S). Term s' (PArray a :--&gt; (PInteger :--&gt; a)))
+ -&gt; Term s (PArray a :--&gt; (PInteger :--&gt; a)))
+-&gt; (forall (s' :: S). Term s' (PArray a :--&gt; (PInteger :--&gt; a)))
+-&gt; Term s (PArray a :--&gt; (PInteger :--&gt; a))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PDelayed (PArray a :--&gt; (PInteger :--&gt; a)))
+-&gt; Term s' (PArray a :--&gt; (PInteger :--&gt; a))
+forall (s :: S) (a :: S -&gt; Type). Term s (PDelayed a) -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#pforce"><span class="hs-identifier hs-var">pforce</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s' (PDelayed (PArray a :--&gt; (PInteger :--&gt; a)))
+ -&gt; Term s' (PArray a :--&gt; (PInteger :--&gt; a)))
+-&gt; Term s' (PDelayed (PArray a :--&gt; (PInteger :--&gt; a)))
+-&gt; Term s' (PArray a :--&gt; (PInteger :--&gt; a))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s' (PDelayed (PArray a :--&gt; (PInteger :--&gt; a)))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.IndexArray</span></span><span>
+</span><span id="line-68"></span></pre></body></html>
