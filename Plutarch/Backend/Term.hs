@@ -1,6 +1,5 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
-{-# LANGUAGE TypeData #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
 {- | The full definition of Plutarch 'Term's, as well as eDSL primitives which
@@ -30,8 +29,6 @@ module Plutarch.Backend.Term (
   toSomeTerm,
   TermError (..),
   PDelayed,
-  S,
-  (:-->) (..),
   plam',
   plet,
   pthrow,
@@ -97,6 +94,7 @@ import Plutarch.Backend.RawTerm (
   ),
   VarTag (Argument, LetBinding, Self),
  )
+import Plutarch.Backend.S (S)
 import Plutarch.Backend.VarMap (
   VarMap,
   vmDelete,
@@ -105,20 +103,9 @@ import Plutarch.Backend.VarMap (
   vmMergeM,
   vmSingleton,
  )
+import Plutarch.Primitive.Function ((:-->))
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
-
--- Note (Koz, 08/06/2026): `type data` is a particularly hideous GHCism used to
--- define (effectively) a kind without forcing us to promote a type. Whenever
--- you see `type data Foo = Bar | Baz`, you can read that as a declaration of a
--- new _kind_ `Foo`, containing the types `Bar` and `Baz`.
-
-{- | An empty kind to ensure that the @s@ parameter never gets used for
-anything.
-
-@since wip
--}
-type data S
 
 {- | A configuration environment for 'Term's and their compilation. Currently
 unused.
@@ -203,22 +190,6 @@ toSomeTerm ::
   forall (a :: S -> Type) (s :: S).
   Term s a -> SomeTerm s
 toSomeTerm = SomeTerm
-
-{- | The type of a Plutarch lambda. To be specific, @'Term' s (a :--> b)@
-corresponds to the code of a computation that, when run, will produce a UPLC
-function that consumes (the equivalent of) @a@ and produces (the equivalent
-of) @b@ (or errors). Contrast this with @'Term' s a -> 'Term' s b@, which is
-instead a transformation of code: more precisely, it takes /code/ that, when
-run, would produce (the UPLC equivalent of) @a@ (or an error) and produces
-/code/ that, when run, would produce (the UPLC equivalent of) @b@ (or an
-error).
-
-@since wip
--}
-newtype (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PLam (Term s a -> Term s b)
-
-infixr 0 :-->
 
 {- | A type-level tag indicating a Plutarch computation that has been
 \'suspended\'. This tag can be removed by using 'pforce', and added by using

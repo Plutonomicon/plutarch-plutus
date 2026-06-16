@@ -10,10 +10,17 @@ module Plutarch.Primitive.Apply (
 ) where
 
 import Data.Kind (Type)
-import Plutarch.Backend.Term (S, Term, punsafeCoerce)
+import Plutarch.Backend.S (S)
+import Plutarch.Backend.Term (Term, punsafeCoerce)
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.ByteString (PByteString)
-import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
+import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Numeric (
+  PByte,
+  PInteger,
+  PNatural,
+  PPositive,
+ )
 import Plutarch.Primitive.Representation (
   PIsFundamental,
   PIsNotFundamental,
@@ -85,6 +92,9 @@ deriving via (PMatchFundamental PBool) instance PMatch PBool
 -- | @since wip
 deriving via (PMatchFundamental PByteString) instance PMatch PByteString
 
+-- | @since wip
+deriving via (PMatchFundamental (a :--> b)) instance PMatch (a :--> b)
+
 {- | A derivation helper for 'PMatch', for use with @deriving via@. Such a
 derivation can be used for any type that is /not/ fundamental (that is, any
 type where @'PRepresentation' a@ and @a@ are different types).
@@ -108,3 +118,6 @@ deriving via (PMatchRepresentation PNatural) instance PMatch PNatural
 
 -- | @since wip
 deriving via (PMatchRepresentation PPositive) instance PMatch PPositive
+
+-- | @since wip
+deriving via (PMatchRepresentation PByte) instance PMatch PByte

@@ -15,8 +15,8 @@ import Plutarch.Backend.AST (
  )
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
+import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
-  S,
   Term (asRawTerm),
   TermEnv (TermEnv),
   TermError,
@@ -24,12 +24,12 @@ import Plutarch.Backend.Term (
   pdelay,
   pforce,
   plam',
-  (:-->),
  )
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Primitive.Bool (PBool, pnot, por)
-import Plutarch.Primitive.Integer (PInteger, paddInteger)
+import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Numeric (PInteger, paddInteger)
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.String (renderString)

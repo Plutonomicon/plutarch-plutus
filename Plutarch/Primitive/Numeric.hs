@@ -3,6 +3,7 @@ module Plutarch.Primitive.Numeric (
   PInteger,
   PNatural,
   PPositive,
+  PByte,
 
   -- * Primitive operations
   paddInteger,
@@ -12,9 +13,15 @@ module Plutarch.Primitive.Numeric (
   pquotientInteger,
   premainderInteger,
   pmodInteger,
+  pequalsInteger,
+  plessThanInteger,
+  plessThanEqualsInteger,
 ) where
 
-import Plutarch.Backend.Term (S, Term, punsafeBuiltin, (:-->))
+import Plutarch.Backend.S (S)
+import Plutarch.Backend.Term (Term, punsafeBuiltin)
+import Plutarch.Primitive.Bool (PBool)
+import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
 
@@ -35,6 +42,12 @@ data PPositive (s :: S)
 
 -- | @since wip
 type instance PRepresentation PPositive = PNatural
+
+-- | @since wip
+data PByte (s :: S)
+
+-- | @since wip
+type instance PRepresentation PByte = PNatural
 
 -- | @since wip
 paddInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
@@ -63,3 +76,15 @@ premainderInteger = punsafeBuiltin PLC.RemainderInteger
 -- | @since wip
 pmodInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 pmodInteger = punsafeBuiltin PLC.ModInteger
+
+-- | @since wip
+pequalsInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PBool)
+pequalsInteger = punsafeBuiltin PLC.EqualsInteger
+
+-- | @since wip
+plessThanInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PBool)
+plessThanInteger = punsafeBuiltin PLC.LessThanInteger
+
+-- | @since wip
+plessThanEqualsInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PBool)
+plessThanEqualsInteger = punsafeBuiltin PLC.LessThanEqualsInteger

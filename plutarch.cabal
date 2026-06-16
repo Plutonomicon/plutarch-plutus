@@ -78,6 +78,7 @@ library
     Plutarch.Backend.Compile
     Plutarch.Backend.PosTree
     Plutarch.Backend.RawTerm
+    Plutarch.Backend.S
     Plutarch.Backend.Term
     Plutarch.Backend.UPLC
     Plutarch.Backend.VarMap
