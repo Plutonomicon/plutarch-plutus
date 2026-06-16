@@ -10,17 +10,26 @@ module Plutarch.Primitive.Apply (
 ) where
 
 import Data.Kind (Type)
+import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, punsafeCoerce)
+import Plutarch.Backend.Term (
+  Term,
+  plam',
+  punsafeCase,
+  punsafeCoerce,
+  toSomeTerm,
+ )
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.ByteString (PByteString)
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.List (PBList (PBCons, PBNil))
 import Plutarch.Primitive.Numeric (
   PByte,
   PInteger,
   PNatural,
   PPositive,
  )
+import Plutarch.Primitive.Pair (PBPair (PBPair))
 import Plutarch.Primitive.Representation (
   PIsFundamental,
   PIsNotFundamental,
@@ -37,6 +46,24 @@ class PMatch (a :: S -> Type) where
   pmatch' ::
     forall (b :: S -> Type) (s :: S).
     Term s (PRepresentation a) -> (a s -> Term s b) -> Term s b
+
+-- | @since wip
+instance PMatch (PBPair a b) where
+  pmatch' x f = punsafeCase x . NEVector.singleton . toSomeTerm $
+    plam' $
+      \x -> plam' $ \y -> f (PBPair x y)
+
+-- | @since wip
+instance PMatch (PBList a) where
+  pmatch' ::
+    forall (b :: S -> Type) (s :: S).
+    Term s (PRepresentation (PBList a)) -> (PBList a s -> Term s b) -> Term s b
+  pmatch' x f = punsafeCase x . NEVector.cons (toSomeTerm whenCons) . NEVector.singleton . toSomeTerm $ whenNil
+    where
+      whenNil :: Term s b
+      whenNil = f PBNil
+      whenCons :: Term s (a :--> PBList a :--> b)
+      whenCons = plam' $ \y -> plam' $ \ys -> f (PBCons y ys)
 
 {- | = Laws
 

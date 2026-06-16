@@ -15,4 +15,4 @@ data (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
 infixr 0 :-->
 
 -- | @since wip
-type instance PRepresentation (a :--> b) = (a :--> b)
+type instance PRepresentation (a :--> b) = (a :--> PRepresentation b)
