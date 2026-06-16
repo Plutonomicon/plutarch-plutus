@@ -12,7 +12,8 @@ module Plutarch.Primitive.Apply (
 import Data.Kind (Type)
 import Plutarch.Backend.Term (S, Term, punsafeCoerce)
 import Plutarch.Primitive.Bool (PBool)
-import Plutarch.Primitive.Integer (PInteger)
+import Plutarch.Primitive.ByteString (PByteString)
+import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
 import Plutarch.Primitive.Representation (
   PIsFundamental,
   PIsNotFundamental,
@@ -81,6 +82,9 @@ deriving via (PMatchFundamental PInteger) instance PMatch PInteger
 -- | @since wip
 deriving via (PMatchFundamental PBool) instance PMatch PBool
 
+-- | @since wip
+deriving via (PMatchFundamental PByteString) instance PMatch PByteString
+
 {- | A derivation helper for 'PMatch', for use with @deriving via@. Such a
 derivation can be used for any type that is /not/ fundamental (that is, any
 type where @'PRepresentation' a@ and @a@ are different types).
@@ -90,7 +94,7 @@ of @a@. This should be used for anything \'@newtype@-like\'.
 
 @since wip
 -}
-newtype PMatchRepresentation (a :: S -> Type) (s :: S) = PMatchRepresentation (PRepresentation a s)
+newtype PMatchRepresentation (a :: S -> Type) (s :: S) = PMatchRepresentation (a s)
 
 -- | @since wip
 type instance PRepresentation (PMatchRepresentation a) = PRepresentation a
@@ -98,3 +102,9 @@ type instance PRepresentation (PMatchRepresentation a) = PRepresentation a
 -- | @since wip
 instance PIsNotFundamental a => PMatch (PMatchRepresentation a) where
   pmatch' x = pmatch (punsafeCoerce x)
+
+-- | @since wip
+deriving via (PMatchRepresentation PNatural) instance PMatch PNatural
+
+-- | @since wip
+deriving via (PMatchRepresentation PPositive) instance PMatch PPositive

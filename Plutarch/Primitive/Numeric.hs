@@ -1,5 +1,10 @@
-module Plutarch.Primitive.Integer (
+module Plutarch.Primitive.Numeric (
+  -- * Types
   PInteger,
+  PNatural,
+  PPositive,
+
+  -- * Primitive operations
   paddInteger,
   psubtractInteger,
   pmultiplyInteger,
@@ -18,6 +23,18 @@ data PInteger (s :: S)
 
 -- | @since wip
 type instance PRepresentation PInteger = PInteger
+
+-- | @since wip
+data PNatural (s :: S)
+
+-- | @since wip
+type instance PRepresentation PNatural = PInteger
+
+-- | @since wip
+data PPositive (s :: S)
+
+-- | @since wip
+type instance PRepresentation PPositive = PNatural
 
 -- | @since wip
 paddInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)

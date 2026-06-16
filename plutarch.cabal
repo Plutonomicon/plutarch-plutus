@@ -142,8 +142,9 @@ library
     Plutarch.Pretty.Internal.Types
     Plutarch.Primitive.Apply
     Plutarch.Primitive.Bool
+    Plutarch.Primitive.ByteString
     Plutarch.Primitive.Function
-    Plutarch.Primitive.Integer
+    Plutarch.Primitive.Numeric
     Plutarch.Primitive.Representation
     Plutarch.Rational
     Plutarch.Reducible
