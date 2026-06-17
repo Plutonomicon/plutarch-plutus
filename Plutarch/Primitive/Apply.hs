@@ -21,6 +21,7 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.ByteString (PByteString)
+import Plutarch.Primitive.Data (PAsData, PData)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.List (PBList (PBCons, PBNil))
 import Plutarch.Primitive.Numeric (
@@ -64,6 +65,13 @@ instance PMatch (PBList a) where
       whenNil = f PBNil
       whenCons :: Term s (a :--> PBList a :--> b)
       whenCons = plam' $ \y -> plam' $ \ys -> f (PBCons y ys)
+
+-- | @since wip
+instance PMatch (a :--> b) where
+  pmatch' ::
+    forall (c :: S -> Type) (s :: S).
+    Term s (PRepresentation (a :--> b)) -> ((a :--> b) s -> Term s c) -> Term s c
+  pmatch' x _ = punsafeCoerce x
 
 {- | = Laws
 
@@ -120,7 +128,7 @@ deriving via (PMatchFundamental PBool) instance PMatch PBool
 deriving via (PMatchFundamental PByteString) instance PMatch PByteString
 
 -- | @since wip
-deriving via (PMatchFundamental (a :--> b)) instance PMatch (a :--> b)
+deriving via (PMatchFundamental PData) instance PMatch PData
 
 {- | A derivation helper for 'PMatch', for use with @deriving via@. Such a
 derivation can be used for any type that is /not/ fundamental (that is, any
@@ -148,3 +156,6 @@ deriving via (PMatchRepresentation PPositive) instance PMatch PPositive
 
 -- | @since wip
 deriving via (PMatchRepresentation PByte) instance PMatch PByte
+
+-- | @since wip
+deriving via (PMatchRepresentation (PAsData a)) instance PMatch (PAsData a)

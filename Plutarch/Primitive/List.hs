@@ -5,7 +5,7 @@ module Plutarch.Primitive.List (
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, punsafeBuiltin)
+import Plutarch.Backend.Term (Term, pforce, punsafeBuiltin)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
@@ -22,4 +22,4 @@ type instance PRepresentation (PBList a) = PBList (PRepresentation a)
 pmkCons ::
   forall (a :: S -> Type) (s :: S).
   Term s (a :--> PBList a :--> PBList a)
-pmkCons = punsafeBuiltin PLC.MkCons
+pmkCons = pforce $ punsafeBuiltin PLC.MkCons
