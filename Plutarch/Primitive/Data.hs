@@ -73,7 +73,7 @@ plistData = punsafeBuiltin PLC.ListData
 pmapData ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (PData `PCanRepresent` a, PData `PCanRepresent` b) =>
-  Term s (PBList (PBPair a b) :--> PAsData (PBPair (PAsData a) (PAsData b)))
+  Term s (PBList (PBPair a b) :--> PAsData (PBList (PAsData (PBPair (PAsData a) (PAsData b)))))
 pmapData = punsafeBuiltin PLC.MapData
 
 -- | @since wip
