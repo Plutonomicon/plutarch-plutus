@@ -281,7 +281,7 @@ analyzeDemand (ANF bm binds) = runST $ do
           else LConstant NeverDemanded c
       LBuiltin _ f -> LBuiltin Trivial f
       LCompiled _ code -> LCompiled NeverDemanded code
-      LError _ -> LError NeverDemanded
+      LError _ -> LError Trivial
     ANFForce _ r -> do
       updateDemandAt mv i r
       MVector.write mv i . ANFForce NeverDemanded $ r

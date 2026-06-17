@@ -22,6 +22,7 @@ import Plutarch.Backend.Term (
   TermError,
   papp,
   pdelay,
+  perror,
   pforce,
   plam',
   (:-->),
@@ -140,9 +141,27 @@ main =
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
     , testCaseSteps "Case 5" $ \step -> do
-        step "Case: \\x y -> paddInteger (pmultiplyInteger x x) (pmultiplyInteger y y)"
+        step "Case: \\x y -> addInteger (multiplyInteger x x) (multiplyInteger y y)"
         step "1. Does Case 5 compile?"
         let compiled = compileTerm case5
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            let asAST = fromRawTerm t
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
+    , testCaseSteps "Case 6" $ \step -> do
+        step "Case: \\x -> paddInteger error (addInteger x error)"
+        step "1. Does Case 6 compile?"
+        let compiled = compileTerm case6
         case compiled of
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
@@ -181,6 +200,10 @@ case4 = plam' $ \x -> plam' $ papp (papp paddInteger x)
 case5 :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 case5 = plam' $ \x -> plam' $ \y ->
   papp (papp paddInteger (papp (papp pmultiplyInteger x) x)) (papp (papp pmultiplyInteger y) y)
+
+-- Case 6: \x -> addInteger error (addInteger x error)
+case6 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case6 = plam' $ \x -> papp (papp paddInteger perror) (papp (papp paddInteger x) perror)
 
 -- Helpers
 
