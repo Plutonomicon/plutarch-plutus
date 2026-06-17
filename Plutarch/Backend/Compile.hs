@@ -45,7 +45,7 @@ import Plutarch.Backend.ANF (
     ANFLam,
     ANFLeaf
   ),
-  Demand (Demanded, NeverDemanded, TrivialConstant),
+  Demand (Demanded, NeverDemanded, Trivial),
   Id (Id),
   Leaf (
     LBuiltin,
@@ -170,8 +170,8 @@ compileWithCache cache i (bindName, bind) = do
   let (firstDemanded, mName) = case getANFBindAnn bind of
         -- Top-level node, nothing to do.
         NeverDemanded -> (-1, Nothing)
-        -- A constant we should always inline.
-        TrivialConstant -> (-1, Nothing)
+        -- Something we should always inline.
+        Trivial -> (-1, Nothing)
         -- Check use count: if it's greater than 1, we have to let-bind;
         -- otherwise, we inline.
         Demanded (Id j) useCount ->
