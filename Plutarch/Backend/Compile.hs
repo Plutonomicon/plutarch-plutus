@@ -19,7 +19,8 @@ import Control.Monad.RWS.CPS (
  )
 import Control.Monad.Reader (MonadReader, runReaderT)
 import Control.Monad.ST (runST)
-import Data.Foldable (foldl')
+import Control.Monad.State.Strict (put, runStateT)
+import Data.Foldable (foldl', for_)
 import Data.Kind (Type)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
@@ -45,7 +46,7 @@ import Plutarch.Backend.ANF (
     ANFLam,
     ANFLeaf
   ),
-  Demand (Demanded, NeverDemanded, TrivialConstant),
+  Demand (Demanded, NeverDemanded, Trivial),
   Id (Id),
   Leaf (
     LBuiltin,
@@ -62,6 +63,7 @@ import Plutarch.Backend.AST (
  )
 import Plutarch.Backend.UPLC (
   UPLCTerm,
+  rewriteUniques,
   uplcApply,
   uplcApply1,
   uplcBuiltin,
@@ -88,10 +90,16 @@ used more than once.
 toUPLCTerm :: ANF Demand -> UPLCTerm
 toUPLCTerm (ANF _ binds) =
   -- We use the hashes of any variable as its `Unique`. To ensure we don't
-  -- accidentally ever alias them, we collect all the ones we use.
+  -- accidentally ever alias them, we collect all the ones we use. As we know
+  -- they can't collide, we don't perform any rehashing.
   let allVarUniques = NEVector.foldl' collectVarName Set.empty binds
+      -- If we have any chunks of precompiled code, some of their variable
+      -- `Unique`s might clash with ours. We can use rehashing to fix this.
+      (rewrittenBinds, usedNames) = fixPrecompiled binds allVarUniques
+      -- Look for the identity function if it exists
+      mIdentity = findIdentity rewrittenBinds
       -- Check how many fixpoints we have and where they are.
-      fixpoints = doFixpointAnalysis binds
+      fixpoints = doFixpointAnalysis rewrittenBinds
       -- To compile a fixpoint, we take its functional (of the form `F = \self ->
       -- body`) and transform it into `M (\r -> F (r r))`. As M is small, it's
       -- cheaper to inline than bind it. Thus, each unique fixpoint (up to
@@ -99,15 +107,15 @@ toUPLCTerm (ANF _ binds) =
       --
       -- - The argument to its copy of M; and
       -- - The variable name `r` for the transformed functional.
-      (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointNames Map.empty . Set.toList $ fixpoints) allVarUniques 0
+      (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointNames Map.empty . Set.toList $ fixpoints) usedNames 0
       -- Make a unique name for any unused arguments. As lambdas in UPLC are all
       -- arity 1, and we will never use an unused argument, we can generate just
       -- a single name. It's cheaper to do this speculatively.
-      (unusedParamName, lastFresh', _) = runRWS mkUnusedName allVarUniques lastFresh
+      (unusedParamName, lastFresh', _) = runRWS mkUnusedName usedNames lastFresh
       -- Name every bind, avoiding any names of existing variables.
-      namedBinds = fst . evalRWS (NEVector.mapM nameBind binds) allVarUniques $ lastFresh'
+      namedBinds = fst . evalRWS (NEVector.mapM nameBind rewrittenBinds) usedNames $ lastFresh'
       -- Set up our compilation environment with everything we just put together
-      compileEnv = CompileEnv namedBinds fixpointNameMap unusedParamName
+      compileEnv = CompileEnv namedBinds fixpointNameMap unusedParamName mIdentity
    in -- Use our demand analysis to compile everything.
       runST $ runReaderT compile compileEnv
   where
@@ -135,6 +143,36 @@ toUPLCTerm (ANF _ binds) =
       pure (mkName "bind" fresh, bind)
 
 -- Helpers
+
+fixPrecompiled ::
+  NonEmptyVector (ANFBind Demand) ->
+  Set Int ->
+  (NonEmptyVector (ANFBind Demand), Set Int)
+fixPrecompiled binds usedNames = runST $ runStateT go usedNames
+  where
+    go ::
+      forall (m :: Type -> Type).
+      (PrimMonad m, MonadState (Set Int) m) =>
+      m (NonEmptyVector (ANFBind Demand))
+    go = do
+      let len = NEVector.length binds
+      mv <- MVector.new len
+      for_ [0, 1 .. len - 1] $ \i -> do
+        case binds NEVector.! i of
+          x@(ANFLeaf ell) -> case ell of
+            -- If we see any compiled code, we rewrite all of its variable
+            -- uniques if any clash with ones we've chosen.
+            LCompiled ann code -> do
+              used <- get
+              let (code', used') = rewriteUniques code used
+              put used'
+              MVector.write mv i . ANFLeaf . LCompiled ann $ code'
+            -- Any other leaf can be left as-is.
+            _ -> MVector.write mv i x
+          -- Anything else doesn't need any changes.
+          x -> MVector.write mv i x
+      v <- Vector.unsafeFreeze mv
+      pure . NEVector.unsafeFromVector $ v
 
 compile ::
   forall (m :: Type -> Type).
@@ -170,8 +208,8 @@ compileWithCache cache i (bindName, bind) = do
   let (firstDemanded, mName) = case getANFBindAnn bind of
         -- Top-level node, nothing to do.
         NeverDemanded -> (-1, Nothing)
-        -- A constant we should always inline.
-        TrivialConstant -> (-1, Nothing)
+        -- Something we should always inline.
+        Trivial -> (-1, Nothing)
         -- Check use count: if it's greater than 1, we have to let-bind;
         -- otherwise, we inline.
         Demanded (Id j) useCount ->
@@ -248,25 +286,40 @@ compileBind cache i = \case
     let handlerArgs = NEVector.map (\(_, mName, code) -> maybe code uplcVar mName) handlers'
     pure (caseBinds, uplcCase scrutArg handlerArgs)
   ANFApply _ f xs -> do
-    (firstDemandedF, mNameF, codeF) <- checkCache cache f
-    xs' <- traverse (checkCache cache) xs
-    let (mFBind, fArg) = case mNameF of
-          Nothing -> (Nothing, codeF)
-          Just fName ->
-            if firstDemandedF == i
-              then (Just (fName, codeF), uplcVar fName)
-              else (Nothing, uplcVar fName)
-    let applyBinds = NEVector.foldl' (extendBinds i) (maybeToList mFBind) xs'
-    let xsArgs = NEVector.map (\(_, mName, code) -> maybe code uplcVar mName) xs'
-    if NEVector.length xs' <= 2
-      -- Compile a regular chain of `apply`
-      then pure (applyBinds, uplcApply fArg xsArgs)
-      -- 'Pack' everything into a `constr`, then `case` it immediately using `f`
-      -- as the sole handler.
+    applyingToId <- isTheIdentity f
+    if applyingToId
+      -- Since applying anything to the identity is just itself, and we already
+      -- know for certain that there's exactly one argument, we can just compile
+      -- it instead.
+      then do
+        (firstDemandedX, mNameX, codeX) <- checkCache cache . NEVector.head $ xs
+        let (mXBind, xArg) = case mNameX of
+              Nothing -> (Nothing, codeX)
+              Just xName ->
+                if firstDemandedX == i
+                  then (Just (xName, codeX), uplcVar xName)
+                  else (Nothing, uplcVar xName)
+        pure (maybeToList mXBind, xArg)
       else do
-        let constrCall = uplcConstr 0 . NEVector.toVector $ xsArgs
-        let soleHandler = NEVector.singleton fArg
-        pure (applyBinds, uplcCase constrCall soleHandler)
+        (firstDemandedF, mNameF, codeF) <- checkCache cache f
+        xs' <- traverse (checkCache cache) xs
+        let (mFBind, fArg) = case mNameF of
+              Nothing -> (Nothing, codeF)
+              Just fName ->
+                if firstDemandedF == i
+                  then (Just (fName, codeF), uplcVar fName)
+                  else (Nothing, uplcVar fName)
+        let applyBinds = NEVector.foldl' (extendBinds i) (maybeToList mFBind) xs'
+        let xsArgs = NEVector.map (\(_, mName, code) -> maybe code uplcVar mName) xs'
+        if NEVector.length xs' <= 2
+          -- Compile a regular chain of `apply`
+          then pure (applyBinds, uplcApply fArg xsArgs)
+          -- 'Pack' everything into a `constr`, then `case` it immediately using `f`
+          -- as the sole handler.
+          else do
+            let constrCall = uplcConstr 0 . NEVector.toVector $ xsArgs
+            let soleHandler = NEVector.singleton fArg
+            pure (applyBinds, uplcCase constrCall soleHandler)
   ANFLam _ params body -> do
     (firstDemandedBody, mNameBody, codeBody) <- checkCache cache body
     asParamNames <- NEVector.mapM multToName params
@@ -362,6 +415,7 @@ data CompileEnv = CompileEnv
   { ceBinds :: NonEmptyVector (PLC.Name, ANFBind Demand)
   , ceFPNameMap :: Map Int (PLC.Name, PLC.Name)
   , ceUnusedParamName :: PLC.Name
+  , ceTheIdentity :: Maybe Id
   }
 
 untilM ::
@@ -383,3 +437,24 @@ getFresh = do
 
 mkName :: Text -> Int -> PLC.Name
 mkName t = PLC.Name t . PLC.Unique
+
+findIdentity :: NonEmptyVector (ANFBind Demand) -> Maybe Id
+findIdentity binds = Id <$> NEVector.findIndex go binds
+  where
+    go :: ANFBind Demand -> Bool
+    go = \case
+      ANFLam _ mults r -> case NEVector.uncons mults of
+        (arg, rest) -> case fmap (\case MultiplicityOne h -> h; MultiplicityMany h -> h) arg of
+          Nothing -> False
+          Just h -> case r of
+            AVar h' -> Vector.null rest && h == h'
+            _ -> False
+      _ -> False
+
+isTheIdentity ::
+  forall (m :: Type -> Type).
+  MonadReader CompileEnv m =>
+  Ref -> m Bool
+isTheIdentity = \case
+  AnId i -> asks ((== Just i) . ceTheIdentity)
+  _ -> pure False

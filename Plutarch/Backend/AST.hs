@@ -145,6 +145,11 @@ More precisely, this closely follows 'RawTerm', except that:
 * Lambdas and fixpoints have been annotated with their 'Liftability'
 * Lambdas that do nothing but forward their arguments (in the same order) to
   a builtin are erased and replaced with that builtin.
+* Applications involving literal error nodes (as either the function or an
+  argument) are replaced with the error node.
+* `constr` nodes involving literal error nodes are replaced with the error
+  node.
+* `case` nodes scrutinizing the error node are replaced with the error node.
 
 @since wip
 -}
@@ -186,9 +191,7 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
       RCompiled _ code -> do
         let structuralHash = hash (3 :: Int, code)
         mkHashed structuralHash (\h -> ASTLeaf (LCompiled h code))
-      RError () -> do
-        let structuralHash = hash (4 :: Int)
-        mkHashed structuralHash (ASTLeaf . LError)
+      RError () -> mkHashed errorHash (ASTLeaf . LError)
       RPlaceholder _ _ -> go (RError ())
       RForce _ body -> do
         vm' <- asks (vmMap stepDownOne)
@@ -225,28 +228,49 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
         fieldVMs <- asks (vmFold separateConstr (Vector.replicate len vmEmpty))
         let descendConstr i rt = local (const (fieldVMs Vector.! i)) (go rt)
         (structuralHashesFields, fields') <- Vector.unzip <$> Vector.imapM descendConstr fields
-        let structuralHash = hash (8 :: Int, tag, structuralHashesFields)
-        mkHashed structuralHash (\h -> ASTConstr h tag fields')
+        -- If any of our fields are the error node, we'll get the error node no
+        -- matter what else we have lying around.
+        if Vector.any (errorHash ==) structuralHashesFields
+          then mkHashed errorHash (ASTLeaf . LError)
+          else do
+            let structuralHash = hash (8 :: Int, tag, structuralHashesFields)
+            mkHashed structuralHash (\h -> ASTConstr h tag fields')
       RCase _ scrut handlers -> do
         let len = NEVector.length handlers
         (scrutVM, handlerVMs) <- asks (vmFold separateCase (vmEmpty, NEVector.replicate1 len vmEmpty))
         (structuralHashScrut, scrut') <- local (const scrutVM) (go scrut)
-        let descendCase i rt = local (const (handlerVMs NEVector.! i)) (go rt)
-        (structuralHashesHandlers, handlers') <- NEVector.unzip <$> NEVector.imapM descendCase handlers
-        let structuralHash = hash (9 :: Int, structuralHashScrut, NEVector.toVector structuralHashesHandlers)
-        mkHashed structuralHash (\h -> ASTCase h scrut' handlers')
+        -- If we're scrutinizing the error node, we'll get the error node no
+        -- matter what else we have lying around.
+        if structuralHashScrut == errorHash
+          then mkHashed errorHash (ASTLeaf . LError)
+          else do
+            let descendCase i rt = local (const (handlerVMs NEVector.! i)) (go rt)
+            (structuralHashesHandlers, handlers') <- NEVector.unzip <$> NEVector.imapM descendCase handlers
+            let structuralHash = hash (9 :: Int, structuralHashScrut, NEVector.toVector structuralHashesHandlers)
+            mkHashed structuralHash (\h -> ASTCase h scrut' handlers')
       RApply _ f x -> do
         (fVM, xVM) <- asks (vmFold separateTwo (vmEmpty, vmEmpty))
         (structuralHashF, f') <- local (const fVM) (go f)
-        (structuralHashX, x') <- local (const xVM) (go x)
-        case f' of
-          -- We're part of a curried apply. We need to add one more argument.
-          ASTApply _ g ys -> do
-            let structuralHash = hash (structuralHashF, structuralHashX)
-            mkHashed structuralHash (\h -> ASTApply h g . NEVector.snoc ys $ x')
-          _ -> do
-            let structuralHash = hash (10 :: Int, structuralHashF, structuralHashX)
-            mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
+        -- If we're trying to apply arguments to the error node, we'll get the
+        -- error node no matter what.
+        if structuralHashF == errorHash
+          then mkHashed errorHash (ASTLeaf . LError)
+          else do
+            (structuralHashX, x') <- local (const xVM) (go x)
+            -- If we try to apply the error node to anything, we'll get the
+            -- error node no matter what.
+            if structuralHashX == errorHash
+              then mkHashed errorHash (ASTLeaf . LError)
+              else case f' of
+                -- We're part of a curried apply, none of whose arguments are
+                -- the error node. We need to add one more argument.
+                ASTApply _ g ys -> do
+                  let structuralHash = hash (structuralHashF, structuralHashX)
+                  mkHashed structuralHash (\h -> ASTApply h g . NEVector.snoc ys $ x')
+                -- We are neither an error node, nor another application.
+                _ -> do
+                  let structuralHash = hash (10 :: Int, structuralHashF, structuralHashX)
+                  mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
       RLamAbs _ mpt body -> do
         fresh <- getFresh
         let multiplicity = case findVarUsage fresh mpt body of
@@ -283,6 +307,9 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
           _ -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
 
 -- Helpers
+
+errorHash :: Int
+errorHash = hash (4 :: Int)
 
 -- Tries to 'dig out' a builtin, possibly wrapped in some number of `force`s. As
 -- we know such terms must be closed, we can just 'rebuild' them as `RawTerm` to

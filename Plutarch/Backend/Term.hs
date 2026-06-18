@@ -37,17 +37,20 @@ module Plutarch.Backend.Term (
   pforce,
   perror,
   pplaceholder,
+  pcompiled,
+  pfix,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
   punsafeConstr,
   punsafeCase,
-  pfix,
+  punsafeCompiled,
 ) where
 
 import Control.Monad.Except (
   ExceptT,
   MonadError,
+  runExceptT,
   throwError,
  )
 import Control.Monad.RWS.CPS (
@@ -55,6 +58,7 @@ import Control.Monad.RWS.CPS (
   RWS,
   get,
   modify,
+  runRWS,
  )
 import Data.Can (Can (Eno, Non, One, Two))
 import Data.Kind (Type)
@@ -67,6 +71,9 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import GHC.Stack (CallStack, HasCallStack, callStack)
+import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
+import Plutarch.Backend.AST (fromRawTerm)
+import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.PosTree (
   PosTree (
     PCase,
@@ -81,6 +88,7 @@ import Plutarch.Backend.RawTerm (
     RApply,
     RBuiltin,
     RCase,
+    RCompiled,
     RConstant,
     RConstr,
     RDelay,
@@ -95,6 +103,7 @@ import Plutarch.Backend.RawTerm (
   VarTag (Argument, LetBinding, Self),
  )
 import Plutarch.Backend.S (S)
+import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Backend.VarMap (
   VarMap,
   vmDelete,
@@ -426,6 +435,56 @@ punsafeCase scrut handlers = Term $ do
       forall (m :: Type -> Type).
       MonadError TermError m => Int -> VarMap -> Int -> VarMap -> m VarMap
     go len acc ix = vmMergeM mergeCase acc . vmMap (toCase len ix)
+
+{- | Given a closed 'Term', compile it \'on the spot\', and embed the resulting
+UPLC into a 'Term'.
+
+= Note
+
+This is rarely useful or efficient. Plutarch's code generator treats any such
+\'code blobs\' as essentially opaque, and can only perform those
+optimizations that are possible at the time 'pcompiled' is used. More
+precisely, any 'Term' that uses the result of a 'pcompiled' will not be able
+to \'see inside\' that result, inhibiting any kind of global analysis.
+
+Only use this if you are certain this gives you any benefit. The primary use
+case for this is property-based testing.
+
+@since wip
+-}
+pcompiled ::
+  forall (a :: S -> Type) (s :: S).
+  (forall (s' :: S). Term s' a) ->
+  Term s a
+pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
+  (res, _, _) -> case res of
+    Left err -> Term . throwError $ err
+    -- We know that we have a closed term, so we can ignore the varmap.
+    Right (_, rt) ->
+      let ast = fromRawTerm rt
+          anf = fromHashedAST ast
+          analyzedANF = analyzeDemand anf
+       in Term . pure $ (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
+
+{- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed
+to be closed, but this won't be checked.
+
+= Note
+
+In addition to all the caveats of 'pcompiled', 'punsafeCompiled' is
+/extremely/ unsafe. There is no guarantee that the correct type of the
+'UPLCTerm' \'blob\' provided matches what you request, that the 'UPLCTerm' is
+closed, or even that it is sensible. Furthermore, Plutarch is unable to
+optimize this /at all/, even locally. Be /very/ sure this is worthwhile
+before you attempt it!
+
+@since wip
+-}
+punsafeCompiled ::
+  forall (a :: S -> Type) (s :: S).
+  UPLCTerm ->
+  Term s a
+punsafeCompiled t = Term . pure $ (vmEmpty, RCompiled () t)
 
 -- Helpers
 

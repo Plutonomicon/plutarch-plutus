@@ -241,12 +241,12 @@ data Demand
     @since wip
     -}
     Demanded Id Word64
-  | {- | Some constants should never be @let@-bound. This means their demand
+  | {- | Some things should never be @let@-bound. This means their demand
     analysis is trivial.
 
     @since wip
     -}
-    TrivialConstant
+    Trivial
   deriving stock
     ( -- | @since wip
       Eq
@@ -260,8 +260,8 @@ instance Semigroup Demand where
   x <> NeverDemanded = x
   Demanded (Id i) count1 <> Demanded (Id j) count2 =
     Demanded (Id $ max i j) (count1 + count2)
-  TrivialConstant <> _ = TrivialConstant
-  _ <> TrivialConstant = TrivialConstant
+  Trivial <> _ = Trivial
+  _ <> Trivial = Trivial
 
 -- | @since wip
 instance Monoid Demand where
@@ -277,11 +277,11 @@ analyzeDemand (ANF bm binds) = runST $ do
     ANFLeaf ell -> MVector.write mv i . ANFLeaf $ case ell of
       LConstant _ c ->
         if smallEnoughToInline c
-          then LConstant TrivialConstant c
+          then LConstant Trivial c
           else LConstant NeverDemanded c
-      LBuiltin _ f -> LBuiltin NeverDemanded f
+      LBuiltin _ f -> LBuiltin Trivial f
       LCompiled _ code -> LCompiled NeverDemanded code
-      LError _ -> LError NeverDemanded
+      LError _ -> LError Trivial
     ANFForce _ r -> do
       updateDemandAt mv i r
       MVector.write mv i . ANFForce NeverDemanded $ r
