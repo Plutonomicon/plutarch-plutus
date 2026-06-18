@@ -25,6 +25,9 @@ import Plutarch.Backend.Term (
   perror,
   pforce,
   plam',
+  punsafeCase,
+  punsafeConstr,
+  toSomeTerm,
   (:-->),
  )
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
@@ -159,13 +162,51 @@ main =
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
     , testCaseSteps "Case 6" $ \step -> do
-        step "Case: \\x -> paddInteger error (addInteger x error)"
+        step "Case: \\x -> addInteger error (addInteger x error)"
         step "1. Does Case 6 compile?"
         let compiled = compileTerm case6
         case compiled of
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
+            let asAST = fromRawTerm t
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
+    , testCaseSteps "Case 7" $ \step -> do
+        step "Case: \\x -> constr 0 [x, error]"
+        step "1. Does Case 7 compile?"
+        let compiled = compileTerm case7
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "AST:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
+    , testCaseSteps "Case 8" $ \step -> do
+        step "Case: \\x -> case error of [x]"
+        step "1. Does Case 8 compile?"
+        let compiled = compileTerm case8
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "AST:\n" <> ppShow t
             let asAST = fromRawTerm t
             let anf@(ANF bm binds) = fromHashedAST asAST
             step $ "ANF bimap:\n" <> ppShow bm
@@ -204,6 +245,14 @@ case5 = plam' $ \x -> plam' $ \y ->
 -- Case 6: \x -> addInteger error (addInteger x error)
 case6 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case6 = plam' $ \x -> papp (papp paddInteger perror) (papp (papp paddInteger x) perror)
+
+-- Case 7: \x -> constr 0 [x, error]
+case7 :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (a :--> b)
+case7 = plam' $ \x -> punsafeConstr 0 [toSomeTerm x, toSomeTerm perror]
+
+-- Case 8: \x -> case error of [x]
+case8 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
+case8 = plam' $ \x -> punsafeCase perror . NEVector.singleton . toSomeTerm $ x
 
 -- Helpers
 
