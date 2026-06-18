@@ -30,7 +30,11 @@ import Plutarch.Backend.Term (
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
-import Plutarch.Primitive.Integer (PInteger, paddInteger)
+import Plutarch.Primitive.Integer (
+  PInteger,
+  paddInteger,
+  pmultiplyInteger,
+ )
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.String (renderString)
@@ -155,6 +159,24 @@ main =
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
+    , testCaseSteps "Case 6" $ \step -> do
+        step "Case: \\x y -> paddInteger (pmultiplyInteger x x) (pmultiplyInteger y y)"
+        step "1. Does Case 6 compile?"
+        let compiled = compileTerm case6
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            let asAST = fromRawTerm t
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
     ]
 
 -- Cases
@@ -186,6 +208,11 @@ case5 = plam' $ \cond -> plam' $ \ifT -> plam' $ \ifF ->
       forall (s' :: S).
       Term s' (PBool :--> a :--> a :--> a)
     go = plam' $ \cond' -> plam' $ \ifT' -> plam' $ \ifF' -> pif cond' ifT' ifF'
+
+-- Case 6: \x y -> addInteger (multiplyInteger x x) (multiplyInteger y y)
+case6 :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
+case6 = plam' $ \x -> plam' $ \y ->
+  papp (papp paddInteger (papp (papp pmultiplyInteger x) x)) (papp (papp pmultiplyInteger y) y)
 
 -- Helpers
 
