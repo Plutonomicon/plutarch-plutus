@@ -15,12 +15,6 @@ module Plutarch.Primitive.Representation (
   PFundamental,
   PIsFundamental,
   PIsNotFundamental,
-
-  -- * Functions
-  pto,
-  ptoFundamental,
-  pgeneralize,
-  punsafeSpecialize,
 ) where
 
 import Data.Kind (Constraint, Type)
@@ -28,7 +22,7 @@ import GHC.TypeError (
   ErrorMessage (ShowType, Text, (:<>:)),
   TypeError,
  )
-import Plutarch.Backend.Term (S, Term, punsafeCoerce)
+import Plutarch.Backend.S (S)
 
 {- | The direct representation of a type. Being an instance of this type family
 specifies that a given Plutarch type can be represented /somehow/ on the
@@ -95,55 +89,6 @@ where @PFundamental a@ is different from @a@.
 -}
 type family PIsNotFundamental (a :: S -> Type) :: Constraint where
   PIsNotFundamental a = PIsNotFundamental' a (PFundamental a)
-
-{- | Any Plutarch term can be converted to a term of its direct representation
-at zero runtime cost safely.
-
-@since wip
--}
-pto ::
-  forall (a :: S -> Type) (s :: S).
-  Term s a -> Term s (PRepresentation a)
-pto = punsafeCoerce
-
-{- | As 'pto', but can go through multiple \'layers\' of representations at
-once. Put another way, 'pgeneralize' \'forgets\' several levels of structure
-imposed by a type relative its representation. Like 'pto', this has no
-runtime cost and is always safe.
-
-@since wip
--}
-pgeneralize ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  a `PCanRepresent` b => Term s b -> Term s a
-pgeneralize = punsafeCoerce
-
-{- | As 'pto' but removes /all/ \'layers\' of representations.
-
-@since wip
--}
-ptoFundamental ::
-  forall (a :: S -> Type) (s :: S).
-  Term s a -> Term s (PFundamental a)
-ptoFundamental = punsafeCoerce
-
-{- | The \'opposite direction\' to 'pgeneralize': given a term of type @a@,
-where @a@ is a valid representation for @b@, insist that the term is of type
-@b@. Like 'pgeneralize', this can go through multiple \'layers\' of
-representations at once.
-
-This is not safe in general: while any @b@ can be an @a@, there is no
-guarantee in particular that the other direction holds. This function is
-provided as a more restricted (and thus, somewhat safer) version of
-'punsafeCoerce' for efficiency in cases where this makes sense. Take care
-when using this.
-
-@since wip
--}
-punsafeSpecialize ::
-  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  a `PCanRepresent` b => Term s a -> Term s b
-punsafeSpecialize = punsafeCoerce
 
 -- Helpers
 

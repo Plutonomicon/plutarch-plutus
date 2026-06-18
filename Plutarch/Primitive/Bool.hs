@@ -12,8 +12,8 @@ module Plutarch.Primitive.Bool (
 import Data.Foldable (foldl')
 import Data.Kind (Type)
 import Data.Vector.NonEmpty qualified as NEVector
+import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
-  S,
   Term,
   punsafeCase,
   punsafeConstant,

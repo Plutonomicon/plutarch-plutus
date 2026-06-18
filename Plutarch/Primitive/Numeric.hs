@@ -1,5 +1,11 @@
-module Plutarch.Primitive.Integer (
+module Plutarch.Primitive.Numeric (
+  -- * Types
   PInteger,
+  PNatural,
+  PPositive,
+  PByte,
+
+  -- * Primitive operations
   paddInteger,
   psubtractInteger,
   pmultiplyInteger,
@@ -7,9 +13,15 @@ module Plutarch.Primitive.Integer (
   pquotientInteger,
   premainderInteger,
   pmodInteger,
+  pequalsInteger,
+  plessThanInteger,
+  plessThanEqualsInteger,
 ) where
 
-import Plutarch.Backend.Term (S, Term, punsafeBuiltin, (:-->))
+import Plutarch.Backend.S (S)
+import Plutarch.Backend.Term (Term, punsafeBuiltin)
+import Plutarch.Primitive.Bool (PBool)
+import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
 
@@ -18,6 +30,24 @@ data PInteger (s :: S)
 
 -- | @since wip
 type instance PRepresentation PInteger = PInteger
+
+-- | @since wip
+data PNatural (s :: S)
+
+-- | @since wip
+type instance PRepresentation PNatural = PInteger
+
+-- | @since wip
+data PPositive (s :: S)
+
+-- | @since wip
+type instance PRepresentation PPositive = PNatural
+
+-- | @since wip
+data PByte (s :: S)
+
+-- | @since wip
+type instance PRepresentation PByte = PNatural
 
 -- | @since wip
 paddInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
@@ -46,3 +76,15 @@ premainderInteger = punsafeBuiltin PLC.RemainderInteger
 -- | @since wip
 pmodInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 pmodInteger = punsafeBuiltin PLC.ModInteger
+
+-- | @since wip
+pequalsInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PBool)
+pequalsInteger = punsafeBuiltin PLC.EqualsInteger
+
+-- | @since wip
+plessThanInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PBool)
+plessThanInteger = punsafeBuiltin PLC.LessThanInteger
+
+-- | @since wip
+plessThanEqualsInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PBool)
+plessThanEqualsInteger = punsafeBuiltin PLC.LessThanEqualsInteger
