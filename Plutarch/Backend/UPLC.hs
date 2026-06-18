@@ -20,10 +20,23 @@ module Plutarch.Backend.UPLC (
   uplcConstr,
   uplcCase,
   uplcMCombinator,
+  rewriteUniques,
 ) where
 
+import Control.Monad.State.Strict (
+  MonadState,
+  gets,
+  modify,
+  runState,
+ )
+import Data.Bifunctor (bimap)
 import Data.Coerce (coerce)
-import Data.Hashable (Hashable)
+import Data.Hashable (Hashable (hash))
+import Data.Kind (Type)
+import Data.Map.Strict (Map)
+import Data.Map.Strict qualified as Map
+import Data.Set (Set)
+import Data.Set qualified as Set
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
@@ -147,3 +160,59 @@ uplcLam argNames body = NEVector.foldr uplcLam1 body argNames
 -}
 uplcLam1 :: UPLC.Name -> UPLCTerm -> UPLCTerm
 uplcLam1 varName (UPLCTerm body) = UPLCTerm . UPLC.LamAbs () varName $ body
+
+-- | @since wip
+rewriteUniques :: UPLCTerm -> Set Int -> (UPLCTerm, Set Int)
+rewriteUniques (UPLCTerm code) used = case runState (go code) (used, Map.empty) of
+  (code', (used', _)) -> (UPLCTerm code', used')
+  where
+    go ::
+      forall (m :: Type -> Type).
+      MonadState (Set Int, Map Int Int) m =>
+      UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun () ->
+      m (UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun ())
+    go = \case
+      t@(UPLC.Var () (UPLC.Name name (UPLC.Unique uniq))) -> do
+        -- Should we rewrite this?
+        mRewrite <- gets (Map.lookup uniq . snd)
+        case mRewrite of
+          Just uniq' -> pure . UPLC.Var () . UPLC.Name name . UPLC.Unique $ uniq'
+          -- Does this clash?
+          Nothing -> do
+            clashes <- gets (Set.member uniq . fst)
+            if clashes
+              then do
+                -- Rehash the current 'unique' until it no longer clashes
+                uniq' <- doUntilM uniq (\x -> pure . hash $ (1 :: Int, x)) (\hash' -> gets (Set.notMember hash' . fst))
+                -- Store the rewrite, and note that the new unique is used
+                modify (bimap (Set.insert uniq') (Map.insert uniq uniq'))
+                -- Apply the rewrite
+                pure . UPLC.Var () . UPLC.Name name . UPLC.Unique $ uniq'
+              else pure t
+      UPLC.LamAbs () allName@(UPLC.Name name (UPLC.Unique uniq)) body -> do
+        body' <- go body
+        -- Should we rewrite our bound var?
+        mRewrite <- gets (Map.lookup uniq . snd)
+        pure $ case mRewrite of
+          Just uniq' -> UPLC.LamAbs () (UPLC.Name name . UPLC.Unique $ uniq') body'
+          Nothing -> UPLC.LamAbs () allName body'
+      UPLC.Apply () f x -> UPLC.Apply () <$> go f <*> go x
+      UPLC.Force () body -> UPLC.Force () <$> go body
+      UPLC.Delay () body -> UPLC.Delay () <$> go body
+      UPLC.Constant () c -> pure . UPLC.Constant () $ c
+      UPLC.Builtin () f -> pure . UPLC.Builtin () $ f
+      UPLC.Error () -> pure . UPLC.Error $ ()
+      UPLC.Constr () tag fields -> UPLC.Constr () tag <$> traverse go fields
+      UPLC.Case () scrut handlers -> UPLC.Case () <$> go scrut <*> traverse go handlers
+
+doUntilM ::
+  forall (a :: Type) (m :: Type -> Type).
+  Monad m =>
+  a ->
+  (a -> m a) ->
+  (a -> m Bool) ->
+  m a
+doUntilM x act cond = do
+  res <- act x
+  stop <- cond res
+  if stop then pure res else doUntilM res act cond
