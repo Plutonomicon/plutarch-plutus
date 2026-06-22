@@ -302,6 +302,25 @@ main =
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
+    , testCaseSteps "Case 13" $ \step -> do
+        step "Case: \\x -> (compose [\\y -> y * y, \\z -> z + 2]) x"
+        step "1. Does Case 13 compile?"
+        let compiled = compileTerm case13
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            let anf@(ANF bm binds) = fromHashedAST asAST
+            step $ "ANF bimap:\n" <> ppShow bm
+            step $ "ANF binds:\n" <> ppShow binds
+            let anf'@(ANF bm' binds') = analyzeDemand anf
+            step $ "ANF bimap:\n" <> ppShow bm'
+            step $ "ANF binds:\n" <> ppShow binds'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
     ]
 
 -- Cases
@@ -378,6 +397,13 @@ case12 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case12 =
   let fun = plam' $ \y -> papp (papp paddInteger y) (punsafeConstant $ PLC.someValue @Integer 2)
    in plam' $ \x -> papp (pcompose fun . pcompose fun $ fun) x
+
+-- Case 13: \x -> (compose [\y -> y * y, \z -> z + 2]) x
+case13 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case13 =
+  let f = plam' $ \y -> papp (papp pmultiplyInteger y) y
+      g = plam' $ \z -> papp (papp paddInteger z) (punsafeConstant $ PLC.someValue @Integer 2)
+   in plam' $ \x -> papp (pcompose f g) x
 
 -- Helpers
 
