@@ -225,7 +225,11 @@ compileWithCache cache i (bindName, bind) = do
             then (j, Nothing)
             else (j, Just bindName)
   (toBind, code) <- compileBind cache i bind
-  let codeWithBinds = foldl' doLetBind code toBind
+  -- In some cases (most notably compositions), we can end up with duplicate
+  -- `let`-bind requests. Thus, we first isolate uniquely named binds before
+  -- doing them.
+  let uniqueBinds = Map.fromList toBind
+  let codeWithBinds = Map.foldlWithKey' doLetBind code uniqueBinds
   -- We only store the name of a compiled bind if we'd need to `let`-bind it
   -- later.
   MVector.write cache i (firstDemanded, mName, codeWithBinds)
@@ -356,8 +360,8 @@ multToName = \case
   Just (MultiplicityOne (Hash h)) -> pure . mkName "arg" $ h
   Just (MultiplicityMany (Hash h)) -> pure . mkName "arg" $ h
 
-doLetBind :: UPLCTerm -> (PLC.Name, UPLCTerm) -> UPLCTerm
-doLetBind f (name, v) = uplcLet name v f
+doLetBind :: UPLCTerm -> PLC.Name -> UPLCTerm -> UPLCTerm
+doLetBind f name v = uplcLet name v f
 
 compileLeaf :: Leaf ann -> UPLCTerm
 compileLeaf = \case
