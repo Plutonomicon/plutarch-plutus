@@ -53,6 +53,7 @@ import Data.Word (Word64)
 import Plutarch.Backend.PosTree (
   PosTree (
     PCase,
+    PCompose,
     PHere,
     PMany,
     POne,
@@ -65,6 +66,7 @@ import Plutarch.Backend.RawTerm (
     RBuiltin,
     RCase,
     RCompiled,
+    RCompose,
     RConstant,
     RConstr,
     RDelay,
@@ -113,6 +115,8 @@ data Multiplicity
   deriving stock
     ( -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | A leaf computation (namely, one that cannot have dependencies).
@@ -130,6 +134,8 @@ data Leaf (ann :: Type)
       Functor
     , -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | A compilation-friendly abstract syntax tree. This is in contrast to
@@ -162,11 +168,14 @@ data AST (ann :: Type)
   | ASTApply ann (AST ann) (NonEmptyVector (AST ann))
   | ASTConstr ann Word64 (Vector (AST ann))
   | ASTCase ann (AST ann) (NonEmptyVector (AST ann))
+  | ASTCompose ann (NonEmptyVector (AST ann))
   deriving stock
     ( -- | @since wip
       Functor
     , -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | Given a 'RawTerm', construct its AST, using hashing to mark
@@ -305,6 +314,13 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
               -- empty variable map.
               Just structure -> local (const vmEmpty) (go structure)
           _ -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+      RCompose _ components -> do
+        let len = NEVector.length components
+        fieldVMs <- asks (vmFold separateCompose (NEVector.replicate1 len vmEmpty))
+        let descendCompose i rt = local (const (fieldVMs NEVector.! i)) (go rt)
+        (structuralHashesComponents, components') <- NEVector.unzip <$> NEVector.imapM descendCompose components
+        let structuralHash = hash (12 :: Int, NEVector.toVector structuralHashesComponents)
+        mkHashed structuralHash (`ASTCompose` components')
 
 -- Helpers
 
@@ -392,6 +408,16 @@ separateConstr acc k = \case
       Nothing -> vm
       Just t -> vmExtend k t vm
 
+separateCompose :: NonEmptyVector VarMap -> Word64 -> PosTree -> NonEmptyVector VarMap
+separateCompose acc k = \case
+  PCompose ts -> NEVector.zipWith go acc ts
+  _ -> acc
+  where
+    go :: VarMap -> Maybe PosTree -> VarMap
+    go vm = \case
+      Nothing -> vm
+      Just t -> vmExtend k t vm
+
 separateCase :: (VarMap, NonEmptyVector VarMap) -> Word64 -> PosTree -> (VarMap, NonEmptyVector VarMap)
 separateCase acc@(scrutVM, handlerVMs) k = \case
   PCase mpt mpts -> case mpt of
@@ -450,6 +476,9 @@ findVarUsage name mpt t = case mpt of
        in case resScrut of
             Just (_, True) -> resScrut
             _ -> NEVector.foldl' go resScrut . NEVector.zip pts $ handlers
+    _ -> Nothing
+  Just (PCompose pts) -> case t of
+    RCompose _ components -> NEVector.foldl' go Nothing . NEVector.zip pts $ components
     _ -> Nothing
   where
     go :: Maybe (Hash, Bool) -> (Maybe PosTree, RawTerm ()) -> Maybe (Hash, Bool)

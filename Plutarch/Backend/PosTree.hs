@@ -68,8 +68,8 @@ data PosTree
     This structure must maintain the implicit invariant that at least one of
     the following always holds:
 
-    - The scrutinee 'PosTree' is not 'Nothing'; or
-    - At least one of the 'NonEmptyVector' entries is not 'Nothing'.
+    * The scrutinee 'PosTree' is not 'Nothing'; or
+    * At least one of the 'NonEmptyVector' entries is not 'Nothing'.
 
     All operations we provide over 'PosTree' maintain this invariant, but if
     you build these yourself, ensure you also maintain it.
@@ -77,6 +77,21 @@ data PosTree
     @since wip
     -}
     PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
+  | {- | The variable of interest occurs in a composition.
+
+    = Note
+
+    This structure must maintain the following implicit invariants:
+
+    * The 'NonEmptyVector' has at least two elements; and
+    * At least one of the 'NonEmptyVector' entries is not 'Nothing'.
+
+    All operations we provide over 'PosTree' maintain this invariant, but if
+    you build these yourself, ensure you also maintain these.
+
+    @since wip
+    -}
+    PCompose (NonEmptyVector (Maybe PosTree))
   deriving stock
     ( -- | @since wip
       Show
@@ -95,6 +110,7 @@ instance Hashable PosTree where
     PTwo ts -> hash (2 :: Int, ts)
     PMany ts -> hash (3 :: Int, Vector.toList ts)
     PCase t ts -> hash (4 :: Int, t, NEVector.toList ts)
+    PCompose ts -> hash (5 :: Int, NEVector.toList ts)
 
 {- | Checks if a 'PosTree' corresponds to a non-branching path. In the context
 of variables, checks whether the variable's use is linear (no more than
@@ -123,6 +139,10 @@ isLinear = \case
     Just tLinearity -> case sequenceA_ ts of
       Nothing -> tLinearity
       Just _ -> False
+  PCompose ts -> case NEVector.uncons ts of
+    (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
+      Nothing -> False -- impossible
+      Just linearity -> linearity
   where
     go :: Maybe Bool -> Maybe PosTree -> Maybe Bool
     go acc x = case acc of

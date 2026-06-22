@@ -39,6 +39,7 @@ import Plutarch.Backend.ANF (
   ANFBind (
     ANFApply,
     ANFCase,
+    ANFCompose,
     ANFConstr,
     ANFDelay,
     ANFFix,
@@ -108,14 +109,20 @@ toUPLCTerm (ANF _ binds) =
       -- - The argument to its copy of M; and
       -- - The variable name `r` for the transformed functional.
       (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointNames Map.empty . Set.toList $ fixpoints) usedNames 0
+      -- Check how many compositions we have and where they are.
+      compositions = doCompositionAnalysis rewrittenBinds
+      -- To compile a composition of the form `[f_1, f_2, ... , f_k]`, we want
+      -- to produce `\z -> f_1 (f_2 (... (f_k z) ...)`. For this, we need a
+      -- unique name for `z`.
+      (compositionNameMap, lastFresh', _) = runRWS (foldM mkCompositionName Map.empty . Set.toList $ compositions) usedNames lastFresh
       -- Make a unique name for any unused arguments. As lambdas in UPLC are all
       -- arity 1, and we will never use an unused argument, we can generate just
       -- a single name. It's cheaper to do this speculatively.
-      (unusedParamName, lastFresh', _) = runRWS mkUnusedName usedNames lastFresh
+      (unusedParamName, lastFresh'', _) = runRWS mkUnusedName usedNames lastFresh'
       -- Name every bind, avoiding any names of existing variables.
-      namedBinds = fst . evalRWS (NEVector.mapM nameBind rewrittenBinds) usedNames $ lastFresh'
+      namedBinds = fst . evalRWS (NEVector.mapM nameBind rewrittenBinds) usedNames $ lastFresh''
       -- Set up our compilation environment with everything we just put together
-      compileEnv = CompileEnv namedBinds fixpointNameMap unusedParamName mIdentity
+      compileEnv = CompileEnv namedBinds fixpointNameMap compositionNameMap unusedParamName mIdentity
    in -- Use our demand analysis to compile everything.
       runST $ runReaderT compile compileEnv
   where
@@ -129,6 +136,7 @@ toUPLCTerm (ANF _ binds) =
       ANFApply _ fR xsRs -> addVar (NEVector.foldl' addVar acc xsRs) fR
       ANFConstr _ _ fieldsRs -> Vector.foldl' addVar acc fieldsRs
       ANFCase _ scrutR handlersRs -> addVar (NEVector.foldl' addVar acc handlersRs) scrutR
+      ANFCompose _ componentRs -> NEVector.foldl' addVar acc componentRs
     addVar :: Set Int -> Ref -> Set Int
     addVar ess = \case
       AVar (Hash h) -> Set.insert h ess
@@ -328,7 +336,17 @@ compileBind cache i = \case
       Just nameBody -> do
         let lamBinds = [(nameBody, codeBody) | firstDemandedBody == i]
         pure (lamBinds, uplcLam asParamNames . uplcVar $ nameBody)
-
+  ANFCompose _ components -> do
+    components' <- traverse (checkCache cache) components
+    let componentBinds = Vector.toList . NEVector.mapMaybe (toBind i) $ components'
+    let componentArgs = NEVector.map (\(_, mName, code) -> maybe code uplcVar mName) components'
+    -- For compositions, given components `[f_1, f_2, .. , f_k]`, we want to
+    -- generate `\z -> f_1 (f_2 ( ... (f_k z) ... )`. We have a name set aside
+    -- for `z` to ensure it's unique.
+    compArgName <- asks (fromJust . Map.lookup i . ceCompNameMap)
+    let len = NEVector.length components'
+    let body = foldl' (\acc i -> uplcApply1 (componentArgs NEVector.! i) acc) (uplcVar compArgName) [len - 1, len - 2 .. 0]
+    pure (componentBinds, uplcLam1 compArgName body)
 multToName ::
   forall (m :: Type -> Type).
   MonadReader CompileEnv m =>
@@ -395,6 +413,23 @@ doFixpointAnalysis = NEVector.ifoldl' go Set.empty
       ANFFix {} -> Set.insert pos acc
       _ -> acc
 
+-- Check every bind to see if it's a composition, and if it is, record its
+-- position.
+--
+-- We need this for two reasons:
+--
+-- 1. To know if there are any compositions at all; and
+-- 2. How many we have, so we can apply the composition transform safely.
+doCompositionAnalysis ::
+  forall (ann :: Type).
+  NonEmptyVector (ANFBind ann) -> Set Int
+doCompositionAnalysis = NEVector.ifoldl' go Set.empty
+  where
+    go :: Set Int -> Int -> ANFBind ann -> Set Int
+    go acc pos = \case
+      ANFCompose {} -> Set.insert pos acc
+      _ -> acc
+
 mkFixpointNames ::
   Map Int (PLC.Name, PLC.Name) ->
   Int ->
@@ -405,15 +440,31 @@ mkFixpointNames acc i = do
   let names = (mkName "mArg" freshForM, mkName "functionalArg" freshForFunctional)
   pure . Map.insert i names $ acc
 
+mkCompositionName ::
+  Map Int PLC.Name ->
+  Int ->
+  RWS (Set Int) () Int (Map Int PLC.Name)
+mkCompositionName acc i = do
+  freshForZ <- untilM getFresh (asks . Set.notMember)
+  let name = mkName "compArg" freshForZ
+  pure . Map.insert i name $ acc
+
 -- A read-only environment for compilation. Contains:
 --
--- - All ANF binds (with demand analysis)
--- - All unique names reserved for these binds, in the same order
--- - Unique name pairs for each fixpoint we have to compile
+
+-- * All ANF binds (with demand analysis)
+
+-- * All unique names reserved for these binds, in the same order
+
+-- * Unique name pairs for each fixpoint we have to compile
+
+-- * A unique name for each composition we have to compile
+
 -- - A unique name for unused function parameters
 data CompileEnv = CompileEnv
   { ceBinds :: NonEmptyVector (PLC.Name, ANFBind Demand)
   , ceFPNameMap :: Map Int (PLC.Name, PLC.Name)
+  , ceCompNameMap :: Map Int PLC.Name
   , ceUnusedParamName :: PLC.Name
   , ceTheIdentity :: Maybe Id
   }

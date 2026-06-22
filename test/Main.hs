@@ -22,11 +22,13 @@ import Plutarch.Backend.Term (
   TermError,
   papp,
   pcompiled,
+  pcompose,
   pdelay,
   perror,
   pforce,
   plam',
   punsafeCase,
+  punsafeConstant,
   punsafeConstr,
   toSomeTerm,
  )
@@ -38,12 +40,19 @@ import Plutarch.Primitive.Numeric (
   PInteger,
   paddInteger,
   pmultiplyInteger,
+  psubtractInteger,
  )
+import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.String (renderString)
 import Test.Tasty (defaultMain, testGroup)
-import Test.Tasty.HUnit (assertBool, assertFailure, testCaseSteps)
+import Test.Tasty.HUnit (
+  assertBool,
+  assertEqual,
+  assertFailure,
+  testCaseSteps,
+ )
 import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -226,7 +235,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "AST:\n" <> ppShow t
+            step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
             let anf@(ANF bm binds) = fromHashedAST asAST
             step $ "ANF bimap:\n" <> ppShow bm
@@ -236,6 +245,43 @@ main =
             step $ "ANF binds:\n" <> ppShow binds'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
+    , testCaseSteps "Cases 10 and 11" $ \step -> do
+        step "Case: \\x -> (compose [\\y -> y + 2, \\z -> x * z, \\z1 -> z1 - 5]) x"
+        step "1. Do both associativities compile?"
+        let compiledLA = compileTerm case10
+        let compiledRA = compileTerm case11
+        case (compiledLA, compiledRA) of
+          (Left err, _) -> assertFailure $ "Compile error: " <> show err
+          (_, Left err) -> assertFailure $ "Compile error: " <> show err
+          (Right (_, tla), Right (_, tra)) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm (left associative):\n" <> ppShow tla
+            step $ "RawTerm (right associative):\n" <> ppShow tra
+            step "2. Are both RawTerms the same?"
+            assertEqual "RawTerms differ" tla tra
+            step "RawTerms are the same!"
+            let tlaAST = fromRawTerm tla
+            let traAST = fromRawTerm tra
+            step $ "AST (left associative):\n" <> ppShow tlaAST
+            step $ "AST (right associative):\n" <> ppShow traAST
+            step "3. Are both ASTs the same?"
+            assertEqual "ASTs differ" tlaAST traAST
+            step "ASTs are the same!"
+            let anfLA@(ANF tlaBM tlaANF) = fromHashedAST tlaAST
+            let anfRA@(ANF traBM traANF) = fromHashedAST traAST
+            step $ "ANF bimap (left associative):\n" <> ppShow tlaBM
+            step $ "ANF bimap (right associative):\n" <> ppShow traBM
+            step $ "ANF binds (left associative):\n" <> ppShow tlaANF
+            step $ "ANF binds (right associative):\n" <> ppShow traANF
+            step "4. Are both ANFs the same?"
+            assertEqual "ANF bimaps differ" tlaBM traBM
+            assertEqual "ANF binds differ" tlaANF traANF
+            step "ANFs are the same!"
+            let (UPLCTerm ttla) = toUPLCTerm . analyzeDemand $ anfLA
+            let (UPLCTerm ttra) = toUPLCTerm . analyzeDemand $ anfRA
+            step $ "UPLC (left associative):\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ ttla)
+            step $ "UPLC (right associative):\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ ttra)
             pure ()
     ]
 
@@ -285,6 +331,28 @@ case8 = plam' $ \x -> punsafeConstr 0 [toSomeTerm x, toSomeTerm perror]
 -- Case 9: \x -> case error of [x]
 case9 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
 case9 = plam' $ \x -> punsafeCase perror . NEVector.singleton . toSomeTerm $ x
+
+-- Case 10: \x -> (compose [\y -> y + 2, \z -> x * z, \z1 -> z1 - 5]) x
+--
+-- Constructed left associatively
+case10 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case10 =
+  let fun1 = plam' $ \y -> papp (papp paddInteger y) (punsafeConstant $ PLC.someValue @Integer 2)
+      fun3 = plam' $ \z1 -> papp (papp psubtractInteger z1) (punsafeConstant $ PLC.someValue @Integer 5)
+   in plam' $ \x ->
+        let fun2 = plam' $ \z -> papp (papp pmultiplyInteger x) z
+         in papp (pcompose (pcompose fun1 fun2) fun3) x
+
+-- Case 11: \x -> (compose [\y -> y + 2, \z -> x * z, \z1 -> z1 - 5]) x
+--
+-- Constructed right associatively
+case11 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case11 =
+  let fun1 = plam' $ \y -> papp (papp paddInteger y) (punsafeConstant $ PLC.someValue @Integer 2)
+      fun3 = plam' $ \z1 -> papp (papp psubtractInteger z1) (punsafeConstant $ PLC.someValue @Integer 5)
+   in plam' $ \x ->
+        let fun2 = plam' $ \z -> papp (papp pmultiplyInteger x) z
+         in papp (pcompose fun1 . pcompose fun2 $ fun3) x
 
 -- Helpers
 

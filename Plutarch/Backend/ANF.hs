@@ -48,6 +48,7 @@ import Plutarch.Backend.AST (
   AST (
     ASTApply,
     ASTCase,
+    ASTCompose,
     ASTConstr,
     ASTDelay,
     ASTFix,
@@ -77,6 +78,8 @@ data Leaf (ann :: Type)
       Functor
     , -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | As ANF \'inlines\' variables, subcomputations are either variables
@@ -91,6 +94,8 @@ data Ref
   deriving stock
     ( -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | An identifier for an ANF bind.
@@ -124,11 +129,14 @@ data ANFBind (ann :: Type)
   | ANFApply ann Ref (NonEmptyVector Ref)
   | ANFConstr ann Word64 (Vector Ref)
   | ANFCase ann Ref (NonEmptyVector Ref)
+  | ANFCompose ann (NonEmptyVector Ref)
   deriving stock
     ( -- | @since wip
       Show
     , -- | @since wip
       Functor
+    , -- | @since wip
+      Eq
     )
 
 -- | @since wip
@@ -146,6 +154,7 @@ getANFBindAnn = \case
   ANFApply x _ _ -> x
   ANFConstr x _ _ -> x
   ANFCase x _ _ -> x
+  ANFCompose x _ -> x
 
 {- | A combination of a (nonempty) vector of binds, together with a unique
 mapping between identifiers and hashes of unique subcomputations.
@@ -197,6 +206,9 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
         scrutRef <- go scrut
         handlersRefs <- traverse go handlers
         newBind h (ANFCase () scrutRef handlersRefs)
+      ASTCompose h components -> withLookup h $ do
+        componentsRefs <- traverse go components
+        newBind h (ANFCompose () componentsRefs)
     doLeaf :: AST.Leaf Hash -> State (Bimap Id Hash, IntMap (ANFBind ())) Ref
     doLeaf = \case
       AST.LVar _ h -> pure . AVar $ h
@@ -278,33 +290,36 @@ analyzeDemand (ANF bm binds) = runST $ do
       LConstant _ c ->
         if smallEnoughToInline c
           then LConstant Trivial c
-          else LConstant NeverDemanded c
+          else LConstant mempty c
       LBuiltin _ f -> LBuiltin Trivial f
-      LCompiled _ code -> LCompiled NeverDemanded code
+      LCompiled _ code -> LCompiled mempty code
       LError _ -> LError Trivial
     ANFForce _ r -> do
       updateDemandAt mv i r
-      MVector.write mv i . ANFForce NeverDemanded $ r
+      MVector.write mv i . ANFForce mempty $ r
     ANFDelay _ r -> do
       updateDemandAt mv i r
-      MVector.write mv i . ANFDelay NeverDemanded $ r
+      MVector.write mv i . ANFDelay mempty $ r
     ANFLam _ mults r -> do
       updateDemandAt mv i r
-      MVector.write mv i . ANFLam NeverDemanded mults $ r
+      MVector.write mv i . ANFLam mempty mults $ r
     ANFFix _ mult r -> do
       updateDemandAt mv i r
-      MVector.write mv i . ANFFix NeverDemanded mult $ r
+      MVector.write mv i . ANFFix mempty mult $ r
     ANFApply _ f xs -> do
       updateDemandAt mv i f
       traverse_ (updateDemandAt mv i) xs
-      MVector.write mv i . ANFApply NeverDemanded f $ xs
+      MVector.write mv i . ANFApply mempty f $ xs
     ANFConstr _ tag fields -> do
       traverse_ (updateDemandAt mv i) fields
-      MVector.write mv i . ANFConstr NeverDemanded tag $ fields
+      MVector.write mv i . ANFConstr mempty tag $ fields
     ANFCase _ scrut handlers -> do
       updateDemandAt mv i scrut
       traverse_ (updateDemandAt mv i) handlers
-      MVector.write mv i . ANFCase NeverDemanded scrut $ handlers
+      MVector.write mv i . ANFCase mempty scrut $ handlers
+    ANFCompose _ components -> do
+      traverse_ (updateDemandAt mv i) components
+      MVector.write mv i . ANFCompose mempty $ components
   v <- Vector.unsafeFreeze mv
   pure . ANF bm . NEVector.unsafeFromVector $ v
   where

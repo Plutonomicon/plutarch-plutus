@@ -39,6 +39,7 @@ module Plutarch.Backend.Term (
   pplaceholder,
   pcompiled,
   pfix,
+  pcompose,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
@@ -77,6 +78,7 @@ import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.PosTree (
   PosTree (
     PCase,
+    PCompose,
     PHere,
     PMany,
     POne,
@@ -89,6 +91,7 @@ import Plutarch.Backend.RawTerm (
     RBuiltin,
     RCase,
     RCompiled,
+    RCompose,
     RConstant,
     RConstr,
     RDelay,
@@ -164,6 +167,13 @@ data TermError
     @since wip
     -}
     BadMergeConstr Word64 PosTree PosTree
+  | {- | A composition construction caused a bad position tree merge. This
+    is something that should not happen normally, and is /definitely/ a
+    bug!
+
+    @since wip
+    -}
+    BadMergeCompose Word64 PosTree PosTree
   deriving stock
     ( -- | @since wip
       Show
@@ -267,6 +277,50 @@ pfix f = Term $ do
   case mpt of
     Nothing -> throwError UnusedSelfArgument
     Just pt -> pure (vmMap POne vm', RFix () pt t)
+
+{- | Given two 'Term's that both generate functions, construct the 'Term' that
+is their composition.
+
+= Note
+
+Prefer this to composing functions using a fresh lambda. Plutarch's back-end
+can emit much better code from a 'pcompose', especially if the chain is long.
+
+@since wip
+-}
+pcompose ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  Term s (a :--> b) ->
+  Term s (c :--> a) ->
+  Term s (c :--> b)
+pcompose f g = Term $ do
+  (fvm, ft) <- asRawTerm f
+  (gvm, gt) <- asRawTerm g
+  case (ft, gt) of
+    (RCompose _ compsF, RCompose _ compsG) -> do
+      let lenFs = NEVector.length compsF
+      let lenGs = NEVector.length compsG
+      let extendedFVM = vmMap (extendComposeEnd lenGs) fvm
+      let extendedGVM = vmMap (extendComposeStart lenFs) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () $ compsF <> compsG)
+    (RCompose _ compsF, _) -> do
+      let lenFs = NEVector.length compsF
+      let extendedFVM = vmMap (extendComposeEnd 1) fvm
+      let extendedGVM = vmMap (mkNewComposeEnd lenFs) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () . NEVector.snoc compsF $ gt)
+    (_, RCompose _ compsG) -> do
+      let lenGs = NEVector.length compsG
+      let extendedFVM = vmMap (mkNewComposeStart lenGs) fvm
+      let extendedGVM = vmMap (extendComposeStart 1) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () . NEVector.cons ft $ compsG)
+    _ -> do
+      let extendedFVM = vmMap (\pt -> PCompose . NEVector.cons (Just pt) . NEVector.singleton $ Nothing) fvm
+      let extendedGVM = vmMap (PCompose . NEVector.cons Nothing . NEVector.singleton . Just) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () . NEVector.cons ft . NEVector.singleton $ gt)
 
 {- | Abort generating code and signal a user-specified error.
 
@@ -488,6 +542,28 @@ punsafeCompiled t = Term . pure $ (vmEmpty, RCompiled () t)
 
 -- Helpers
 
+-- Construct a brand new composition position tree, with all elements `Nothing`
+-- except the last
+mkNewComposeEnd :: Int -> PosTree -> PosTree
+mkNewComposeEnd len = PCompose . NEVector.snoc (NEVector.replicate1 len Nothing) . Just
+
+-- Construct a brand new composition position tree, with all elements `Nothing`
+-- except the first
+mkNewComposeStart :: Int -> PosTree -> PosTree
+mkNewComposeStart len pt = PCompose . NEVector.cons (Just pt) . NEVector.replicate1 len $ Nothing
+
+-- Adds `Nothing` elements on the end of a composition position tree
+extendComposeEnd :: Int -> PosTree -> PosTree
+extendComposeEnd count = \case
+  PCompose pts -> PCompose $ pts <> NEVector.replicate1 count Nothing
+  pt -> pt
+
+-- Adds `Nothing` elements at the start of a composition position tree
+extendComposeStart :: Int -> PosTree -> PosTree
+extendComposeStart count = \case
+  PCompose pts -> PCompose $ NEVector.replicate1 count Nothing <> pts
+  pt -> pt
+
 -- Helper for extending position trees for `case`s
 toCase :: Int -> Int -> PosTree -> PosTree
 toCase len ix pt = PCase Nothing . NEVector.generate1 len $ \ix' -> if ix == ix' then Just pt else Nothing
@@ -508,6 +584,19 @@ mergeConstr = zipWithAMatched $ \k v1 v2 -> case v1 of
       PMany <$> traverse (mergeCanM (BadMergeConstr k v1 v2)) combined
     _ -> throwError . BadMergeConstr k v1 $ v2
   _ -> throwError . BadMergeConstr k v1 $ v2
+
+-- Handler for combining composition position trees
+mergeCompose ::
+  forall (m :: Type -> Type).
+  MonadError TermError m =>
+  WhenMatched m Word64 PosTree PosTree PosTree
+mergeCompose = zipWithAMatched $ \k v1 v2 -> case v1 of
+  PCompose xs -> case v2 of
+    PCompose ys -> do
+      let combined = NEVector.zipWith maybeToCan xs ys
+      PCompose <$> traverse (mergeCanM (BadMergeCompose k v1 v2)) combined
+    _ -> throwError . BadMergeCompose k v1 $ v2
+  _ -> throwError . BadMergeCompose k v1 $ v2
 
 -- Handler for combining `PTwo`s, needed in various places
 mergeTwo ::
