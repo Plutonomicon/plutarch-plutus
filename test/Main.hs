@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedLists #-}
+
 module Main (main) where
 
 import Control.Monad.Except (runExceptT)
@@ -14,6 +16,7 @@ import Plutarch.Backend.AST (
   fromRawTerm,
  )
 import Plutarch.Backend.Compile (toUPLCTerm)
+import Plutarch.Backend.PrettyANF (prettyShow)
 import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
@@ -77,13 +80,11 @@ main =
                 let asAST = fromRawTerm t
                 step $ "AST: \n" <> ppShow asAST
                 step "Converting to ANF"
-                let anf@(ANF bm binds) = fromHashedAST asAST
-                step $ "ANF bimap:\n" <> ppShow bm
-                step $ "ANF binds:\n" <> ppShow binds
+                let anf = fromHashedAST asAST
+                step $ prettyShow anf
                 step "Demand analysis"
-                let anf'@(ANF bm' binds') = analyzeDemand anf
-                step $ "ANF bimap:\n" <> ppShow bm'
-                step $ "ANF binds:\n" <> ppShow binds'
+                let anf' = analyzeDemand anf
+                step $ prettyShow anf'
                 step "Converting to UPLC"
                 let (UPLCTerm t) = toUPLCTerm anf'
                 step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
@@ -99,9 +100,8 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST: \n" <> ppShow asAST
-            let ANF bm binds = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
+            let anf@(ANF _ binds) = fromHashedAST asAST
+            step $ prettyShow anf
             step "2. Is there one bind exactly?"
             assertBool "Too many binds" (NEVector.length binds == 1)
             step "Exactly one bind!"
@@ -120,17 +120,15 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
+            let anf@(ANF _ binds) = fromHashedAST asAST
+            step $ prettyShow anf
             step "2. Are there 5 binds?"
             let len = NEVector.length binds
             assertBool ("Too many binds: " <> show len) (len == 5)
             step "5 binds exactly!"
             step "Demand analysis"
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -144,12 +142,10 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -163,12 +159,10 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -181,12 +175,10 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -199,12 +191,10 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -218,12 +208,10 @@ main =
             step "Successfully compiled!"
             step $ "AST:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -237,12 +225,10 @@ main =
             step "Successfully compiled!"
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -270,10 +256,8 @@ main =
             step "ASTs are the same!"
             let anfLA@(ANF tlaBM tlaANF) = fromHashedAST tlaAST
             let anfRA@(ANF traBM traANF) = fromHashedAST traAST
-            step $ "ANF bimap (left associative):\n" <> ppShow tlaBM
-            step $ "ANF bimap (right associative):\n" <> ppShow traBM
-            step $ "ANF binds (left associative):\n" <> ppShow tlaANF
-            step $ "ANF binds (right associative):\n" <> ppShow traANF
+            step $ "ANF (left associative):\n" <> prettyShow anfLA
+            step $ "ANF (right associative):\n" <> prettyShow anfRA
             step "4. Are both ANFs the same?"
             assertEqual "ANF bimaps differ" tlaBM traBM
             assertEqual "ANF binds differ" tlaANF traANF
@@ -293,12 +277,10 @@ main =
             step "Successfully compiled!"
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -312,12 +294,10 @@ main =
             step "Successfully compiled!"
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ prettyShow anf
+            let anf' = analyzeDemand anf
+            step $ prettyShow anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
