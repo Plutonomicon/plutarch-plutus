@@ -147,6 +147,7 @@ library
     Plutarch.Primitive.Data
     Plutarch.Primitive.Function
     Plutarch.Primitive.List
+    Plutarch.Primitive.Match
     Plutarch.Primitive.Numeric
     Plutarch.Primitive.Pair
     Plutarch.Rational

@@ -18,6 +18,9 @@ module Plutarch.Primitive.Apply (
   pcoerce,
   pgeneralize,
   punsafeSpecialize,
+
+  -- * Helpers
+  PlutarchTypeRep (..),
 ) where
 
 import Data.Kind (Constraint, Type)
@@ -117,6 +120,14 @@ punsafeSpecialize ::
   forall (a :: S -> Type) (s :: S).
   PlutarchType a => Term s (PRepresentation a) -> Term s a
 punsafeSpecialize = punsafeCoerce
+
+-- | @since wip
+newtype PlutarchTypeRep (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PlutarchTypeRep (b s)
+
+-- | @since wip
+instance PlutarchType b => PlutarchType (PlutarchTypeRep a b) where
+  type PRepresentation (PlutarchTypeRep a b) = b
 
 -- Helpers
 
