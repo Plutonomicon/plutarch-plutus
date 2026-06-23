@@ -20,34 +20,46 @@ module Plutarch.Primitive.Numeric (
 
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, punsafeBuiltin)
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
 
 -- | @since wip
 data PInteger (s :: S)
 
+type role PInteger nominal
+
 -- | @since wip
-type instance PRepresentation PInteger = PInteger
+instance PlutarchType PInteger where
+  type PRepresentation PInteger = PInteger
 
 -- | @since wip
 data PNatural (s :: S)
 
+type role PNatural nominal
+
 -- | @since wip
-type instance PRepresentation PNatural = PInteger
+instance PlutarchType PNatural where
+  type PRepresentation PNatural = PInteger
 
 -- | @since wip
 data PPositive (s :: S)
 
+type role PPositive nominal
+
 -- | @since wip
-type instance PRepresentation PPositive = PNatural
+instance PlutarchType PPositive where
+  type PRepresentation PPositive = PNatural
 
 -- | @since wip
 data PByte (s :: S)
 
+type role PByte nominal
+
 -- | @since wip
-type instance PRepresentation PByte = PNatural
+instance PlutarchType PByte where
+  type PRepresentation PByte = PNatural
 
 -- | @since wip
 paddInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)

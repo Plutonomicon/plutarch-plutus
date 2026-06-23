@@ -23,26 +23,35 @@ module Plutarch.Primitive.Data (
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, punsafeBuiltin)
+import Plutarch.Primitive.Apply (
+  PCanRepresent,
+  PlutarchType (PRepresentation),
+ )
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.ByteString (PByteString)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
-import Plutarch.Primitive.Representation (PCanRepresent, PRepresentation)
 import PlutusCore qualified as PLC
 
 -- | @since wip
 data PData (s :: S)
 
+type role PData nominal
+
 -- | @since wip
-type instance PRepresentation PData = PData
+instance PlutarchType PData where
+  type PRepresentation PData = PData
 
 -- | @since wip
 data PAsData (a :: S -> Type) (s :: S)
 
+type role PAsData nominal nominal
+
 -- | @since wip
-type instance PRepresentation (PAsData _) = PData
+instance PlutarchType (PAsData a) where
+  type PRepresentation (PAsData _) = PData
 
 -- | @since wip
 piData ::

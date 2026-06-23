@@ -18,14 +18,12 @@ import Plutarch.Backend.Term (Term, punsafeBuiltin)
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PByte, PNatural)
-import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
 
 -- | @since wip
 data PByteString (s :: S)
 
--- | @since wip
-type instance PRepresentation PByteString = PByteString
+type role PByteString nominal
 
 -- | @since wip
 pappendByteString ::

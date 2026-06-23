@@ -19,14 +19,17 @@ import Plutarch.Backend.Term (
   punsafeConstant,
   toSomeTerm,
  )
-import Plutarch.Primitive.Representation (PRepresentation)
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import PlutusCore qualified as PLC
 
 -- | @since wip
 data PBool (s :: S)
 
+type role PBool nominal
+
 -- | @since wip
-type instance PRepresentation PBool = PBool
+instance PlutarchType PBool where
+  type PRepresentation PBool = PBool
 
 -- | @since wip
 pfalse :: forall (s :: S). Term s PBool
