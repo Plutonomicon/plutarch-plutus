@@ -321,6 +321,25 @@ pcompose f g = Term $ do
       let extendedGVM = vmMap (PCompose . NEVector.cons Nothing . NEVector.singleton . Just) gvm
       vm <- vmMergeM mergeCompose extendedFVM extendedGVM
       pure (vm, RCompose () . NEVector.cons ft . NEVector.singleton $ gt)
+  where
+    -- Construct a brand new composition position tree, with all elements `Nothing`
+    -- except the last
+    mkNewComposeEnd :: Int -> PosTree -> PosTree
+    mkNewComposeEnd len = PCompose . NEVector.snoc (NEVector.replicate1 len Nothing) . Just
+    -- Construct a brand new composition position tree, with all elements `Nothing`
+    -- except the first
+    mkNewComposeStart :: Int -> PosTree -> PosTree
+    mkNewComposeStart len pt = PCompose . NEVector.cons (Just pt) . NEVector.replicate1 len $ Nothing
+    -- Adds `Nothing` elements on the end of a composition position tree
+    extendComposeEnd :: Int -> PosTree -> PosTree
+    extendComposeEnd count = \case
+      PCompose pts -> PCompose $ pts <> NEVector.replicate1 count Nothing
+      pt -> pt
+    -- Adds `Nothing` elements at the start of a composition position tree
+    extendComposeStart :: Int -> PosTree -> PosTree
+    extendComposeStart count = \case
+      PCompose pts -> PCompose $ NEVector.replicate1 count Nothing <> pts
+      pt -> pt
 
 {- | Abort generating code and signal a user-specified error.
 
@@ -541,28 +560,6 @@ punsafeCompiled ::
 punsafeCompiled t = Term . pure $ (vmEmpty, RCompiled () t)
 
 -- Helpers
-
--- Construct a brand new composition position tree, with all elements `Nothing`
--- except the last
-mkNewComposeEnd :: Int -> PosTree -> PosTree
-mkNewComposeEnd len = PCompose . NEVector.snoc (NEVector.replicate1 len Nothing) . Just
-
--- Construct a brand new composition position tree, with all elements `Nothing`
--- except the first
-mkNewComposeStart :: Int -> PosTree -> PosTree
-mkNewComposeStart len pt = PCompose . NEVector.cons (Just pt) . NEVector.replicate1 len $ Nothing
-
--- Adds `Nothing` elements on the end of a composition position tree
-extendComposeEnd :: Int -> PosTree -> PosTree
-extendComposeEnd count = \case
-  PCompose pts -> PCompose $ pts <> NEVector.replicate1 count Nothing
-  pt -> pt
-
--- Adds `Nothing` elements at the start of a composition position tree
-extendComposeStart :: Int -> PosTree -> PosTree
-extendComposeStart count = \case
-  PCompose pts -> PCompose $ NEVector.replicate1 count Nothing <> pts
-  pt -> pt
 
 -- Helper for extending position trees for `case`s
 toCase :: Int -> Int -> PosTree -> PosTree
