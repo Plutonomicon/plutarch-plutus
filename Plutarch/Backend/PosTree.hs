@@ -16,11 +16,13 @@ module Plutarch.Backend.PosTree (
   isLinear,
 ) where
 
+import Control.Monad (guard)
 import Data.Foldable (sequenceA_)
 import Data.Hashable (
   Hashable (hash, hashWithSalt),
   defaultHashWithSalt,
  )
+import Data.Maybe (isJust, isNothing)
 import Data.These (These (That, These, This))
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
@@ -68,8 +70,8 @@ data PosTree
     This structure must maintain the implicit invariant that at least one of
     the following always holds:
 
-    - The scrutinee 'PosTree' is not 'Nothing'; or
-    - At least one of the 'NonEmptyVector' entries is not 'Nothing'.
+    * The scrutinee 'PosTree' is not 'Nothing'; or
+    * At least one of the 'NonEmptyVector' entries is not 'Nothing'.
 
     All operations we provide over 'PosTree' maintain this invariant, but if
     you build these yourself, ensure you also maintain it.
@@ -77,6 +79,21 @@ data PosTree
     @since wip
     -}
     PCase (Maybe PosTree) (NonEmptyVector (Maybe PosTree))
+  | {- | The variable of interest occurs in a composition.
+
+    = Note
+
+    This structure must maintain the following implicit invariants:
+
+    * The 'NonEmptyVector' has at least two elements; and
+    * At least one of the 'NonEmptyVector' entries is not 'Nothing'.
+
+    All operations we provide over 'PosTree' maintain this invariant, but if
+    you build these yourself, ensure you also maintain these.
+
+    @since wip
+    -}
+    PCompose (NonEmptyVector (Maybe PosTree))
   deriving stock
     ( -- | @since wip
       Show
@@ -95,6 +112,7 @@ instance Hashable PosTree where
     PTwo ts -> hash (2 :: Int, ts)
     PMany ts -> hash (3 :: Int, Vector.toList ts)
     PCase t ts -> hash (4 :: Int, t, NEVector.toList ts)
+    PCompose ts -> hash (5 :: Int, NEVector.toList ts)
 
 {- | Checks if a 'PosTree' corresponds to a non-branching path. In the context
 of variables, checks whether the variable's use is linear (no more than
@@ -112,22 +130,26 @@ isLinear = \case
     These _ _ -> False
   PMany ts -> case Vector.uncons ts of
     Nothing -> True
-    Just (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
-      Nothing -> False -- impossible
-      Just linearity -> linearity
+    Just (x, xs) -> case x of
+      Nothing -> maybe False isLinear (findOnlyJust xs)
+      Just t -> isLinear t && Vector.all isNothing xs
   PCase t ts -> case fmap isLinear t of
     Nothing -> case NEVector.uncons ts of
-      (x, xs) -> case Vector.foldl' go (fmap isLinear x) xs of
-        Nothing -> False -- impossible
-        Just linearity -> linearity
+      (x, xs) -> case x of
+        Nothing -> maybe False isLinear (findOnlyJust xs)
+        Just t -> isLinear t && Vector.all isNothing xs
     Just tLinearity -> case sequenceA_ ts of
       Nothing -> tLinearity
       Just _ -> False
+  PCompose ts -> case NEVector.uncons ts of
+    (x, xs) -> case x of
+      Nothing -> maybe False isLinear (findOnlyJust xs)
+      Just t -> isLinear t && Vector.all isNothing xs
   where
-    go :: Maybe Bool -> Maybe PosTree -> Maybe Bool
-    go acc x = case acc of
-      Nothing -> fmap isLinear x
-      Just False -> Just False
-      Just True -> case fmap isLinear x of
-        Nothing -> Just True
-        Just _ -> Just False
+    -- Note (Koz, 23/06/2026): This works because we assume we never pass any
+    -- collection to this function that could be `Nothing` everywhere.
+    findOnlyJust :: Vector (Maybe PosTree) -> Maybe PosTree
+    findOnlyJust v = do
+      (i, is) <- Vector.uncons . Vector.findIndices isJust $ v
+      guard (Vector.null is)
+      v Vector.! i
