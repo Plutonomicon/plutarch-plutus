@@ -1,6 +1,5 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 {-# LANGUAGE RoleAnnotations #-}
-{-# LANGUAGE TypeData #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
 {- | The full definition of Plutarch 'Term's, as well as eDSL primitives which
@@ -30,8 +29,6 @@ module Plutarch.Backend.Term (
   toSomeTerm,
   TermError (..),
   PDelayed,
-  S,
-  (:-->) (..),
   plam',
   plet,
   pthrow,
@@ -40,17 +37,21 @@ module Plutarch.Backend.Term (
   pforce,
   perror,
   pplaceholder,
+  pcompiled,
+  pfix,
+  pcompose,
   punsafeCoerce,
   punsafeBuiltin,
   punsafeConstant,
   punsafeConstr,
   punsafeCase,
-  pfix,
+  punsafeCompiled,
 ) where
 
 import Control.Monad.Except (
   ExceptT,
   MonadError,
+  runExceptT,
   throwError,
  )
 import Control.Monad.RWS.CPS (
@@ -58,6 +59,7 @@ import Control.Monad.RWS.CPS (
   RWS,
   get,
   modify,
+  runRWS,
  )
 import Data.Can (Can (Eno, Non, One, Two))
 import Data.Kind (Type)
@@ -70,9 +72,13 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import GHC.Stack (CallStack, HasCallStack, callStack)
+import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
+import Plutarch.Backend.AST (fromRawTerm)
+import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.PosTree (
   PosTree (
     PCase,
+    PCompose,
     PHere,
     PMany,
     POne,
@@ -84,6 +90,8 @@ import Plutarch.Backend.RawTerm (
     RApply,
     RBuiltin,
     RCase,
+    RCompiled,
+    RCompose,
     RConstant,
     RConstr,
     RDelay,
@@ -97,6 +105,8 @@ import Plutarch.Backend.RawTerm (
   ),
   VarTag (Argument, LetBinding, Self),
  )
+import Plutarch.Backend.S (S)
+import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Backend.VarMap (
   VarMap,
   vmDelete,
@@ -105,20 +115,9 @@ import Plutarch.Backend.VarMap (
   vmMergeM,
   vmSingleton,
  )
+import Plutarch.Primitive.Function ((:-->))
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
-
--- Note (Koz, 08/06/2026): `type data` is a particularly hideous GHCism used to
--- define (effectively) a kind without forcing us to promote a type. Whenever
--- you see `type data Foo = Bar | Baz`, you can read that as a declaration of a
--- new _kind_ `Foo`, containing the types `Bar` and `Baz`.
-
-{- | An empty kind to ensure that the @s@ parameter never gets used for
-anything.
-
-@since wip
--}
-type data S
 
 {- | A configuration environment for 'Term's and their compilation. Currently
 unused.
@@ -168,6 +167,13 @@ data TermError
     @since wip
     -}
     BadMergeConstr Word64 PosTree PosTree
+  | {- | A composition construction caused a bad position tree merge. This
+    is something that should not happen normally, and is /definitely/ a
+    bug!
+
+    @since wip
+    -}
+    BadMergeCompose Word64 PosTree PosTree
   deriving stock
     ( -- | @since wip
       Show
@@ -203,22 +209,6 @@ toSomeTerm ::
   forall (a :: S -> Type) (s :: S).
   Term s a -> SomeTerm s
 toSomeTerm = SomeTerm
-
-{- | The type of a Plutarch lambda. To be specific, @'Term' s (a :--> b)@
-corresponds to the code of a computation that, when run, will produce a UPLC
-function that consumes (the equivalent of) @a@ and produces (the equivalent
-of) @b@ (or errors). Contrast this with @'Term' s a -> 'Term' s b@, which is
-instead a transformation of code: more precisely, it takes /code/ that, when
-run, would produce (the UPLC equivalent of) @a@ (or an error) and produces
-/code/ that, when run, would produce (the UPLC equivalent of) @b@ (or an
-error).
-
-@since wip
--}
-newtype (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PLam (Term s a -> Term s b)
-
-infixr 0 :-->
 
 {- | A type-level tag indicating a Plutarch computation that has been
 \'suspended\'. This tag can be removed by using 'pforce', and added by using
@@ -287,6 +277,69 @@ pfix f = Term $ do
   case mpt of
     Nothing -> throwError UnusedSelfArgument
     Just pt -> pure (vmMap POne vm', RFix () pt t)
+
+{- | Given two 'Term's that both generate functions, construct the 'Term' that
+is their composition.
+
+= Note
+
+Prefer this to composing functions using a fresh lambda. Plutarch's back-end
+can emit much better code from a 'pcompose', especially if the chain is long.
+
+@since wip
+-}
+pcompose ::
+  forall (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S).
+  Term s (a :--> b) ->
+  Term s (c :--> a) ->
+  Term s (c :--> b)
+pcompose f g = Term $ do
+  (fvm, ft) <- asRawTerm f
+  (gvm, gt) <- asRawTerm g
+  case (ft, gt) of
+    (RCompose _ compsF, RCompose _ compsG) -> do
+      let lenFs = NEVector.length compsF
+      let lenGs = NEVector.length compsG
+      let extendedFVM = vmMap (extendComposeEnd lenGs) fvm
+      let extendedGVM = vmMap (extendComposeStart lenFs) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () $ compsF <> compsG)
+    (RCompose _ compsF, _) -> do
+      let lenFs = NEVector.length compsF
+      let extendedFVM = vmMap (extendComposeEnd 1) fvm
+      let extendedGVM = vmMap (mkNewComposeEnd lenFs) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () . NEVector.snoc compsF $ gt)
+    (_, RCompose _ compsG) -> do
+      let lenGs = NEVector.length compsG
+      let extendedFVM = vmMap (mkNewComposeStart lenGs) fvm
+      let extendedGVM = vmMap (extendComposeStart 1) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () . NEVector.cons ft $ compsG)
+    _ -> do
+      let extendedFVM = vmMap (\pt -> PCompose . NEVector.cons (Just pt) . NEVector.singleton $ Nothing) fvm
+      let extendedGVM = vmMap (PCompose . NEVector.cons Nothing . NEVector.singleton . Just) gvm
+      vm <- vmMergeM mergeCompose extendedFVM extendedGVM
+      pure (vm, RCompose () . NEVector.cons ft . NEVector.singleton $ gt)
+  where
+    -- Construct a brand new composition position tree, with all elements `Nothing`
+    -- except the last
+    mkNewComposeEnd :: Int -> PosTree -> PosTree
+    mkNewComposeEnd len = PCompose . NEVector.snoc (NEVector.replicate1 len Nothing) . Just
+    -- Construct a brand new composition position tree, with all elements `Nothing`
+    -- except the first
+    mkNewComposeStart :: Int -> PosTree -> PosTree
+    mkNewComposeStart len pt = PCompose . NEVector.cons (Just pt) . NEVector.replicate1 len $ Nothing
+    -- Adds `Nothing` elements on the end of a composition position tree
+    extendComposeEnd :: Int -> PosTree -> PosTree
+    extendComposeEnd count = \case
+      PCompose pts -> PCompose $ pts <> NEVector.replicate1 count Nothing
+      pt -> pt
+    -- Adds `Nothing` elements at the start of a composition position tree
+    extendComposeStart :: Int -> PosTree -> PosTree
+    extendComposeStart count = \case
+      PCompose pts -> PCompose $ NEVector.replicate1 count Nothing <> pts
+      pt -> pt
 
 {- | Abort generating code and signal a user-specified error.
 
@@ -456,6 +509,56 @@ punsafeCase scrut handlers = Term $ do
       MonadError TermError m => Int -> VarMap -> Int -> VarMap -> m VarMap
     go len acc ix = vmMergeM mergeCase acc . vmMap (toCase len ix)
 
+{- | Given a closed 'Term', compile it \'on the spot\', and embed the resulting
+UPLC into a 'Term'.
+
+= Note
+
+This is rarely useful or efficient. Plutarch's code generator treats any such
+\'code blobs\' as essentially opaque, and can only perform those
+optimizations that are possible at the time 'pcompiled' is used. More
+precisely, any 'Term' that uses the result of a 'pcompiled' will not be able
+to \'see inside\' that result, inhibiting any kind of global analysis.
+
+Only use this if you are certain this gives you any benefit. The primary use
+case for this is property-based testing.
+
+@since wip
+-}
+pcompiled ::
+  forall (a :: S -> Type) (s :: S).
+  (forall (s' :: S). Term s' a) ->
+  Term s a
+pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
+  (res, _, _) -> case res of
+    Left err -> Term . throwError $ err
+    -- We know that we have a closed term, so we can ignore the varmap.
+    Right (_, rt) ->
+      let ast = fromRawTerm rt
+          anf = fromHashedAST ast
+          analyzedANF = analyzeDemand anf
+       in Term . pure $ (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
+
+{- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed
+to be closed, but this won't be checked.
+
+= Note
+
+In addition to all the caveats of 'pcompiled', 'punsafeCompiled' is
+/extremely/ unsafe. There is no guarantee that the correct type of the
+'UPLCTerm' \'blob\' provided matches what you request, that the 'UPLCTerm' is
+closed, or even that it is sensible. Furthermore, Plutarch is unable to
+optimize this /at all/, even locally. Be /very/ sure this is worthwhile
+before you attempt it!
+
+@since wip
+-}
+punsafeCompiled ::
+  forall (a :: S -> Type) (s :: S).
+  UPLCTerm ->
+  Term s a
+punsafeCompiled t = Term . pure $ (vmEmpty, RCompiled () t)
+
 -- Helpers
 
 -- Helper for extending position trees for `case`s
@@ -478,6 +581,19 @@ mergeConstr = zipWithAMatched $ \k v1 v2 -> case v1 of
       PMany <$> traverse (mergeCanM (BadMergeConstr k v1 v2)) combined
     _ -> throwError . BadMergeConstr k v1 $ v2
   _ -> throwError . BadMergeConstr k v1 $ v2
+
+-- Handler for combining composition position trees
+mergeCompose ::
+  forall (m :: Type -> Type).
+  MonadError TermError m =>
+  WhenMatched m Word64 PosTree PosTree PosTree
+mergeCompose = zipWithAMatched $ \k v1 v2 -> case v1 of
+  PCompose xs -> case v2 of
+    PCompose ys -> do
+      let combined = NEVector.zipWith maybeToCan xs ys
+      PCompose <$> traverse (mergeCanM (BadMergeCompose k v1 v2)) combined
+    _ -> throwError . BadMergeCompose k v1 $ v2
+  _ -> throwError . BadMergeCompose k v1 $ v2
 
 -- Handler for combining `PTwo`s, needed in various places
 mergeTwo ::

@@ -17,9 +17,13 @@ module Plutarch.Backend.ANF (
   ANFBind (..),
   Id (..),
   ANF (..),
+  Demand (..),
   fromHashedAST,
+  analyzeDemand,
+  getANFBindAnn,
 ) where
 
+import Control.Monad.ST (ST, runST)
 import Control.Monad.State.Strict (
   State,
   gets,
@@ -29,11 +33,14 @@ import Control.Monad.State.Strict (
 import Data.Bifunctor (bimap)
 import Data.Bimap (Bimap)
 import Data.Bimap qualified as Bimap
+import Data.Foldable (for_, traverse_)
 import Data.IntMap.Strict (IntMap)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Kind (Type)
 import Data.Maybe (fromJust)
-import Data.Vector (Vector)
+import Data.Vector (MVector, Vector)
+import Data.Vector qualified as Vector
+import Data.Vector.Mutable qualified as MVector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
@@ -41,6 +48,7 @@ import Plutarch.Backend.AST (
   AST (
     ASTApply,
     ASTCase,
+    ASTCompose,
     ASTConstr,
     ASTDelay,
     ASTFix,
@@ -53,7 +61,7 @@ import Plutarch.Backend.AST (
  )
 import Plutarch.Backend.AST qualified as AST
 import Plutarch.Backend.UPLC (UPLCTerm)
-import PlutusCore (Some, ValueOf)
+import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 
 {- | A leaf bind in the ANF (that is, one that cannot have dependencies).
@@ -70,6 +78,8 @@ data Leaf (ann :: Type)
       Functor
     , -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | As ANF \'inlines\' variables, subcomputations are either variables
@@ -84,6 +94,8 @@ data Ref
   deriving stock
     ( -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | An identifier for an ANF bind.
@@ -117,10 +129,32 @@ data ANFBind (ann :: Type)
   | ANFApply ann Ref (NonEmptyVector Ref)
   | ANFConstr ann Word64 (Vector Ref)
   | ANFCase ann Ref (NonEmptyVector Ref)
+  | ANFCompose ann (NonEmptyVector Ref)
   deriving stock
     ( -- | @since wip
       Show
+    , -- | @since wip
+      Functor
+    , -- | @since wip
+      Eq
     )
+
+-- | @since wip
+getANFBindAnn :: forall (ann :: Type). ANFBind ann -> ann
+getANFBindAnn = \case
+  ANFLeaf ell -> case ell of
+    LConstant x _ -> x
+    LBuiltin x _ -> x
+    LCompiled x _ -> x
+    LError x -> x
+  ANFForce x _ -> x
+  ANFDelay x _ -> x
+  ANFLam x _ _ -> x
+  ANFFix x _ _ -> x
+  ANFApply x _ _ -> x
+  ANFConstr x _ _ -> x
+  ANFCase x _ _ -> x
+  ANFCompose x _ -> x
 
 {- | A combination of a (nonempty) vector of binds, together with a unique
 mapping between identifiers and hashes of unique subcomputations.
@@ -172,6 +206,9 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
         scrutRef <- go scrut
         handlersRefs <- traverse go handlers
         newBind h (ANFCase () scrutRef handlersRefs)
+      ASTCompose h components -> withLookup h $ do
+        componentsRefs <- traverse go components
+        newBind h (ANFCompose () componentsRefs)
     doLeaf :: AST.Leaf Hash -> State (Bimap Id Hash, IntMap (ANFBind ())) Ref
     doLeaf = \case
       AST.LVar _ h -> pure . AVar $ h
@@ -196,3 +233,108 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
       let asId = Id firstAvailable
       modify (bimap (Bimap.insert asId h) (IntMap.insert firstAvailable bind))
       pure . AnId $ asId
+
+{- | A custom monoid for demand analysis. This is designed to fuse both
+determining how often a bind is needed, and where it should be @let@-bound,
+into a single monoidal traversal.
+
+@since wip
+-}
+data Demand
+  = {- | The 'mempty' starting point.
+
+    @since wip
+    -}
+    NeverDemanded
+  | {- | The 'Id' corresponds to the last bind (thus, the first demand site) of
+    the given bind, and the 'Word64' is the count of how many times the bind
+    is demanded.
+
+    @since wip
+    -}
+    Demanded Id Word64
+  | {- | Some things should never be @let@-bound. This means their demand
+    analysis is trivial.
+
+    @since wip
+    -}
+    Trivial
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+-- | @since wip
+instance Semigroup Demand where
+  NeverDemanded <> x = x
+  x <> NeverDemanded = x
+  Demanded (Id i) count1 <> Demanded (Id j) count2 =
+    Demanded (Id $ max i j) (count1 + count2)
+  Trivial <> _ = Trivial
+  _ <> Trivial = Trivial
+
+-- | @since wip
+instance Monoid Demand where
+  mempty = NeverDemanded
+
+analyzeDemand :: forall (ann :: Type). ANF ann -> ANF Demand
+analyzeDemand (ANF bm binds) = runST $ do
+  let len = NEVector.length binds
+  -- Note (Koz, 05/06/2026): We're working with a possibly-empty mutable vector
+  -- here as currently, there is no way to 'freeze' a mutable non-empty vector.
+  mv <- MVector.new len
+  for_ [0, 1 .. len - 1] $ \i -> case binds NEVector.! i of
+    ANFLeaf ell -> MVector.write mv i . ANFLeaf $ case ell of
+      LConstant _ c ->
+        if smallEnoughToInline c
+          then LConstant Trivial c
+          else LConstant mempty c
+      LBuiltin _ f -> LBuiltin Trivial f
+      LCompiled _ code -> LCompiled mempty code
+      LError _ -> LError Trivial
+    ANFForce _ r -> do
+      updateDemandAt mv i r
+      MVector.write mv i . ANFForce mempty $ r
+    ANFDelay _ r -> do
+      updateDemandAt mv i r
+      MVector.write mv i . ANFDelay mempty $ r
+    ANFLam _ mults r -> do
+      updateDemandAt mv i r
+      MVector.write mv i . ANFLam mempty mults $ r
+    ANFFix _ mult r -> do
+      updateDemandAt mv i r
+      MVector.write mv i . ANFFix mempty mult $ r
+    ANFApply _ f xs -> do
+      updateDemandAt mv i f
+      traverse_ (updateDemandAt mv i) xs
+      MVector.write mv i . ANFApply mempty f $ xs
+    ANFConstr _ tag fields -> do
+      traverse_ (updateDemandAt mv i) fields
+      MVector.write mv i . ANFConstr mempty tag $ fields
+    ANFCase _ scrut handlers -> do
+      updateDemandAt mv i scrut
+      traverse_ (updateDemandAt mv i) handlers
+      MVector.write mv i . ANFCase mempty scrut $ handlers
+    ANFCompose _ components -> do
+      traverse_ (updateDemandAt mv i) components
+      MVector.write mv i . ANFCompose mempty $ components
+  v <- Vector.unsafeFreeze mv
+  pure . ANF bm . NEVector.unsafeFromVector $ v
+  where
+    smallEnoughToInline :: Some (ValueOf PLC.DefaultUni) -> Bool
+    smallEnoughToInline = \case
+      Some (ValueOf PLC.DefaultUniBool _) -> True
+      Some (ValueOf PLC.DefaultUniUnit _) -> True
+      Some (ValueOf PLC.DefaultUniInteger n) -> abs n < 256
+      _ -> False
+    updateDemandAt ::
+      forall (s :: Type).
+      MVector s (ANFBind Demand) ->
+      Int ->
+      Ref ->
+      ST s ()
+    updateDemandAt mv i = \case
+      AnId (Id j) -> MVector.modify mv (fmap (<> Demanded (Id i) 1)) j
+      AVar _ -> pure ()

@@ -150,6 +150,11 @@ data RawTerm (ann :: Type)
     @since wip
     -}
     RFix ann PosTree (RawTerm ann)
+  | {- | A composition of two or more things that can have an argument applied.
+
+    @since wip
+    -}
+    RCompose ann (NonEmptyVector (RawTerm ann))
   deriving stock
     ( -- | @since wip
       Eq
@@ -181,3 +186,4 @@ getRawTermAnn = \case
   RCase x _ _ -> x
   RLet x _ _ _ -> x
   RFix x _ _ -> x
+  RCompose x _ -> x

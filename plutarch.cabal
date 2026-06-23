@@ -78,6 +78,7 @@ library
     Plutarch.Backend.PosTree
     Plutarch.Backend.PrettyANF
     Plutarch.Backend.RawTerm
+    Plutarch.Backend.S
     Plutarch.Backend.Term
     Plutarch.Backend.UPLC
     Plutarch.Backend.VarMap
@@ -140,7 +141,16 @@ library
     Plutarch.Pretty.Internal.Name
     Plutarch.Pretty.Internal.TermUtils
     Plutarch.Pretty.Internal.Types
+    Plutarch.Primitive.Apply
     Plutarch.Primitive.Bool
+    Plutarch.Primitive.ByteString
+    Plutarch.Primitive.Coerce
+    Plutarch.Primitive.Data
+    Plutarch.Primitive.Function
+    Plutarch.Primitive.List
+    Plutarch.Primitive.Numeric
+    Plutarch.Primitive.Pair
+    Plutarch.Primitive.Representation
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Repr.Data

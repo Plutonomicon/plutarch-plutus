@@ -31,6 +31,7 @@ module Plutarch.Backend.AST (
 ) where
 
 import Control.Applicative ((<|>))
+import Control.Monad (guard)
 import Control.Monad.RWS.CPS (
   MonadReader (ask, local),
   MonadState (get),
@@ -52,6 +53,7 @@ import Data.Word (Word64)
 import Plutarch.Backend.PosTree (
   PosTree (
     PCase,
+    PCompose,
     PHere,
     PMany,
     POne,
@@ -64,6 +66,7 @@ import Plutarch.Backend.RawTerm (
     RBuiltin,
     RCase,
     RCompiled,
+    RCompose,
     RConstant,
     RConstr,
     RDelay,
@@ -112,6 +115,8 @@ data Multiplicity
   deriving stock
     ( -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | A leaf computation (namely, one that cannot have dependencies).
@@ -129,6 +134,8 @@ data Leaf (ann :: Type)
       Functor
     , -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | A compilation-friendly abstract syntax tree. This is in contrast to
@@ -137,11 +144,18 @@ and thus be easier to prettyprint and generate.
 
 More precisely, this closely follows 'RawTerm', except that:
 
-- 'RLet' nodes have been removed
-- Lambdas and applications have been uncurried
-- Position trees have been replaced by 'Multiplicity', whose hashes are
+* 'RLet' nodes have been removed
+* Lambdas and applications have been uncurried
+* Position trees have been replaced by 'Multiplicity', whose hashes are
   hashes of the corresponding position tree
-- Lambdas and fixpoints have been annotated with their 'Liftability'
+* Lambdas and fixpoints have been annotated with their 'Liftability'
+* Lambdas that do nothing but forward their arguments (in the same order) to
+  a builtin are erased and replaced with that builtin.
+* Applications involving literal error nodes (as either the function or an
+  argument) are replaced with the error node.
+* `constr` nodes involving literal error nodes are replaced with the error
+  node.
+* `case` nodes scrutinizing the error node are replaced with the error node.
 
 @since wip
 -}
@@ -154,11 +168,14 @@ data AST (ann :: Type)
   | ASTApply ann (AST ann) (NonEmptyVector (AST ann))
   | ASTConstr ann Word64 (Vector (AST ann))
   | ASTCase ann (AST ann) (NonEmptyVector (AST ann))
+  | ASTCompose ann (NonEmptyVector (AST ann))
   deriving stock
     ( -- | @since wip
       Functor
     , -- | @since wip
       Show
+    , -- | @since wip
+      Eq
     )
 
 {- | Given a 'RawTerm', construct its AST, using hashing to mark
@@ -183,9 +200,7 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
       RCompiled _ code -> do
         let structuralHash = hash (3 :: Int, code)
         mkHashed structuralHash (\h -> ASTLeaf (LCompiled h code))
-      RError () -> do
-        let structuralHash = hash (4 :: Int)
-        mkHashed structuralHash (ASTLeaf . LError)
+      RError () -> mkHashed errorHash (ASTLeaf . LError)
       RPlaceholder _ _ -> go (RError ())
       RForce _ body -> do
         vm' <- asks (vmMap stepDownOne)
@@ -222,28 +237,49 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
         fieldVMs <- asks (vmFold separateConstr (Vector.replicate len vmEmpty))
         let descendConstr i rt = local (const (fieldVMs Vector.! i)) (go rt)
         (structuralHashesFields, fields') <- Vector.unzip <$> Vector.imapM descendConstr fields
-        let structuralHash = hash (8 :: Int, tag, structuralHashesFields)
-        mkHashed structuralHash (\h -> ASTConstr h tag fields')
+        -- If any of our fields are the error node, we'll get the error node no
+        -- matter what else we have lying around.
+        if Vector.any (errorHash ==) structuralHashesFields
+          then mkHashed errorHash (ASTLeaf . LError)
+          else do
+            let structuralHash = hash (8 :: Int, tag, structuralHashesFields)
+            mkHashed structuralHash (\h -> ASTConstr h tag fields')
       RCase _ scrut handlers -> do
         let len = NEVector.length handlers
         (scrutVM, handlerVMs) <- asks (vmFold separateCase (vmEmpty, NEVector.replicate1 len vmEmpty))
         (structuralHashScrut, scrut') <- local (const scrutVM) (go scrut)
-        let descendCase i rt = local (const (handlerVMs NEVector.! i)) (go rt)
-        (structuralHashesHandlers, handlers') <- NEVector.unzip <$> NEVector.imapM descendCase handlers
-        let structuralHash = hash (9 :: Int, structuralHashScrut, NEVector.toVector structuralHashesHandlers)
-        mkHashed structuralHash (\h -> ASTCase h scrut' handlers')
+        -- If we're scrutinizing the error node, we'll get the error node no
+        -- matter what else we have lying around.
+        if structuralHashScrut == errorHash
+          then mkHashed errorHash (ASTLeaf . LError)
+          else do
+            let descendCase i rt = local (const (handlerVMs NEVector.! i)) (go rt)
+            (structuralHashesHandlers, handlers') <- NEVector.unzip <$> NEVector.imapM descendCase handlers
+            let structuralHash = hash (9 :: Int, structuralHashScrut, NEVector.toVector structuralHashesHandlers)
+            mkHashed structuralHash (\h -> ASTCase h scrut' handlers')
       RApply _ f x -> do
         (fVM, xVM) <- asks (vmFold separateTwo (vmEmpty, vmEmpty))
         (structuralHashF, f') <- local (const fVM) (go f)
-        (structuralHashX, x') <- local (const xVM) (go x)
-        case f' of
-          -- We're part of a curried apply. We need to add one more argument.
-          ASTApply _ g ys -> do
-            let structuralHash = hash (structuralHashF, structuralHashX)
-            mkHashed structuralHash (\h -> ASTApply h g . NEVector.snoc ys $ x')
-          _ -> do
-            let structuralHash = hash (10 :: Int, structuralHashF, structuralHashX)
-            mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
+        -- If we're trying to apply arguments to the error node, we'll get the
+        -- error node no matter what.
+        if structuralHashF == errorHash
+          then mkHashed errorHash (ASTLeaf . LError)
+          else do
+            (structuralHashX, x') <- local (const xVM) (go x)
+            -- If we try to apply the error node to anything, we'll get the
+            -- error node no matter what.
+            if structuralHashX == errorHash
+              then mkHashed errorHash (ASTLeaf . LError)
+              else case f' of
+                -- We're part of a curried apply, none of whose arguments are
+                -- the error node. We need to add one more argument.
+                ASTApply _ g ys -> do
+                  let structuralHash = hash (structuralHashF, structuralHashX)
+                  mkHashed structuralHash (\h -> ASTApply h g . NEVector.snoc ys $ x')
+                -- We are neither an error node, nor another application.
+                _ -> do
+                  let structuralHash = hash (10 :: Int, structuralHashF, structuralHashX)
+                  mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
       RLamAbs _ mpt body -> do
         fresh <- getFresh
         let multiplicity = case findVarUsage fresh mpt body of
@@ -254,17 +290,87 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
               Nothing -> vm'
               Just pt -> vmExtend fresh pt vm'
         (structuralHashBody, body') <- local (const extendedVM) (go body)
-        case body' of
-          -- We're part of a curried lambda. We need to add one more
-          -- multiplicity.
-          ASTLam _ mults body'' -> do
-            let structuralHash = hash (structuralHashBody, mpt)
-            mkHashed structuralHash (\h -> ASTLam h (NEVector.cons multiplicity mults) body'')
-          _ -> do
-            let structuralHash = hash (11 :: Int, mpt, structuralHashBody)
-            mkHashed structuralHash (\h -> ASTLam h (NEVector.singleton multiplicity) body')
+        let (structuralHashAll, fullMults, fullBody) = case body' of
+              -- We're part of a curried lambda. We need to add one more
+              -- multiplicity.
+              ASTLam _ mults body'' ->
+                let structuralHash = hash (structuralHashBody, mpt)
+                 in (structuralHash, NEVector.cons multiplicity mults, body'')
+              _ ->
+                let structuralHash = hash (11 :: Int, mpt, structuralHashBody)
+                 in (structuralHash, NEVector.singleton multiplicity, body')
+        case fullBody of
+          -- If our body is an application, we want to check that the arguments
+          -- are being forwarded directly to a builtin. If they are, we should
+          -- eliminate the lambda entirely in favour of that builtin.
+          ASTApply _ f xs -> case alignMultsArgs fullMults xs of
+            Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+            Just () -> case getBuiltinStructure f of
+              Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+              -- If we've made it here, we know that we have a lambda body that
+              -- just forwards the lambda's arguments, in the same order, to a
+              -- builtin, possibly with some `force`s in the way. Since such a
+              -- term is closed by definition, we can built its AST using the
+              -- empty variable map.
+              Just structure -> local (const vmEmpty) (go structure)
+          _ -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+      RCompose _ components -> do
+        let len = NEVector.length components
+        fieldVMs <- asks (vmFold separateCompose (NEVector.replicate1 len vmEmpty))
+        let descendCompose i rt = local (const (fieldVMs NEVector.! i)) (go rt)
+        (structuralHashesComponents, components') <- NEVector.unzip <$> NEVector.imapM descendCompose components
+        let structuralHash = hash (12 :: Int, NEVector.toVector structuralHashesComponents)
+        mkHashed structuralHash (`ASTCompose` components')
 
 -- Helpers
+
+errorHash :: Int
+errorHash = hash (4 :: Int)
+
+-- Tries to 'dig out' a builtin, possibly wrapped in some number of `force`s. As
+-- we know such terms must be closed, we can just 'rebuild' them as `RawTerm` to
+-- make it easier to deal with their hashes.
+getBuiltinStructure :: AST Hash -> Maybe (RawTerm ())
+getBuiltinStructure = \case
+  ASTLeaf (LBuiltin _ f) -> pure . RBuiltin () $ f
+  ASTForce _ body -> RForce () <$> getBuiltinStructure body
+  _ -> Nothing
+
+-- Check that the arguments of a lambda align exactly with some arguments to an
+-- application. This means they must:
+--
+
+-- * Have the same number;
+
+-- * All be variables;
+
+-- * Correspond positionally to the lambda's arguments
+alignMultsArgs :: NonEmptyVector (Maybe Multiplicity) -> NonEmptyVector (AST Hash) -> Maybe ()
+alignMultsArgs mults args =
+  let (mult, mults') = NEVector.uncons mults
+      (arg, args') = NEVector.uncons args
+   in go mult arg mults' args'
+  where
+    go ::
+      Maybe Multiplicity ->
+      AST Hash ->
+      Vector (Maybe Multiplicity) ->
+      Vector (AST Hash) ->
+      Maybe ()
+    go mMult arg restMult restArgs = do
+      mult <- mMult
+      case arg of
+        ASTLeaf (LVar _ varHash) -> do
+          let multHash = case mult of MultiplicityOne h -> h; MultiplicityMany h -> h
+          guard (multHash == varHash)
+          case Vector.uncons restMult of
+            Nothing -> case Vector.uncons restArgs of
+              Nothing -> pure ()
+              _ -> Nothing
+            Just (mMult', restMult') -> do
+              (arg', restArgs') <- Vector.uncons restArgs
+              go mMult' arg' restMult' restArgs'
+        _ -> Nothing
 
 mergeLet :: PosTree -> PosTree -> PosTree
 mergeLet (PCase f1 xs1) (PCase f2 xs2) = PCase (f1 <|> f2) (NEVector.zipWith (<|>) xs1 xs2)
@@ -295,6 +401,16 @@ separateTwo acc@(accL, accR) k = \case
 separateConstr :: Vector VarMap -> Word64 -> PosTree -> Vector VarMap
 separateConstr acc k = \case
   PMany ts -> Vector.zipWith go acc ts
+  _ -> acc
+  where
+    go :: VarMap -> Maybe PosTree -> VarMap
+    go vm = \case
+      Nothing -> vm
+      Just t -> vmExtend k t vm
+
+separateCompose :: NonEmptyVector VarMap -> Word64 -> PosTree -> NonEmptyVector VarMap
+separateCompose acc k = \case
+  PCompose ts -> NEVector.zipWith go acc ts
   _ -> acc
   where
     go :: VarMap -> Maybe PosTree -> VarMap
@@ -360,6 +476,9 @@ findVarUsage name mpt t = case mpt of
        in case resScrut of
             Just (_, True) -> resScrut
             _ -> NEVector.foldl' go resScrut . NEVector.zip pts $ handlers
+    _ -> Nothing
+  Just (PCompose pts) -> case t of
+    RCompose _ components -> NEVector.foldl' go Nothing . NEVector.zip pts $ components
     _ -> Nothing
   where
     go :: Maybe (Hash, Bool) -> (Maybe PosTree, RawTerm ()) -> Maybe (Hash, Bool)
