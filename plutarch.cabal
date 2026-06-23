@@ -144,6 +144,7 @@ library
     Plutarch.Primitive.Apply
     Plutarch.Primitive.Bool
     Plutarch.Primitive.ByteString
+    Plutarch.Primitive.Con
     Plutarch.Primitive.Data
     Plutarch.Primitive.Function
     Plutarch.Primitive.List

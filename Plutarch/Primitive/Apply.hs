@@ -32,7 +32,12 @@ import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, papp, punsafeCoerce)
 import Plutarch.Primitive.Function ((:-->))
 
--- | @since wip
+{- | = Laws
+
+1. @f '#' (g '#' x)@ @=@ @'pcompose' f g '#' x@
+
+@since wip
+-}
 class PlutarchType (PRepresentation a) => PlutarchType (a :: S -> Type) where
   type PRepresentation a :: S -> Type
   papply ::
