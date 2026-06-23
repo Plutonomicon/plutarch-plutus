@@ -23,8 +23,6 @@ import Data.Text qualified as T
 
 import Data.Bimap (toAscList)
 
--- for testing / delete later
-
 -- NOTE: Instance does not print the annotations, use `prettyANFAnnotations`
 --       if you wish to see them.
 --
