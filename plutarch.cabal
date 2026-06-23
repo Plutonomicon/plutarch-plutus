@@ -34,7 +34,6 @@ common c
     NondecreasingIndentation
     NumDecimals
     OverloadedLabels
-    OverloadedLists
     OverloadedRecordDot
     OverloadedStrings
     PackageImports
@@ -77,6 +76,7 @@ library
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
     Plutarch.Backend.PosTree
+    Plutarch.Backend.PrettyANF
     Plutarch.Backend.RawTerm
     Plutarch.Backend.Term
     Plutarch.Backend.UPLC
