@@ -453,24 +453,18 @@ mkCompositionName acc i = do
   let name = mkName "compArg" freshForZ
   pure . Map.insert i name $ acc
 
--- A read-only environment for compilation. Contains:
---
-
--- * All ANF binds (with demand analysis)
-
--- * All unique names reserved for these binds, in the same order
-
--- * Unique name pairs for each fixpoint we have to compile
-
--- * A unique name for each composition we have to compile
-
--- - A unique name for unused function parameters
+-- A read-only environment for compilation.
 data CompileEnv = CompileEnv
-  { ceBinds :: NonEmptyVector (PLC.Name, ANFBind Demand)
-  , ceFPNameMap :: Map Int (PLC.Name, PLC.Name)
-  , ceCompNameMap :: Map Int PLC.Name
-  , ceUnusedParamName :: PLC.Name
-  , ceTheIdentity :: Maybe Id
+  { -- All ANF binds, with demand analysis, together with their unique names
+    ceBinds :: NonEmptyVector (PLC.Name, ANFBind Demand)
+  , -- Unique name pairs for each fixpoint we have to compile
+    ceFPNameMap :: Map Int (PLC.Name, PLC.Name)
+  , -- A unique name for each composition we have to compile
+    ceCompNameMap :: Map Int PLC.Name
+  , -- A unique name for unused function parameters
+    ceUnusedParamName :: PLC.Name
+  , -- Whether the identify functions occurs, and if so, where
+    ceTheIdentity :: Maybe Id
   }
 
 untilM ::
