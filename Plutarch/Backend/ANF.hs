@@ -1,4 +1,4 @@
-{-# LANGUAGE NoOverloadedLists #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
 {- | Administrative normal form representation, with alpha-equivalent binds
@@ -60,9 +60,12 @@ import Plutarch.Backend.AST (
   Multiplicity,
  )
 import Plutarch.Backend.AST qualified as AST
-import Plutarch.Backend.UPLC (UPLCTerm)
+import Plutarch.Backend.Pretty (prettyValueOf, (<:=>))
+import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
+import PlutusCore.Pretty (prettyPlcReadable)
+import Prettyprinter (Doc, Pretty (pretty), align, brackets, group, hardline, hsep, indent, list, punctuate, vcat, viaShow, (<+>))
 
 {- | A leaf bind in the ANF (that is, one that cannot have dependencies).
 
@@ -82,6 +85,13 @@ data Leaf (ann :: Type)
       Eq
     )
 
+instance Pretty (Leaf ann) where
+  pretty = \case
+    LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
+    LBuiltin _ fun -> viaShow fun
+    LCompiled _ (UPLCTerm uplc) -> "COMPILED" <+> align (brackets (align $ prettyPlcReadable uplc))
+    LError _ -> "ERROR"
+
 {- | As ANF \'inlines\' variables, subcomputations are either variables
 (identified by their hashes) or other binds (identified by their
 identifiers).
@@ -97,6 +107,11 @@ data Ref
     , -- | @since wip
       Eq
     )
+
+instance Pretty Ref where
+  pretty = \case
+    AVar h -> pretty h
+    AnId i -> pretty i
 
 {- | An identifier for an ANF bind.
 
@@ -114,6 +129,9 @@ newtype Id = Id Int
     ( -- | @since wip
       Show
     )
+
+instance Pretty Id where
+  pretty (Id i) = "#" <> viaShow i
 
 {- | An ANF bind. Instead of a recursive ANF-like structure, this uses 'Id' to
 determine subcomputations.
@@ -139,6 +157,24 @@ data ANFBind (ann :: Type)
       Eq
     )
 
+instance Pretty (ANFBind ann) where
+  pretty = \case
+    ANFLeaf l -> pretty l
+    ANFForce _ ref -> "Force" <+> pretty ref
+    ANFDelay _ ref -> "Delay" <+> pretty ref
+    ANFLam _ args body -> "\\" <> mkArgs args <+> "->" <+> pretty body
+    ANFFix _ mult body -> "Fix" <> brackets (pretty mult) <+> pretty body
+    ANFApply _ fnRef args -> "Apply" <+> pretty fnRef <+> list (pretty <$> NEVector.toList args)
+    ANFConstr _ cix args -> "Ctor" <+> viaShow cix <+> list (pretty <$> Vector.toList args)
+    ANFCase _ scrut handlers -> "Case" <+> pretty scrut <+> list (pretty <$> NEVector.toList handlers)
+    ANFCompose _ args -> hsep . punctuate " <<<" . fmap pretty . NEVector.toList $ args
+    where
+      mkArgs :: forall ann. NEVector.NonEmptyVector (Maybe Multiplicity) -> Doc ann
+      mkArgs (NEVector.toList -> xs) =
+        hsep
+          . fmap (\case Nothing -> "_"; Just m -> pretty m)
+          $ xs
+
 -- | @since wip
 getANFBindAnn :: forall (ann :: Type). ANFBind ann -> ann
 getANFBindAnn = \case
@@ -162,6 +198,35 @@ mapping between identifiers and hashes of unique subcomputations.
 @since wip
 -}
 data ANF (ann :: Type) = ANF (Bimap Id Hash) (NonEmptyVector (ANFBind ann))
+
+instance Pretty (ANF ()) where
+  pretty anf =
+    "ANF Hashes:"
+      <> hardline
+      <> indent 1 (align $ prettyANFHashes anf)
+      <> hardline
+      <> hardline
+      <> "ANF Binds:"
+      <> hardline
+      <> indent 1 (align $ prettyANFBinds anf)
+      <> hardline
+
+instance {-# OVERLAPS #-} Pretty ann => Pretty (ANF ann) where
+  pretty anf =
+    "ANF Hashes:"
+      <> hardline
+      <> indent 1 (align $ prettyANFHashes anf)
+      <> hardline
+      <> hardline
+      <> "ANF Binds:"
+      <> hardline
+      <> indent 1 (align $ prettyANFBinds anf)
+      <> hardline
+      <> hardline
+      <> "ANF Annotations:"
+      <> hardline
+      <> indent 1 (align $ prettyANFAnnotations anf)
+      <> hardline
 
 {- | Given an 'AST' annotated with hashes for unique (up to alpha-equivalence)
 subcomputations, construct an ANF. The 'Hash' annotations are used to
@@ -275,6 +340,9 @@ instance Semigroup Demand where
   Trivial <> _ = Trivial
   _ <> Trivial = Trivial
 
+instance Pretty Demand where
+  pretty = viaShow
+
 -- | @since wip
 instance Monoid Demand where
   mempty = NeverDemanded
@@ -338,3 +406,20 @@ analyzeDemand (ANF bm binds) = runST $ do
     updateDemandAt mv i = \case
       AnId (Id j) -> MVector.modify mv (fmap (<> Demanded (Id i) 1)) j
       AVar _ -> pure ()
+
+-- Pretty Printer Helpers
+
+prettyANFBinds :: forall ann1 ann2. ANF ann1 -> Doc ann2
+prettyANFBinds (ANF _ binds) = vcat . NEVector.toList $ NEVector.imap (\(Id -> i) b -> mkBind i b) binds
+  where
+    mkBind :: Id -> ANFBind ann1 -> Doc ann2
+    mkBind i b = align . group $ pretty i <:=> align (group $ pretty b)
+
+prettyANFAnnotations :: forall ann1 ann2. Pretty ann1 => ANF ann1 -> Doc ann2
+prettyANFAnnotations (ANF _ binds) = vcat . NEVector.toList $ NEVector.imap (\(Id -> i) b -> mkAnn i b) binds
+  where
+    mkAnn :: Id -> ANFBind ann1 -> Doc ann2
+    mkAnn i b = align . group $ pretty i <:=> align (group . pretty $ getANFBindAnn b)
+
+prettyANFHashes :: forall ann1 ann2. ANF ann1 -> Doc ann2
+prettyANFHashes (ANF hashes _) = vcat . map (\(i, h) -> pretty i <:=> pretty h) . Bimap.toAscList $ hashes

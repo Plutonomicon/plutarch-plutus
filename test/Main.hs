@@ -16,7 +16,6 @@ import Plutarch.Backend.AST (
   fromRawTerm,
  )
 import Plutarch.Backend.Compile (toUPLCTerm)
-import Plutarch.Backend.PrettyANF (prettyShow)
 import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
@@ -47,7 +46,11 @@ import Plutarch.Primitive.Numeric (
  )
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
-import Prettyprinter (defaultLayoutOptions, layoutSmart)
+import Prettyprinter (
+  Pretty (pretty),
+  defaultLayoutOptions,
+  layoutSmart,
+ )
 import Prettyprinter.Render.String (renderString)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (
@@ -81,10 +84,10 @@ main =
                 step $ "AST: \n" <> ppShow asAST
                 step "Converting to ANF"
                 let anf = fromHashedAST asAST
-                step $ prettyShow anf
+                step $ toPrettyString anf
                 step "Demand analysis"
                 let anf' = analyzeDemand anf
-                step $ prettyShow anf'
+                step $ toPrettyString anf'
                 step "Converting to UPLC"
                 let (UPLCTerm t) = toUPLCTerm anf'
                 step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
@@ -101,7 +104,7 @@ main =
             let asAST = fromRawTerm t
             step $ "AST: \n" <> ppShow asAST
             let anf@(ANF _ binds) = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             step "2. Is there one bind exactly?"
             assertBool "Too many binds" (NEVector.length binds == 1)
             step "Exactly one bind!"
@@ -121,14 +124,14 @@ main =
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
             let anf@(ANF _ binds) = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             step "2. Are there 5 binds?"
             let len = NEVector.length binds
             assertBool ("Too many binds: " <> show len) (len == 5)
             step "5 binds exactly!"
             step "Demand analysis"
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -143,9 +146,9 @@ main =
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -160,9 +163,9 @@ main =
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -176,9 +179,9 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -192,9 +195,9 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -209,9 +212,9 @@ main =
             step $ "AST:\n" <> ppShow t
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -226,9 +229,9 @@ main =
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -256,8 +259,8 @@ main =
             step "ASTs are the same!"
             let anfLA@(ANF tlaBM tlaANF) = fromHashedAST tlaAST
             let anfRA@(ANF traBM traANF) = fromHashedAST traAST
-            step $ "ANF (left associative):\n" <> prettyShow anfLA
-            step $ "ANF (right associative):\n" <> prettyShow anfRA
+            step $ "ANF (left associative):\n" <> toPrettyString anfLA
+            step $ "ANF (right associative):\n" <> toPrettyString anfRA
             step "4. Are both ANFs the same?"
             assertEqual "ANF bimaps differ" tlaBM traBM
             assertEqual "ANF binds differ" tlaANF traANF
@@ -278,9 +281,9 @@ main =
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -295,9 +298,9 @@ main =
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
-            step $ prettyShow anf
+            step $ toPrettyString anf
             let anf' = analyzeDemand anf
-            step $ prettyShow anf'
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -392,3 +395,6 @@ compileTerm ::
   Term s a -> Either TermError (VarMap, RawTerm ())
 compileTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
   (res, _, _) -> res
+
+toPrettyString :: forall a. Pretty a => a -> String
+toPrettyString = renderString . layoutSmart defaultLayoutOptions . pretty

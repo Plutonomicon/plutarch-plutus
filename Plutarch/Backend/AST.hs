@@ -60,6 +60,7 @@ import Plutarch.Backend.PosTree (
     PTwo
   ),
  )
+import Plutarch.Backend.Pretty (compactReadableVar)
 import Plutarch.Backend.RawTerm (
   RawTerm (
     RApply,
@@ -91,6 +92,7 @@ import Plutarch.Backend.VarMap (
  )
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
+import Prettyprinter (Pretty (pretty))
 import Prelude hiding (until)
 
 {- | A clarity newtype for hashes, both \'structural\' and \'combined\'.
@@ -103,6 +105,11 @@ newtype Hash = Hash Int
     ( -- | @since wip
       Show
     )
+
+-- Hashing will give huge ints which are hard to read
+-- so we turn them into something readable
+instance Pretty Hash where
+  pretty (Hash h) = pretty . compactReadableVar . fromIntegral $ h
 
 {- | A hash identifying a bound variable argument, together with whether it
 occurs once, or more than once, in the body where it is bound.
@@ -118,6 +125,14 @@ data Multiplicity
     , -- | @since wip
       Eq
     )
+
+-- REVIEW @Koz: I changed this to indicate the One/Many-ness of the var,
+--              but I don't know if that's useful. If it's not please let me know
+--              because this adds some clutter.
+instance Pretty Multiplicity where
+  pretty = \case
+    MultiplicityOne h -> pretty h <> ":One"
+    MultiplicityMany h -> pretty h <> ":Many"
 
 {- | A leaf computation (namely, one that cannot have dependencies).
 

@@ -76,7 +76,7 @@ library
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
     Plutarch.Backend.PosTree
-    Plutarch.Backend.PrettyANF
+    Plutarch.Backend.Pretty
     Plutarch.Backend.RawTerm
     Plutarch.Backend.S
     Plutarch.Backend.Term
