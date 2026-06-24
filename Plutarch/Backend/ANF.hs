@@ -65,7 +65,7 @@ import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
-import Prettyprinter (Doc, Pretty (pretty), align, brackets, group, hardline, hsep, indent, list, punctuate, vcat, viaShow, (<+>))
+import Prettyprinter (Doc, Pretty (pretty), align, braces, brackets, group, hardline, hsep, indent, list, punctuate, vcat, viaShow, (<+>))
 
 {- | A leaf bind in the ANF (that is, one that cannot have dependencies).
 
@@ -89,7 +89,7 @@ instance Pretty (Leaf ann) where
   pretty = \case
     LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
     LBuiltin _ fun -> viaShow fun
-    LCompiled _ (UPLCTerm uplc) -> "COMPILED" <+> align (brackets (align $ prettyPlcReadable uplc))
+    LCompiled _ (UPLCTerm uplc) -> "COMPILED" <+> align (braces (align $ prettyPlcReadable uplc))
     LError _ -> "ERROR"
 
 {- | As ANF \'inlines\' variables, subcomputations are either variables
