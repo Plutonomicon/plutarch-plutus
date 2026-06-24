@@ -20,7 +20,6 @@ import Plutarch.Backend.Term (
   Term (asRawTerm),
   TermEnv (TermEnv),
   TermError,
-  papp,
   pcompiled,
   pcompose,
   pdelay,
@@ -34,6 +33,7 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
+import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (
@@ -326,8 +326,8 @@ main =
 -- Cases
 
 -- Case 1: \x -> (\y -> y) ((\z -> z) x)
-case1 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
-case1 = plam' $ \x -> papp (plam' id) (papp (plam' id) x)
+case1 :: forall (s :: S). Term s (PInteger :--> PInteger)
+case1 = plam' $ \x -> plam' id # (plam' id # x)
 
 -- Case 2: \x -> force (delay x)
 case2 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
@@ -339,28 +339,28 @@ case3 = plam' $ \x -> plam' $ \y -> por (pnot x) y
 
 -- Case 4: \x y -> addInteger x y
 case4 :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
-case4 = plam' $ \x -> plam' $ papp (papp paddInteger x)
+case4 = plam' $ \x -> plam' $ \y -> paddInteger # x # y
 
 -- Case 5: \cond ifT ifF -> (compiled (\cond' ifT' ifF' -> pif cond' ifT' ifF') cond ifT ifF
 case5 ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (PBool :--> a :--> a :--> a)
+  forall (s :: S).
+  Term s (PBool :--> PInteger :--> PInteger :--> PInteger)
 case5 = plam' $ \cond -> plam' $ \ifT -> plam' $ \ifF ->
-  papp (papp (papp (pcompiled go) cond) ifT) ifF
+  pcompiled go # cond # ifT # ifF
   where
     go ::
       forall (s' :: S).
-      Term s' (PBool :--> a :--> a :--> a)
+      Term s' (PBool :--> PInteger :--> PInteger :--> PInteger)
     go = plam' $ \cond' -> plam' $ \ifT' -> plam' $ \ifF' -> pif cond' ifT' ifF'
 
 -- Case 6: \x y -> addInteger (multiplyInteger x x) (multiplyInteger y y)
 case6 :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
 case6 = plam' $ \x -> plam' $ \y ->
-  papp (papp paddInteger (papp (papp pmultiplyInteger x) x)) (papp (papp pmultiplyInteger y) y)
+  paddInteger # (pmultiplyInteger # x # x) # (pmultiplyInteger # y # y)
 
 -- Case 7: \x -> addInteger error (addInteger x error)
 case7 :: forall (s :: S). Term s (PInteger :--> PInteger)
-case7 = plam' $ \x -> papp (papp paddInteger perror) (papp (papp paddInteger x) perror)
+case7 = plam' $ \x -> paddInteger # perror #$ paddInteger # x # perror
 
 -- Case 8: \x -> constr 0 [x, error]
 case8 :: forall (a :: S -> Type) (b :: S -> Type) (s :: S). Term s (a :--> b)

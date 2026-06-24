@@ -15,17 +15,20 @@ module Plutarch.Primitive.ByteString (
 
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, punsafeBuiltin)
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PByte, PNatural)
-import Plutarch.Primitive.Representation (PRepresentation)
 import PlutusCore qualified as PLC
 
 -- | @since wip
 data PByteString (s :: S)
 
+type role PByteString nominal
+
 -- | @since wip
-type instance PRepresentation PByteString = PByteString
+instance PlutarchType PByteString where
+  type PRepresentation PByteString = PByteString
 
 -- | @since wip
 pappendByteString ::

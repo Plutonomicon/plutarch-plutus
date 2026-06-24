@@ -190,7 +190,7 @@ compile a 'Term' with free variables.
 newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
-type role Term nominal nominal
+type role Term nominal representational
 
 {- | A 'Term' whose result has been forgotten. Useful mainly together with
 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of
