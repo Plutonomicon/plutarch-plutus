@@ -60,12 +60,27 @@ import Plutarch.Backend.AST (
   Multiplicity,
  )
 import Plutarch.Backend.AST qualified as AST
-import Plutarch.Backend.Pretty (prettyValueOf, (<:=>))
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
+import Plutarch.Utils.Pretty (prettyValueOf, (<:=>))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
-import Prettyprinter (Doc, Pretty (pretty), align, braces, brackets, group, hardline, hsep, indent, list, punctuate, vcat, viaShow, (<+>))
+import Prettyprinter (
+  Doc,
+  Pretty (pretty),
+  align,
+  braces,
+  brackets,
+  group,
+  hardline,
+  hsep,
+  indent,
+  list,
+  punctuate,
+  vcat,
+  viaShow,
+  (<+>),
+ )
 
 {- | A leaf bind in the ANF (that is, one that cannot have dependencies).
 
@@ -85,6 +100,7 @@ data Leaf (ann :: Type)
       Eq
     )
 
+-- @since wip
 instance Pretty (Leaf ann) where
   pretty = \case
     LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
@@ -108,6 +124,7 @@ data Ref
       Eq
     )
 
+-- @since wip
 instance Pretty Ref where
   pretty = \case
     AVar h -> pretty h
@@ -130,6 +147,7 @@ newtype Id = Id Int
       Show
     )
 
+-- @since wip
 instance Pretty Id where
   pretty (Id i) = "#" <> viaShow i
 
@@ -157,6 +175,7 @@ data ANFBind (ann :: Type)
       Eq
     )
 
+-- @since wip
 instance Pretty (ANFBind ann) where
   pretty = \case
     ANFLeaf l -> pretty l
@@ -165,7 +184,7 @@ instance Pretty (ANFBind ann) where
     ANFLam _ args body -> "\\" <> mkArgs args <+> "->" <+> pretty body
     ANFFix _ mult body -> "Fix" <> brackets (pretty mult) <+> pretty body
     ANFApply _ fnRef args -> "Apply" <+> pretty fnRef <+> list (pretty <$> NEVector.toList args)
-    ANFConstr _ cix args -> "Ctor" <+> viaShow cix <+> list (pretty <$> Vector.toList args)
+    ANFConstr _ cix args -> "Constr" <+> viaShow cix <+> list (pretty <$> Vector.toList args)
     ANFCase _ scrut handlers -> "Case" <+> pretty scrut <+> list (pretty <$> NEVector.toList handlers)
     ANFCompose _ args -> hsep . punctuate " <<<" . fmap pretty . NEVector.toList $ args
     where
@@ -340,6 +359,7 @@ instance Semigroup Demand where
   Trivial <> _ = Trivial
   _ <> Trivial = Trivial
 
+-- @since wip
 instance Pretty Demand where
   pretty = viaShow
 

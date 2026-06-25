@@ -1,9 +1,5 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableSuperClasses #-}
--- I don't want to put all of this in the ANF module.
-{-# OPTIONS_GHC -Wno-orphans #-}
-
-module Plutarch.Backend.Pretty (
+-- | Miscellaneous helpers for the various pretty printers.
+module Plutarch.Utils.Pretty (
   prettyValueOf,
   compactReadableVar,
   (<:=>),
@@ -27,11 +23,7 @@ import Prettyprinter (
   (<+>),
  )
 
--- We can do better than the UPLC Pretty instance.
--- REVIEW(@Koz): I get an incomplete cases warning in the helper here even though I think this
---               should cover all of the cases that can actually exist? I *think* it's
---               the exhaustiveness checker imploding (probably the kinds make it fail to identify
---               inaccessible branches, I'd guess?) but do check if you have a sec.
+-- We can do better than the Plutus Pretty instance.
 prettyValueOf :: forall (a :: Type) ann. DefaultUni (Esc a) -> a -> Doc ann
 prettyValueOf uni x = case prettyUni uni of
   (uniDoc, prettyX) -> prettyX x <+> "::" <+> uniDoc
@@ -63,8 +55,24 @@ prettyValueOf uni x = case prettyUni uni of
       DefaultUniBLS12_381_G2_Element -> ("Bls12_381_G2_element", pretty)
       DefaultUniBLS12_381_MlResult -> ("Bls12_381_mlresult", pretty)
       DefaultUniValue -> ("Value", pretty)
-      other -> error ("I was wrong in `prettyValueOf`` and I missed a case that covers: " <> show other)
+      DefaultUniApply apF _ ->
+        error $
+          "Error: Could not prettify a DefaultUniApply because the LHS is: "
+            <> show apF
+            <> ", which "
+            <> "is neither a DefaultUniProtoPair, DefaultUniProtoList, or DefaultUniProtoArray. "
+            <> "The most likely cause of this is that a new polymorphic type was added to the "
+            <> "default universe but `prettyValueOf` was not updated to support it."
+            <> "\n"
+            <> "If you are a Plutarch user, please open an issue or contact the maintainers."
 
+{- The hashes are usually pretty large Ints, and would clutter up the prettified output
+   even in hex, so we do something even more compact.
+
+   The basic idea is that we do a first "round" of conversion in base 26 to get a lowercase letter,
+   and then convert the remainder into base 61 using every alphanum char (except `N`, which
+   we tack onto the end of negative values to disambiguate them from their positive absolute value)
+-}
 compactReadableVar :: Integer -> Text
 compactReadableVar n
   | n < 0 = compactReadableVar (abs n) <> "N"
@@ -90,5 +98,5 @@ compactReadableVar n
     allChars :: Vector.Vector Char
     allChars = lowers <> Vector.fromList (['A' .. 'M'] <> ['O' .. 'Z'] <> ['0' .. '9'])
 
-(<:=>) :: forall ann. Doc ann -> Doc ann -> Doc ann
+(<:=>) :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
 d1 <:=> d2 = d1 <+> ":=" <+> d2

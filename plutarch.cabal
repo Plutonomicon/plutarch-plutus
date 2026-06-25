@@ -76,7 +76,6 @@ library
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
     Plutarch.Backend.PosTree
-    Plutarch.Backend.Pretty
     Plutarch.Backend.RawTerm
     Plutarch.Backend.S
     Plutarch.Backend.Term
@@ -165,6 +164,7 @@ library
     Plutarch.Trace
     Plutarch.Unroll
     Plutarch.Unsafe
+    Plutarch.Utils.Pretty
 
   build-depends:
     , aeson

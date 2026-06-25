@@ -60,7 +60,6 @@ import Plutarch.Backend.PosTree (
     PTwo
   ),
  )
-import Plutarch.Backend.Pretty (compactReadableVar)
 import Plutarch.Backend.RawTerm (
   RawTerm (
     RApply,
@@ -90,6 +89,7 @@ import Plutarch.Backend.VarMap (
   vmMerge,
   vmSingleton,
  )
+import Plutarch.Utils.Pretty (compactReadableVar)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
 import Prettyprinter (Pretty (pretty))
@@ -106,8 +106,9 @@ newtype Hash = Hash Int
       Show
     )
 
--- Hashing will give huge ints which are hard to read
+-- Hashing will give huge Ints which are hard to read
 -- so we turn them into something readable
+-- @since wip
 instance Pretty Hash where
   pretty (Hash h) = pretty . compactReadableVar . fromIntegral $ h
 
@@ -126,9 +127,7 @@ data Multiplicity
       Eq
     )
 
--- REVIEW @Koz: I changed this to indicate the One/Many-ness of the var,
---              but I don't know if that's useful. If it's not please let me know
---              because this adds some clutter.
+-- @since wip
 instance Pretty Multiplicity where
   pretty = \case
     MultiplicityOne h -> pretty h <> ":One"
