@@ -142,7 +142,10 @@ library
     Plutarch.Pretty.Internal.TermUtils
     Plutarch.Pretty.Internal.Types
     Plutarch.Primitive.Apply
+    Plutarch.Primitive.Array
+    Plutarch.Primitive.BLS
     Plutarch.Primitive.Bool
+    Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.ByteString
     Plutarch.Primitive.Con
     Plutarch.Primitive.Data
@@ -151,6 +154,8 @@ library
     Plutarch.Primitive.Match
     Plutarch.Primitive.Numeric
     Plutarch.Primitive.Pair
+    Plutarch.Primitive.String
+    Plutarch.Primitive.Value
     Plutarch.Rational
     Plutarch.Reducible
     Plutarch.Repr.Data
