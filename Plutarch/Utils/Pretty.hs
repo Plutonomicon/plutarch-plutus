@@ -24,6 +24,11 @@ import Prettyprinter (
  )
 
 -- We can do better than the Plutus Pretty instance.
+-- If we use (_,_) for pairs and [] for list types then
+-- we only need to care about parens for nested arrays
+-- because everything else is fully disambiguated by default.
+-- NOTE: If they ever add a new polymorphic default universe type
+--       someone will have to do something more clever here.
 prettyValueOf :: forall (a :: Type) ann. DefaultUni (Esc a) -> a -> Doc ann
 prettyValueOf uni x = case prettyUni uni of
   (uniDoc, prettyX) -> prettyX x <+> "::" <+> uniDoc
@@ -48,7 +53,7 @@ prettyValueOf uni x = case prettyUni uni of
         let (inner, f) = prettyUni uniA
             f' = list . SV.toList . fmap f
          in case uniA of
-              DefaultUniApply _ _ -> ("Array" <+> parens inner, f')
+              DefaultUniApply DefaultUniProtoArray _ -> ("Array" <+> parens inner, f')
               _ -> ("Array" <+> inner, f')
       DefaultUniData -> ("Data", pretty)
       DefaultUniBLS12_381_G1_Element -> ("Bls12_381_G1_element", pretty)

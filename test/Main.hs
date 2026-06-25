@@ -38,12 +38,14 @@ import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (
   PInteger,
   paddInteger,
   pmultiplyInteger,
   psubtractInteger,
  )
+import Plutarch.Primitive.Pair
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (
@@ -304,6 +306,19 @@ main =
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
+    , testCaseSteps "Case 14" $ \step -> do
+        step "Case: [[2]]"
+        step "1. Does Case 14 compile?"
+        let compiled = compileTerm case14
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            pure ()
     ]
 
 -- Cases
@@ -387,6 +402,10 @@ case13 =
   let f = plam' $ \y -> papp (papp pmultiplyInteger y) y
       g = plam' $ \z -> papp (papp paddInteger z) (punsafeConstant $ PLC.someValue @Integer 2)
    in plam' $ \x -> papp (pcompose f g) x
+
+-- [[2]] (for pretty printing)
+case14 :: forall (s :: S). Term s (PBList (PBList (PBPair PInteger PInteger)))
+case14 = punsafeConstant $ PLC.someValue @[[(Integer, Integer)]] [[(2, 3)]]
 
 -- Helpers
 
