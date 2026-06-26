@@ -2,20 +2,13 @@
 
 module Plutarch.Primitive.List (
   PBList (..),
-  pmkCons,
 ) where
 
 import Data.Kind (Type)
 import Plutarch.Backend.Evaluate (peval)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  Term,
-  pforce,
-  punsafeBuiltin,
-  punsafeConstant,
- )
+import Plutarch.Backend.Term (Term, punsafeConstant)
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Liftable (
   LiftError (DidNotEvaluate, NotAConstant, WrongConstantType),
   PLiftable (
@@ -55,9 +48,3 @@ instance PLiftable a => PLiftable (PBList a) where
         case geqL expectedProof actualProof of
           PLC.EvaluationSuccess PLC.Refl -> pure xs
           PLC.EvaluationFailure -> Left WrongConstantType
-
--- | @since wip
-pmkCons ::
-  forall (a :: S -> Type) (s :: S).
-  Term s (a :--> PBList a :--> PBList a)
-pmkCons = pforce $ punsafeBuiltin PLC.MkCons

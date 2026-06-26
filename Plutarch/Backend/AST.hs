@@ -89,8 +89,10 @@ import Plutarch.Backend.VarMap (
   vmMerge,
   vmSingleton,
  )
+import Plutarch.Utils.Pretty (compactReadableVar)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
+import Prettyprinter (Pretty (pretty))
 import Prelude hiding (until)
 
 {- | A clarity newtype for hashes, both \'structural\' and \'combined\'.
@@ -103,6 +105,13 @@ newtype Hash = Hash Int
     ( -- | @since wip
       Show
     )
+
+-- Hashing will give huge Ints which are hard to read
+-- so we turn them into something readable
+
+-- | @since wip
+instance Pretty Hash where
+  pretty (Hash h) = pretty . compactReadableVar . fromIntegral $ h
 
 {- | A hash identifying a bound variable argument, together with whether it
 occurs once, or more than once, in the body where it is bound.
@@ -118,6 +127,12 @@ data Multiplicity
     , -- | @since wip
       Eq
     )
+
+-- | @since wip
+instance Pretty Multiplicity where
+  pretty = \case
+    MultiplicityOne h -> pretty h <> ":One"
+    MultiplicityMany h -> pretty h <> ":Many"
 
 {- | A leaf computation (namely, one that cannot have dependencies).
 
