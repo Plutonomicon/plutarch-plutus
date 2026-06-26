@@ -37,15 +37,15 @@ import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
-import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Primitive.List (PBList)
-import Plutarch.Primitive.Numeric (
-  PInteger,
+import Plutarch.Primitive.BuiltinFun (
   paddInteger,
   pmultiplyInteger,
   psubtractInteger,
  )
-import Plutarch.Primitive.Pair
+import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.List (PBList)
+import Plutarch.Primitive.Numeric (PInteger)
+import Plutarch.Primitive.Pair (PBPair)
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (
@@ -373,35 +373,35 @@ case9 = plam' $ \x -> punsafeCase perror . NEVector.singleton . toSomeTerm $ x
 -- Constructed left associatively
 case10 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case10 =
-  let fun1 = plam' $ \y -> papp (papp paddInteger y) (punsafeConstant $ PLC.someValue @Integer 2)
-      fun3 = plam' $ \z1 -> papp (papp psubtractInteger z1) (punsafeConstant $ PLC.someValue @Integer 5)
+  let fun1 = plam' $ \y -> paddInteger # y # punsafeConstant (PLC.someValue @Integer 2)
+      fun3 = plam' $ \z1 -> psubtractInteger # z1 # punsafeConstant (PLC.someValue @Integer 5)
    in plam' $ \x ->
-        let fun2 = plam' $ \z -> papp (papp pmultiplyInteger x) z
-         in papp (pcompose (pcompose fun1 fun2) fun3) x
+        let fun2 = plam' $ \z -> pmultiplyInteger # x # z
+         in pcompose (pcompose fun1 fun2) fun3 # x
 
 -- Case 11: \x -> (compose [\y -> y + 2, \z -> x * z, \z1 -> z1 - 5]) x
 --
 -- Constructed right associatively
 case11 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case11 =
-  let fun1 = plam' $ \y -> papp (papp paddInteger y) (punsafeConstant $ PLC.someValue @Integer 2)
-      fun3 = plam' $ \z1 -> papp (papp psubtractInteger z1) (punsafeConstant $ PLC.someValue @Integer 5)
+  let fun1 = plam' $ \y -> paddInteger # y # punsafeConstant (PLC.someValue @Integer 2)
+      fun3 = plam' $ \z1 -> psubtractInteger # z1 # punsafeConstant (PLC.someValue @Integer 5)
    in plam' $ \x ->
-        let fun2 = plam' $ \z -> papp (papp pmultiplyInteger x) z
-         in papp (pcompose fun1 . pcompose fun2 $ fun3) x
+        let fun2 = plam' $ \z -> pmultiplyInteger # x # z
+         in (pcompose fun1 . pcompose fun2 $ fun3) # x
 
 -- Case 12: \x -> (compose [\y -> y + 2, \z -> z + 2, \z1 -> z1 + 2]) x
 case12 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case12 =
-  let fun = plam' $ \y -> papp (papp paddInteger y) (punsafeConstant $ PLC.someValue @Integer 2)
-   in plam' $ \x -> papp (pcompose fun . pcompose fun $ fun) x
+  let fun = plam' $ \y -> paddInteger # y # punsafeConstant (PLC.someValue @Integer 2)
+   in plam' $ \x -> (pcompose fun . pcompose fun $ fun) # x
 
 -- Case 13: \x -> (compose [\y -> y * y, \z -> z + 2]) x
 case13 :: forall (s :: S). Term s (PInteger :--> PInteger)
 case13 =
-  let f = plam' $ \y -> papp (papp pmultiplyInteger y) y
-      g = plam' $ \z -> papp (papp paddInteger z) (punsafeConstant $ PLC.someValue @Integer 2)
-   in plam' $ \x -> papp (pcompose f g) x
+  let f = plam' $ \y -> pmultiplyInteger # y # y
+      g = plam' $ \z -> paddInteger # z # punsafeConstant (PLC.someValue @Integer 2)
+   in plam' $ \x -> pcompose f g # x
 
 -- [[2]] (for pretty printing)
 case14 :: forall (s :: S). Term s (PBList (PBList (PBPair PInteger PInteger)))

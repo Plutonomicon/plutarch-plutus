@@ -35,11 +35,6 @@ type role PBool nominal
 -- | @since wip
 deriving via (PlutarchTypeRep PBool PBool) instance PlutarchType PBool
 
-{-
-instance PlutarchType PBool where
-  type PRepresentation PBool = PBool
--}
-
 -- | @since wip
 pfalse :: forall (s :: S). Term s PBool
 pfalse = punsafeConstant $ PLC.someValue False
