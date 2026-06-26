@@ -1,3 +1,4 @@
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Plutarch.Primitive.Data (
@@ -26,14 +27,20 @@ import Plutarch.Backend.Term (Term, punsafeBuiltin)
 import Plutarch.Primitive.Apply (
   PCanRepresent,
   PlutarchType (PRepresentation),
+  PlutarchTypeRep (PlutarchTypeRep),
  )
 import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.ByteString (PByteString)
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Liftable (
+  PLiftable,
+  PLiftableDirect (PLiftableDirect),
+ )
 import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
 import PlutusCore qualified as PLC
+import PlutusTx qualified as PTx
 
 -- | @since wip
 data PData (s :: S)
@@ -41,8 +48,10 @@ data PData (s :: S)
 type role PData nominal
 
 -- | @since wip
-instance PlutarchType PData where
-  type PRepresentation PData = PData
+deriving via (PlutarchTypeRep PData PData) instance PlutarchType PData
+
+-- | @since wip
+deriving via (PLiftableDirect PData PTx.Data) instance PLiftable PData
 
 -- | @since wip
 data PAsData (a :: S -> Type) (s :: S)

@@ -76,6 +76,7 @@ library
     Plutarch.Backend.Arity
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
+    Plutarch.Backend.Evaluate
     Plutarch.Backend.PosTree
     Plutarch.Backend.RawTerm
     Plutarch.Backend.S

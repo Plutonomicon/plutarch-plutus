@@ -530,6 +530,8 @@ pcompiled ::
   (forall (s' :: S). Term s' a) ->
   Term s a
 pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
+  -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
+  -- here, as otherwise, we would get a dependency loop.
   (res, _, _) -> case res of
     Left err -> Term . throwError $ err
     -- We know that we have a closed term, so we can ignore the varmap.
