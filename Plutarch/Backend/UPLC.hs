@@ -64,7 +64,7 @@ newtype UPLCTerm = UPLCTerm (UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun
     )
     via (UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun ())
 
--- @since wip
+-- | @since wip
 instance Pretty UPLCTerm where
   pretty (UPLCTerm t) = prettyPlcReadable t
 

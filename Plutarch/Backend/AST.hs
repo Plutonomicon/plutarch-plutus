@@ -108,7 +108,8 @@ newtype Hash = Hash Int
 
 -- Hashing will give huge Ints which are hard to read
 -- so we turn them into something readable
--- @since wip
+
+-- | @since wip
 instance Pretty Hash where
   pretty (Hash h) = pretty . compactReadableVar . fromIntegral $ h
 
@@ -127,7 +128,7 @@ data Multiplicity
       Eq
     )
 
--- @since wip
+-- | @since wip
 instance Pretty Multiplicity where
   pretty = \case
     MultiplicityOne h -> pretty h <> ":One"

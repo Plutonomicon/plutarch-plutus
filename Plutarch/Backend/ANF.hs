@@ -100,7 +100,7 @@ data Leaf (ann :: Type)
       Eq
     )
 
--- @since wip
+-- | @since wip
 instance Pretty (Leaf ann) where
   pretty = \case
     LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
@@ -124,7 +124,7 @@ data Ref
       Eq
     )
 
--- @since wip
+-- | @since wip
 instance Pretty Ref where
   pretty = \case
     AVar h -> pretty h
@@ -147,7 +147,7 @@ newtype Id = Id Int
       Show
     )
 
--- @since wip
+-- | @since wip
 instance Pretty Id where
   pretty (Id i) = "#" <> viaShow i
 
@@ -175,7 +175,7 @@ data ANFBind (ann :: Type)
       Eq
     )
 
--- @since wip
+-- | @since wip
 instance Pretty (ANFBind ann) where
   pretty = \case
     ANFLeaf l -> pretty l
@@ -359,7 +359,7 @@ instance Semigroup Demand where
   Trivial <> _ = Trivial
   _ <> Trivial = Trivial
 
--- @since wip
+-- | @since wip
 instance Pretty Demand where
   pretty = viaShow
 
