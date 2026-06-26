@@ -218,6 +218,7 @@ mapping between identifiers and hashes of unique subcomputations.
 -}
 data ANF (ann :: Type) = ANF (Bimap Id Hash) (NonEmptyVector (ANFBind ann))
 
+-- | @since wip
 instance Pretty (ANF ()) where
   pretty anf =
     "ANF Hashes:"
@@ -230,6 +231,7 @@ instance Pretty (ANF ()) where
       <> indent 1 (align $ prettyANFBinds anf)
       <> hardline
 
+-- | @since wip
 instance {-# OVERLAPS #-} Pretty ann => Pretty (ANF ann) where
   pretty anf =
     "ANF Hashes:"
