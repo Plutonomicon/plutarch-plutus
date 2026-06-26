@@ -2,7 +2,7 @@ cabal-version:      3.0
 name:               plutarch
 version:            1.14.0
 author:
-  Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>, Philip DiSarro <philipdisarro@gmail.com>
+  Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>, Philip DiSarro <philipdisarro@gmail.com>, Sean Hunter <sean@mlabs.city>
 
 license:            MIT
 extra-source-files: README.md
@@ -34,7 +34,6 @@ common c
     NondecreasingIndentation
     NumDecimals
     OverloadedLabels
-    OverloadedLists
     OverloadedRecordDot
     OverloadedStrings
     PackageImports
@@ -165,6 +164,7 @@ library
     Plutarch.Trace
     Plutarch.Unroll
     Plutarch.Unsafe
+    Plutarch.Utils.Pretty
 
   build-depends:
     , aeson

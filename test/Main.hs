@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedLists #-}
+
 module Main (main) where
 
 import Control.Monad.Except (runExceptT)
@@ -36,15 +38,21 @@ import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (
   PInteger,
   paddInteger,
   pmultiplyInteger,
   psubtractInteger,
  )
+import Plutarch.Primitive.Pair
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
-import Prettyprinter (defaultLayoutOptions, layoutSmart)
+import Prettyprinter (
+  Pretty (pretty),
+  defaultLayoutOptions,
+  layoutSmart,
+ )
 import Prettyprinter.Render.String (renderString)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (
@@ -77,13 +85,11 @@ main =
                 let asAST = fromRawTerm t
                 step $ "AST: \n" <> ppShow asAST
                 step "Converting to ANF"
-                let anf@(ANF bm binds) = fromHashedAST asAST
-                step $ "ANF bimap:\n" <> ppShow bm
-                step $ "ANF binds:\n" <> ppShow binds
+                let anf = fromHashedAST asAST
+                step $ toPrettyString anf
                 step "Demand analysis"
-                let anf'@(ANF bm' binds') = analyzeDemand anf
-                step $ "ANF bimap:\n" <> ppShow bm'
-                step $ "ANF binds:\n" <> ppShow binds'
+                let anf' = analyzeDemand anf
+                step $ toPrettyString anf'
                 step "Converting to UPLC"
                 let (UPLCTerm t) = toUPLCTerm anf'
                 step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
@@ -99,9 +105,8 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST: \n" <> ppShow asAST
-            let ANF bm binds = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
+            let anf@(ANF _ binds) = fromHashedAST asAST
+            step $ toPrettyString anf
             step "2. Is there one bind exactly?"
             assertBool "Too many binds" (NEVector.length binds == 1)
             step "Exactly one bind!"
@@ -120,17 +125,15 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
+            let anf@(ANF _ binds) = fromHashedAST asAST
+            step $ toPrettyString anf
             step "2. Are there 5 binds?"
             let len = NEVector.length binds
             assertBool ("Too many binds: " <> show len) (len == 5)
             step "5 binds exactly!"
             step "Demand analysis"
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -144,12 +147,10 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -163,12 +164,10 @@ main =
             step "Successfully compiled!"
             let asAST = fromRawTerm t
             step $ "AST:\n" <> ppShow asAST
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -181,12 +180,10 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -199,12 +196,10 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -218,12 +213,10 @@ main =
             step "Successfully compiled!"
             step $ "AST:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -237,12 +230,10 @@ main =
             step "Successfully compiled!"
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -270,10 +261,8 @@ main =
             step "ASTs are the same!"
             let anfLA@(ANF tlaBM tlaANF) = fromHashedAST tlaAST
             let anfRA@(ANF traBM traANF) = fromHashedAST traAST
-            step $ "ANF bimap (left associative):\n" <> ppShow tlaBM
-            step $ "ANF bimap (right associative):\n" <> ppShow traBM
-            step $ "ANF binds (left associative):\n" <> ppShow tlaANF
-            step $ "ANF binds (right associative):\n" <> ppShow traANF
+            step $ "ANF (left associative):\n" <> toPrettyString anfLA
+            step $ "ANF (right associative):\n" <> toPrettyString anfRA
             step "4. Are both ANFs the same?"
             assertEqual "ANF bimaps differ" tlaBM traBM
             assertEqual "ANF binds differ" tlaANF traANF
@@ -293,12 +282,10 @@ main =
             step "Successfully compiled!"
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
@@ -312,14 +299,25 @@ main =
             step "Successfully compiled!"
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
-            let anf@(ANF bm binds) = fromHashedAST asAST
-            step $ "ANF bimap:\n" <> ppShow bm
-            step $ "ANF binds:\n" <> ppShow binds
-            let anf'@(ANF bm' binds') = analyzeDemand anf
-            step $ "ANF bimap:\n" <> ppShow bm'
-            step $ "ANF binds:\n" <> ppShow binds'
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
+    , testCaseSteps "Case 14" $ \step -> do
+        step "Case: [[2]]"
+        step "1. Does Case 14 compile?"
+        let compiled = compileTerm case14
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
             pure ()
     ]
 
@@ -405,6 +403,10 @@ case13 =
       g = plam' $ \z -> papp (papp paddInteger z) (punsafeConstant $ PLC.someValue @Integer 2)
    in plam' $ \x -> papp (pcompose f g) x
 
+-- [[2]] (for pretty printing)
+case14 :: forall (s :: S). Term s (PBList (PBList (PBPair PInteger PInteger)))
+case14 = punsafeConstant $ PLC.someValue @[[(Integer, Integer)]] [[(2, 3)]]
+
 -- Helpers
 
 compileTerm ::
@@ -412,3 +414,6 @@ compileTerm ::
   Term s a -> Either TermError (VarMap, RawTerm ())
 compileTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
   (res, _, _) -> res
+
+toPrettyString :: forall a. Pretty a => a -> String
+toPrettyString = renderString . layoutSmart defaultLayoutOptions . pretty
