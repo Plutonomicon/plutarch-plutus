@@ -1,6 +1,9 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Primitive.Liftable (
+  ReprError (..),
+  PlutusRepresentable (..),
   LiftError (..),
   PLiftable (..),
   pconstant,
@@ -8,30 +11,134 @@ module Plutarch.Primitive.Liftable (
   PLiftableDirect (..),
 ) where
 
+import Data.Bifunctor (bimap)
+import Data.Bitraversable (bitraverse)
+import Data.ByteString (ByteString)
 import Data.Kind (Type)
+import Data.Text (Text)
+import Data.Vector.Strict (Vector)
+import Data.Word (Word8)
+import Numeric.Natural (Natural)
 import Plutarch.Backend.Evaluate (EvalError, peval)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, punsafeCoerce, punsafeConstant)
+import Plutarch.Backend.Term (Term, punsafeConstant)
+import Plutarch.Primitive.Apply (
+  PlutarchType (PRepresentation),
+  pcoerce,
+ )
 import PlutusCore qualified as PLC
 import PlutusCore.Builtin (GEqL, geqL)
+import PlutusCore.Crypto.BLS12_381.G1 qualified as BLS.G1
+import PlutusCore.Crypto.BLS12_381.G2 qualified as BLS.G2
+import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS.Pairing
+import PlutusCore.Value as PLCValue
+import PlutusTx qualified as PTx
+
+-- | @since wip
+data ReprError
+  = UnexpectedNegative Integer
+  | ByteOutOfBounds Integer
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
 
 -- | @since wip
 data LiftError
   = DidNotEvaluate EvalError
   | NotAConstant
   | WrongConstantType
-  | UnexpectedNegative Integer
-  | ByteOutOfBounds Integer
+  deriving stock
+    ( -- | @since wip
+      Show
+    )
 
 {- | = Laws
 
 1. @'reprToHask' '.' 'haskToRepr'@ @=@ @'Right'@
-2. @'plutToRepr' '.' 'reprToPlut'@ @=@ @'Right'@
 
 @since wip
 -}
 class
-  (PLC.DefaultUni `PLC.Contains` PAsPlutus a, GEqL PLC.DefaultUni (PAsPlutus a)) =>
+  PLC.DefaultUni `PLC.Contains` AsPlutus a =>
+  PlutusRepresentable (a :: Type)
+  where
+  type AsPlutus a :: Type
+  type AsPlutus a = a
+  haskToRepr :: a -> AsPlutus a
+  default haskToRepr :: a ~ AsPlutus a => a -> AsPlutus a
+  haskToRepr = id
+  reprToHask :: AsPlutus a -> Either ReprError a
+  default reprToHask :: a ~ AsPlutus a => AsPlutus a -> Either ReprError a
+  reprToHask = Right
+
+-- | @since wip
+instance PlutusRepresentable Integer
+
+-- | @since wip
+instance PlutusRepresentable Bool
+
+-- | @since wip
+instance PlutusRepresentable ByteString
+
+-- | @since wip
+instance PlutusRepresentable Text
+
+-- | @since wip
+instance PlutusRepresentable BLS.G1.Element
+
+-- | @since wip
+instance PlutusRepresentable BLS.G2.Element
+
+-- | @since wip
+instance PlutusRepresentable BLS.Pairing.MlResult
+
+-- | @since wip
+instance PlutusRepresentable PLCValue.Value
+
+-- | @since wip
+instance PlutusRepresentable PTx.Data
+
+-- | @since wip
+instance PlutusRepresentable Natural where
+  type AsPlutus Natural = Integer
+  haskToRepr = fromIntegral
+  reprToHask i = case signum i of
+    (-1) -> Left . UnexpectedNegative $ i
+    _ -> Right . fromIntegral $ i
+
+-- | @since wip
+instance PlutusRepresentable Word8 where
+  type AsPlutus Word8 = Integer
+  haskToRepr = fromIntegral
+  reprToHask i
+    | i < 0 = Left . ByteOutOfBounds $ i
+    | i > 255 = Left . ByteOutOfBounds $ i
+    | otherwise = Right . fromIntegral $ i
+
+-- | @since wip
+instance PlutusRepresentable a => PlutusRepresentable [a] where
+  type AsPlutus [a] = [AsPlutus a]
+  haskToRepr = fmap haskToRepr
+  reprToHask = traverse reprToHask
+
+-- | @since wip
+instance PlutusRepresentable a => PlutusRepresentable (Vector a) where
+  type AsPlutus (Vector a) = Vector (AsPlutus a)
+  haskToRepr = fmap haskToRepr
+  reprToHask = traverse reprToHask
+
+-- | @since wip
+instance (PlutusRepresentable a, PlutusRepresentable b) => PlutusRepresentable (a, b) where
+  type AsPlutus (a, b) = (AsPlutus a, AsPlutus b)
+  haskToRepr = bimap haskToRepr haskToRepr
+  reprToHask = bitraverse reprToHask reprToHask
+
+-- | @since wip
+class
+  (PlutusRepresentable (AsHaskell a), GEqL PLC.DefaultUni (AsPlutus (AsHaskell a)), PlutarchType a) =>
   -- Note (Koz, 26/06/2026): The second constraint here is needed to make
   -- `plutToRepr` work. The _short_ answer is that the machinery required to
   -- convert `Term` constants back into their (wrapped!) Haskell values involves
@@ -44,45 +151,46 @@ class
   -- typechecker noise, so we put it here.
   PLiftable (a :: S -> Type)
   where
-  type PAsHaskell a :: Type
-  type PAsPlutus a :: Type
-  haskToRepr :: PAsHaskell a -> PAsPlutus a
-  reprToHask :: PAsPlutus a -> Either LiftError (PAsHaskell a)
-  reprToPlut :: forall (s :: S). PAsPlutus a -> Term s a
-  plutToRepr :: (forall (s :: S). Term s a) -> Either LiftError (PAsPlutus a)
+  type AsHaskell a :: Type
+  plutToRepr :: (forall (s :: S). Term s a) -> Either LiftError (AsPlutus (AsHaskell a))
+  reprToPlut :: forall (s :: S). AsPlutus (AsHaskell a) -> Term s a
 
 -- | @since wip
 pconstant ::
   forall (a :: S -> Type) (s :: S).
   PLiftable a =>
-  PAsHaskell a ->
+  AsHaskell a ->
   Term s a
-pconstant = reprToPlut . haskToRepr @a
+pconstant = reprToPlut . haskToRepr
 
 -- | @since wip
 plift ::
   forall (a :: S -> Type).
   PLiftable a =>
   (forall (s :: S). Term s a) ->
-  PAsHaskell a
-plift t = case plutToRepr @a t of
-  Left err -> error $ "plift failed: " <> showLiftError err
-  Right res -> case reprToHask @a res of
-    Left err -> error $ "plift failed: " <> showLiftError err
+  AsHaskell a
+plift t = case plutToRepr t of
+  Left err -> error $ "lifting failed: " <> show err
+  Right res -> case reprToHask res of
+    Left err -> error $ "representation error: " <> show err
     Right res' -> res'
 
 -- | @since wip
 newtype PLiftableDirect (a :: S -> Type) (h :: Type) (s :: S) = PLiftableDirect (a s)
 
 -- | @since wip
-instance (PLC.DefaultUni `PLC.Contains` h, GEqL PLC.DefaultUni h) => PLiftable (PLiftableDirect a h) where
-  type PAsHaskell (PLiftableDirect a h) = h
-  type PAsPlutus (PLiftableDirect a h) = h
-  haskToRepr = id
-  reprToHask = Right
-  reprToPlut x = punsafeCoerce . punsafeConstant $ PLC.someValue @h x
-  plutToRepr t = case peval (punsafeCoerce @_ @a t) of
+instance PlutarchType a => PlutarchType (PLiftableDirect a h) where
+  type PRepresentation (PLiftableDirect a h) = a
+
+-- | @since wip
+instance
+  (PlutarchType a, GEqL PLC.DefaultUni (AsPlutus h), PlutusRepresentable h) =>
+  PLiftable (PLiftableDirect a h)
+  where
+  type AsHaskell (PLiftableDirect a h) = h
+  plutToRepr t = case peval (pcoerce t) of
     Left err -> Left . DidNotEvaluate $ err
+    Right (Right _) -> Left NotAConstant
     -- Note (Koz, 26/06/2026): This sludge requires further explanation. When we
     -- get a constant back from the evaluator, we actually get two things:
     --
@@ -96,19 +204,9 @@ instance (PLC.DefaultUni `PLC.Contains` h, GEqL PLC.DefaultUni h) => PLiftable (
     -- guarantee that the proof will carry the same tag of what it's for as `h`.
     Right (Left c) -> case c of
       PLC.Some (PLC.ValueOf actualProof x) -> do
-        let expectedProof = PLC.knownUni @_ @PLC.DefaultUni @h
+        let expectedProof = PLC.knownUni @_ @PLC.DefaultUni @(AsPlutus h)
         case geqL expectedProof actualProof of
-          -- As the proofs match, in this branch, we know that x :: h
+          -- As the proofs match, in this branch, we know that x :: AsPlutus h
           PLC.EvaluationSuccess PLC.Refl -> pure x
           PLC.EvaluationFailure -> Left WrongConstantType
-    Right (Right _) -> Left NotAConstant
-
--- Helpers
-
-showLiftError :: LiftError -> String
-showLiftError = \case
-  DidNotEvaluate err -> "failed to evaluate: " <> show err
-  NotAConstant -> "did not get a constant"
-  WrongConstantType -> "got a constant of the wrong type"
-  UnexpectedNegative i -> "got a negative value when we expected a non-negative: " <> show i
-  ByteOutOfBounds i -> "cannot fit into a byte: " <> show i
+  reprToPlut = punsafeConstant . PLC.someValue @(AsPlutus h)
