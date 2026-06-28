@@ -133,6 +133,7 @@ library
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
+    Plutarch.Numeric.Positive
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Pretty

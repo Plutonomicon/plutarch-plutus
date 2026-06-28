@@ -11,6 +11,7 @@ module Plutarch.Primitive.Numeric (
 import Data.Word (Word8)
 import Numeric.Natural (Natural)
 import Plutarch.Backend.S (S)
+import Plutarch.Numeric.Positive (Positive)
 import Plutarch.Primitive.Apply (
   PlutarchType (PRepresentation),
   PlutarchTypeRep (PlutarchTypeRep),
@@ -54,6 +55,12 @@ type role PPositive nominal
 -- | @since wip
 instance PlutarchType PPositive where
   type PRepresentation PPositive = PNatural
+
+-- | @since wip
+deriving via
+  (PLiftableDirect PPositive Positive)
+  instance
+    PLiftable PPositive
 
 -- | @since wip
 data PByte (s :: S)

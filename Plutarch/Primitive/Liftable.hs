@@ -38,6 +38,7 @@ import PlutusTx qualified as PTx
 data ReprError
   = UnexpectedNegative Integer
   | ByteOutOfBounds Integer
+  | UnexpectedZero
   deriving stock
     ( -- | @since wip
       Eq
