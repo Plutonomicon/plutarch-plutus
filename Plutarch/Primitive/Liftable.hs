@@ -2,12 +2,17 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Primitive.Liftable (
+  -- * Type classes
   ReprError (..),
   PlutusRepresentable (..),
   LiftError (..),
   PLiftable (..),
+
+  -- * Functions
   pconstant,
   plift,
+
+  -- * Derivation helper
   PLiftableDirect (..),
 ) where
 
@@ -34,11 +39,16 @@ import PlutusCore.Crypto.BLS12_381.Pairing qualified as BLS.Pairing
 import PlutusCore.Value as PLCValue
 import PlutusTx qualified as PTx
 
--- | @since wip
+{- | Errors that can arise when converting from an onchain representation type
+to its \'narrower\' equivalent.
+
+@since wip
+-}
 data ReprError
   = UnexpectedNegative Integer
   | ByteOutOfBounds Integer
   | UnexpectedZero
+  | UserSpecified String
   deriving stock
     ( -- | @since wip
       Eq
@@ -46,7 +56,11 @@ data ReprError
       Show
     )
 
--- | @since wip
+{- | Errors that can arise when evaluating a computation designed to produce a
+'PLiftable' type.
+
+@since wip
+-}
 data LiftError
   = DidNotEvaluate EvalError
   | NotAConstant
@@ -56,9 +70,26 @@ data LiftError
       Show
     )
 
-{- | = Laws
+{- | Specifies that some Haskell-level type @a@ can be converted to and from
+some other type @'AsPlutus' a@, where all of the following hold:
+
+* @'AsPlutus' a@ is part of the Plutus default universe;
+* @a@ can be converted unconditionally to @'AsPlutus' a@;
+* @'AsPlutus' a@ can be converted conditionally to @a@; and
+* The conversion should round-trip when starting from @a@.
+
+Put another way, a @'PlutusRepresentable' a@ instance defines an embedding into
+some member of the Plutus default universe.
+
+= Laws
 
 1. @'reprToHask' '.' 'haskToRepr'@ @=@ @'Right'@
+
+= Defaults
+
+'PlutusRepresentable' defaults are designed to make instances of types already
+in the default Plutus universe efficient. You should (probably) not use these
+yourself.
 
 @since wip
 -}
@@ -137,7 +168,27 @@ instance (PlutusRepresentable a, PlutusRepresentable b) => PlutusRepresentable (
   haskToRepr = bimap haskToRepr haskToRepr
   reprToHask = bitraverse reprToHask reprToHask
 
--- | @since wip
+{- | Specifies that, for some Plutarch type @a@, there exists some Haskell type
+@AsHaskell a@ such that its Plutus representation terms can be \'lifted\' as
+constants into a Plutarch 'Term'. Additionally, specifies that any closed
+Plutarch 'Term' producing an @a@ can be evaluated \'on the spot\' to produce
+the equivalent Plutus representation of its result. Put another way, an
+instance of @'PLiftable' a@ defines an embedding between some type in the
+host language (Haskell) and scripts that Plutarch can produce.
+
+= Important note
+
+'plutToRepr' is not something you should use in a script, as it requires
+using the evaluator. It exists primarily for tests. 'reprToPlut' is fine to
+use in scripts (as this ends up being embedded as a constant), though
+'pconstant' is usually more convenient.
+
+= Laws
+
+1. @'reprToPlut' '.' 'plutToRepr'@ @=@ @'Right'@
+
+@since wip
+-}
 class
   (PlutusRepresentable (AsHaskell a), GEqL PLC.DefaultUni (AsPlutus (AsHaskell a)), PlutarchType a) =>
   -- Note (Koz, 26/06/2026): The second constraint here is needed to make
@@ -156,7 +207,11 @@ class
   plutToRepr :: (forall (s :: S). Term s a) -> Either LiftError (AsPlutus (AsHaskell a))
   reprToPlut :: forall (s :: S). AsPlutus (AsHaskell a) -> Term s a
 
--- | @since wip
+{- | Given the Haskell representation of a type, produce a 'Term' containing the
+equivalent constant.
+
+@since wip
+-}
 pconstant ::
   forall (a :: S -> Type) (s :: S).
   PLiftable a =>
@@ -164,7 +219,16 @@ pconstant ::
   Term s a
 pconstant = reprToPlut . haskToRepr
 
--- | @since wip
+{- | Given a closed 'Term', evaluate it and produce the Haskell representation
+of the result.
+
+= Note
+
+If the computation errors, or produces a result of the wrong type, this will
+call @'error'@.
+
+@since wip
+-}
 plift ::
   forall (a :: S -> Type).
   PLiftable a =>
@@ -176,7 +240,16 @@ plift t = case plutToRepr t of
     Left err -> error $ "representation error: " <> show err
     Right res' -> res'
 
--- | @since wip
+{- | A helper @newtype@ for deriving 'PLiftable' for Plutarch types which are
+directly representable using something in the Plutus default universe. More
+precisely, using 'PLiftableDirect' in a @via@ derivation specifies the
+following:
+
+* @a@'s Haskell equivalent is @h@; and
+* @h@ is a part of the default Plutus universe.
+
+@since wip
+-}
 newtype PLiftableDirect (a :: S -> Type) (h :: Type) (s :: S) = PLiftableDirect (a s)
 
 -- | @since wip
