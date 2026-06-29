@@ -105,9 +105,6 @@ import Prettyprinter (
   hardline,
   hsep,
   indent,
-  list,
-  punctuate,
-  vcat,
   viaShow,
   (<+>),
  )
@@ -220,6 +217,8 @@ data AST (ann :: Type)
       Eq
     )
 
+-- For the sake of consistency this uses the same formatting as the overlapping instance,
+-- although this *could* be prettier if we wanted it to be.
 instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
   pretty = \case
     ASTLeaf l -> pretty l
@@ -227,14 +226,25 @@ instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
     ASTDelay _ arg -> "delay" <+> pretty arg
     ASTLam _ vars body -> "\\" <> mkArgs vars <+> "->" <> hardline <> indent 2 (pretty body)
     ASTFix _ self body -> "Fix" <> brackets (pretty self) <+> pretty body
-    ASTApply _ fun args -> align . group . vcat . punctuate " #" . map pretty $ (fun : NEVector.toList args)
-    ASTConstr _ cix args -> "Constr" <> brackets (pretty cix) <+> list (pretty <$> Vector.toList args)
-    ASTCase _ scrut handlers -> "case" <+> pretty scrut <+> hardline <> indent 2 (align . group . vcat . map pretty . NEVector.toList $ handlers)
-    ASTCompose _ args -> align . vcat $ punctuate " <<<" . map pretty $ NEVector.toList args
+    ASTApply _ fun args ->
+      "Apply"
+        <+> hardline
+        <+> align (indent 2 (pretty fun))
+        <+> hardline
+        <+> align (indent 2 (blockList . map pretty . NEVector.toList $ args))
+    ASTConstr _ cix args -> "Constr" <> brackets (pretty cix) <+> blockList (pretty <$> Vector.toList args)
+    ASTCase _ scrut handlers ->
+      "case"
+        <+> pretty scrut
+        <+> hardline
+        <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
+    ASTCompose _ args -> "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
 
 instance {-# OVERLAPS #-} Pretty ann => Pretty (AST ann) where
   pretty = \case
-    ASTLeaf l -> pretty l
+    ASTLeaf l -> case l of
+      LVar {} -> pretty l
+      _ -> taggedNode (pretty $ astLeafAnn l) $ pretty l
     ASTForce ann arg -> taggedNode (pretty ann) $ "force" <+> pretty arg
     ASTDelay ann arg -> taggedNode (pretty ann) $ "delay" <+> pretty arg
     ASTLam ann vars body ->
@@ -242,15 +252,20 @@ instance {-# OVERLAPS #-} Pretty ann => Pretty (AST ann) where
     ASTFix ann self body ->
       taggedNode (pretty ann) $ "Fix" <> brackets (pretty self) <+> pretty body
     ASTApply ann fun args ->
-      taggedNode (pretty ann) $ "Apply" <+> hardline <+> align (indent 2 (pretty fun)) <+> hardline <+> align (indent 2 (blockList . map pretty . NEVector.toList $ args))
+      taggedNode (pretty ann) $
+        "Apply"
+          <+> hardline
+          <+> align (indent 2 (pretty fun))
+          <+> hardline
+          <+> align (indent 2 (blockList . map pretty . NEVector.toList $ args))
     ASTConstr ann cix args ->
-      taggedNode (pretty ann) $ "Constr" <> brackets (pretty cix) <+> list (pretty <$> Vector.toList args)
+      taggedNode (pretty ann) $ "Constr" <> brackets (pretty cix) <+> blockList (pretty <$> Vector.toList args)
     ASTCase ann scrut handlers ->
       taggedNode (pretty ann) $
         "case"
           <+> pretty scrut
           <+> hardline
-          <> indent 2 (align . vcat . map pretty . NEVector.toList $ handlers)
+          <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
     ASTCompose ann args ->
       taggedNode (pretty ann) $ "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
 
