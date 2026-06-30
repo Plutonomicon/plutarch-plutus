@@ -4,7 +4,6 @@ module Plutarch.Primitive.Function (
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Primitive.Representation (PRepresentation)
 
 {- | The type of a Plutarch lambda.
 
@@ -12,7 +11,6 @@ import Plutarch.Primitive.Representation (PRepresentation)
 -}
 data (:-->) (a :: S -> Type) (b :: S -> Type) (s :: S)
 
-infixr 0 :-->
+type role (:-->) nominal nominal nominal
 
--- | @since wip
-type instance PRepresentation (a :--> b) = (a :--> PRepresentation b)
+infixr 0 :-->

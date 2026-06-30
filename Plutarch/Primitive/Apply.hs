@@ -1,161 +1,164 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeData #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
+-- Needed for safety constraints on coercions
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Plutarch.Primitive.Apply (
-  PMatch (..),
-  PCon (..),
-  pmatch,
-  pcon,
-  PMatchFundamental (..),
-  PMatchRepresentation (..),
+  -- * Type class
+  PlutarchType (..),
+
+  -- * Constraints
+  PCanRepresent,
+
+  -- * Functions
+  (#),
+  (#$),
+  pcoerce,
+  pgeneralize,
+  punsafeSpecialize,
+
+  -- * Helpers
+  PlutarchTypeRep (..),
 ) where
 
-import Data.Kind (Type)
-import Data.Vector.NonEmpty qualified as NEVector
+import Data.Kind (Constraint, Type)
+import GHC.TypeError (
+  ErrorMessage (ShowType, Text, (:<>:)),
+  TypeError,
+ )
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  Term,
-  plam',
-  punsafeCase,
-  punsafeCoerce,
-  toSomeTerm,
- )
-import Plutarch.Primitive.Bool (PBool)
-import Plutarch.Primitive.ByteString (PByteString)
-import Plutarch.Primitive.Data (PAsData, PData)
+import Plutarch.Backend.Term (Term, papp, punsafeCoerce)
 import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Primitive.List (PBList (PBCons, PBNil))
-import Plutarch.Primitive.Numeric (
-  PByte,
-  PInteger,
-  PNatural,
-  PPositive,
- )
-import Plutarch.Primitive.Pair (PBPair (PBPair))
-import Plutarch.Primitive.Representation (
-  PIsFundamental,
-  PIsNotFundamental,
-  PRepresentation,
- )
 
 {- | = Laws
 
-1. @('pmatch' x f) g@ @=@ @'pmatch' x (\x' -> 'pmatch' (f x) g)@
+1. @f '#' (g '#' x)@ @=@ @'pcompose' f g '#' x@
 
 @since wip
 -}
-class PMatch (a :: S -> Type) where
-  pmatch' ::
+class PlutarchType (PRepresentation a) => PlutarchType (a :: S -> Type) where
+  type PRepresentation a :: S -> Type
+  papply ::
     forall (b :: S -> Type) (s :: S).
-    Term s (PRepresentation a) -> (a s -> Term s b) -> Term s b
+    Term s (PRepresentation a :--> b) -> Term s a -> Term s b
+  papply f x = papp (punsafeCoerce f) (pcoerce x)
 
 -- | @since wip
-instance PMatch (PBPair a b) where
-  pmatch' x f = punsafeCase x . NEVector.singleton . toSomeTerm $
-    plam' $
-      \x -> plam' $ \y -> f (PBPair x y)
+instance (PlutarchType a, PlutarchType b) => PlutarchType (a :--> b) where
+  type PRepresentation (a :--> b) = (a :--> PRepresentation b)
 
--- | @since wip
-instance PMatch (PBList a) where
-  pmatch' ::
-    forall (b :: S -> Type) (s :: S).
-    Term s (PRepresentation (PBList a)) -> (PBList a s -> Term s b) -> Term s b
-  pmatch' x f = punsafeCase x . NEVector.cons (toSomeTerm whenCons) . NEVector.singleton . toSomeTerm $ whenNil
-    where
-      whenNil :: Term s b
-      whenNil = f PBNil
-      whenCons :: Term s (a :--> PBList a :--> b)
-      whenCons = plam' $ \y -> plam' $ \ys -> f (PBCons y ys)
+{- | Describes that a given type @a@ can be used to represent another given type
+@b@. This may be for one of three reasons:
 
--- | @since wip
-instance PMatch (a :--> b) where
-  pmatch' ::
-    forall (c :: S -> Type) (s :: S).
-    Term s (PRepresentation (a :--> b)) -> ((a :--> b) s -> Term s c) -> Term s c
-  pmatch' x _ = punsafeCoerce x
+* @a ~ b@
+* @a ~ PRepresentation b@
+* There exists some type @c@ such that @PCanRepresent a c@ and @c ~
+  PRepresentation b@
 
-{- | = Laws
+You cannot define instances of this directly: for safety, these are derived
+exclusively from 'PRepresentation' instances.
 
-1. @'pmatch' ('pcon' x) f@ @=@ @f x@
-2. @'pmatch' x 'pcon'@ @=@ @x@
+This defines a relation termed /representability/. This relation is a partial
+order, and thus follows the following laws:
+
+* /Reflexivity:/ any type can represent itself;
+* /Anti-symmetry:/ if two types can represent each other, they must be the
+  same type;
+* /Transitivity:/ if @a `PCanRepresent` b@ and @b `PCanRepresent` c@, then @a
+  `PCanRepresent` c@.
 
 @since wip
 -}
-class PMatch a => PCon (a :: S -> Type) where
-  pcon' :: forall (s :: S). a s -> Term s (PRepresentation a)
+type family PCanRepresent (a :: S -> Type) (b :: S -> Type) :: Constraint where
+  PCanRepresent a b = (CanRepresent' a b ~ Representable, CanRepresentErrorHelper a b (CanRepresent' a b))
 
-{- | Convenience wrapper to avoid having to refer to 'PRepresentation's.
-
-@since wip
--}
-pcon ::
-  forall (a :: S -> Type) (s :: S).
-  PCon a =>
-  a s -> Term s a
-pcon = punsafeCoerce . pcon'
-
-{- | Convenience wrapper to avoid having to refer to 'PRepresentation's.
-
-@since wip
--}
-pmatch ::
+-- | @since wip
+(#) ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
-  PMatch a =>
-  Term s a -> (a s -> Term s b) -> Term s b
-pmatch x = pmatch' (punsafeCoerce x)
+  PlutarchType a =>
+  Term s (a :--> b) -> Term s a -> Term s b
+f # x = papply (punsafeCoerce f) x
 
-{- | A derivation helper for 'PMatch', for use with @deriving via@. Such a
-derivation can be used for any fundamental type (that is, any type for which
-@'PRepresentation' a ~ a@.
+infixl 8 #
+
+-- | @since wip
+(#$) ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  PlutarchType a =>
+  Term s (a :--> b) -> Term s a -> Term s b
+(#$) = (#)
+
+infixr 0 #$
+
+{- | Any Plutarch type can \'forget\' any additional structure it may have, and
+revert to being its direct representation. This is safe, and has zero runtime cost.
 
 @since wip
 -}
-newtype PMatchFundamental (a :: S -> Type) (s :: S) = PMatchFundamental (a s)
+pcoerce ::
+  forall (a :: S -> Type) (s :: S).
+  PlutarchType a => Term s a -> Term s (PRepresentation a)
+pcoerce = punsafeCoerce
 
--- | @since wip
-type instance PRepresentation (PMatchFundamental a) = a
-
--- | @since wip
-instance PIsFundamental a => PMatch (PMatchFundamental a) where
-  pmatch' x _ = punsafeCoerce x
-
--- | @since wip
-deriving via (PMatchFundamental PInteger) instance PMatch PInteger
-
--- | @since wip
-deriving via (PMatchFundamental PBool) instance PMatch PBool
-
--- | @since wip
-deriving via (PMatchFundamental PByteString) instance PMatch PByteString
-
--- | @since wip
-deriving via (PMatchFundamental PData) instance PMatch PData
-
-{- | A derivation helper for 'PMatch', for use with @deriving via@. Such a
-derivation can be used for any type that is /not/ fundamental (that is, any
-type where @'PRepresentation' a@ and @a@ are different types).
-
-Semantically, such an instance delegates 'pmatch' logic to the representation
-of @a@. This should be used for anything \'@newtype@-like\'.
+{- | As 'pcoerce', but can \'look through\' any number of \'layers\' of
+representations.
 
 @since wip
 -}
-newtype PMatchRepresentation (a :: S -> Type) (s :: S) = PMatchRepresentation (a s)
+pgeneralize ::
+  forall (b :: S -> Type) (a :: S -> Type) (s :: S).
+  b `PCanRepresent` a => Term s a -> Term s b
+pgeneralize = punsafeCoerce
+
+{- | Given a direct representation of some type @a@, declare unconditionally
+that it is a term of type @a@. This is not safe: @a@ may impose additional
+structure beyond what its direct representation requires, which can break
+Plutarch type system guarantees. It is zero runtime cost, and thus exists for
+performance: check carefully that you aren't violating any structural
+requirements of @a@!
+
+@since wip
+-}
+punsafeSpecialize ::
+  forall (a :: S -> Type) (s :: S).
+  PlutarchType a => Term s (PRepresentation a) -> Term s a
+punsafeSpecialize = punsafeCoerce
 
 -- | @since wip
-type instance PRepresentation (PMatchRepresentation a) = PRepresentation a
+newtype PlutarchTypeRep (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PlutarchTypeRep (b s)
 
 -- | @since wip
-instance PIsNotFundamental a => PMatch (PMatchRepresentation a) where
-  pmatch' x = pmatch (punsafeCoerce x)
+instance PlutarchType b => PlutarchType (PlutarchTypeRep a b) where
+  type PRepresentation (PlutarchTypeRep a b) = b
 
--- | @since wip
-deriving via (PMatchRepresentation PNatural) instance PMatch PNatural
+-- Helpers
 
--- | @since wip
-deriving via (PMatchRepresentation PPositive) instance PMatch PPositive
+-- Defines `PCanRepresent` using something we can match on.
+type family CanRepresent' (a :: S -> Type) (b :: S -> Type) :: RepresentationRelation where
+  CanRepresent' a a = Representable
+  CanRepresent' a b = Helper a b (PRepresentation b)
 
--- | @since wip
-deriving via (PMatchRepresentation PByte) instance PMatch PByte
+-- Helper needed to define properly transitive representation relation
+type data RepresentationRelation = Representable | NotRepresentable
 
--- | @since wip
-deriving via (PMatchRepresentation (PAsData a)) instance PMatch (PAsData a)
+-- 'Loop helper' for `CanRepresent'`, as otherwise, type family resolution would
+-- never end.
+type family Helper (a :: S -> Type) (b :: S -> Type) (bi :: S -> Type) :: RepresentationRelation where
+  Helper _ b b = NotRepresentable
+  Helper a _ bi = CanRepresent' a bi
+
+-- Helper to allow us to provide more useful error messages, instead of type
+-- family soup
+type family CanRepresentErrorHelper (a :: S -> Type) (b :: S -> Type) (r :: RepresentationRelation) :: Constraint where
+  CanRepresentErrorHelper a b NotRepresentable =
+    TypeError
+      ( 'Text "\""
+          ':<>: 'ShowType b
+          ':<>: 'Text "\" cannot represent \""
+          ':<>: 'ShowType a
+          ':<>: 'Text "\""
+      )
+  CanRepresentErrorHelper _ _ Representable = ()

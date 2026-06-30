@@ -190,7 +190,7 @@ compile a 'Term' with free variables.
 newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
-type role Term nominal nominal
+type role Term nominal representational
 
 {- | A 'Term' whose result has been forgotten. Useful mainly together with
 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of
@@ -530,6 +530,8 @@ pcompiled ::
   (forall (s' :: S). Term s' a) ->
   Term s a
 pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
+  -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
+  -- here, as otherwise, we would get a dependency loop.
   (res, _, _) -> case res of
     Left err -> Term . throwError $ err
     -- We know that we have a closed term, so we can ignore the varmap.
