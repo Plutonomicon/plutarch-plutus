@@ -135,6 +135,7 @@ library
     Plutarch.Numeric.Additive
     Plutarch.Numeric.Helpers
     Plutarch.Numeric.Multiplicative
+    Plutarch.Numeric.Zeroable
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Pretty
