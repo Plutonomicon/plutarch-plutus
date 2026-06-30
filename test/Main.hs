@@ -83,7 +83,7 @@ main =
                 step $ "Top node: \n" <> ppShow t
                 step "Converting to AST"
                 let asAST = fromRawTerm t
-                step $ "AST: \n" <> ppShow asAST
+                step $ "AST: \n" <> toPrettyString asAST
                 step "Converting to ANF"
                 let anf = fromHashedAST asAST
                 step $ toPrettyString anf
@@ -104,7 +104,7 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            step $ "AST: \n" <> ppShow asAST
+            step $ "AST: \n" <> toPrettyString asAST
             let anf@(ANF _ binds) = fromHashedAST asAST
             step $ toPrettyString anf
             step "2. Is there one bind exactly?"
@@ -124,7 +124,7 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf@(ANF _ binds) = fromHashedAST asAST
             step $ toPrettyString anf
             step "2. Are there 5 binds?"
@@ -146,7 +146,7 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
@@ -163,7 +163,7 @@ main =
           Right (_, t) -> do
             step "Successfully compiled!"
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
@@ -211,8 +211,8 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "AST:\n" <> ppShow t
             let asAST = fromRawTerm t
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
@@ -254,8 +254,8 @@ main =
             step "RawTerms are the same!"
             let tlaAST = fromRawTerm tla
             let traAST = fromRawTerm tra
-            step $ "AST (left associative):\n" <> ppShow tlaAST
-            step $ "AST (right associative):\n" <> ppShow traAST
+            step $ "AST (left associative):\n" <> toPrettyString tlaAST
+            step $ "AST (right associative):\n" <> toPrettyString traAST
             step "3. Are both ASTs the same?"
             assertEqual "ASTs differ" tlaAST traAST
             step "ASTs are the same!"

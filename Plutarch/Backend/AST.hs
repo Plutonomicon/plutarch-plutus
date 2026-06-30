@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
 {- | A collection of helper types, as well as more compilation-oriented abstract
@@ -28,6 +29,8 @@ module Plutarch.Backend.AST (
   Leaf (..),
   AST (..),
   fromRawTerm,
+  astLeafAnn,
+  astNodeAnn,
 ) where
 
 import Control.Applicative ((<|>))
@@ -89,10 +92,22 @@ import Plutarch.Backend.VarMap (
   vmMerge,
   vmSingleton,
  )
-import Plutarch.Utils.Pretty (compactReadableVar)
-import PlutusCore (Some, ValueOf)
+import Plutarch.Utils.Pretty (blockList, compactReadableVar, prettyValueOf, taggedNode)
+import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
-import Prettyprinter (Pretty (pretty))
+import Prettyprinter (
+  Doc,
+  Pretty (pretty),
+  align,
+  braces,
+  brackets,
+  group,
+  hardline,
+  hsep,
+  indent,
+  viaShow,
+  (<+>),
+ )
 import Prelude hiding (until)
 
 {- | A clarity newtype for hashes, both \'structural\' and \'combined\'.
@@ -153,6 +168,16 @@ data Leaf (ann :: Type)
       Eq
     )
 
+-- | @since wip
+instance Pretty (Leaf ann) where
+  pretty = \case
+    LVar _ h ->
+      pretty h
+    LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
+    LBuiltin _ bi -> viaShow bi
+    LCompiled _ uplcTerm -> "COMPILED" <> ":" <> align (braces (align . group $ pretty uplcTerm))
+    LError _ -> "ERROR"
+
 {- | A compilation-friendly abstract syntax tree. This is in contrast to
 'RawTerm', which is designed to match more closely to the eDSL constructs,
 and thus be easier to prettyprint and generate.
@@ -192,6 +217,61 @@ data AST (ann :: Type)
     , -- | @since wip
       Eq
     )
+
+-- For the sake of consistency this uses the same formatting as the overlapping instance,
+-- although this *could* be prettier if we wanted it to be.
+
+-- | @since wip
+instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
+  pretty = \case
+    ASTLeaf l -> pretty l
+    ASTForce _ arg -> "force" <+> pretty arg
+    ASTDelay _ arg -> "delay" <+> pretty arg
+    ASTLam _ vars body -> "\\" <> mkArgs vars <+> "->" <> hardline <> indent 2 (pretty body)
+    ASTFix _ self body -> "Fix" <> brackets (pretty self) <+> pretty body
+    ASTApply _ fun args ->
+      "Apply"
+        <+> hardline
+        <+> align (indent 2 (pretty fun))
+        <+> hardline
+        <+> align (indent 2 (blockList . map pretty . NEVector.toList $ args))
+    ASTConstr _ cix args -> "Constr" <> brackets (pretty cix) <+> blockList (pretty <$> Vector.toList args)
+    ASTCase _ scrut handlers ->
+      "case"
+        <+> pretty scrut
+        <+> hardline
+        <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
+    ASTCompose _ args -> "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
+
+-- | @since wip
+instance {-# OVERLAPS #-} Pretty ann => Pretty (AST ann) where
+  pretty = \case
+    ASTLeaf l -> case l of
+      LVar {} -> pretty l
+      _ -> taggedNode (pretty $ astLeafAnn l) $ pretty l
+    ASTForce ann arg -> taggedNode (pretty ann) $ "force" <+> pretty arg
+    ASTDelay ann arg -> taggedNode (pretty ann) $ "delay" <+> pretty arg
+    ASTLam ann vars body ->
+      taggedNode (pretty ann) $ "\\" <> mkArgs vars <+> "->" <> hardline <> indent 2 (pretty body)
+    ASTFix ann self body ->
+      taggedNode (pretty ann) $ "Fix" <> brackets (pretty self) <+> pretty body
+    ASTApply ann fun args ->
+      taggedNode (pretty ann) $
+        "Apply"
+          <+> hardline
+          <+> align (indent 2 (pretty fun))
+          <+> hardline
+          <+> align (indent 2 (blockList . map pretty . NEVector.toList $ args))
+    ASTConstr ann cix args ->
+      taggedNode (pretty ann) $ "Constr" <> brackets (pretty cix) <+> blockList (pretty <$> Vector.toList args)
+    ASTCase ann scrut handlers ->
+      taggedNode (pretty ann) $
+        "case"
+          <+> pretty scrut
+          <+> hardline
+          <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
+    ASTCompose ann args ->
+      taggedNode (pretty ann) $ "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
 
 {- | Given a 'RawTerm', construct its AST, using hashing to mark
 alpha-equivalent subcomputations.
@@ -503,3 +583,29 @@ findVarUsage name mpt t = case mpt of
         Nothing -> acc
         Just _ -> Just (h, True)
       Just (_, True) -> acc
+
+astLeafAnn :: forall (ann :: Type). Leaf ann -> ann
+astLeafAnn = \case
+  LVar ann _ -> ann
+  LConstant ann _ -> ann
+  LBuiltin ann _ -> ann
+  LCompiled ann _ -> ann
+  LError ann -> ann
+
+astNodeAnn :: forall (ann :: Type). AST ann -> ann
+astNodeAnn = \case
+  ASTLeaf l -> astLeafAnn l
+  ASTForce ann _ -> ann
+  ASTDelay ann _ -> ann
+  ASTLam ann _ _ -> ann
+  ASTFix ann _ _ -> ann
+  ASTApply ann _ _ -> ann
+  ASTConstr ann _ _ -> ann
+  ASTCase ann _ _ -> ann
+  ASTCompose ann _ -> ann
+
+mkArgs :: NonEmptyVector (Maybe Multiplicity) -> Doc ann
+mkArgs (NEVector.toList -> xs) =
+  hsep
+    . fmap (\case Nothing -> "_"; Just m -> pretty m)
+    $ xs
