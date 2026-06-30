@@ -105,7 +105,7 @@ instance Pretty (Leaf ann) where
   pretty = \case
     LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
     LBuiltin _ fun -> viaShow fun
-    LCompiled _ (UPLCTerm uplc) -> "COMPILED" <+> align (braces (align $ prettyPlcReadable uplc))
+    LCompiled _ (UPLCTerm uplc) -> "COMPILED" <+> align (braces (align . group $ prettyPlcReadable uplc))
     LError _ -> "ERROR"
 
 {- | As ANF \'inlines\' variables, subcomputations are either variables

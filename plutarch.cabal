@@ -75,6 +75,7 @@ library
     Plutarch.Backend.Arity
     Plutarch.Backend.AST
     Plutarch.Backend.Compile
+    Plutarch.Backend.Evaluate
     Plutarch.Backend.PosTree
     Plutarch.Backend.RawTerm
     Plutarch.Backend.S
@@ -135,6 +136,7 @@ library
     Plutarch.Numeric.Additive
     Plutarch.Numeric.Helpers
     Plutarch.Numeric.Multiplicative
+    Plutarch.Numeric.Positive
     Plutarch.Numeric.Zeroable
     Plutarch.Pair
     Plutarch.Prelude
@@ -153,6 +155,7 @@ library
     Plutarch.Primitive.Con
     Plutarch.Primitive.Data
     Plutarch.Primitive.Function
+    Plutarch.Primitive.Liftable
     Plutarch.Primitive.List
     Plutarch.Primitive.Match
     Plutarch.Primitive.Numeric

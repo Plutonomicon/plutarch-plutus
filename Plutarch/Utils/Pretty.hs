@@ -3,8 +3,12 @@ module Plutarch.Utils.Pretty (
   prettyValueOf,
   compactReadableVar,
   (<:=>),
+  taggedNode,
+  prettyAnnotated,
+  blockList,
 ) where
 
+import Control.Lens.Plated
 import Data.ByteString ()
 import Data.Kind (Type)
 import Data.Text (Text)
@@ -15,10 +19,16 @@ import PlutusCore.Default (DefaultUni (..), Esc)
 import Prettyprinter (
   Doc,
   Pretty (pretty),
+  align,
   brackets,
+  group,
+  hardline,
+  indent,
   list,
   parens,
+  punctuate,
   tupled,
+  vcat,
   viaShow,
   (<+>),
  )
@@ -105,3 +115,28 @@ compactReadableVar n
 
 (<:=>) :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
 d1 <:=> d2 = d1 <+> ":=" <+> d2
+
+-- first two args are the left and right block separator
+block :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
+block l r d = align . group $ l <> hardline <> indent 2 (align d) <> hardline <> r
+
+-- This aligns the `[` and `]` at the same indentation level to make this easier to read
+blockList :: forall (ann :: Type). [Doc ann] -> Doc ann
+blockList = block "[" "]" . vcat . punctuate ", "
+
+taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
+taggedNode ann node = align . group $ block "<" ">" node <> "@" <> ann
+
+prettyAnnotated ::
+  forall f a ann.
+  (Plated (f a), Pretty a) =>
+  (f a -> a) ->
+  (Doc ann -> Doc ann -> Doc ann) -> -- ann doc is first arg
+  (forall x. f x -> [Doc ann] -> Doc ann) ->
+  f a ->
+  Doc ann
+prettyAnnotated getAnn annHandler nodePrinter x = annHandler (pretty a) $ nodePrinter x childNodesPretty
+  where
+    childNodesPretty = prettyAnnotated getAnn annHandler nodePrinter <$> childNodes
+    a = getAnn x
+    childNodes = children x

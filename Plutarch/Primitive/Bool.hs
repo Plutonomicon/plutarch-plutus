@@ -25,6 +25,7 @@ import Plutarch.Primitive.Apply (
   PlutarchType,
   PlutarchTypeRep (PlutarchTypeRep),
  )
+import Plutarch.Primitive.Liftable (PLiftable, PLiftableDirect (PLiftableDirect))
 import PlutusCore qualified as PLC
 
 -- | @since wip
@@ -34,6 +35,9 @@ type role PBool nominal
 
 -- | @since wip
 deriving via (PlutarchTypeRep PBool PBool) instance PlutarchType PBool
+
+-- | @since wip
+deriving via (PLiftableDirect PBool Bool) instance PLiftable PBool
 
 -- | @since wip
 pfalse :: forall (s :: S). Term s PBool
