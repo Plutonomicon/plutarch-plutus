@@ -35,6 +35,7 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
+import Plutarch.Numeric.Multiplicative (ppowNatural)
 import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
 import Plutarch.Primitive.BuiltinFun (
@@ -318,6 +319,26 @@ main =
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
+            pure ()
+    , testCaseSteps "Case 15" $ \step -> do
+        step "Case: ppowNatural @Integer"
+        step "1. Does Case 15 compile?"
+        let compiled = compileTerm (ppowNatural @PInteger)
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
+            let anf = fromHashedAST asAST
+            step "ANF, no demand analysis"
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step "ANF, with demand analysis"
+            step $ toPrettyString anf'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
     ]
 
