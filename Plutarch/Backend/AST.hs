@@ -168,6 +168,7 @@ data Leaf (ann :: Type)
       Eq
     )
 
+-- | @since wip
 instance Pretty (Leaf ann) where
   pretty = \case
     LVar _ h ->
@@ -219,6 +220,8 @@ data AST (ann :: Type)
 
 -- For the sake of consistency this uses the same formatting as the overlapping instance,
 -- although this *could* be prettier if we wanted it to be.
+
+-- | @since wip
 instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
   pretty = \case
     ASTLeaf l -> pretty l
@@ -240,6 +243,7 @@ instance {-# OVERLAPPABLE #-} Pretty (AST ()) where
         <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
     ASTCompose _ args -> "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
 
+-- | @since wip
 instance {-# OVERLAPS #-} Pretty ann => Pretty (AST ann) where
   pretty = \case
     ASTLeaf l -> case l of
