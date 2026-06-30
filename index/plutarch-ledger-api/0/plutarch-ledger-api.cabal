@@ -53,6 +53,7 @@ library
     Plutarch.LedgerApi.V2
     Plutarch.LedgerApi.V3
     Plutarch.LedgerApi.V3.Contexts
+    Plutarch.LedgerApi.V3.Value
     Plutarch.LedgerApi.Value
 
   other-modules:

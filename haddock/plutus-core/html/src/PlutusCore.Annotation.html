@@ -8,59 +8,63 @@
 </span><span id="line-8"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier">InlineHints</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
 </span><span id="line-9"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Inline"><span class="hs-identifier">Inline</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
 </span><span id="line-10"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier">AnnInline</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
-</span><span id="line-11"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Megaparsec.SourcePos</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
-</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Megaparsec.Pos</span></span><span>
-</span><span id="line-13"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#addSrcSpan"><span class="hs-identifier">addSrcSpan</span></a></span><span>
-</span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#lineInSrcSpan"><span class="hs-identifier">lineInSrcSpan</span></a></span><span>
-</span><span id="line-15"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html"><span class="hs-identifier">Control.DeepSeq</span></a></span><span>
-</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Default.Class</span></span><span>
-</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Hashable</span></span><span>
-</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.List.html"><span class="hs-identifier">Data.List</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">List</span></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.MonoTraversable</span></span><span>
-</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.html"><span class="hs-identifier">Data.Set</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.Internal.html#Set"><span class="hs-identifier">Set</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.html"><span class="hs-identifier">Data.Set</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Set</span></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span>
-</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Flat</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Flat</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span>
-</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Pos</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Megaparsec</span></span><span>
-</span><span id="line-28"></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">newtype</span><span> </span><span id="InlineHints"><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-var">InlineHints</span></a></span></span><span> </span><span id="local-6989586621682102714"><span class="annot"><a href="#local-6989586621682102714"><span class="hs-identifier hs-type">name</span></a></span></span><span> </span><span id="local-6989586621682102715"><span class="annot"><a href="#local-6989586621682102715"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="InlineHints"><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-var">InlineHints</span></a></span></span><span> </span><span class="hs-special">{</span><span id="shouldInline"><span class="annot"><span class="annottext">forall name a. InlineHints name a -&gt; a -&gt; name -&gt; Inline
-</span><a href="PlutusCore.Annotation.html#shouldInline"><span class="hs-identifier hs-var hs-var">shouldInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682102715"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621682102714"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-11"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Case"><span class="hs-identifier">Case</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnCase"><span class="hs-identifier">AnnCase</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Megaparsec.SourcePos</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Megaparsec.Pos</span></span><span>
+</span><span id="line-15"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#addSrcSpan"><span class="hs-identifier">addSrcSpan</span></a></span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#lineInSrcSpan"><span class="hs-identifier">lineInSrcSpan</span></a></span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-18"></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html"><span class="hs-identifier">Control.DeepSeq</span></a></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Default.Class</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Hashable</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.List.html"><span class="hs-identifier">Data.List</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">List</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.MonoTraversable</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.html"><span class="hs-identifier">Data.Set</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.Internal.html#Set"><span class="hs-identifier">Set</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.html"><span class="hs-identifier">Data.Set</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Set</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Flat</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Flat</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Pos</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Megaparsec</span></span><span>
 </span><span id="line-30"></span><span>
-</span><span id="line-31"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682102724"><span id="local-6989586621682102725"><span id="local-6989586621682102907"><span id="local-6989586621682102912"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-type">InlineHints</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682102724"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682102725"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-32"></span><span>  </span><span id="local-6989586621682102915"><span class="annot"><span class="annottext">show :: InlineHints name a -&gt; String
-</span><a href="#local-6989586621682102915"><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></a></span></span><span> </span><span class="annot"><span class="annottext">InlineHints name a
+</span><span id="line-31"></span><span class="hs-keyword">newtype</span><span> </span><span id="InlineHints"><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-var">InlineHints</span></a></span></span><span> </span><span id="local-6989586621682174768"><span class="annot"><a href="#local-6989586621682174768"><span class="hs-identifier hs-type">name</span></a></span></span><span> </span><span id="local-6989586621682174769"><span class="annot"><a href="#local-6989586621682174769"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="InlineHints"><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-var">InlineHints</span></a></span></span><span> </span><span class="hs-special">{</span><span id="shouldInline"><span class="annot"><span class="annottext">forall name a. InlineHints name a -&gt; a -&gt; name -&gt; Inline
+</span><a href="PlutusCore.Annotation.html#shouldInline"><span class="hs-identifier hs-var hs-var">shouldInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174769"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621682174768"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682174778"><span id="local-6989586621682174779"><span id="local-6989586621682174966"><span id="local-6989586621682174971"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-type">InlineHints</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682174778"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682174779"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-34"></span><span>  </span><span id="local-6989586621682174974"><span class="annot"><span class="annottext">show :: InlineHints name a -&gt; String
+</span><a href="#local-6989586621682174974"><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></a></span></span><span> </span><span class="annot"><span class="annottext">InlineHints name a
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;&lt;inline hints&gt;&quot;</span></span><span>
-</span><span id="line-33"></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682102730"><span id="local-6989586621682102731"><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-type">InlineHints</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682102730"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682102731"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-35"></span><span>  </span><span id="local-6989586621682102920"><span class="annot"><span class="annottext">def :: InlineHints name a
-</span><a href="#local-6989586621682102920"><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; name -&gt; Inline) -&gt; InlineHints name a
+</span><span id="line-35"></span><span>
+</span><span id="line-36"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682174784"><span id="local-6989586621682174785"><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-type">InlineHints</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682174784"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682174785"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>  </span><span id="local-6989586621682174979"><span class="annot"><span class="annottext">def :: InlineHints name a
+</span><a href="#local-6989586621682174979"><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; name -&gt; Inline) -&gt; InlineHints name a
 forall name a. (a -&gt; name -&gt; Inline) -&gt; InlineHints name a
 </span><a href="PlutusCore.Annotation.html#InlineHints"><span class="hs-identifier hs-var">InlineHints</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">a
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">name
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Inline
 </span><a href="PlutusCore.Annotation.html#MayInline"><span class="hs-identifier hs-var">MayInline</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="annot"><span class="hs-comment">-- | An annotation type used during the compilation.</span></span><span>
-</span><span id="line-38"></span><span class="hs-keyword">data</span><span> </span><span id="Ann"><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-var">Ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Ann"><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-var">Ann</span></a></span></span><span>
-</span><span id="line-39"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="annInline"><span class="annot"><span class="annottext">Ann -&gt; Inline
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span class="annot"><span class="hs-comment">-- | An annotation type used during the compilation.</span></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">data</span><span> </span><span id="Ann"><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-var">Ann</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Ann"><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-var">Ann</span></a></span></span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="annInline"><span class="annot"><span class="annottext">Ann -&gt; Inline
 </span><a href="PlutusCore.Annotation.html#annInline"><span class="hs-identifier hs-var hs-var">annInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span>
-</span><span id="line-40"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="annSrcSpans"><span class="annot"><span class="annottext">Ann -&gt; SrcSpans
+</span><span id="line-42"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="annCase"><span class="annot"><span class="annottext">Ann -&gt; Case
+</span><a href="PlutusCore.Annotation.html#annCase"><span class="hs-identifier hs-var hs-var">annCase</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="annSrcSpans"><span class="annot"><span class="annottext">Ann -&gt; SrcSpans
 </span><a href="PlutusCore.Annotation.html#annSrcSpans"><span class="hs-identifier hs-var hs-var">annSrcSpans</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span>
-</span><span id="line-41"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="annIsAsDataMatcher"><span class="annot"><span class="annottext">Ann -&gt; Bool
+</span><span id="line-44"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="annIsAsDataMatcher"><span class="annot"><span class="annottext">Ann -&gt; Bool
 </span><a href="PlutusCore.Annotation.html#annIsAsDataMatcher"><span class="hs-identifier hs-var hs-var">annIsAsDataMatcher</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span>
-</span><span id="line-42"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682102928"><span id="local-6989586621682102936"><span class="annot"><span class="annottext">Ann -&gt; Ann -&gt; Bool
+</span><span id="line-45"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682174988"><span id="local-6989586621682174998"><span class="annot"><span class="annottext">Ann -&gt; Ann -&gt; Bool
 (Ann -&gt; Ann -&gt; Bool) -&gt; (Ann -&gt; Ann -&gt; Bool) -&gt; Eq Ann
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: Ann -&gt; Ann -&gt; Bool
 == :: Ann -&gt; Ann -&gt; Bool
 $c/= :: Ann -&gt; Ann -&gt; Bool
 /= :: Ann -&gt; Ann -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682102943"><span id="local-6989586621682102951"><span id="local-6989586621682102956"><span id="local-6989586621682102960"><span id="local-6989586621682102963"><span id="local-6989586621682102966"><span id="local-6989586621682102969"><span class="annot"><span class="annottext">Eq Ann
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175005"><span id="local-6989586621682175015"><span id="local-6989586621682175021"><span id="local-6989586621682175025"><span id="local-6989586621682175028"><span id="local-6989586621682175031"><span id="local-6989586621682175034"><span class="annot"><span class="annottext">Eq Ann
 Eq Ann =&gt;
 (Ann -&gt; Ann -&gt; Ordering)
 -&gt; (Ann -&gt; Ann -&gt; Bool)
@@ -97,7 +101,7 @@ $cmax :: Ann -&gt; Ann -&gt; Ann
 max :: Ann -&gt; Ann -&gt; Ann
 $cmin :: Ann -&gt; Ann -&gt; Ann
 min :: Ann -&gt; Ann -&gt; Ann
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682102973"><span id="local-6989586621682102975"><span class="annot"><span class="annottext">(forall x. Ann -&gt; Rep Ann x)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175038"><span id="local-6989586621682175040"><span class="annot"><span class="annottext">(forall x. Ann -&gt; Rep Ann x)
 -&gt; (forall x. Rep Ann x -&gt; Ann) -&gt; Generic Ann
 forall x. Rep Ann x -&gt; Ann
 forall x. Ann -&gt; Rep Ann x
@@ -107,7 +111,7 @@ $cfrom :: forall x. Ann -&gt; Rep Ann x
 from :: forall x. Ann -&gt; Rep Ann x
 $cto :: forall x. Rep Ann x -&gt; Ann
 to :: forall x. Rep Ann x -&gt; Ann
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682102979"><span id="local-6989586621682102988"><span id="local-6989586621682102992"><span class="annot"><span class="annottext">Int -&gt; Ann -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175044"><span id="local-6989586621682175055"><span id="local-6989586621682175059"><span class="annot"><span class="annottext">Int -&gt; Ann -&gt; ShowS
 [Ann] -&gt; ShowS
 Ann -&gt; String
 (Int -&gt; Ann -&gt; ShowS)
@@ -121,7 +125,7 @@ show :: Ann -&gt; String
 $cshowList :: [Ann] -&gt; ShowS
 showList :: [Ann] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682102997"><span id="local-6989586621682103004"><span class="annot"><span class="annottext">Eq Ann
+</span><span id="line-47"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175064"><span id="local-6989586621682175071"><span class="annot"><span class="annottext">Eq Ann
 Eq Ann =&gt; (Int -&gt; Ann -&gt; Int) -&gt; (Ann -&gt; Int) -&gt; Hashable Ann
 Int -&gt; Ann -&gt; Int
 Ann -&gt; Int
@@ -131,25 +135,28 @@ hashWithSalt :: Int -&gt; Ann -&gt; Int
 $chash :: Ann -&gt; Int
 hash :: Ann -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>
-</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-47"></span><span>  </span><span id="local-6989586621682103029"><span class="annot"><span class="annottext">def :: Ann
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-50"></span><span>  </span><span id="local-6989586621682175101"><span class="annot"><span class="annottext">def :: Ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-48"></span><span>    </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span>
-</span><span id="line-49"></span><span>      </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">annInline :: Inline
+</span><span id="line-51"></span><span>    </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span>
+</span><span id="line-52"></span><span>      </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">annInline :: Inline
 </span><a href="PlutusCore.Annotation.html#annInline"><span class="hs-identifier hs-var">annInline</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Inline
 </span><a href="PlutusCore.Annotation.html#MayInline"><span class="hs-identifier hs-var">MayInline</span></a></span><span>
-</span><span id="line-50"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">annSrcSpans :: SrcSpans
+</span><span id="line-53"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">annCase :: Case
+</span><a href="PlutusCore.Annotation.html#annCase"><span class="hs-identifier hs-var">annCase</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Case
+</span><a href="PlutusCore.Annotation.html#NotSafeToDrop"><span class="hs-identifier hs-var">NotSafeToDrop</span></a></span><span>
+</span><span id="line-54"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">annSrcSpans :: SrcSpans
 </span><a href="PlutusCore.Annotation.html#annSrcSpans"><span class="hs-identifier hs-var">annSrcSpans</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpans
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-51"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">annIsAsDataMatcher :: Bool
+</span><span id="line-55"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">annIsAsDataMatcher :: Bool
 </span><a href="PlutusCore.Annotation.html#annIsAsDataMatcher"><span class="hs-identifier hs-var">annIsAsDataMatcher</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span>
-</span><span id="line-52"></span><span>      </span><span class="hs-special">}</span><span>
-</span><span id="line-53"></span><span>
-</span><span id="line-54"></span><span class="hs-keyword">data</span><span> </span><span id="Inline"><span class="annot"><a href="PlutusCore.Annotation.html#Inline"><span class="hs-identifier hs-var">Inline</span></a></span></span><span>
-</span><span id="line-55"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-comment">{-| When calling @PlutusIR.Compiler.Definitions.defineTerm@ to add a new term definition,
+</span><span id="line-56"></span><span>      </span><span class="hs-special">}</span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">data</span><span> </span><span id="Inline"><span class="annot"><a href="PlutusCore.Annotation.html#Inline"><span class="hs-identifier hs-var">Inline</span></a></span></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-comment">{-| When calling @PlutusIR.Compiler.Definitions.defineTerm@ to add a new term definition,
     if we annotation the var on the LHS of the definition with `AlwaysInline`, the inliner will
     always inline that var.
 
@@ -157,12 +164,12 @@ forall a. Monoid a =&gt; a
     flag is on and @trace@ is rewritten to @const@) are inlined, because the inliner would
     otherwise not inline them. To achieve that, we annotate the definition with `AlwaysInline`
     when defining @trace@, i.e., @trace &lt;AlwaysInline&gt; = \_ a -&gt; a@. -}</span></span><span>
-</span><span id="line-63"></span><span>    </span><span id="AlwaysInline"><span class="annot"><a href="PlutusCore.Annotation.html#AlwaysInline"><span class="hs-identifier hs-var">AlwaysInline</span></a></span></span><span>
-</span><span id="line-64"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">{-| Signaling to the compiler that a binding is safe to inline. This is useful for
+</span><span id="line-67"></span><span>    </span><span id="AlwaysInline"><span class="annot"><a href="PlutusCore.Annotation.html#AlwaysInline"><span class="hs-identifier hs-var">AlwaysInline</span></a></span></span><span>
+</span><span id="line-68"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">{-| Signaling to the compiler that a binding is safe to inline. This is useful for
     annotating strict bindings that aren't obviously safe to inline. -}</span></span><span>
-</span><span id="line-66"></span><span>    </span><span id="SafeToInline"><span class="annot"><a href="PlutusCore.Annotation.html#SafeToInline"><span class="hs-identifier hs-var">SafeToInline</span></a></span></span><span>
-</span><span id="line-67"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MayInline"><span class="annot"><a href="PlutusCore.Annotation.html#MayInline"><span class="hs-identifier hs-var">MayInline</span></a></span></span><span>
-</span><span id="line-68"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103033"><span id="local-6989586621682103035"><span class="annot"><span class="annottext">Inline -&gt; Inline -&gt; Bool
+</span><span id="line-70"></span><span>    </span><span id="SafeToInline"><span class="annot"><a href="PlutusCore.Annotation.html#SafeToInline"><span class="hs-identifier hs-var">SafeToInline</span></a></span></span><span>
+</span><span id="line-71"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="MayInline"><span class="annot"><a href="PlutusCore.Annotation.html#MayInline"><span class="hs-identifier hs-var">MayInline</span></a></span></span><span>
+</span><span id="line-72"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175106"><span id="local-6989586621682175108"><span class="annot"><span class="annottext">Inline -&gt; Inline -&gt; Bool
 (Inline -&gt; Inline -&gt; Bool)
 -&gt; (Inline -&gt; Inline -&gt; Bool) -&gt; Eq Inline
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -170,7 +177,7 @@ $c== :: Inline -&gt; Inline -&gt; Bool
 == :: Inline -&gt; Inline -&gt; Bool
 $c/= :: Inline -&gt; Inline -&gt; Bool
 /= :: Inline -&gt; Inline -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103040"><span id="local-6989586621682103042"><span id="local-6989586621682103044"><span id="local-6989586621682103047"><span id="local-6989586621682103050"><span id="local-6989586621682103053"><span id="local-6989586621682103056"><span class="annot"><span class="annottext">Eq Inline
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175113"><span id="local-6989586621682175115"><span id="local-6989586621682175117"><span id="local-6989586621682175120"><span id="local-6989586621682175123"><span id="local-6989586621682175126"><span id="local-6989586621682175129"><span class="annot"><span class="annottext">Eq Inline
 Eq Inline =&gt;
 (Inline -&gt; Inline -&gt; Ordering)
 -&gt; (Inline -&gt; Inline -&gt; Bool)
@@ -207,7 +214,7 @@ $cmax :: Inline -&gt; Inline -&gt; Inline
 max :: Inline -&gt; Inline -&gt; Inline
 $cmin :: Inline -&gt; Inline -&gt; Inline
 min :: Inline -&gt; Inline -&gt; Inline
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103059"><span id="local-6989586621682103061"><span class="annot"><span class="annottext">(forall x. Inline -&gt; Rep Inline x)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175132"><span id="local-6989586621682175134"><span class="annot"><span class="annottext">(forall x. Inline -&gt; Rep Inline x)
 -&gt; (forall x. Rep Inline x -&gt; Inline) -&gt; Generic Inline
 forall x. Rep Inline x -&gt; Inline
 forall x. Inline -&gt; Rep Inline x
@@ -217,7 +224,7 @@ $cfrom :: forall x. Inline -&gt; Rep Inline x
 from :: forall x. Inline -&gt; Rep Inline x
 $cto :: forall x. Rep Inline x -&gt; Inline
 to :: forall x. Rep Inline x -&gt; Inline
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103064"><span id="local-6989586621682103066"><span id="local-6989586621682103069"><span class="annot"><span class="annottext">Int -&gt; Inline -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175137"><span id="local-6989586621682175139"><span id="local-6989586621682175142"><span class="annot"><span class="annottext">Int -&gt; Inline -&gt; ShowS
 [Inline] -&gt; ShowS
 Inline -&gt; String
 (Int -&gt; Inline -&gt; ShowS)
@@ -231,7 +238,7 @@ show :: Inline -&gt; String
 $cshowList :: [Inline] -&gt; ShowS
 showList :: [Inline] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-69"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103074"><span id="local-6989586621682103080"><span class="annot"><span class="annottext">Eq Inline
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175147"><span id="local-6989586621682175153"><span class="annot"><span class="annottext">Eq Inline
 Eq Inline =&gt;
 (Int -&gt; Inline -&gt; Int) -&gt; (Inline -&gt; Int) -&gt; Hashable Inline
 Int -&gt; Inline -&gt; Int
@@ -242,69 +249,192 @@ hashWithSalt :: Int -&gt; Inline -&gt; Int
 $chash :: Inline -&gt; Int
 hash :: Inline -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-70"></span><span>
-</span><span id="line-71"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682103094"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-72"></span><span>  </span><span id="local-6989586621682103099"><span class="annot"><span class="annottext">pretty :: forall ann. Ann -&gt; Doc ann
-</span><a href="#local-6989586621682103099"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann -&gt; Doc ann
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682175167"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>  </span><span id="local-6989586621682175172"><span class="annot"><span class="annottext">pretty :: forall ann. Ann -&gt; Doc ann
+</span><a href="#local-6989586621682175172"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann -&gt; Doc ann
 forall a ann. Show a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">viaShow</span></span><span>
-</span><span id="line-73"></span><span>
-</span><span id="line-74"></span><span class="hs-keyword">class</span><span> </span><span id="AnnInline"><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier hs-var">AnnInline</span></a></span></span><span> </span><span id="local-6989586621682102775"><span class="annot"><a href="#local-6989586621682102775"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-75"></span><span>  </span><span class="hs-comment">-- | An annotation instructing the inliner to always inline a binding.</span><span>
-</span><span id="line-76"></span><span>  </span><span id="annAlwaysInline"><span class="annot"><a href="PlutusCore.Annotation.html#annAlwaysInline"><span class="hs-identifier hs-type">annAlwaysInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682102775"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span>  </span><span class="hs-comment">{-| An annotation signaling to the inliner that a binding is safe to inline.
+</span><span id="line-78"></span><span class="hs-keyword">class</span><span> </span><span id="AnnInline"><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier hs-var">AnnInline</span></a></span></span><span> </span><span id="local-6989586621682174830"><span class="annot"><a href="#local-6989586621682174830"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-comment">-- | An annotation instructing the inliner to always inline a binding.</span><span>
+</span><span id="line-80"></span><span>  </span><span id="annAlwaysInline"><span class="annot"><a href="PlutusCore.Annotation.html#annAlwaysInline"><span class="hs-identifier hs-type">annAlwaysInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174830"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-81"></span><span>
+</span><span id="line-82"></span><span>  </span><span class="hs-comment">{-| An annotation signaling to the inliner that a binding is safe to inline.
   The inlining decision is left to the inliner. This is useful for
   annotating strict bindings that aren't obviously safe to inline. -}</span><span>
-</span><span id="line-81"></span><span>  </span><span id="annSafeToInline"><span class="annot"><a href="PlutusCore.Annotation.html#annSafeToInline"><span class="hs-identifier hs-type">annSafeToInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682102775"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-82"></span><span>
-</span><span id="line-83"></span><span>  </span><span class="hs-comment">-- | An annotation that leaves the inlining decision to the inliner.</span><span>
-</span><span id="line-84"></span><span>  </span><span id="annMayInline"><span class="annot"><a href="PlutusCore.Annotation.html#annMayInline"><span class="hs-identifier hs-type">annMayInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682102775"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-85"></span><span>
-</span><span id="line-86"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier hs-type">AnnInline</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-87"></span><span>  </span><span id="local-6989586621682103110"><span class="annot"><span class="annottext">annAlwaysInline :: ()
+</span><span id="line-85"></span><span>  </span><span id="annSafeToInline"><span class="annot"><a href="PlutusCore.Annotation.html#annSafeToInline"><span class="hs-identifier hs-type">annSafeToInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174830"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-comment">-- | An annotation that leaves the inlining decision to the inliner.</span><span>
+</span><span id="line-88"></span><span>  </span><span id="annMayInline"><span class="annot"><a href="PlutusCore.Annotation.html#annMayInline"><span class="hs-identifier hs-type">annMayInline</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174830"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-89"></span><span>
+</span><span id="line-90"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier hs-type">AnnInline</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-91"></span><span>  </span><span id="local-6989586621682175183"><span class="annot"><span class="annottext">annAlwaysInline :: ()
 </span><a href="PlutusCore.Annotation.html#annAlwaysInline"><span class="hs-identifier hs-var hs-var hs-var hs-var">annAlwaysInline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621682103111"><span class="annot"><span class="annottext">annSafeToInline :: ()
+</span><span id="line-92"></span><span>  </span><span id="local-6989586621682175184"><span class="annot"><span class="annottext">annSafeToInline :: ()
 </span><a href="PlutusCore.Annotation.html#annSafeToInline"><span class="hs-identifier hs-var hs-var hs-var hs-var">annSafeToInline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-89"></span><span>  </span><span id="local-6989586621682103112"><span class="annot"><span class="annottext">annMayInline :: ()
+</span><span id="line-93"></span><span>  </span><span id="local-6989586621682175185"><span class="annot"><span class="annottext">annMayInline :: ()
 </span><a href="PlutusCore.Annotation.html#annMayInline"><span class="hs-identifier hs-var hs-var hs-var hs-var">annMayInline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-90"></span><span>
-</span><span id="line-91"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier hs-type">AnnInline</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-92"></span><span>  </span><span id="local-6989586621682103118"><span class="annot"><span class="annottext">annAlwaysInline :: Ann
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnInline"><span class="hs-identifier hs-type">AnnInline</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-96"></span><span>  </span><span id="local-6989586621682175191"><span class="annot"><span class="annottext">annAlwaysInline :: Ann
 </span><a href="PlutusCore.Annotation.html#annAlwaysInline"><span class="hs-identifier hs-var hs-var hs-var hs-var">annAlwaysInline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span> </span><span class="hs-special">{</span><span class="annot"><a href="PlutusCore.Annotation.html#annInline"><span class="hs-identifier hs-var">annInline</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AlwaysInline"><span class="hs-identifier hs-type">AlwaysInline</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-93"></span><span>  </span><span id="local-6989586621682103120"><span class="annot"><span class="annottext">annSafeToInline :: Ann
+</span><span id="line-97"></span><span>  </span><span id="local-6989586621682175193"><span class="annot"><span class="annottext">annSafeToInline :: Ann
 </span><a href="PlutusCore.Annotation.html#annSafeToInline"><span class="hs-identifier hs-var hs-var hs-var hs-var">annSafeToInline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span> </span><span class="hs-special">{</span><span class="annot"><a href="PlutusCore.Annotation.html#annInline"><span class="hs-identifier hs-var">annInline</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SafeToInline"><span class="hs-identifier hs-type">SafeToInline</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-94"></span><span>  </span><span id="local-6989586621682103122"><span class="annot"><span class="annottext">annMayInline :: Ann
+</span><span id="line-98"></span><span>  </span><span id="local-6989586621682175195"><span class="annot"><span class="annottext">annMayInline :: Ann
 </span><a href="PlutusCore.Annotation.html#annMayInline"><span class="hs-identifier hs-var hs-var hs-var hs-var">annMayInline</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span> </span><span class="hs-special">{</span><span class="annot"><a href="PlutusCore.Annotation.html#annInline"><span class="hs-identifier hs-var">annInline</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#MayInline"><span class="hs-identifier hs-type">MayInline</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-95"></span><span>
-</span><span id="line-96"></span><span class="annot"><span class="hs-comment">{-| The span between two source locations.
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span class="hs-keyword">data</span><span> </span><span id="Case"><span class="annot"><a href="PlutusCore.Annotation.html#Case"><span class="hs-identifier hs-var">Case</span></a></span></span><span>
+</span><span id="line-101"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-comment">{-| Signaling to the compiler that a @case@ expression is safe to drop,
+    so long as its binders are unused. -}</span></span><span>
+</span><span id="line-103"></span><span>    </span><span id="SafeToDrop"><span class="annot"><a href="PlutusCore.Annotation.html#SafeToDrop"><span class="hs-identifier hs-var">SafeToDrop</span></a></span></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="NotSafeToDrop"><span class="annot"><a href="PlutusCore.Annotation.html#NotSafeToDrop"><span class="hs-identifier hs-var">NotSafeToDrop</span></a></span></span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175198"><span id="local-6989586621682175200"><span class="annot"><span class="annottext">Case -&gt; Case -&gt; Bool
+(Case -&gt; Case -&gt; Bool) -&gt; (Case -&gt; Case -&gt; Bool) -&gt; Eq Case
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+$c== :: Case -&gt; Case -&gt; Bool
+== :: Case -&gt; Case -&gt; Bool
+$c/= :: Case -&gt; Case -&gt; Bool
+/= :: Case -&gt; Case -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175205"><span id="local-6989586621682175207"><span id="local-6989586621682175209"><span id="local-6989586621682175212"><span id="local-6989586621682175215"><span id="local-6989586621682175218"><span id="local-6989586621682175221"><span class="annot"><span class="annottext">Eq Case
+Eq Case =&gt;
+(Case -&gt; Case -&gt; Ordering)
+-&gt; (Case -&gt; Case -&gt; Bool)
+-&gt; (Case -&gt; Case -&gt; Bool)
+-&gt; (Case -&gt; Case -&gt; Bool)
+-&gt; (Case -&gt; Case -&gt; Bool)
+-&gt; (Case -&gt; Case -&gt; Case)
+-&gt; (Case -&gt; Case -&gt; Case)
+-&gt; Ord Case
+Case -&gt; Case -&gt; Bool
+Case -&gt; Case -&gt; Ordering
+Case -&gt; Case -&gt; Case
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+$ccompare :: Case -&gt; Case -&gt; Ordering
+compare :: Case -&gt; Case -&gt; Ordering
+$c&lt; :: Case -&gt; Case -&gt; Bool
+&lt; :: Case -&gt; Case -&gt; Bool
+$c&lt;= :: Case -&gt; Case -&gt; Bool
+&lt;= :: Case -&gt; Case -&gt; Bool
+$c&gt; :: Case -&gt; Case -&gt; Bool
+&gt; :: Case -&gt; Case -&gt; Bool
+$c&gt;= :: Case -&gt; Case -&gt; Bool
+&gt;= :: Case -&gt; Case -&gt; Bool
+$cmax :: Case -&gt; Case -&gt; Case
+max :: Case -&gt; Case -&gt; Case
+$cmin :: Case -&gt; Case -&gt; Case
+min :: Case -&gt; Case -&gt; Case
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175224"><span id="local-6989586621682175226"><span class="annot"><span class="annottext">(forall x. Case -&gt; Rep Case x)
+-&gt; (forall x. Rep Case x -&gt; Case) -&gt; Generic Case
+forall x. Rep Case x -&gt; Case
+forall x. Case -&gt; Rep Case x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cfrom :: forall x. Case -&gt; Rep Case x
+from :: forall x. Case -&gt; Rep Case x
+$cto :: forall x. Rep Case x -&gt; Case
+to :: forall x. Rep Case x -&gt; Case
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175229"><span id="local-6989586621682175231"><span id="local-6989586621682175234"><span class="annot"><span class="annottext">Int -&gt; Case -&gt; ShowS
+[Case] -&gt; ShowS
+Case -&gt; String
+(Int -&gt; Case -&gt; ShowS)
+-&gt; (Case -&gt; String) -&gt; ([Case] -&gt; ShowS) -&gt; Show Case
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+$cshowsPrec :: Int -&gt; Case -&gt; ShowS
+showsPrec :: Int -&gt; Case -&gt; ShowS
+$cshow :: Case -&gt; String
+show :: Case -&gt; String
+$cshowList :: [Case] -&gt; ShowS
+showList :: [Case] -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175239"><span id="local-6989586621682175245"><span class="annot"><span class="annottext">Eq Case
+Eq Case =&gt; (Int -&gt; Case -&gt; Int) -&gt; (Case -&gt; Int) -&gt; Hashable Case
+Int -&gt; Case -&gt; Int
+Case -&gt; Int
+forall a. Eq a =&gt; (Int -&gt; a -&gt; Int) -&gt; (a -&gt; Int) -&gt; Hashable a
+$chashWithSalt :: Int -&gt; Case -&gt; Int
+hashWithSalt :: Int -&gt; Case -&gt; Int
+$chash :: Case -&gt; Int
+hash :: Case -&gt; Int
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="annot"><span class="hs-comment">-- | Methods used to guide optimization of @case@ expressions.</span></span><span>
+</span><span id="line-109"></span><span class="hs-keyword">class</span><span> </span><span id="AnnCase"><span class="annot"><a href="PlutusCore.Annotation.html#AnnCase"><span class="hs-identifier hs-var">AnnCase</span></a></span></span><span> </span><span id="local-6989586621682174832"><span class="annot"><a href="#local-6989586621682174832"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-comment">{-| An annotation signaling that the @case@ expression is safe to drop,
+  so long as its binders are unused. -}</span><span>
+</span><span id="line-112"></span><span>  </span><span id="annSafeToDrop"><span class="annot"><a href="PlutusCore.Annotation.html#annSafeToDrop"><span class="hs-identifier hs-type">annSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174832"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-113"></span><span>
+</span><span id="line-114"></span><span>  </span><span id="annNotSafeToDrop"><span class="annot"><a href="PlutusCore.Annotation.html#annNotSafeToDrop"><span class="hs-identifier hs-type">annNotSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174832"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-115"></span><span>
+</span><span id="line-116"></span><span>  </span><span id="annIsSafeToDrop"><span class="annot"><a href="PlutusCore.Annotation.html#annIsSafeToDrop"><span class="hs-identifier hs-type">annIsSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621682174832"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span>
+</span><span id="line-117"></span><span>
+</span><span id="line-118"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnCase"><span class="hs-identifier hs-type">AnnCase</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-119"></span><span>  </span><span id="local-6989586621682175259"><span class="annot"><span class="annottext">annSafeToDrop :: ()
+</span><a href="PlutusCore.Annotation.html#annSafeToDrop"><span class="hs-identifier hs-var hs-var hs-var hs-var">annSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-120"></span><span>  </span><span id="local-6989586621682175260"><span class="annot"><span class="annottext">annNotSafeToDrop :: ()
+</span><a href="PlutusCore.Annotation.html#annNotSafeToDrop"><span class="hs-identifier hs-var hs-var hs-var hs-var">annNotSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-121"></span><span>  </span><span id="local-6989586621682175261"><span class="annot"><span class="annottext">annIsSafeToDrop :: () -&gt; Bool
+</span><a href="PlutusCore.Annotation.html#annIsSafeToDrop"><span class="hs-identifier hs-var hs-var hs-var hs-var">annIsSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; () -&gt; Bool
+forall a b. a -&gt; b -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#const"><span class="hs-identifier hs-var">const</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#False"><span class="hs-identifier hs-var">False</span></a></span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#AnnCase"><span class="hs-identifier hs-type">AnnCase</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-124"></span><span>  </span><span id="local-6989586621682175268"><span class="annot"><span class="annottext">annSafeToDrop :: Ann
+</span><a href="PlutusCore.Annotation.html#annSafeToDrop"><span class="hs-identifier hs-var hs-var hs-var hs-var">annSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann
+forall a. Default a =&gt; a
+</span><span class="hs-identifier hs-var">def</span></span><span> </span><span class="hs-special">{</span><span class="annot"><a href="PlutusCore.Annotation.html#annCase"><span class="hs-identifier hs-var">annCase</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SafeToDrop"><span class="hs-identifier hs-type">SafeToDrop</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-125"></span><span>  </span><span id="local-6989586621682175270"><span class="annot"><span class="annottext">annNotSafeToDrop :: Ann
+</span><a href="PlutusCore.Annotation.html#annNotSafeToDrop"><span class="hs-identifier hs-var hs-var hs-var hs-var">annNotSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ann
+forall a. Default a =&gt; a
+</span><span class="hs-identifier hs-var">def</span></span><span> </span><span class="hs-special">{</span><span class="annot"><a href="PlutusCore.Annotation.html#annCase"><span class="hs-identifier hs-var">annCase</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#NotSafeToDrop"><span class="hs-identifier hs-type">NotSafeToDrop</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-126"></span><span>  </span><span id="local-6989586621682175272"><span class="annot"><span class="annottext">annIsSafeToDrop :: Ann -&gt; Bool
+</span><a href="PlutusCore.Annotation.html#annIsSafeToDrop"><span class="hs-identifier hs-var hs-var hs-var hs-var">annIsSafeToDrop</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Case -&gt; Case -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3D%3D"><span class="hs-operator hs-var">==</span></a></span><span> </span><span class="annot"><span class="annottext">Case
+</span><a href="PlutusCore.Annotation.html#SafeToDrop"><span class="hs-identifier hs-var">SafeToDrop</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Case -&gt; Bool) -&gt; (Ann -&gt; Case) -&gt; Ann -&gt; Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Ann -&gt; Case
+</span><a href="PlutusCore.Annotation.html#annCase"><span class="hs-identifier hs-var">annCase</span></a></span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="annot"><span class="hs-comment">{-| The span between two source locations.
 
 This corresponds roughly to the `SrcSpan` used by GHC,
 but we define our own version so we don't have to depend on `ghc` to use it.
 
 The line and column numbers are 1-based, and the unit is Unicode code point (or `Char`). -}</span></span><span>
-</span><span id="line-102"></span><span class="hs-keyword">data</span><span> </span><span id="SrcSpan"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcSpan"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span></span><span>
-</span><span id="line-103"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="srcSpanFile"><span class="annot"><span class="annottext">SrcSpan -&gt; String
+</span><span id="line-134"></span><span class="hs-keyword">data</span><span> </span><span id="SrcSpan"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcSpan"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-var">SrcSpan</span></a></span></span><span>
+</span><span id="line-135"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="srcSpanFile"><span class="annot"><span class="annottext">SrcSpan -&gt; String
 </span><a href="PlutusCore.Annotation.html#srcSpanFile"><span class="hs-identifier hs-var hs-var">srcSpanFile</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.IO.html#FilePath"><span class="hs-identifier hs-type">FilePath</span></a></span><span>
-</span><span id="line-104"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanSLine"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><span id="line-136"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanSLine"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanSLine"><span class="hs-identifier hs-var hs-var">srcSpanSLine</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span>
-</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanSCol"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><span id="line-137"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanSCol"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanSCol"><span class="hs-identifier hs-var hs-var">srcSpanSCol</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span>
-</span><span id="line-106"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanELine"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><span id="line-138"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanELine"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanELine"><span class="hs-identifier hs-var hs-var">srcSpanELine</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span>
-</span><span id="line-107"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanECol"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
+</span><span id="line-139"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="srcSpanECol"><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanECol"><span class="hs-identifier hs-var hs-var">srcSpanECol</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span>
-</span><span id="line-108"></span><span>  </span><span class="annot"><span class="hs-comment">{-^ Same as GHC's @SrcSpan@, @srcSpanECol@ is usually one more than the column of
+</span><span id="line-140"></span><span>  </span><span class="annot"><span class="hs-comment">{-^ Same as GHC's @SrcSpan@, @srcSpanECol@ is usually one more than the column of
   the last character of the thing this @SrcSpan@ is for (unless the last character
   is the line break). -}</span></span><span>
-</span><span id="line-111"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-112"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103131"><span id="local-6989586621682103141"><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpan -&gt; Bool
+</span><span id="line-143"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175282"><span id="local-6989586621682175292"><span class="annot"><span class="annottext">SrcSpan -&gt; SrcSpan -&gt; Bool
 (SrcSpan -&gt; SrcSpan -&gt; Bool)
 -&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool) -&gt; Eq SrcSpan
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -312,7 +442,7 @@ $c== :: SrcSpan -&gt; SrcSpan -&gt; Bool
 == :: SrcSpan -&gt; SrcSpan -&gt; Bool
 $c/= :: SrcSpan -&gt; SrcSpan -&gt; Bool
 /= :: SrcSpan -&gt; SrcSpan -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103148"><span id="local-6989586621682103157"><span id="local-6989586621682103165"><span id="local-6989586621682103168"><span id="local-6989586621682103171"><span id="local-6989586621682103174"><span id="local-6989586621682103177"><span class="annot"><span class="annottext">Eq SrcSpan
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175299"><span id="local-6989586621682175308"><span id="local-6989586621682175316"><span id="local-6989586621682175319"><span id="local-6989586621682175322"><span id="local-6989586621682175325"><span id="local-6989586621682175328"><span class="annot"><span class="annottext">Eq SrcSpan
 Eq SrcSpan =&gt;
 (SrcSpan -&gt; SrcSpan -&gt; Ordering)
 -&gt; (SrcSpan -&gt; SrcSpan -&gt; Bool)
@@ -349,7 +479,7 @@ $cmax :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
 max :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
 $cmin :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
 min :: SrcSpan -&gt; SrcSpan -&gt; SrcSpan
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103181"><span id="local-6989586621682103183"><span class="annot"><span class="annottext">(forall x. SrcSpan -&gt; Rep SrcSpan x)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175332"><span id="local-6989586621682175334"><span class="annot"><span class="annottext">(forall x. SrcSpan -&gt; Rep SrcSpan x)
 -&gt; (forall x. Rep SrcSpan x -&gt; SrcSpan) -&gt; Generic SrcSpan
 forall x. Rep SrcSpan x -&gt; SrcSpan
 forall x. SrcSpan -&gt; Rep SrcSpan x
@@ -360,7 +490,7 @@ from :: forall x. SrcSpan -&gt; Rep SrcSpan x
 $cto :: forall x. Rep SrcSpan x -&gt; SrcSpan
 to :: forall x. Rep SrcSpan x -&gt; SrcSpan
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-113"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103186"><span id="local-6989586621682103193"><span id="local-6989586621682103199"><span class="annot"><span class="annottext">Get SrcSpan
+</span><span id="line-145"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175337"><span id="local-6989586621682175344"><span id="local-6989586621682175350"><span class="annot"><span class="annottext">Get SrcSpan
 SrcSpan -&gt; Encoding
 SrcSpan -&gt; Int -&gt; Int
 (SrcSpan -&gt; Encoding)
@@ -372,7 +502,7 @@ $cdecode :: Get SrcSpan
 decode :: Get SrcSpan
 $csize :: SrcSpan -&gt; Int -&gt; Int
 size :: SrcSpan -&gt; Int -&gt; Int
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103265"><span id="local-6989586621682103272"><span class="annot"><span class="annottext">Eq SrcSpan
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175416"><span id="local-6989586621682175423"><span class="annot"><span class="annottext">Eq SrcSpan
 Eq SrcSpan =&gt;
 (Int -&gt; SrcSpan -&gt; Int) -&gt; (SrcSpan -&gt; Int) -&gt; Hashable SrcSpan
 Int -&gt; SrcSpan -&gt; Int
@@ -382,93 +512,93 @@ $chashWithSalt :: Int -&gt; SrcSpan -&gt; Int
 hashWithSalt :: Int -&gt; SrcSpan -&gt; Int
 $chash :: SrcSpan -&gt; Int
 hash :: SrcSpan -&gt; Int
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103293"><span class="annot"><span class="annottext">SrcSpan -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175444"><span class="annot"><span class="annottext">SrcSpan -&gt; ()
 (SrcSpan -&gt; ()) -&gt; NFData SrcSpan
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: SrcSpan -&gt; ()
 rnf :: SrcSpan -&gt; ()
 </span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-114"></span><span>
-</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682103323"><span id="local-6989586621682103327"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-116"></span><span>  </span><span id="local-6989586621682103340"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcSpan -&gt; ShowS
-</span><a href="#local-6989586621682103340"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682103342"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-117"></span><span>    </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span id="line-146"></span><span>
+</span><span id="line-147"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682175474"><span id="local-6989586621682175478"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-148"></span><span>  </span><span id="local-6989586621682175491"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcSpan -&gt; ShowS
+</span><a href="#local-6989586621682175491"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682175493"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-149"></span><span>    </span><span class="annot"><span class="annottext">String -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showString"><span class="hs-identifier hs-var">showString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; String
 </span><a href="PlutusCore.Annotation.html#srcSpanFile"><span class="hs-identifier hs-var">srcSpanFile</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-118"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-150"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showChar"><span class="hs-identifier hs-var">showChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">':'</span></span><span>
-</span><span id="line-119"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><span id="line-151"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; ShowS
 forall a. Show a =&gt; Int -&gt; a -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showsPrec"><span class="hs-identifier hs-var">showsPrec</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanSLine"><span class="hs-identifier hs-var">srcSpanSLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-120"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-152"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showChar"><span class="hs-identifier hs-var">showChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">':'</span></span><span>
-</span><span id="line-121"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><span id="line-153"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; ShowS
 forall a. Show a =&gt; Int -&gt; a -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showsPrec"><span class="hs-identifier hs-var">showsPrec</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanSCol"><span class="hs-identifier hs-var">srcSpanSCol</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-122"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-154"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showChar"><span class="hs-identifier hs-var">showChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'-'</span></span><span>
-</span><span id="line-123"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><span id="line-155"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; ShowS
 forall a. Show a =&gt; Int -&gt; a -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showsPrec"><span class="hs-identifier hs-var">showsPrec</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanELine"><span class="hs-identifier hs-var">srcSpanELine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-124"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-156"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showChar"><span class="hs-identifier hs-var">showChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">':'</span></span><span>
-</span><span id="line-125"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><span id="line-157"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; ShowS
 forall a. Show a =&gt; Int -&gt; a -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showsPrec"><span class="hs-identifier hs-var">showsPrec</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanECol"><span class="hs-identifier hs-var">srcSpanECol</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3D%3D"><span class="hs-operator hs-var">==</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanECol"><span class="hs-identifier hs-var">srcSpanECol</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103342"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621682175493"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
-</span><span id="line-126"></span><span>
-</span><span id="line-127"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682103348"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-128"></span><span>  </span><span id="local-6989586621682103352"><span class="annot"><span class="annottext">pretty :: forall ann. SrcSpan -&gt; Doc ann
+</span><span id="line-158"></span><span>
+</span><span id="line-159"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682175498"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-160"></span><span>  </span><span id="local-6989586621682175502"><span class="annot"><span class="annottext">pretty :: forall ann. SrcSpan -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Doc ann
 forall a ann. Show a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">viaShow</span></span><span>
-</span><span id="line-129"></span><span>
-</span><span id="line-130"></span><span class="hs-keyword">newtype</span><span> </span><span id="SrcSpans"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-var">SrcSpans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcSpans"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-var">SrcSpans</span></a></span></span><span> </span><span class="hs-special">{</span><span id="unSrcSpans"><span class="annot"><span class="annottext">SrcSpans -&gt; Set SrcSpan
+</span><span id="line-161"></span><span>
+</span><span id="line-162"></span><span class="hs-keyword">newtype</span><span> </span><span id="SrcSpans"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-var">SrcSpans</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="SrcSpans"><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-var">SrcSpans</span></a></span></span><span> </span><span class="hs-special">{</span><span id="unSrcSpans"><span class="annot"><span class="annottext">SrcSpans -&gt; Set SrcSpan
 </span><a href="PlutusCore.Annotation.html#unSrcSpans"><span class="hs-identifier hs-var hs-var">unSrcSpans</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.Internal.html#Set"><span class="hs-identifier hs-type">Set</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-131"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103356"><span id="local-6989586621682103362"><span class="annot"><span class="annottext">SrcSpans -&gt; SrcSpans -&gt; Bool
+</span><span id="line-163"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175506"><span id="local-6989586621682175512"><span class="annot"><span class="annottext">SrcSpans -&gt; SrcSpans -&gt; Bool
 (SrcSpans -&gt; SrcSpans -&gt; Bool)
 -&gt; (SrcSpans -&gt; SrcSpans -&gt; Bool) -&gt; Eq SrcSpans
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -476,7 +606,7 @@ $c== :: SrcSpans -&gt; SrcSpans -&gt; Bool
 == :: SrcSpans -&gt; SrcSpans -&gt; Bool
 $c/= :: SrcSpans -&gt; SrcSpans -&gt; Bool
 /= :: SrcSpans -&gt; SrcSpans -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103369"><span id="local-6989586621682103374"><span id="local-6989586621682103378"><span id="local-6989586621682103382"><span id="local-6989586621682103386"><span id="local-6989586621682103390"><span id="local-6989586621682103394"><span class="annot"><span class="annottext">Eq SrcSpans
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175519"><span id="local-6989586621682175524"><span id="local-6989586621682175528"><span id="local-6989586621682175532"><span id="local-6989586621682175536"><span id="local-6989586621682175540"><span id="local-6989586621682175544"><span class="annot"><span class="annottext">Eq SrcSpans
 Eq SrcSpans =&gt;
 (SrcSpans -&gt; SrcSpans -&gt; Ordering)
 -&gt; (SrcSpans -&gt; SrcSpans -&gt; Bool)
@@ -513,7 +643,7 @@ $cmax :: SrcSpans -&gt; SrcSpans -&gt; SrcSpans
 max :: SrcSpans -&gt; SrcSpans -&gt; SrcSpans
 $cmin :: SrcSpans -&gt; SrcSpans -&gt; SrcSpans
 min :: SrcSpans -&gt; SrcSpans -&gt; SrcSpans
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103400"><span id="local-6989586621682103406"><span class="annot"><span class="annottext">Eq SrcSpans
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175550"><span id="local-6989586621682175556"><span class="annot"><span class="annottext">Eq SrcSpans
 Eq SrcSpans =&gt;
 (Int -&gt; SrcSpans -&gt; Int) -&gt; (SrcSpans -&gt; Int) -&gt; Hashable SrcSpans
 Int -&gt; SrcSpans -&gt; Int
@@ -523,7 +653,7 @@ $chashWithSalt :: Int -&gt; SrcSpans -&gt; Int
 hashWithSalt :: Int -&gt; SrcSpans -&gt; Int
 $chash :: SrcSpans -&gt; Int
 hash :: SrcSpans -&gt; Int
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103411"><span id="local-6989586621682103416"><span id="local-6989586621682103422"><span class="annot"><span class="annottext">NonEmpty SrcSpans -&gt; SrcSpans
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175561"><span id="local-6989586621682175566"><span id="local-6989586621682175572"><span class="annot"><span class="annottext">NonEmpty SrcSpans -&gt; SrcSpans
 SrcSpans -&gt; SrcSpans -&gt; SrcSpans
 (SrcSpans -&gt; SrcSpans -&gt; SrcSpans)
 -&gt; (NonEmpty SrcSpans -&gt; SrcSpans)
@@ -541,7 +671,7 @@ $csconcat :: NonEmpty SrcSpans -&gt; SrcSpans
 sconcat :: NonEmpty SrcSpans -&gt; SrcSpans
 $cstimes :: forall b. Integral b =&gt; b -&gt; SrcSpans -&gt; SrcSpans
 stimes :: forall b. Integral b =&gt; b -&gt; SrcSpans -&gt; SrcSpans
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103432"><span id="local-6989586621682103437"><span id="local-6989586621682103441"><span class="annot"><span class="annottext">Semigroup SrcSpans
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175582"><span id="local-6989586621682175587"><span id="local-6989586621682175591"><span class="annot"><span class="annottext">Semigroup SrcSpans
 SrcSpans
 Semigroup SrcSpans =&gt;
 SrcSpans
@@ -559,7 +689,7 @@ $cmappend :: SrcSpans -&gt; SrcSpans -&gt; SrcSpans
 mappend :: SrcSpans -&gt; SrcSpans -&gt; SrcSpans
 $cmconcat :: [SrcSpans] -&gt; SrcSpans
 mconcat :: [SrcSpans] -&gt; SrcSpans
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103448"><span id="local-6989586621682103456"><span id="local-6989586621682103461"><span id="local-6989586621682103466"><span id="local-6989586621682103471"><span id="local-6989586621682103476"><span id="local-6989586621682103481"><span id="local-6989586621682103485"><span id="local-6989586621682103489"><span id="local-6989586621682103495"><span id="local-6989586621682103503"><span id="local-6989586621682103512"><span id="local-6989586621682103521"><span id="local-6989586621682103530"><span id="local-6989586621682103539"><span id="local-6989586621682103548"><span id="local-6989586621682103555"><span id="local-6989586621682103560"><span id="local-6989586621682103565"><span id="local-6989586621682103570"><span id="local-6989586621682103575"><span id="local-6989586621682103580"><span id="local-6989586621682103585"><span id="local-6989586621682103590"><span id="local-6989586621682103598"><span id="local-6989586621682103609"><span class="annot"><span class="annottext">Eq (Element SrcSpans) =&gt; Element SrcSpans -&gt; SrcSpans -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175598"><span id="local-6989586621682175606"><span id="local-6989586621682175611"><span id="local-6989586621682175616"><span id="local-6989586621682175621"><span id="local-6989586621682175626"><span id="local-6989586621682175631"><span id="local-6989586621682175635"><span id="local-6989586621682175639"><span id="local-6989586621682175645"><span id="local-6989586621682175653"><span id="local-6989586621682175662"><span id="local-6989586621682175671"><span id="local-6989586621682175680"><span id="local-6989586621682175689"><span id="local-6989586621682175698"><span id="local-6989586621682175705"><span id="local-6989586621682175710"><span id="local-6989586621682175715"><span id="local-6989586621682175720"><span id="local-6989586621682175725"><span id="local-6989586621682175730"><span id="local-6989586621682175735"><span id="local-6989586621682175740"><span id="local-6989586621682175748"><span id="local-6989586621682175759"><span class="annot"><span class="annottext">Eq (Element SrcSpans) =&gt; Element SrcSpans -&gt; SrcSpans -&gt; Bool
 SrcSpans -&gt; Bool
 SrcSpans -&gt; Int
 SrcSpans -&gt; Int64
@@ -755,13 +885,13 @@ $coelem :: Eq (Element SrcSpans) =&gt; Element SrcSpans -&gt; SrcSpans -&gt; Boo
 oelem :: Eq (Element SrcSpans) =&gt; Element SrcSpans -&gt; SrcSpans -&gt; Bool
 $conotElem :: Eq (Element SrcSpans) =&gt; Element SrcSpans -&gt; SrcSpans -&gt; Bool
 onotElem :: Eq (Element SrcSpans) =&gt; Element SrcSpans -&gt; SrcSpans -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">MonoFoldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682103619"><span class="annot"><span class="annottext">SrcSpans -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">MonoFoldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682175769"><span class="annot"><span class="annottext">SrcSpans -&gt; ()
 (SrcSpans -&gt; ()) -&gt; NFData SrcSpans
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: SrcSpans -&gt; ()
 rnf :: SrcSpans -&gt; ()
 </span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-132"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103626"><span id="local-6989586621682103628"><span class="annot"><span class="annottext">(forall x. SrcSpans -&gt; Rep SrcSpans x)
+</span><span id="line-164"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175776"><span id="local-6989586621682175778"><span class="annot"><span class="annottext">(forall x. SrcSpans -&gt; Rep SrcSpans x)
 -&gt; (forall x. Rep SrcSpans x -&gt; SrcSpans) -&gt; Generic SrcSpans
 forall x. Rep SrcSpans x -&gt; SrcSpans
 forall x. SrcSpans -&gt; Rep SrcSpans x
@@ -772,7 +902,7 @@ from :: forall x. SrcSpans -&gt; Rep SrcSpans x
 $cto :: forall x. Rep SrcSpans x -&gt; SrcSpans
 to :: forall x. Rep SrcSpans x -&gt; SrcSpans
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-133"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682103631"><span id="local-6989586621682103638"><span id="local-6989586621682103644"><span class="annot"><span class="annottext">Get SrcSpans
+</span><span id="line-165"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682175781"><span id="local-6989586621682175788"><span id="local-6989586621682175794"><span class="annot"><span class="annottext">Get SrcSpans
 SrcSpans -&gt; Encoding
 SrcSpans -&gt; Int -&gt; Int
 (SrcSpans -&gt; Encoding)
@@ -785,29 +915,29 @@ decode :: Get SrcSpans
 $csize :: SrcSpans -&gt; Int -&gt; Int
 size :: SrcSpans -&gt; Int -&gt; Int
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Flat</span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-134"></span><span>
-</span><span id="line-135"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Element"><span class="annot"><span class="hs-identifier hs-var">Element</span></span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span>
-</span><span id="line-136"></span><span>
-</span><span id="line-137"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682103666"><span id="local-6989586621682103669"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-138"></span><span>  </span><span id="local-6989586621682103674"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcSpans -&gt; ShowS
+</span><span id="line-166"></span><span>
+</span><span id="line-167"></span><span class="hs-keyword">type</span><span> </span><span class="hs-keyword">instance</span><span> </span><span id="Element"><span class="annot"><span class="hs-identifier hs-var">Element</span></span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span>
+</span><span id="line-168"></span><span>
+</span><span id="line-169"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682175816"><span id="local-6989586621682175819"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-170"></span><span>  </span><span id="local-6989586621682175824"><span class="annot"><span class="annottext">showsPrec :: Int -&gt; SrcSpans -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showsPrec"><span class="hs-identifier hs-var hs-var hs-var hs-var">showsPrec</span></a></span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span> </span><span id="local-6989586621682103675"><span class="annot"><span class="annottext">Set SrcSpan
-</span><a href="#local-6989586621682103675"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-139"></span><span>    </span><span class="annot"><span class="annottext">String -&gt; ShowS
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span> </span><span id="local-6989586621682175825"><span class="annot"><span class="annottext">Set SrcSpan
+</span><a href="#local-6989586621682175825"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-171"></span><span>    </span><span class="annot"><span class="annottext">String -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showString"><span class="hs-identifier hs-var">showString</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;{ &quot;</span></span><span>
-</span><span id="line-140"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><span id="line-172"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showString"><span class="hs-identifier hs-var">showString</span></a></span><span>
-</span><span id="line-141"></span><span>        </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Set SrcSpan -&gt; [SrcSpan]
+</span><span id="line-173"></span><span>        </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Set SrcSpan -&gt; [SrcSpan]
 forall a. Set a -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.Internal.html#toList"><span class="hs-identifier hs-var">Set.toList</span></a></span><span> </span><span class="annot"><span class="annottext">Set SrcSpan
-</span><a href="#local-6989586621682103675"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-142"></span><span>            </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621682175825"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-174"></span><span>            </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;no-src-span&quot;</span></span><span>
-</span><span id="line-143"></span><span>            </span><span id="local-6989586621682103677"><span class="annot"><span class="annottext">[SrcSpan]
-</span><a href="#local-6989586621682103677"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; String
+</span><span id="line-175"></span><span>            </span><span id="local-6989586621682175827"><span class="annot"><span class="annottext">[SrcSpan]
+</span><a href="#local-6989586621682175827"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; String
 forall a. [a] -&gt; [[a]] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.OldList.html#intercalate"><span class="hs-identifier hs-var">List.intercalate</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;, &quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpan -&gt; String
@@ -815,59 +945,61 @@ forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">(SrcSpan -&gt; String) -&gt; [SrcSpan] -&gt; [String]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[SrcSpan]
-</span><a href="#local-6989586621682103677"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-144"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-145"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
+</span><a href="#local-6989586621682175827"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-176"></span><span>        </span><span class="hs-special">)</span><span>
+</span><span id="line-177"></span><span>      </span><span class="annot"><span class="annottext">ShowS -&gt; ShowS -&gt; ShowS
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#showString"><span class="hs-identifier hs-var">showString</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot; }&quot;</span></span><span>
-</span><span id="line-146"></span><span>
-</span><span id="line-147"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682103682"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-148"></span><span>  </span><span id="local-6989586621682103686"><span class="annot"><span class="annottext">pretty :: forall ann. SrcSpans -&gt; Doc ann
+</span><span id="line-178"></span><span>
+</span><span id="line-179"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682175832"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-180"></span><span>  </span><span id="local-6989586621682175836"><span class="annot"><span class="annottext">pretty :: forall ann. SrcSpans -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpans -&gt; Doc ann
 forall a ann. Show a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">viaShow</span></span><span>
-</span><span id="line-149"></span><span>
-</span><span id="line-150"></span><span class="annot"><span class="hs-comment">-- | Add an extra SrcSpan to existing 'SrcSpans' of 'Ann'</span></span><span>
-</span><span id="line-151"></span><span class="annot"><a href="PlutusCore.Annotation.html#addSrcSpan"><span class="hs-identifier hs-type">addSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span>
-</span><span id="line-152"></span><span id="addSrcSpan"><span class="annot"><span class="annottext">addSrcSpan :: SrcSpan -&gt; Ann -&gt; Ann
-</span><a href="PlutusCore.Annotation.html#addSrcSpan"><span class="hs-identifier hs-var hs-var">addSrcSpan</span></a></span></span><span> </span><span id="local-6989586621682103687"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103687"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span id="local-6989586621682103688"><span class="annot"><span class="annottext">Inline
-</span><a href="#local-6989586621682103688"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span> </span><span id="local-6989586621682103689"><span class="annot"><span class="annottext">Set SrcSpan
-</span><a href="#local-6989586621682103689"><span class="hs-identifier hs-var">ss</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621682103690"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621682103690"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Inline -&gt; SrcSpans -&gt; Bool -&gt; Ann
+</span><span id="line-181"></span><span>
+</span><span id="line-182"></span><span class="annot"><span class="hs-comment">-- | Add an extra SrcSpan to existing 'SrcSpans' of 'Ann'</span></span><span>
+</span><span id="line-183"></span><span class="annot"><a href="PlutusCore.Annotation.html#addSrcSpan"><span class="hs-identifier hs-type">addSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span>
+</span><span id="line-184"></span><span id="addSrcSpan"><span class="annot"><span class="annottext">addSrcSpan :: SrcSpan -&gt; Ann -&gt; Ann
+</span><a href="PlutusCore.Annotation.html#addSrcSpan"><span class="hs-identifier hs-var hs-var">addSrcSpan</span></a></span></span><span> </span><span id="local-6989586621682175837"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621682175837"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-type">Ann</span></a></span><span> </span><span id="local-6989586621682175838"><span class="annot"><span class="annottext">Inline
+</span><a href="#local-6989586621682175838"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682175839"><span class="annot"><span class="annottext">Case
+</span><a href="#local-6989586621682175839"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-type">SrcSpans</span></a></span><span> </span><span id="local-6989586621682175840"><span class="annot"><span class="annottext">Set SrcSpan
+</span><a href="#local-6989586621682175840"><span class="hs-identifier hs-var">ss</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621682175841"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621682175841"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Inline -&gt; Case -&gt; SrcSpans -&gt; Bool -&gt; Ann
 </span><a href="PlutusCore.Annotation.html#Ann"><span class="hs-identifier hs-var">Ann</span></a></span><span> </span><span class="annot"><span class="annottext">Inline
-</span><a href="#local-6989586621682103688"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set SrcSpan -&gt; SrcSpans
+</span><a href="#local-6989586621682175838"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Case
+</span><a href="#local-6989586621682175839"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set SrcSpan -&gt; SrcSpans
 </span><a href="PlutusCore.Annotation.html#SrcSpans"><span class="hs-identifier hs-var">SrcSpans</span></a></span><span> </span><span class="annot"><span class="annottext">(Set SrcSpan -&gt; SrcSpans) -&gt; Set SrcSpan -&gt; SrcSpans
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Set SrcSpan -&gt; Set SrcSpan
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Set a
 </span><a href="../../../ghc-9.8.4/html/libraries/containers-0.6.8-inplace/src/Data.Set.Internal.html#insert"><span class="hs-identifier hs-var">Set.insert</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103687"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Set SrcSpan
-</span><a href="#local-6989586621682103689"><span class="hs-identifier hs-var">ss</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621682103690"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-153"></span><span>
-</span><span id="line-154"></span><span class="annot"><span class="hs-comment">-- | Tells if a line (positive integer) falls inside a SrcSpan.</span></span><span>
-</span><span id="line-155"></span><span class="annot"><a href="PlutusCore.Annotation.html#lineInSrcSpan"><span class="hs-identifier hs-type">lineInSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pos</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span>
-</span><span id="line-156"></span><span id="lineInSrcSpan"><span class="annot"><span class="annottext">lineInSrcSpan :: Pos -&gt; SrcSpan -&gt; Bool
-</span><a href="PlutusCore.Annotation.html#lineInSrcSpan"><span class="hs-identifier hs-var hs-var">lineInSrcSpan</span></a></span></span><span> </span><span id="local-6989586621682103692"><span class="annot"><span class="annottext">Pos
-</span><a href="#local-6989586621682103692"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621682103693"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103693"><span class="hs-identifier hs-var">spn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-157"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621682103694"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621682103694"><span class="hs-identifier hs-var hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Int
+</span><a href="#local-6989586621682175837"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Set SrcSpan
+</span><a href="#local-6989586621682175840"><span class="hs-identifier hs-var">ss</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621682175841"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-185"></span><span>
+</span><span id="line-186"></span><span class="annot"><span class="hs-comment">-- | Tells if a line (positive integer) falls inside a SrcSpan.</span></span><span>
+</span><span id="line-187"></span><span class="annot"><a href="PlutusCore.Annotation.html#lineInSrcSpan"><span class="hs-identifier hs-type">lineInSrcSpan</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pos</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.Annotation.html#SrcSpan"><span class="hs-identifier hs-type">SrcSpan</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span><span>
+</span><span id="line-188"></span><span id="lineInSrcSpan"><span class="annot"><span class="annottext">lineInSrcSpan :: Pos -&gt; SrcSpan -&gt; Bool
+</span><a href="PlutusCore.Annotation.html#lineInSrcSpan"><span class="hs-identifier hs-var hs-var">lineInSrcSpan</span></a></span></span><span> </span><span id="local-6989586621682175843"><span class="annot"><span class="annottext">Pos
+</span><a href="#local-6989586621682175843"><span class="hs-identifier hs-var">pos</span></a></span></span><span> </span><span id="local-6989586621682175844"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621682175844"><span class="hs-identifier hs-var">spn</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-189"></span><span>  </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621682175845"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621682175845"><span class="hs-identifier hs-var hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Pos -&gt; Int
 </span><span class="hs-identifier hs-var">Megaparsec.unPos</span></span><span> </span><span class="annot"><span class="annottext">Pos
-</span><a href="#local-6989586621682103692"><span class="hs-identifier hs-var">pos</span></a></span><span>
-</span><span id="line-158"></span><span>   </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682103694"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682175843"><span class="hs-identifier hs-var">pos</span></a></span><span>
+</span><span id="line-190"></span><span>   </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621682175845"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanSLine"><span class="hs-identifier hs-var">srcSpanSLine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103693"><span class="hs-identifier hs-var">spn</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621682175844"><span class="hs-identifier hs-var">spn</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682103694"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682175845"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan -&gt; Int
 </span><a href="PlutusCore.Annotation.html#srcSpanELine"><span class="hs-identifier hs-var">srcSpanELine</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621682103693"><span class="hs-identifier hs-var">spn</span></a></span><span>
-</span><span id="line-159"></span></pre></body></html>
+</span><a href="#local-6989586621682175844"><span class="hs-identifier hs-var">spn</span></a></span><span>
+</span><span id="line-191"></span></pre></body></html>

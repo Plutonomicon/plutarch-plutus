@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621682114995"><span id="local-6989586621682114996"><span id="local-6989586621682114997"><span id="local-6989586621682114998"><span id="local-6989586621682114999"><span id="local-6989586621682115000"></span></span></span></span></span></span><span class="hs-pragma">{-# LANGUAGE BangPatterns #-}</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621682187203"><span id="local-6989586621682187204"><span id="local-6989586621682187205"><span id="local-6989586621682187206"><span id="local-6989586621682187207"><span id="local-6989586621682187208"></span></span></span></span></span></span><span class="hs-pragma">{-# LANGUAGE BangPatterns #-}</span><span>
 </span><span id="line-2"></span><span class="hs-pragma">{-# LANGUAGE DeriveAnyClass #-}</span><span>
 </span><span id="line-3"></span><span class="hs-pragma">{-# LANGUAGE DeriveDataTypeable #-}</span><span>
 </span><span id="line-4"></span><span class="hs-pragma">{-# LANGUAGE DerivingStrategies #-}</span><span>
@@ -45,7 +45,7 @@ The other constructors are various primitives. -}</span></span><span>
 </span><span id="line-45"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="List"><span class="annot"><a href="PlutusCore.Data.html#List"><span class="hs-identifier hs-var">List</span></a></span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="I"><span class="annot"><a href="PlutusCore.Data.html#I"><span class="hs-identifier hs-var">I</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-47"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="B"><span class="annot"><a href="PlutusCore.Data.html#B"><span class="hs-identifier hs-var">B</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span>
-</span><span id="line-48"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682115095"><span id="local-6989586621682115113"><span id="local-6989586621682115117"><span class="annot"><span class="annottext">Int -&gt; Data -&gt; ShowS
+</span><span id="line-48"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682187303"><span id="local-6989586621682187321"><span id="local-6989586621682187325"><span class="annot"><span class="annottext">Int -&gt; Data -&gt; ShowS
 [Data] -&gt; ShowS
 Data -&gt; String
 (Int -&gt; Data -&gt; ShowS)
@@ -58,7 +58,7 @@ $cshow :: Data -&gt; String
 show :: Data -&gt; String
 $cshowList :: [Data] -&gt; ShowS
 showList :: [Data] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115122"><span id="local-6989586621682115126"><span id="local-6989586621682115129"><span id="local-6989586621682115159"><span class="annot"><span class="annottext">ReadPrec [Data]
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187330"><span id="local-6989586621682187334"><span id="local-6989586621682187337"><span id="local-6989586621682187367"><span class="annot"><span class="annottext">ReadPrec [Data]
 ReadPrec Data
 Int -&gt; ReadS Data
 ReadS [Data]
@@ -75,14 +75,14 @@ $creadPrec :: ReadPrec Data
 readPrec :: ReadPrec Data
 $creadListPrec :: ReadPrec [Data]
 readListPrec :: ReadPrec [Data]
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115164"><span id="local-6989586621682115177"><span class="annot"><span class="annottext">Data -&gt; Data -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187372"><span id="local-6989586621682187385"><span class="annot"><span class="annottext">Data -&gt; Data -&gt; Bool
 (Data -&gt; Data -&gt; Bool) -&gt; (Data -&gt; Data -&gt; Bool) -&gt; Eq Data
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: Data -&gt; Data -&gt; Bool
 == :: Data -&gt; Data -&gt; Bool
 $c/= :: Data -&gt; Data -&gt; Bool
 /= :: Data -&gt; Data -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115185"><span id="local-6989586621682115197"><span id="local-6989586621682115201"><span id="local-6989586621682115204"><span id="local-6989586621682115207"><span id="local-6989586621682115210"><span id="local-6989586621682115213"><span class="annot"><span class="annottext">Eq Data
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187393"><span id="local-6989586621682187405"><span id="local-6989586621682187409"><span id="local-6989586621682187412"><span id="local-6989586621682187415"><span id="local-6989586621682187418"><span id="local-6989586621682187421"><span class="annot"><span class="annottext">Eq Data
 Eq Data =&gt;
 (Data -&gt; Data -&gt; Ordering)
 -&gt; (Data -&gt; Data -&gt; Bool)
@@ -119,7 +119,7 @@ $cmax :: Data -&gt; Data -&gt; Data
 max :: Data -&gt; Data -&gt; Data
 $cmin :: Data -&gt; Data -&gt; Data
 min :: Data -&gt; Data -&gt; Data
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115218"><span id="local-6989586621682115220"><span class="annot"><span class="annottext">(forall x. Data -&gt; Rep Data x)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187426"><span id="local-6989586621682187428"><span class="annot"><span class="annottext">(forall x. Data -&gt; Rep Data x)
 -&gt; (forall x. Rep Data x -&gt; Data) -&gt; Generic Data
 forall x. Rep Data x -&gt; Data
 forall x. Data -&gt; Rep Data x
@@ -129,7 +129,7 @@ $cfrom :: forall x. Data -&gt; Rep Data x
 from :: forall x. Data -&gt; Rep Data x
 $cto :: forall x. Rep Data x -&gt; Data
 to :: forall x. Rep Data x -&gt; Data
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115226"><span id="local-6989586621682115239"><span id="local-6989586621682115249"><span id="local-6989586621682115251"><span id="local-6989586621682115253"><span id="local-6989586621682115259"><span id="local-6989586621682115264"><span id="local-6989586621682115267"><span id="local-6989586621682115270"><span id="local-6989586621682115273"><span id="local-6989586621682115276"><span id="local-6989586621682115279"><span id="local-6989586621682115284"><span id="local-6989586621682115289"><span class="annot"><span class="annottext">Typeable Data
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187434"><span id="local-6989586621682187447"><span id="local-6989586621682187457"><span id="local-6989586621682187459"><span id="local-6989586621682187461"><span id="local-6989586621682187467"><span id="local-6989586621682187472"><span id="local-6989586621682187475"><span id="local-6989586621682187478"><span id="local-6989586621682187481"><span id="local-6989586621682187484"><span id="local-6989586621682187487"><span id="local-6989586621682187492"><span id="local-6989586621682187497"><span class="annot"><span class="annottext">Typeable Data
 Typeable Data =&gt;
 (forall (c :: * -&gt; *).
  (forall d b. Data d =&gt; c (d -&gt; b) -&gt; d -&gt; c b)
@@ -283,7 +283,7 @@ gmapMo :: forall (m :: * -&gt; *).
 MonadPlus m =&gt;
 (forall d. Data d =&gt; d -&gt; m d) -&gt; Data -&gt; m Data
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Data.html#Data"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Data.Data.Data</span></a></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-49"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682115298"><span id="local-6989586621682115305"><span class="annot"><span class="annottext">Eq Data
+</span><span id="line-49"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682187506"><span id="local-6989586621682187513"><span class="annot"><span class="annottext">Eq Data
 Eq Data =&gt; (Int -&gt; Data -&gt; Int) -&gt; (Data -&gt; Int) -&gt; Hashable Data
 Int -&gt; Data -&gt; Int
 Data -&gt; Int
@@ -292,12 +292,12 @@ $chashWithSalt :: Int -&gt; Data -&gt; Int
 hashWithSalt :: Int -&gt; Data -&gt; Int
 $chash :: Data -&gt; Int
 hash :: Data -&gt; Int
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115342"><span class="annot"><span class="annottext">Data -&gt; ()
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Hashable</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187550"><span class="annot"><span class="annottext">Data -&gt; ()
 (Data -&gt; ()) -&gt; NFData Data
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Data -&gt; ()
 rnf :: Data -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115381"><span id="local-6989586621682115385"><span id="local-6989586621682115391"><span class="annot"><span class="annottext">Context -&gt; Data -&gt; IO (Maybe ThunkInfo)
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187589"><span id="local-6989586621682187593"><span id="local-6989586621682187599"><span class="annot"><span class="annottext">Context -&gt; Data -&gt; IO (Maybe ThunkInfo)
 Proxy Data -&gt; String
 (Context -&gt; Data -&gt; IO (Maybe ThunkInfo))
 -&gt; (Context -&gt; Data -&gt; IO (Maybe ThunkInfo))
@@ -316,12 +316,12 @@ $cshowTypeOf :: Proxy Data -&gt; String
 showTypeOf :: Proxy Data -&gt; String
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">NoThunks</span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682115440"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-52"></span><span>  </span><span id="local-6989586621682115460"><span class="annot"><span class="annottext">pretty :: forall ann. Data -&gt; Doc ann
-</span><a href="#local-6989586621682115460"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-51"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682187648"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>  </span><span id="local-6989586621682187668"><span class="annot"><span class="annottext">pretty :: forall ann. Data -&gt; Doc ann
+</span><a href="#local-6989586621682187668"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-53"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682115462"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115462"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682187670"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187670"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">angles</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
@@ -336,9 +336,9 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. Data -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115462"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-54"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#Map"><span class="hs-identifier hs-type">Map</span></a></span><span> </span><span id="local-6989586621682115467"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621682115467"><span class="hs-identifier hs-var">entries</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682187670"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#Map"><span class="hs-identifier hs-type">Map</span></a></span><span> </span><span id="local-6989586621682187675"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621682187675"><span class="hs-identifier hs-var">entries</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-55"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">braces</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
@@ -350,13 +350,13 @@ forall ann. Doc ann
 </span><span class="hs-identifier hs-var">comma</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((Data, Data) -&gt; Doc ann) -&gt; [(Data, Data)] -&gt; [Doc ann]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621682115469"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115469"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115470"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115470"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Doc ann
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621682187677"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621682187677"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187678"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621682187678"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. Data -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115469"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621682187677"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;:&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
@@ -365,10 +365,10 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. Data -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115470"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621682115467"><span class="hs-identifier hs-var">entries</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-56"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#List"><span class="hs-identifier hs-type">List</span></a></span><span> </span><span id="local-6989586621682115472"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115472"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621682187678"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621682187675"><span class="hs-identifier hs-var">entries</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#List"><span class="hs-identifier hs-type">List</span></a></span><span> </span><span id="local-6989586621682187680"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187680"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">brackets</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
@@ -383,15 +383,15 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. Data -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115472"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-57"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#I"><span class="hs-identifier hs-type">I</span></a></span><span> </span><span id="local-6989586621682115474"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115474"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Doc ann
+</span><a href="#local-6989586621682187680"><span class="hs-identifier hs-var">ds</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#I"><span class="hs-identifier hs-type">I</span></a></span><span> </span><span id="local-6989586621682187682"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187682"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Doc ann
 forall ann. Integer -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115474"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-58"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#B"><span class="hs-identifier hs-type">B</span></a></span><span> </span><span id="local-6989586621682115475"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115475"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682187682"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><a href="PlutusCore.Data.html#B"><span class="hs-identifier hs-type">B</span></a></span><span> </span><span id="local-6989586621682187683"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187683"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-59"></span><span>      </span><span class="hs-comment">-- Base64 encode the ByteString since it may contain arbitrary bytes</span><span>
 </span><span id="line-60"></span><span>      </span><span class="annot"><span class="annottext">Text -&gt; Doc ann
 forall ann. Text -&gt; Doc ann
@@ -399,7 +399,7 @@ forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Text
 </span><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Encoding.html#decodeLatin1"><span class="hs-identifier hs-var">Text.decodeLatin1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
 </span><span class="hs-identifier hs-var">Base64.encode</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115475"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187683"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-61"></span><span>
 </span><span id="line-62"></span><span class="hs-comment">{- Note [Encoding via Term]
 We want to write a custom encoder/decoder for Data (i.e. not use the Generic version), but actually
@@ -407,12 +407,12 @@ doing this is a pain. So instead we go via the CBOR 'Term' representation, which
 more structured representation, which is a lot easier.
 -}</span><span>
 </span><span id="line-67"></span><span>
-</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682115481"><span id="local-6989586621682115484"><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682187689"><span id="local-6989586621682187692"><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-69"></span><span>  </span><span class="hs-comment">-- See Note [Encoding via Term]</span><span>
-</span><span id="line-70"></span><span>  </span><span id="local-6989586621682115487"><span class="annot"><span class="annottext">encode :: Data -&gt; Encoding
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621682187695"><span class="annot"><span class="annottext">encode :: Data -&gt; Encoding
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">encode</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Encoding
 </span><a href="PlutusCore.Data.html#encodeData"><span class="hs-identifier hs-var">encodeData</span></a></span><span>
-</span><span id="line-71"></span><span>  </span><span id="local-6989586621682115489"><span class="annot"><span class="annottext">decode :: forall s. Decoder s Data
+</span><span id="line-71"></span><span>  </span><span id="local-6989586621682187697"><span class="annot"><span class="annottext">decode :: forall s. Decoder s Data
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">decode</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Decoder s Data
 forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var">decodeData</span></a></span><span>
@@ -494,15 +494,15 @@ Again, we need to write some manual encoders/decoders.
 </span><span id="line-147"></span><span id="encodeData"><span class="annot"><span class="annottext">encodeData :: Data -&gt; Encoding
 </span><a href="PlutusCore.Data.html#encodeData"><span class="hs-identifier hs-var hs-var">encodeData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-148"></span><span>  </span><span class="hs-comment">-- See Note [CBOR alternative tags]</span><span>
-</span><span id="line-149"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682115491"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115491"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682115492"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115492"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span id="line-149"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682187699"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187699"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682187700"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187700"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115491"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621682187699"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115491"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187699"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">7</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Encoding
@@ -512,21 +512,21 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-number">121</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115491"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
+</span><a href="#local-6989586621682187699"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115492"><span class="hs-identifier hs-var">ds</span></a></span><span>
-</span><span id="line-150"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682115498"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115498"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682115499"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115499"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187700"><span class="hs-identifier hs-var">ds</span></a></span><span>
+</span><span id="line-150"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682187706"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187706"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682187707"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187707"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">7</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115498"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621682187706"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115498"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187706"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">128</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Encoding
@@ -536,7 +536,7 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-number">1280</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115498"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621682187706"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">7</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
@@ -544,23 +544,23 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115499"><span class="hs-identifier hs-var">ds</span></a></span><span>
-</span><span id="line-151"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682115500"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115500"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682115501"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115501"><span class="hs-identifier hs-var">ds</span></a></span></span><span>
+</span><a href="#local-6989586621682187707"><span class="hs-identifier hs-var">ds</span></a></span><span>
+</span><span id="line-151"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682187708"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187708"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682187709"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187709"><span class="hs-identifier hs-var">ds</span></a></span></span><span>
 </span><span id="line-152"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#otherwise"><span class="hs-identifier hs-var">otherwise</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-153"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621682115513"><span class="annot"><span class="annottext">tagEncoding :: Encoding
-</span><a href="#local-6989586621682115513"><span class="hs-identifier hs-var hs-var">tagEncoding</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-153"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621682187721"><span class="annot"><span class="annottext">tagEncoding :: Encoding
+</span><a href="#local-6989586621682187721"><span class="hs-identifier hs-var hs-var">tagEncoding</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-154"></span><span>              </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a. Bounded a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#minBound"><span class="hs-identifier hs-var">minBound</span></a></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word64"><span class="hs-identifier hs-type">Word64</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115500"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621682187708"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115500"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187708"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
@@ -570,13 +570,13 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">CBOR.encodeWord64</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Word64
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115500"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187708"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-156"></span><span>                </span><span class="hs-comment">-- This is a &quot;correct&quot;-ish encoding of the tag, but it will *not* deserialise, since</span><span>
 </span><span id="line-157"></span><span>                </span><span class="hs-comment">-- we insist on a 'Word64' when we deserialise.</span><span>
 </span><span id="line-158"></span><span>                </span><span class="hs-comment">-- So this is really a &quot;soft&quot; failure, without using 'error' or something.</span><span>
 </span><span id="line-159"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115500"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621682187708"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-160"></span><span>         </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeTag</span></span><span> </span><span class="annot"><span class="annottext">Word
 </span><span class="hs-number">102</span></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
@@ -586,14 +586,14 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Encoding
-</span><a href="#local-6989586621682115513"><span class="hs-identifier hs-var">tagEncoding</span></a></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
+</span><a href="#local-6989586621682187721"><span class="hs-identifier hs-var">tagEncoding</span></a></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115501"><span class="hs-identifier hs-var">ds</span></a></span><span>
-</span><span id="line-161"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Map"><span class="hs-identifier hs-type">Map</span></a></span><span> </span><span id="local-6989586621682115519"><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621682115519"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682187709"><span class="hs-identifier hs-var">ds</span></a></span><span>
+</span><span id="line-161"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#Map"><span class="hs-identifier hs-type">Map</span></a></span><span> </span><span id="local-6989586621682187727"><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621682187727"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-162"></span><span>    </span><span class="annot"><span class="annottext">Word -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeMapLen</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Word
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
@@ -603,7 +603,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#length"><span class="hs-identifier hs-var">length</span></a></span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621682115519"><span class="hs-identifier hs-var">es</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187727"><span class="hs-identifier hs-var">es</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-163"></span><span>      </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Encoding] -&gt; Encoding
@@ -611,28 +611,28 @@ forall a. Monoid a =&gt; [a] -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mconcat"><span class="hs-identifier hs-var">mconcat</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Data -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115522"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
+</span><a href="#local-6989586621682187730"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Data -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115523"><span class="hs-identifier hs-var">t'</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682115522"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115522"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115523"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621682115523"><span class="hs-identifier hs-var">t'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
-</span><a href="#local-6989586621682115519"><span class="hs-identifier hs-var">es</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-164"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#List"><span class="hs-identifier hs-type">List</span></a></span><span> </span><span id="local-6989586621682115524"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115524"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Encoding
+</span><a href="#local-6989586621682187731"><span class="hs-identifier hs-var">t'</span></a></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682187730"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621682187730"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187731"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621682187731"><span class="hs-identifier hs-var">t'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)]
+</span><a href="#local-6989586621682187727"><span class="hs-identifier hs-var">es</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-164"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#List"><span class="hs-identifier hs-type">List</span></a></span><span> </span><span id="local-6989586621682187732"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187732"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115524"><span class="hs-identifier hs-var">ds</span></a></span><span>
-</span><span id="line-165"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#I"><span class="hs-identifier hs-type">I</span></a></span><span> </span><span id="local-6989586621682115525"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115525"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Encoding
+</span><a href="#local-6989586621682187732"><span class="hs-identifier hs-var">ds</span></a></span><span>
+</span><span id="line-165"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#I"><span class="hs-identifier hs-type">I</span></a></span><span> </span><span id="local-6989586621682187733"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187733"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Encoding
 </span><a href="PlutusCore.Data.html#encodeInteger"><span class="hs-identifier hs-var">encodeInteger</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115525"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-166"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#B"><span class="hs-identifier hs-type">B</span></a></span><span> </span><span id="local-6989586621682115527"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115527"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Encoding
+</span><a href="#local-6989586621682187733"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-166"></span><span>  </span><span class="annot"><a href="PlutusCore.Data.html#B"><span class="hs-identifier hs-type">B</span></a></span><span> </span><span id="local-6989586621682187735"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187735"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Encoding
 </span><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-var">encodeBs</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115527"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621682187735"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-167"></span><span>
 </span><span id="line-168"></span><span class="hs-comment">-- Logic for choosing encoding borrowed from Codec.CBOR.Write</span><span>
 </span><span id="line-169"></span><span class="annot"><span class="hs-comment">-- | Given an integer, create a 'CBOR.Term' that encodes it, following our size restrictions.</span></span><span>
@@ -640,14 +640,14 @@ forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span id="line-171"></span><span class="hs-comment">-- If it fits in a Word64, then it's less than 64 bytes for sure, and we can just send it off</span><span>
 </span><span id="line-172"></span><span class="hs-comment">-- as a normal integer for cborg to deal with</span><span>
 </span><span id="line-173"></span><span id="encodeInteger"><span class="annot"><span class="annottext">encodeInteger :: Integer -&gt; Encoding
-</span><a href="PlutusCore.Data.html#encodeInteger"><span class="hs-identifier hs-var hs-var">encodeInteger</span></a></span></span><span> </span><span id="local-6989586621682115529"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span></span><span>
+</span><a href="PlutusCore.Data.html#encodeInteger"><span class="hs-identifier hs-var hs-var">encodeInteger</span></a></span></span><span> </span><span id="local-6989586621682187737"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span></span><span>
 </span><span id="line-174"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
@@ -655,13 +655,13 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 forall a. Bounded a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word64"><span class="hs-identifier hs-type">Word64</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-175"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="hs-glyph">-</span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
@@ -672,15 +672,15 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 forall a. Bounded a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word64"><span class="hs-identifier hs-type">Word64</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeInteger</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115529"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621682187737"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-176"></span><span class="hs-comment">-- Otherwise, it would be encoded as a bignum anyway, so we manually do the bignum</span><span>
 </span><span id="line-177"></span><span class="hs-comment">-- encoding with a bytestring inside, and since we use bsToTerm, that bytestring will</span><span>
 </span><span id="line-178"></span><span class="hs-comment">-- get chunked up if it's too big.</span><span>
 </span><span id="line-179"></span><span class="hs-comment">-- See Note [Evading the 64-byte limit]</span><span>
-</span><span id="line-180"></span><span class="annot"><a href="PlutusCore.Data.html#encodeInteger"><span class="hs-identifier hs-var">encodeInteger</span></a></span><span> </span><span id="local-6989586621682115530"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115530"><span class="hs-identifier hs-var">i</span></a></span></span><span>
+</span><span id="line-180"></span><span class="annot"><a href="PlutusCore.Data.html#encodeInteger"><span class="hs-identifier hs-var">encodeInteger</span></a></span><span> </span><span id="local-6989586621682187738"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621682187738"><span class="hs-identifier hs-var">i</span></a></span></span><span>
 </span><span id="line-181"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115530"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
+</span><a href="#local-6989586621682187738"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Encoding
@@ -690,7 +690,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Encoding
 </span><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-var">encodeBs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; ByteString
 </span><a href="PlutusCore.Bitwise.html#integerToBytesBE"><span class="hs-identifier hs-var">integerToBytesBE</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115530"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187738"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-182"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#otherwise"><span class="hs-identifier hs-var">otherwise</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeTag</span></span><span> </span><span class="annot"><span class="annottext">Word
@@ -702,25 +702,25 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621682115530"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187738"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-183"></span><span>
 </span><span id="line-184"></span><span class="annot"><span class="hs-comment">-- | Given an bytestring, create a 'CBOR.Term' that encodes it, following our size restrictions.</span></span><span>
 </span><span id="line-185"></span><span class="annot"><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-type">encodeBs</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Encoding</span></span><span>
 </span><span id="line-186"></span><span id="encodeBs"><span class="annot"><span class="annottext">encodeBs :: ByteString -&gt; Encoding
-</span><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-var hs-var">encodeBs</span></a></span></span><span> </span><span id="local-6989586621682115531"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115531"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-var hs-var">encodeBs</span></a></span></span><span> </span><span id="local-6989586621682187739"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187739"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html#length"><span class="hs-identifier hs-var">BS.length</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115531"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682187739"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">64</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeBytes</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115531"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621682187739"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-187"></span><span class="hs-comment">-- It's a bit tricky to get cborg to emit an indefinite-length bytestring with chunks that we</span><span>
 </span><span id="line-188"></span><span class="hs-comment">-- control, so we encode it manually</span><span>
 </span><span id="line-189"></span><span class="hs-comment">-- See Note [Evading the 64-byte limit]</span><span>
-</span><span id="line-190"></span><span class="annot"><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-var">encodeBs</span></a></span><span> </span><span id="local-6989586621682115534"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115534"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Encoding
+</span><span id="line-190"></span><span class="annot"><a href="PlutusCore.Data.html#encodeBs"><span class="hs-identifier hs-var">encodeBs</span></a></span><span> </span><span id="local-6989586621682187742"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187742"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeBytesIndef</span></span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Encoding) -&gt; [ByteString] -&gt; Encoding
@@ -732,7 +732,7 @@ forall (t :: * -&gt; *) m a.
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
 </span><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-var">to64ByteChunks</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115534"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
+</span><a href="#local-6989586621682187742"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Encoding -&gt; Encoding -&gt; Encoding
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Encoding
 </span><span class="hs-identifier hs-var">CBOR.encodeBreak</span></span><span>
@@ -740,29 +740,29 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span id="line-192"></span><span class="annot"><span class="hs-comment">-- | Turns a 'BS.ByteString' into a list of &lt;=64 byte chunks.</span></span><span>
 </span><span id="line-193"></span><span class="annot"><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-type">to64ByteChunks</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-194"></span><span id="to64ByteChunks"><span class="annot"><span class="annottext">to64ByteChunks :: ByteString -&gt; [ByteString]
-</span><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-var hs-var">to64ByteChunks</span></a></span></span><span> </span><span id="local-6989586621682115539"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115539"><span class="hs-identifier hs-var">b</span></a></span></span><span>
+</span><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-var hs-var">to64ByteChunks</span></a></span></span><span> </span><span id="local-6989586621682187747"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187747"><span class="hs-identifier hs-var">b</span></a></span></span><span>
 </span><span id="line-195"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html#length"><span class="hs-identifier hs-var">BS.length</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115539"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682187747"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E"><span class="hs-operator hs-var">&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">64</span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-196"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682115541"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115541"><span class="hs-identifier hs-var">chunk</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682115542"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115542"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; (ByteString, ByteString)
+</span><span id="line-196"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682187749"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187749"><span class="hs-identifier hs-var">chunk</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682187750"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187750"><span class="hs-identifier hs-var">rest</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; ByteString -&gt; (ByteString, ByteString)
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html#splitAt"><span class="hs-identifier hs-var">BS.splitAt</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">64</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115539"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621682187747"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-197"></span><span>       </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115541"><span class="hs-identifier hs-var">chunk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; [ByteString]
+</span><a href="#local-6989586621682187749"><span class="hs-identifier hs-var">chunk</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; [ByteString]
 forall a. a -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
 </span><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-var">to64ByteChunks</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115542"><span class="hs-identifier hs-var">rest</span></a></span><span>
-</span><span id="line-198"></span><span class="annot"><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-var">to64ByteChunks</span></a></span><span> </span><span id="local-6989586621682115544"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115544"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115544"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682187750"><span class="hs-identifier hs-var">rest</span></a></span><span>
+</span><span id="line-198"></span><span class="annot"><a href="PlutusCore.Data.html#to64ByteChunks"><span class="hs-identifier hs-var">to64ByteChunks</span></a></span><span> </span><span id="local-6989586621682187752"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187752"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187752"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-199"></span><span>
 </span><span id="line-200"></span><span class="hs-comment">{- Note [Definite and indefinite forms of CBOR]
 CBOR is annoying and you can have both definite (with a fixed length) and indefinite lists, maps,
@@ -773,7 +773,7 @@ the indefinite kinds, but see Note [Evading the 64-byte limit] for some cases wh
 -}</span><span>
 </span><span id="line-207"></span><span>
 </span><span id="line-208"></span><span class="annot"><span class="hs-comment">-- | Turn a CBOR Term into Data if possible.</span></span><span>
-</span><span id="line-209"></span><span id="local-6989586621682115545"><span class="annot"><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-type">decodeData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682115545"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
+</span><span id="line-209"></span><span id="local-6989586621682187753"><span class="annot"><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-type">decodeData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187753"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
 </span><span id="line-210"></span><span id="decodeData"><span class="annot"><span class="annottext">decodeData :: forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var hs-var">decodeData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-211"></span><span>  </span><span class="annot"><span class="annottext">Decoder s TokenType
@@ -872,8 +872,8 @@ forall s. Decoder s Data
 </span><span class="hs-identifier hs-var">CBOR.TypeTag64</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Decoder s Data
 forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeConstr"><span class="hs-identifier hs-var">decodeConstr</span></a></span><span>
-</span><span id="line-230"></span><span>    </span><span id="local-6989586621682115589"><span class="annot"><span class="annottext">TokenType
-</span><a href="#local-6989586621682115589"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s Data
+</span><span id="line-230"></span><span>    </span><span id="local-6989586621682187797"><span class="annot"><span class="annottext">TokenType
+</span><a href="#local-6989586621682187797"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s Data
 forall a. String -&gt; Decoder s a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.Fail.html#fail"><span class="hs-identifier hs-var">fail</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
@@ -882,18 +882,18 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">TokenType -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">TokenType
-</span><a href="#local-6989586621682115589"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187797"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-231"></span><span>
-</span><span id="line-232"></span><span id="local-6989586621682115591"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBigInteger"><span class="hs-identifier hs-type">decodeBoundedBigInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682115591"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span></span><span>
+</span><span id="line-232"></span><span id="local-6989586621682187799"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBigInteger"><span class="hs-identifier hs-type">decodeBoundedBigInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187799"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span></span><span>
 </span><span id="line-233"></span><span id="decodeBoundedBigInteger"><span class="annot"><span class="annottext">decodeBoundedBigInteger :: forall s. Decoder s Integer
 </span><a href="PlutusCore.Data.html#decodeBoundedBigInteger"><span class="hs-identifier hs-var hs-var">decodeBoundedBigInteger</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-234"></span><span>  </span><span id="local-6989586621682115612"><span class="annot"><span class="annottext">Word
-</span><a href="#local-6989586621682115612"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Word
+</span><span id="line-234"></span><span>  </span><span id="local-6989586621682187820"><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621682187820"><span class="hs-identifier hs-var">tag</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Word
 forall s. Decoder s Word
 </span><span class="hs-identifier hs-var">CBOR.decodeTag</span></span><span>
 </span><span id="line-235"></span><span>  </span><span class="hs-comment">-- Bignums contain a bytestring as the payload</span><span>
-</span><span id="line-236"></span><span>  </span><span id="local-6989586621682115614"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115614"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span>
+</span><span id="line-236"></span><span>  </span><span id="local-6989586621682187822"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187822"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span>
 </span><span id="line-237"></span><span>    </span><span class="annot"><span class="annottext">Decoder s TokenType
 forall s. Decoder s TokenType
 </span><span class="hs-identifier hs-var">CBOR.peekTokenType</span></span><span> </span><span class="annot"><span class="annottext">Decoder s TokenType
@@ -913,8 +913,8 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s LazyByteString
 forall s. Decoder s LazyByteString
 </span><a href="PlutusCore.Data.html#decodeBoundedBytesIndef"><span class="hs-identifier hs-var">decodeBoundedBytesIndef</span></a></span><span>
-</span><span id="line-240"></span><span>      </span><span id="local-6989586621682115615"><span class="annot"><span class="annottext">TokenType
-</span><a href="#local-6989586621682115615"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s ByteString
+</span><span id="line-240"></span><span>      </span><span id="local-6989586621682187823"><span class="annot"><span class="annottext">TokenType
+</span><a href="#local-6989586621682187823"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s ByteString
 forall a. String -&gt; Decoder s a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.Fail.html#fail"><span class="hs-identifier hs-var">fail</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
@@ -923,10 +923,10 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">TokenType -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">TokenType
-</span><a href="#local-6989586621682115615"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187823"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-241"></span><span>  </span><span class="hs-comment">-- Depending on the tag, the bytestring is either a positive or negative integer</span><span>
 </span><span id="line-242"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Word
-</span><a href="#local-6989586621682115612"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621682187820"><span class="hs-identifier hs-var">tag</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-243"></span><span>    </span><span class="annot"><span class="annottext">Word
 </span><span class="hs-number">2</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Decoder s Integer
 forall a. a -&gt; Decoder s a
@@ -935,7 +935,7 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Integer
 </span><span class="hs-identifier hs-var">CBOR.uintegerFromBytes</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115614"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><a href="#local-6989586621682187822"><span class="hs-identifier hs-var">bs</span></a></span><span>
 </span><span id="line-244"></span><span>    </span><span class="annot"><span class="annottext">Word
 </span><span class="hs-number">3</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Decoder s Integer
 forall a. a -&gt; Decoder s a
@@ -944,9 +944,9 @@ forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Integer
 </span><span class="hs-identifier hs-var">CBOR.nintegerFromBytes</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115614"><span class="hs-identifier hs-var">bs</span></a></span><span>
-</span><span id="line-245"></span><span>    </span><span id="local-6989586621682115618"><span class="annot"><span class="annottext">Word
-</span><a href="#local-6989586621682115618"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s Integer
+</span><a href="#local-6989586621682187822"><span class="hs-identifier hs-var">bs</span></a></span><span>
+</span><span id="line-245"></span><span>    </span><span id="local-6989586621682187826"><span class="annot"><span class="annottext">Word
+</span><a href="#local-6989586621682187826"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s Integer
 forall a. String -&gt; Decoder s a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.Fail.html#fail"><span class="hs-identifier hs-var">fail</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
@@ -955,10 +955,10 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">Word -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">Word
-</span><a href="#local-6989586621682115618"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187826"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-246"></span><span>
 </span><span id="line-247"></span><span class="hs-comment">-- Adapted from Codec.CBOR.Read</span><span>
-</span><span id="line-248"></span><span id="local-6989586621682114926"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBytesIndef"><span class="hs-identifier hs-type">decodeBoundedBytesIndef</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682114926"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.Internal.html#ByteString"><span class="hs-identifier hs-type">BSL.ByteString</span></a></span></span><span>
+</span><span id="line-248"></span><span id="local-6989586621682187134"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBytesIndef"><span class="hs-identifier hs-type">decodeBoundedBytesIndef</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187134"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.Internal.html#ByteString"><span class="hs-identifier hs-type">BSL.ByteString</span></a></span></span><span>
 </span><span id="line-249"></span><span id="decodeBoundedBytesIndef"><span class="annot"><span class="annottext">decodeBoundedBytesIndef :: forall s. Decoder s LazyByteString
 </span><a href="PlutusCore.Data.html#decodeBoundedBytesIndef"><span class="hs-identifier hs-var hs-var">decodeBoundedBytesIndef</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Decoder s ()
 forall s. Decoder s ()
@@ -971,16 +971,16 @@ forall s. [ByteString] -&gt; Decoder s LazyByteString
 </span><a href="PlutusCore.Data.html#decodeBoundedBytesIndefLen"><span class="hs-identifier hs-var">decodeBoundedBytesIndefLen</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-250"></span><span>
 </span><span id="line-251"></span><span class="hs-comment">-- Adapted from Codec.CBOR.Read, to call the size-checking bytestring decoder</span><span>
-</span><span id="line-252"></span><span id="local-6989586621682114939"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBytesIndefLen"><span class="hs-identifier hs-type">decodeBoundedBytesIndefLen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682114939"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.Internal.html#ByteString"><span class="hs-identifier hs-type">BSL.ByteString</span></a></span></span><span>
+</span><span id="line-252"></span><span id="local-6989586621682187147"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBytesIndefLen"><span class="hs-identifier hs-type">decodeBoundedBytesIndefLen</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187147"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.Internal.html#ByteString"><span class="hs-identifier hs-type">BSL.ByteString</span></a></span></span><span>
 </span><span id="line-253"></span><span id="decodeBoundedBytesIndefLen"><span class="annot"><span class="annottext">decodeBoundedBytesIndefLen :: forall s. [ByteString] -&gt; Decoder s LazyByteString
-</span><a href="PlutusCore.Data.html#decodeBoundedBytesIndefLen"><span class="hs-identifier hs-var hs-var">decodeBoundedBytesIndefLen</span></a></span></span><span> </span><span id="local-6989586621682115626"><span class="annot"><span class="annottext">[ByteString]
-</span><a href="#local-6989586621682115626"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-254"></span><span>  </span><span id="local-6989586621682115627"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621682115627"><span class="hs-identifier hs-var">stop</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Bool
+</span><a href="PlutusCore.Data.html#decodeBoundedBytesIndefLen"><span class="hs-identifier hs-var hs-var">decodeBoundedBytesIndefLen</span></a></span></span><span> </span><span id="local-6989586621682187834"><span class="annot"><span class="annottext">[ByteString]
+</span><a href="#local-6989586621682187834"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-254"></span><span>  </span><span id="local-6989586621682187835"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621682187835"><span class="hs-identifier hs-var">stop</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Bool
 forall s. Decoder s Bool
 </span><span class="hs-identifier hs-var">CBOR.decodeBreakOr</span></span><span>
 </span><span id="line-255"></span><span>  </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621682115627"><span class="hs-identifier hs-var">stop</span></a></span><span>
+</span><a href="#local-6989586621682187835"><span class="hs-identifier hs-var">stop</span></a></span><span>
 </span><span id="line-256"></span><span>    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">LazyByteString -&gt; Decoder s LazyByteString
 forall a. a -&gt; Decoder s a
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
@@ -991,25 +991,25 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.html#fromChunks"><span class="hs-identifier hs-var">BSL.fromChunks</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[ByteString] -&gt; [ByteString]
 forall a. [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">[ByteString]
-</span><a href="#local-6989586621682115626"><span class="hs-identifier hs-var">acc</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187834"><span class="hs-identifier hs-var">acc</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-257"></span><span>    </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-258"></span><span>      </span><span class="hs-glyph">!</span><span id="local-6989586621682115632"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115632"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s ByteString
+</span><span id="line-258"></span><span>      </span><span class="hs-glyph">!</span><span id="local-6989586621682187840"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187840"><span class="hs-identifier hs-var">bs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s ByteString
 forall s. Decoder s ByteString
 </span><a href="PlutusCore.Data.html#decodeBoundedBytes"><span class="hs-identifier hs-var">decodeBoundedBytes</span></a></span><span>
 </span><span id="line-259"></span><span>      </span><span class="annot"><span class="annottext">[ByteString] -&gt; Decoder s LazyByteString
 forall s. [ByteString] -&gt; Decoder s LazyByteString
 </span><a href="PlutusCore.Data.html#decodeBoundedBytesIndefLen"><span class="hs-identifier hs-var">decodeBoundedBytesIndefLen</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115632"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; [ByteString]
+</span><a href="#local-6989586621682187840"><span class="hs-identifier hs-var">bs</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString] -&gt; [ByteString]
 forall a. a -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#%3A"><span class="hs-glyph hs-var">:</span></a></span><span> </span><span class="annot"><span class="annottext">[ByteString]
-</span><a href="#local-6989586621682115626"><span class="hs-identifier hs-var">acc</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187834"><span class="hs-identifier hs-var">acc</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-260"></span><span>
-</span><span id="line-261"></span><span id="local-6989586621682114921"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBytes"><span class="hs-identifier hs-type">decodeBoundedBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682114921"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span></span><span>
+</span><span id="line-261"></span><span id="local-6989586621682187129"><span class="annot"><a href="PlutusCore.Data.html#decodeBoundedBytes"><span class="hs-identifier hs-type">decodeBoundedBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187129"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span></span><span>
 </span><span id="line-262"></span><span id="decodeBoundedBytes"><span class="annot"><span class="annottext">decodeBoundedBytes :: forall s. Decoder s ByteString
 </span><a href="PlutusCore.Data.html#decodeBoundedBytes"><span class="hs-identifier hs-var hs-var">decodeBoundedBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-263"></span><span>  </span><span id="local-6989586621682115640"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115640"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s ByteString
+</span><span id="line-263"></span><span>  </span><span id="local-6989586621682187848"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621682187848"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s ByteString
 forall s. Decoder s ByteString
 </span><span class="hs-identifier hs-var">CBOR.decodeBytes</span></span><span>
 </span><span id="line-264"></span><span>  </span><span class="hs-comment">-- See Note [The 64-byte limit]</span><span>
@@ -1017,7 +1017,7 @@ forall s. Decoder s ByteString
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.html#unless"><span class="hs-identifier hs-var">unless</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html#length"><span class="hs-identifier hs-var">BS.length</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115640"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682187848"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">64</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Decoder s () -&gt; Decoder s ()) -&gt; Decoder s () -&gt; Decoder s ()
@@ -1031,9 +1031,9 @@ forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 forall a. a -&gt; Decoder s a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621682115640"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><a href="#local-6989586621682187848"><span class="hs-identifier hs-var">b</span></a></span><span>
 </span><span id="line-267"></span><span>
-</span><span id="line-268"></span><span id="local-6989586621682115642"><span class="annot"><a href="PlutusCore.Data.html#decodeList"><span class="hs-identifier hs-type">decodeList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682115642"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
+</span><span id="line-268"></span><span id="local-6989586621682187850"><span class="annot"><a href="PlutusCore.Data.html#decodeList"><span class="hs-identifier hs-type">decodeList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187850"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
 </span><span id="line-269"></span><span id="decodeList"><span class="annot"><span class="annottext">decodeList :: forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeList"><span class="hs-identifier hs-var hs-var">decodeList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; Data
 </span><a href="PlutusCore.Data.html#List"><span class="hs-identifier hs-var">List</span></a></span><span> </span><span class="annot"><span class="annottext">([Data] -&gt; Data) -&gt; Decoder s [Data] -&gt; Decoder s Data
@@ -1044,10 +1044,10 @@ forall s x. Decoder s x -&gt; Decoder s [x]
 forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var">decodeData</span></a></span><span>
 </span><span id="line-270"></span><span>
-</span><span id="line-271"></span><span id="local-6989586621682114950"><span id="local-6989586621682114951"><span class="annot"><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-type">decodeListOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682114950"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682114951"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682114950"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621682114951"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">]</span></span></span><span>
+</span><span id="line-271"></span><span id="local-6989586621682187158"><span id="local-6989586621682187159"><span class="annot"><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-type">decodeListOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187158"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682187159"><span class="hs-identifier hs-type">x</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187158"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621682187159"><span class="hs-identifier hs-type">x</span></a></span><span class="hs-special">]</span></span></span><span>
 </span><span id="line-272"></span><span id="decodeListOf"><span class="annot"><span class="annottext">decodeListOf :: forall s x. Decoder s x -&gt; Decoder s [x]
-</span><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-var hs-var">decodeListOf</span></a></span></span><span> </span><span id="local-6989586621682115646"><span class="annot"><span class="annottext">Decoder s x
-</span><a href="#local-6989586621682115646"><span class="hs-identifier hs-var">decoder</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-var hs-var">decodeListOf</span></a></span></span><span> </span><span id="local-6989586621682187854"><span class="annot"><span class="annottext">Decoder s x
+</span><a href="#local-6989586621682187854"><span class="hs-identifier hs-var">decoder</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-273"></span><span>  </span><span class="annot"><span class="annottext">Decoder s (Maybe Int)
 forall s. Decoder s (Maybe Int)
 </span><span class="hs-identifier hs-var">CBOR.decodeListLenOrIndef</span></span><span> </span><span class="annot"><span class="annottext">Decoder s (Maybe Int)
@@ -1065,9 +1065,9 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#flip"><span class="hs-identifier hs-var">flip</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[x] -&gt; [x]
 forall a. [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s x
-</span><a href="#local-6989586621682115646"><span class="hs-identifier hs-var">decoder</span></a></span><span>
-</span><span id="line-275"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621682115649"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682115649"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">([x] -&gt; x -&gt; [x])
+</span><a href="#local-6989586621682187854"><span class="hs-identifier hs-var">decoder</span></a></span><span>
+</span><span id="line-275"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621682187857"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621682187857"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">([x] -&gt; x -&gt; [x])
 -&gt; [x] -&gt; ([x] -&gt; [x]) -&gt; Int -&gt; Decoder s x -&gt; Decoder s [x]
 forall r a r' s.
 (r -&gt; a -&gt; r)
@@ -1077,10 +1077,10 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#flip"><span class="hs-identifier hs-var">flip</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[x] -&gt; [x]
 forall a. [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682115649"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s x
-</span><a href="#local-6989586621682115646"><span class="hs-identifier hs-var">decoder</span></a></span><span>
+</span><a href="#local-6989586621682187857"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s x
+</span><a href="#local-6989586621682187854"><span class="hs-identifier hs-var">decoder</span></a></span><span>
 </span><span id="line-276"></span><span>
-</span><span id="line-277"></span><span id="local-6989586621682115650"><span class="annot"><a href="PlutusCore.Data.html#decodeMap"><span class="hs-identifier hs-type">decodeMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682115650"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
+</span><span id="line-277"></span><span id="local-6989586621682187858"><span class="annot"><a href="PlutusCore.Data.html#decodeMap"><span class="hs-identifier hs-type">decodeMap</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187858"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
 </span><span id="line-278"></span><span id="decodeMap"><span class="annot"><span class="annottext">decodeMap :: forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeMap"><span class="hs-identifier hs-var hs-var">decodeMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-279"></span><span>  </span><span class="annot"><span class="annottext">Decoder s (Maybe Int)
@@ -1109,9 +1109,9 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 forall a. [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s (Data, Data)
 forall {s}. Decoder s (Data, Data)
-</span><a href="#local-6989586621682115655"><span class="hs-identifier hs-var">decodePair</span></a></span><span>
-</span><span id="line-281"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621682115656"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682115656"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Data
+</span><a href="#local-6989586621682187863"><span class="hs-identifier hs-var">decodePair</span></a></span><span>
+</span><span id="line-281"></span><span>    </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621682187864"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621682187864"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; Data
 </span><a href="PlutusCore.Data.html#Map"><span class="hs-identifier hs-var">Map</span></a></span><span> </span><span class="annot"><span class="annottext">([(Data, Data)] -&gt; Data)
 -&gt; Decoder s [(Data, Data)] -&gt; Decoder s Data
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -1130,12 +1130,12 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; b -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#flip"><span class="hs-identifier hs-var">flip</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[(Data, Data)] -&gt; [(Data, Data)]
 forall a. [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#reverse"><span class="hs-identifier hs-var">reverse</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682115656"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s (Data, Data)
+</span><a href="#local-6989586621682187864"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s (Data, Data)
 forall {s}. Decoder s (Data, Data)
-</span><a href="#local-6989586621682115655"><span class="hs-identifier hs-var">decodePair</span></a></span><span>
+</span><a href="#local-6989586621682187863"><span class="hs-identifier hs-var">decodePair</span></a></span><span>
 </span><span id="line-282"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-283"></span><span>    </span><span id="local-6989586621682115655"><span class="annot"><span class="annottext">decodePair :: Decoder s (Data, Data)
-</span><a href="#local-6989586621682115655"><span class="hs-identifier hs-var hs-var">decodePair</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Data -&gt; Data -&gt; (Data, Data))
+</span><span id="line-283"></span><span>    </span><span id="local-6989586621682187863"><span class="annot"><span class="annottext">decodePair :: Decoder s (Data, Data)
+</span><a href="#local-6989586621682187863"><span class="hs-identifier hs-var hs-var">decodePair</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Data -&gt; Data -&gt; (Data, Data))
 -&gt; Decoder s Data -&gt; Decoder s (Data -&gt; (Data, Data))
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s Data
@@ -1149,7 +1149,7 @@ forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var">decodeData</span></a></span><span>
 </span><span id="line-284"></span><span>
 </span><span id="line-285"></span><span class="hs-comment">-- See Note [CBOR alternative tags] for the encoding scheme.</span><span>
-</span><span id="line-286"></span><span id="local-6989586621682115659"><span class="annot"><a href="PlutusCore.Data.html#decodeConstr"><span class="hs-identifier hs-type">decodeConstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682115659"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
+</span><span id="line-286"></span><span id="local-6989586621682187867"><span class="annot"><a href="PlutusCore.Data.html#decodeConstr"><span class="hs-identifier hs-type">decodeConstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Decoder</span></span><span> </span><span class="annot"><a href="#local-6989586621682187867"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Data.html#Data"><span class="hs-identifier hs-type">Data</span></a></span></span><span>
 </span><span id="line-287"></span><span id="decodeConstr"><span class="annot"><span class="annottext">decodeConstr :: forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeConstr"><span class="hs-identifier hs-var hs-var">decodeConstr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-288"></span><span>  </span><span class="annot"><span class="annottext">Decoder s Word64
@@ -1161,16 +1161,16 @@ forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 </span><span id="line-289"></span><span>    </span><span class="annot"><span class="annottext">Word64
 </span><span class="hs-number">102</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Decoder s Data
 forall s. Decoder s Data
-</span><a href="#local-6989586621682115691"><span class="hs-identifier hs-var">decodeConstrExtended</span></a></span><span>
-</span><span id="line-290"></span><span>    </span><span id="local-6989586621682115692"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115692"><span class="hs-identifier hs-var">t</span></a></span></span><span>
+</span><a href="#local-6989586621682187899"><span class="hs-identifier hs-var">decodeConstrExtended</span></a></span><span>
+</span><span id="line-290"></span><span>    </span><span id="local-6989586621682187900"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621682187900"><span class="hs-identifier hs-var">t</span></a></span></span><span>
 </span><span id="line-291"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word64
 </span><span class="hs-number">121</span></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115692"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621682187900"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115692"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
+</span><a href="#local-6989586621682187900"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
 </span><span class="hs-number">128</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
@@ -1178,7 +1178,7 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-var">Constr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word64 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115692"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621682187900"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">121</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Data] -&gt; Data) -&gt; Decoder s [Data] -&gt; Decoder s Data
@@ -1188,15 +1188,15 @@ forall s x. Decoder s x -&gt; Decoder s [x]
 </span><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-var">decodeListOf</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s Data
 forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var">decodeData</span></a></span><span>
-</span><span id="line-293"></span><span>    </span><span id="local-6989586621682115693"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115693"><span class="hs-identifier hs-var">t</span></a></span></span><span>
+</span><span id="line-293"></span><span>    </span><span id="local-6989586621682187901"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621682187901"><span class="hs-identifier hs-var">t</span></a></span></span><span>
 </span><span id="line-294"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word64
 </span><span class="hs-number">1280</span></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115693"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621682187901"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115693"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
+</span><a href="#local-6989586621682187901"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Word64 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
 </span><span class="hs-number">1401</span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
@@ -1204,7 +1204,7 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-var">Constr</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word64 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115693"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+</span><a href="#local-6989586621682187901"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1280</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
@@ -1217,8 +1217,8 @@ forall s x. Decoder s x -&gt; Decoder s [x]
 </span><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-var">decodeListOf</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s Data
 forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var">decodeData</span></a></span><span>
-</span><span id="line-296"></span><span>    </span><span id="local-6989586621682115694"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115694"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s Data
+</span><span id="line-296"></span><span>    </span><span id="local-6989586621682187902"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621682187902"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s Data
 forall a. String -&gt; Decoder s a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.Fail.html#fail"><span class="hs-identifier hs-var">fail</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
@@ -1227,47 +1227,47 @@ forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115694"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682187902"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-297"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-298"></span><span>    </span><span id="local-6989586621682115691"><span class="annot"><span class="annottext">decodeConstrExtended :: Decoder s Data
-</span><a href="#local-6989586621682115691"><span class="hs-identifier hs-var hs-var">decodeConstrExtended</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-299"></span><span>      </span><span id="local-6989586621682115710"><span class="annot"><span class="annottext">Maybe Int
-</span><a href="#local-6989586621682115710"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s (Maybe Int)
+</span><span id="line-298"></span><span>    </span><span id="local-6989586621682187899"><span class="annot"><span class="annottext">decodeConstrExtended :: Decoder s Data
+</span><a href="#local-6989586621682187899"><span class="hs-identifier hs-var hs-var">decodeConstrExtended</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-299"></span><span>      </span><span id="local-6989586621682187918"><span class="annot"><span class="annottext">Maybe Int
+</span><a href="#local-6989586621682187918"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s (Maybe Int)
 forall s. Decoder s (Maybe Int)
 </span><span class="hs-identifier hs-var">CBOR.decodeListLenOrIndef</span></span><span>
-</span><span id="line-300"></span><span>      </span><span id="local-6989586621682115711"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115711"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Word64
+</span><span id="line-300"></span><span>      </span><span id="local-6989586621682187919"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621682187919"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Word64
 forall s. Decoder s Word64
 </span><span class="hs-identifier hs-var">CBOR.decodeWord64</span></span><span>
-</span><span id="line-301"></span><span>      </span><span id="local-6989586621682115713"><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115713"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Data -&gt; Decoder s [Data]
+</span><span id="line-301"></span><span>      </span><span id="local-6989586621682187921"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187921"><span class="hs-identifier hs-var">args</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Data -&gt; Decoder s [Data]
 forall s x. Decoder s x -&gt; Decoder s [x]
 </span><a href="PlutusCore.Data.html#decodeListOf"><span class="hs-identifier hs-var">decodeListOf</span></a></span><span> </span><span class="annot"><span class="annottext">Decoder s Data
 forall s. Decoder s Data
 </span><a href="PlutusCore.Data.html#decodeData"><span class="hs-identifier hs-var">decodeData</span></a></span><span>
 </span><span id="line-302"></span><span>      </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Maybe Int
-</span><a href="#local-6989586621682115710"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621682187918"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-303"></span><span>        </span><span class="annot"><span class="annottext">Maybe Int
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-304"></span><span>          </span><span id="local-6989586621682115714"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621682115714"><span class="hs-identifier hs-var">done</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Bool
+</span><span id="line-304"></span><span>          </span><span id="local-6989586621682187922"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621682187922"><span class="hs-identifier hs-var">done</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Decoder s Bool
 forall s. Decoder s Bool
 </span><span class="hs-identifier hs-var">CBOR.decodeBreakOr</span></span><span>
 </span><span id="line-305"></span><span>          </span><span class="annot"><span class="annottext">Bool -&gt; Decoder s () -&gt; Decoder s ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.html#unless"><span class="hs-identifier hs-var">unless</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621682115714"><span class="hs-identifier hs-var">done</span></a></span><span> </span><span class="annot"><span class="annottext">(Decoder s () -&gt; Decoder s ()) -&gt; Decoder s () -&gt; Decoder s ()
+</span><a href="#local-6989586621682187922"><span class="hs-identifier hs-var">done</span></a></span><span> </span><span class="annot"><span class="annottext">(Decoder s () -&gt; Decoder s ()) -&gt; Decoder s () -&gt; Decoder s ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Decoder s ()
 forall a. String -&gt; Decoder s a
 forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.Fail.html#fail"><span class="hs-identifier hs-var">fail</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Expected exactly two elements&quot;</span></span><span>
-</span><span id="line-306"></span><span>        </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621682115715"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682115715"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Decoder s () -&gt; Decoder s ()
+</span><span id="line-306"></span><span>        </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span id="local-6989586621682187923"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621682187923"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Decoder s () -&gt; Decoder s ()
 forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Control.Monad.html#unless"><span class="hs-identifier hs-var">unless</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621682115715"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621682187923"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3D%3D"><span class="hs-operator hs-var">==</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Decoder s () -&gt; Decoder s ()) -&gt; Decoder s () -&gt; Decoder s ()
@@ -1286,6 +1286,6 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="PlutusCore.Data.html#Constr"><span class="hs-identifier hs-var">Constr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word64 -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682115711"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Data]
-</span><a href="#local-6989586621682115713"><span class="hs-identifier hs-var">args</span></a></span><span>
+</span><a href="#local-6989586621682187919"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621682187921"><span class="hs-identifier hs-var">args</span></a></span><span>
 </span><span id="line-308"></span></pre></body></html>

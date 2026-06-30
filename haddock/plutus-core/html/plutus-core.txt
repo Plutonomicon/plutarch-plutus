@@ -4,7 +4,7 @@
 
 -- | Pretty-printer, parser, and typechecker for Plutus Core.
 @package plutus-core
-@version 1.60.0.0
+@version 1.65.0.0
 
 module Codec.Extras.FlatViaSerialise
 
@@ -92,8 +92,9 @@ module PlutusCore.Annotation
 
 -- | An annotation type used during the compilation.
 data Ann
-Ann :: Inline -> SrcSpans -> Bool -> Ann
+Ann :: Inline -> Case -> SrcSpans -> Bool -> Ann
 [annInline] :: Ann -> Inline
+[annCase] :: Ann -> Case
 [annSrcSpans] :: Ann -> SrcSpans
 [annIsAsDataMatcher] :: Ann -> Bool
 
@@ -155,6 +156,21 @@ annSafeToInline :: AnnInline a => a
 
 -- | An annotation that leaves the inlining decision to the inliner.
 annMayInline :: AnnInline a => a
+data Case
+
+-- | Signaling to the compiler that a <tt>case</tt> expression is safe to
+--   drop, so long as its binders are unused.
+SafeToDrop :: Case
+NotSafeToDrop :: Case
+
+-- | Methods used to guide optimization of <tt>case</tt> expressions.
+class AnnCase a
+
+-- | An annotation signaling that the <tt>case</tt> expression is safe to
+--   drop, so long as its binders are unused.
+annSafeToDrop :: AnnCase a => a
+annNotSafeToDrop :: AnnCase a => a
+annIsSafeToDrop :: AnnCase a => a -> Bool
 data SourcePos
 SourcePos :: FilePath -> !Pos -> !Pos -> SourcePos
 [sourceName] :: SourcePos -> FilePath
@@ -167,21 +183,26 @@ addSrcSpan :: SrcSpan -> Ann -> Ann
 
 -- | Tells if a line (positive integer) falls inside a SrcSpan.
 lineInSrcSpan :: Pos -> SrcSpan -> Bool
+instance PlutusCore.Annotation.AnnCase PlutusCore.Annotation.Ann
+instance PlutusCore.Annotation.AnnCase ()
 instance PlutusCore.Annotation.AnnInline PlutusCore.Annotation.Ann
 instance PlutusCore.Annotation.AnnInline ()
 instance Data.Default.Internal.Default PlutusCore.Annotation.Ann
 instance Data.Default.Internal.Default (PlutusCore.Annotation.InlineHints name a)
 instance GHC.Classes.Eq PlutusCore.Annotation.Ann
+instance GHC.Classes.Eq PlutusCore.Annotation.Case
 instance GHC.Classes.Eq PlutusCore.Annotation.Inline
 instance GHC.Classes.Eq PlutusCore.Annotation.SrcSpan
 instance GHC.Classes.Eq PlutusCore.Annotation.SrcSpans
 instance PlutusCore.Flat.Class.Flat PlutusCore.Annotation.SrcSpan
 instance PlutusCore.Flat.Class.Flat PlutusCore.Annotation.SrcSpans
 instance GHC.Generics.Generic PlutusCore.Annotation.Ann
+instance GHC.Generics.Generic PlutusCore.Annotation.Case
 instance GHC.Generics.Generic PlutusCore.Annotation.Inline
 instance GHC.Generics.Generic PlutusCore.Annotation.SrcSpan
 instance GHC.Generics.Generic PlutusCore.Annotation.SrcSpans
 instance Data.Hashable.Class.Hashable PlutusCore.Annotation.Ann
+instance Data.Hashable.Class.Hashable PlutusCore.Annotation.Case
 instance Data.Hashable.Class.Hashable PlutusCore.Annotation.Inline
 instance Data.Hashable.Class.Hashable PlutusCore.Annotation.SrcSpan
 instance Data.Hashable.Class.Hashable PlutusCore.Annotation.SrcSpans
@@ -190,6 +211,7 @@ instance GHC.Base.Monoid PlutusCore.Annotation.SrcSpans
 instance Control.DeepSeq.NFData PlutusCore.Annotation.SrcSpan
 instance Control.DeepSeq.NFData PlutusCore.Annotation.SrcSpans
 instance GHC.Classes.Ord PlutusCore.Annotation.Ann
+instance GHC.Classes.Ord PlutusCore.Annotation.Case
 instance GHC.Classes.Ord PlutusCore.Annotation.Inline
 instance GHC.Classes.Ord PlutusCore.Annotation.SrcSpan
 instance GHC.Classes.Ord PlutusCore.Annotation.SrcSpans
@@ -198,6 +220,7 @@ instance Prettyprinter.Internal.Pretty PlutusCore.Annotation.SrcSpan
 instance Prettyprinter.Internal.Pretty PlutusCore.Annotation.SrcSpans
 instance GHC.Base.Semigroup PlutusCore.Annotation.SrcSpans
 instance GHC.Show.Show PlutusCore.Annotation.Ann
+instance GHC.Show.Show PlutusCore.Annotation.Case
 instance GHC.Show.Show PlutusCore.Annotation.Inline
 instance GHC.Show.Show (PlutusCore.Annotation.InlineHints name a)
 instance GHC.Show.Show PlutusCore.Annotation.SrcSpan
@@ -319,6 +342,7 @@ MinSize :: LinearFunction -> Model
 MaxSize :: LinearFunction -> Model
 LinearInX :: LinearFunction -> Model
 LinearInY :: LinearFunction -> Model
+LinearInY2 :: LinearFunction -> Integer -> Model
 LinearInZ :: LinearFunction -> Model
 LinearInU :: LinearFunction -> Model
 LiteralInYOrLinearInZ :: LinearFunction -> Model
@@ -337,6 +361,7 @@ ConstAboveDiagonal :: Integer -> Model -> Model
 ConstBelowDiagonal :: Integer -> Model -> Model
 ConstOffDiagonal :: Integer -> Model -> Model
 ExpModCost :: ExpModCostingFunction -> Model
+AboveAndBelowDiagonal :: Integer -> Model -> Model
 
 -- | A CPU usage modelling function and a memory usage modelling function
 --   bundled together
@@ -1588,6 +1613,18 @@ showText :: Show a => a -> Text
 class Default a
 def :: Default a => a
 
+-- | Types that have an outermost annotation.
+class HasAnn (f :: Type -> Type)
+
+-- | Get the outermost annotation.
+getAnn :: HasAnn f => f a -> a
+
+-- | Modify the outermost annotation.
+modifyAnn :: HasAnn f => (a -> a) -> f a -> f a
+
+-- | Set the outermost annotation.
+setAnn :: HasAnn f => a -> f a -> f a
+
 -- | Zips two lists of the same length together, returning <a>Nothing</a>
 --   if they are not the same length.
 zipExact :: [a] -> [b] -> Maybe [(a, b)]
@@ -2626,6 +2663,7 @@ findFirstSetBit :: ByteString -> Int
 data IntegerToByteStringError
 NegativeInput :: IntegerToByteStringError
 NotEnoughDigits :: IntegerToByteStringError
+maximumInputLength :: Integer
 maximumOutputLength :: Integer
 instance GHC.Classes.Eq PlutusCore.Bitwise.IntegerToByteStringError
 instance GHC.Classes.Eq PlutusCore.Bitwise.WriteBitsException
@@ -2750,6 +2788,7 @@ unionValue :: Value -> Value -> BuiltinResult Value
 --   non-builtin <tt>Value</tt>. This is the denotation of
 --   <tt>ValueData</tt> in Plutus V1, V2 and V3.
 valueData :: Value -> BuiltinResult Data
+valueDataMaxSize :: Int
 
 -- | &lt;math&gt;. Decodes <a>Data</a> into <a>Value</a>. This is the
 --   denotation of <tt>UnValueData</tt> in Plutus V1, V2 and V3.
@@ -3731,6 +3770,7 @@ add :: Element -> Element -> Element
 -- | Negate a G2 group element
 neg :: Element -> Element
 scalarMul :: Integer -> Element -> Element
+scalarMulE :: Integer -> Element -> BuiltinResult Element
 hashToGroup :: ByteString -> ByteString -> Either BLS12_381_Error Element
 
 -- | Compress a G2 element to a bytestring. This serialises a curve point
@@ -3792,6 +3832,7 @@ neg :: Element -> Element
 --   arguments are the other way round, but scalars acting on the left is
 --   more consistent with standard mathematical practice.
 scalarMul :: Integer -> Element -> Element
+scalarMulE :: Integer -> Element -> BuiltinResult Element
 
 -- | Take an arbitrary bytestring and a Domain Separation Tag (DST) and
 --   hash them to a get point in G1.
@@ -3923,6 +3964,9 @@ NumBytesCostedAsNumWords :: Integer -> NumBytesCostedAsNumWords
 newtype IntegerCostedLiterally
 IntegerCostedLiterally :: Integer -> IntegerCostedLiterally
 [unIntegerCostedLiterally] :: IntegerCostedLiterally -> Integer
+newtype TextCostedByByteLength
+TextCostedByByteLength :: Text -> TextCostedByByteLength
+[unTextCostedByByteLength] :: TextCostedByByteLength -> Text
 
 -- | Measure the size of a <a>Value</a> by its <a>totalSize</a>.
 newtype ValueTotalSize
@@ -3954,6 +3998,7 @@ instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage GHC.Num.Natur
 instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage PlutusCore.Evaluation.Machine.ExMemoryUsage.NumBytesCostedAsNumWords
 instance (Universe.Core.Closed uni, Universe.Core.Everywhere uni PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage) => PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage (Data.Some.Newtype.Some (Universe.Core.ValueOf uni))
 instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage Data.Text.Internal.Text
+instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage PlutusCore.Evaluation.Machine.ExMemoryUsage.TextCostedByByteLength
 instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage (a, b)
 instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage ()
 instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage PlutusCore.Value.Value
@@ -4140,6 +4185,7 @@ data ModelTwoArguments
 ModelTwoArgumentsConstantCost :: CostingInteger -> ModelTwoArguments
 ModelTwoArgumentsLinearInX :: OneVariableLinearFunction -> ModelTwoArguments
 ModelTwoArgumentsLinearInY :: OneVariableLinearFunction -> ModelTwoArguments
+ModelTwoArgumentsLinearInY2 :: ModelSubtractedSizes -> ModelTwoArguments
 ModelTwoArgumentsLinearInXAndY :: TwoVariableLinearFunction -> ModelTwoArguments
 ModelTwoArgumentsAddedSizes :: OneVariableLinearFunction -> ModelTwoArguments
 ModelTwoArgumentsSubtractedSizes :: ModelSubtractedSizes -> ModelTwoArguments
@@ -4153,6 +4199,7 @@ ModelTwoArgumentsConstBelowDiagonal :: ModelConstantOrTwoArguments -> ModelTwoAr
 ModelTwoArgumentsQuadraticInY :: OneVariableQuadraticFunction -> ModelTwoArguments
 ModelTwoArgumentsQuadraticInXAndY :: TwoVariableQuadraticFunction -> ModelTwoArguments
 ModelTwoArgumentsWithInteractionInXAndY :: TwoVariableWithInteractionFunction -> ModelTwoArguments
+ModelTwoArgumentsAboveAndBelowDiagonal :: ModelConstantOrTwoArguments -> ModelTwoArguments
 data ModelThreeArguments
 ModelThreeArgumentsConstantCost :: CostingInteger -> ModelThreeArguments
 ModelThreeArgumentsLinearInX :: OneVariableLinearFunction -> ModelThreeArguments
@@ -4699,6 +4746,7 @@ data ModelTwoArguments
 ModelTwoArgumentsConstantCost :: CostingInteger -> ModelTwoArguments
 ModelTwoArgumentsLinearInX :: OneVariableLinearFunction -> ModelTwoArguments
 ModelTwoArgumentsLinearInY :: OneVariableLinearFunction -> ModelTwoArguments
+ModelTwoArgumentsLinearInY2 :: ModelSubtractedSizes -> ModelTwoArguments
 ModelTwoArgumentsLinearInXAndY :: TwoVariableLinearFunction -> ModelTwoArguments
 ModelTwoArgumentsAddedSizes :: OneVariableLinearFunction -> ModelTwoArguments
 ModelTwoArgumentsSubtractedSizes :: ModelSubtractedSizes -> ModelTwoArguments
@@ -4712,6 +4760,7 @@ ModelTwoArgumentsConstBelowDiagonal :: ModelConstantOrTwoArguments -> ModelTwoAr
 ModelTwoArgumentsQuadraticInY :: OneVariableQuadraticFunction -> ModelTwoArguments
 ModelTwoArgumentsQuadraticInXAndY :: TwoVariableQuadraticFunction -> ModelTwoArguments
 ModelTwoArgumentsWithInteractionInXAndY :: TwoVariableWithInteractionFunction -> ModelTwoArguments
+ModelTwoArgumentsAboveAndBelowDiagonal :: ModelConstantOrTwoArguments -> ModelTwoArguments
 data ModelThreeArguments
 ModelThreeArgumentsConstantCost :: CostingInteger -> ModelThreeArguments
 ModelThreeArgumentsLinearInX :: OneVariableLinearFunction -> ModelThreeArguments
@@ -5081,8 +5130,18 @@ Normalized :: a -> Normalized a
 
 -- | The latest version of Plutus Core supported by this library.
 latestVersion :: Version
-termAnn :: forall tyname name (uni :: Type -> Type) fun ann. Term tyname name uni fun ann -> ann
-typeAnn :: forall tyname (uni :: Type -> Type) ann. Type tyname uni ann -> ann
+
+-- | Types that have an outermost annotation.
+class HasAnn (f :: Type -> Type)
+
+-- | Get the outermost annotation.
+getAnn :: HasAnn f => f a -> a
+
+-- | Modify the outermost annotation.
+modifyAnn :: HasAnn f => (a -> a) -> f a -> f a
+
+-- | Set the outermost annotation.
+setAnn :: HasAnn f => a -> f a -> f a
 tyVarDeclAnn :: forall tyname ann f. Functor f => (ann -> f ann) -> TyVarDecl tyname ann -> f (TyVarDecl tyname ann)
 tyVarDeclName :: forall tyname1 ann tyname2 f. Functor f => (tyname1 -> f tyname2) -> TyVarDecl tyname1 ann -> f (TyVarDecl tyname2 ann)
 tyVarDeclKind :: forall tyname ann f. Functor f => (Kind ann -> f (Kind ann)) -> TyVarDecl tyname ann -> f (TyVarDecl tyname ann)
@@ -6206,6 +6265,9 @@ argProxy :: forall val arg (args :: [Type]) res. TypeScheme val (arg ': args) re
 -- | Convert a <a>TypeScheme</a> to the corresponding <a>Type</a>.
 typeSchemeToType :: forall val (args :: [Type]) res. TypeScheme val args res -> Type TyName (UniOf val) ()
 
+-- | The <tt>cost</tt> part of <a>BuiltinMeaning</a>.
+type family CostingPart (uni :: Type -> Type) fun
+
 -- | Feed the <a>SingKind</a> version of the given <a>Kind</a> to the given
 --   continuation.
 withSingKind :: Kind ann -> (forall k. () => SingKind k -> r) -> r
@@ -6290,9 +6352,6 @@ BuiltinMeaning :: TypeScheme val args res -> ~FoldArgs args res -> (cost -> Buil
 
 -- | Constraints available when defining a built-in function.
 type HasMeaningIn (uni :: Type -> Type) val = (Typeable val, ExMemoryUsage val, HasConstantIn uni val)
-
--- | The <tt>cost</tt> part of <a>BuiltinMeaning</a>.
-type family CostingPart (uni :: Type -> Type) fun
 
 -- | Feed the <a>TypeScheme</a> of the given built-in function to the
 --   continuation.
@@ -6443,8 +6502,10 @@ TyDecl :: ann -> Type tyname uni ann -> Kind ann -> TyDecl tyname (uni :: Type -
 --   <tt>ann</tt> is propagated from the <a>VarDecl</a> to the <a>Var</a>.
 mkVar :: forall term tyname name (uni :: Type -> Type) fun ann. TermLike term tyname name uni fun => VarDecl tyname name uni ann -> term ann
 
--- | Make a <a>TyVar</a> referencing the given <a>TyVarDecl</a>.
-mkTyVar :: forall ann tyname (uni :: Type -> Type). ann -> TyVarDecl tyname ann -> Type tyname uni ann
+-- | Make a <a>TyVar</a> referencing the given <a>TyVarDecl</a>. The
+--   <tt>ann</tt> is propagated from the <a>TyVarDecl</a> to the
+--   <a>TyVar</a>.
+mkTyVar :: forall tyname ann (uni :: Type -> Type). TyVarDecl tyname ann -> Type tyname uni ann
 tyDeclVar :: forall tyname ann (uni :: Type -> Type). TyVarDecl tyname ann -> TyDecl tyname uni ann
 
 -- | A definition. Pretty much just a pair with more descriptive names.
@@ -7153,6 +7214,7 @@ eitherToBuiltinResult :: Show e => Either e r -> BuiltinResult r
 builtinTagWidth :: NumBits
 encodeBuiltin :: Word8 -> Encoding
 decodeBuiltin :: Get Word8
+ensurable :: BuiltinSemanticsVariant DefaultFun -> Bool
 instance GHC.Enum.Bounded (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Default.Builtins.DefaultFun)
 instance GHC.Enum.Bounded PlutusCore.Default.Builtins.DefaultFun
 instance Data.Default.Internal.Default (PlutusCore.Builtin.Meaning.BuiltinSemanticsVariant PlutusCore.Default.Builtins.DefaultFun)
@@ -7669,9 +7731,11 @@ pattern DefaultUniArray :: forall {a} {k1} {k2} {f :: k1 -> k2} {a1 :: k1}. () =
 -- | A constrant for "<tt>constr a</tt> holds for any <tt>a</tt> from
 --   <tt>uni</tt>".
 type family Everywhere (uni :: Type -> Type) (constr :: Type -> Constraint)
+defaultUniSize :: forall k (a :: k). DefaultUni (Esc a) -> Int
 
 -- | For pleasing the coverage checker.
 noMoreTypeFunctions :: forall a b c d (f :: a -> b -> c -> d) any. DefaultUni (Esc f) -> any
+minBoundInteger :: Integer
 
 -- | <tt>uni <a>Includes</a> a</tt> reads as "<tt>a</tt> is in the
 --   <tt>uni</tt>". <tt>a</tt> can be of a higher-kind, see the docs of
@@ -7736,6 +7800,16 @@ gshow :: forall {k} t (a :: k). GShow t => t a -> String
 defaultEq :: forall {k} f (a :: k) (b :: k). GEq f => f a -> f b -> Bool
 data DSum (tag :: k -> Type) (f :: k -> Type)
 (:=>) :: !tag a -> f a -> DSum (tag :: k -> Type) (f :: k -> Type)
+maxBoundInteger :: Integer
+maxBoundByteString :: Int
+
+-- | Cardano on-chain integer
+newtype CInteger
+CInteger :: Integer -> CInteger
+
+-- | Cardano on-chain bytestring
+newtype CByteString
+CByteString :: ByteString -> CByteString
 
 
 -- | Built-in <tt>pair</tt> and related functions.
@@ -8203,6 +8277,9 @@ type family AllElaboratedArgs (constr :: Type -> Constraint) (x :: a)
 --   0-ary application of a built-in type.
 class AllElaboratedArgs constr ElaborateBuiltin uni x => AllBuiltinArgs (uni :: Type -> Type) (constr :: Type -> Constraint) (x :: a)
 
+-- | The <tt>cost</tt> part of <a>BuiltinMeaning</a>.
+type family CostingPart (uni :: Type -> Type) fun
+
 -- | A function turned into a type class with exactly one fully general
 --   instance. We can't package up the constraints of
 --   <a>makeBuiltinMeaning</a> (see the instance) into a type or class
@@ -8248,9 +8325,6 @@ BuiltinMeaning :: TypeScheme val args res -> ~FoldArgs args res -> (cost -> Buil
 
 -- | Constraints available when defining a built-in function.
 type HasMeaningIn (uni :: Type -> Type) val = (Typeable val, ExMemoryUsage val, HasConstantIn uni val)
-
--- | The <tt>cost</tt> part of <a>BuiltinMeaning</a>.
-type family CostingPart (uni :: Type -> Type) fun
 
 -- | Feed the <a>TypeScheme</a> of the given built-in function to the
 --   continuation.
@@ -9120,8 +9194,18 @@ Normalized :: a -> Normalized a
 
 -- | The latest version of Plutus Core supported by this library.
 latestVersion :: Version
-termAnn :: forall tyname name (uni :: Type -> Type) fun ann. Term tyname name uni fun ann -> ann
-typeAnn :: forall tyname (uni :: Type -> Type) ann. Type tyname uni ann -> ann
+
+-- | Types that have an outermost annotation.
+class HasAnn (f :: Type -> Type)
+
+-- | Get the outermost annotation.
+getAnn :: HasAnn f => f a -> a
+
+-- | Modify the outermost annotation.
+modifyAnn :: HasAnn f => (a -> a) -> f a -> f a
+
+-- | Set the outermost annotation.
+setAnn :: HasAnn f => a -> f a -> f a
 tyVarDeclAnn :: forall tyname ann f. Functor f => (ann -> f ann) -> TyVarDecl tyname ann -> f (TyVarDecl tyname ann)
 tyVarDeclName :: forall tyname1 ann tyname2 f. Functor f => (tyname1 -> f tyname2) -> TyVarDecl tyname1 ann -> f (TyVarDecl tyname2 ann)
 tyVarDeclKind :: forall tyname ann f. Functor f => (Kind ann -> f (Kind ann)) -> TyVarDecl tyname ann -> f (TyVarDecl tyname ann)
@@ -9614,10 +9698,6 @@ bindFunM :: forall m ann fun name (uni :: Type -> Type) fun'. Monad m => (ann ->
 bindFun :: forall ann fun name (uni :: Type -> Type) fun'. (ann -> fun -> Term name uni fun' ann) -> Term name uni fun ann -> Term name uni fun' ann
 mapFun :: forall ann fun fun' name (uni :: Type -> Type). (ann -> fun -> fun') -> Term name uni fun ann -> Term name uni fun' ann
 
--- | Return the outermost annotation of a <a>Term</a>.
-termAnn :: forall name (uni :: Type -> Type) fun ann. Term name uni fun ann -> ann
-modifyTermAnn :: forall ann name (uni :: Type -> Type) fun. (ann -> ann) -> Term name uni fun ann -> Term name uni fun ann
-
 -- | An untyped "variable declaration", i.e. a name for a variable.
 data UVarDecl name ann
 UVarDecl :: ann -> name -> UVarDecl name ann
@@ -9625,12 +9705,14 @@ UVarDecl :: ann -> name -> UVarDecl name ann
 [_uvarDeclName] :: UVarDecl name ann -> name
 uvarDeclName :: forall name1 ann name2 f. Functor f => (name1 -> f name2) -> UVarDecl name1 ann -> f (UVarDecl name2 ann)
 uvarDeclAnn :: forall name ann1 ann2 f. Functor f => (ann1 -> f ann2) -> UVarDecl name ann1 -> f (UVarDecl name ann2)
+instance PlutusCore.Evaluation.Machine.ExMemoryUsage.ExMemoryUsage (UntypedPlutusCore.Core.Type.Term name uni fun ann)
 instance GHC.Base.Functor (UntypedPlutusCore.Core.Type.Program name uni fun)
 instance GHC.Base.Functor (UntypedPlutusCore.Core.Type.Term name uni fun)
 instance GHC.Base.Functor (UntypedPlutusCore.Core.Type.UVarDecl name)
 instance GHC.Generics.Generic (UntypedPlutusCore.Core.Type.Program name uni fun ann)
 instance GHC.Generics.Generic (UntypedPlutusCore.Core.Type.Term name uni fun ann)
 instance GHC.Generics.Generic (UntypedPlutusCore.Core.Type.UVarDecl name ann)
+instance PlutusPrelude.HasAnn (UntypedPlutusCore.Core.Type.Term name uni fun)
 instance PlutusCore.Builtin.HasConstant.HasConstant (UntypedPlutusCore.Core.Type.Term name uni fun ())
 instance (Control.DeepSeq.NFData name, Universe.Core.Everywhere uni Control.DeepSeq.NFData, Control.DeepSeq.NFData fun, Control.DeepSeq.NFData ann, Universe.Core.Closed uni) => Control.DeepSeq.NFData (UntypedPlutusCore.Core.Type.Program name uni fun ann)
 instance (Control.DeepSeq.NFData name, Control.DeepSeq.NFData fun, Control.DeepSeq.NFData ann, Universe.Core.Everywhere uni Control.DeepSeq.NFData, Universe.Core.Closed uni) => Control.DeepSeq.NFData (UntypedPlutusCore.Core.Type.Term name uni fun ann)
@@ -9669,6 +9751,9 @@ termSubtermsDeep :: forall name (uni :: Type -> Type) fun ann f. (Contravariant 
 -- | Get all the transitive child <a>Unique</a>s of the given <a>Term</a>.
 termUniquesDeep :: forall name (uni :: Type -> Type) fun ann. HasUniques (Term name uni fun ann) => Fold (Term name uni fun ann) Unique
 
+-- | View a term as a constant.
+_Constant :: forall name (uni :: Type -> Type) fun a p f. (Choice p, Applicative f) => p (a, Some (ValueOf uni)) (f (a, Some (ValueOf uni))) -> p (Term name uni fun a) (f (Term name uni fun a))
+
 module UntypedPlutusCore.Core.Instance.Scoping
 instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.CollectScopeInfo (UntypedPlutusCore.Core.Type.Program name uni fun)
 instance (name GHC.Types.~ PlutusCore.Name.Unique.Name) => PlutusCore.Check.Scoping.CollectScopeInfo (UntypedPlutusCore.Core.Type.Term name uni fun)
@@ -9681,7 +9766,7 @@ module UntypedPlutusCore.Core
 -- | Using 4 bits to encode term tags.
 termTagWidth :: NumBits
 encodeTerm :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => Term name uni fun ann -> Encoding
-decodeTerm :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => Version -> (fun -> Maybe String) -> Get (Term name uni fun ann)
+decodeTerm :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => Version -> (Some (ValueOf uni) -> Maybe String) -> (fun -> Maybe String) -> (Int -> Maybe String) -> Get (Term name uni fun ann)
 encodeTermTag :: Word8 -> Encoding
 decodeTermTag :: Get Word8
 sizeTerm :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => Term name uni fun ann -> NumBits -> NumBits
@@ -9692,7 +9777,7 @@ sizeTerm :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere u
 --   thing is to go via the instance for <a>UnrestrictedProgram</a>, which
 --   uses this
 encodeProgram :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => Program name uni fun ann -> Encoding
-decodeProgram :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => (fun -> Maybe String) -> Get (Program name uni fun ann)
+decodeProgram :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => (Some (ValueOf uni) -> Maybe String) -> (fun -> Maybe String) -> (Int -> Maybe String) -> Get (Program name uni fun ann)
 sizeProgram :: forall name (uni :: Type -> Type) fun ann. (Closed uni, Everywhere uni Flat, Flat fun, Flat ann, Flat name, Flat (Binder name)) => Program name uni fun ann -> NumBits -> NumBits
 
 -- | A program that can be serialized without any restrictions, e.g. on the
@@ -9725,6 +9810,13 @@ splitAppCtx :: forall nam (uni :: Type -> Type) fun a. Term nam uni fun a -> (Te
 -- | Fills in the hole in an <a>AppCtx</a>, the inverse of
 --   <a>splitAppCtx</a>.
 fillAppCtx :: forall name (uni :: Type -> Type) fun ann. Term name uni fun ann -> AppCtx name uni fun ann -> Term name uni fun ann
+data Saturation
+Oversaturated :: Saturation
+Undersaturated :: Saturation
+Saturated :: Saturation
+
+-- | Do the given arguments saturate the given arity?
+saturates :: forall name (uni :: Type -> Type) fun a. AppCtx name uni fun a -> Arity -> Maybe Saturation
 
 module UntypedPlutusCore.AstSize
 newtype AstSize
@@ -10549,7 +10641,7 @@ logWithBudgetEmitter :: forall (uni :: Type -> Type) fun. EmitterMode uni fun
 
 -- | Emits log and, when script evaluation fails, call trace.
 --   
---   This requires script to be compiled with `PlutusTx.Plugin:profile-all`
+--   This requires script to be compiled with `Plinth.Plugin:profile-all`
 --   turned on because this relies on compiler-generated trace calls that
 --   notifies entrance and exit of a function call. These traces that mark
 --   entrance and exit are ordinary traces like "-&gt;
@@ -11207,7 +11299,7 @@ logWithBudgetEmitter :: forall (uni :: Type -> Type) fun. EmitterMode uni fun
 
 -- | Emits log and, when script evaluation fails, call trace.
 --   
---   This requires script to be compiled with `PlutusTx.Plugin:profile-all`
+--   This requires script to be compiled with `Plinth.Plugin:profile-all`
 --   turned on because this relies on compiler-generated trace calls that
 --   notifies entrance and exit of a function call. These traces that mark
 --   entrance and exit are ordinary traces like "-&gt;
@@ -11268,8 +11360,9 @@ UVarDecl :: ann -> name -> UVarDecl name ann
 uvarDeclName :: forall name1 ann name2 f. Functor f => (name1 -> f name2) -> UVarDecl name1 ann -> f (UVarDecl name2 ann)
 uvarDeclAnn :: forall name ann1 ann2 f. Functor f => (ann1 -> f ann2) -> UVarDecl name ann1 -> f (UVarDecl name ann2)
 
--- | Make a <a>Var</a> referencing the given <tt>VarDecl</tt>.
-mkVar :: forall ann name (uni :: Type -> Type) fun. ann -> UVarDecl name ann -> Term name uni fun ann
+-- | Make a <a>Var</a> referencing the given <a>UVarDecl</a>. The
+--   <tt>ann</tt> is propagated from the <a>UVarDecl</a> to the <a>Var</a>.
+mkVar :: forall name ann (uni :: Type -> Type) fun. UVarDecl name ann -> Term name uni fun ann
 
 -- | Lambda abstract a list of names.
 mkIterLamAbs :: forall name ann (uni :: Type -> Type) fun. [UVarDecl name ann] -> Term name uni fun ann -> Term name uni fun ann
@@ -11282,6 +11375,15 @@ Def :: var -> val -> Def var val
 
 -- | A term definition as a variable.
 type UTermDef name (uni :: Type -> Type) fun ann = Def UVarDecl name ann Term name uni fun ann
+
+module PlutusCore.Compiler.Opts
+data CompilationOpts name fun a
+CompilationOpts :: OptimizeOpts name a -> BuiltinSemanticsVariant fun -> CompilationOpts name fun a
+[_coOptimizeOpts] :: CompilationOpts name fun a -> OptimizeOpts name a
+[_coBuiltinSemanticsVariant] :: CompilationOpts name fun a -> BuiltinSemanticsVariant fun
+coOptimizeOpts :: forall name1 fun a1 name2 a2 f. Functor f => (OptimizeOpts name1 a1 -> f (OptimizeOpts name2 a2)) -> CompilationOpts name1 fun a1 -> f (CompilationOpts name2 fun a2)
+coBuiltinSemanticsVariant :: forall name fun1 a fun2 f. Functor f => (BuiltinSemanticsVariant fun1 -> f (BuiltinSemanticsVariant fun2)) -> CompilationOpts name fun1 a -> f (CompilationOpts name fun2 a)
+defaultCompilationOpts :: Default (BuiltinSemanticsVariant fun) => CompilationOpts name fun a
 
 module UntypedPlutusCore.Purity
 
@@ -11418,7 +11520,6 @@ InlConstr :: [Inline] -> Inline
 InlCase :: Inline -> [Inline] -> Inline
 InlExpand :: Inline -> Inline
 InlDrop :: Inline -> Inline
-InlLamDrop :: Inline -> Inline
 
 -- | Hints for the certifier.
 --   
@@ -11434,68 +11535,135 @@ instance Control.DeepSeq.NFData UntypedPlutusCore.Transform.Certify.Hints.Hints
 instance Control.DeepSeq.NFData UntypedPlutusCore.Transform.Certify.Hints.Inline
 
 module UntypedPlutusCore.Transform.Certify.Trace
-data SimplifierStage
-FloatDelay :: SimplifierStage
-ForceDelay :: SimplifierStage
-ForceCaseDelay :: SimplifierStage
-CaseOfCase :: SimplifierStage
-CaseReduce :: SimplifierStage
-Inline :: SimplifierStage
-CSE :: SimplifierStage
-ApplyToCase :: SimplifierStage
-Unknown :: SimplifierStage
-data Simplification name (uni :: Type -> Type) fun a
-Simplification :: Term name uni fun a -> SimplifierStage -> Hints -> Term name uni fun a -> Simplification name (uni :: Type -> Type) fun a
-[beforeAST] :: Simplification name (uni :: Type -> Type) fun a -> Term name uni fun a
-[stage] :: Simplification name (uni :: Type -> Type) fun a -> SimplifierStage
-[hints] :: Simplification name (uni :: Type -> Type) fun a -> Hints
-[afterAST] :: Simplification name (uni :: Type -> Type) fun a -> Term name uni fun a
-newtype SimplifierTrace name (uni :: Type -> Type) fun a
-SimplifierTrace :: [Simplification name uni fun a] -> SimplifierTrace name (uni :: Type -> Type) fun a
-[simplifierTrace] :: SimplifierTrace name (uni :: Type -> Type) fun a -> [Simplification name uni fun a]
-initSimplifierTrace :: forall name (uni :: Type -> Type) fun a. SimplifierTrace name uni fun a
-instance GHC.Generics.Generic UntypedPlutusCore.Transform.Certify.Trace.SimplifierStage
-instance Control.DeepSeq.NFData UntypedPlutusCore.Transform.Certify.Trace.SimplifierStage
-instance GHC.Show.Show UntypedPlutusCore.Transform.Certify.Trace.SimplifierStage
 
-module UntypedPlutusCore.Transform.Simplifier
-newtype SimplifierT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
-SimplifierT :: StateT (SimplifierTrace name uni fun ann) m a -> SimplifierT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
-[getSimplifierT] :: SimplifierT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a -> StateT (SimplifierTrace name uni fun ann) m a
-newtype SimplifierTrace name (uni :: Type -> Type) fun a
-SimplifierTrace :: [Simplification name uni fun a] -> SimplifierTrace name (uni :: Type -> Type) fun a
-[simplifierTrace] :: SimplifierTrace name (uni :: Type -> Type) fun a -> [Simplification name uni fun a]
-data SimplifierStage
-FloatDelay :: SimplifierStage
-ForceDelay :: SimplifierStage
-ForceCaseDelay :: SimplifierStage
-CaseOfCase :: SimplifierStage
-CaseReduce :: SimplifierStage
-Inline :: SimplifierStage
-CSE :: SimplifierStage
-ApplyToCase :: SimplifierStage
-Unknown :: SimplifierStage
-data Simplification name (uni :: Type -> Type) fun a
-Simplification :: Term name uni fun a -> SimplifierStage -> Hints -> Term name uni fun a -> Simplification name (uni :: Type -> Type) fun a
-[beforeAST] :: Simplification name (uni :: Type -> Type) fun a -> Term name uni fun a
-[stage] :: Simplification name (uni :: Type -> Type) fun a -> SimplifierStage
-[hints] :: Simplification name (uni :: Type -> Type) fun a -> Hints
-[afterAST] :: Simplification name (uni :: Type -> Type) fun a -> Term name uni fun a
-runSimplifierT :: forall name (uni :: Type -> Type) fun ann m a. SimplifierT name uni fun ann m a -> m (a, SimplifierTrace name uni fun ann)
-evalSimplifierT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => SimplifierT name uni fun ann m a -> m a
-execSimplifierT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => SimplifierT name uni fun ann m a -> m (SimplifierTrace name uni fun ann)
-type Simplifier name (uni :: Type -> Type) fun ann = SimplifierT name uni fun ann Identity
-runSimplifier :: forall name (uni :: Type -> Type) fun ann a. Simplifier name uni fun ann a -> (a, SimplifierTrace name uni fun ann)
-evalSimplifier :: forall name (uni :: Type -> Type) fun ann a. Simplifier name uni fun ann a -> a
-execSimplifier :: forall name (uni :: Type -> Type) fun ann a. Simplifier name uni fun ann a -> SimplifierTrace name uni fun ann
-initSimplifierTrace :: forall name (uni :: Type -> Type) fun a. SimplifierTrace name uni fun a
-recordSimplification :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> SimplifierStage -> Term name uni fun a -> SimplifierT name uni fun a m ()
-recordSimplificationWithHints :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Hints -> Term name uni fun a -> SimplifierStage -> Term name uni fun a -> SimplifierT name uni fun a m ()
-instance GHC.Base.Monad m => GHC.Base.Applicative (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance GHC.Base.Functor m => GHC.Base.Functor (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance PlutusCore.Quote.MonadQuote m => PlutusCore.Quote.MonadQuote (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance GHC.Base.Monad m => GHC.Base.Monad (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann m)
-instance Control.Monad.Trans.Class.MonadTrans (UntypedPlutusCore.Transform.Simplifier.SimplifierT name uni fun ann)
+-- | Datatype which represents optimization passes which are also
+--   certified.
+--   
+--   This means that these passes are formalized as part of the certifier,
+--   and adding a new pass constructor to this type means that it is
+--   expected the pass will be also certified in the same PR.
+--   
+--   WARNING: the order of the constructors MUST be the same as the order
+--   of their counterparts in <a>Trace</a>.
+data CertifiedOptStage
+FloatDelay :: CertifiedOptStage
+ForceDelay :: CertifiedOptStage
+ForceCaseDelay :: CertifiedOptStage
+Inline :: CertifiedOptStage
+CSE :: CertifiedOptStage
+ApplyToCase :: CertifiedOptStage
+CaseReduce :: CertifiedOptStage
+LetFloatOut :: CertifiedOptStage
+
+-- | Datatype which represents optimization passes which are not yet
+--   certified.
+--   
+--   WARNING: the order of the constructors MUST be the same as the order
+--   of their counterparts in <a>Trace</a>.
+--   
+--   IMPORTANT: if you add a new pass, or modify an existing pass, without
+--   also modifying the certifier in the same PR, you must add/move its
+--   corresponding constructor to this type. Please also open an issue at
+--   <a>https://github.com/IntersectMBO/plutus/issues</a>.
+data UncertifiedOptStage
+CaseOfCase :: UncertifiedOptStage
+ConstantFolding :: UncertifiedOptStage
+PolyBuiltin :: UncertifiedOptStage
+type OptStage = Either UncertifiedOptStage CertifiedOptStage
+pattern FloatDelayStage :: OptStage
+pattern ForceDelayStage :: OptStage
+pattern ForceCaseDelayStage :: OptStage
+pattern CaseReduceStage :: OptStage
+pattern InlineStage :: OptStage
+pattern CseStage :: OptStage
+pattern ApplyToCaseStage :: OptStage
+pattern CaseOfCaseStage :: OptStage
+pattern LetFloatOutStage :: OptStage
+pattern ConstantFoldingStage :: OptStage
+pattern PolyBuiltinStage :: OptStage
+data Optimization name (uni :: Type -> Type) fun a
+Optimization :: Term name uni fun a -> OptStage -> Hints -> Term name uni fun a -> Optimization name (uni :: Type -> Type) fun a
+[beforeAST] :: Optimization name (uni :: Type -> Type) fun a -> Term name uni fun a
+[stage] :: Optimization name (uni :: Type -> Type) fun a -> OptStage
+[hints] :: Optimization name (uni :: Type -> Type) fun a -> Hints
+[afterAST] :: Optimization name (uni :: Type -> Type) fun a -> Term name uni fun a
+newtype OptimizerTrace name (uni :: Type -> Type) fun a
+OptimizerTrace :: [Optimization name uni fun a] -> OptimizerTrace name (uni :: Type -> Type) fun a
+[optimizerTrace] :: OptimizerTrace name (uni :: Type -> Type) fun a -> [Optimization name uni fun a]
+initOptimizerTrace :: forall name (uni :: Type -> Type) fun a. OptimizerTrace name uni fun a
+allASTs :: forall name (uni :: Type -> Type) fun a. OptimizerTrace name uni fun a -> [Term name uni fun a]
+instance GHC.Generics.Generic UntypedPlutusCore.Transform.Certify.Trace.CertifiedOptStage
+instance GHC.Generics.Generic UntypedPlutusCore.Transform.Certify.Trace.UncertifiedOptStage
+instance Control.DeepSeq.NFData UntypedPlutusCore.Transform.Certify.Trace.CertifiedOptStage
+instance Control.DeepSeq.NFData UntypedPlutusCore.Transform.Certify.Trace.UncertifiedOptStage
+instance GHC.Show.Show UntypedPlutusCore.Transform.Certify.Trace.CertifiedOptStage
+instance GHC.Show.Show UntypedPlutusCore.Transform.Certify.Trace.UncertifiedOptStage
+
+module UntypedPlutusCore.Transform.Optimizer
+newtype OptimizerT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
+OptimizerT :: StateT (OptimizerTrace name uni fun ann) m a -> OptimizerT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
+[getOptimizerT] :: OptimizerT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a -> StateT (OptimizerTrace name uni fun ann) m a
+type OptStage = Either UncertifiedOptStage CertifiedOptStage
+pattern FloatDelayStage :: OptStage
+pattern ForceDelayStage :: OptStage
+pattern ForceCaseDelayStage :: OptStage
+pattern CaseReduceStage :: OptStage
+pattern InlineStage :: OptStage
+pattern CseStage :: OptStage
+pattern ApplyToCaseStage :: OptStage
+pattern CaseOfCaseStage :: OptStage
+pattern LetFloatOutStage :: OptStage
+pattern ConstantFoldingStage :: OptStage
+pattern PolyBuiltinStage :: OptStage
+newtype OptimizerTrace name (uni :: Type -> Type) fun a
+OptimizerTrace :: [Optimization name uni fun a] -> OptimizerTrace name (uni :: Type -> Type) fun a
+[optimizerTrace] :: OptimizerTrace name (uni :: Type -> Type) fun a -> [Optimization name uni fun a]
+data Optimization name (uni :: Type -> Type) fun a
+Optimization :: Term name uni fun a -> OptStage -> Hints -> Term name uni fun a -> Optimization name (uni :: Type -> Type) fun a
+[beforeAST] :: Optimization name (uni :: Type -> Type) fun a -> Term name uni fun a
+[stage] :: Optimization name (uni :: Type -> Type) fun a -> OptStage
+[hints] :: Optimization name (uni :: Type -> Type) fun a -> Hints
+[afterAST] :: Optimization name (uni :: Type -> Type) fun a -> Term name uni fun a
+runOptimizerT :: forall name (uni :: Type -> Type) fun ann m a. OptimizerT name uni fun ann m a -> m (a, OptimizerTrace name uni fun ann)
+evalOptimizerT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => OptimizerT name uni fun ann m a -> m a
+execOptimizerT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => OptimizerT name uni fun ann m a -> m (OptimizerTrace name uni fun ann)
+type Optimizer name (uni :: Type -> Type) fun ann = OptimizerT name uni fun ann Identity
+runOptimizer :: forall name (uni :: Type -> Type) fun ann a. Optimizer name uni fun ann a -> (a, OptimizerTrace name uni fun ann)
+evalOptimizer :: forall name (uni :: Type -> Type) fun ann a. Optimizer name uni fun ann a -> a
+execOptimizer :: forall name (uni :: Type -> Type) fun ann a. Optimizer name uni fun ann a -> OptimizerTrace name uni fun ann
+initOptimizerTrace :: forall name (uni :: Type -> Type) fun a. OptimizerTrace name uni fun a
+recordOptimization :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> OptStage -> Term name uni fun a -> OptimizerT name uni fun a m ()
+recordOptimizationWithHints :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Hints -> Term name uni fun a -> OptStage -> Term name uni fun a -> OptimizerT name uni fun a m ()
+instance GHC.Base.Monad m => GHC.Base.Applicative (UntypedPlutusCore.Transform.Optimizer.OptimizerT name uni fun ann m)
+instance GHC.Base.Functor m => GHC.Base.Functor (UntypedPlutusCore.Transform.Optimizer.OptimizerT name uni fun ann m)
+instance GHC.Base.Monad m => GHC.Base.Monad (UntypedPlutusCore.Transform.Optimizer.OptimizerT name uni fun ann m)
+instance PlutusCore.Quote.MonadQuote m => PlutusCore.Quote.MonadQuote (UntypedPlutusCore.Transform.Optimizer.OptimizerT name uni fun ann m)
+instance Control.Monad.Trans.Class.MonadTrans (UntypedPlutusCore.Transform.Optimizer.OptimizerT name uni fun ann)
+
+
+-- | Floats immediately-applied lambdas ("let bindings") outwards, as long
+--   as doing so cannot cause any expression to be evaluated more than
+--   before.
+--   
+--   This can unlock further optimizations, such as case-constr and
+--   force-delay cancellation.
+--   
+--   Specifically, it floats bindings from the following positions:
+--   <tt>case</tt> scrutinee, <tt>force</tt> body, and the function of
+--   <tt>apply</tt>.
+--   
+--   If we don't care about the order of effects, we can also float
+--   bindings from <tt>apply</tt> arguments and <tt>constr</tt> arguments,
+--   but there's no evidence that doing so is beneficial, so we don't do
+--   it.
+--   
+--   This pass only floats one bindings from each location. Since the pass
+--   runs once per simplifier iteration, this should be sufficient.
+--   Floating out multi-lets at once would complicate things, since we'd
+--   need to consider both <tt>(a b. M) A B</tt> and <tt>(a. (b -&gt; M) B)
+--   A</tt>.
+module UntypedPlutusCore.Transform.LetFloatOut
+letFloatOut :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. (MonadQuote m, Rename (Term name uni fun a)) => Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 
 
 -- | An inlining pass.
@@ -11515,7 +11683,7 @@ module UntypedPlutusCore.Transform.Inline
 
 -- | Inline simple bindings. Relies on global uniqueness, and preserves it.
 --   See Note [Inlining and global uniqueness]
-inline :: forall name (uni :: Type -> Type) fun (m :: Type -> Type) a. ExternalConstraints name uni fun m => AstSize -> Bool -> Bool -> InlineHints name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+inline :: forall name (uni :: Type -> Type) fun (m :: Type -> Type) a. ExternalConstraints name uni fun m => AstSize -> AstSize -> Bool -> Bool -> InlineHints name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 newtype InlineHints name a
 InlineHints :: (a -> name -> Inline) -> InlineHints name a
 [shouldInline] :: InlineHints name a -> a -> name -> Inline
@@ -11529,18 +11697,18 @@ S :: Subst name uni fun a -> UniqueMap TermUnique (VarInfo name uni fun a) -> S 
 [_subst] :: S name (uni :: Type -> Type) fun a -> Subst name uni fun a
 [_vars] :: S name (uni :: Type -> Type) fun a -> UniqueMap TermUnique (VarInfo name uni fun a)
 
--- | An enclosing Drop, LamDrop or Expand layer
+-- | An enclosing Drop or Expand layer
 data Decoration
 DDrop :: Decoration
-DLamDrop :: Decoration
 DExpand :: Decoration
 type Ann a = ([Decoration], a)
 data InlineInfo name fun a
-InlineInfo :: Usages -> InlineHints name a -> BuiltinSemanticsVariant fun -> Bool -> AstSize -> Bool -> InlineInfo name fun a
+InlineInfo :: Usages -> InlineHints name a -> BuiltinSemanticsVariant fun -> Bool -> AstSize -> AstSize -> Bool -> InlineInfo name fun a
 [_iiUsages] :: InlineInfo name fun a -> Usages
 [_iiHints] :: InlineInfo name fun a -> InlineHints name a
 [_iiBuiltinSemanticsVariant] :: InlineInfo name fun a -> BuiltinSemanticsVariant fun
 [_iiInlineConstants] :: InlineInfo name fun a -> Bool
+[_iiInlineUnconditionalGrowth] :: InlineInfo name fun a -> AstSize
 [_iiInlineCallsiteGrowth] :: InlineInfo name fun a -> AstSize
 [_iiPreserveLogging] :: InlineInfo name fun a -> Bool
 
@@ -11574,10 +11742,10 @@ module UntypedPlutusCore.Transform.ForceDelay
 
 -- | Traverses the term, for each node applying the optimisation detailed
 --   above. For implementation details see <a>optimisationProcedure</a>.
-forceDelay :: forall (uni :: Type -> Type) fun (m :: Type -> Type) name a. (uni ~ DefaultUni, fun ~ DefaultFun, Monad m) => BuiltinSemanticsVariant fun -> Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+forceDelay :: forall (uni :: Type -> Type) fun (m :: Type -> Type) name a. (uni ~ DefaultUni, fun ~ DefaultFun, Monad m) => BuiltinSemanticsVariant fun -> Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 
 module UntypedPlutusCore.Transform.ForceCaseDelay
-forceCaseDelay :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+forceCaseDelay :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 
 
 -- | The Float Delay optimization floats <a>Delay</a> from arguments into
@@ -11649,30 +11817,20 @@ forceCaseDelay :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. M
 --   inliner, and both are part of the UPLC simplifier.</li>
 --   </ol>
 module UntypedPlutusCore.Transform.FloatDelay
-floatDelay :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. (MonadQuote m, Rename (Term name uni fun a), HasUnique name TermUnique) => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+floatDelay :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. (MonadQuote m, Rename (Term name uni fun a), HasUnique name TermUnique) => Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
+
+
+-- | This module mirrors <a>EvaluateBuiltins</a>, adapted for UPLC's
+--   untyped <a>Term</a> and <a>AppCtx</a>. See that module for detailed
+--   commentary.
+module UntypedPlutusCore.Transform.EvaluateBuiltins
+evaluateBuiltinsPass :: forall (m :: Type -> Type) (uni :: Type -> Type) fun name a. (Monad m, ToBuiltinMeaning uni fun, Typeable name) => Bool -> BuiltinsInfo uni fun -> CostingPart uni fun -> Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 
 module UntypedPlutusCore.Transform.Cse
-cse :: forall (m :: Type -> Type) (uni :: Type -> Type) fun ann. (MonadQuote m, Hashable (Term Name uni fun ()), Rename (Term Name uni fun ann), ToBuiltinMeaning uni fun) => CseWhichSubterms -> BuiltinSemanticsVariant fun -> Term Name uni fun ann -> SimplifierT Name uni fun ann m (Term Name uni fun ann)
-
--- | Which subterms should be considered as candidates?
-data CseWhichSubterms
-AllSubterms :: CseWhichSubterms
-ExcludeWorkFree :: CseWhichSubterms
-instance Prettyprinter.Internal.Pretty UntypedPlutusCore.Transform.Cse.CseWhichSubterms
-instance GHC.Read.Read UntypedPlutusCore.Transform.Cse.CseWhichSubterms
-instance GHC.Show.Show UntypedPlutusCore.Transform.Cse.CseWhichSubterms
-
-module PlutusCore.Compiler.Opts
-data CompilationOpts name fun a
-CompilationOpts :: SimplifyOpts name a -> BuiltinSemanticsVariant fun -> CompilationOpts name fun a
-[_coSimplifyOpts] :: CompilationOpts name fun a -> SimplifyOpts name a
-[_coBuiltinSemanticsVariant] :: CompilationOpts name fun a -> BuiltinSemanticsVariant fun
-coSimplifyOpts :: forall name1 fun a1 name2 a2 f. Functor f => (SimplifyOpts name1 a1 -> f (SimplifyOpts name2 a2)) -> CompilationOpts name1 fun a1 -> f (CompilationOpts name2 fun a2)
-coBuiltinSemanticsVariant :: forall name fun1 a fun2 f. Functor f => (BuiltinSemanticsVariant fun1 -> f (BuiltinSemanticsVariant fun2)) -> CompilationOpts name fun1 a -> f (CompilationOpts name fun2 a)
-defaultCompilationOpts :: Default (BuiltinSemanticsVariant fun) => CompilationOpts name fun a
+cse :: forall (m :: Type -> Type) (uni :: Type -> Type) fun ann. (MonadQuote m, Hashable (Term Name uni fun ()), Rename (Term Name uni fun ann), ToBuiltinMeaning uni fun) => CseWhichSubterms -> BuiltinSemanticsVariant fun -> Term Name uni fun ann -> OptimizerT Name uni fun ann m (Term Name uni fun ann)
 
 module UntypedPlutusCore.Transform.CaseReduce
-caseReduce :: forall (m :: Type -> Type) (uni :: Type -> Type) name fun a. (Monad m, CaseBuiltin uni) => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+caseReduce :: forall (m :: Type -> Type) (uni :: Type -> Type) name fun a. (Monad m, CaseBuiltin uni) => Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 processTerm :: forall (uni :: Type -> Type) name fun a. CaseBuiltin uni => Term name uni fun a -> Term name uni fun a
 
 
@@ -11704,7 +11862,7 @@ processTerm :: forall (uni :: Type -> Type) name fun a. CaseBuiltin uni => Term 
 --   
 --   This is always an improvement.
 module UntypedPlutusCore.Transform.CaseOfCase
-caseOfCase :: forall fun (m :: Type -> Type) (uni :: Type -> Type) name a. (fun ~ DefaultFun, Monad m, CaseBuiltin uni, GEq uni, Closed uni, Everywhere uni Eq) => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+caseOfCase :: forall fun (m :: Type -> Type) (uni :: Type -> Type) name a. (fun ~ DefaultFun, Monad m, CaseBuiltin uni, GEq uni, Closed uni, Everywhere uni Eq) => Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
 
 
 -- | Transform multi-argument applications into case-constr form.
@@ -11721,19 +11879,17 @@ caseOfCase :: forall fun (m :: Type -> Type) (uni :: Type -> Type) name a. (fun 
 --   iterations interleaved with other optimizations, because CSE can both
 --   destroy and enable further optimizations.
 module UntypedPlutusCore.Transform.ApplyToCase
-applyToCase :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
+applyToCase :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
+
+
+-- | Hoist fully-forced polymorphic builtins.
+--   
+--   Before: <tt>...force (force fstPair)...</tt> After: <tt>(fstPairForced
+--   -&gt; ...fstPairForced...) (force (force fstPair))</tt>
+module UntypedPlutusCore.Transform.PolyBuiltin
+polyBuiltin :: forall (m :: Type -> Type) (uni :: Type -> Type) fun a. (MonadQuote m, Hashable fun, ToBuiltinMeaning uni fun) => BuiltinSemanticsVariant fun -> Term Name uni fun a -> OptimizerT Name uni fun a m (Term Name uni fun a)
 
 module UntypedPlutusCore
-data SimplifierStage
-FloatDelay :: SimplifierStage
-ForceDelay :: SimplifierStage
-ForceCaseDelay :: SimplifierStage
-CaseOfCase :: SimplifierStage
-CaseReduce :: SimplifierStage
-Inline :: SimplifierStage
-CSE :: SimplifierStage
-ApplyToCase :: SimplifierStage
-Unknown :: SimplifierStage
 
 -- | Completely replace the names with a new name type.
 termMapNames :: forall name name' (uni :: Type -> Type) fun ann. (name -> name') -> Term name uni fun ann -> Term name' uni fun ann
@@ -11741,18 +11897,21 @@ programMapNames :: forall name name' (uni :: Type -> Type) fun ann. (name -> nam
 newtype InlineHints name a
 InlineHints :: (a -> name -> Inline) -> InlineHints name a
 [shouldInline] :: InlineHints name a -> a -> name -> Inline
-data SimplifyOpts name a
-SimplifyOpts :: Int -> Int -> CseWhichSubterms -> Bool -> InlineHints name a -> Bool -> AstSize -> Bool -> Bool -> SimplifyOpts name a
-[_soMaxSimplifierIterations] :: SimplifyOpts name a -> Int
-[_soMaxCseIterations] :: SimplifyOpts name a -> Int
-[_soCseWhichSubterms] :: SimplifyOpts name a -> CseWhichSubterms
-[_soConservativeOpts] :: SimplifyOpts name a -> Bool
-[_soInlineHints] :: SimplifyOpts name a -> InlineHints name a
-[_soInlineConstants] :: SimplifyOpts name a -> Bool
-[_soInlineCallsiteGrowth] :: SimplifyOpts name a -> AstSize
-[_soPreserveLogging] :: SimplifyOpts name a -> Bool
-[_soApplyToCase] :: SimplifyOpts name a -> Bool
-defaultSimplifyOpts :: SimplifyOpts name a
+data OptimizeOpts name a
+OptimizeOpts :: Int -> Int -> CseWhichSubterms -> Bool -> InlineHints name a -> Bool -> AstSize -> AstSize -> Bool -> Bool -> Bool -> Bool -> OptimizeOpts name a
+[_ooMaxSimplifierIterations] :: OptimizeOpts name a -> Int
+[_ooMaxCseIterations] :: OptimizeOpts name a -> Int
+[_ooCseWhichSubterms] :: OptimizeOpts name a -> CseWhichSubterms
+[_ooConservativeOpts] :: OptimizeOpts name a -> Bool
+[_ooInlineHints] :: OptimizeOpts name a -> InlineHints name a
+[_ooInlineConstants] :: OptimizeOpts name a -> Bool
+[_ooInlineUnconditionalGrowth] :: OptimizeOpts name a -> AstSize
+[_ooInlineCallsiteGrowth] :: OptimizeOpts name a -> AstSize
+[_ooPreserveLogging] :: OptimizeOpts name a -> Bool
+[_ooApplyToCase] :: OptimizeOpts name a -> Bool
+[_ooHoistPolyBuiltins] :: OptimizeOpts name a -> Bool
+[_ooCertifiedOptsOnly] :: OptimizeOpts name a -> Bool
+defaultOptimizeOpts :: OptimizeOpts name a
 
 -- | Applicatively replace a variable using the given function.
 substVarA :: forall f name ann (uni :: Type -> Type) fun. Applicative f => (name -> ann -> f (Maybe (Term name uni fun ann))) -> Term name uni fun ann -> f (Term name uni fun ann)
@@ -11782,46 +11941,61 @@ termSubstConstantsM :: forall m ann (uni :: Type -> Type) name fun. Monad m => (
 
 -- | Substitute constants using the given function.
 termSubstConstants :: forall ann (uni :: Type -> Type) name fun. (ann -> Some (ValueOf uni) -> Maybe (Term name uni fun ann)) -> Term name uni fun ann -> Term name uni fun ann
-newtype SimplifierT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
-SimplifierT :: StateT (SimplifierTrace name uni fun ann) m a -> SimplifierT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
-[getSimplifierT] :: SimplifierT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a -> StateT (SimplifierTrace name uni fun ann) m a
-recordSimplification :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> SimplifierStage -> Term name uni fun a -> SimplifierT name uni fun a m ()
-type Simplifier name (uni :: Type -> Type) fun ann = SimplifierT name uni fun ann Identity
+newtype OptimizerT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
+OptimizerT :: StateT (OptimizerTrace name uni fun ann) m a -> OptimizerT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a
+[getOptimizerT] :: OptimizerT name (uni :: Type -> Type) fun ann (m :: Type -> Type) a -> StateT (OptimizerTrace name uni fun ann) m a
+recordOptimization :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Term name uni fun a -> OptStage -> Term name uni fun a -> OptimizerT name uni fun a m ()
+pattern ApplyToCaseStage :: OptStage
+type Optimizer name (uni :: Type -> Type) fun ann = OptimizerT name uni fun ann Identity
+pattern CaseOfCaseStage :: OptStage
+pattern CaseReduceStage :: OptStage
 
--- | Which subterms should be considered as candidates?
+-- | Which subterms should be considered as candidates for CSE?
 data CseWhichSubterms
 AllSubterms :: CseWhichSubterms
 ExcludeWorkFree :: CseWhichSubterms
-recordSimplificationWithHints :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Hints -> Term name uni fun a -> SimplifierStage -> Term name uni fun a -> SimplifierT name uni fun a m ()
-newtype SimplifierTrace name (uni :: Type -> Type) fun a
-SimplifierTrace :: [Simplification name uni fun a] -> SimplifierTrace name (uni :: Type -> Type) fun a
-[simplifierTrace] :: SimplifierTrace name (uni :: Type -> Type) fun a -> [Simplification name uni fun a]
-data Simplification name (uni :: Type -> Type) fun a
-Simplification :: Term name uni fun a -> SimplifierStage -> Hints -> Term name uni fun a -> Simplification name (uni :: Type -> Type) fun a
-[beforeAST] :: Simplification name (uni :: Type -> Type) fun a -> Term name uni fun a
-[stage] :: Simplification name (uni :: Type -> Type) fun a -> SimplifierStage
-[hints] :: Simplification name (uni :: Type -> Type) fun a -> Hints
-[afterAST] :: Simplification name (uni :: Type -> Type) fun a -> Term name uni fun a
-runSimplifierT :: forall name (uni :: Type -> Type) fun ann m a. SimplifierT name uni fun ann m a -> m (a, SimplifierTrace name uni fun ann)
-evalSimplifierT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => SimplifierT name uni fun ann m a -> m a
-execSimplifierT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => SimplifierT name uni fun ann m a -> m (SimplifierTrace name uni fun ann)
-runSimplifier :: forall name (uni :: Type -> Type) fun ann a. Simplifier name uni fun ann a -> (a, SimplifierTrace name uni fun ann)
-evalSimplifier :: forall name (uni :: Type -> Type) fun ann a. Simplifier name uni fun ann a -> a
-execSimplifier :: forall name (uni :: Type -> Type) fun ann a. Simplifier name uni fun ann a -> SimplifierTrace name uni fun ann
-initSimplifierTrace :: forall name (uni :: Type -> Type) fun a. SimplifierTrace name uni fun a
-simplifyTerm :: forall name (uni :: Type -> Type) fun m a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> m (Term name uni fun a)
-simplifyProgram :: forall name (uni :: Type -> Type) fun m a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a)
-simplifyProgramWithTrace :: forall name (uni :: Type -> Type) fun m a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a, SimplifierTrace name uni fun a)
-termSimplifier :: forall name (uni :: Type -> Type) fun (m :: Type -> Type) a. Compiling m uni fun name a => SimplifyOpts name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> SimplifierT name uni fun a m (Term name uni fun a)
-soApplyToCase :: forall name a f. Functor f => (Bool -> f Bool) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soMaxSimplifierIterations :: forall name a f. Functor f => (Int -> f Int) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soMaxCseIterations :: forall name a f. Functor f => (Int -> f Int) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soCseWhichSubterms :: forall name a f. Functor f => (CseWhichSubterms -> f CseWhichSubterms) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soInlineHints :: forall name1 a1 name2 a2 f. Functor f => (InlineHints name1 a1 -> f (InlineHints name2 a2)) -> SimplifyOpts name1 a1 -> f (SimplifyOpts name2 a2)
-soConservativeOpts :: forall name a f. Functor f => (Bool -> f Bool) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soInlineConstants :: forall name a f. Functor f => (Bool -> f Bool) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soInlineCallsiteGrowth :: forall name a f. Functor f => (AstSize -> f AstSize) -> SimplifyOpts name a -> f (SimplifyOpts name a)
-soPreserveLogging :: forall name a f. Functor f => (Bool -> f Bool) -> SimplifyOpts name a -> f (SimplifyOpts name a)
+pattern CseStage :: OptStage
+pattern FloatDelayStage :: OptStage
+pattern ForceCaseDelayStage :: OptStage
+pattern ForceDelayStage :: OptStage
+recordOptimizationWithHints :: forall (m :: Type -> Type) name (uni :: Type -> Type) fun a. Monad m => Hints -> Term name uni fun a -> OptStage -> Term name uni fun a -> OptimizerT name uni fun a m ()
+pattern InlineStage :: OptStage
+pattern LetFloatOutStage :: OptStage
+type OptStage = Either UncertifiedOptStage CertifiedOptStage
+newtype OptimizerTrace name (uni :: Type -> Type) fun a
+OptimizerTrace :: [Optimization name uni fun a] -> OptimizerTrace name (uni :: Type -> Type) fun a
+[optimizerTrace] :: OptimizerTrace name (uni :: Type -> Type) fun a -> [Optimization name uni fun a]
+data Optimization name (uni :: Type -> Type) fun a
+Optimization :: Term name uni fun a -> OptStage -> Hints -> Term name uni fun a -> Optimization name (uni :: Type -> Type) fun a
+[beforeAST] :: Optimization name (uni :: Type -> Type) fun a -> Term name uni fun a
+[stage] :: Optimization name (uni :: Type -> Type) fun a -> OptStage
+[hints] :: Optimization name (uni :: Type -> Type) fun a -> Hints
+[afterAST] :: Optimization name (uni :: Type -> Type) fun a -> Term name uni fun a
+runOptimizerT :: forall name (uni :: Type -> Type) fun ann m a. OptimizerT name uni fun ann m a -> m (a, OptimizerTrace name uni fun ann)
+evalOptimizerT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => OptimizerT name uni fun ann m a -> m a
+execOptimizerT :: forall m name (uni :: Type -> Type) fun ann a. Monad m => OptimizerT name uni fun ann m a -> m (OptimizerTrace name uni fun ann)
+runOptimizer :: forall name (uni :: Type -> Type) fun ann a. Optimizer name uni fun ann a -> (a, OptimizerTrace name uni fun ann)
+evalOptimizer :: forall name (uni :: Type -> Type) fun ann a. Optimizer name uni fun ann a -> a
+execOptimizer :: forall name (uni :: Type -> Type) fun ann a. Optimizer name uni fun ann a -> OptimizerTrace name uni fun ann
+initOptimizerTrace :: forall name (uni :: Type -> Type) fun a. OptimizerTrace name uni fun a
+pattern PolyBuiltinStage :: OptStage
+optimizeTerm :: forall name (uni :: Type -> Type) fun m a. Compiling m uni fun name a => OptimizeOpts name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> m (Term name uni fun a)
+optimizeProgram :: forall name (uni :: Type -> Type) fun m a. Compiling m uni fun name a => OptimizeOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a)
+optimizeProgramWithTrace :: forall name (uni :: Type -> Type) fun m a. Compiling m uni fun name a => OptimizeOpts name a -> BuiltinSemanticsVariant fun -> Program name uni fun a -> m (Program name uni fun a, OptimizerTrace name uni fun a)
+termOptimizer :: forall name (uni :: Type -> Type) fun (m :: Type -> Type) a. Compiling m uni fun name a => OptimizeOpts name a -> BuiltinSemanticsVariant fun -> Term name uni fun a -> OptimizerT name uni fun a m (Term name uni fun a)
+ooApplyToCase :: forall name a f. Functor f => (Bool -> f Bool) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooHoistPolyBuiltins :: forall name a f. Functor f => (Bool -> f Bool) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooMaxSimplifierIterations :: forall name a f. Functor f => (Int -> f Int) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooMaxCseIterations :: forall name a f. Functor f => (Int -> f Int) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooCseWhichSubterms :: forall name a f. Functor f => (CseWhichSubterms -> f CseWhichSubterms) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooInlineHints :: forall name1 a1 name2 a2 f. Functor f => (InlineHints name1 a1 -> f (InlineHints name2 a2)) -> OptimizeOpts name1 a1 -> f (OptimizeOpts name2 a2)
+ooConservativeOpts :: forall name a f. Functor f => (Bool -> f Bool) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooInlineConstants :: forall name a f. Functor f => (Bool -> f Bool) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooInlineUnconditionalGrowth :: forall name a f. Functor f => (AstSize -> f AstSize) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooInlineCallsiteGrowth :: forall name a f. Functor f => (AstSize -> f AstSize) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooPreserveLogging :: forall name a f. Functor f => (Bool -> f Bool) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+ooCertifiedOptsOnly :: forall name a f. Functor f => (Bool -> f Bool) -> OptimizeOpts name a -> f (OptimizeOpts name a)
+pattern ConstantFoldingStage :: OptStage
 
 -- | The type of Untyped Plutus Core terms. Mirrors the type of Typed
 --   Plutus Core terms except
@@ -11864,6 +12038,7 @@ Program :: ann -> Version -> Term name uni fun ann -> Program name (uni :: Type 
 -- | Applies one program to another. Fails if the versions do not match and
 --   tries to merge annotations.
 applyProgram :: forall m a name (uni :: Type -> Type) fun. (MonadError ApplyProgramError m, Semigroup a) => Program name uni fun a -> Program name uni fun a -> m (Program name uni fun a)
+applyTerm :: forall a name (uni :: Type -> Type) fun. Semigroup a => Term name uni fun a -> Term name uni fun a -> Term name uni fun a
 
 -- | Parse and rewrite so that names are globally unique, not just unique
 --   within their scope.
@@ -11889,4 +12064,4 @@ compileProgram :: forall m (uni :: Type -> Type) fun name a tyname. (Compiling m
 
 -- | Compile a PLC program to UPLC, and optimize it. This includes the
 --   compilation trace in the result.
-compileProgramWithTrace :: forall m (uni :: Type -> Type) fun name a tyname. (Compiling m uni fun name a, MonadReader (CompilationOpts name fun a) m) => Program tyname name uni fun a -> m (Program name uni fun a, SimplifierTrace name uni fun a)
+compileProgramWithTrace :: forall m (uni :: Type -> Type) fun name a tyname. (Compiling m uni fun name a, MonadReader (CompilationOpts name fun a) m) => Program tyname name uni fun a -> m (Program name uni fun a, OptimizerTrace name uni fun a)

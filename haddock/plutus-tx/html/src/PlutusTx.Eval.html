@@ -46,7 +46,7 @@
 </span><span id="line-41"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="evalResultTraces"><span class="annot"><span class="annottext">EvalResult -&gt; [Text]
 </span><a href="PlutusTx.Eval.html#evalResultTraces"><span class="hs-identifier hs-var hs-var">evalResultTraces</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-42"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680213988"><span id="local-6989586621680214001"><span id="local-6989586621680214005"><span class="annot"><span class="annottext">Int -&gt; EvalResult -&gt; ShowS
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680213655"><span id="local-6989586621680213668"><span id="local-6989586621680213672"><span class="annot"><span class="annottext">Int -&gt; EvalResult -&gt; ShowS
 [EvalResult] -&gt; ShowS
 EvalResult -&gt; String
 (Int -&gt; EvalResult -&gt; ShowS)
@@ -63,9 +63,9 @@ $cshowList :: [EvalResult] -&gt; ShowS
 showList :: [EvalResult] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-44"></span><span>
-</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621680214160"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-46"></span><span>  </span><span id="local-6989586621680214267"><span class="annot"><span class="annottext">pretty :: forall ann. EvalResult -&gt; Doc ann
-</span><a href="#local-6989586621680214267"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621680214269"><span id="local-6989586621680214270"><span id="local-6989586621680214271"><span class="annot"><span class="annottext">[Text]
+</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621680213827"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-46"></span><span>  </span><span id="local-6989586621680213934"><span class="annot"><span class="annottext">pretty :: forall ann. EvalResult -&gt; Doc ann
+</span><a href="#local-6989586621680213934"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621680213936"><span id="local-6989586621680213937"><span id="local-6989586621680213938"><span class="annot"><span class="annottext">[Text]
 Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (NTerm DefaultUni DefaultFun ())
@@ -88,9 +88,9 @@ forall ann. [Doc ann] -&gt; Doc ann
 </span><span id="line-48"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (NTerm DefaultUni DefaultFun ())
-</span><a href="#local-6989586621680214269"><span class="hs-identifier hs-var">evalResult</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-49"></span><span>          </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621680214272"><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621680214272"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621680213936"><span class="hs-identifier hs-var">evalResult</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-49"></span><span>          </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-type">Left</span></a></span><span> </span><span id="local-6989586621680213939"><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621680213939"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-50"></span><span>            </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">vsep</span></span><span>
@@ -105,10 +105,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; Doc ann
 forall a ann. PrettyPlc a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyPlcClassicSimple</span></span><span> </span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621680214272"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><a href="#local-6989586621680213939"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-53"></span><span>              </span><span class="hs-special">]</span><span>
-</span><span id="line-54"></span><span>          </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621680214274"><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun ()
-</span><a href="#local-6989586621680214274"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-54"></span><span>          </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-type">Right</span></a></span><span> </span><span id="local-6989586621680213941"><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun ()
+</span><a href="#local-6989586621680213941"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-55"></span><span>            </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">vsep</span></span><span>
@@ -122,7 +122,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun () -&gt; Doc ann
 forall a ann. PrettyPlc a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyPlcReadableSimple</span></span><span> </span><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun ()
-</span><a href="#local-6989586621680214274"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621680213941"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-58"></span><span>              </span><span class="hs-special">]</span><span>
 </span><span id="line-59"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall a. Monoid a =&gt; a
@@ -140,7 +140,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; Doc ann
 forall ann. ExBudget -&gt; Doc ann
 </span><a href="PlutusTx.Eval.html#prettyExBudget"><span class="hs-identifier hs-var">prettyExBudget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621680214270"><span class="hs-identifier hs-var">evalResultBudget</span></a></span><span>
+</span><a href="#local-6989586621680213937"><span class="hs-identifier hs-var">evalResultBudget</span></a></span><span>
 </span><span id="line-63"></span><span>          </span><span class="hs-special">]</span><span>
 </span><span id="line-64"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall a. Monoid a =&gt; a
@@ -149,7 +149,7 @@ forall a. Monoid a =&gt; a
 forall a. [a] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#null"><span class="hs-identifier hs-var">null</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621680214271"><span class="hs-identifier hs-var">evalResultTraces</span></a></span><span>
+</span><a href="#local-6989586621680213938"><span class="hs-identifier hs-var">evalResultTraces</span></a></span><span>
 </span><span id="line-66"></span><span>          </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;No traces were emitted&quot;</span></span><span>
 </span><span id="line-67"></span><span>          </span><span class="hs-keyword">else</span><span>
@@ -170,7 +170,7 @@ doc -&gt; doc -&gt; amount -&gt; doc
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#length"><span class="hs-identifier hs-var">length</span></a></span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621680214271"><span class="hs-identifier hs-var">evalResultTraces</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680213938"><span class="hs-identifier hs-var">evalResultTraces</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-71"></span><span>                  </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -189,13 +189,13 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-74"></span><span>                    </span><span class="annot"><span class="annottext">(Int -&gt; Text -&gt; Doc ann) -&gt; [Int] -&gt; [Text] -&gt; [Doc ann]
 forall a b c. (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#zipWith"><span class="hs-identifier hs-var">zipWith</span></a></span><span>
-</span><span id="line-75"></span><span>                      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621680214280"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621680214280"><span class="hs-identifier hs-var">idx</span></a></span></span><span> </span><span id="local-6989586621680214281"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621680214281"><span class="hs-identifier hs-var">trace</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
+</span><span id="line-75"></span><span>                      </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621680213947"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621680213947"><span class="hs-identifier hs-var">idx</span></a></span></span><span> </span><span id="local-6989586621680213948"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621680213948"><span class="hs-identifier hs-var">trace</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621680214280"><span class="hs-identifier hs-var">idx</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
+</span><a href="#local-6989586621680213947"><span class="hs-identifier hs-var">idx</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall ann. Doc ann
@@ -205,11 +205,11 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Text -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621680214281"><span class="hs-identifier hs-var">trace</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680213948"><span class="hs-identifier hs-var">trace</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-76"></span><span>                      </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span> </span><span class="hs-glyph">..</span><span class="hs-special">]</span><span>
 </span><span id="line-77"></span><span>                      </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621680214271"><span class="hs-identifier hs-var">evalResultTraces</span></a></span><span>
+</span><a href="#local-6989586621680213938"><span class="hs-identifier hs-var">evalResultTraces</span></a></span><span>
 </span><span id="line-78"></span><span>              </span><span class="hs-special">]</span><span>
 </span><span id="line-79"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 forall a. Monoid a =&gt; a
@@ -233,14 +233,14 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall ann. ExBudget -&gt; Doc ann
 </span><a href="PlutusTx.Eval.html#prettyExBudget"><span class="hs-identifier hs-var">prettyExBudget</span></a></span><span>
 </span><span id="line-87"></span><span>
-</span><span id="line-88"></span><span id="local-6989586621680213895"><span class="annot"><a href="PlutusTx.Eval.html#prettyExBudget"><span class="hs-identifier hs-type">prettyExBudget</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Doc</span></span><span> </span><span class="annot"><a href="#local-6989586621680213895"><span class="hs-identifier hs-type">ann</span></a></span></span><span>
+</span><span id="line-88"></span><span id="local-6989586621680213562"><span class="annot"><a href="PlutusTx.Eval.html#prettyExBudget"><span class="hs-identifier hs-type">prettyExBudget</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Doc</span></span><span> </span><span class="annot"><a href="#local-6989586621680213562"><span class="hs-identifier hs-type">ann</span></a></span></span><span>
 </span><span id="line-89"></span><span id="prettyExBudget"><span class="annot"><span class="annottext">prettyExBudget :: forall ann. ExBudget -&gt; Doc ann
 </span><a href="PlutusTx.Eval.html#prettyExBudget"><span class="hs-identifier hs-var hs-var">prettyExBudget</span></a></span></span><span>
 </span><span id="line-90"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">ExBudget</span></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">exBudgetCPU :: ExBudget -&gt; ExCPU
-</span><span class="hs-identifier hs-var">exBudgetCPU</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExCPU</span></span><span> </span><span id="local-6989586621680214301"><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621680214301"><span class="hs-identifier hs-var">cpu</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">exBudgetMemory :: ExBudget -&gt; ExMemory
-</span><span class="hs-identifier hs-var">exBudgetMemory</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExMemory</span></span><span> </span><span id="local-6989586621680214304"><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621680214304"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var">exBudgetCPU</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExCPU</span></span><span> </span><span id="local-6989586621680213968"><span class="annot"><span class="annottext">CostingInteger
+</span><a href="#local-6989586621680213968"><span class="hs-identifier hs-var">cpu</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">exBudgetMemory :: ExBudget -&gt; ExMemory
+</span><span class="hs-identifier hs-var">exBudgetMemory</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExMemory</span></span><span> </span><span id="local-6989586621680213971"><span class="annot"><span class="annottext">CostingInteger
+</span><a href="#local-6989586621680213971"><span class="hs-identifier hs-var">mem</span></a></span></span><span class="hs-special">}</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">vsep</span></span><span>
@@ -250,31 +250,31 @@ forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Doc ann
 forall ann. Text -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
-</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Format Text (Int -&gt; Text) -&gt; Int -&gt; Text
+</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Format Text (Int64 -&gt; Text) -&gt; Int64 -&gt; Text
 forall a. Format Text a -&gt; a
-</span><span class="hs-identifier hs-var">format</span></span><span> </span><span class="annot"><span class="annottext">Format Text (Int -&gt; Text)
+</span><span class="hs-identifier hs-var">format</span></span><span> </span><span class="annot"><span class="annottext">Format Text (Int64 -&gt; Text)
 forall n r. (Buildable n, Integral n) =&gt; Format r (n -&gt; r)
-</span><span class="hs-identifier hs-var">commas</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int
+</span><span class="hs-identifier hs-var">commas</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int64
 </span><span class="hs-identifier hs-var">unSatInt</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621680214301"><span class="hs-identifier hs-var">cpu</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680213968"><span class="hs-identifier hs-var">cpu</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-93"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;MEM&quot;</span></span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann -&gt; Doc ann
 </span><span class="hs-operator hs-var">&lt;+&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Doc ann
 forall ann. Text -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
-</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Format Text (Int -&gt; Text) -&gt; Int -&gt; Text
+</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Format Text (Int64 -&gt; Text) -&gt; Int64 -&gt; Text
 forall a. Format Text a -&gt; a
-</span><span class="hs-identifier hs-var">format</span></span><span> </span><span class="annot"><span class="annottext">Format Text (Int -&gt; Text)
+</span><span class="hs-identifier hs-var">format</span></span><span> </span><span class="annot"><span class="annottext">Format Text (Int64 -&gt; Text)
 forall n r. (Buildable n, Integral n) =&gt; Format r (n -&gt; r)
-</span><span class="hs-identifier hs-var">commas</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int
+</span><span class="hs-identifier hs-var">commas</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int64
 </span><span class="hs-identifier hs-var">unSatInt</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621680214304"><span class="hs-identifier hs-var">mem</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680213971"><span class="hs-identifier hs-var">mem</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-94"></span><span>      </span><span class="hs-special">]</span><span>
 </span><span id="line-95"></span><span>
 </span><span id="line-96"></span><span class="annot"><span class="hs-comment">{-| Evaluates the given 'CompiledCode' using the CEK machine
 with the default machine parameters. -}</span></span><span>
-</span><span id="line-98"></span><span id="local-6989586621680213924"><span class="annot"><a href="PlutusTx.Eval.html#evaluateCompiledCode"><span class="hs-identifier hs-type">evaluateCompiledCode</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680213924"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span></span><span>
+</span><span id="line-98"></span><span id="local-6989586621680213591"><span class="annot"><a href="PlutusTx.Eval.html#evaluateCompiledCode"><span class="hs-identifier hs-type">evaluateCompiledCode</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680213591"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span></span><span>
 </span><span id="line-99"></span><span id="evaluateCompiledCode"><span class="annot"><span class="annottext">evaluateCompiledCode :: forall a. CompiledCode a -&gt; EvalResult
 </span><a href="PlutusTx.Eval.html#evaluateCompiledCode"><span class="hs-identifier hs-var hs-var">evaluateCompiledCode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultMachineParameters -&gt; CompiledCode a -&gt; EvalResult
 forall a. DefaultMachineParameters -&gt; CompiledCode a -&gt; EvalResult
@@ -287,12 +287,12 @@ MachineParameters
 </span><span id="line-100"></span><span>
 </span><span id="line-101"></span><span class="annot"><span class="hs-comment">{-| Evaluates the given 'CompiledCode' using the CEK machine
 with the given machine parameters. -}</span></span><span>
-</span><span id="line-103"></span><span id="local-6989586621680213928"><span class="annot"><a href="PlutusTx.Eval.html#evaluateCompiledCode%27"><span class="hs-identifier hs-type">evaluateCompiledCode'</span></a></span><span>
-</span><span id="line-104"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DefaultMachineParameters</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680213928"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span></span><span>
+</span><span id="line-103"></span><span id="local-6989586621680213595"><span class="annot"><a href="PlutusTx.Eval.html#evaluateCompiledCode%27"><span class="hs-identifier hs-type">evaluateCompiledCode'</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DefaultMachineParameters</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680213595"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span></span><span>
 </span><span id="line-105"></span><span id="evaluateCompiledCode%27"><span class="annot"><span class="annottext">evaluateCompiledCode' :: forall a. DefaultMachineParameters -&gt; CompiledCode a -&gt; EvalResult
-</span><a href="PlutusTx.Eval.html#evaluateCompiledCode%27"><span class="hs-identifier hs-var hs-var">evaluateCompiledCode'</span></a></span></span><span> </span><span id="local-6989586621680214308"><span class="annot"><span class="annottext">DefaultMachineParameters
-</span><a href="#local-6989586621680214308"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span id="local-6989586621680214309"><span class="annot"><span class="annottext">CompiledCode a
-</span><a href="#local-6989586621680214309"><span class="hs-identifier hs-var">code</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">[Text]
+</span><a href="PlutusTx.Eval.html#evaluateCompiledCode%27"><span class="hs-identifier hs-var hs-var">evaluateCompiledCode'</span></a></span></span><span> </span><span id="local-6989586621680213975"><span class="annot"><span class="annottext">DefaultMachineParameters
+</span><a href="#local-6989586621680213975"><span class="hs-identifier hs-var">params</span></a></span></span><span> </span><span id="local-6989586621680213976"><span class="annot"><span class="annottext">CompiledCode a
+</span><a href="#local-6989586621680213976"><span class="hs-identifier hs-var">code</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="PlutusTx.Eval.html#EvalResult"><span class="hs-identifier hs-type">EvalResult</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">[Text]
 Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (NTerm DefaultUni DefaultFun ())
@@ -309,15 +309,15 @@ evalResultBudget :: ExBudget
 evalResultTraces :: [Text]
 </span><a href="PlutusTx.Eval.html#evalResult"><span class="hs-glyph hs-var hs-var hs-var hs-var hs-var hs-var">..</span></a></span><span class="hs-special">}</span><span>
 </span><span id="line-106"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-107"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Program</span></span><span> </span><span id="local-6989586621680214355"><span class="annot"><span class="annottext">()
-</span><a href="#local-6989586621680214355"><span class="hs-identifier hs-var">_ann</span></a></span></span><span> </span><span id="local-6989586621680214356"><span class="annot"><span class="annottext">Version
-</span><a href="#local-6989586621680214356"><span class="hs-identifier hs-var">_version</span></a></span></span><span> </span><span id="local-6989586621680214357"><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun ()
-</span><a href="#local-6989586621680214357"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CompiledCode a -&gt; Program NamedDeBruijn DefaultUni DefaultFun ()
+</span><span id="line-107"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Program</span></span><span> </span><span id="local-6989586621680214022"><span class="annot"><span class="annottext">()
+</span><a href="#local-6989586621680214022"><span class="hs-identifier hs-var">_ann</span></a></span></span><span> </span><span id="local-6989586621680214023"><span class="annot"><span class="annottext">Version
+</span><a href="#local-6989586621680214023"><span class="hs-identifier hs-var">_version</span></a></span></span><span> </span><span id="local-6989586621680214024"><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun ()
+</span><a href="#local-6989586621680214024"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CompiledCode a -&gt; Program NamedDeBruijn DefaultUni DefaultFun ()
 forall (uni :: * -&gt; *) fun a.
 (Closed uni, Everywhere uni Flat, Flat fun) =&gt;
 CompiledCodeIn uni fun a -&gt; Program NamedDeBruijn uni fun ()
 </span><a href="PlutusTx.Code.html#getPlcNoAnn"><span class="hs-identifier hs-var">getPlcNoAnn</span></a></span><span> </span><span class="annot"><span class="annottext">CompiledCode a
-</span><a href="#local-6989586621680214309"><span class="hs-identifier hs-var">code</span></a></span><span>
+</span><a href="#local-6989586621680213976"><span class="hs-identifier hs-var">code</span></a></span><span>
 </span><span id="line-108"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">CekReport</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
@@ -326,12 +326,12 @@ forall name (uni :: * -&gt; *) fun.
 CekResult name uni fun
 -&gt; Either
      (CekEvaluationException name uni fun) (Term name uni fun ())
-</span><span class="hs-identifier hs-var">cekResultToEither</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621680214310"><span class="annot"><span class="annottext">Either
+</span><span class="hs-identifier hs-var">cekResultToEither</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span id="local-6989586621680213977"><span class="annot"><span class="annottext">Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (NTerm DefaultUni DefaultFun ())
-</span><a href="#local-6989586621680214310"><span class="hs-identifier hs-var">evalResult</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CountingSt</span></span><span> </span><span id="local-6989586621680214311"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621680214311"><span class="hs-identifier hs-var">evalResultBudget</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621680214312"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621680214312"><span class="hs-identifier hs-var">evalResultTraces</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621680213977"><span class="hs-identifier hs-var">evalResult</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CountingSt</span></span><span> </span><span id="local-6989586621680213978"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621680213978"><span class="hs-identifier hs-var">evalResultBudget</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621680213979"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621680213979"><span class="hs-identifier hs-var">evalResultTraces</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-109"></span><span>      </span><span class="annot"><span class="annottext">DefaultMachineParameters
 -&gt; ExBudgetMode CountingSt DefaultUni DefaultFun
 -&gt; EmitterMode DefaultUni DefaultFun
@@ -345,14 +345,14 @@ MachineParameters CekMachineCosts fun (CekValue uni fun ann)
 -&gt; NTerm uni fun ann
 -&gt; CekReport cost NamedDeBruijn uni fun
 </span><span class="hs-identifier hs-var">runCekDeBruijn</span></span><span> </span><span class="annot"><span class="annottext">DefaultMachineParameters
-</span><a href="#local-6989586621680214308"><span class="hs-identifier hs-var">params</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudgetMode CountingSt DefaultUni DefaultFun
+</span><a href="#local-6989586621680213975"><span class="hs-identifier hs-var">params</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudgetMode CountingSt DefaultUni DefaultFun
 forall (uni :: * -&gt; *) fun. ExBudgetMode CountingSt uni fun
 </span><span class="hs-identifier hs-var">counting</span></span><span> </span><span class="annot"><span class="annottext">EmitterMode DefaultUni DefaultFun
 forall (uni :: * -&gt; *) fun. EmitterMode uni fun
 </span><span class="hs-identifier hs-var">logEmitter</span></span><span> </span><span class="annot"><span class="annottext">NTerm DefaultUni DefaultFun ()
-</span><a href="#local-6989586621680214357"><span class="hs-identifier hs-var">term</span></a></span><span>
+</span><a href="#local-6989586621680214024"><span class="hs-identifier hs-var">term</span></a></span><span>
 </span><span id="line-110"></span><span>
-</span><span id="line-111"></span><span id="local-6989586621680213958"><span class="annot"><a href="PlutusTx.Eval.html#evaluatesToError"><span class="hs-identifier hs-type">evaluatesToError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680213958"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span></span><span>
+</span><span id="line-111"></span><span id="local-6989586621680213625"><span class="annot"><a href="PlutusTx.Eval.html#evaluatesToError"><span class="hs-identifier hs-type">evaluatesToError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680213625"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span></span><span>
 </span><span id="line-112"></span><span id="evaluatesToError"><span class="annot"><span class="annottext">evaluatesToError :: forall a. CompiledCode a -&gt; Bool
 </span><a href="PlutusTx.Eval.html#evaluatesToError"><span class="hs-identifier hs-var hs-var">evaluatesToError</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#not"><span class="hs-identifier hs-var">not</span></a></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool)
@@ -362,10 +362,10 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. CompiledCode a -&gt; Bool
 </span><a href="PlutusTx.Eval.html#evaluatesWithoutError"><span class="hs-identifier hs-var">evaluatesWithoutError</span></a></span><span>
 </span><span id="line-113"></span><span>
-</span><span id="line-114"></span><span id="local-6989586621680214418"><span class="annot"><a href="PlutusTx.Eval.html#evaluatesWithoutError"><span class="hs-identifier hs-type">evaluatesWithoutError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680214418"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span></span><span>
+</span><span id="line-114"></span><span id="local-6989586621680214085"><span class="annot"><a href="PlutusTx.Eval.html#evaluatesWithoutError"><span class="hs-identifier hs-type">evaluatesWithoutError</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Code.html#CompiledCode"><span class="hs-identifier hs-type">CompiledCode</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680214085"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Bool"><span class="hs-identifier hs-type">Bool</span></a></span></span><span>
 </span><span id="line-115"></span><span id="evaluatesWithoutError"><span class="annot"><span class="annottext">evaluatesWithoutError :: forall a. CompiledCode a -&gt; Bool
-</span><a href="PlutusTx.Eval.html#evaluatesWithoutError"><span class="hs-identifier hs-var hs-var">evaluatesWithoutError</span></a></span></span><span> </span><span id="local-6989586621680214419"><span class="annot"><span class="annottext">CompiledCode a
-</span><a href="#local-6989586621680214419"><span class="hs-identifier hs-var">code</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either
+</span><a href="PlutusTx.Eval.html#evaluatesWithoutError"><span class="hs-identifier hs-var hs-var">evaluatesWithoutError</span></a></span></span><span> </span><span id="local-6989586621680214086"><span class="annot"><span class="annottext">CompiledCode a
+</span><a href="#local-6989586621680214086"><span class="hs-identifier hs-var">code</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (NTerm DefaultUni DefaultFun ())
 -&gt; Bool
@@ -377,5 +377,5 @@ forall a b. Either a b -&gt; Bool
 </span><a href="PlutusTx.Eval.html#evalResult"><span class="hs-identifier hs-var">evalResult</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CompiledCode a -&gt; EvalResult
 forall a. CompiledCode a -&gt; EvalResult
 </span><a href="PlutusTx.Eval.html#evaluateCompiledCode"><span class="hs-identifier hs-var">evaluateCompiledCode</span></a></span><span> </span><span class="annot"><span class="annottext">CompiledCode a
-</span><a href="#local-6989586621680214419"><span class="hs-identifier hs-var">code</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680214086"><span class="hs-identifier hs-var">code</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-116"></span></pre></body></html>

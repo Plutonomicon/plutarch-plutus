@@ -17,9 +17,9 @@
 </span><span id="line-17"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">DefaultMachineParameters</span></span><span>
 </span><span id="line-18"></span><span id="machineParametersFor"><span class="annot"><span class="annottext">machineParametersFor :: PlutusLedgerLanguage
 -&gt; MajorProtocolVersion -&gt; DefaultMachineParameters
-</span><a href="PlutusLedgerApi.MachineParameters.html#machineParametersFor"><span class="hs-identifier hs-var hs-var">machineParametersFor</span></a></span></span><span> </span><span id="local-6989586621681278304"><span class="annot"><span class="annottext">PlutusLedgerLanguage
-</span><a href="#local-6989586621681278304"><span class="hs-identifier hs-var">ledgerLang</span></a></span></span><span> </span><span id="local-6989586621681278305"><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681278305"><span class="hs-identifier hs-var">majorPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusLedgerApi.MachineParameters.html#machineParametersFor"><span class="hs-identifier hs-var hs-var">machineParametersFor</span></a></span></span><span> </span><span id="local-6989586621681278601"><span class="annot"><span class="annottext">PlutusLedgerLanguage
+</span><a href="#local-6989586621681278601"><span class="hs-identifier hs-var">ledgerLang</span></a></span></span><span> </span><span id="local-6989586621681278602"><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="#local-6989586621681278602"><span class="hs-identifier hs-var">majorPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-19"></span><span>  </span><span class="annot"><span class="annottext">CaserBuiltin (UniOf (CekValue DefaultUni DefaultFun ()))
 -&gt; MachineVariantParameters
      CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ())
@@ -30,7 +30,7 @@ CaserBuiltin (UniOf val)
 -&gt; MachineParameters machineCosts fun val
 </span><span class="hs-identifier hs-var">MachineParameters</span></span><span>
 </span><span id="line-20"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681278305"><span class="hs-identifier hs-var">majorPV</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><a href="#local-6989586621681278602"><span class="hs-identifier hs-var">majorPV</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var">vanRossemPV</span></a></span><span>
@@ -41,7 +41,7 @@ forall (uni :: * -&gt; *). Int -&gt; CaserBuiltin uni
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; Int
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#getMajorProtocolVersion"><span class="hs-identifier hs-var">getMajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681278305"><span class="hs-identifier hs-var">majorPV</span></a></span><span>
+</span><a href="#local-6989586621681278602"><span class="hs-identifier hs-var">majorPV</span></a></span><span>
 </span><span id="line-22"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(forall term.
  (UniOf term ~ DefaultUni) =&gt;
  Some (ValueOf DefaultUni)
@@ -76,7 +76,7 @@ BuiltinSemanticsVariant fun
 -&gt; CostModel machineCosts builtincosts
 -&gt; MachineVariantParameters machineCosts fun val
 </span><span class="hs-identifier hs-var">mkMachineVariantParameters</span></span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681278317"><span class="hs-identifier hs-var">builtinSemVar</span></a></span><span> </span><span class="annot"><span class="annottext">(CostModel CekMachineCosts BuiltinCostModel
+</span><a href="#local-6989586621681278614"><span class="hs-identifier hs-var">builtinSemVar</span></a></span><span> </span><span class="annot"><span class="annottext">(CostModel CekMachineCosts BuiltinCostModel
  -&gt; MachineVariantParameters
       CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ()))
 -&gt; CostModel CekMachineCosts BuiltinCostModel
@@ -86,28 +86,28 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
 -&gt; CostModel CekMachineCosts BuiltinCostModel
 </span><span class="hs-identifier hs-var">cekCostModelForVariant</span></span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681278317"><span class="hs-identifier hs-var">builtinSemVar</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681278614"><span class="hs-identifier hs-var">builtinSemVar</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-25"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-26"></span><span>    </span><span id="local-6989586621681278317"><span class="annot"><span class="annottext">builtinSemVar :: BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681278317"><span class="hs-identifier hs-var hs-var">builtinSemVar</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-26"></span><span>    </span><span id="local-6989586621681278614"><span class="annot"><span class="annottext">builtinSemVar :: BuiltinSemanticsVariant DefaultFun
+</span><a href="#local-6989586621681278614"><span class="hs-identifier hs-var hs-var">builtinSemVar</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-27"></span><span>      </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681278305"><span class="hs-identifier hs-var">majorPV</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><a href="#local-6989586621681278602"><span class="hs-identifier hs-var">majorPV</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var">vanRossemPV</span></a></span><span>
 </span><span id="line-28"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
-</span><a href="#local-6989586621681278304"><span class="hs-identifier hs-var">ledgerLang</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621681278601"><span class="hs-identifier hs-var">ledgerLang</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-29"></span><span>          </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Versions.html#PlutusV1"><span class="hs-identifier hs-var">PlutusV1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681278320"><span class="hs-identifier hs-var">conwayDependentVariant</span></a></span><span>
+</span><a href="#local-6989586621681278617"><span class="hs-identifier hs-var">conwayDependentVariant</span></a></span><span>
 </span><span id="line-30"></span><span>          </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Versions.html#PlutusV2"><span class="hs-identifier hs-var">PlutusV2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681278320"><span class="hs-identifier hs-var">conwayDependentVariant</span></a></span><span>
+</span><a href="#local-6989586621681278617"><span class="hs-identifier hs-var">conwayDependentVariant</span></a></span><span>
 </span><span id="line-31"></span><span>          </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Versions.html#PlutusV3"><span class="hs-identifier hs-var">PlutusV3</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
 </span><span class="hs-identifier hs-var">DefaultFunSemanticsVariantC</span></span><span>
 </span><span id="line-32"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
-</span><a href="#local-6989586621681278304"><span class="hs-identifier hs-var">ledgerLang</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621681278601"><span class="hs-identifier hs-var">ledgerLang</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-33"></span><span>          </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Versions.html#PlutusV1"><span class="hs-identifier hs-var">PlutusV1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
 </span><span class="hs-identifier hs-var">DefaultFunSemanticsVariantD</span></span><span>
@@ -117,10 +117,10 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span id="line-35"></span><span>          </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Versions.html#PlutusV3"><span class="hs-identifier hs-var">PlutusV3</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
 </span><span class="hs-identifier hs-var">DefaultFunSemanticsVariantE</span></span><span>
-</span><span id="line-36"></span><span>    </span><span id="local-6989586621681278320"><span class="annot"><span class="annottext">conwayDependentVariant :: BuiltinSemanticsVariant DefaultFun
-</span><a href="#local-6989586621681278320"><span class="hs-identifier hs-var hs-var">conwayDependentVariant</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-36"></span><span>    </span><span id="local-6989586621681278617"><span class="annot"><span class="annottext">conwayDependentVariant :: BuiltinSemanticsVariant DefaultFun
+</span><a href="#local-6989586621681278617"><span class="hs-identifier hs-var hs-var">conwayDependentVariant</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-37"></span><span>      </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681278305"><span class="hs-identifier hs-var">majorPV</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><a href="#local-6989586621681278602"><span class="hs-identifier hs-var">majorPV</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier hs-var">changPV</span></a></span><span>

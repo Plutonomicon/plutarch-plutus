@@ -20,9 +20,10 @@
 </span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html"><span class="hs-identifier">Plutarch.LedgerApi.Value.TokenName</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html#PTokenName"><span class="hs-identifier">PTokenName</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">psingleton</span></span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Unsafe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">punsafeCoerce</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">punsafeDowncast</span></span><span class="hs-special">)</span><span>
-</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Prelude</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
-</span><span id="line-24"></span><span>
-</span><span id="line-25"></span><span class="annot"><span class="hs-comment">{- | Represents sorted, well-formed Values without an Ada entry, while all
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V3</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLA</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Prelude</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="annot"><span class="hs-comment">{- | Represents sorted, well-formed Values without an Ada entry, while all
 non-Ada token quantities must be non-zero.
 
 Duplicate currency symbols or duplicate token names within the same
@@ -30,10 +31,10 @@ token map are not allowed (since wip).
 
 @since 3.5.0
 -}</span></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">newtype</span><span> </span><span id="PMintValue"><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-var">PMintValue</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679383352"><span class="annot"><a href="#local-6989586621679383352"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PMintValue"><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-var">PMintValue</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383352"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
-</span><span id="line-35"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-36"></span><span>      </span><span id="local-6989586621679383355"><span id="local-6989586621679383357"><span class="annot"><span class="annottext">(forall x. PMintValue s -&gt; Rep (PMintValue s) x)
+</span><span id="line-34"></span><span class="hs-keyword">newtype</span><span> </span><span id="PMintValue"><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-var">PMintValue</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387461"><span class="annot"><a href="#local-6989586621679387461"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PMintValue"><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-var">PMintValue</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387461"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-37"></span><span>      </span><span id="local-6989586621679387464"><span id="local-6989586621679387466"><span class="annot"><span class="annottext">(forall x. PMintValue s -&gt; Rep (PMintValue s) x)
 -&gt; (forall x. Rep (PMintValue s) x -&gt; PMintValue s)
 -&gt; Generic (PMintValue s)
 forall x. Rep (PMintValue s) x -&gt; PMintValue s
@@ -47,10 +48,10 @@ from :: forall x. PMintValue s -&gt; Rep (PMintValue s) x
 $cto :: forall (s :: S) x. Rep (PMintValue s) x -&gt; PMintValue s
 to :: forall x. Rep (PMintValue s) x -&gt; PMintValue s
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
-</span><span id="line-37"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
-</span><span id="line-39"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-40"></span><span>      </span><span id="local-6989586621679383364"><span id="local-6989586621679383373"><span class="annot"><span class="annottext">All SListI (Code (PMintValue s))
+</span><span id="line-38"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-41"></span><span>      </span><span id="local-6989586621679387473"><span id="local-6989586621679387482"><span class="annot"><span class="annottext">All SListI (Code (PMintValue s))
 All SListI (Code (PMintValue s)) =&gt;
 (PMintValue s -&gt; Rep (PMintValue s))
 -&gt; (Rep (PMintValue s) -&gt; PMintValue s) -&gt; Generic (PMintValue s)
@@ -67,8 +68,8 @@ from :: PMintValue s -&gt; Rep (PMintValue s)
 $cto :: forall (s :: S). Rep (PMintValue s) -&gt; PMintValue s
 to :: Rep (PMintValue s) -&gt; PMintValue s
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
-</span><span id="line-41"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-42"></span><span>      </span><span id="local-6989586621679383403"><span id="local-6989586621679383409"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PMintValue) -&gt; Term s PMintValue)
+</span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-43"></span><span>      </span><span id="local-6989586621679387512"><span id="local-6989586621679387518"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PMintValue) -&gt; Term s PMintValue)
 -&gt; (forall (s :: S). Term s PMintValue -&gt; Term s PData)
 -&gt; PIsData PMintValue
 forall (s :: S). Term s (PAsData PMintValue) -&gt; Term s PMintValue
@@ -81,8 +82,8 @@ pfromDataImpl :: forall (s :: S). Term s (PAsData PMintValue) -&gt; Term s PMint
 $cpdataImpl :: forall (s :: S). Term s PMintValue -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PMintValue -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
-</span><span id="line-43"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-44"></span><span>      </span><span id="local-6989586621679383416"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PMintValue -&gt; Term s PString)
+</span><span id="line-44"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-45"></span><span>      </span><span id="local-6989586621679387525"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PMintValue -&gt; Term s PString)
 -&gt; PShow PMintValue
 forall (s :: S). Bool -&gt; Term s PMintValue -&gt; Term s PString
 forall (t :: S -&gt; Type).
@@ -90,10 +91,10 @@ forall (t :: S -&gt; Type).
 $cpshow' :: forall (s :: S). Bool -&gt; Term s PMintValue -&gt; Term s PString
 pshow' :: forall (s :: S). Bool -&gt; Term s PMintValue -&gt; Term s PString
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
-</span><span id="line-45"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-47"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-48"></span><span>      </span><span id="local-6989586621679383433"><span id="local-6989586621679383441"><span class="annot"><span class="annottext">(forall (s :: S). PMintValue s -&gt; Term s (PInner PMintValue))
+</span><span id="line-46"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-49"></span><span>      </span><span id="local-6989586621679387542"><span id="local-6989586621679387550"><span class="annot"><span class="annottext">(forall (s :: S). PMintValue s -&gt; Term s (PInner PMintValue))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner PMintValue)
     -&gt; (PMintValue s -&gt; Term s b) -&gt; Term s b)
@@ -116,19 +117,19 @@ pmatch' :: forall (s :: S) (b :: S -&gt; Type).
 Term s (PInner PMintValue)
 -&gt; (PMintValue s -&gt; Term s b) -&gt; Term s b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
-</span><span id="line-49"></span><span>    </span><span class="hs-special">)</span><span>
-</span><span id="line-50"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-51"></span><span>
-</span><span id="line-52"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-53"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PEq</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-54"></span><span>  </span><span id="local-6989586621679383455"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383455"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679383456"><span class="annot"><span class="annottext">#== :: forall (s :: S).
+</span><span id="line-50"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-54"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PEq</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-55"></span><span>  </span><span id="local-6989586621679387564"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387564"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679387565"><span class="annot"><span class="annottext">#== :: forall (s :: S).
 Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PBool
-</span><a href="#local-6989586621679383456"><span class="hs-operator hs-var hs-var hs-var hs-var">#==</span></a></span></span><span> </span><span id="local-6989586621679383458"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383458"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
+</span><a href="#local-6989586621679387565"><span class="hs-operator hs-var hs-var hs-var hs-var">#==</span></a></span></span><span> </span><span id="local-6989586621679387567"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387567"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383455"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PBool
+</span><a href="#local-6989586621679387564"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PBool
 forall (s :: S).
 Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PBool
 forall (t :: S -&gt; Type) (s :: S).
@@ -137,14 +138,14 @@ Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#==</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383458"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383209"><span id="local-6989586621679383462"><span id="local-6989586621679383466"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383209"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-58"></span><span>  </span><span id="local-6989586621679383473"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383473"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679383474"><span class="annot"><span class="annottext">&lt;&gt; :: Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PMintValue
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679383475"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383475"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PMintValue)
+</span><a href="#local-6989586621679387567"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387301"><span id="local-6989586621679387571"><span id="local-6989586621679387575"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387301"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-59"></span><span>  </span><span id="local-6989586621679387582"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387582"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679387583"><span class="annot"><span class="annottext">&lt;&gt; :: Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PMintValue
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679387584"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387584"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PMintValue)
 forall (s :: S). Term s (PSortedValue :--&gt; PMintValue)
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#ptoMintValue"><span class="hs-identifier hs-var">ptoMintValue</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PMintValue)
 -&gt; Term s PSortedValue -&gt; Term s PMintValue
@@ -153,19 +154,19 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#$</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383473"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PSortedValue
+</span><a href="#local-6989586621679387582"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PSortedValue
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383475"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-59"></span><span>
-</span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-61"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383219"><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383219"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-62"></span><span>  </span><span id="local-6989586621679383481"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383481"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679383482"><span class="annot"><span class="annottext">&lt;&gt; :: Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PMintValue
-</span><a href="#local-6989586621679383482"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679383484"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383484"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PMintValue)
+</span><a href="#local-6989586621679387584"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-62"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387311"><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387311"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-63"></span><span>  </span><span id="local-6989586621679387590"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387590"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679387591"><span class="annot"><span class="annottext">&lt;&gt; :: Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PMintValue
+</span><a href="#local-6989586621679387591"><span class="hs-operator hs-var hs-var hs-var hs-var">&lt;&gt;</span></a></span></span><span> </span><span id="local-6989586621679387593"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387593"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PMintValue)
 forall (s :: S). Term s (PSortedValue :--&gt; PMintValue)
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#ptoMintValue"><span class="hs-identifier hs-var">ptoMintValue</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PMintValue)
 -&gt; Term s PSortedValue -&gt; Term s PMintValue
@@ -174,48 +175,48 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#$</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383481"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PSortedValue
+</span><a href="#local-6989586621679387590"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PSortedValue -&gt; Term s PSortedValue
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s (PInner PMintValue)
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383484"><span class="hs-identifier hs-var">b</span></a></span><span>
-</span><span id="line-63"></span><span>
-</span><span id="line-64"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-65"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383487"><span class="annot"><span class="hs-identifier hs-type">PSemigroup</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-66"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#&lt;&gt;</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-67"></span><span>  </span><span id="local-6989586621679383493"><span class="annot"><span class="annottext">#&lt;&gt; :: forall (s :: S).
+</span><a href="#local-6989586621679387593"><span class="hs-identifier hs-var">b</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387596"><span class="annot"><span class="hs-identifier hs-type">PSemigroup</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">#&lt;&gt;</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-68"></span><span>  </span><span id="local-6989586621679387602"><span class="annot"><span class="annottext">#&lt;&gt; :: forall (s :: S).
 Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PMintValue
 </span><span class="hs-operator hs-var hs-var hs-var hs-var">(#&lt;&gt;)</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue -&gt; Term s PMintValue -&gt; Term s PMintValue
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">(&lt;&gt;)</span></a></span><span>
-</span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-70"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383228"><span id="local-6989586621679383498"><span id="local-6989586621679383502"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383228"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-71"></span><span>  </span><span id="local-6989586621679383505"><span class="annot"><span class="annottext">mempty :: Term s PMintValue
+</span><span id="line-69"></span><span>
+</span><span id="line-70"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-71"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387320"><span id="local-6989586621679387607"><span id="local-6989586621679387611"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387320"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679387614"><span class="annot"><span class="annottext">mempty :: Term s PMintValue
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
 forall (s :: S). Term s PMintValue
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#pemptyMintValue"><span class="hs-identifier hs-var">pemptyMintValue</span></a></span><span>
-</span><span id="line-72"></span><span>
-</span><span id="line-73"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-74"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383232"><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383232"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-75"></span><span>  </span><span id="local-6989586621679383511"><span class="annot"><span class="annottext">mempty :: Term s PMintValue
-</span><a href="#local-6989586621679383511"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387324"><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387324"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>  </span><span id="local-6989586621679387620"><span class="annot"><span class="annottext">mempty :: Term s PMintValue
+</span><a href="#local-6989586621679387620"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
 forall (s :: S). Term s PMintValue
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#pemptyMintValue"><span class="hs-identifier hs-var">pemptyMintValue</span></a></span><span>
-</span><span id="line-76"></span><span>
-</span><span id="line-77"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383517"><span class="annot"><span class="hs-identifier hs-type">PMonoid</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-79"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">pmempty</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-80"></span><span>  </span><span id="local-6989586621679383523"><span class="annot"><span class="annottext">pmempty :: forall (s :: S). Term s PMintValue
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-79"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387626"><span class="annot"><span class="hs-identifier hs-type">PMonoid</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-80"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">pmempty</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-81"></span><span>  </span><span id="local-6989586621679387632"><span class="annot"><span class="annottext">pmempty :: forall (s :: S). Term s PMintValue
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">pmempty</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-81"></span><span>
-</span><span id="line-82"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679383242"><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Group</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383242"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-84"></span><span>  </span><span id="local-6989586621679383531"><span class="annot"><span class="annottext">inv :: Term s PMintValue -&gt; Term s PMintValue
-</span><a href="#local-6989586621679383531"><span class="hs-identifier hs-var hs-var hs-var hs-var">inv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PInner PMintValue) -&gt; Term s PMintValue
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-84"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679387334"><span class="annot"><span class="hs-identifier hs-type">PlutusTx.Group</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387334"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679387640"><span class="annot"><span class="annottext">inv :: Term s PMintValue -&gt; Term s PMintValue
+</span><a href="#local-6989586621679387640"><span class="hs-identifier hs-var hs-var hs-var hs-var">inv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PInner PMintValue) -&gt; Term s PMintValue
 Term s PSortedValue -&gt; Term s PMintValue
 forall (s :: S) (a :: S -&gt; Type). Term s (PInner a) -&gt; Term s a
 </span><span class="hs-identifier hs-var">punsafeDowncast</span></span><span> </span><span class="annot"><span class="annottext">(Term s PSortedValue -&gt; Term s PMintValue)
@@ -234,17 +235,17 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 Term s PMintValue -&gt; Term s PSortedValue
 forall (a :: S -&gt; Type) (s :: S). Term s a -&gt; Term s (PInner a)
 </span><span class="hs-identifier hs-var">pto</span></span><span>
-</span><span id="line-85"></span><span>
-</span><span id="line-86"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
-</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621679383551"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: S -&gt; Type).
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="annot"><span class="hs-comment">-- | @since 3.5.0</span></span><span>
+</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-89"></span><span>  </span><span id="local-6989586621679387660"><span class="annot"><span class="annottext">ptryFrom' :: forall (s :: S) (r :: S -&gt; Type).
 Term s PData
 -&gt; ((Term s (PAsData PMintValue),
      Reduce (PTryFromExcess PData (PAsData PMintValue) s))
     -&gt; Term s r)
 -&gt; Term s r
-</span><a href="#local-6989586621679383551"><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></a></span></span><span> </span><span id="local-6989586621679383553"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679383553"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
+</span><a href="#local-6989586621679387660"><span class="hs-identifier hs-var hs-var hs-var hs-var">ptryFrom'</span></a></span></span><span> </span><span id="local-6989586621679387662"><span class="annot"><span class="annottext">Term s PData
+</span><a href="#local-6989586621679387662"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">TermCont
   s
   (Term s (PAsData PMintValue),
    Reduce (PTryFromExcess PData (PAsData PMintValue) s))
@@ -272,8 +273,8 @@ TermCont s a -&gt; (a -&gt; Term s r) -&gt; Term s r
 -&gt; Term s r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-89"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679383555"><span class="annot"><span class="annottext">Term s (PAsData PSortedValue)
-</span><a href="#local-6989586621679383555"><span class="hs-identifier hs-var">opq'</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">()
+</span><span id="line-90"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679387664"><span class="annot"><span class="annottext">Term s (PAsData PSortedValue)
+</span><a href="#local-6989586621679387664"><span class="hs-identifier hs-var">opq'</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(((Term s (PAsData PSortedValue), ()) -&gt; Term s r) -&gt; Term s r)
 -&gt; TermCont s (Term s (PAsData PSortedValue), ())
 forall a (s :: S) (r :: S -&gt; Type).
@@ -289,9 +290,9 @@ Term s a
 -&gt; ((Term s b, Reduce (PTryFromExcess a b s)) -&gt; Term s r)
 -&gt; Term s r
 </span><span class="hs-identifier hs-var">ptryFrom</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679383553"><span class="hs-identifier hs-var">opq</span></a></span><span>
-</span><span id="line-90"></span><span>    </span><span id="local-6989586621679383558"><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383558"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PMintValue -&gt; Term s r) -&gt; Term s r)
+</span><a href="#local-6989586621679387662"><span class="hs-identifier hs-var">opq</span></a></span><span>
+</span><span id="line-91"></span><span>    </span><span id="local-6989586621679387667"><span class="annot"><span class="annottext">Term s PMintValue
+</span><a href="#local-6989586621679387667"><span class="hs-identifier hs-var">unwrapped</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">((Term s PMintValue -&gt; Term s r) -&gt; Term s r)
 -&gt; TermCont s (Term s PMintValue)
 forall a (s :: S) (r :: S -&gt; Type).
 ((a -&gt; Term s r) -&gt; Term s r) -&gt; TermCont s a
@@ -330,8 +331,8 @@ Term s (PAsData a) -&gt; Term s a
 -&gt; Term s (PAsData PSortedValue) -&gt; TermCont s (Term s PMintValue)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PAsData PSortedValue)
-</span><a href="#local-6989586621679383555"><span class="hs-identifier hs-var">opq'</span></a></span><span>
-</span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">(Term s (PAsData PMintValue), ())
+</span><a href="#local-6989586621679387664"><span class="hs-identifier hs-var">opq'</span></a></span><span>
+</span><span id="line-92"></span><span>    </span><span class="annot"><span class="annottext">(Term s (PAsData PMintValue), ())
 -&gt; TermCont s (Term s (PAsData PMintValue), ())
 forall a. a -&gt; TermCont s a
 forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
@@ -340,28 +341,28 @@ forall (a :: S -&gt; Type) (s :: S).
 PIsData a =&gt;
 Term s a -&gt; Term s (PAsData a)
 </span><span class="hs-identifier hs-var">pdata</span></span><span> </span><span class="annot"><span class="annottext">Term s PMintValue
-</span><a href="#local-6989586621679383558"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-92"></span><span>
-</span><span id="line-93"></span><span class="annot"><span class="hs-comment">{- | Checks that we have a valid 'PMintValue'. The underlying map must be
+</span><a href="#local-6989586621679387667"><span class="hs-identifier hs-var">unwrapped</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span class="annot"><span class="hs-comment">{- | Checks that we have a valid 'PMintValue'. The underlying map must be
 sorted, must not include an ADA entry, and must not contain any empty token maps
 or tokens with zero quantities.
 
 @since 3.6.0
 -}</span></span><span>
-</span><span id="line-99"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PValidateData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-100"></span><span>  </span><span id="local-6989586621679383569"><span class="annot"><span class="annottext">pwithValidated :: forall (s :: S).
+</span><span id="line-100"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PValidateData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-101"></span><span>  </span><span id="local-6989586621679387678"><span class="annot"><span class="annottext">pwithValidated :: forall (s :: S).
 Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
-</span><a href="#local-6989586621679383569"><span class="hs-identifier hs-var hs-var hs-var hs-var">pwithValidated</span></a></span></span><span> </span><span id="local-6989586621679383571"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679383571"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span id="local-6989586621679383572"><span class="annot"><span class="annottext">Term s r
-</span><a href="#local-6989586621679383572"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-101"></span><span>    </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
+</span><a href="#local-6989586621679387678"><span class="hs-identifier hs-var hs-var hs-var hs-var">pwithValidated</span></a></span></span><span> </span><span id="local-6989586621679387680"><span class="annot"><span class="annottext">Term s PData
+</span><a href="#local-6989586621679387680"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span id="local-6989586621679387681"><span class="annot"><span class="annottext">Term s r
+</span><a href="#local-6989586621679387681"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-102"></span><span>    </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
 PValidateData a =&gt;
 Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
 </span><span class="hs-identifier hs-var">pwithValidated</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679383571"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s r -&gt; Term s r) -&gt; Term s r -&gt; Term s r
+</span><a href="#local-6989586621679387680"><span class="hs-identifier hs-var">opq</span></a></span><span> </span><span class="annot"><span class="annottext">(Term s r -&gt; Term s r) -&gt; Term s r -&gt; Term s r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
-</span><span id="line-102"></span><span>      </span><span class="annot"><span class="annottext">Term s PSortedValue
+</span><span id="line-103"></span><span>      </span><span class="annot"><span class="annottext">Term s PSortedValue
 -&gt; (Term s PSortedValue -&gt; Term s r) -&gt; Term s r
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
@@ -375,23 +376,23 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (b :: S -&gt; Type) (a :: S -&gt; Type) (s :: S).
 Term s a -&gt; Term s b
 </span><span class="hs-identifier hs-var">punsafeCoerce</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679383571"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PSortedValue -&gt; Term s r) -&gt; Term s r)
+</span><a href="#local-6989586621679387680"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PSortedValue -&gt; Term s r) -&gt; Term s r)
 -&gt; (Term s PSortedValue -&gt; Term s r) -&gt; Term s r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679383573"><span class="annot"><span class="annottext">Term s PSortedValue
-</span><a href="#local-6989586621679383573"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-103"></span><span>        </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679387682"><span class="annot"><span class="annottext">Term s PSortedValue
+</span><a href="#local-6989586621679387682"><span class="hs-identifier hs-var">value</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-104"></span><span>        </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
 forall (a :: S -&gt; Type) (s :: S).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
-</span><span id="line-104"></span><span>          </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PBool)
+</span><span id="line-105"></span><span>          </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PBool)
 forall (s :: S). Term s (PSortedValue :--&gt; PBool)
 </span><a href="Plutarch.LedgerApi.Value.html#phasAdaEntry"><span class="hs-identifier hs-var">phasAdaEntry</span></a></span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PBool)
 -&gt; Term s PSortedValue -&gt; Term s PBool
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue
-</span><a href="#local-6989586621679383573"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s PBool -&gt; Term s PBool
+</span><a href="#local-6989586621679387682"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 forall (s :: S). Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#||</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s (PRawValue :--&gt; PBool)
 forall (s :: S). Term s (PRawValue :--&gt; PBool)
@@ -401,27 +402,33 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue -&gt; Term s PRawValue
 forall (s :: S). Term s PSortedValue -&gt; Term s PRawValue
 </span><a href="Plutarch.LedgerApi.Value.html#pforgetSorted"><span class="hs-identifier hs-var">pforgetSorted</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PSortedValue
-</span><a href="#local-6989586621679383573"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-105"></span><span>          </span><span class="annot"><span class="annottext">Term s r
+</span><a href="#local-6989586621679387682"><span class="hs-identifier hs-var">value</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-106"></span><span>          </span><span class="annot"><span class="annottext">Term s r
 forall (s :: S) (a :: S -&gt; Type). Term s a
 </span><span class="hs-identifier hs-var">perror</span></span><span>
-</span><span id="line-106"></span><span>          </span><span class="annot"><span class="annottext">Term s r
-</span><a href="#local-6989586621679383572"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-107"></span><span>
-</span><span id="line-108"></span><span class="annot"><span class="hs-comment">{- | Construct an empty 'PMintValue'.
+</span><span id="line-107"></span><span>          </span><span class="annot"><span class="annottext">Term s r
+</span><a href="#local-6989586621679387681"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-108"></span><span>
+</span><span id="line-109"></span><span class="annot"><span class="hs-comment">-- | @since 3.7.0</span></span><span>
+</span><span id="line-110"></span><span id="local-6989586621679387690"><span id="local-6989586621679387700"><span id="local-6989586621679387709"><span id="local-6989586621679387718"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-111"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.MintValue</span></span><span>
+</span><span id="line-112"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-113"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span></span></span></span></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="annot"><span class="hs-comment">{- | Construct an empty 'PMintValue'.
 
 @since 3.6.0
 -}</span></span><span>
-</span><span id="line-112"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#pemptyMintValue"><span class="hs-identifier hs-type">pemptyMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679383578"><span class="annot"><a href="#local-6989586621679383578"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383578"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span>
-</span><span id="line-113"></span><span id="pemptyMintValue"><span class="annot"><span class="annottext">pemptyMintValue :: forall (s :: S). Term s PMintValue
+</span><span id="line-119"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#pemptyMintValue"><span class="hs-identifier hs-type">pemptyMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387747"><span class="annot"><a href="#local-6989586621679387747"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387747"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span>
+</span><span id="line-120"></span><span id="pemptyMintValue"><span class="annot"><span class="annottext">pemptyMintValue :: forall (s :: S). Term s PMintValue
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#pemptyMintValue"><span class="hs-identifier hs-var hs-var">pemptyMintValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s (PInner PMintValue) -&gt; Term s PMintValue
 forall (s :: S) (a :: S -&gt; Type). Term s (PInner a) -&gt; Term s a
 </span><span class="hs-identifier hs-var">punsafeDowncast</span></span><span> </span><span class="annot"><span class="annottext">Term s (PInner PMintValue)
 Term s PSortedValue
 forall (s :: S). Term s PSortedValue
 </span><a href="Plutarch.LedgerApi.Value.html#pemptySortedValue"><span class="hs-identifier hs-var">pemptySortedValue</span></a></span><span>
-</span><span id="line-114"></span><span>
-</span><span id="line-115"></span><span class="annot"><span class="hs-comment">{- | Construct a singleton 'PMintValue' containing only the given quantity of
+</span><span id="line-121"></span><span>
+</span><span id="line-122"></span><span class="annot"><span class="hs-comment">{- | Construct a singleton 'PMintValue' containing only the given quantity of
 the given currency.
 
 = Important note
@@ -431,15 +438,15 @@ the result is an empty 'PMintValue'.
 
 @since 3.6.0
 -}</span></span><span>
-</span><span id="line-125"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#psingletonMintValue"><span class="hs-identifier hs-type">psingletonMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span>
-</span><span id="line-126"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679383309"><span class="annot"><a href="#local-6989586621679383309"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
-</span><span id="line-127"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383309"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html#PTokenName"><span class="hs-identifier hs-type">PTokenName</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-128"></span><span id="psingletonMintValue"><span class="annot"><span class="annottext">psingletonMintValue :: forall (s :: S).
+</span><span id="line-132"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#psingletonMintValue"><span class="hs-identifier hs-type">psingletonMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-133"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387418"><span class="annot"><a href="#local-6989586621679387418"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-134"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387418"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.TokenName.html#PTokenName"><span class="hs-identifier hs-type">PTokenName</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-135"></span><span id="psingletonMintValue"><span class="annot"><span class="annottext">psingletonMintValue :: forall (s :: S).
 Term
   s
   (PCurrencySymbol :--&gt; (PTokenName :--&gt; (PInteger :--&gt; PMintValue)))
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#psingletonMintValue"><span class="hs-identifier hs-var hs-var">psingletonMintValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-129"></span><span>  </span><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-136"></span><span>  </span><span class="annot"><span class="annottext">(forall (s :: S).
  Term
    s
    (PCurrencySymbol
@@ -469,7 +476,7 @@ HasCallStack =&gt;
      (PCurrencySymbol :--&gt; (PTokenName :--&gt; (PInteger :--&gt; PMintValue)))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
-</span><span id="line-130"></span><span>    </span><span class="annot"><span class="annottext">(Term s' PCurrencySymbol
+</span><span id="line-137"></span><span>    </span><span class="annot"><span class="annottext">(Term s' PCurrencySymbol
  -&gt; Term s' PTokenName -&gt; Term s' PInteger -&gt; Term s' PMintValue)
 -&gt; Term
      s'
@@ -494,17 +501,17 @@ HasCallStack =&gt;
      s'
      (PCurrencySymbol :--&gt; (PTokenName :--&gt; (PInteger :--&gt; PMintValue)))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679383602"><span class="annot"><span class="annottext">Term s' PCurrencySymbol
-</span><a href="#local-6989586621679383602"><span class="hs-identifier hs-var">symbol</span></a></span></span><span> </span><span id="local-6989586621679383603"><span class="annot"><span class="annottext">Term s' PTokenName
-</span><a href="#local-6989586621679383603"><span class="hs-identifier hs-var">token</span></a></span></span><span> </span><span id="local-6989586621679383604"><span class="annot"><span class="annottext">Term s' PInteger
-</span><a href="#local-6989586621679383604"><span class="hs-identifier hs-var">amount</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-131"></span><span>      </span><span class="annot"><span class="annottext">Term s' PBool
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679387771"><span class="annot"><span class="annottext">Term s' PCurrencySymbol
+</span><a href="#local-6989586621679387771"><span class="hs-identifier hs-var">symbol</span></a></span></span><span> </span><span id="local-6989586621679387772"><span class="annot"><span class="annottext">Term s' PTokenName
+</span><a href="#local-6989586621679387772"><span class="hs-identifier hs-var">token</span></a></span></span><span> </span><span id="local-6989586621679387773"><span class="annot"><span class="annottext">Term s' PInteger
+</span><a href="#local-6989586621679387773"><span class="hs-identifier hs-var">amount</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-138"></span><span>      </span><span class="annot"><span class="annottext">Term s' PBool
 -&gt; Term s' PMintValue -&gt; Term s' PMintValue -&gt; Term s' PMintValue
 forall (a :: S -&gt; Type) (s :: S).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
-</span><span id="line-132"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s' PInteger
-</span><a href="#local-6989586621679383604"><span class="hs-identifier hs-var">amount</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' PInteger -&gt; Term s' PInteger -&gt; Term s' PBool
+</span><span id="line-139"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s' PInteger
+</span><a href="#local-6989586621679387773"><span class="hs-identifier hs-var">amount</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' PInteger -&gt; Term s' PInteger -&gt; Term s' PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: S -&gt; Type) (s :: S).
 PEq t =&gt;
@@ -513,7 +520,7 @@ Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Term s' PBool -&gt; Term s' PBool -&gt; Term s' PBool
 forall (s :: S). Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#||</span></span><span> </span><span class="annot"><span class="annottext">Term s' PCurrencySymbol
-</span><a href="#local-6989586621679383602"><span class="hs-identifier hs-var">symbol</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' PCurrencySymbol -&gt; Term s' PCurrencySymbol -&gt; Term s' PBool
+</span><a href="#local-6989586621679387771"><span class="hs-identifier hs-var">symbol</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' PCurrencySymbol -&gt; Term s' PCurrencySymbol -&gt; Term s' PBool
 forall (s :: S).
 Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
 forall (t :: S -&gt; Type) (s :: S).
@@ -522,16 +529,16 @@ Term s t -&gt; Term s t -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#==</span></span><span> </span><span class="annot"><span class="annottext">Term s' PCurrencySymbol
 forall (s :: S). Term s PCurrencySymbol
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbol"><span class="hs-identifier hs-var">padaSymbol</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-133"></span><span>        </span><span class="annot"><span class="annottext">Term s' PMintValue
+</span><span id="line-140"></span><span>        </span><span class="annot"><span class="annottext">Term s' PMintValue
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-134"></span><span>        </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Term s' (PInner PMintValue) -&gt; Term s' PMintValue
+</span><span id="line-141"></span><span>        </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Term s' (PInner PMintValue) -&gt; Term s' PMintValue
 forall (s :: S) (a :: S -&gt; Type). Term s (PInner a) -&gt; Term s a
 </span><span class="hs-identifier hs-var">punsafeDowncast</span></span><span> </span><span class="annot"><span class="annottext">(Term s' (PInner PMintValue) -&gt; Term s' PMintValue)
 -&gt; Term s' (PInner PMintValue) -&gt; Term s' PMintValue
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
-</span><span id="line-135"></span><span>            </span><span class="annot"><span class="annottext">Term
+</span><span id="line-142"></span><span>            </span><span class="annot"><span class="annottext">Term
   s'
   (PCurrencySymbol
    :--&gt; (PTokenName :--&gt; (PInteger :--&gt; PSortedValue)))
@@ -549,26 +556,26 @@ Term
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s' PCurrencySymbol
-</span><a href="#local-6989586621679383602"><span class="hs-identifier hs-var">symbol</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PTokenName :--&gt; (PInteger :--&gt; PSortedValue))
+</span><a href="#local-6989586621679387771"><span class="hs-identifier hs-var">symbol</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PTokenName :--&gt; (PInteger :--&gt; PSortedValue))
 -&gt; Term s' PTokenName -&gt; Term s' (PInteger :--&gt; PSortedValue)
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s' PTokenName
-</span><a href="#local-6989586621679383603"><span class="hs-identifier hs-var">token</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PInteger :--&gt; PSortedValue)
+</span><a href="#local-6989586621679387772"><span class="hs-identifier hs-var">token</span></a></span><span> </span><span class="annot"><span class="annottext">Term s' (PInteger :--&gt; PSortedValue)
 -&gt; Term s' PInteger -&gt; Term s' PSortedValue
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s' PInteger
-</span><a href="#local-6989586621679383604"><span class="hs-identifier hs-var">amount</span></a></span><span>
-</span><span id="line-136"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-137"></span><span>
-</span><span id="line-138"></span><span class="hs-comment">{- Convert a 'PSortedValue' to a 'PMintValue', ensuring no Ada entry and
+</span><a href="#local-6989586621679387773"><span class="hs-identifier hs-var">amount</span></a></span><span>
+</span><span id="line-143"></span><span>        </span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>
+</span><span id="line-145"></span><span class="hs-comment">{- Convert a 'PSortedValue' to a 'PMintValue', ensuring no Ada entry and
 non-zero token quantities.
 
 @since 3.5.0
 -}</span><span>
-</span><span id="line-143"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#ptoMintValue"><span class="hs-identifier hs-type">ptoMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679383212"><span class="annot"><a href="#local-6989586621679383212"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679383212"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-144"></span><span id="ptoMintValue"><span class="annot"><span class="annottext">ptoMintValue :: forall (s :: S). Term s (PSortedValue :--&gt; PMintValue)
+</span><span id="line-150"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#ptoMintValue"><span class="hs-identifier hs-type">ptoMintValue</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679387304"><span class="annot"><a href="#local-6989586621679387304"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679387304"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Value.html#PSortedValue"><span class="hs-identifier hs-type">PSortedValue</span></a></span><span> </span><span class="annot"><span class="hs-operator hs-type">:--&gt;</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V3.MintValue.html#PMintValue"><span class="hs-identifier hs-type">PMintValue</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-151"></span><span id="ptoMintValue"><span class="annot"><span class="annottext">ptoMintValue :: forall (s :: S). Term s (PSortedValue :--&gt; PMintValue)
 </span><a href="Plutarch.LedgerApi.V3.MintValue.html#ptoMintValue"><span class="hs-identifier hs-var hs-var">ptoMintValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Term s PSortedValue -&gt; Term s PMintValue)
 -&gt; Term s (PSortedValue :--&gt; PMintValue)
 forall a (b :: S -&gt; Type) (s :: S) (c :: S -&gt; Type).
@@ -592,4 +599,4 @@ Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-identifier hs-var">papp</span></span><span> </span><span class="annot"><span class="annottext">Term s (PSortedValue :--&gt; PSortedValue)
 forall (s :: S). Term s (PSortedValue :--&gt; PSortedValue)
 </span><a href="Plutarch.LedgerApi.Value.html#pnormalizeNoAdaNonZeroTokens"><span class="hs-identifier hs-var">pnormalizeNoAdaNonZeroTokens</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-145"></span></pre></body></html>
+</span><span id="line-152"></span></pre></body></html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="annot"><span class="hs-comment">-- | @since 1.14.0</span></span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.Builtin.Value</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-3"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Type</span></span><span>
+</span><span id="line-4"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier">PBuiltinValue</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Functions</span></span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#pinsertCoin"><span class="hs-identifier">pinsertCoin</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#plookupCoin"><span class="hs-identifier">plookupCoin</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#punionValue"><span class="hs-identifier">punionValue</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#pvalueContains"><span class="hs-identifier">pvalueContains</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#pvalueData"><span class="hs-identifier">pvalueData</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#punValueData"><span class="hs-identifier">punValueData</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><a href="Plutarch.Builtin.Value.html#pscaleValue"><span class="hs-identifier">pscaleValue</span></a></span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html"><span class="hs-identifier">Plutarch.Builtin.Bool</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier">PBool</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html"><span class="hs-identifier">Plutarch.Builtin.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier">PByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Data.html"><span class="hs-identifier">Plutarch.Builtin.Data</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Data.html#PData"><span class="hs-identifier">PData</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html"><span class="hs-identifier">Plutarch.Builtin.Integer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier">PInteger</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html"><span class="hs-identifier">Plutarch.Builtin.Opaque</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html"><span class="hs-identifier">Plutarch.Internal.Term</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier">S</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier">Term</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier">punsafeBuiltin</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator">(:--&gt;)</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="annot"><span class="hs-comment">{- | A builtin Plutus @Value@.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">newtype</span><span> </span><span id="PBuiltinValue"><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-var">PBuiltinValue</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699785"><span class="annot"><a href="#local-6989586621679699785"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PBuiltinValue"><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-var">PBuiltinValue</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679699785"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Opaque.html#POpaque"><span class="hs-identifier hs-type">POpaque</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.14.0</span></span><span>
+</span><span id="line-33"></span><span>      </span><span id="local-6989586621679699788"><span id="local-6989586621679699790"><span class="annot"><span class="annottext">(forall x. PBuiltinValue s -&gt; Rep (PBuiltinValue s) x)
+-&gt; (forall x. Rep (PBuiltinValue s) x -&gt; PBuiltinValue s)
+-&gt; Generic (PBuiltinValue s)
+forall x. Rep (PBuiltinValue s) x -&gt; PBuiltinValue s
+forall x. PBuiltinValue s -&gt; Rep (PBuiltinValue s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PBuiltinValue s) x -&gt; PBuiltinValue s
+forall (s :: S) x. PBuiltinValue s -&gt; Rep (PBuiltinValue s) x
+$cfrom :: forall (s :: S) x. PBuiltinValue s -&gt; Rep (PBuiltinValue s) x
+from :: forall x. PBuiltinValue s -&gt; Rep (PBuiltinValue s) x
+$cto :: forall (s :: S) x. Rep (PBuiltinValue s) x -&gt; PBuiltinValue s
+to :: forall x. Rep (PBuiltinValue s) x -&gt; PBuiltinValue s
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 1.14.0</span></span><span>
+</span><span id="line-37"></span><span>      </span><span id="local-6989586621679699797"><span id="local-6989586621679699806"><span class="annot"><span class="annottext">All @[Type] (SListI @Type) (Code (PBuiltinValue s))
+All @[Type] (SListI @Type) (Code (PBuiltinValue s)) =&gt;
+(PBuiltinValue s -&gt; Rep (PBuiltinValue s))
+-&gt; (Rep (PBuiltinValue s) -&gt; PBuiltinValue s)
+-&gt; Generic (PBuiltinValue s)
+Rep (PBuiltinValue s) -&gt; PBuiltinValue s
+PBuiltinValue s -&gt; Rep (PBuiltinValue s)
+forall a.
+All @[Type] (SListI @Type) (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S).
+All @[Type] (SListI @Type) (Code (PBuiltinValue s))
+forall (s :: S). Rep (PBuiltinValue s) -&gt; PBuiltinValue s
+forall (s :: S). PBuiltinValue s -&gt; Rep (PBuiltinValue s)
+$cfrom :: forall (s :: S). PBuiltinValue s -&gt; Rep (PBuiltinValue s)
+from :: PBuiltinValue s -&gt; Rep (PBuiltinValue s)
+$cto :: forall (s :: S). Rep (PBuiltinValue s) -&gt; PBuiltinValue s
+to :: Rep (PBuiltinValue s) -&gt; PBuiltinValue s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><span class="hs-comment">{- | Given a currency, a token name, an amount, an an existing 'PBuiltinValue',
+produce a new 'PBuiltinValue', identical to the argument 'PBuiltinValue',
+except as follows:
+
+* If the amount is @0@, the new 'PBuiltinValue' will have the given
+  currency-token name entry deleted;
+* If the argument 'PBuiltinValue' is empty, the new 'PBuiltinValue' will be a
+  singleton containing the given currency-token name entry with the given
+  (nonzero) amount.
+* If the argument 'PBuiltinValue' already contains the given currency-token
+  name entry, the new 'PBuiltinValue' will have that currency-token name
+  entry replaced with the given (nonzero) amount.
+* Otherwise, the new 'PBuiltinValue' will contain a new currency-token name
+  entry, with the given (nonzero) amount.
+
+= Important note
+
+If given a currency name, or a token name, that isn't valid, this will error.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-61"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#pinsertCoin"><span class="hs-identifier hs-type">pinsertCoin</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699755"><span class="annot"><a href="#local-6989586621679699755"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-63"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span>
+</span><span id="line-64"></span><span>    </span><span class="annot"><a href="#local-6989586621679699755"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span>
+</span><span id="line-66"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span>
+</span><span id="line-67"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span>
+</span><span id="line-68"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-69"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span id="pinsertCoin"><span class="annot"><span class="annottext">pinsertCoin :: forall (s :: S).
+Term
+  s
+  (PByteString
+   :--&gt; (PByteString
+         :--&gt; (PInteger :--&gt; (PBuiltinValue :--&gt; PBuiltinValue))))
+</span><a href="Plutarch.Builtin.Value.html#pinsertCoin"><span class="hs-identifier hs-var hs-var">pinsertCoin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PByteString
+      :--&gt; (PByteString
+            :--&gt; (PInteger :--&gt; (PBuiltinValue :--&gt; PBuiltinValue))))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.InsertCoin</span></span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="annot"><span class="hs-comment">{- | Given a currency, a token name, and a 'PBuiltinValue', return the amount
+associated with the given currency-token name entry. If there is no such
+entry, the result is @0@.
+
+= Important note
+
+If given a currency name, or token name, that isn't valid, this will produce
+@0@.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-84"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#plookupCoin"><span class="hs-identifier hs-type">plookupCoin</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-85"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699763"><span class="annot"><a href="#local-6989586621679699763"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-86"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span>
+</span><span id="line-87"></span><span>    </span><span class="annot"><a href="#local-6989586621679699763"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-88"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span>
+</span><span id="line-89"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.ByteString.html#PByteString"><span class="hs-identifier hs-type">PByteString</span></a></span><span>
+</span><span id="line-90"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-91"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span>
+</span><span id="line-92"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span id="plookupCoin"><span class="annot"><span class="annottext">plookupCoin :: forall (s :: S).
+Term
+  s
+  (PByteString :--&gt; (PByteString :--&gt; (PBuiltinValue :--&gt; PInteger)))
+</span><a href="Plutarch.Builtin.Value.html#plookupCoin"><span class="hs-identifier hs-var hs-var">plookupCoin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term
+     s
+     (PByteString :--&gt; (PByteString :--&gt; (PBuiltinValue :--&gt; PInteger)))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.LookupCoin</span></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="annot"><span class="hs-comment">{- | Given two 'PBuiltinValue's, constructs their union. More specifically, for
+every currency-token name entry in either argument, the result will contain a
+currency-token name entry as well. If the entry is in one argument, it will
+be copied as-is; otherwise, the amounts will be combined from both maps using
+addition.
+
+= Important note
+
+'PBuiltinValue's cannot store amounts outside of the range of a 128-bit
+signed integer. If any amount produced by this operation would fall outside
+of this range, this function will error.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-109"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#punionValue"><span class="hs-identifier hs-type">punionValue</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699765"><span class="annot"><a href="#local-6989586621679699765"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-111"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span>
+</span><span id="line-112"></span><span>    </span><span class="annot"><a href="#local-6989586621679699765"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-113"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-114"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-115"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-116"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-117"></span><span id="punionValue"><span class="annot"><span class="annottext">punionValue :: forall (s :: S).
+Term s (PBuiltinValue :--&gt; (PBuiltinValue :--&gt; PBuiltinValue))
+</span><a href="Plutarch.Builtin.Value.html#punionValue"><span class="hs-identifier hs-var hs-var">punionValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PBuiltinValue :--&gt; (PBuiltinValue :--&gt; PBuiltinValue))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.UnionValue</span></span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="annot"><span class="hs-comment">{- | @'pvalueContains' x y@ is true when, for any currency-token name entry in
+@y@, the amount associated with that entry in @x@ is not smaller.
+
+= Important note
+
+Neither argument can contain any negative entries. If either argument has a
+negative entry, this will error.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-129"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#pvalueContains"><span class="hs-identifier hs-type">pvalueContains</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-130"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699767"><span class="annot"><a href="#local-6989586621679699767"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-131"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span>
+</span><span id="line-132"></span><span>    </span><span class="annot"><a href="#local-6989586621679699767"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-133"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-134"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span>
+</span><span id="line-135"></span><span>        </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Bool.html#PBool"><span class="hs-identifier hs-type">PBool</span></a></span><span>
+</span><span id="line-136"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-137"></span><span id="pvalueContains"><span class="annot"><span class="annottext">pvalueContains :: forall (s :: S).
+Term s (PBuiltinValue :--&gt; (PBuiltinValue :--&gt; PBool))
+</span><a href="Plutarch.Builtin.Value.html#pvalueContains"><span class="hs-identifier hs-var hs-var">pvalueContains</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PBuiltinValue :--&gt; (PBuiltinValue :--&gt; PBool))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ValueContains</span></span><span>
+</span><span id="line-138"></span><span>
+</span><span id="line-139"></span><span class="annot"><span class="hs-comment">{- | Converts a 'PBuiltinValue' into its @Data@ encoding.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-143"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#pvalueData"><span class="hs-identifier hs-type">pvalueData</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-144"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699770"><span class="annot"><a href="#local-6989586621679699770"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-145"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679699770"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Data.html#PData"><span class="hs-identifier hs-type">PData</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-146"></span><span id="pvalueData"><span class="annot"><span class="annottext">pvalueData :: forall (s :: S). Term s (PBuiltinValue :--&gt; PData)
+</span><a href="Plutarch.Builtin.Value.html#pvalueData"><span class="hs-identifier hs-var hs-var">pvalueData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PBuiltinValue :--&gt; PData)
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ValueData</span></span><span>
+</span><span id="line-147"></span><span>
+</span><span id="line-148"></span><span class="annot"><span class="hs-comment">{- | Converts a valid @Data@ encoding of a 'PBuiltinValue' into the
+'PBuiltinValue' it represents, and errors otherwise.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-153"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#punValueData"><span class="hs-identifier hs-type">punValueData</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-154"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699773"><span class="annot"><a href="#local-6989586621679699773"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-155"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679699773"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Data.html#PData"><span class="hs-identifier hs-type">PData</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-156"></span><span id="punValueData"><span class="annot"><span class="annottext">punValueData :: forall (s :: S). Term s (PData :--&gt; PBuiltinValue)
+</span><a href="Plutarch.Builtin.Value.html#punValueData"><span class="hs-identifier hs-var hs-var">punValueData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun -&gt; Term s (PData :--&gt; PBuiltinValue)
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.UnValueData</span></span><span>
+</span><span id="line-157"></span><span>
+</span><span id="line-158"></span><span class="annot"><span class="hs-comment">{- | Given a 'PBuiltinValue' and a scalar, produce a new 'PBuiltinValue' with
+all amounts multiplied by that scalar. Note that if the scalar is @0@, then
+the result will be an empty 'PBuiltinValue'.
+
+@since 1.14.0
+-}</span></span><span>
+</span><span id="line-164"></span><span class="annot"><a href="Plutarch.Builtin.Value.html#pscaleValue"><span class="hs-identifier hs-type">pscaleValue</span></a></span><span> </span><span class="hs-glyph">::</span><span>
+</span><span id="line-165"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679699775"><span class="annot"><a href="#local-6989586621679699775"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#S"><span class="hs-identifier hs-type">S</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-166"></span><span>  </span><span class="annot"><a href="Plutarch.Internal.Term.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679699775"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Builtin.Integer.html#PInteger"><span class="hs-identifier hs-type">PInteger</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span> </span><span class="annot"><a href="Plutarch.Internal.Term.html#%3A--%3E"><span class="hs-operator hs-type">:--&gt;</span></a></span><span> </span><span class="annot"><a href="Plutarch.Builtin.Value.html#PBuiltinValue"><span class="hs-identifier hs-type">PBuiltinValue</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-167"></span><span id="pscaleValue"><span class="annot"><span class="annottext">pscaleValue :: forall (s :: S).
+Term s (PInteger :--&gt; (PBuiltinValue :--&gt; PBuiltinValue))
+</span><a href="Plutarch.Builtin.Value.html#pscaleValue"><span class="hs-identifier hs-var hs-var">pscaleValue</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">DefaultFun
+-&gt; Term s (PInteger :--&gt; (PBuiltinValue :--&gt; PBuiltinValue))
+forall (s :: S) (a :: S -&gt; Type). DefaultFun -&gt; Term s a
+</span><a href="Plutarch.Internal.Term.html#punsafeBuiltin"><span class="hs-identifier hs-var">punsafeBuiltin</span></a></span><span> </span><span class="annot"><span class="annottext">DefaultFun
+</span><span class="hs-identifier hs-var">PLC.ScaleValue</span></span><span>
+</span><span id="line-168"></span></pre></body></html>

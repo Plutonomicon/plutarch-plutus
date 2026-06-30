@@ -51,44 +51,44 @@ __Unsupported:__
 See 'PlutusTx.Eq.Class.Eq' for the class definition. -}</span></span><span>
 </span><span id="line-52"></span><span class="annot"><a href="PlutusTx.Eq.TH.html#deriveEq"><span class="hs-identifier hs-type">deriveEq</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Dec"><span class="hs-identifier hs-type">Dec</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-53"></span><span id="deriveEq"><span class="annot"><span class="annottext">deriveEq :: Name -&gt; Q [Dec]
-</span><a href="PlutusTx.Eq.TH.html#deriveEq"><span class="hs-identifier hs-var hs-var">deriveEq</span></a></span></span><span> </span><span id="local-6989586621680199061"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199061"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="PlutusTx.Eq.TH.html#deriveEq"><span class="hs-identifier hs-var hs-var">deriveEq</span></a></span></span><span> </span><span id="local-6989586621680198723"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621680198723"><span class="hs-identifier hs-var">name</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-54"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DatatypeInfo</span></span><span>
 </span><span id="line-55"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">datatypeName :: DatatypeInfo -&gt; Name
-</span><span class="hs-identifier hs-var">datatypeName</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680199064"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199064"><span class="hs-identifier hs-var">tyConName</span></a></span></span><span>
+</span><span class="hs-identifier hs-var">datatypeName</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680198726"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621680198726"><span class="hs-identifier hs-var">tyConName</span></a></span></span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">datatypeInstTypes :: DatatypeInfo -&gt; [Type]
-</span><span class="hs-identifier hs-var">datatypeInstTypes</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680199066"><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199066"><span class="hs-identifier hs-var">tyVars0</span></a></span></span><span>
+</span><span class="hs-identifier hs-var">datatypeInstTypes</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680198728"><span class="annot"><span class="annottext">[Type]
+</span><a href="#local-6989586621680198728"><span class="hs-identifier hs-var">tyVars0</span></a></span></span><span>
 </span><span id="line-57"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">datatypeCons :: DatatypeInfo -&gt; [ConstructorInfo]
-</span><span class="hs-identifier hs-var">datatypeCons</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680199068"><span class="annot"><span class="annottext">[ConstructorInfo]
-</span><a href="#local-6989586621680199068"><span class="hs-identifier hs-var">cons</span></a></span></span><span>
+</span><span class="hs-identifier hs-var">datatypeCons</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680198730"><span class="annot"><span class="annottext">[ConstructorInfo]
+</span><a href="#local-6989586621680198730"><span class="hs-identifier hs-var">cons</span></a></span></span><span>
 </span><span id="line-58"></span><span>    </span><span class="hs-special">}</span><span> </span><span class="hs-glyph">&lt;-</span><span>
 </span><span id="line-59"></span><span>    </span><span class="annot"><span class="annottext">Name -&gt; Q DatatypeInfo
 </span><span class="hs-identifier hs-var">reifyDatatype</span></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199061"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621680198723"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-60"></span><span>
-</span><span id="line-61"></span><span>  </span><span id="local-6989586621680199070"><span class="annot"><span class="annottext">[Role]
-</span><a href="#local-6989586621680199070"><span class="hs-identifier hs-var">roles</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q [Role]
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621680198732"><span class="annot"><span class="annottext">[Role]
+</span><a href="#local-6989586621680198732"><span class="hs-identifier hs-var">roles</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q [Role]
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#reifyRoles"><span class="hs-identifier hs-var">reifyRoles</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199061"><span class="hs-identifier hs-var">name</span></a></span><span>
+</span><a href="#local-6989586621680198723"><span class="hs-identifier hs-var">name</span></a></span><span>
 </span><span id="line-62"></span><span>
 </span><span id="line-63"></span><span>  </span><span class="hs-keyword">let</span><span>
 </span><span id="line-64"></span><span>    </span><span class="hs-comment">-- The purpose of the `VarT . varTToName` roundtrip is to remove the kind</span><span>
 </span><span id="line-65"></span><span>    </span><span class="hs-comment">-- signatures attached to the type variables in `tyVars0`. Otherwise, the</span><span>
 </span><span id="line-66"></span><span>    </span><span class="hs-comment">-- `KindSignatures` extension would be needed whenever `length tyVars0 &gt; 0`.</span><span>
-</span><span id="line-67"></span><span>    </span><span id="local-6989586621680199073"><span class="annot"><span class="annottext">tyVars :: [Type]
-</span><a href="#local-6989586621680199073"><span class="hs-identifier hs-var hs-var">tyVars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Type
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621680198735"><span class="annot"><span class="annottext">tyVars :: [Type]
+</span><a href="#local-6989586621680198735"><span class="hs-identifier hs-var hs-var">tyVars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#VarT"><span class="hs-identifier hs-var">VarT</span></a></span><span> </span><span class="annot"><span class="annottext">(Name -&gt; Type) -&gt; (Type -&gt; Name) -&gt; Type -&gt; Type
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Type -&gt; Name
 </span><span class="hs-identifier hs-var">varTToName</span></span><span> </span><span class="annot"><span class="annottext">(Type -&gt; Type) -&gt; [Type] -&gt; [Type]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199066"><span class="hs-identifier hs-var">tyVars0</span></a></span><span>
+</span><a href="#local-6989586621680198728"><span class="hs-identifier hs-var">tyVars0</span></a></span><span>
 </span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621680199080"><span class="annot"><span class="annottext">nonPhantomTyVars :: [Type]
-</span><a href="#local-6989586621680199080"><span class="hs-identifier hs-var hs-var">nonPhantomTyVars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621680198742"><span class="annot"><span class="annottext">nonPhantomTyVars :: [Type]
+</span><a href="#local-6989586621680198742"><span class="hs-identifier hs-var hs-var">nonPhantomTyVars</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-70"></span><span>      </span><span class="annot"><span class="annottext">Name -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#VarT"><span class="hs-identifier hs-var">VarT</span></a></span><span> </span><span class="annot"><span class="annottext">(Name -&gt; Type) -&gt; ((Role, Type) -&gt; Name) -&gt; (Role, Type) -&gt; Type
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -111,21 +111,21 @@ forall a b. (a, b) -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Tuple.html#fst"><span class="hs-identifier hs-var">fst</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Role] -&gt; [Type] -&gt; [(Role, Type)]
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#zip"><span class="hs-identifier hs-var">zip</span></a></span><span> </span><span class="annot"><span class="annottext">[Role]
-</span><a href="#local-6989586621680199070"><span class="hs-identifier hs-var">roles</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199066"><span class="hs-identifier hs-var">tyVars0</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680198732"><span class="hs-identifier hs-var">roles</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
+</span><a href="#local-6989586621680198728"><span class="hs-identifier hs-var">tyVars0</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-71"></span><span>
-</span><span id="line-72"></span><span>    </span><span class="annot"><a href="#local-6989586621680199085"><span class="hs-identifier hs-type">instanceCxt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Cxt"><span class="hs-identifier hs-type">Cxt</span></a></span><span>
-</span><span id="line-73"></span><span>    </span><span id="local-6989586621680199085"><span class="annot"><span class="annottext">instanceCxt :: [Type]
-</span><a href="#local-6989586621680199085"><span class="hs-identifier hs-var hs-var">instanceCxt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Type -&gt; Type -&gt; Type
+</span><span id="line-72"></span><span>    </span><span class="annot"><a href="#local-6989586621680198747"><span class="hs-identifier hs-type">instanceCxt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Cxt"><span class="hs-identifier hs-type">Cxt</span></a></span><span>
+</span><span id="line-73"></span><span>    </span><span id="local-6989586621680198747"><span class="annot"><span class="annottext">instanceCxt :: [Type]
+</span><a href="#local-6989586621680198747"><span class="hs-identifier hs-var hs-var">instanceCxt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Type -&gt; Type -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#AppT"><span class="hs-identifier hs-var">AppT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#ConT"><span class="hs-identifier hs-var">ConT</span></a></span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Eq</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Type -&gt; Type) -&gt; [Type] -&gt; [Type]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199080"><span class="hs-identifier hs-var">nonPhantomTyVars</span></a></span><span>
+</span><a href="#local-6989586621680198742"><span class="hs-identifier hs-var">nonPhantomTyVars</span></a></span><span>
 </span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span>    </span><span class="annot"><a href="#local-6989586621680199089"><span class="hs-identifier hs-type">instanceType</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span>
-</span><span id="line-76"></span><span>    </span><span id="local-6989586621680199089"><span class="annot"><span class="annottext">instanceType :: Type
-</span><a href="#local-6989586621680199089"><span class="hs-identifier hs-var hs-var">instanceType</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Type -&gt; Type -&gt; Type
+</span><span id="line-75"></span><span>    </span><span class="annot"><a href="#local-6989586621680198751"><span class="hs-identifier hs-type">instanceType</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span>
+</span><span id="line-76"></span><span>    </span><span id="local-6989586621680198751"><span class="annot"><span class="annottext">instanceType :: Type
+</span><a href="#local-6989586621680198751"><span class="hs-identifier hs-var hs-var">instanceType</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Type -&gt; Type -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#AppT"><span class="hs-identifier hs-var">AppT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#ConT"><span class="hs-identifier hs-var">ConT</span></a></span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Eq</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Type -&gt; Type) -&gt; Type -&gt; Type
 forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -137,12 +137,12 @@ Foldable t =&gt;
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#foldl%27"><span class="hs-identifier hs-var">foldl'</span></a></span><span> </span><span class="annot"><span class="annottext">Type -&gt; Type -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#AppT"><span class="hs-identifier hs-var">AppT</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Type
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#ConT"><span class="hs-identifier hs-var">ConT</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199064"><span class="hs-identifier hs-var">tyConName</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199073"><span class="hs-identifier hs-var">tyVars</span></a></span><span>
+</span><a href="#local-6989586621680198726"><span class="hs-identifier hs-var">tyConName</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Type]
+</span><a href="#local-6989586621680198735"><span class="hs-identifier hs-var">tyVars</span></a></span><span>
 </span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span>    </span><span class="annot"><a href="#local-6989586621680199091"><span class="hs-identifier hs-type">maybeDefaultClause</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ConstructorInfo</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Clause"><span class="hs-identifier hs-type">Clause</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-79"></span><span>    </span><span id="local-6989586621680199091"><span class="annot"><span class="annottext">maybeDefaultClause :: [ConstructorInfo] -&gt; [Q Clause]
-</span><a href="#local-6989586621680199091"><span class="hs-identifier hs-var hs-var">maybeDefaultClause</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-78"></span><span>    </span><span class="annot"><a href="#local-6989586621680198753"><span class="hs-identifier hs-type">maybeDefaultClause</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">ConstructorInfo</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Clause"><span class="hs-identifier hs-type">Clause</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621680198753"><span class="annot"><span class="annottext">maybeDefaultClause :: [ConstructorInfo] -&gt; [Q Clause]
+</span><a href="#local-6989586621680198753"><span class="hs-identifier hs-var hs-var">maybeDefaultClause</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-80"></span><span>      </span><span class="hs-comment">-- if void datatype aka 0 constructors, generate a True clause</span><span>
 </span><span id="line-81"></span><span>      </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Q Pat] -&gt; Q Body -&gt; [Q Dec] -&gt; Q Clause
 forall (m :: * -&gt; *).
@@ -191,12 +191,12 @@ m [Type] -&gt; m Type -&gt; [m Dec] -&gt; m Dec
 forall a. a -&gt; Q a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199085"><span class="hs-identifier hs-var">instanceCxt</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680198747"><span class="hs-identifier hs-var">instanceCxt</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-90"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Type -&gt; Q Type
 forall a. a -&gt; Q a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Type
-</span><a href="#local-6989586621680199089"><span class="hs-identifier hs-var">instanceType</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680198751"><span class="hs-identifier hs-var">instanceType</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-91"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Name -&gt; [Q Clause] -&gt; Q Dec
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; [m Clause] -&gt; m Dec
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#funD"><span class="hs-identifier hs-var">funD</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">(</span><span class="hs-operator">==</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(ConstructorInfo -&gt; Q Clause) -&gt; [ConstructorInfo] -&gt; [Q Clause]
@@ -204,11 +204,11 @@ forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">ConstructorInfo -&gt; Q Clause
 </span><a href="PlutusTx.Eq.TH.html#deriveEqCons"><span class="hs-identifier hs-var">deriveEqCons</span></a></span><span> </span><span class="annot"><span class="annottext">[ConstructorInfo]
-</span><a href="#local-6989586621680199068"><span class="hs-identifier hs-var">cons</span></a></span><span> </span><span class="annot"><span class="annottext">[Q Clause] -&gt; [Q Clause] -&gt; [Q Clause]
+</span><a href="#local-6989586621680198730"><span class="hs-identifier hs-var">cons</span></a></span><span> </span><span class="annot"><span class="annottext">[Q Clause] -&gt; [Q Clause] -&gt; [Q Clause]
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[ConstructorInfo] -&gt; [Q Clause]
-</span><a href="#local-6989586621680199091"><span class="hs-identifier hs-var">maybeDefaultClause</span></a></span><span> </span><span class="annot"><span class="annottext">[ConstructorInfo]
-</span><a href="#local-6989586621680199068"><span class="hs-identifier hs-var">cons</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680198753"><span class="hs-identifier hs-var">maybeDefaultClause</span></a></span><span> </span><span class="annot"><span class="annottext">[ConstructorInfo]
+</span><a href="#local-6989586621680198730"><span class="hs-identifier hs-var">cons</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-92"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Inline -&gt; RuleMatch -&gt; Phases -&gt; Q Dec
 forall (m :: * -&gt; *).
 Quote m =&gt;
@@ -223,12 +223,12 @@ Name -&gt; Inline -&gt; RuleMatch -&gt; Phases -&gt; m Dec
 </span><span id="line-96"></span><span class="annot"><a href="PlutusTx.Eq.TH.html#deriveEqCons"><span class="hs-identifier hs-type">deriveEqCons</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ConstructorInfo</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Q"><span class="hs-identifier hs-type">Q</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Clause"><span class="hs-identifier hs-type">Clause</span></a></span><span>
 </span><span id="line-97"></span><span id="deriveEqCons"><span class="annot"><span class="annottext">deriveEqCons :: ConstructorInfo -&gt; Q Clause
 </span><a href="PlutusTx.Eq.TH.html#deriveEqCons"><span class="hs-identifier hs-var hs-var">deriveEqCons</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ConstructorInfo</span></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="annottext">constructorName :: ConstructorInfo -&gt; Name
-</span><span class="hs-identifier hs-var">constructorName</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680199096"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199096"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">constructorFields :: ConstructorInfo -&gt; [Type]
-</span><span class="hs-identifier hs-var">constructorFields</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680199098"><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199098"><span class="hs-identifier hs-var">fields</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-98"></span><span>  </span><span id="local-6989586621680199099"><span class="annot"><span class="annottext">[Name]
-</span><a href="#local-6989586621680199099"><span class="hs-identifier hs-var">argsL</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; (Int -&gt; Q Name) -&gt; Q [Name]
+</span><span class="hs-identifier hs-var">constructorName</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680198758"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621680198758"><span class="hs-identifier hs-var">name</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">constructorFields :: ConstructorInfo -&gt; [Type]
+</span><span class="hs-identifier hs-var">constructorFields</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="local-6989586621680198760"><span class="annot"><span class="annottext">[Type]
+</span><a href="#local-6989586621680198760"><span class="hs-identifier hs-var">fields</span></a></span></span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-98"></span><span>  </span><span id="local-6989586621680198761"><span class="annot"><span class="annottext">[Name]
+</span><a href="#local-6989586621680198761"><span class="hs-identifier hs-var">argsL</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; (Int -&gt; Q Name) -&gt; Q [Name]
 forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Traversable t, Applicative f) =&gt;
 t a -&gt; (a -&gt; f b) -&gt; f (t b)
@@ -237,8 +237,8 @@ t a -&gt; (a -&gt; f b) -&gt; f (t b)
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#length"><span class="hs-identifier hs-var">length</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199098"><span class="hs-identifier hs-var">fields</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621680199102"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621680199102"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q Name
+</span><a href="#local-6989586621680198760"><span class="hs-identifier hs-var">fields</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621680198764"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621680198764"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q Name
 forall (m :: * -&gt; *). Quote m =&gt; String -&gt; m Name
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#newName"><span class="hs-identifier hs-var">newName</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;l&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
@@ -246,12 +246,12 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621680199102"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><a href="#local-6989586621680198764"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;l&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-99"></span><span>  </span><span id="local-6989586621680199104"><span class="annot"><span class="annottext">[Name]
-</span><a href="#local-6989586621680199104"><span class="hs-identifier hs-var">argsR</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; (Int -&gt; Q Name) -&gt; Q [Name]
+</span><span id="line-99"></span><span>  </span><span id="local-6989586621680198766"><span class="annot"><span class="annottext">[Name]
+</span><a href="#local-6989586621680198766"><span class="hs-identifier hs-var">argsR</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; (Int -&gt; Q Name) -&gt; Q [Name]
 forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Traversable t, Applicative f) =&gt;
 t a -&gt; (a -&gt; f b) -&gt; f (t b)
@@ -260,8 +260,8 @@ t a -&gt; (a -&gt; f b) -&gt; f (t b)
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#length"><span class="hs-identifier hs-var">length</span></a></span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199098"><span class="hs-identifier hs-var">fields</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621680199105"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621680199105"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q Name
+</span><a href="#local-6989586621680198760"><span class="hs-identifier hs-var">fields</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621680198767"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621680198767"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Q Name
 forall (m :: * -&gt; *). Quote m =&gt; String -&gt; m Name
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#newName"><span class="hs-identifier hs-var">newName</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;r&quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
@@ -269,7 +269,7 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#show"><span class="hs-identifier hs-var">show</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621680199105"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+</span><a href="#local-6989586621680198767"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;r&quot;</span></span><span class="hs-special">)</span><span>
@@ -281,27 +281,27 @@ Quote m =&gt;
 </span><span id="line-101"></span><span>    </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Name -&gt; [Q Pat] -&gt; Q Pat
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; [m Pat] -&gt; m Pat
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.html#conP"><span class="hs-identifier hs-var">conP</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199096"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Name -&gt; Q Pat) -&gt; [Name] -&gt; [Q Pat]
+</span><a href="#local-6989586621680198758"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Name -&gt; Q Pat) -&gt; [Name] -&gt; [Q Pat]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q Pat
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Pat
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#varP"><span class="hs-identifier hs-var">varP</span></a></span><span> </span><span class="annot"><span class="annottext">[Name]
-</span><a href="#local-6989586621680199099"><span class="hs-identifier hs-var">argsL</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Name -&gt; [Q Pat] -&gt; Q Pat
+</span><a href="#local-6989586621680198761"><span class="hs-identifier hs-var">argsL</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Name -&gt; [Q Pat] -&gt; Q Pat
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; [m Pat] -&gt; m Pat
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.html#conP"><span class="hs-identifier hs-var">conP</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199096"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Name -&gt; Q Pat) -&gt; [Name] -&gt; [Q Pat]
+</span><a href="#local-6989586621680198758"><span class="hs-identifier hs-var">name</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Name -&gt; Q Pat) -&gt; [Name] -&gt; [Q Pat]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q Pat
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Pat
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#varP"><span class="hs-identifier hs-var">varP</span></a></span><span> </span><span class="annot"><span class="annottext">[Name]
-</span><a href="#local-6989586621680199104"><span class="hs-identifier hs-var">argsR</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621680198766"><span class="hs-identifier hs-var">argsR</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
 </span><span id="line-102"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Q Exp -&gt; Q Body
 forall (m :: * -&gt; *). Quote m =&gt; m Exp -&gt; m Body
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#normalB"><span class="hs-identifier hs-var">normalB</span></a></span><span>
 </span><span id="line-103"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">[Type]
-</span><a href="#local-6989586621680199098"><span class="hs-identifier hs-var">fields</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621680198760"><span class="hs-identifier hs-var">fields</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-104"></span><span>          </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q Exp
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Exp
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#conE"><span class="hs-identifier hs-var">conE</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-identifier">True</span><span>
@@ -310,9 +310,9 @@ forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Exp
 </span><span id="line-106"></span><span>            </span><span class="annot"><span class="annottext">(Q Exp -&gt; Q Exp -&gt; Q Exp) -&gt; [Q Exp] -&gt; Q Exp
 forall a. (a -&gt; a -&gt; a) -&gt; [a] -&gt; a
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; a -&gt; a) -&gt; t a -&gt; a
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#foldr1"><span class="hs-identifier hs-var">foldr1</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621680199108"><span class="annot"><span class="annottext">Q Exp
-</span><a href="#local-6989586621680199108"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621680199109"><span class="annot"><span class="annottext">Q Exp
-</span><a href="#local-6989586621680199109"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Q Exp) -&gt; Q Exp -&gt; Maybe (Q Exp) -&gt; Q Exp
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#foldr1"><span class="hs-identifier hs-var">foldr1</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621680198770"><span class="annot"><span class="annottext">Q Exp
+</span><a href="#local-6989586621680198770"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span id="local-6989586621680198771"><span class="annot"><span class="annottext">Q Exp
+</span><a href="#local-6989586621680198771"><span class="hs-identifier hs-var">acc</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (Q Exp) -&gt; Q Exp -&gt; Maybe (Q Exp) -&gt; Q Exp
 forall (m :: * -&gt; *).
 Quote m =&gt;
 Maybe (m Exp) -&gt; m Exp -&gt; Maybe (m Exp) -&gt; m Exp
@@ -320,21 +320,21 @@ Maybe (m Exp) -&gt; m Exp -&gt; Maybe (m Exp) -&gt; m Exp
 forall a. a -&gt; Maybe a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Q Exp
-</span><a href="#local-6989586621680199108"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Q Exp
+</span><a href="#local-6989586621680198770"><span class="hs-identifier hs-var">e</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Q Exp
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Exp
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#varE"><span class="hs-identifier hs-var">varE</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">(</span><span class="hs-operator">&amp;&amp;</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q Exp -&gt; Maybe (Q Exp)
 forall a. a -&gt; Maybe a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">Q Exp
-</span><a href="#local-6989586621680199109"><span class="hs-identifier hs-var">acc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Q Exp] -&gt; Q Exp) -&gt; [Q Exp] -&gt; Q Exp
+</span><a href="#local-6989586621680198771"><span class="hs-identifier hs-var">acc</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Q Exp] -&gt; Q Exp) -&gt; [Q Exp] -&gt; Q Exp
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
 </span><span id="line-107"></span><span>              </span><span class="annot"><span class="annottext">(Name -&gt; Name -&gt; Q Exp) -&gt; [Name] -&gt; [Name] -&gt; [Q Exp]
 forall a b c. (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.List.html#zipWith"><span class="hs-identifier hs-var">zipWith</span></a></span><span>
-</span><span id="line-108"></span><span>                </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621680199111"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199111"><span class="hs-identifier hs-var">argL</span></a></span></span><span> </span><span id="local-6989586621680199112"><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199112"><span class="hs-identifier hs-var">argR</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-108"></span><span>                </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621680198773"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621680198773"><span class="hs-identifier hs-var">argL</span></a></span></span><span> </span><span id="local-6989586621680198774"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621680198774"><span class="hs-identifier hs-var">argR</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-109"></span><span>                    </span><span class="annot"><span class="annottext">Maybe (Q Exp) -&gt; Q Exp -&gt; Maybe (Q Exp) -&gt; Q Exp
 forall (m :: * -&gt; *).
 Quote m =&gt;
@@ -347,7 +347,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q Exp
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Exp
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#varE"><span class="hs-identifier hs-var">varE</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199111"><span class="hs-identifier hs-var">argL</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Q Exp
+</span><a href="#local-6989586621680198773"><span class="hs-identifier hs-var">argL</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Name -&gt; Q Exp
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Exp
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#varE"><span class="hs-identifier hs-var">varE</span></a></span><span> </span><span class="hs-special">'</span><span class="hs-special">(</span><span class="hs-operator">==</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Q Exp -&gt; Maybe (Q Exp)
 forall a. a -&gt; Maybe a
@@ -357,12 +357,12 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Name -&gt; Q Exp
 forall (m :: * -&gt; *). Quote m =&gt; Name -&gt; m Exp
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Lib.Internal.html#varE"><span class="hs-identifier hs-var">varE</span></a></span><span> </span><span class="annot"><span class="annottext">Name
-</span><a href="#local-6989586621680199112"><span class="hs-identifier hs-var">argR</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680198774"><span class="hs-identifier hs-var">argR</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-110"></span><span>                </span><span class="hs-special">)</span><span>
 </span><span id="line-111"></span><span>                </span><span class="annot"><span class="annottext">[Name]
-</span><a href="#local-6989586621680199099"><span class="hs-identifier hs-var">argsL</span></a></span><span>
+</span><a href="#local-6989586621680198761"><span class="hs-identifier hs-var">argsL</span></a></span><span>
 </span><span id="line-112"></span><span>                </span><span class="annot"><span class="annottext">[Name]
-</span><a href="#local-6989586621680199104"><span class="hs-identifier hs-var">argsR</span></a></span><span>
+</span><a href="#local-6989586621680198766"><span class="hs-identifier hs-var">argsR</span></a></span><span>
 </span><span id="line-113"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-114"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
 </span><span id="line-115"></span></pre></body></html>

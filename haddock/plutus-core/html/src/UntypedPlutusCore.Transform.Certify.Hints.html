@@ -19,8 +19,7 @@
 </span><span id="line-19"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="InlCase"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#InlCase"><span class="hs-identifier hs-var">InlCase</span></a></span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-20"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="InlExpand"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#InlExpand"><span class="hs-identifier hs-var">InlExpand</span></a></span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span>
 </span><span id="line-21"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="InlDrop"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#InlDrop"><span class="hs-identifier hs-var">InlDrop</span></a></span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span>
-</span><span id="line-22"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="InlLamDrop"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#InlLamDrop"><span class="hs-identifier hs-var">InlLamDrop</span></a></span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span>
-</span><span id="line-23"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682251051"><span id="local-6989586621682251053"><span class="annot"><span class="annottext">(forall x. Inline -&gt; Rep Inline x)
+</span><span id="line-22"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682329753"><span id="local-6989586621682329755"><span class="annot"><span class="annottext">(forall x. Inline -&gt; Rep Inline x)
 -&gt; (forall x. Rep Inline x -&gt; Inline) -&gt; Generic Inline
 forall x. Rep Inline x -&gt; Inline
 forall x. Inline -&gt; Rep Inline x
@@ -31,21 +30,21 @@ from :: forall x. Inline -&gt; Rep Inline x
 $cto :: forall x. Rep Inline x -&gt; Inline
 to :: forall x. Rep Inline x -&gt; Inline
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-24"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682251057"><span class="annot"><span class="annottext">Inline -&gt; ()
+</span><span id="line-23"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682329759"><span class="annot"><span class="annottext">Inline -&gt; ()
 (Inline -&gt; ()) -&gt; NFData Inline
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Inline -&gt; ()
 rnf :: Inline -&gt; ()
 </span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-25"></span><span>
-</span><span id="line-26"></span><span class="annot"><span class="hs-comment">{-| Hints for the certifier.
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="annot"><span class="hs-comment">{-| Hints for the certifier.
 
 Note that there's a separate and unrelated notion of @InlineHints@. When there's
 ambiguity, this should be referred to as &quot;certifier hints&quot;. -}</span></span><span>
-</span><span id="line-30"></span><span class="hs-keyword">data</span><span> </span><span id="Hints"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Hints"><span class="hs-identifier hs-var">Hints</span></a></span></span><span>
-</span><span id="line-31"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Inline"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-var">Inline</span></a></span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span>
-</span><span id="line-32"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="NoHints"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#NoHints"><span class="hs-identifier hs-var">NoHints</span></a></span></span><span>
-</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682251106"><span id="local-6989586621682251108"><span class="annot"><span class="annottext">(forall x. Hints -&gt; Rep Hints x)
+</span><span id="line-29"></span><span class="hs-keyword">data</span><span> </span><span id="Hints"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Hints"><span class="hs-identifier hs-var">Hints</span></a></span></span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Inline"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-var">Inline</span></a></span></span><span> </span><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#Inline"><span class="hs-identifier hs-type">Inline</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="NoHints"><span class="annot"><a href="UntypedPlutusCore.Transform.Certify.Hints.html#NoHints"><span class="hs-identifier hs-var">NoHints</span></a></span></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682329806"><span id="local-6989586621682329808"><span class="annot"><span class="annottext">(forall x. Hints -&gt; Rep Hints x)
 -&gt; (forall x. Rep Hints x -&gt; Hints) -&gt; Generic Hints
 forall x. Rep Hints x -&gt; Hints
 forall x. Hints -&gt; Rep Hints x
@@ -56,10 +55,10 @@ from :: forall x. Hints -&gt; Rep Hints x
 $cto :: forall x. Rep Hints x -&gt; Hints
 to :: forall x. Rep Hints x -&gt; Hints
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682251111"><span class="annot"><span class="annottext">Hints -&gt; ()
+</span><span id="line-33"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682329811"><span class="annot"><span class="annottext">Hints -&gt; ()
 (Hints -&gt; ()) -&gt; NFData Hints
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Hints -&gt; ()
 rnf :: Hints -&gt; ()
 </span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">)</span><span>
-</span><span id="line-35"></span></pre></body></html>
+</span><span id="line-34"></span></pre></body></html>

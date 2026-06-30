@@ -73,7 +73,7 @@ However, we don't build on 32bit platforms anyway, so we can ignore that.
 </span><span id="line-73"></span><span>
 </span><span id="line-74"></span><span class="annot"><span class="hs-comment">-- | Counts size in machine words.</span></span><span>
 </span><span id="line-75"></span><span class="hs-keyword">newtype</span><span> </span><span id="ExMemory"><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-var">ExMemory</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ExMemory"><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-var">ExMemory</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#CostingInteger"><span class="hs-identifier hs-type">CostingInteger</span></a></span><span>
-</span><span id="line-76"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682104807"><span id="local-6989586621682104811"><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; Bool
+</span><span id="line-76"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682176997"><span id="local-6989586621682177001"><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; Bool
 (ExMemory -&gt; ExMemory -&gt; Bool)
 -&gt; (ExMemory -&gt; ExMemory -&gt; Bool) -&gt; Eq ExMemory
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -81,7 +81,7 @@ $c== :: ExMemory -&gt; ExMemory -&gt; Bool
 == :: ExMemory -&gt; ExMemory -&gt; Bool
 $c/= :: ExMemory -&gt; ExMemory -&gt; Bool
 /= :: ExMemory -&gt; ExMemory -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104818"><span id="local-6989586621682104822"><span id="local-6989586621682104825"><span id="local-6989586621682104829"><span id="local-6989586621682104832"><span id="local-6989586621682104835"><span id="local-6989586621682104838"><span class="annot"><span class="annottext">Eq ExMemory
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177008"><span id="local-6989586621682177012"><span id="local-6989586621682177015"><span id="local-6989586621682177019"><span id="local-6989586621682177022"><span id="local-6989586621682177025"><span id="local-6989586621682177028"><span class="annot"><span class="annottext">Eq ExMemory
 Eq ExMemory =&gt;
 (ExMemory -&gt; ExMemory -&gt; Ordering)
 -&gt; (ExMemory -&gt; ExMemory -&gt; Bool)
@@ -118,7 +118,7 @@ $cmax :: ExMemory -&gt; ExMemory -&gt; ExMemory
 max :: ExMemory -&gt; ExMemory -&gt; ExMemory
 $cmin :: ExMemory -&gt; ExMemory -&gt; ExMemory
 min :: ExMemory -&gt; ExMemory -&gt; ExMemory
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104842"><span id="local-6989586621682104848"><span id="local-6989586621682104852"><span class="annot"><span class="annottext">Int -&gt; ExMemory -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177032"><span id="local-6989586621682177038"><span id="local-6989586621682177042"><span class="annot"><span class="annottext">Int -&gt; ExMemory -&gt; ShowS
 [ExMemory] -&gt; ShowS
 ExMemory -&gt; String
 (Int -&gt; ExMemory -&gt; ShowS)
@@ -131,7 +131,7 @@ $cshow :: ExMemory -&gt; String
 show :: ExMemory -&gt; String
 $cshowList :: [ExMemory] -&gt; ShowS
 showList :: [ExMemory] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104856"><span id="local-6989586621682104858"><span class="annot"><span class="annottext">(forall x. ExMemory -&gt; Rep ExMemory x)
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177046"><span id="local-6989586621682177048"><span class="annot"><span class="annottext">(forall x. ExMemory -&gt; Rep ExMemory x)
 -&gt; (forall x. Rep ExMemory x -&gt; ExMemory) -&gt; Generic ExMemory
 forall x. Rep ExMemory x -&gt; ExMemory
 forall x. ExMemory -&gt; Rep ExMemory x
@@ -141,7 +141,7 @@ $cfrom :: forall x. ExMemory -&gt; Rep ExMemory x
 from :: forall x. ExMemory -&gt; Rep ExMemory x
 $cto :: forall x. Rep ExMemory x -&gt; ExMemory
 to :: forall x. Rep ExMemory x -&gt; ExMemory
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104862"><span id="local-6989586621682104869"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; ExMemory -&gt; m Exp)
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177052"><span id="local-6989586621682177059"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; ExMemory -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *). Quote m =&gt; ExMemory -&gt; Code m ExMemory)
 -&gt; Lift ExMemory
 forall t.
@@ -154,7 +154,7 @@ lift :: forall (m :: * -&gt; *). Quote m =&gt; ExMemory -&gt; m Exp
 $cliftTyped :: forall (m :: * -&gt; *). Quote m =&gt; ExMemory -&gt; Code m ExMemory
 liftTyped :: forall (m :: * -&gt; *). Quote m =&gt; ExMemory -&gt; Code m ExMemory
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-77"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682104877"><span id="local-6989586621682104882"><span id="local-6989586621682104886"><span id="local-6989586621682104890"><span id="local-6989586621682104894"><span id="local-6989586621682104898"><span id="local-6989586621682104902"><span class="annot"><span class="annottext">Integer -&gt; ExMemory
+</span><span id="line-77"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177067"><span id="local-6989586621682177072"><span id="local-6989586621682177076"><span id="local-6989586621682177080"><span id="local-6989586621682177084"><span id="local-6989586621682177088"><span id="local-6989586621682177092"><span class="annot"><span class="annottext">Integer -&gt; ExMemory
 ExMemory -&gt; ExMemory
 ExMemory -&gt; ExMemory -&gt; ExMemory
 (ExMemory -&gt; ExMemory -&gt; ExMemory)
@@ -188,12 +188,12 @@ $csignum :: ExMemory -&gt; ExMemory
 signum :: ExMemory -&gt; ExMemory
 $cfromInteger :: Integer -&gt; ExMemory
 fromInteger :: Integer -&gt; ExMemory
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104908"><span class="annot"><span class="annottext">ExMemory -&gt; ()
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177098"><span class="annot"><span class="annottext">ExMemory -&gt; ()
 (ExMemory -&gt; ()) -&gt; NFData ExMemory
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: ExMemory -&gt; ()
 rnf :: ExMemory -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104915"><span id="local-6989586621682104920"><span id="local-6989586621682104924"><span id="local-6989586621682104928"><span class="annot"><span class="annottext">ReadPrec [ExMemory]
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177105"><span id="local-6989586621682177110"><span id="local-6989586621682177114"><span id="local-6989586621682177118"><span class="annot"><span class="annottext">ReadPrec [ExMemory]
 ReadPrec ExMemory
 Int -&gt; ReadS ExMemory
 ReadS [ExMemory]
@@ -213,7 +213,7 @@ $creadPrec :: ReadPrec ExMemory
 readPrec :: ReadPrec ExMemory
 $creadListPrec :: ReadPrec [ExMemory]
 readListPrec :: ReadPrec [ExMemory]
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104934"><span id="local-6989586621682104939"><span class="annot"><span class="annottext">ExMemory
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177124"><span id="local-6989586621682177129"><span class="annot"><span class="annottext">ExMemory
 ExMemory -&gt; ExMemory -&gt; Bounded ExMemory
 forall a. a -&gt; a -&gt; Bounded a
 $cminBound :: ExMemory
@@ -221,7 +221,7 @@ minBound :: ExMemory
 $cmaxBound :: ExMemory
 maxBound :: ExMemory
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#Bounded"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-78"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682104945"><span id="local-6989586621682104950"><span id="local-6989586621682104954"><span class="annot"><span class="annottext">Maybe ExMemory
+</span><span id="line-78"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177135"><span id="local-6989586621682177140"><span id="local-6989586621682177144"><span class="annot"><span class="annottext">Maybe ExMemory
 Value -&gt; Parser [ExMemory]
 Value -&gt; Parser ExMemory
 (Value -&gt; Parser ExMemory)
@@ -237,7 +237,7 @@ $cparseJSONList :: Value -&gt; Parser [ExMemory]
 parseJSONList :: Value -&gt; Parser [ExMemory]
 $comittedField :: Maybe ExMemory
 omittedField :: Maybe ExMemory
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682104960"><span id="local-6989586621682104965"><span id="local-6989586621682104969"><span id="local-6989586621682104973"><span id="local-6989586621682104977"><span class="annot"><span class="annottext">[ExMemory] -&gt; Encoding
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177150"><span id="local-6989586621682177155"><span id="local-6989586621682177159"><span id="local-6989586621682177163"><span id="local-6989586621682177167"><span class="annot"><span class="annottext">[ExMemory] -&gt; Encoding
 [ExMemory] -&gt; Value
 ExMemory -&gt; Bool
 ExMemory -&gt; Encoding
@@ -266,7 +266,7 @@ toEncodingList :: [ExMemory] -&gt; Encoding
 $comitField :: ExMemory -&gt; Bool
 omitField :: ExMemory -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#CostingInteger"><span class="hs-identifier hs-type">CostingInteger</span></a></span><span>
-</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682104983"><span id="local-6989586621682104988"><span id="local-6989586621682104992"><span id="local-6989586621682104996"><span class="annot"><span class="annottext">[ExMemory] -&gt; Encoding
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177173"><span id="local-6989586621682177178"><span id="local-6989586621682177182"><span id="local-6989586621682177186"><span class="annot"><span class="annottext">[ExMemory] -&gt; Encoding
 ExMemory -&gt; Encoding
 (ExMemory -&gt; Encoding)
 -&gt; (forall s. Decoder s ExMemory)
@@ -290,7 +290,7 @@ encodeList :: [ExMemory] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [ExMemory]
 decodeList :: forall s. Decoder s [ExMemory]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#CostingInteger"><span class="hs-identifier hs-type">CostingInteger</span></a></span><span>
-</span><span id="line-80"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682105002"><span id="local-6989586621682105006"><span id="local-6989586621682105012"><span class="annot"><span class="annottext">Context -&gt; ExMemory -&gt; IO (Maybe ThunkInfo)
+</span><span id="line-80"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177192"><span id="local-6989586621682177196"><span id="local-6989586621682177202"><span class="annot"><span class="annottext">Context -&gt; ExMemory -&gt; IO (Maybe ThunkInfo)
 Proxy ExMemory -&gt; String
 (Context -&gt; ExMemory -&gt; IO (Maybe ThunkInfo))
 -&gt; (Context -&gt; ExMemory -&gt; IO (Maybe ThunkInfo))
@@ -309,24 +309,24 @@ $cshowTypeOf :: Proxy ExMemory -&gt; String
 showTypeOf :: Proxy ExMemory -&gt; String
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">NoThunks</span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-81"></span><span>
-</span><span id="line-82"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682105037"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-83"></span><span>  </span><span id="local-6989586621682105043"><span class="annot"><span class="annottext">pretty :: forall ann. ExMemory -&gt; Doc ann
-</span><a href="#local-6989586621682105043"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span><span> </span><span id="local-6989586621682105045"><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621682105045"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
-forall ann. Int -&gt; Doc ann
+</span><span id="line-82"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682177227"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-83"></span><span>  </span><span id="local-6989586621682177233"><span class="annot"><span class="annottext">pretty :: forall ann. ExMemory -&gt; Doc ann
+</span><a href="#local-6989586621682177233"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span><span> </span><span id="local-6989586621682177235"><span class="annot"><span class="annottext">CostingInteger
+</span><a href="#local-6989586621682177235"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Doc ann
+forall ann. Int64 -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
-</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int
+</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int64
 </span><span class="hs-identifier hs-var">unSatInt</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621682105045"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-84"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682104785"><span id="local-6989586621682105049"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621682104785"><span class="hs-identifier hs-type">config</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-85"></span><span>  </span><span id="local-6989586621682105054"><span class="annot"><span class="annottext">prettyBy :: forall ann. config -&gt; ExMemory -&gt; Doc ann
-</span><a href="#local-6989586621682105054"><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></a></span></span><span> </span><span class="annot"><span class="annottext">config
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682105056"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621682105056"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; Doc ann
+</span><a href="#local-6989586621682177235"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682176975"><span id="local-6989586621682177239"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621682176975"><span class="hs-identifier hs-type">config</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621682177244"><span class="annot"><span class="annottext">prettyBy :: forall ann. config -&gt; ExMemory -&gt; Doc ann
+</span><a href="#local-6989586621682177244"><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></a></span></span><span> </span><span class="annot"><span class="annottext">config
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682177246"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621682177246"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExMemory -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621682105056"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><a href="#local-6989586621682177246"><span class="hs-identifier hs-var">m</span></a></span><span>
 </span><span id="line-86"></span><span>
 </span><span id="line-87"></span><span class="hs-comment">{- Note [Manual Semigroup and Monoid instances for Sum monoids]
 We don't do
@@ -341,28 +341,28 @@ So instead we implement @Semigroup A@ and @Monoid A@ instances manually for a 'S
 -}</span><span>
 </span><span id="line-98"></span><span>
 </span><span id="line-99"></span><span class="hs-comment">-- See Note [Manual Semigroup and Monoid instances for Sum monoids].</span><span>
-</span><span id="line-100"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682105059"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-101"></span><span>  </span><span id="local-6989586621682105065"><span class="annot"><span class="annottext">&lt;&gt; :: ExMemory -&gt; ExMemory -&gt; ExMemory
+</span><span id="line-100"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682177249"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-101"></span><span>  </span><span id="local-6989586621682177255"><span class="annot"><span class="annottext">&lt;&gt; :: ExMemory -&gt; ExMemory -&gt; ExMemory
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; ExMemory
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">(+)</span></a></span><span>
 </span><span id="line-102"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">&lt;&gt;</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-103"></span><span>
-</span><span id="line-104"></span><span>  </span><span id="local-6989586621682105071"><span class="annot"><span class="annottext">stimes :: forall b. Integral b =&gt; b -&gt; ExMemory -&gt; ExMemory
-</span><a href="#local-6989586621682105071"><span class="hs-identifier hs-var hs-var hs-var hs-var">stimes</span></a></span></span><span> </span><span id="local-6989586621682105073"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621682105073"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682105074"><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621682105074"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; ExMemory
+</span><span id="line-104"></span><span>  </span><span id="local-6989586621682177261"><span class="annot"><span class="annottext">stimes :: forall b. Integral b =&gt; b -&gt; ExMemory -&gt; ExMemory
+</span><a href="#local-6989586621682177261"><span class="hs-identifier hs-var hs-var hs-var hs-var">stimes</span></a></span></span><span> </span><span id="local-6989586621682177263"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621682177263"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682177264"><span class="annot"><span class="annottext">ExMemory
+</span><a href="#local-6989586621682177264"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; ExMemory
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621682105073"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; ExMemory
+</span><a href="#local-6989586621682177263"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory -&gt; ExMemory -&gt; ExMemory
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2A"><span class="hs-operator hs-var">*</span></a></span><span> </span><span class="annot"><span class="annottext">ExMemory
-</span><a href="#local-6989586621682105074"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621682177264"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-105"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#stimes"><span class="hs-pragma hs-type">stimes</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-106"></span><span>
 </span><span id="line-107"></span><span class="hs-comment">-- See Note [Manual Semigroup and Monoid instances for Sum monoids].</span><span>
-</span><span id="line-108"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682105080"><span id="local-6989586621682105084"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-109"></span><span>  </span><span id="local-6989586621682105088"><span class="annot"><span class="annottext">mempty :: ExMemory
+</span><span id="line-108"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682177270"><span id="local-6989586621682177274"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-type">ExMemory</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-109"></span><span>  </span><span id="local-6989586621682177278"><span class="annot"><span class="annottext">mempty :: ExMemory
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CostingInteger -&gt; ExMemory
 </span><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExMemory"><span class="hs-identifier hs-var">ExMemory</span></a></span><span> </span><span class="annot"><span class="annottext">CostingInteger
 </span><span class="hs-number">0</span></span><span>
@@ -371,14 +371,14 @@ forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span id="line-112"></span><span class="annot"><span class="hs-comment">{-| Counts CPU units in picoseconds: maximum value for SatInt is 2^63 ps, or
 appproximately 106 days. -}</span></span><span>
 </span><span id="line-114"></span><span class="hs-keyword">newtype</span><span> </span><span id="ExCPU"><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-var">ExCPU</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ExCPU"><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-var">ExCPU</span></a></span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#CostingInteger"><span class="hs-identifier hs-type">CostingInteger</span></a></span><span>
-</span><span id="line-115"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682105091"><span id="local-6989586621682105094"><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; Bool
+</span><span id="line-115"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177281"><span id="local-6989586621682177284"><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; Bool
 (ExCPU -&gt; ExCPU -&gt; Bool) -&gt; (ExCPU -&gt; ExCPU -&gt; Bool) -&gt; Eq ExCPU
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: ExCPU -&gt; ExCPU -&gt; Bool
 == :: ExCPU -&gt; ExCPU -&gt; Bool
 $c/= :: ExCPU -&gt; ExCPU -&gt; Bool
 /= :: ExCPU -&gt; ExCPU -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105100"><span id="local-6989586621682105103"><span id="local-6989586621682105106"><span id="local-6989586621682105110"><span id="local-6989586621682105113"><span id="local-6989586621682105116"><span id="local-6989586621682105119"><span class="annot"><span class="annottext">Eq ExCPU
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177290"><span id="local-6989586621682177293"><span id="local-6989586621682177296"><span id="local-6989586621682177300"><span id="local-6989586621682177303"><span id="local-6989586621682177306"><span id="local-6989586621682177309"><span class="annot"><span class="annottext">Eq ExCPU
 Eq ExCPU =&gt;
 (ExCPU -&gt; ExCPU -&gt; Ordering)
 -&gt; (ExCPU -&gt; ExCPU -&gt; Bool)
@@ -415,7 +415,7 @@ $cmax :: ExCPU -&gt; ExCPU -&gt; ExCPU
 max :: ExCPU -&gt; ExCPU -&gt; ExCPU
 $cmin :: ExCPU -&gt; ExCPU -&gt; ExCPU
 min :: ExCPU -&gt; ExCPU -&gt; ExCPU
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105122"><span id="local-6989586621682105126"><span id="local-6989586621682105130"><span class="annot"><span class="annottext">Int -&gt; ExCPU -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177312"><span id="local-6989586621682177316"><span id="local-6989586621682177320"><span class="annot"><span class="annottext">Int -&gt; ExCPU -&gt; ShowS
 [ExCPU] -&gt; ShowS
 ExCPU -&gt; String
 (Int -&gt; ExCPU -&gt; ShowS)
@@ -428,7 +428,7 @@ $cshow :: ExCPU -&gt; String
 show :: ExCPU -&gt; String
 $cshowList :: [ExCPU] -&gt; ShowS
 showList :: [ExCPU] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105133"><span id="local-6989586621682105135"><span class="annot"><span class="annottext">(forall x. ExCPU -&gt; Rep ExCPU x)
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177323"><span id="local-6989586621682177325"><span class="annot"><span class="annottext">(forall x. ExCPU -&gt; Rep ExCPU x)
 -&gt; (forall x. Rep ExCPU x -&gt; ExCPU) -&gt; Generic ExCPU
 forall x. Rep ExCPU x -&gt; ExCPU
 forall x. ExCPU -&gt; Rep ExCPU x
@@ -438,7 +438,7 @@ $cfrom :: forall x. ExCPU -&gt; Rep ExCPU x
 from :: forall x. ExCPU -&gt; Rep ExCPU x
 $cto :: forall x. Rep ExCPU x -&gt; ExCPU
 to :: forall x. Rep ExCPU x -&gt; ExCPU
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105138"><span id="local-6989586621682105144"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; ExCPU -&gt; m Exp)
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177328"><span id="local-6989586621682177334"><span class="annot"><span class="annottext">(forall (m :: * -&gt; *). Quote m =&gt; ExCPU -&gt; m Exp)
 -&gt; (forall (m :: * -&gt; *). Quote m =&gt; ExCPU -&gt; Code m ExCPU)
 -&gt; Lift ExCPU
 forall t.
@@ -451,7 +451,7 @@ lift :: forall (m :: * -&gt; *). Quote m =&gt; ExCPU -&gt; m Exp
 $cliftTyped :: forall (m :: * -&gt; *). Quote m =&gt; ExCPU -&gt; Code m ExCPU
 liftTyped :: forall (m :: * -&gt; *). Quote m =&gt; ExCPU -&gt; Code m ExCPU
 </span><a href="../../../ghc-9.8.4/html/libraries/template-haskell-2.21.0.0-inplace/src/Language.Haskell.TH.Syntax.html#Lift"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Lift</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-116"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682105151"><span id="local-6989586621682105155"><span id="local-6989586621682105159"><span id="local-6989586621682105163"><span id="local-6989586621682105167"><span id="local-6989586621682105171"><span id="local-6989586621682105175"><span class="annot"><span class="annottext">Integer -&gt; ExCPU
+</span><span id="line-116"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177341"><span id="local-6989586621682177345"><span id="local-6989586621682177349"><span id="local-6989586621682177353"><span id="local-6989586621682177357"><span id="local-6989586621682177361"><span id="local-6989586621682177365"><span class="annot"><span class="annottext">Integer -&gt; ExCPU
 ExCPU -&gt; ExCPU
 ExCPU -&gt; ExCPU -&gt; ExCPU
 (ExCPU -&gt; ExCPU -&gt; ExCPU)
@@ -485,12 +485,12 @@ $csignum :: ExCPU -&gt; ExCPU
 signum :: ExCPU -&gt; ExCPU
 $cfromInteger :: Integer -&gt; ExCPU
 fromInteger :: Integer -&gt; ExCPU
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105180"><span class="annot"><span class="annottext">ExCPU -&gt; ()
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177370"><span class="annot"><span class="annottext">ExCPU -&gt; ()
 (ExCPU -&gt; ()) -&gt; NFData ExCPU
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: ExCPU -&gt; ()
 rnf :: ExCPU -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105185"><span id="local-6989586621682105189"><span id="local-6989586621682105193"><span id="local-6989586621682105197"><span class="annot"><span class="annottext">ReadPrec [ExCPU]
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177375"><span id="local-6989586621682177379"><span id="local-6989586621682177383"><span id="local-6989586621682177387"><span class="annot"><span class="annottext">ReadPrec [ExCPU]
 ReadPrec ExCPU
 Int -&gt; ReadS ExCPU
 ReadS [ExCPU]
@@ -510,7 +510,7 @@ $creadPrec :: ReadPrec ExCPU
 readPrec :: ReadPrec ExCPU
 $creadListPrec :: ReadPrec [ExCPU]
 readListPrec :: ReadPrec [ExCPU]
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105202"><span id="local-6989586621682105206"><span class="annot"><span class="annottext">ExCPU
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Read.html#Read"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></a></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177392"><span id="local-6989586621682177396"><span class="annot"><span class="annottext">ExCPU
 ExCPU -&gt; ExCPU -&gt; Bounded ExCPU
 forall a. a -&gt; a -&gt; Bounded a
 $cminBound :: ExCPU
@@ -518,7 +518,7 @@ minBound :: ExCPU
 $cmaxBound :: ExCPU
 maxBound :: ExCPU
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#Bounded"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-117"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682105211"><span id="local-6989586621682105215"><span id="local-6989586621682105219"><span class="annot"><span class="annottext">Maybe ExCPU
+</span><span id="line-117"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177401"><span id="local-6989586621682177405"><span id="local-6989586621682177409"><span class="annot"><span class="annottext">Maybe ExCPU
 Value -&gt; Parser [ExCPU]
 Value -&gt; Parser ExCPU
 (Value -&gt; Parser ExCPU)
@@ -532,7 +532,7 @@ $cparseJSONList :: Value -&gt; Parser [ExCPU]
 parseJSONList :: Value -&gt; Parser [ExCPU]
 $comittedField :: Maybe ExCPU
 omittedField :: Maybe ExCPU
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682105224"><span id="local-6989586621682105228"><span id="local-6989586621682105232"><span id="local-6989586621682105236"><span id="local-6989586621682105240"><span class="annot"><span class="annottext">[ExCPU] -&gt; Encoding
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">FromJSON</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682177414"><span id="local-6989586621682177418"><span id="local-6989586621682177422"><span id="local-6989586621682177426"><span id="local-6989586621682177430"><span class="annot"><span class="annottext">[ExCPU] -&gt; Encoding
 [ExCPU] -&gt; Value
 ExCPU -&gt; Bool
 ExCPU -&gt; Encoding
@@ -561,7 +561,7 @@ toEncodingList :: [ExCPU] -&gt; Encoding
 $comitField :: ExCPU -&gt; Bool
 omitField :: ExCPU -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">ToJSON</span></span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#CostingInteger"><span class="hs-identifier hs-type">CostingInteger</span></a></span><span>
-</span><span id="line-118"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682105245"><span id="local-6989586621682105249"><span id="local-6989586621682105253"><span id="local-6989586621682105257"><span class="annot"><span class="annottext">[ExCPU] -&gt; Encoding
+</span><span id="line-118"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177435"><span id="local-6989586621682177439"><span id="local-6989586621682177443"><span id="local-6989586621682177447"><span class="annot"><span class="annottext">[ExCPU] -&gt; Encoding
 ExCPU -&gt; Encoding
 (ExCPU -&gt; Encoding)
 -&gt; (forall s. Decoder s ExCPU)
@@ -585,7 +585,7 @@ encodeList :: [ExCPU] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [ExCPU]
 decodeList :: forall s. Decoder s [ExCPU]
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#CostingInteger"><span class="hs-identifier hs-type">CostingInteger</span></a></span><span>
-</span><span id="line-119"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682105262"><span id="local-6989586621682105266"><span id="local-6989586621682105272"><span class="annot"><span class="annottext">Context -&gt; ExCPU -&gt; IO (Maybe ThunkInfo)
+</span><span id="line-119"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682177452"><span id="local-6989586621682177456"><span id="local-6989586621682177462"><span class="annot"><span class="annottext">Context -&gt; ExCPU -&gt; IO (Maybe ThunkInfo)
 Proxy ExCPU -&gt; String
 (Context -&gt; ExCPU -&gt; IO (Maybe ThunkInfo))
 -&gt; (Context -&gt; ExCPU -&gt; IO (Maybe ThunkInfo))
@@ -604,48 +604,48 @@ $cshowTypeOf :: Proxy ExCPU -&gt; String
 showTypeOf :: Proxy ExCPU -&gt; String
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">NoThunks</span></span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-120"></span><span>
-</span><span id="line-121"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682105288"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-122"></span><span>  </span><span id="local-6989586621682105292"><span class="annot"><span class="annottext">pretty :: forall ann. ExCPU -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span><span> </span><span id="local-6989586621682105293"><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621682105293"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
-forall ann. Int -&gt; Doc ann
+</span><span id="line-121"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682177478"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-122"></span><span>  </span><span id="local-6989586621682177482"><span class="annot"><span class="annottext">pretty :: forall ann. ExCPU -&gt; Doc ann
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span><span> </span><span id="local-6989586621682177483"><span class="annot"><span class="annottext">CostingInteger
+</span><a href="#local-6989586621682177483"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int64 -&gt; Doc ann
+forall ann. Int64 -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
-</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int
+</span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; Int64
 </span><span class="hs-identifier hs-var">unSatInt</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
-</span><a href="#local-6989586621682105293"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-123"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682104800"><span id="local-6989586621682105296"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621682104800"><span class="hs-identifier hs-type">config</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-124"></span><span>  </span><span id="local-6989586621682105300"><span class="annot"><span class="annottext">prettyBy :: forall ann. config -&gt; ExCPU -&gt; Doc ann
+</span><a href="#local-6989586621682177483"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-123"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682176990"><span id="local-6989586621682177486"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621682176990"><span class="hs-identifier hs-type">config</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-124"></span><span>  </span><span id="local-6989586621682177490"><span class="annot"><span class="annottext">prettyBy :: forall ann. config -&gt; ExCPU -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span class="annot"><span class="annottext">config
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682105301"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621682105301"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; Doc ann
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682177491"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621682177491"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. ExCPU -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621682105301"><span class="hs-identifier hs-var">m</span></a></span><span>
+</span><a href="#local-6989586621682177491"><span class="hs-identifier hs-var">m</span></a></span><span>
 </span><span id="line-125"></span><span>
 </span><span id="line-126"></span><span class="hs-comment">-- See Note [Manual Semigroup and Monoid instances for Sum monoids].</span><span>
-</span><span id="line-127"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682105304"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-128"></span><span>  </span><span id="local-6989586621682105309"><span class="annot"><span class="annottext">&lt;&gt; :: ExCPU -&gt; ExCPU -&gt; ExCPU
+</span><span id="line-127"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682177494"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-type">Semigroup</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-128"></span><span>  </span><span id="local-6989586621682177499"><span class="annot"><span class="annottext">&lt;&gt; :: ExCPU -&gt; ExCPU -&gt; ExCPU
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var hs-var hs-var hs-var">(&lt;&gt;)</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; ExCPU
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">(+)</span></a></span><span>
 </span><span id="line-129"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="hs-pragma">(</span><span class="hs-pragma">&lt;&gt;</span><span class="hs-pragma">)</span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-130"></span><span>
-</span><span id="line-131"></span><span>  </span><span id="local-6989586621682105314"><span class="annot"><span class="annottext">stimes :: forall b. Integral b =&gt; b -&gt; ExCPU -&gt; ExCPU
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#stimes"><span class="hs-identifier hs-var hs-var hs-var hs-var">stimes</span></a></span></span><span> </span><span id="local-6989586621682105315"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621682105315"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682105316"><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621682105316"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; ExCPU
+</span><span id="line-131"></span><span>  </span><span id="local-6989586621682177504"><span class="annot"><span class="annottext">stimes :: forall b. Integral b =&gt; b -&gt; ExCPU -&gt; ExCPU
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#stimes"><span class="hs-identifier hs-var hs-var hs-var hs-var">stimes</span></a></span></span><span> </span><span id="local-6989586621682177505"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621682177505"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682177506"><span class="annot"><span class="annottext">ExCPU
+</span><a href="#local-6989586621682177506"><span class="hs-identifier hs-var">mem</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b -&gt; ExCPU
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621682105315"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; ExCPU
+</span><a href="#local-6989586621682177505"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExCPU -&gt; ExCPU
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2A"><span class="hs-operator hs-var">*</span></a></span><span> </span><span class="annot"><span class="annottext">ExCPU
-</span><a href="#local-6989586621682105316"><span class="hs-identifier hs-var">mem</span></a></span><span>
+</span><a href="#local-6989586621682177506"><span class="hs-identifier hs-var">mem</span></a></span><span>
 </span><span id="line-132"></span><span>  </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#stimes"><span class="hs-pragma hs-type">stimes</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-133"></span><span>
 </span><span id="line-134"></span><span class="hs-comment">-- See Note [Manual Semigroup and Monoid instances for Sum monoids].</span><span>
-</span><span id="line-135"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682105321"><span id="local-6989586621682105325"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-136"></span><span>  </span><span id="local-6989586621682105328"><span class="annot"><span class="annottext">mempty :: ExCPU
+</span><span id="line-135"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682177511"><span id="local-6989586621682177515"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-type">Monoid</span></a></span><span> </span><span class="annot"><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-type">ExCPU</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-136"></span><span>  </span><span id="local-6989586621682177518"><span class="annot"><span class="annottext">mempty :: ExCPU
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var hs-var hs-var hs-var">mempty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CostingInteger -&gt; ExCPU
 </span><a href="PlutusCore.Evaluation.Machine.ExMemory.html#ExCPU"><span class="hs-identifier hs-var">ExCPU</span></a></span><span> </span><span class="annot"><span class="annottext">CostingInteger
 </span><span class="hs-number">0</span></span><span>

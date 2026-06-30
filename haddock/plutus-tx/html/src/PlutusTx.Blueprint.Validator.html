@@ -28,7 +28,7 @@
 The 'referencedTypes' phantom type parameter is used to track the types used in the contract
 making sure their schemas are included in the blueprint and that they are referenced
 in a type-safe way. -}</span></span><span>
-</span><span id="line-31"></span><span class="hs-keyword">data</span><span> </span><span id="ValidatorBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#ValidatorBlueprint"><span class="hs-identifier hs-var">ValidatorBlueprint</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680191408"><span class="annot"><a href="#local-6989586621680191408"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MkValidatorBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#MkValidatorBlueprint"><span class="hs-identifier hs-var">MkValidatorBlueprint</span></a></span></span><span>
+</span><span id="line-31"></span><span class="hs-keyword">data</span><span> </span><span id="ValidatorBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#ValidatorBlueprint"><span class="hs-identifier hs-var">ValidatorBlueprint</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680191064"><span class="annot"><a href="#local-6989586621680191064"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MkValidatorBlueprint"><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#MkValidatorBlueprint"><span class="hs-identifier hs-var">MkValidatorBlueprint</span></a></span></span><span>
 </span><span id="line-32"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="validatorTitle"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ValidatorBlueprint referencedTypes -&gt; Text
 </span><a href="PlutusTx.Blueprint.Validator.html#validatorTitle"><span class="hs-identifier hs-var hs-var">validatorTitle</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>
@@ -40,24 +40,24 @@ ValidatorBlueprint referencedTypes -&gt; Maybe Text
 </span><span id="line-36"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="validatorRedeemer"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ValidatorBlueprint referencedTypes
 -&gt; ArgumentBlueprint referencedTypes
-</span><a href="PlutusTx.Blueprint.Validator.html#validatorRedeemer"><span class="hs-identifier hs-var hs-var">validatorRedeemer</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-type">ArgumentBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191408"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span>
+</span><a href="PlutusTx.Blueprint.Validator.html#validatorRedeemer"><span class="hs-identifier hs-var hs-var">validatorRedeemer</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-type">ArgumentBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191064"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span>
 </span><span id="line-37"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ A description of the redeemer format expected by this validator.</span></span><span>
 </span><span id="line-38"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="validatorDatum"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ValidatorBlueprint referencedTypes
 -&gt; Maybe (ArgumentBlueprint referencedTypes)
-</span><a href="PlutusTx.Blueprint.Validator.html#validatorDatum"><span class="hs-identifier hs-var hs-var">validatorDatum</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-type">ArgumentBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191408"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">)</span><span>
+</span><a href="PlutusTx.Blueprint.Validator.html#validatorDatum"><span class="hs-identifier hs-var hs-var">validatorDatum</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Argument.html#ArgumentBlueprint"><span class="hs-identifier hs-type">ArgumentBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191064"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-39"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ A description of the datum format expected by this validator.</span></span><span>
 </span><span id="line-40"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="validatorParameters"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ValidatorBlueprint referencedTypes
 -&gt; [ParameterBlueprint referencedTypes]
-</span><a href="PlutusTx.Blueprint.Validator.html#validatorParameters"><span class="hs-identifier hs-var hs-var">validatorParameters</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusTx.Blueprint.Parameter.html#ParameterBlueprint"><span class="hs-identifier hs-type">ParameterBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191408"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">]</span><span>
+</span><a href="PlutusTx.Blueprint.Validator.html#validatorParameters"><span class="hs-identifier hs-var hs-var">validatorParameters</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusTx.Blueprint.Parameter.html#ParameterBlueprint"><span class="hs-identifier hs-type">ParameterBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191064"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-41"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ A list of parameters required by the script.</span></span><span>
 </span><span id="line-42"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="validatorCompiled"><span class="annot"><span class="annottext">forall (referencedTypes :: [*]).
 ValidatorBlueprint referencedTypes -&gt; Maybe CompiledValidator
 </span><a href="PlutusTx.Blueprint.Validator.html#validatorCompiled"><span class="hs-identifier hs-var hs-var">validatorCompiled</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#CompiledValidator"><span class="hs-identifier hs-type">CompiledValidator</span></a></span><span>
 </span><span id="line-43"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ A full compiled and CBOR-encoded serialized flat script together with its hash.</span></span><span>
 </span><span id="line-44"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680191482"><span id="local-6989586621680191498"><span id="local-6989586621680191502"><span class="annot"><span class="annottext">Int -&gt; ValidatorBlueprint referencedTypes -&gt; ShowS
+</span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680191138"><span id="local-6989586621680191154"><span id="local-6989586621680191158"><span class="annot"><span class="annottext">Int -&gt; ValidatorBlueprint referencedTypes -&gt; ShowS
 [ValidatorBlueprint referencedTypes] -&gt; ShowS
 ValidatorBlueprint referencedTypes -&gt; String
 (Int -&gt; ValidatorBlueprint referencedTypes -&gt; ShowS)
@@ -81,7 +81,7 @@ show :: ValidatorBlueprint referencedTypes -&gt; String
 $cshowList :: forall (referencedTypes :: [*]).
 [ValidatorBlueprint referencedTypes] -&gt; ShowS
 showList :: [ValidatorBlueprint referencedTypes] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191508"><span id="local-6989586621680191522"><span class="annot"><span class="annottext">ValidatorBlueprint referencedTypes
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191164"><span id="local-6989586621680191178"><span class="annot"><span class="annottext">ValidatorBlueprint referencedTypes
 -&gt; ValidatorBlueprint referencedTypes -&gt; Bool
 (ValidatorBlueprint referencedTypes
  -&gt; ValidatorBlueprint referencedTypes -&gt; Bool)
@@ -102,7 +102,7 @@ ValidatorBlueprint referencedTypes
 -&gt; ValidatorBlueprint referencedTypes -&gt; Bool
 /= :: ValidatorBlueprint referencedTypes
 -&gt; ValidatorBlueprint referencedTypes -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191531"><span id="local-6989586621680191545"><span id="local-6989586621680191555"><span id="local-6989586621680191559"><span id="local-6989586621680191562"><span id="local-6989586621680191565"><span id="local-6989586621680191568"><span class="annot"><span class="annottext">Eq (ValidatorBlueprint referencedTypes)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191187"><span id="local-6989586621680191201"><span id="local-6989586621680191211"><span id="local-6989586621680191215"><span id="local-6989586621680191218"><span id="local-6989586621680191221"><span id="local-6989586621680191224"><span class="annot"><span class="annottext">Eq (ValidatorBlueprint referencedTypes)
 Eq (ValidatorBlueprint referencedTypes) =&gt;
 (ValidatorBlueprint referencedTypes
  -&gt; ValidatorBlueprint referencedTypes -&gt; Ordering)
@@ -197,7 +197,7 @@ min :: ValidatorBlueprint referencedTypes
 </span><span id="line-49"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="compiledValidatorHash"><span class="annot"><span class="annottext">CompiledValidator -&gt; ByteString
 </span><a href="PlutusTx.Blueprint.Validator.html#compiledValidatorHash"><span class="hs-identifier hs-var hs-var">compiledValidatorHash</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
 </span><span id="line-50"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-51"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680191577"><span id="local-6989586621680191583"><span id="local-6989586621680191586"><span class="annot"><span class="annottext">Int -&gt; CompiledValidator -&gt; ShowS
+</span><span id="line-51"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621680191233"><span id="local-6989586621680191239"><span id="local-6989586621680191242"><span class="annot"><span class="annottext">Int -&gt; CompiledValidator -&gt; ShowS
 [CompiledValidator] -&gt; ShowS
 CompiledValidator -&gt; String
 (Int -&gt; CompiledValidator -&gt; ShowS)
@@ -212,7 +212,7 @@ $cshow :: CompiledValidator -&gt; String
 show :: CompiledValidator -&gt; String
 $cshowList :: [CompiledValidator] -&gt; ShowS
 showList :: [CompiledValidator] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191589"><span id="local-6989586621680191594"><span class="annot"><span class="annottext">CompiledValidator -&gt; CompiledValidator -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191245"><span id="local-6989586621680191250"><span class="annot"><span class="annottext">CompiledValidator -&gt; CompiledValidator -&gt; Bool
 (CompiledValidator -&gt; CompiledValidator -&gt; Bool)
 -&gt; (CompiledValidator -&gt; CompiledValidator -&gt; Bool)
 -&gt; Eq CompiledValidator
@@ -221,7 +221,7 @@ $c== :: CompiledValidator -&gt; CompiledValidator -&gt; Bool
 == :: CompiledValidator -&gt; CompiledValidator -&gt; Bool
 $c/= :: CompiledValidator -&gt; CompiledValidator -&gt; Bool
 /= :: CompiledValidator -&gt; CompiledValidator -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191599"><span id="local-6989586621680191604"><span id="local-6989586621680191608"><span id="local-6989586621680191611"><span id="local-6989586621680191614"><span id="local-6989586621680191617"><span id="local-6989586621680191620"><span class="annot"><span class="annottext">Eq CompiledValidator
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621680191255"><span id="local-6989586621680191260"><span id="local-6989586621680191264"><span id="local-6989586621680191267"><span id="local-6989586621680191270"><span id="local-6989586621680191273"><span id="local-6989586621680191276"><span class="annot"><span class="annottext">Eq CompiledValidator
 Eq CompiledValidator =&gt;
 (CompiledValidator -&gt; CompiledValidator -&gt; Ordering)
 -&gt; (CompiledValidator -&gt; CompiledValidator -&gt; Bool)
@@ -262,27 +262,27 @@ min :: CompiledValidator -&gt; CompiledValidator -&gt; CompiledValidator
 </span><span id="line-52"></span><span>
 </span><span id="line-53"></span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#compiledValidator"><span class="hs-identifier hs-type">compiledValidator</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.PlutusVersion.html#PlutusVersion"><span class="hs-identifier hs-type">PlutusVersion</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#CompiledValidator"><span class="hs-identifier hs-type">CompiledValidator</span></a></span><span>
 </span><span id="line-54"></span><span id="compiledValidator"><span class="annot"><span class="annottext">compiledValidator :: PlutusVersion -&gt; ByteString -&gt; CompiledValidator
-</span><a href="PlutusTx.Blueprint.Validator.html#compiledValidator"><span class="hs-identifier hs-var hs-var">compiledValidator</span></a></span></span><span> </span><span id="local-6989586621680191623"><span class="annot"><span class="annottext">PlutusVersion
-</span><a href="#local-6989586621680191623"><span class="hs-identifier hs-var">version</span></a></span></span><span> </span><span id="local-6989586621680191624"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621680191624"><span class="hs-identifier hs-var">code</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusTx.Blueprint.Validator.html#compiledValidator"><span class="hs-identifier hs-var hs-var">compiledValidator</span></a></span></span><span> </span><span id="local-6989586621680191279"><span class="annot"><span class="annottext">PlutusVersion
+</span><a href="#local-6989586621680191279"><span class="hs-identifier hs-var">version</span></a></span></span><span> </span><span id="local-6989586621680191280"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621680191280"><span class="hs-identifier hs-var">code</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-55"></span><span>  </span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#MkCompiledValidator"><span class="hs-identifier hs-type">MkCompiledValidator</span></a></span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">compiledValidatorCode :: ByteString
 </span><a href="PlutusTx.Blueprint.Validator.html#compiledValidatorCode"><span class="hs-identifier hs-var">compiledValidatorCode</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621680191624"><span class="hs-identifier hs-var">code</span></a></span><span>
+</span><a href="#local-6989586621680191280"><span class="hs-identifier hs-var">code</span></a></span><span>
 </span><span id="line-57"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">compiledValidatorHash :: ByteString
 </span><a href="PlutusTx.Blueprint.Validator.html#compiledValidatorHash"><span class="hs-identifier hs-var">compiledValidatorHash</span></a></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-58"></span><span>        </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
 </span><span class="hs-identifier hs-var">blake2b_224</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8 -&gt; ByteString
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html#singleton"><span class="hs-identifier hs-var">BS.singleton</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PlutusVersion -&gt; Word8
-</span><a href="#local-6989586621680191626"><span class="hs-identifier hs-var">versionTag</span></a></span><span> </span><span class="annot"><span class="annottext">PlutusVersion
-</span><a href="#local-6989586621680191623"><span class="hs-identifier hs-var">version</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621680191282"><span class="hs-identifier hs-var">versionTag</span></a></span><span> </span><span class="annot"><span class="annottext">PlutusVersion
+</span><a href="#local-6989586621680191279"><span class="hs-identifier hs-var">version</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621680191624"><span class="hs-identifier hs-var">code</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680191280"><span class="hs-identifier hs-var">code</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-59"></span><span>    </span><span class="hs-special">}</span><span>
 </span><span id="line-60"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-61"></span><span>    </span><span id="local-6989586621680191626"><span class="annot"><span class="annottext">versionTag :: PlutusVersion -&gt; Word8
-</span><a href="#local-6989586621680191626"><span class="hs-identifier hs-var hs-var">versionTag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-61"></span><span>    </span><span id="local-6989586621680191282"><span class="annot"><span class="annottext">versionTag :: PlutusVersion -&gt; Word8
+</span><a href="#local-6989586621680191282"><span class="hs-identifier hs-var hs-var">versionTag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-62"></span><span>      </span><span class="annot"><span class="annottext">PlutusVersion
 </span><a href="PlutusTx.Blueprint.PlutusVersion.html#PlutusV1"><span class="hs-identifier hs-var">PlutusV1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">0x1</span></span><span>
@@ -293,9 +293,9 @@ forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><a href="PlutusTx.Blueprint.PlutusVersion.html#PlutusV3"><span class="hs-identifier hs-var">PlutusV3</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">0x3</span></span><span>
 </span><span id="line-65"></span><span>
-</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621680191449"><span id="local-6989586621680191636"><span id="local-6989586621680191640"><span id="local-6989586621680191643"><span id="local-6989586621680191646"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#ValidatorBlueprint"><span class="hs-identifier hs-type">ValidatorBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191449"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-67"></span><span>  </span><span id="local-6989586621680191672"><span class="annot"><span class="annottext">toJSON :: ValidatorBlueprint referencedTypes -&gt; Value
-</span><a href="#local-6989586621680191672"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#MkValidatorBlueprint"><span class="hs-identifier hs-type">MkValidatorBlueprint</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621680191674"><span id="local-6989586621680191675"><span id="local-6989586621680191676"><span id="local-6989586621680191677"><span id="local-6989586621680191678"><span id="local-6989586621680191679"><span class="annot"><span class="annottext">[ParameterBlueprint referencedTypes]
+</span><span id="line-66"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621680191105"><span id="local-6989586621680191292"><span id="local-6989586621680191296"><span id="local-6989586621680191299"><span id="local-6989586621680191302"><span class="annot"><span class="hs-identifier hs-type">ToJSON</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#ValidatorBlueprint"><span class="hs-identifier hs-type">ValidatorBlueprint</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680191105"><span class="hs-identifier hs-type">referencedTypes</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>  </span><span id="local-6989586621680191328"><span class="annot"><span class="annottext">toJSON :: ValidatorBlueprint referencedTypes -&gt; Value
+</span><a href="#local-6989586621680191328"><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></a></span></span><span> </span><span class="annot"><a href="PlutusTx.Blueprint.Validator.html#MkValidatorBlueprint"><span class="hs-identifier hs-type">MkValidatorBlueprint</span></a></span><span> </span><span class="hs-special">{</span><span id="local-6989586621680191330"><span id="local-6989586621680191331"><span id="local-6989586621680191332"><span id="local-6989586621680191333"><span id="local-6989586621680191334"><span id="local-6989586621680191335"><span class="annot"><span class="annottext">[ParameterBlueprint referencedTypes]
 Maybe Text
 Maybe (ArgumentBlueprint referencedTypes)
 Maybe CompiledValidator
@@ -331,21 +331,21 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. ToJSON a =&gt; Key -&gt; a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#requiredField"><span class="hs-identifier hs-var">requiredField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;title&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621680191674"><span class="hs-identifier hs-var">validatorTitle</span></a></span><span>
+</span><a href="#local-6989586621680191330"><span class="hs-identifier hs-var">validatorTitle</span></a></span><span>
 </span><span id="line-70"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; ArgumentBlueprint referencedTypes -&gt; Object -&gt; Object
 forall a. ToJSON a =&gt; Key -&gt; a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#requiredField"><span class="hs-identifier hs-var">requiredField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;redeemer&quot;</span></span><span> </span><span class="annot"><span class="annottext">ArgumentBlueprint referencedTypes
-</span><a href="#local-6989586621680191676"><span class="hs-identifier hs-var">validatorRedeemer</span></a></span><span>
+</span><a href="#local-6989586621680191332"><span class="hs-identifier hs-var">validatorRedeemer</span></a></span><span>
 </span><span id="line-71"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Maybe Text -&gt; Object -&gt; Object
 forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#optionalField"><span class="hs-identifier hs-var">optionalField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;description&quot;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Text
-</span><a href="#local-6989586621680191675"><span class="hs-identifier hs-var">validatorDescription</span></a></span><span>
+</span><a href="#local-6989586621680191331"><span class="hs-identifier hs-var">validatorDescription</span></a></span><span>
 </span><span id="line-72"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key
@@ -353,7 +353,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#optionalField"><span class="hs-identifier hs-var">optionalField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;datum&quot;</span></span><span> </span><span class="annot"><span class="annottext">Maybe (ArgumentBlueprint referencedTypes)
-</span><a href="#local-6989586621680191677"><span class="hs-identifier hs-var">validatorDatum</span></a></span><span>
+</span><a href="#local-6989586621680191333"><span class="hs-identifier hs-var">validatorDatum</span></a></span><span>
 </span><span id="line-73"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key
@@ -366,14 +366,14 @@ forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 -&gt; Maybe (NonEmpty (ParameterBlueprint referencedTypes))
 forall a. [a] -&gt; Maybe (NonEmpty a)
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.List.NonEmpty.html#nonEmpty"><span class="hs-identifier hs-var">NE.nonEmpty</span></a></span><span> </span><span class="annot"><span class="annottext">[ParameterBlueprint referencedTypes]
-</span><a href="#local-6989586621680191678"><span class="hs-identifier hs-var">validatorParameters</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680191334"><span class="hs-identifier hs-var">validatorParameters</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-74"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Maybe Text -&gt; Object -&gt; Object
 forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#optionalField"><span class="hs-identifier hs-var">optionalField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;compiledCode&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Text
-</span><a href="#local-6989586621680191682"><span class="hs-identifier hs-var">toHex</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
+</span><a href="#local-6989586621680191338"><span class="hs-identifier hs-var">toHex</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
 -&gt; (CompiledValidator -&gt; ByteString) -&gt; CompiledValidator -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">CompiledValidator -&gt; ByteString
@@ -381,14 +381,14 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; Maybe CompiledValidator -&gt; Maybe Text
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe CompiledValidator
-</span><a href="#local-6989586621680191679"><span class="hs-identifier hs-var">validatorCompiled</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680191335"><span class="hs-identifier hs-var">validatorCompiled</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-75"></span><span>        </span><span class="annot"><span class="annottext">(Object -&gt; Object) -&gt; (Object -&gt; Object) -&gt; Object -&gt; Object
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Key -&gt; Maybe Text -&gt; Object -&gt; Object
 forall a. ToJSON a =&gt; Key -&gt; Maybe a -&gt; Object -&gt; Object
 </span><a href="Data.Aeson.Extra.html#optionalField"><span class="hs-identifier hs-var">optionalField</span></a></span><span> </span><span class="annot"><span class="annottext">Key
 </span><span class="hs-string">&quot;hash&quot;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ByteString -&gt; Text
-</span><a href="#local-6989586621680191682"><span class="hs-identifier hs-var">toHex</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
+</span><a href="#local-6989586621680191338"><span class="hs-identifier hs-var">toHex</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
 -&gt; (CompiledValidator -&gt; ByteString) -&gt; CompiledValidator -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">CompiledValidator -&gt; ByteString
@@ -396,11 +396,11 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; Maybe CompiledValidator -&gt; Maybe Text
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe CompiledValidator
-</span><a href="#local-6989586621680191679"><span class="hs-identifier hs-var">validatorCompiled</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621680191335"><span class="hs-identifier hs-var">validatorCompiled</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-76"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-77"></span><span>      </span><span class="annot"><a href="#local-6989586621680191682"><span class="hs-identifier hs-type">toHex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>
-</span><span id="line-78"></span><span>      </span><span id="local-6989586621680191682"><span class="annot"><span class="annottext">toHex :: ByteString -&gt; Text
-</span><a href="#local-6989586621680191682"><span class="hs-identifier hs-var hs-var">toHex</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
+</span><span id="line-77"></span><span>      </span><span class="annot"><a href="#local-6989586621680191338"><span class="hs-identifier hs-type">toHex</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span>
+</span><span id="line-78"></span><span>      </span><span id="local-6989586621680191338"><span class="annot"><span class="annottext">toHex :: ByteString -&gt; Text
+</span><a href="#local-6989586621680191338"><span class="hs-identifier hs-var hs-var">toHex</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
 </span><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Encoding.html#decodeUtf8"><span class="hs-identifier hs-var">Text.decodeUtf8</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Text)
 -&gt; (ByteString -&gt; ByteString) -&gt; ByteString -&gt; Text
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c

@@ -43,11 +43,11 @@
       Script,
     ExBudget, [Text])
 </span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var">evalScript'</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688009"><span class="hs-identifier hs-var">budget</span></a></span><span>
+</span><a href="#local-6989586621679694890"><span class="hs-identifier hs-var">budget</span></a></span><span>
 </span><span id="line-30"></span><span>  </span><span class="hs-keyword">where</span><span>
 </span><span id="line-31"></span><span>    </span><span class="hs-comment">-- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17</span><span>
-</span><span id="line-32"></span><span>    </span><span id="local-6989586621679688009"><span class="annot"><span class="annottext">budget :: ExBudget
-</span><a href="#local-6989586621679688009"><span class="hs-identifier hs-var hs-var">budget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
+</span><span id="line-32"></span><span>    </span><span id="local-6989586621679694890"><span class="annot"><span class="annottext">budget :: ExBudget
+</span><a href="#local-6989586621679694890"><span class="hs-identifier hs-var hs-var">budget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
 </span><span class="hs-identifier hs-var">ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExCPU
 </span><span class="hs-identifier hs-var">ExCPU</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
 </span><span class="hs-number">10000000000</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExMemory
@@ -68,11 +68,11 @@
       Script,
     ExBudget, [Text])
 </span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var">evalScript'</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688013"><span class="hs-identifier hs-var">budget</span></a></span><span>
+</span><a href="#local-6989586621679694894"><span class="hs-identifier hs-var">budget</span></a></span><span>
 </span><span id="line-37"></span><span>  </span><span class="hs-keyword">where</span><span>
 </span><span id="line-38"></span><span>    </span><span class="hs-comment">-- from https://github.com/input-output-hk/cardano-node/blob/master/configuration/cardano/mainnet-alonzo-genesis.json#L17</span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679688013"><span class="annot"><span class="annottext">budget :: ExBudget
-</span><a href="#local-6989586621679688013"><span class="hs-identifier hs-var hs-var">budget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679694894"><span class="annot"><span class="annottext">budget :: ExBudget
+</span><a href="#local-6989586621679694894"><span class="hs-identifier hs-var hs-var">budget</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExCPU -&gt; ExMemory -&gt; ExBudget
 </span><span class="hs-identifier hs-var">ExBudget</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CostingInteger -&gt; ExCPU
 </span><span class="hs-identifier hs-var">ExCPU</span></span><span> </span><span class="annot"><span class="annottext">CostingInteger
 forall a. Bounded a =&gt; a
@@ -89,31 +89,31 @@ forall a. Bounded a =&gt; a
       (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
       Script,
     ExBudget, [Text])
-</span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var hs-var">evalScript'</span></a></span></span><span> </span><span id="local-6989586621679688018"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688018"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Program</span></span><span> </span><span class="annot"><span class="annottext">()
+</span><a href="Plutarch.Internal.Evaluate.html#evalScript%27"><span class="hs-identifier hs-var hs-var">evalScript'</span></a></span></span><span> </span><span id="local-6989586621679694899"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694899"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Program</span></span><span> </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Version
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679688019"><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688019"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679694900"><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694900"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ExBudget
 -&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
 -&gt; (Either
       (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
       (Term NamedDeBruijn DefaultUni DefaultFun ()),
     ExBudget, [Text])
 </span><a href="Plutarch.Internal.Evaluate.html#evalTerm"><span class="hs-identifier hs-var">evalTerm</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688018"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(DeBruijn -&gt; NamedDeBruijn)
+</span><a href="#local-6989586621679694899"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(DeBruijn -&gt; NamedDeBruijn)
 -&gt; Term DeBruijn DefaultUni DefaultFun ()
 -&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
 forall name name' (uni :: Type -&gt; Type) fun ann.
 (name -&gt; name') -&gt; Term name uni fun ann -&gt; Term name' uni fun ann
 </span><span class="hs-identifier hs-var">UPLC.termMapNames</span></span><span> </span><span class="annot"><span class="annottext">DeBruijn -&gt; NamedDeBruijn
 </span><span class="hs-identifier hs-var">UPLC.fakeNameDeBruijn</span></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688019"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-44"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679688023"><span class="annot"><span class="annottext">Either
+</span><a href="#local-6989586621679694900"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-special">(</span><span id="local-6989586621679694904"><span class="annot"><span class="annottext">Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (Term NamedDeBruijn DefaultUni DefaultFun ())
-</span><a href="#local-6989586621679688023"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679688024"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688024"><span class="hs-identifier hs-var">remaining</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679688025"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688025"><span class="hs-identifier hs-var">logs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; Script
+</span><a href="#local-6989586621679694904"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679694905"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694905"><span class="hs-identifier hs-var">remaining</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679694906"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694906"><span class="hs-identifier hs-var">logs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; Script
 </span><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-var">Script</span></a></span><span> </span><span class="annot"><span class="annottext">(Program DeBruijn DefaultUni DefaultFun () -&gt; Script)
 -&gt; (Term NamedDeBruijn DefaultUni DefaultFun ()
     -&gt; Program DeBruijn DefaultUni DefaultFun ())
@@ -150,9 +150,9 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Either
   (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
   (Term NamedDeBruijn DefaultUni DefaultFun ())
-</span><a href="#local-6989586621679688023"><span class="hs-identifier hs-var">res</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688024"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688025"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679694904"><span class="hs-identifier hs-var">res</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694905"><span class="hs-identifier hs-var">remaining</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694906"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-45"></span><span>
 </span><span id="line-46"></span><span class="annot"><span class="hs-comment">{- | Evaluate a script without budget limit
 
@@ -166,8 +166,8 @@ forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f
     ExBudget, [Text])
 </span><a href="Plutarch.Internal.Evaluate.html#evalScriptUnlimited"><span class="hs-identifier hs-var hs-var">evalScriptUnlimited</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Program</span></span><span> </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Version
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679688029"><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688029"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679694910"><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694910"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-52"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MachineParameters
   CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ())
 -&gt; ExBudgetMode CountingSt DefaultUni DefaultFun
@@ -198,23 +198,23 @@ forall name name' (uni :: Type -&gt; Type) fun ann.
 (name -&gt; name') -&gt; Term name uni fun ann -&gt; Term name' uni fun ann
 </span><span class="hs-identifier hs-var">UPLC.termMapNames</span></span><span> </span><span class="annot"><span class="annottext">DeBruijn -&gt; NamedDeBruijn
 </span><span class="hs-identifier hs-var">UPLC.fakeNameDeBruijn</span></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688029"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-53"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekReport</span></span><span> </span><span id="local-6989586621679688034"><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688034"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.CountingSt</span></span><span> </span><span id="local-6989586621679688036"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688036"><span class="hs-identifier hs-var">cost</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679688037"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688037"><span class="hs-identifier hs-var">logs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688034"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-54"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekFailure</span></span><span> </span><span id="local-6989586621679688039"><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688039"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694910"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-53"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekReport</span></span><span> </span><span id="local-6989586621679694915"><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694915"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.CountingSt</span></span><span> </span><span id="local-6989586621679694917"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694917"><span class="hs-identifier hs-var">cost</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679694918"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694918"><span class="hs-identifier hs-var">logs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694915"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-54"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekFailure</span></span><span> </span><span id="local-6989586621679694920"><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694920"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688039"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688036"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688037"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-55"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessConstant</span></span><span> </span><span id="local-6989586621679688041"><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni)
-</span><a href="#local-6989586621679688041"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679694920"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694917"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694918"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessConstant</span></span><span> </span><span id="local-6989586621679694922"><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni)
+</span><a href="#local-6989586621679694922"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall a b. b -&gt; Either a b
@@ -228,7 +228,7 @@ forall a b. b -&gt; Either a b
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun () -&gt; Script
-</span><a href="#local-6989586621679688042"><span class="hs-identifier hs-var">toScript</span></a></span><span> </span><span class="annot"><span class="annottext">(Term DeBruijn DefaultUni DefaultFun () -&gt; Script)
+</span><a href="#local-6989586621679694923"><span class="hs-identifier hs-var">toScript</span></a></span><span> </span><span class="annot"><span class="annottext">(Term DeBruijn DefaultUni DefaultFun () -&gt; Script)
 -&gt; (Some @Type (ValueOf DefaultUni)
     -&gt; Term DeBruijn DefaultUni DefaultFun ())
 -&gt; Some @Type (ValueOf DefaultUni)
@@ -248,11 +248,11 @@ ann -&gt; Some @Type (ValueOf uni) -&gt; Term name uni fun ann
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni)
-</span><a href="#local-6989586621679688041"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688036"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688037"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-56"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessNonConstant</span></span><span> </span><span id="local-6989586621679688045"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688045"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679694922"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694917"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694918"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessNonConstant</span></span><span> </span><span id="local-6989586621679694926"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694926"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Script
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall a b. b -&gt; Either a b
@@ -266,7 +266,7 @@ forall a b. b -&gt; Either a b
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Term DeBruijn DefaultUni DefaultFun () -&gt; Script
-</span><a href="#local-6989586621679688042"><span class="hs-identifier hs-var">toScript</span></a></span><span> </span><span class="annot"><span class="annottext">(Term DeBruijn DefaultUni DefaultFun () -&gt; Script)
+</span><a href="#local-6989586621679694923"><span class="hs-identifier hs-var">toScript</span></a></span><span> </span><span class="annot"><span class="annottext">(Term DeBruijn DefaultUni DefaultFun () -&gt; Script)
 -&gt; (Term NamedDeBruijn DefaultUni DefaultFun ()
     -&gt; Term DeBruijn DefaultUni DefaultFun ())
 -&gt; Term NamedDeBruijn DefaultUni DefaultFun ()
@@ -287,13 +287,13 @@ forall name name' (uni :: Type -&gt; Type) fun ann.
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun) Script
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688045"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688036"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688037"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679694926"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694917"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694918"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-57"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-58"></span><span>    </span><span class="annot"><a href="#local-6989586621679688042"><span class="hs-identifier hs-type">toScript</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span>
-</span><span id="line-59"></span><span>    </span><span id="local-6989586621679688042"><span class="annot"><span class="annottext">toScript :: Term DeBruijn DefaultUni DefaultFun () -&gt; Script
-</span><a href="#local-6989586621679688042"><span class="hs-identifier hs-var hs-var">toScript</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; Script
+</span><span id="line-58"></span><span>    </span><span class="annot"><a href="#local-6989586621679694923"><span class="hs-identifier hs-type">toScript</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DeBruijn</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DefaultUni</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">UPLC.DefaultFun</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-type">Script</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span id="local-6989586621679694923"><span class="annot"><span class="annottext">toScript :: Term DeBruijn DefaultUni DefaultFun () -&gt; Script
+</span><a href="#local-6989586621679694923"><span class="hs-identifier hs-var hs-var">toScript</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; Script
 </span><a href="Plutarch.Script.html#Script"><span class="hs-identifier hs-var">Script</span></a></span><span> </span><span class="annot"><span class="annottext">(Program DeBruijn DefaultUni DefaultFun () -&gt; Script)
 -&gt; (Term DeBruijn DefaultUni DefaultFun ()
     -&gt; Program DeBruijn DefaultUni DefaultFun ())
@@ -324,9 +324,9 @@ ann -&gt; Version -&gt; Term name uni fun ann -&gt; Program name uni fun ann
       (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
       (Term NamedDeBruijn DefaultUni DefaultFun ()),
     ExBudget, [Text])
-</span><a href="Plutarch.Internal.Evaluate.html#evalTerm"><span class="hs-identifier hs-var hs-var">evalTerm</span></a></span></span><span> </span><span id="local-6989586621679688046"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688046"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span id="local-6989586621679688047"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688047"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.Internal.Evaluate.html#evalTerm"><span class="hs-identifier hs-var hs-var">evalTerm</span></a></span></span><span> </span><span id="local-6989586621679694927"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694927"><span class="hs-identifier hs-var">budget</span></a></span></span><span> </span><span id="local-6989586621679694928"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694928"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">MachineParameters
   CekMachineCosts DefaultFun (CekValue DefaultUni DefaultFun ())
 -&gt; ExBudgetMode RestrictingSt DefaultUni DefaultFun
@@ -353,29 +353,29 @@ ThrowableBuiltins uni fun =&gt;
 ExRestrictingBudget -&gt; ExBudgetMode RestrictingSt uni fun
 </span><span class="hs-identifier hs-var">Cek.restricting</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ExBudget -&gt; ExRestrictingBudget
 </span><span class="hs-identifier hs-var">ExRestrictingBudget</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688046"><span class="hs-identifier hs-var">budget</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">EmitterMode DefaultUni DefaultFun
+</span><a href="#local-6989586621679694927"><span class="hs-identifier hs-var">budget</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">EmitterMode DefaultUni DefaultFun
 forall (uni :: Type -&gt; Type) fun. EmitterMode uni fun
 </span><span class="hs-identifier hs-var">Cek.logEmitter</span></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688047"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-72"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekReport</span></span><span> </span><span id="local-6989586621679688049"><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688049"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.RestrictingSt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExRestrictingBudget</span></span><span> </span><span id="local-6989586621679688051"><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688051"><span class="hs-identifier hs-var">cost</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679688052"><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688052"><span class="hs-identifier hs-var">logs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688049"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-73"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekFailure</span></span><span> </span><span id="local-6989586621679688053"><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688053"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694928"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-72"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekReport</span></span><span> </span><span id="local-6989586621679694930"><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694930"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Cek.RestrictingSt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ExRestrictingBudget</span></span><span> </span><span id="local-6989586621679694932"><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694932"><span class="hs-identifier hs-var">cost</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679694933"><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694933"><span class="hs-identifier hs-var">logs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">CekResult NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694930"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-73"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekFailure</span></span><span> </span><span id="local-6989586621679694934"><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
+</span><a href="#local-6989586621679694934"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
      (Term NamedDeBruijn DefaultUni DefaultFun ())
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">CekEvaluationException NamedDeBruijn DefaultUni DefaultFun
-</span><a href="#local-6989586621679688053"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688046"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
+</span><a href="#local-6989586621679694934"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694927"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
 </span><span class="hs-operator hs-var">`minusExBudget`</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688051"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688052"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessConstant</span></span><span> </span><span id="local-6989586621679688054"><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni)
-</span><a href="#local-6989586621679688054"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694932"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694933"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-74"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessConstant</span></span><span> </span><span id="local-6989586621679694935"><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni)
+</span><a href="#local-6989586621679694935"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
      (Term NamedDeBruijn DefaultUni DefaultFun ())
@@ -406,21 +406,21 @@ ann -&gt; Some @Type (ValueOf uni) -&gt; Term name uni fun ann
      (Term NamedDeBruijn DefaultUni DefaultFun ())
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Some @Type (ValueOf DefaultUni)
-</span><a href="#local-6989586621679688054"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688046"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
+</span><a href="#local-6989586621679694935"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694927"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
 </span><span class="hs-operator hs-var">`minusExBudget`</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688051"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688052"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-75"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessNonConstant</span></span><span> </span><span id="local-6989586621679688055"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688055"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694932"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694933"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-75"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Cek.CekSuccessNonConstant</span></span><span> </span><span id="local-6989586621679694936"><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
+</span><a href="#local-6989586621679694936"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
 -&gt; Either
      (CekEvaluationException NamedDeBruijn DefaultUni DefaultFun)
      (Term NamedDeBruijn DefaultUni DefaultFun ())
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">Term NamedDeBruijn DefaultUni DefaultFun ()
-</span><a href="#local-6989586621679688055"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688046"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
+</span><a href="#local-6989586621679694936"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ExBudget
+</span><a href="#local-6989586621679694927"><span class="hs-identifier hs-var">budget</span></a></span><span> </span><span class="annot"><span class="annottext">ExBudget -&gt; ExBudget -&gt; ExBudget
 </span><span class="hs-operator hs-var">`minusExBudget`</span></span><span> </span><span class="annot"><span class="annottext">ExBudget
-</span><a href="#local-6989586621679688051"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
-</span><a href="#local-6989586621679688052"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679694932"><span class="hs-identifier hs-var">cost</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Text]
+</span><a href="#local-6989586621679694933"><span class="hs-identifier hs-var">logs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-76"></span></pre></body></html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusCore.Value.Orphans</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html"><span class="hs-identifier">Data.Maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#fromJust"><span class="hs-identifier">fromJust</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#maybeToList"><span class="hs-identifier">maybeToList</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Exts.html"><span class="hs-identifier">GHC.Exts</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.IsList.html#fromListN"><span class="hs-identifier">fromListN</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Builtin</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">BuiltinResult</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">BuiltinSuccess</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">BuiltinSuccessWithLogs</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Value</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-12"></span><span>  </span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">shrink</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><span class="hs-identifier">CoArbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">coarbitrary</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><span class="hs-identifier">Function</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">function</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><span class="hs-identifier">Gen</span></span><span class="hs-special">,</span><span>
+</span><span id="line-16"></span><span>  </span><span class="annot"><span class="hs-identifier">chooseInt</span></span><span class="hs-special">,</span><span>
+</span><span id="line-17"></span><span>  </span><span class="annot"><span class="hs-identifier">chooseInteger</span></span><span class="hs-special">,</span><span>
+</span><span id="line-18"></span><span>  </span><span class="annot"><span class="hs-identifier">functionMap</span></span><span class="hs-special">,</span><span>
+</span><span id="line-19"></span><span>  </span><span class="annot"><span class="hs-identifier">suchThatMap</span></span><span class="hs-special">,</span><span>
+</span><span id="line-20"></span><span>  </span><span class="annot"><span class="hs-identifier">vectorOf</span></span><span class="hs-special">,</span><span>
+</span><span id="line-21"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck.Instances</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.K</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-27"></span><span>  </span><span id="local-6989586621679184546"><span class="annot"><span class="annottext">arbitrary :: Gen K
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen ByteString -&gt; (ByteString -&gt; Maybe K) -&gt; Gen K
+forall a b. Gen a -&gt; (a -&gt; Maybe b) -&gt; Gen b
+</span><span class="hs-identifier hs-var">suchThatMap</span></span><span> </span><span class="annot"><span class="annottext">Gen ByteString
+</span><a href="PlutusCore.Value.Orphans.html#mkBoundedBS"><span class="hs-identifier hs-var">mkBoundedBS</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe K
+</span><span class="hs-identifier hs-var">PlutusCore.k</span></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-29"></span><span>  </span><span id="local-6989586621679184553"><span class="annot"><span class="annottext">shrink :: K -&gt; [K]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span id="local-6989586621679184554"><span class="annot"><span class="annottext">K
+</span><a href="#local-6989586621679184554"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-30"></span><span>    </span><span id="local-6989586621679184555"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679184555"><span class="hs-identifier hs-var">bs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [ByteString]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; [ByteString])
+-&gt; (K -&gt; ByteString) -&gt; K -&gt; [ByteString]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">K -&gt; ByteString
+</span><span class="hs-identifier hs-var">PlutusCore.unK</span></span><span> </span><span class="annot"><span class="annottext">(K -&gt; [ByteString]) -&gt; K -&gt; [ByteString]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">K
+</span><a href="#local-6989586621679184554"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-31"></span><span>    </span><span class="annot"><span class="annottext">Maybe K -&gt; [K]
+forall a. Maybe a -&gt; [a]
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#maybeToList"><span class="hs-identifier hs-var">maybeToList</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe K -&gt; [K]) -&gt; (ByteString -&gt; Maybe K) -&gt; ByteString -&gt; [K]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe K
+</span><span class="hs-identifier hs-var">PlutusCore.k</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; [K]) -&gt; ByteString -&gt; [K]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679184555"><span class="hs-identifier hs-var">bs'</span></a></span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-34"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.K</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-36"></span><span>  </span><span id="local-6989586621679184563"><span class="annot"><span class="annottext">coarbitrary :: forall b. K -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span id="local-6989586621679184564"><span class="annot"><span class="annottext">K
+</span><a href="#local-6989586621679184564"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Gen b -&gt; Gen b
+forall b. ByteString -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">K -&gt; ByteString
+</span><span class="hs-identifier hs-var">PlutusCore.unK</span></span><span> </span><span class="annot"><span class="annottext">K
+</span><a href="#local-6989586621679184564"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.K</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-41"></span><span>  </span><span class="hs-comment">-- Note (Koz, 08/04/2026): This is safe, as we can never get any input that</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-comment">-- isn't valid.</span><span>
+</span><span id="line-43"></span><span>  </span><span id="local-6989586621679184572"><span class="annot"><span class="annottext">function :: forall b. (K -&gt; b) -&gt; K :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(K -&gt; ByteString) -&gt; (ByteString -&gt; K) -&gt; (K -&gt; b) -&gt; K :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">K -&gt; ByteString
+</span><span class="hs-identifier hs-var">PlutusCore.unK</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe K -&gt; K
+forall a. HasCallStack =&gt; Maybe a -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#fromJust"><span class="hs-identifier hs-var">fromJust</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe K -&gt; K) -&gt; (ByteString -&gt; Maybe K) -&gt; ByteString -&gt; K
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Maybe K
+</span><span class="hs-identifier hs-var">PlutusCore.k</span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Quantity</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-48"></span><span>  </span><span id="local-6989586621679184587"><span class="annot"><span class="annottext">arbitrary :: Gen Quantity
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-49"></span><span>    </span><span class="annot"><span class="annottext">Gen Integer -&gt; (Integer -&gt; Maybe Quantity) -&gt; Gen Quantity
+forall a b. Gen a -&gt; (a -&gt; Maybe b) -&gt; Gen b
+</span><span class="hs-identifier hs-var">suchThatMap</span></span><span>
+</span><span id="line-50"></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Integer, Integer) -&gt; Gen Integer
+</span><span class="hs-identifier hs-var">chooseInteger</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#%5E"><span class="hs-operator hs-var">^</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">127</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a b. (Num a, Integral b) =&gt; a -&gt; b -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#%5E"><span class="hs-operator hs-var">^</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">127</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>      </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Quantity
+</span><span class="hs-identifier hs-var">PlutusCore.quantity</span></span><span>
+</span><span id="line-52"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-53"></span><span>  </span><span id="local-6989586621679184593"><span class="annot"><span class="annottext">shrink :: Quantity -&gt; [Quantity]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span id="local-6989586621679184594"><span class="annot"><span class="annottext">Quantity
+</span><a href="#local-6989586621679184594"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679184595"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679184595"><span class="hs-identifier hs-var">i'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; [Integer]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; [Integer])
+-&gt; (Quantity -&gt; Integer) -&gt; Quantity -&gt; [Integer]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Quantity -&gt; Integer
+</span><span class="hs-identifier hs-var">PlutusCore.unQuantity</span></span><span> </span><span class="annot"><span class="annottext">(Quantity -&gt; [Integer]) -&gt; Quantity -&gt; [Integer]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Quantity
+</span><a href="#local-6989586621679184594"><span class="hs-identifier hs-var">q</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span class="annot"><span class="annottext">Maybe Quantity -&gt; [Quantity]
+forall a. Maybe a -&gt; [a]
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#maybeToList"><span class="hs-identifier hs-var">maybeToList</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Quantity -&gt; [Quantity])
+-&gt; (Integer -&gt; Maybe Quantity) -&gt; Integer -&gt; [Quantity]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Quantity
+</span><span class="hs-identifier hs-var">PlutusCore.quantity</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; [Quantity]) -&gt; Integer -&gt; [Quantity]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679184595"><span class="hs-identifier hs-var">i'</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Quantity</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-60"></span><span>  </span><span id="local-6989586621679184601"><span class="annot"><span class="annottext">coarbitrary :: forall b. Quantity -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span id="local-6989586621679184602"><span class="annot"><span class="annottext">Quantity
+</span><a href="#local-6989586621679184602"><span class="hs-identifier hs-var">q</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Gen b -&gt; Gen b
+forall b. Integer -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Quantity -&gt; Integer
+</span><span class="hs-identifier hs-var">PlutusCore.unQuantity</span></span><span> </span><span class="annot"><span class="annottext">Quantity
+</span><a href="#local-6989586621679184602"><span class="hs-identifier hs-var">q</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>
+</span><span id="line-62"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-63"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Quantity</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-64"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-65"></span><span>  </span><span id="local-6989586621679184609"><span class="annot"><span class="annottext">function :: forall b. (Quantity -&gt; b) -&gt; Quantity :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Quantity -&gt; Integer)
+-&gt; (Integer -&gt; Quantity) -&gt; (Quantity -&gt; b) -&gt; Quantity :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">Quantity -&gt; Integer
+</span><span class="hs-identifier hs-var">PlutusCore.unQuantity</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe Quantity -&gt; Quantity
+forall a. HasCallStack =&gt; Maybe a -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#fromJust"><span class="hs-identifier hs-var">fromJust</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Quantity -&gt; Quantity)
+-&gt; (Integer -&gt; Maybe Quantity) -&gt; Integer -&gt; Quantity
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe Quantity
+</span><span class="hs-identifier hs-var">PlutusCore.quantity</span></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-68"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Value</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-69"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">arbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621679184621"><span class="annot"><span class="annottext">arbitrary :: Gen Value
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen [(K, [(K, Quantity)])]
+-&gt; ([(K, [(K, Quantity)])] -&gt; Maybe Value) -&gt; Gen Value
+forall a b. Gen a -&gt; (a -&gt; Maybe b) -&gt; Gen b
+</span><span class="hs-identifier hs-var">suchThatMap</span></span><span> </span><span class="annot"><span class="annottext">Gen [(K, [(K, Quantity)])]
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">BuiltinResult Value -&gt; Maybe Value
+</span><a href="PlutusCore.Value.Orphans.html#fromResult"><span class="hs-identifier hs-var">fromResult</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinResult Value -&gt; Maybe Value)
+-&gt; ([(K, [(K, Quantity)])] -&gt; BuiltinResult Value)
+-&gt; [(K, [(K, Quantity)])]
+-&gt; Maybe Value
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])] -&gt; BuiltinResult Value
+</span><span class="hs-identifier hs-var">PlutusCore.fromList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">shrink</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-72"></span><span>  </span><span id="local-6989586621679184631"><span class="annot"><span class="annottext">shrink :: Value -&gt; [Value]
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">shrink</span></span></span><span> </span><span id="local-6989586621679184632"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184632"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-73"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679184633"><span class="annot"><span class="annottext">asList :: [(K, [(K, Quantity)])]
+</span><a href="#local-6989586621679184633"><span class="hs-identifier hs-var hs-var">asList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Value -&gt; [(K, [(K, Quantity)])]
+</span><span class="hs-identifier hs-var">PlutusCore.toList</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184632"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679184635"><span class="annot"><span class="annottext">[(K, [(K, Quantity)])]
+</span><a href="#local-6989586621679184635"><span class="hs-identifier hs-var">asList'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])] -&gt; [[(K, [(K, Quantity)])]]
+forall a. Arbitrary a =&gt; a -&gt; [a]
+</span><span class="hs-identifier hs-var">shrink</span></span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])]
+</span><a href="#local-6989586621679184633"><span class="hs-identifier hs-var">asList</span></a></span><span>
+</span><span id="line-75"></span><span>    </span><span class="annot"><span class="annottext">Maybe Value -&gt; [Value]
+forall a. Maybe a -&gt; [a]
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#maybeToList"><span class="hs-identifier hs-var">maybeToList</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Value -&gt; [Value])
+-&gt; ([(K, [(K, Quantity)])] -&gt; Maybe Value)
+-&gt; [(K, [(K, Quantity)])]
+-&gt; [Value]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinResult Value -&gt; Maybe Value
+</span><a href="PlutusCore.Value.Orphans.html#fromResult"><span class="hs-identifier hs-var">fromResult</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinResult Value -&gt; Maybe Value)
+-&gt; ([(K, [(K, Quantity)])] -&gt; BuiltinResult Value)
+-&gt; [(K, [(K, Quantity)])]
+-&gt; Maybe Value
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])] -&gt; BuiltinResult Value
+</span><span class="hs-identifier hs-var">PlutusCore.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(K, [(K, Quantity)])] -&gt; [Value])
+-&gt; [(K, [(K, Quantity)])] -&gt; [Value]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])]
+</span><a href="#local-6989586621679184635"><span class="hs-identifier hs-var">asList'</span></a></span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Value</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">coarbitrary</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-80"></span><span>  </span><span id="local-6989586621679184646"><span class="annot"><span class="annottext">coarbitrary :: forall b. Value -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">coarbitrary</span></span></span><span> </span><span id="local-6989586621679184647"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184647"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])] -&gt; Gen b -&gt; Gen b
+forall b. [(K, [(K, Quantity)])] -&gt; Gen b -&gt; Gen b
+forall a b. CoArbitrary a =&gt; a -&gt; Gen b -&gt; Gen b
+</span><span class="hs-identifier hs-var">coarbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Value -&gt; [(K, [(K, Quantity)])]
+</span><span class="hs-identifier hs-var">PlutusCore.toList</span></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184647"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-81"></span><span>
+</span><span id="line-82"></span><span class="annot"><span class="hs-comment">-- | @since 1.3.0</span></span><span>
+</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Value</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-85"></span><span>  </span><span id="local-6989586621679184660"><span class="annot"><span class="annottext">function :: forall b. (Value -&gt; b) -&gt; Value :-&gt; b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Value -&gt; [(K, [(K, Quantity)])])
+-&gt; ([(K, [(K, Quantity)])] -&gt; Value) -&gt; (Value -&gt; b) -&gt; Value :-&gt; b
+forall b a c.
+Function b =&gt;
+(a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
+</span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">Value -&gt; [(K, [(K, Quantity)])]
+</span><span class="hs-identifier hs-var">PlutusCore.toList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Maybe Value -&gt; Value
+forall a. HasCallStack =&gt; Maybe a -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#fromJust"><span class="hs-identifier hs-var">fromJust</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Value -&gt; Value)
+-&gt; ([(K, [(K, Quantity)])] -&gt; Maybe Value)
+-&gt; [(K, [(K, Quantity)])]
+-&gt; Value
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinResult Value -&gt; Maybe Value
+</span><a href="PlutusCore.Value.Orphans.html#fromResult"><span class="hs-identifier hs-var">fromResult</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinResult Value -&gt; Maybe Value)
+-&gt; ([(K, [(K, Quantity)])] -&gt; BuiltinResult Value)
+-&gt; [(K, [(K, Quantity)])]
+-&gt; Maybe Value
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[(K, [(K, Quantity)])] -&gt; BuiltinResult Value
+</span><span class="hs-identifier hs-var">PlutusCore.fromList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="hs-comment">-- Helpers</span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="annot"><a href="PlutusCore.Value.Orphans.html#mkBoundedBS"><span class="hs-identifier hs-type">mkBoundedBS</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Gen</span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
+</span><span id="line-90"></span><span id="mkBoundedBS"><span class="annot"><span class="annottext">mkBoundedBS :: Gen ByteString
+</span><a href="PlutusCore.Value.Orphans.html#mkBoundedBS"><span class="hs-identifier hs-var hs-var">mkBoundedBS</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-91"></span><span>  </span><span id="local-6989586621679184661"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679184661"><span class="hs-identifier hs-var">len</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Int, Int) -&gt; Gen Int
+</span><span class="hs-identifier hs-var">chooseInt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">32</span></span><span class="hs-special">)</span><span>
+</span><span id="line-92"></span><span>  </span><span id="local-6989586621679184662"><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679184662"><span class="hs-identifier hs-var">bytes</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Gen Word8 -&gt; Gen [Word8]
+forall a. Int -&gt; Gen a -&gt; Gen [a]
+</span><span class="hs-identifier hs-var">vectorOf</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679184661"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">Gen Word8
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-93"></span><span>  </span><span class="annot"><span class="annottext">ByteString -&gt; Gen ByteString
+forall a. a -&gt; Gen a
+forall (f :: Type -&gt; Type) a. Applicative f =&gt; a -&gt; f a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#pure"><span class="hs-identifier hs-var">pure</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Gen ByteString)
+-&gt; ([Word8] -&gt; ByteString) -&gt; [Word8] -&gt; Gen ByteString
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Item ByteString] -&gt; ByteString
+forall l. IsList l =&gt; Int -&gt; [Item l] -&gt; l
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.IsList.html#fromListN"><span class="hs-identifier hs-var">fromListN</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679184661"><span class="hs-identifier hs-var">len</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Gen ByteString) -&gt; [Word8] -&gt; Gen ByteString
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621679184662"><span class="hs-identifier hs-var">bytes</span></a></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="annot"><a href="PlutusCore.Value.Orphans.html#fromResult"><span class="hs-identifier hs-type">fromResult</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">BuiltinResult</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Value</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Maybe"><span class="hs-identifier hs-type">Maybe</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusCore.Value</span></span><span>
+</span><span id="line-96"></span><span id="fromResult"><span class="annot"><span class="annottext">fromResult :: BuiltinResult Value -&gt; Maybe Value
+</span><a href="PlutusCore.Value.Orphans.html#fromResult"><span class="hs-identifier hs-var hs-var">fromResult</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-97"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">BuiltinSuccess</span></span><span> </span><span id="local-6989586621679184663"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184663"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Maybe Value
+forall a. a -&gt; Maybe a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184663"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-98"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">BuiltinSuccessWithLogs</span></span><span> </span><span class="annot"><span class="annottext">DList Text
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679184664"><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184664"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Value -&gt; Maybe Value
+forall a. a -&gt; Maybe a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-var">Just</span></a></span><span> </span><span class="annot"><span class="annottext">Value
+</span><a href="#local-6989586621679184664"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-99"></span><span>  </span><span class="annot"><span class="annottext">BuiltinResult Value
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Value
+forall a. Maybe a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Nothing"><span class="hs-identifier hs-var">Nothing</span></a></span><span>
+</span><span id="line-100"></span></pre></body></html>

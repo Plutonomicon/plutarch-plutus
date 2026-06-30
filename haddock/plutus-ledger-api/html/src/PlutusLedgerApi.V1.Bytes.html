@@ -42,7 +42,7 @@
 </span><span id="line-42"></span><span>    </span><span id="UnpairedDigit"><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#UnpairedDigit"><span class="hs-identifier hs-var">UnpairedDigit</span></a></span></span><span>
 </span><span id="line-43"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">-- | A non-hex digit character ([^A-Fa-f0-9]) encountered during decoding.</span></span><span>
 </span><span id="line-44"></span><span>    </span><span id="NotHexit"><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#NotHexit"><span class="hs-identifier hs-var">NotHexit</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Char"><span class="hs-identifier hs-type">Char</span></a></span><span>
-</span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295171"><span id="local-6989586621681295177"><span id="local-6989586621681295181"><span class="annot"><span class="annottext">Int -&gt; LedgerBytesError -&gt; ShowS
+</span><span id="line-45"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295468"><span id="local-6989586621681295474"><span id="local-6989586621681295478"><span class="annot"><span class="annottext">Int -&gt; LedgerBytesError -&gt; ShowS
 [LedgerBytesError] -&gt; ShowS
 LedgerBytesError -&gt; String
 (Int -&gt; LedgerBytesError -&gt; ShowS)
@@ -58,7 +58,7 @@ show :: LedgerBytesError -&gt; String
 $cshowList :: [LedgerBytesError] -&gt; ShowS
 showList :: [LedgerBytesError] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295189"><span id="local-6989586621681295193"><span id="local-6989586621681295196"><span class="annot"><span class="annottext">Show LedgerBytesError
+</span><span id="line-46"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295486"><span id="local-6989586621681295490"><span id="local-6989586621681295493"><span class="annot"><span class="annottext">Show LedgerBytesError
 Typeable LedgerBytesError
 (Typeable LedgerBytesError, Show LedgerBytesError) =&gt;
 (LedgerBytesError -&gt; SomeException)
@@ -104,46 +104,46 @@ forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
 -&gt; Either LedgerBytesError LedgerBytes
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either LedgerBytesError ByteString
-</span><a href="#local-6989586621681295201"><span class="hs-identifier hs-var">asBSLiteral</span></a></span><span>
+</span><a href="#local-6989586621681295498"><span class="hs-identifier hs-var">asBSLiteral</span></a></span><span>
 </span><span id="line-52"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-53"></span><span>    </span><span class="annot"><a href="#local-6989586621681295202"><span class="hs-identifier hs-type">handleChar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
-</span><span id="line-54"></span><span>    </span><span id="local-6989586621681295202"><span class="annot"><span class="annottext">handleChar :: Word8 -&gt; Either LedgerBytesError Word8
-</span><a href="#local-6989586621681295202"><span class="hs-identifier hs-var hs-var">handleChar</span></a></span></span><span> </span><span id="local-6989586621681295203"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span></span><span>
+</span><span id="line-53"></span><span>    </span><span class="annot"><a href="#local-6989586621681295499"><span class="hs-identifier hs-type">handleChar</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621681295499"><span class="annot"><span class="annottext">handleChar :: Word8 -&gt; Either LedgerBytesError Word8
+</span><a href="#local-6989586621681295499"><span class="hs-identifier hs-var hs-var">handleChar</span></a></span></span><span> </span><span id="local-6989586621681295500"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span></span><span>
 </span><span id="line-55"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'0'</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'9'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'0'</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- hexits 0-9</span><span>
 </span><span id="line-56"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'a'</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'f'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
@@ -152,20 +152,20 @@ forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
 </span><span class="hs-number">10</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">-- hexits a-f</span><span>
 </span><span id="line-57"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3E%3D"><span class="hs-operator hs-var">&gt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'A'</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%26%26"><span class="hs-operator hs-var">&amp;&amp;</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C%3D"><span class="hs-operator hs-var">&lt;=</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
 </span><span class="hs-char">'F'</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#-"><span class="hs-glyph hs-var">-</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Word8
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#c2w"><span class="hs-identifier hs-var">c2w</span></a></span><span> </span><span class="annot"><span class="annottext">Char
@@ -182,22 +182,22 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; LedgerBytesError
 </span><a href="PlutusLedgerApi.V1.Bytes.html#NotHexit"><span class="hs-identifier hs-var">NotHexit</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Word8 -&gt; Char
 </span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#w2c"><span class="hs-identifier hs-var">w2c</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295203"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621681295500"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-59"></span><span>
 </span><span id="line-60"></span><span>    </span><span class="hs-comment">-- turns a pair of bytes such as &quot;a6&quot; into a single Word8</span><span>
-</span><span id="line-61"></span><span>    </span><span class="annot"><a href="#local-6989586621681295207"><span class="hs-identifier hs-type">handlePair</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
-</span><span id="line-62"></span><span>    </span><span id="local-6989586621681295207"><span class="annot"><span class="annottext">handlePair :: Word8 -&gt; Word8 -&gt; Either LedgerBytesError Word8
-</span><a href="#local-6989586621681295207"><span class="hs-identifier hs-var hs-var">handlePair</span></a></span></span><span> </span><span id="local-6989586621681295208"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295208"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621681295209"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295209"><span class="hs-identifier hs-var">c'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-63"></span><span>      </span><span id="local-6989586621681295210"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295210"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
-</span><a href="#local-6989586621681295202"><span class="hs-identifier hs-var">handleChar</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295208"><span class="hs-identifier hs-var">c</span></a></span><span>
-</span><span id="line-64"></span><span>      </span><span id="local-6989586621681295211"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295211"><span class="hs-identifier hs-var">n'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
-</span><a href="#local-6989586621681295202"><span class="hs-identifier hs-var">handleChar</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295209"><span class="hs-identifier hs-var">c'</span></a></span><span>
+</span><span id="line-61"></span><span>    </span><span class="annot"><a href="#local-6989586621681295504"><span class="hs-identifier hs-type">handlePair</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621681295504"><span class="annot"><span class="annottext">handlePair :: Word8 -&gt; Word8 -&gt; Either LedgerBytesError Word8
+</span><a href="#local-6989586621681295504"><span class="hs-identifier hs-var hs-var">handlePair</span></a></span></span><span> </span><span id="local-6989586621681295505"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295505"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621681295506"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295506"><span class="hs-identifier hs-var">c'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-63"></span><span>      </span><span id="local-6989586621681295507"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295507"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
+</span><a href="#local-6989586621681295499"><span class="hs-identifier hs-var">handleChar</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295505"><span class="hs-identifier hs-var">c</span></a></span><span>
+</span><span id="line-64"></span><span>      </span><span id="local-6989586621681295508"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295508"><span class="hs-identifier hs-var">n'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
+</span><a href="#local-6989586621681295499"><span class="hs-identifier hs-var">handleChar</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295506"><span class="hs-identifier hs-var">c'</span></a></span><span>
 </span><span id="line-65"></span><span>      </span><span class="annot"><span class="annottext">Word8 -&gt; Either LedgerBytesError Word8
 forall a. a -&gt; Either LedgerBytesError a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
@@ -208,29 +208,29 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-number">16</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2A"><span class="hs-operator hs-var">*</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295210"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
+</span><a href="#local-6989586621681295507"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Word8
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#%2B"><span class="hs-operator hs-var">+</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295211"><span class="hs-identifier hs-var">n'</span></a></span><span>
+</span><a href="#local-6989586621681295508"><span class="hs-identifier hs-var">n'</span></a></span><span>
 </span><span id="line-66"></span><span>
-</span><span id="line-67"></span><span>    </span><span class="annot"><a href="#local-6989586621681295213"><span class="hs-identifier hs-type">asBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-68"></span><span>    </span><span id="local-6989586621681295213"><span class="annot"><span class="annottext">asBytes :: [Word8] -&gt; Either LedgerBytesError [Word8]
-</span><a href="#local-6989586621681295213"><span class="hs-identifier hs-var hs-var">asBytes</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
+</span><span id="line-67"></span><span>    </span><span class="annot"><a href="#local-6989586621681295510"><span class="hs-identifier hs-type">asBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-68"></span><span>    </span><span id="local-6989586621681295510"><span class="annot"><span class="annottext">asBytes :: [Word8] -&gt; Either LedgerBytesError [Word8]
+</span><a href="#local-6989586621681295510"><span class="hs-identifier hs-var hs-var">asBytes</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
 forall a b. b -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8]
 forall a. Monoid a =&gt; a
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#mempty"><span class="hs-identifier hs-var">mempty</span></a></span><span>
-</span><span id="line-69"></span><span>    </span><span class="annot"><a href="#local-6989586621681295213"><span class="hs-identifier hs-var">asBytes</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295214"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295214"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621681295215"><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295215"><span class="hs-identifier hs-var">c'</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621681295216"><span class="annot"><span class="annottext">[Word8]
-</span><a href="#local-6989586621681295216"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; [Word8] -&gt; [Word8])
+</span><span id="line-69"></span><span>    </span><span class="annot"><a href="#local-6989586621681295510"><span class="hs-identifier hs-var">asBytes</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295511"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295511"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621681295512"><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295512"><span class="hs-identifier hs-var">c'</span></a></span></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#%3A"><span class="hs-glyph hs-type">:</span></a></span><span> </span><span id="local-6989586621681295513"><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621681295513"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">:</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Word8 -&gt; [Word8] -&gt; [Word8])
 -&gt; Either LedgerBytesError Word8
 -&gt; Either LedgerBytesError ([Word8] -&gt; [Word8])
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Functor.html#%3C%24%3E"><span class="hs-operator hs-var">&lt;$&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Word8 -&gt; Either LedgerBytesError Word8
-</span><a href="#local-6989586621681295207"><span class="hs-identifier hs-var">handlePair</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295214"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
-</span><a href="#local-6989586621681295215"><span class="hs-identifier hs-var">c'</span></a></span><span> </span><span class="annot"><span class="annottext">Either LedgerBytesError ([Word8] -&gt; [Word8])
+</span><a href="#local-6989586621681295504"><span class="hs-identifier hs-var">handlePair</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295511"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Word8
+</span><a href="#local-6989586621681295512"><span class="hs-identifier hs-var">c'</span></a></span><span> </span><span class="annot"><span class="annottext">Either LedgerBytesError ([Word8] -&gt; [Word8])
 -&gt; Either LedgerBytesError [Word8]
 -&gt; Either LedgerBytesError [Word8]
 forall a b.
@@ -238,30 +238,30 @@ Either LedgerBytesError (a -&gt; b)
 -&gt; Either LedgerBytesError a -&gt; Either LedgerBytesError b
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%2A%3E"><span class="hs-operator hs-var">&lt;*&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
-</span><a href="#local-6989586621681295213"><span class="hs-identifier hs-var">asBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8]
-</span><a href="#local-6989586621681295216"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-70"></span><span>    </span><span class="annot"><a href="#local-6989586621681295213"><span class="hs-identifier hs-var">asBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621681295510"><span class="hs-identifier hs-var">asBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8]
+</span><a href="#local-6989586621681295513"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="annot"><a href="#local-6989586621681295510"><span class="hs-identifier hs-var">asBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8]
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">LedgerBytesError -&gt; Either LedgerBytesError [Word8]
 forall a b. a -&gt; Either a b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">LedgerBytesError
 </span><a href="PlutusLedgerApi.V1.Bytes.html#UnpairedDigit"><span class="hs-identifier hs-var">UnpairedDigit</span></a></span><span>
 </span><span id="line-71"></span><span>
 </span><span id="line-72"></span><span>    </span><span class="hs-comment">-- parses a bytestring such as @a6b4@ into an actual bytestring</span><span>
-</span><span id="line-73"></span><span>    </span><span class="annot"><a href="#local-6989586621681295201"><span class="hs-identifier hs-type">asBSLiteral</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span>
-</span><span id="line-74"></span><span>    </span><span id="local-6989586621681295201"><span class="annot"><span class="annottext">asBSLiteral :: ByteString -&gt; Either LedgerBytesError ByteString
-</span><a href="#local-6989586621681295201"><span class="hs-identifier hs-var hs-var">asBSLiteral</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Either LedgerBytesError [Word8])
+</span><span id="line-73"></span><span>    </span><span class="annot"><a href="#local-6989586621681295498"><span class="hs-identifier hs-type">asBSLiteral</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621681295498"><span class="annot"><span class="annottext">asBSLiteral :: ByteString -&gt; Either LedgerBytesError ByteString
+</span><a href="#local-6989586621681295498"><span class="hs-identifier hs-var hs-var">asBSLiteral</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Either LedgerBytesError [Word8])
 -&gt; ByteString -&gt; Either LedgerBytesError ByteString
-</span><a href="#local-6989586621681295218"><span class="hs-identifier hs-var">withBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
-</span><a href="#local-6989586621681295213"><span class="hs-identifier hs-var">asBytes</span></a></span><span>
+</span><a href="#local-6989586621681295515"><span class="hs-identifier hs-var">withBytes</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
+</span><a href="#local-6989586621681295510"><span class="hs-identifier hs-var">asBytes</span></a></span><span>
 </span><span id="line-75"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-76"></span><span>        </span><span class="annot"><a href="#local-6989586621681295218"><span class="hs-identifier hs-type">withBytes</span></a></span><span>
+</span><span id="line-76"></span><span>        </span><span class="annot"><a href="#local-6989586621681295515"><span class="hs-identifier hs-type">withBytes</span></a></span><span>
 </span><span id="line-77"></span><span>          </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Word.html#Word8"><span class="hs-identifier hs-type">Word8</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-78"></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span>
 </span><span id="line-79"></span><span>          </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Either"><span class="hs-identifier hs-type">Either</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytesError"><span class="hs-identifier hs-type">LedgerBytesError</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span>
-</span><span id="line-80"></span><span>        </span><span id="local-6989586621681295218"><span class="annot"><span class="annottext">withBytes :: ([Word8] -&gt; Either LedgerBytesError [Word8])
+</span><span id="line-80"></span><span>        </span><span id="local-6989586621681295515"><span class="annot"><span class="annottext">withBytes :: ([Word8] -&gt; Either LedgerBytesError [Word8])
 -&gt; ByteString -&gt; Either LedgerBytesError ByteString
-</span><a href="#local-6989586621681295218"><span class="hs-identifier hs-var hs-var">withBytes</span></a></span></span><span> </span><span id="local-6989586621681295219"><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
-</span><a href="#local-6989586621681295219"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; ByteString)
+</span><a href="#local-6989586621681295515"><span class="hs-identifier hs-var hs-var">withBytes</span></a></span></span><span> </span><span id="local-6989586621681295516"><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
+</span><a href="#local-6989586621681295516"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; ByteString)
 -&gt; Either LedgerBytesError [Word8]
 -&gt; Either LedgerBytesError ByteString
 forall a b.
@@ -275,7 +275,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 -&gt; Either LedgerBytesError ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">[Word8] -&gt; Either LedgerBytesError [Word8]
-</span><a href="#local-6989586621681295219"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Either LedgerBytesError [Word8])
+</span><a href="#local-6989586621681295516"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">([Word8] -&gt; Either LedgerBytesError [Word8])
 -&gt; (ByteString -&gt; [Word8])
 -&gt; ByteString
 -&gt; Either LedgerBytesError [Word8]
@@ -285,7 +285,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-81"></span><span>
 </span><span id="line-82"></span><span class="hs-keyword">newtype</span><span> </span><span id="LedgerBytes"><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-var">LedgerBytes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="LedgerBytes"><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-var">LedgerBytes</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getLedgerBytes"><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinByteString
 </span><a href="PlutusLedgerApi.V1.Bytes.html#getLedgerBytes"><span class="hs-identifier hs-var hs-var">getLedgerBytes</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.BuiltinByteString</span></span><span class="hs-special">}</span><span>
-</span><span id="line-83"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295224"><span id="local-6989586621681295228"><span class="annot"><span class="annottext">LedgerBytes -&gt; LedgerBytes -&gt; Bool
+</span><span id="line-83"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295521"><span id="local-6989586621681295525"><span class="annot"><span class="annottext">LedgerBytes -&gt; LedgerBytes -&gt; Bool
 (LedgerBytes -&gt; LedgerBytes -&gt; Bool)
 -&gt; (LedgerBytes -&gt; LedgerBytes -&gt; Bool) -&gt; Eq LedgerBytes
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -293,7 +293,7 @@ $c== :: LedgerBytes -&gt; LedgerBytes -&gt; Bool
 == :: LedgerBytes -&gt; LedgerBytes -&gt; Bool
 $c/= :: LedgerBytes -&gt; LedgerBytes -&gt; Bool
 /= :: LedgerBytes -&gt; LedgerBytes -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295235"><span id="local-6989586621681295239"><span id="local-6989586621681295242"><span id="local-6989586621681295246"><span id="local-6989586621681295249"><span id="local-6989586621681295252"><span id="local-6989586621681295255"><span class="annot"><span class="annottext">Eq LedgerBytes
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295532"><span id="local-6989586621681295536"><span id="local-6989586621681295539"><span id="local-6989586621681295543"><span id="local-6989586621681295546"><span id="local-6989586621681295549"><span id="local-6989586621681295552"><span class="annot"><span class="annottext">Eq LedgerBytes
 Eq LedgerBytes =&gt;
 (LedgerBytes -&gt; LedgerBytes -&gt; Ordering)
 -&gt; (LedgerBytes -&gt; LedgerBytes -&gt; Bool)
@@ -330,7 +330,7 @@ $cmax :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
 max :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
 $cmin :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
 min :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295259"><span id="local-6989586621681295261"><span class="annot"><span class="annottext">(forall x. LedgerBytes -&gt; Rep LedgerBytes x)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295556"><span id="local-6989586621681295558"><span class="annot"><span class="annottext">(forall x. LedgerBytes -&gt; Rep LedgerBytes x)
 -&gt; (forall x. Rep LedgerBytes x -&gt; LedgerBytes)
 -&gt; Generic LedgerBytes
 forall x. Rep LedgerBytes x -&gt; LedgerBytes
@@ -342,12 +342,12 @@ from :: forall x. LedgerBytes -&gt; Rep LedgerBytes x
 $cto :: forall x. Rep LedgerBytes x -&gt; LedgerBytes
 to :: forall x. Rep LedgerBytes x -&gt; LedgerBytes
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-84"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295265"><span class="annot"><span class="annottext">LedgerBytes -&gt; LedgerBytes -&gt; Bool
+</span><span id="line-84"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295562"><span class="annot"><span class="annottext">LedgerBytes -&gt; LedgerBytes -&gt; Bool
 (LedgerBytes -&gt; LedgerBytes -&gt; Bool) -&gt; Eq LedgerBytes
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: LedgerBytes -&gt; LedgerBytes -&gt; Bool
 == :: LedgerBytes -&gt; LedgerBytes -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">P.Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295274"><span id="local-6989586621681295279"><span id="local-6989586621681295283"><span id="local-6989586621681295287"><span id="local-6989586621681295291"><span id="local-6989586621681295295"><span id="local-6989586621681295299"><span class="annot"><span class="annottext">Eq LedgerBytes
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">P.Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295571"><span id="local-6989586621681295576"><span id="local-6989586621681295580"><span id="local-6989586621681295584"><span id="local-6989586621681295588"><span id="local-6989586621681295592"><span id="local-6989586621681295596"><span class="annot"><span class="annottext">Eq LedgerBytes
 Eq LedgerBytes =&gt;
 (LedgerBytes -&gt; LedgerBytes -&gt; Ordering)
 -&gt; (LedgerBytes -&gt; LedgerBytes -&gt; Bool)
@@ -384,34 +384,34 @@ $cmax :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
 max :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
 $cmin :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
 min :: LedgerBytes -&gt; LedgerBytes -&gt; LedgerBytes
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">P.Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295305"><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">P.Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295602"><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinData
 (LedgerBytes -&gt; BuiltinData) -&gt; ToData LedgerBytes
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: LedgerBytes -&gt; BuiltinData
 toBuiltinData :: LedgerBytes -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295312"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe LedgerBytes
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295609"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe LedgerBytes
 (BuiltinData -&gt; Maybe LedgerBytes) -&gt; FromData LedgerBytes
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe LedgerBytes
 fromBuiltinData :: BuiltinData -&gt; Maybe LedgerBytes
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295319"><span class="annot"><span class="annottext">BuiltinData -&gt; LedgerBytes
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295616"><span class="annot"><span class="annottext">BuiltinData -&gt; LedgerBytes
 (BuiltinData -&gt; LedgerBytes) -&gt; UnsafeFromData LedgerBytes
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; LedgerBytes
 unsafeFromBuiltinData :: BuiltinData -&gt; LedgerBytes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PlutusTx.UnsafeFromData</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-85"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295326"><span class="annot"><span class="annottext">LedgerBytes -&gt; ()
+</span><span id="line-85"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295623"><span class="annot"><span class="annottext">LedgerBytes -&gt; ()
 (LedgerBytes -&gt; ()) -&gt; NFData LedgerBytes
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: LedgerBytes -&gt; ()
 rnf :: LedgerBytes -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295341"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681295638"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition LedgerBytes
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-86"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295347"><span id="local-6989586621681295353"><span class="annot"><span class="annottext">(forall ann. LedgerBytes -&gt; Doc ann)
+</span><span id="line-86"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681295644"><span id="local-6989586621681295650"><span class="annot"><span class="annottext">(forall ann. LedgerBytes -&gt; Doc ann)
 -&gt; (forall ann. [LedgerBytes] -&gt; Doc ann) -&gt; Pretty LedgerBytes
 forall ann. [LedgerBytes] -&gt; Doc ann
 forall ann. LedgerBytes -&gt; Doc ann
@@ -424,9 +424,9 @@ $cprettyList :: forall ann. [LedgerBytes] -&gt; Doc ann
 prettyList :: forall ann. [LedgerBytes] -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Prettyprinter.Extras.html#PrettyShow"><span class="hs-identifier hs-type">PrettyShow</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-87"></span><span>
-</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681294956"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681294956"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681295253"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681295253"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-89"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">schema</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-90"></span><span>  </span><span id="local-6989586621681295366"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><span id="line-90"></span><span>  </span><span id="local-6989586621681295663"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">forall t (referencedTypes :: [*]).
 HasBlueprintSchema t referencedTypes =&gt;
@@ -441,9 +441,9 @@ forall a b. a -&gt; (a -&gt; b) -&gt; b
 forall (referencedTypes :: [*]).
 (SchemaInfo -&gt; SchemaInfo)
 -&gt; Schema referencedTypes -&gt; Schema referencedTypes
-</span><span class="hs-identifier hs-var">withSchemaInfo</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681295367"><span class="annot"><span class="annottext">SchemaInfo
-</span><a href="#local-6989586621681295367"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SchemaInfo
-</span><a href="#local-6989586621681295367"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="hs-identifier hs-var">title</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;LedgerBytes&quot;</span></span><span class="hs-special">}</span><span>
+</span><span class="hs-identifier hs-var">withSchemaInfo</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681295664"><span class="annot"><span class="annottext">SchemaInfo
+</span><a href="#local-6989586621681295664"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">SchemaInfo
+</span><a href="#local-6989586621681295664"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="hs-identifier hs-var">title</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;LedgerBytes&quot;</span></span><span class="hs-special">}</span><span>
 </span><span id="line-93"></span><span>
 </span><span id="line-94"></span><span class="annot"><span class="hs-comment">-- | Lift a Haskell bytestring to the Plutus abstraction 'LedgerBytes'</span></span><span>
 </span><span id="line-95"></span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#fromBytes"><span class="hs-identifier hs-type">fromBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">BS.ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span>
@@ -478,7 +478,7 @@ by utilizing Haskell's double-quoted string syntax.
 IMPORTANT: the 'LedgerBytes' are expected to be already hex-encoded (base16); otherwise,
 'LedgerBytesError' will be raised as an 'GHC.Exception.Exception'. -}</span></span><span>
 </span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.String.html#IsString"><span class="hs-identifier hs-type">IsString</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-111"></span><span>  </span><span id="local-6989586621681295375"><span class="annot"><span class="annottext">fromString :: String -&gt; LedgerBytes
+</span><span id="line-111"></span><span>  </span><span id="local-6989586621681295672"><span class="annot"><span class="annottext">fromString :: String -&gt; LedgerBytes
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.String.html#fromString"><span class="hs-identifier hs-var hs-var hs-var hs-var">fromString</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either LedgerBytesError LedgerBytes -&gt; LedgerBytes
 forall e a. Exception e =&gt; Either e a -&gt; a
 </span><span class="hs-identifier hs-var">unsafeFromEither</span></span><span> </span><span class="annot"><span class="annottext">(Either LedgerBytesError LedgerBytes -&gt; LedgerBytes)
@@ -498,9 +498,9 @@ forall a. IsString a =&gt; String -&gt; a
 </span><span id="line-112"></span><span>
 </span><span id="line-113"></span><span class="annot"><span class="hs-comment">{-| The `Show` instance of `LedgerBytes` is its Base16/Hex encoded bytestring,
 decoded with UTF-8, unpacked to `String`. -}</span></span><span>
-</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681295377"><span id="local-6989586621681295381"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-116"></span><span>  </span><span id="local-6989586621681295383"><span class="annot"><span class="annottext">show :: LedgerBytes -&gt; String
-</span><a href="#local-6989586621681295383"><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span id="line-115"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681295674"><span id="local-6989586621681295678"><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-type">Show</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-116"></span><span>  </span><span id="local-6989586621681295680"><span class="annot"><span class="annottext">show :: LedgerBytes -&gt; String
+</span><a href="#local-6989586621681295680"><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
 </span><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Show.html#unpack"><span class="hs-identifier hs-var">Text.unpack</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; String) -&gt; (LedgerBytes -&gt; Text) -&gt; LedgerBytes -&gt; String
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Text
@@ -524,5 +524,5 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-123"></span><span class="hs-comment">----------------------------------------------------------------------------------------------------</span><span>
 </span><span id="line-124"></span><span class="hs-comment">-- TH Splices --------------------------------------------------------------------------------------</span><span>
 </span><span id="line-125"></span><span>
-</span><span id="line-126"></span><span class="hs-special">$</span><span id="local-6989586621681295389"><span id="local-6989586621681295391"><span class="hs-special">(</span><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">LedgerBytes</span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-126"></span><span class="hs-special">$</span><span id="local-6989586621681295686"><span id="local-6989586621681295688"><span class="hs-special">(</span><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">LedgerBytes</span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-127"></span></pre></body></html>

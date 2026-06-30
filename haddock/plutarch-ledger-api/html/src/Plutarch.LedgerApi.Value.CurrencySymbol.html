@@ -12,10 +12,10 @@
 </span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Builtins.Internal</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx</span></span><span>
 </span><span id="line-13"></span><span>
 </span><span id="line-14"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-15"></span><span class="hs-keyword">newtype</span><span> </span><span id="PCurrencySymbol"><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-var">PCurrencySymbol</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679378185"><span class="annot"><a href="#local-6989586621679378185"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PCurrencySymbol"><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-var">PCurrencySymbol</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679378185"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">newtype</span><span> </span><span id="PCurrencySymbol"><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-var">PCurrencySymbol</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679382280"><span class="annot"><a href="#local-6989586621679382280"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PCurrencySymbol"><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-var">PCurrencySymbol</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679382280"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PByteString</span></span><span class="hs-special">)</span><span>
 </span><span id="line-16"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-17"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-18"></span><span>      </span><span id="local-6989586621679378188"><span id="local-6989586621679378190"><span class="annot"><span class="annottext">(forall x. PCurrencySymbol s -&gt; Rep (PCurrencySymbol s) x)
+</span><span id="line-18"></span><span>      </span><span id="local-6989586621679382283"><span id="local-6989586621679382285"><span class="annot"><span class="annottext">(forall x. PCurrencySymbol s -&gt; Rep (PCurrencySymbol s) x)
 -&gt; (forall x. Rep (PCurrencySymbol s) x -&gt; PCurrencySymbol s)
 -&gt; Generic (PCurrencySymbol s)
 forall x. Rep (PCurrencySymbol s) x -&gt; PCurrencySymbol s
@@ -32,7 +32,7 @@ to :: forall x. Rep (PCurrencySymbol s) x -&gt; PCurrencySymbol s
 </span><span id="line-19"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
 </span><span id="line-21"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-22"></span><span>      </span><span id="local-6989586621679378197"><span id="local-6989586621679378206"><span class="annot"><span class="annottext">All SListI (Code (PCurrencySymbol s))
+</span><span id="line-22"></span><span>      </span><span id="local-6989586621679382292"><span id="local-6989586621679382301"><span class="annot"><span class="annottext">All SListI (Code (PCurrencySymbol s))
 All SListI (Code (PCurrencySymbol s)) =&gt;
 (PCurrencySymbol s -&gt; Rep (PCurrencySymbol s))
 -&gt; (Rep (PCurrencySymbol s) -&gt; PCurrencySymbol s)
@@ -51,7 +51,7 @@ $cto :: forall (s :: S). Rep (PCurrencySymbol s) -&gt; PCurrencySymbol s
 to :: Rep (PCurrencySymbol s) -&gt; PCurrencySymbol s
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
 </span><span id="line-23"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-24"></span><span>      </span><span id="local-6989586621679378236"><span id="local-6989586621679378242"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-24"></span><span>      </span><span id="local-6989586621679382331"><span id="local-6989586621679382337"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s (PAsData PCurrencySymbol) -&gt; Term s PCurrencySymbol)
 -&gt; (forall (s :: S). Term s PCurrencySymbol -&gt; Term s PData)
 -&gt; PIsData PCurrencySymbol
@@ -69,7 +69,7 @@ $cpdataImpl :: forall (s :: S). Term s PCurrencySymbol -&gt; Term s PData
 pdataImpl :: forall (s :: S). Term s PCurrencySymbol -&gt; Term s PData
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
 </span><span id="line-25"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-26"></span><span>      </span><span id="local-6989586621679378249"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-26"></span><span>      </span><span id="local-6989586621679382344"><span class="annot"><span class="annottext">(forall (s :: S).
  Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool)
 -&gt; PEq PCurrencySymbol
 forall (s :: S).
@@ -82,7 +82,7 @@ Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
 Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
 </span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-28"></span><span>      </span><span id="local-6989586621679378268"><span id="local-6989586621679378274"><span id="local-6989586621679378279"><span id="local-6989586621679378282"><span class="annot"><span class="annottext">PEq PCurrencySymbol
+</span><span id="line-28"></span><span>      </span><span id="local-6989586621679382363"><span id="local-6989586621679382369"><span id="local-6989586621679382374"><span id="local-6989586621679382377"><span class="annot"><span class="annottext">PEq PCurrencySymbol
 PEq PCurrencySymbol =&gt;
 (forall (s :: S).
  Term s PCurrencySymbol -&gt; Term s PCurrencySymbol -&gt; Term s PBool)
@@ -129,7 +129,7 @@ Term s PCurrencySymbol
 -&gt; Term s PCurrencySymbol -&gt; Term s PCurrencySymbol
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">POrd</span></span></span></span></span></span><span>
 </span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-30"></span><span>      </span><span id="local-6989586621679378287"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PCurrencySymbol -&gt; Term s PString)
+</span><span id="line-30"></span><span>      </span><span id="local-6989586621679382382"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PCurrencySymbol -&gt; Term s PString)
 -&gt; PShow PCurrencySymbol
 forall (s :: S). Bool -&gt; Term s PCurrencySymbol -&gt; Term s PString
 forall (t :: S -&gt; Type).
@@ -140,7 +140,7 @@ pshow' :: forall (s :: S). Bool -&gt; Term s PCurrencySymbol -&gt; Term s PStrin
 </span><span id="line-31"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>  </span><span class="hs-keyword">deriving</span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.3.0</span></span><span>
-</span><span id="line-34"></span><span>      </span><span id="local-6989586621679378302"><span id="local-6989586621679378310"><span class="annot"><span class="annottext">(forall (s :: S).
+</span><span id="line-34"></span><span>      </span><span id="local-6989586621679382397"><span id="local-6989586621679382405"><span class="annot"><span class="annottext">(forall (s :: S).
  PCurrencySymbol s -&gt; Term s (PInner PCurrencySymbol))
 -&gt; (forall (s :: S) (b :: S -&gt; Type).
     Term s (PInner PCurrencySymbol)
@@ -175,13 +175,13 @@ Term s (PInner PCurrencySymbol)
 </span><span id="line-40"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><span class="hs-identifier hs-var">AsHaskell</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.CurrencySymbol</span></span><span>
 </span><span id="line-41"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><span class="hs-identifier hs-var">PlutusRepr</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span>
 </span><span id="line-42"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">haskToRepr</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-43"></span><span>  </span><span id="local-6989586621679378328"><span class="annot"><span class="annottext">haskToRepr :: AsHaskell PCurrencySymbol -&gt; PlutusRepr PCurrencySymbol
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.CurrencySymbol</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span id="local-6989586621679378331"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679378331"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
+</span><span id="line-43"></span><span>  </span><span id="local-6989586621679382423"><span class="annot"><span class="annottext">haskToRepr :: AsHaskell PCurrencySymbol -&gt; PlutusRepr PCurrencySymbol
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Plutus.CurrencySymbol</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span> </span><span id="local-6989586621679382426"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679382426"><span class="hs-identifier hs-var">str</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString
 PlutusRepr PCurrencySymbol
-</span><a href="#local-6989586621679378331"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><a href="#local-6989586621679382426"><span class="hs-identifier hs-var">str</span></a></span><span>
 </span><span id="line-44"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">reprToHask</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-45"></span><span>  </span><span id="local-6989586621679378333"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr PCurrencySymbol
+</span><span id="line-45"></span><span>  </span><span id="local-6989586621679382428"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr PCurrencySymbol
 -&gt; Either LiftError (AsHaskell PCurrencySymbol)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToHask</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CurrencySymbol -&gt; Either LiftError CurrencySymbol
 forall a b. b -&gt; Either a b
@@ -199,7 +199,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
 </span><span class="hs-identifier hs-var">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">reprToPlut</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-47"></span><span>  </span><span id="local-6989586621679378341"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S).
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621679382436"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S).
 PlutusRepr PCurrencySymbol -&gt; PLifted s PCurrencySymbol
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToPlut</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">PlutusRepr PCurrencySymbol -&gt; PLifted s PCurrencySymbol
 forall (a :: S -&gt; Type) (s :: S).
@@ -207,7 +207,7 @@ Includes DefaultUni (PlutusRepr a) =&gt;
 PlutusRepr a -&gt; PLifted s a
 </span><span class="hs-identifier hs-var">reprToPlutUni</span></span><span>
 </span><span id="line-48"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">plutToRepr</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-49"></span><span>  </span><span id="local-6989586621679378360"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s PCurrencySymbol)
+</span><span id="line-49"></span><span>  </span><span id="local-6989586621679382455"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s PCurrencySymbol)
 -&gt; Either LiftError (PlutusRepr PCurrencySymbol)
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">plutToRepr</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall (s :: S). PLifted s PCurrencySymbol)
 -&gt; Either LiftError (PlutusRepr PCurrencySymbol)
@@ -218,7 +218,7 @@ KnownBuiltinType
 </span><span class="hs-identifier hs-var">plutToReprUni</span></span><span>
 </span><span id="line-50"></span><span>
 </span><span id="line-51"></span><span class="annot"><span class="hs-comment">-- | @since 3.4.0</span></span><span>
-</span><span id="line-52"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679378366"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-52"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679382461"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span class="hs-special">)</span></span><span>
 </span><span id="line-53"></span><span>
 </span><span id="line-54"></span><span class="annot"><span class="hs-comment">{- | Checks that we have a 'PCurrencySymbol' of valid length. The underlying
 'PByteString' must be exactly 28 bytes, as Cardano minting policies are hashed
@@ -227,11 +227,11 @@ with BLAKE2b-224.
 @since 3.6.0
 -}</span></span><span>
 </span><span id="line-60"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PValidateData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-61"></span><span>  </span><span id="local-6989586621679378383"><span class="annot"><span class="annottext">pwithValidated :: forall (s :: S).
+</span><span id="line-61"></span><span>  </span><span id="local-6989586621679382478"><span class="annot"><span class="annottext">pwithValidated :: forall (s :: S).
 Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
-</span><a href="#local-6989586621679378383"><span class="hs-identifier hs-var hs-var hs-var hs-var">pwithValidated</span></a></span></span><span> </span><span id="local-6989586621679378385"><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679378385"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span id="local-6989586621679378386"><span class="annot"><span class="annottext">Term s r
-</span><a href="#local-6989586621679378386"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="#local-6989586621679382478"><span class="hs-identifier hs-var hs-var hs-var hs-var">pwithValidated</span></a></span></span><span> </span><span id="local-6989586621679382480"><span class="annot"><span class="annottext">Term s PData
+</span><a href="#local-6989586621679382480"><span class="hs-identifier hs-var">opq</span></a></span></span><span> </span><span id="local-6989586621679382481"><span class="annot"><span class="annottext">Term s r
+</span><a href="#local-6989586621679382481"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-62"></span><span>    </span><span class="annot"><span class="annottext">Term s PInteger -&gt; (Term s PInteger -&gt; Term s r) -&gt; Term s r
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s a -&gt; (Term s a -&gt; Term s b) -&gt; Term s b
@@ -248,17 +248,17 @@ forall (s :: S). Term s (PData :--&gt; PByteString)
 forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
 Term s (a :--&gt; b) -&gt; Term s a -&gt; Term s b
 </span><span class="hs-operator hs-var">#</span></span><span> </span><span class="annot"><span class="annottext">Term s PData
-</span><a href="#local-6989586621679378385"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PInteger -&gt; Term s r) -&gt; Term s r)
+</span><a href="#local-6989586621679382480"><span class="hs-identifier hs-var">opq</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Term s PInteger -&gt; Term s r) -&gt; Term s r)
 -&gt; (Term s PInteger -&gt; Term s r) -&gt; Term s r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679378392"><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679378392"><span class="hs-identifier hs-var">bsSize</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679382487"><span class="annot"><span class="annottext">Term s PInteger
+</span><a href="#local-6989586621679382487"><span class="hs-identifier hs-var">bsSize</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-63"></span><span>      </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s r -&gt; Term s r -&gt; Term s r
 forall (a :: S -&gt; Type) (s :: S).
 Term s PBool -&gt; Term s a -&gt; Term s a -&gt; Term s a
 </span><span class="hs-identifier hs-var">pif</span></span><span>
 </span><span id="line-64"></span><span>        </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679378392"><span class="hs-identifier hs-var">bsSize</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679382487"><span class="hs-identifier hs-var">bsSize</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: S -&gt; Type) (s :: S).
 PEq t =&gt;
@@ -268,7 +268,7 @@ forall (s :: S). Term s PInteger
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#pnonAdaCurrencySymbolByteSize"><span class="hs-identifier hs-var">pnonAdaCurrencySymbolByteSize</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 forall (s :: S). Term s PBool -&gt; Term s PBool -&gt; Term s PBool
 </span><span class="hs-operator hs-var">#||</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Term s PInteger
-</span><a href="#local-6989586621679378392"><span class="hs-identifier hs-var">bsSize</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
+</span><a href="#local-6989586621679382487"><span class="hs-identifier hs-var">bsSize</span></a></span><span> </span><span class="annot"><span class="annottext">Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (s :: S). Term s PInteger -&gt; Term s PInteger -&gt; Term s PBool
 forall (t :: S -&gt; Type) (s :: S).
 PEq t =&gt;
@@ -277,17 +277,17 @@ Term s t -&gt; Term s t -&gt; Term s PBool
 forall (s :: S). Term s PInteger
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaCurrencySymbolByteSize"><span class="hs-identifier hs-var">padaCurrencySymbolByteSize</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-65"></span><span>        </span><span class="annot"><span class="annottext">Term s r
-</span><a href="#local-6989586621679378386"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679382481"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-66"></span><span>        </span><span class="annot"><span class="annottext">Term s r
 forall (s :: S) (a :: S -&gt; Type). Term s a
 </span><span class="hs-identifier hs-var">perror</span></span><span>
 </span><span id="line-67"></span><span>
-</span><span id="line-68"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#pnonAdaCurrencySymbolByteSize"><span class="hs-identifier hs-type">pnonAdaCurrencySymbolByteSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679378166"><span class="annot"><a href="#local-6989586621679378166"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679378166"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#pnonAdaCurrencySymbolByteSize"><span class="hs-identifier hs-type">pnonAdaCurrencySymbolByteSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679382261"><span class="annot"><a href="#local-6989586621679382261"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679382261"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span>
 </span><span id="line-69"></span><span id="pnonAdaCurrencySymbolByteSize"><span class="annot"><span class="annottext">pnonAdaCurrencySymbolByteSize :: forall (s :: S). Term s PInteger
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#pnonAdaCurrencySymbolByteSize"><span class="hs-identifier hs-var hs-var">pnonAdaCurrencySymbolByteSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 </span><span class="hs-number">28</span></span><span>
 </span><span id="line-70"></span><span>
-</span><span id="line-71"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaCurrencySymbolByteSize"><span class="hs-identifier hs-type">padaCurrencySymbolByteSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679378403"><span class="annot"><a href="#local-6989586621679378403"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679378403"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span>
+</span><span id="line-71"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaCurrencySymbolByteSize"><span class="hs-identifier hs-type">padaCurrencySymbolByteSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679382498"><span class="annot"><a href="#local-6989586621679382498"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679382498"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PInteger</span></span><span>
 </span><span id="line-72"></span><span id="padaCurrencySymbolByteSize"><span class="annot"><span class="annottext">padaCurrencySymbolByteSize :: forall (s :: S). Term s PInteger
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaCurrencySymbolByteSize"><span class="hs-identifier hs-var hs-var">padaCurrencySymbolByteSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PInteger
 </span><span class="hs-number">0</span></span><span>
@@ -296,7 +296,7 @@ forall (s :: S) (a :: S -&gt; Type). Term s a
 
 @since 2.1.1
 -}</span></span><span>
-</span><span id="line-78"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbol"><span class="hs-identifier hs-type">padaSymbol</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679378175"><span class="annot"><a href="#local-6989586621679378175"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679378175"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span>
+</span><span id="line-78"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbol"><span class="hs-identifier hs-type">padaSymbol</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679382270"><span class="annot"><a href="#local-6989586621679382270"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679382270"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span>
 </span><span id="line-79"></span><span id="padaSymbol"><span class="annot"><span class="annottext">padaSymbol :: forall (s :: S). Term s PCurrencySymbol
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbol"><span class="hs-identifier hs-var hs-var">padaSymbol</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AsHaskell PCurrencySymbol -&gt; Term s PCurrencySymbol
 forall (a :: S -&gt; Type) (s :: S).
@@ -310,7 +310,7 @@ CurrencySymbol
 
 @since 2.1.1
 -}</span></span><span>
-</span><span id="line-85"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbolData"><span class="hs-identifier hs-type">padaSymbolData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679378179"><span class="annot"><a href="#local-6989586621679378179"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679378179"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-85"></span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbolData"><span class="hs-identifier hs-type">padaSymbolData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679382274"><span class="annot"><a href="#local-6989586621679382274"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679382274"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#PCurrencySymbol"><span class="hs-identifier hs-type">PCurrencySymbol</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span><span id="padaSymbolData"><span class="annot"><span class="annottext">padaSymbolData :: forall (s :: S). Term s (PAsData PCurrencySymbol)
 </span><a href="Plutarch.LedgerApi.Value.CurrencySymbol.html#padaSymbolData"><span class="hs-identifier hs-var hs-var">padaSymbolData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term s PCurrencySymbol -&gt; Term s (PAsData PCurrencySymbol)
 forall (a :: S -&gt; Type) (s :: S).

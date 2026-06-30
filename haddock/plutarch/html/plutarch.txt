@@ -137,9 +137,8 @@ PLam :: (Term s a -> Term s b) -> (:-->) (a :: S -> Type) (b :: S -> Type) (s ::
 infixr 0 :-->
 data PDelayed (a :: S -> Type) (s :: S)
 newtype Term (s :: S) (a :: S -> Type)
-Term :: (Word64 -> TermMonad TermResult) -> Term (s :: S) (a :: S -> Type)
-[asRawTerm] :: Term (s :: S) (a :: S -> Type) -> Word64 -> TermMonad TermResult
-asClosedRawTerm :: forall (a :: S -> Type). (forall (s :: S). () => Term s a) -> TermMonad TermResult
+Term :: ExceptT Text (RWS TermEnv () ()) TermResult -> Term (s :: S) (a :: S -> Type)
+[asRawTerm] :: Term (s :: S) (a :: S -> Type) -> ExceptT Text (RWS TermEnv () ()) TermResult
 newtype Script
 Script :: Program DeBruijn DefaultUni DefaultFun () -> Script
 mapTerm :: (RawTerm -> RawTerm) -> TermResult -> TermResult
@@ -240,6 +239,7 @@ RHoisted :: HoistedTerm -> RawTerm
 RPlaceHolder :: Integer -> RawTerm
 RConstr :: Word64 -> [RawTerm] -> RawTerm
 RCase :: RawTerm -> [RawTerm] -> RawTerm
+RLet :: RawTerm -> RawTerm -> RawTerm
 data HoistedTerm
 HoistedTerm :: Int -> RawTerm -> HoistedTerm
 [htHash] :: HoistedTerm -> Int
@@ -285,9 +285,6 @@ logLevel :: Config -> Maybe LogLevel
 pgetConfig :: forall (s :: S) (a :: S -> Type). (Config -> Term s a) -> Term s a
 pgetInternalConfig :: forall (s :: S) (a :: S -> Type). (InternalConfig -> Term s a) -> Term s a
 pwithInternalConfig :: forall (s :: S) (a :: S -> Type). InternalConfig -> Term s a -> Term s a
-newtype TermMonad m
-TermMonad :: ReaderT (InternalConfig, Config) (Either Text) m -> TermMonad m
-[runTermMonad] :: TermMonad m -> ReaderT (InternalConfig, Config) (Either Text) m
 
 -- | High precedence infixl synonym of <a>papp</a>, to be used like
 --   function juxtaposition. e.g.:
@@ -308,7 +305,6 @@ infixl 8 #
 --   </pre>
 (#$) :: forall (s :: S) (a :: S -> Type) (b :: S -> Type). Term s (a :--> b) -> Term s a -> Term s b
 infixr 0 #$
-instance GHC.Base.Applicative Plutarch.Internal.Term.TermMonad
 instance GHC.Classes.Eq Plutarch.Internal.Term.Config
 instance GHC.Classes.Eq Plutarch.Internal.Term.HoistedTerm
 instance GHC.Classes.Eq Plutarch.Internal.Term.InternalConfig
@@ -318,10 +314,8 @@ instance GHC.Classes.Eq Plutarch.Internal.Term.TracingMode
 instance Data.Aeson.Types.FromJSON.FromJSON Plutarch.Internal.Term.Config
 instance Data.Aeson.Types.FromJSON.FromJSON Plutarch.Internal.Term.LogLevel
 instance Data.Aeson.Types.FromJSON.FromJSON Plutarch.Internal.Term.TracingMode
-instance GHC.Base.Functor Plutarch.Internal.Term.TermMonad
 instance Data.Hashable.Class.Hashable Plutarch.Internal.Term.HoistedTerm
 instance Data.Hashable.Class.Hashable Plutarch.Internal.Term.RawTerm
-instance GHC.Base.Monad Plutarch.Internal.Term.TermMonad
 instance GHC.Base.Monoid Plutarch.Internal.Term.Config
 instance GHC.Classes.Ord Plutarch.Internal.Term.LogLevel
 instance GHC.Classes.Ord Plutarch.Internal.Term.TracingMode
@@ -336,6 +330,7 @@ instance GHC.Show.Show Plutarch.Internal.Term.HoistedTerm
 instance GHC.Show.Show Plutarch.Internal.Term.InternalConfig
 instance GHC.Show.Show Plutarch.Internal.Term.LogLevel
 instance GHC.Show.Show Plutarch.Internal.Term.RawTerm
+instance GHC.Show.Show Plutarch.Internal.Term.TermResult
 instance GHC.Show.Show Plutarch.Internal.Term.TracingMode
 instance Data.Aeson.Types.ToJSON.ToJSON Plutarch.Internal.Term.Config
 instance Data.Aeson.Types.ToJSON.ToJSON Plutarch.Internal.Term.LogLevel
@@ -690,10 +685,6 @@ runTermCont :: TermCont a b -> (b -> Term a r) -> Term a r
 unTermCont :: forall (a :: S -> Type) (s :: S). TermCont s (Term s a) -> Term s a
 tcont :: forall a (s :: S) (r :: S -> Type). ((a -> Term s r) -> Term s r) -> TermCont s a
 
--- | Given a term, and an integer tag, this function checks if the term
---   holds and <tt>PPlaceholder</tt> with the given integer tag.
-pfindPlaceholder :: forall {r :: S -> Type} (s :: S) (a :: S -> Type). Integer -> Term s a -> TermCont s Bool
-
 -- | Finds all placeholder ids and returns it
 pfindAllPlaceholders :: forall {r :: S -> Type} (s :: S) (a :: S -> Type). Term s a -> TermCont s [Integer]
 instance forall (r :: Plutarch.Internal.Term.S -> GHC.Types.Type) (s :: Plutarch.Internal.Term.S). GHC.Base.Applicative (Plutarch.Internal.TermCont.TermCont @r s)
@@ -800,6 +791,85 @@ pchooseListBuiltin :: forall (s :: S) (a :: S -> Type) (b :: S -> Type). Term s 
 pnullBuiltin :: forall (s :: S) (a :: S -> Type). Term s (PBuiltinList a :--> PBool)
 pconsBuiltin :: forall (s :: S) (a :: S -> Type). Term s (a :--> (PBuiltinList a :--> PBuiltinList a))
 
+
+module Plutarch.Builtin.Value
+
+-- | A builtin Plutus <tt>Value</tt>.
+newtype PBuiltinValue (s :: S)
+PBuiltinValue :: Term s POpaque -> PBuiltinValue (s :: S)
+
+-- | Given a currency, a token name, an amount, an an existing
+--   <a>PBuiltinValue</a>, produce a new <a>PBuiltinValue</a>, identical to
+--   the argument <a>PBuiltinValue</a>, except as follows:
+--   
+--   <ul>
+--   <li>If the amount is <tt>0</tt>, the new <a>PBuiltinValue</a> will
+--   have the given currency-token name entry deleted;</li>
+--   <li>If the argument <a>PBuiltinValue</a> is empty, the new
+--   <a>PBuiltinValue</a> will be a singleton containing the given
+--   currency-token name entry with the given (nonzero) amount.</li>
+--   <li>If the argument <a>PBuiltinValue</a> already contains the given
+--   currency-token name entry, the new <a>PBuiltinValue</a> will have that
+--   currency-token name entry replaced with the given (nonzero)
+--   amount.</li>
+--   <li>Otherwise, the new <a>PBuiltinValue</a> will contain a new
+--   currency-token name entry, with the given (nonzero) amount.</li>
+--   </ul>
+--   
+--   <h1>Important note</h1>
+--   
+--   If given a currency name, or a token name, that isn't valid, this will
+--   error.
+pinsertCoin :: forall (s :: S). Term s (PByteString :--> (PByteString :--> (PInteger :--> (PBuiltinValue :--> PBuiltinValue))))
+
+-- | Given a currency, a token name, and a <a>PBuiltinValue</a>, return the
+--   amount associated with the given currency-token name entry. If there
+--   is no such entry, the result is <tt>0</tt>.
+--   
+--   <h1>Important note</h1>
+--   
+--   If given a currency name, or token name, that isn't valid, this will
+--   produce <tt>0</tt>.
+plookupCoin :: forall (s :: S). Term s (PByteString :--> (PByteString :--> (PBuiltinValue :--> PInteger)))
+
+-- | Given two <a>PBuiltinValue</a>s, constructs their union. More
+--   specifically, for every currency-token name entry in either argument,
+--   the result will contain a currency-token name entry as well. If the
+--   entry is in one argument, it will be copied as-is; otherwise, the
+--   amounts will be combined from both maps using addition.
+--   
+--   <h1>Important note</h1>
+--   
+--   <a>PBuiltinValue</a>s cannot store amounts outside of the range of a
+--   128-bit signed integer. If any amount produced by this operation would
+--   fall outside of this range, this function will error.
+punionValue :: forall (s :: S). Term s (PBuiltinValue :--> (PBuiltinValue :--> PBuiltinValue))
+
+-- | <tt><a>pvalueContains</a> x y</tt> is true when, for any
+--   currency-token name entry in <tt>y</tt>, the amount associated with
+--   that entry in <tt>x</tt> is not smaller.
+--   
+--   <h1>Important note</h1>
+--   
+--   Neither argument can contain any negative entries. If either argument
+--   has a negative entry, this will error.
+pvalueContains :: forall (s :: S). Term s (PBuiltinValue :--> (PBuiltinValue :--> PBool))
+
+-- | Converts a <a>PBuiltinValue</a> into its <tt>Data</tt> encoding.
+pvalueData :: forall (s :: S). Term s (PBuiltinValue :--> PData)
+
+-- | Converts a valid <tt>Data</tt> encoding of a <a>PBuiltinValue</a> into
+--   the <a>PBuiltinValue</a> it represents, and errors otherwise.
+punValueData :: forall (s :: S). Term s (PData :--> PBuiltinValue)
+
+-- | Given a <a>PBuiltinValue</a> and a scalar, produce a new
+--   <a>PBuiltinValue</a> with all amounts multiplied by that scalar. Note
+--   that if the scalar is <tt>0</tt>, then the result will be an empty
+--   <a>PBuiltinValue</a>.
+pscaleValue :: forall (s :: S). Term s (PInteger :--> (PBuiltinValue :--> PBuiltinValue))
+instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.Value.PBuiltinValue s)
+instance forall (s :: Plutarch.Internal.Term.S). Generics.SOP.Universe.Generic (Plutarch.Builtin.Value.PBuiltinValue s)
+
 module Plutarch.Builtin.Crypto
 
 -- | Hash a <a>PByteString</a> using SHA-256.
@@ -905,6 +975,12 @@ pbls12_381_mulMlResult :: forall (s :: S). Term s (PBuiltinBLS12_381_MlResult :-
 
 -- | Perform the final verification step in BLS12-381 pairing.
 pbls12_381_finalVerify :: forall (s :: S). Term s (PBuiltinBLS12_381_MlResult :--> (PBuiltinBLS12_381_MlResult :--> PBool))
+
+-- | See <a>CIP-133</a> for more information on how this function works.
+pbls12_381_G1_multiScalarMul :: forall (s :: S). Term s (PBuiltinList PInteger :--> (PBuiltinList PBuiltinBLS12_381_G1_Element :--> PBuiltinBLS12_381_G1_Element))
+
+-- | See <a>CIP-133</a> for more information on how this function works.
+pbls12_381_G2_multiScalarMul :: forall (s :: S). Term s (PBuiltinList PInteger :--> (PBuiltinList PBuiltinBLS12_381_G2_Element :--> PBuiltinBLS12_381_G2_Element))
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.BLS.PBuiltinBLS12_381_G1_Element s)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.BLS.PBuiltinBLS12_381_G2_Element s)
 instance forall (s :: Plutarch.Internal.Term.S). GHC.Generics.Generic (Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult s)
@@ -981,6 +1057,7 @@ instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.BLS.PBuiltinBL
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). Universe.Core.Contains @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a) => Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.Data.PBuiltinList a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.PlutusType.PlutusType (Plutarch.Builtin.Data.PBuiltinPair a b)
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Value.PBuiltinValue
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.ByteString.PByte
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.ByteString.PByteString
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.Builtin.Data.PData
@@ -1310,6 +1387,7 @@ instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.BLS.PBuiltinBLS12_381
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.BLS.PBuiltinBLS12_381_MlResult
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a), PlutusCore.Builtin.KnownType.KnownBuiltinType (UntypedPlutusCore.Core.Type.Term PlutusCore.DeBruijn.Internal.DeBruijn PlutusCore.Default.Universe.DefaultUni PlutusCore.Default.Builtins.DefaultFun ()) (Plutarch.Internal.Lift.PlutusRepr a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.Data.PBuiltinList a)
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Internal.Lift.PLiftable a, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr a), PlutusCore.Builtin.KnownType.KnownBuiltinType (UntypedPlutusCore.Core.Type.Term PlutusCore.DeBruijn.Internal.DeBruijn PlutusCore.Default.Universe.DefaultUni PlutusCore.Default.Builtins.DefaultFun ()) (Plutarch.Internal.Lift.PlutusRepr a), Plutarch.Internal.Lift.PLiftable b, Universe.Core.Includes @GHC.Types.Type PlutusCore.Default.Universe.DefaultUni (Plutarch.Internal.Lift.PlutusRepr b), PlutusCore.Builtin.KnownType.KnownBuiltinType (UntypedPlutusCore.Core.Type.Term PlutusCore.DeBruijn.Internal.DeBruijn PlutusCore.Default.Universe.DefaultUni PlutusCore.Default.Builtins.DefaultFun ()) (Plutarch.Internal.Lift.PlutusRepr b)) => Plutarch.Internal.Lift.PLiftable (Plutarch.Builtin.Data.PBuiltinPair a b)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.Value.PBuiltinValue
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.ByteString.PByte
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.ByteString.PByteString
 instance Plutarch.Internal.Lift.PLiftable Plutarch.Builtin.Data.PData
@@ -1646,6 +1724,7 @@ instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type). (Plutarch.Int
 instance forall (a :: Plutarch.Internal.Term.S -> GHC.Types.Type) (b :: Plutarch.Internal.Term.S -> GHC.Types.Type). Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinPair (Plutarch.Builtin.Data.PAsData a) (Plutarch.Builtin.Data.PAsData b))
 instance Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinPair Plutarch.Builtin.Data.PData Plutarch.Builtin.Data.PData)
 instance Plutarch.Internal.IsData.PIsData (Plutarch.Builtin.Data.PBuiltinPair Plutarch.Builtin.Integer.PInteger (Plutarch.Builtin.Data.PBuiltinList Plutarch.Builtin.Data.PData))
+instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Value.PBuiltinValue
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.ByteString.PByteString
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Data.PData
 instance Plutarch.Internal.IsData.PIsData Plutarch.Builtin.Integer.PInteger
@@ -3123,10 +3202,6 @@ newtype TermCont (a :: S) b
 runTermCont :: TermCont a b -> (b -> Term a r) -> Term a r
 unTermCont :: forall (a :: S -> Type) (s :: S). TermCont s (Term s a) -> Term s a
 tcont :: forall a (s :: S) (r :: S -> Type). ((a -> Term s r) -> Term s r) -> TermCont s a
-
--- | Given a term, and an integer tag, this function checks if the term
---   holds and <tt>PPlaceholder</tt> with the given integer tag.
-pfindPlaceholder :: forall {r :: S -> Type} (s :: S) (a :: S -> Type). Integer -> Term s a -> TermCont s Bool
 
 -- | Like <a>plet</a> but works in a <a>TermCont</a> monad
 pletC :: forall {r :: S -> Type} (s :: S) (a :: S -> Type). Term s a -> TermCont s (Term s a)

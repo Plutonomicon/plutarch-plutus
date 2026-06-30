@@ -57,7 +57,7 @@ The `Serialise` instances for `Datum` and `Redeemer` exist for several reasons:
 </span><span id="line-57"></span><span>    </span><span id="EvaluationError"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#EvaluationError"><span class="hs-identifier hs-var">EvaluationError</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/text-2.1.1-inplace/src/Data.Text.Internal.html#Text"><span class="hs-identifier hs-type">Text</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#String"><span class="hs-identifier hs-type">Haskell.String</span></a></span><span>
 </span><span id="line-58"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">-- | Unexpected behavior of the engine (a bug)</span></span><span>
 </span><span id="line-59"></span><span>    </span><span id="EvaluationException"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#EvaluationException"><span class="hs-identifier hs-var">EvaluationException</span></a></span></span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#String"><span class="hs-identifier hs-type">Haskell.String</span></a></span><span> </span><span class="hs-glyph">!</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#String"><span class="hs-identifier hs-type">Haskell.String</span></a></span><span>
-</span><span id="line-60"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301180"><span id="local-6989586621681301192"><span id="local-6989586621681301196"><span class="annot"><span class="annottext">Int -&gt; ScriptError -&gt; ShowS
+</span><span id="line-60"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301477"><span id="local-6989586621681301489"><span id="local-6989586621681301493"><span class="annot"><span class="annottext">Int -&gt; ScriptError -&gt; ShowS
 [ScriptError] -&gt; ShowS
 ScriptError -&gt; String
 (Int -&gt; ScriptError -&gt; ShowS)
@@ -72,7 +72,7 @@ $cshow :: ScriptError -&gt; String
 show :: ScriptError -&gt; String
 $cshowList :: [ScriptError] -&gt; ShowS
 showList :: [ScriptError] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301202"><span id="local-6989586621681301211"><span class="annot"><span class="annottext">ScriptError -&gt; ScriptError -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301499"><span id="local-6989586621681301508"><span class="annot"><span class="annottext">ScriptError -&gt; ScriptError -&gt; Bool
 (ScriptError -&gt; ScriptError -&gt; Bool)
 -&gt; (ScriptError -&gt; ScriptError -&gt; Bool) -&gt; Eq ScriptError
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -80,7 +80,7 @@ $c== :: ScriptError -&gt; ScriptError -&gt; Bool
 == :: ScriptError -&gt; ScriptError -&gt; Bool
 $c/= :: ScriptError -&gt; ScriptError -&gt; Bool
 /= :: ScriptError -&gt; ScriptError -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301218"><span id="local-6989586621681301220"><span class="annot"><span class="annottext">(forall x. ScriptError -&gt; Rep ScriptError x)
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301515"><span id="local-6989586621681301517"><span class="annot"><span class="annottext">(forall x. ScriptError -&gt; Rep ScriptError x)
 -&gt; (forall x. Rep ScriptError x -&gt; ScriptError)
 -&gt; Generic ScriptError
 forall x. Rep ScriptError x -&gt; ScriptError
@@ -92,12 +92,12 @@ from :: forall x. ScriptError -&gt; Rep ScriptError x
 $cto :: forall x. Rep ScriptError x -&gt; ScriptError
 to :: forall x. Rep ScriptError x -&gt; ScriptError
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-61"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301224"><span class="annot"><span class="annottext">ScriptError -&gt; ()
+</span><span id="line-61"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301521"><span class="annot"><span class="annottext">ScriptError -&gt; ()
 (ScriptError -&gt; ()) -&gt; NFData ScriptError
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: ScriptError -&gt; ()
 rnf :: ScriptError -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301252"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301549"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition ScriptError
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
@@ -107,7 +107,7 @@ definitionId :: DefinitionId
 </span><span id="line-63"></span><span class="annot"><span class="hs-comment">-- | 'Datum' is a wrapper around 'Data' values which are used as data in transaction outputs.</span></span><span>
 </span><span id="line-64"></span><span class="hs-keyword">newtype</span><span> </span><span id="Datum"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-var">Datum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Datum"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-var">Datum</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getDatum"><span class="annot"><span class="annottext">Datum -&gt; BuiltinData
 </span><a href="PlutusLedgerApi.V1.Scripts.html#getDatum"><span class="hs-identifier hs-var hs-var">getDatum</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span class="hs-special">}</span><span>
-</span><span id="line-65"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301260"><span id="local-6989586621681301262"><span class="annot"><span class="annottext">(forall x. Datum -&gt; Rep Datum x)
+</span><span id="line-65"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301557"><span id="local-6989586621681301559"><span class="annot"><span class="annottext">(forall x. Datum -&gt; Rep Datum x)
 -&gt; (forall x. Rep Datum x -&gt; Datum) -&gt; Generic Datum
 forall x. Rep Datum x -&gt; Datum
 forall x. Datum -&gt; Rep Datum x
@@ -117,7 +117,7 @@ $cfrom :: forall x. Datum -&gt; Rep Datum x
 from :: forall x. Datum -&gt; Rep Datum x
 $cto :: forall x. Rep Datum x -&gt; Datum
 to :: forall x. Rep Datum x -&gt; Datum
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301265"><span id="local-6989586621681301270"><span id="local-6989586621681301274"><span class="annot"><span class="annottext">Int -&gt; Datum -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301562"><span id="local-6989586621681301567"><span id="local-6989586621681301571"><span class="annot"><span class="annottext">Int -&gt; Datum -&gt; ShowS
 [Datum] -&gt; ShowS
 Datum -&gt; String
 (Int -&gt; Datum -&gt; ShowS)
@@ -131,14 +131,14 @@ show :: Datum -&gt; String
 $cshowList :: [Datum] -&gt; ShowS
 showList :: [Datum] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-66"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301277"><span id="local-6989586621681301282"><span class="annot"><span class="annottext">Datum -&gt; Datum -&gt; Bool
+</span><span id="line-66"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301574"><span id="local-6989586621681301579"><span class="annot"><span class="annottext">Datum -&gt; Datum -&gt; Bool
 (Datum -&gt; Datum -&gt; Bool) -&gt; (Datum -&gt; Datum -&gt; Bool) -&gt; Eq Datum
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: Datum -&gt; Datum -&gt; Bool
 == :: Datum -&gt; Datum -&gt; Bool
 $c/= :: Datum -&gt; Datum -&gt; Bool
 /= :: Datum -&gt; Datum -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301289"><span id="local-6989586621681301294"><span id="local-6989586621681301298"><span id="local-6989586621681301302"><span id="local-6989586621681301306"><span id="local-6989586621681301310"><span id="local-6989586621681301314"><span class="annot"><span class="annottext">Eq Datum
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301586"><span id="local-6989586621681301591"><span id="local-6989586621681301595"><span id="local-6989586621681301599"><span id="local-6989586621681301603"><span id="local-6989586621681301607"><span id="local-6989586621681301611"><span class="annot"><span class="annottext">Eq Datum
 Eq Datum =&gt;
 (Datum -&gt; Datum -&gt; Ordering)
 -&gt; (Datum -&gt; Datum -&gt; Bool)
@@ -175,27 +175,27 @@ $cmax :: Datum -&gt; Datum -&gt; Datum
 max :: Datum -&gt; Datum -&gt; Datum
 $cmin :: Datum -&gt; Datum -&gt; Datum
 min :: Datum -&gt; Datum -&gt; Datum
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301320"><span class="annot"><span class="annottext">Datum -&gt; Datum -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301617"><span class="annot"><span class="annottext">Datum -&gt; Datum -&gt; Bool
 (Datum -&gt; Datum -&gt; Bool) -&gt; Eq Datum
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: Datum -&gt; Datum -&gt; Bool
 == :: Datum -&gt; Datum -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301327"><span class="annot"><span class="annottext">Datum -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301624"><span class="annot"><span class="annottext">Datum -&gt; BuiltinData
 (Datum -&gt; BuiltinData) -&gt; ToData Datum
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: Datum -&gt; BuiltinData
 toBuiltinData :: Datum -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301334"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe Datum
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301631"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe Datum
 (BuiltinData -&gt; Maybe Datum) -&gt; FromData Datum
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe Datum
 fromBuiltinData :: BuiltinData -&gt; Maybe Datum
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301341"><span class="annot"><span class="annottext">BuiltinData -&gt; Datum
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301638"><span class="annot"><span class="annottext">BuiltinData -&gt; Datum
 (BuiltinData -&gt; Datum) -&gt; UnsafeFromData Datum
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; Datum
 unsafeFromBuiltinData :: BuiltinData -&gt; Datum
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301348"><span id="local-6989586621681301353"><span class="annot"><span class="annottext">(forall ann. Datum -&gt; Doc ann)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301645"><span id="local-6989586621681301650"><span class="annot"><span class="annottext">(forall ann. Datum -&gt; Doc ann)
 -&gt; (forall ann. [Datum] -&gt; Doc ann) -&gt; Pretty Datum
 forall ann. [Datum] -&gt; Doc ann
 forall ann. Datum -&gt; Doc ann
@@ -207,36 +207,36 @@ pretty :: forall ann. Datum -&gt; Doc ann
 $cprettyList :: forall ann. [Datum] -&gt; Doc ann
 prettyList :: forall ann. [Datum] -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-67"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301359"><span class="annot"><span class="annottext">Datum -&gt; ()
+</span><span id="line-67"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301656"><span class="annot"><span class="annottext">Datum -&gt; ()
 (Datum -&gt; ()) -&gt; NFData Datum
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Datum -&gt; ()
 rnf :: Datum -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301371"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301668"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition Datum
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681300919"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-type">Datum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681300919"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-70"></span><span>  </span><span id="local-6989586621681301381"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
-</span><a href="#local-6989586621681301381"><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SchemaInfo -&gt; Schema referencedTypes
+</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301216"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-type">Datum</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681301216"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-70"></span><span>  </span><span id="local-6989586621681301678"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><a href="#local-6989586621681301678"><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SchemaInfo -&gt; Schema referencedTypes
 forall (referencedTypes :: [*]).
 SchemaInfo -&gt; Schema referencedTypes
 </span><span class="hs-identifier hs-var">SchemaBuiltInData</span></span><span> </span><span class="annot"><span class="annottext">SchemaInfo
 </span><span class="hs-identifier hs-var">emptySchemaInfo</span></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="hs-identifier hs-var">title</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Datum&quot;</span></span><span class="hs-special">}</span><span>
 </span><span id="line-71"></span><span>
 </span><span id="line-72"></span><span class="hs-comment">-- See Note [Serialise instances for Datum and Redeemer]</span><span>
-</span><span id="line-73"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301388"><span id="local-6989586621681301392"><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-type">Datum</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-74"></span><span>  </span><span id="local-6989586621681301397"><span class="annot"><span class="annottext">encode :: Datum -&gt; Encoding
-</span><a href="#local-6989586621681301397"><span class="hs-identifier hs-var hs-var hs-var hs-var">encode</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-type">Datum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span> </span><span id="local-6989586621681301400"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681301400"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Encoding
+</span><span id="line-73"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301685"><span id="local-6989586621681301689"><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-type">Datum</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-74"></span><span>  </span><span id="local-6989586621681301694"><span class="annot"><span class="annottext">encode :: Datum -&gt; Encoding
+</span><a href="#local-6989586621681301694"><span class="hs-identifier hs-var hs-var hs-var hs-var">encode</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-type">Datum</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span> </span><span id="local-6989586621681301697"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621681301697"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681301400"><span class="hs-identifier hs-var">d</span></a></span><span>
-</span><span id="line-75"></span><span>  </span><span id="local-6989586621681301404"><span class="annot"><span class="annottext">decode :: forall s. Decoder s Datum
-</span><a href="#local-6989586621681301404"><span class="hs-identifier hs-var hs-var hs-var hs-var">decode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinData -&gt; Datum
+</span><a href="#local-6989586621681301697"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-75"></span><span>  </span><span id="local-6989586621681301701"><span class="annot"><span class="annottext">decode :: forall s. Decoder s Datum
+</span><a href="#local-6989586621681301701"><span class="hs-identifier hs-var hs-var hs-var hs-var">decode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinData -&gt; Datum
 </span><a href="PlutusLedgerApi.V1.Scripts.html#Datum"><span class="hs-identifier hs-var">Datum</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinData -&gt; Datum) -&gt; (Data -&gt; BuiltinData) -&gt; Data -&gt; Datum
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Data -&gt; BuiltinData
@@ -250,7 +250,7 @@ forall a s. Serialise a =&gt; Decoder s a
 </span><span id="line-77"></span><span class="annot"><span class="hs-comment">-- | 'Redeemer' is a wrapper around 'Data' values that are used as redeemers in transaction inputs.</span></span><span>
 </span><span id="line-78"></span><span class="hs-keyword">newtype</span><span> </span><span id="Redeemer"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-var">Redeemer</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Redeemer"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-var">Redeemer</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getRedeemer"><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinData
 </span><a href="PlutusLedgerApi.V1.Scripts.html#getRedeemer"><span class="hs-identifier hs-var hs-var">getRedeemer</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span class="hs-special">}</span><span>
-</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301411"><span id="local-6989586621681301413"><span class="annot"><span class="annottext">(forall x. Redeemer -&gt; Rep Redeemer x)
+</span><span id="line-79"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301708"><span id="local-6989586621681301710"><span class="annot"><span class="annottext">(forall x. Redeemer -&gt; Rep Redeemer x)
 -&gt; (forall x. Rep Redeemer x -&gt; Redeemer) -&gt; Generic Redeemer
 forall x. Rep Redeemer x -&gt; Redeemer
 forall x. Redeemer -&gt; Rep Redeemer x
@@ -260,7 +260,7 @@ $cfrom :: forall x. Redeemer -&gt; Rep Redeemer x
 from :: forall x. Redeemer -&gt; Rep Redeemer x
 $cto :: forall x. Rep Redeemer x -&gt; Redeemer
 to :: forall x. Rep Redeemer x -&gt; Redeemer
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301416"><span id="local-6989586621681301420"><span id="local-6989586621681301424"><span class="annot"><span class="annottext">Int -&gt; Redeemer -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301713"><span id="local-6989586621681301717"><span id="local-6989586621681301721"><span class="annot"><span class="annottext">Int -&gt; Redeemer -&gt; ShowS
 [Redeemer] -&gt; ShowS
 Redeemer -&gt; String
 (Int -&gt; Redeemer -&gt; ShowS)
@@ -274,7 +274,7 @@ show :: Redeemer -&gt; String
 $cshowList :: [Redeemer] -&gt; ShowS
 showList :: [Redeemer] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-80"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301427"><span id="local-6989586621681301431"><span class="annot"><span class="annottext">Redeemer -&gt; Redeemer -&gt; Bool
+</span><span id="line-80"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301724"><span id="local-6989586621681301728"><span class="annot"><span class="annottext">Redeemer -&gt; Redeemer -&gt; Bool
 (Redeemer -&gt; Redeemer -&gt; Bool)
 -&gt; (Redeemer -&gt; Redeemer -&gt; Bool) -&gt; Eq Redeemer
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -282,7 +282,7 @@ $c== :: Redeemer -&gt; Redeemer -&gt; Bool
 == :: Redeemer -&gt; Redeemer -&gt; Bool
 $c/= :: Redeemer -&gt; Redeemer -&gt; Bool
 /= :: Redeemer -&gt; Redeemer -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301438"><span id="local-6989586621681301442"><span id="local-6989586621681301446"><span id="local-6989586621681301450"><span id="local-6989586621681301454"><span id="local-6989586621681301458"><span id="local-6989586621681301462"><span class="annot"><span class="annottext">Eq Redeemer
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301735"><span id="local-6989586621681301739"><span id="local-6989586621681301743"><span id="local-6989586621681301747"><span id="local-6989586621681301751"><span id="local-6989586621681301755"><span id="local-6989586621681301759"><span class="annot"><span class="annottext">Eq Redeemer
 Eq Redeemer =&gt;
 (Redeemer -&gt; Redeemer -&gt; Ordering)
 -&gt; (Redeemer -&gt; Redeemer -&gt; Bool)
@@ -319,27 +319,27 @@ $cmax :: Redeemer -&gt; Redeemer -&gt; Redeemer
 max :: Redeemer -&gt; Redeemer -&gt; Redeemer
 $cmin :: Redeemer -&gt; Redeemer -&gt; Redeemer
 min :: Redeemer -&gt; Redeemer -&gt; Redeemer
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301467"><span class="annot"><span class="annottext">Redeemer -&gt; Redeemer -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301764"><span class="annot"><span class="annottext">Redeemer -&gt; Redeemer -&gt; Bool
 (Redeemer -&gt; Redeemer -&gt; Bool) -&gt; Eq Redeemer
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: Redeemer -&gt; Redeemer -&gt; Bool
 == :: Redeemer -&gt; Redeemer -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301472"><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301769"><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinData
 (Redeemer -&gt; BuiltinData) -&gt; ToData Redeemer
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: Redeemer -&gt; BuiltinData
 toBuiltinData :: Redeemer -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301477"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe Redeemer
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301774"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe Redeemer
 (BuiltinData -&gt; Maybe Redeemer) -&gt; FromData Redeemer
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe Redeemer
 fromBuiltinData :: BuiltinData -&gt; Maybe Redeemer
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301482"><span class="annot"><span class="annottext">BuiltinData -&gt; Redeemer
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301779"><span class="annot"><span class="annottext">BuiltinData -&gt; Redeemer
 (BuiltinData -&gt; Redeemer) -&gt; UnsafeFromData Redeemer
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; Redeemer
 unsafeFromBuiltinData :: BuiltinData -&gt; Redeemer
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301487"><span id="local-6989586621681301491"><span class="annot"><span class="annottext">(forall ann. Redeemer -&gt; Doc ann)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301784"><span id="local-6989586621681301788"><span class="annot"><span class="annottext">(forall ann. Redeemer -&gt; Doc ann)
 -&gt; (forall ann. [Redeemer] -&gt; Doc ann) -&gt; Pretty Redeemer
 forall ann. [Redeemer] -&gt; Doc ann
 forall ann. Redeemer -&gt; Doc ann
@@ -351,20 +351,20 @@ pretty :: forall ann. Redeemer -&gt; Doc ann
 $cprettyList :: forall ann. [Redeemer] -&gt; Doc ann
 prettyList :: forall ann. [Redeemer] -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-81"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301496"><span class="annot"><span class="annottext">Redeemer -&gt; ()
+</span><span id="line-81"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301793"><span class="annot"><span class="annottext">Redeemer -&gt; ()
 (Redeemer -&gt; ()) -&gt; NFData Redeemer
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: Redeemer -&gt; ()
 rnf :: Redeemer -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301507"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301804"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition Redeemer
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-82"></span><span>
-</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681300942"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-type">Redeemer</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681300942"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-84"></span><span>  </span><span id="local-6989586621681301515"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><span id="line-83"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301239"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-type">Redeemer</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681301239"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-84"></span><span>  </span><span id="local-6989586621681301812"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SchemaInfo -&gt; Schema referencedTypes
 forall (referencedTypes :: [*]).
 SchemaInfo -&gt; Schema referencedTypes
@@ -372,14 +372,14 @@ SchemaInfo -&gt; Schema referencedTypes
 </span><span class="hs-identifier hs-var">emptySchemaInfo</span></span><span> </span><span class="hs-special">{</span><span class="annot"><span class="hs-identifier hs-var">title</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Maybe.html#Just"><span class="hs-identifier hs-type">Just</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;Redeemer&quot;</span></span><span class="hs-special">}</span><span>
 </span><span id="line-85"></span><span>
 </span><span id="line-86"></span><span class="hs-comment">-- See Note [Serialise instances for Datum and Redeemer]</span><span>
-</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301519"><span id="local-6989586621681301523"><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-type">Redeemer</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-88"></span><span>  </span><span id="local-6989586621681301526"><span class="annot"><span class="annottext">encode :: Redeemer -&gt; Encoding
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">encode</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-type">Redeemer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span> </span><span id="local-6989586621681301527"><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681301527"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Encoding
+</span><span id="line-87"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301816"><span id="local-6989586621681301820"><span class="annot"><span class="hs-identifier hs-type">Serialise</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-type">Redeemer</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621681301823"><span class="annot"><span class="annottext">encode :: Redeemer -&gt; Encoding
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">encode</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-type">Redeemer</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span> </span><span id="local-6989586621681301824"><span class="annot"><span class="annottext">Data
+</span><a href="#local-6989586621681301824"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; Encoding
 forall a. Serialise a =&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">encode</span></span><span> </span><span class="annot"><span class="annottext">Data
-</span><a href="#local-6989586621681301527"><span class="hs-identifier hs-var">d</span></a></span><span>
-</span><span id="line-89"></span><span>  </span><span id="local-6989586621681301530"><span class="annot"><span class="annottext">decode :: forall s. Decoder s Redeemer
+</span><a href="#local-6989586621681301824"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-89"></span><span>  </span><span id="local-6989586621681301827"><span class="annot"><span class="annottext">decode :: forall s. Decoder s Redeemer
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">decode</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinData -&gt; Redeemer
 </span><a href="PlutusLedgerApi.V1.Scripts.html#Redeemer"><span class="hs-identifier hs-var">Redeemer</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinData -&gt; Redeemer)
 -&gt; (Data -&gt; BuiltinData) -&gt; Data -&gt; Redeemer
@@ -400,14 +400,14 @@ See the [Shelley ledger specification](https://github.com/IntersectMBO/cardano-l
 </span><span id="line-96"></span><span class="hs-keyword">newtype</span><span> </span><span id="ScriptHash"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#ScriptHash"><span class="hs-identifier hs-var">ScriptHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="ScriptHash"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#ScriptHash"><span class="hs-identifier hs-var">ScriptHash</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getScriptHash"><span class="annot"><span class="annottext">ScriptHash -&gt; BuiltinByteString
 </span><a href="PlutusLedgerApi.V1.Scripts.html#getScriptHash"><span class="hs-identifier hs-var hs-var">getScriptHash</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Builtins.BuiltinByteString</span></span><span class="hs-special">}</span><span>
 </span><span id="line-97"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-98"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621681301534"><span class="annot"><span class="annottext">String -&gt; ScriptHash
+</span><span id="line-98"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621681301831"><span class="annot"><span class="annottext">String -&gt; ScriptHash
 (String -&gt; ScriptHash) -&gt; IsString ScriptHash
 forall a. (String -&gt; a) -&gt; IsString a
 $cfromString :: String -&gt; ScriptHash
 fromString :: String -&gt; ScriptHash
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.String.html#IsString"><span class="hs-identifier hs-var hs-var hs-var hs-var">IsString</span></a></span></span><span>
 </span><span id="line-99"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ from hex encoding</span></span><span>
-</span><span id="line-100"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301541"><span id="local-6989586621681301546"><span id="local-6989586621681301550"><span class="annot"><span class="annottext">Int -&gt; ScriptHash -&gt; ShowS
+</span><span id="line-100"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301838"><span id="local-6989586621681301843"><span id="local-6989586621681301847"><span class="annot"><span class="annottext">Int -&gt; ScriptHash -&gt; ShowS
 [ScriptHash] -&gt; ShowS
 ScriptHash -&gt; String
 (Int -&gt; ScriptHash -&gt; ShowS)
@@ -424,7 +424,7 @@ $cshowList :: [ScriptHash] -&gt; ShowS
 showList :: [ScriptHash] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span>
 </span><span id="line-101"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ using hex encoding</span></span><span>
-</span><span id="line-102"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301555"><span id="local-6989586621681301560"><span class="annot"><span class="annottext">(forall ann. ScriptHash -&gt; Doc ann)
+</span><span id="line-102"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301852"><span id="local-6989586621681301857"><span class="annot"><span class="annottext">(forall ann. ScriptHash -&gt; Doc ann)
 -&gt; (forall ann. [ScriptHash] -&gt; Doc ann) -&gt; Pretty ScriptHash
 forall ann. [ScriptHash] -&gt; Doc ann
 forall ann. ScriptHash -&gt; Doc ann
@@ -439,7 +439,7 @@ prettyList :: forall ann. [ScriptHash] -&gt; Doc ann
 </span><span id="line-103"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ using hex encoding</span></span><span>
 </span><span id="line-104"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-105"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span>
-</span><span id="line-106"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301565"><span id="local-6989586621681301567"><span class="annot"><span class="annottext">(forall x. ScriptHash -&gt; Rep ScriptHash x)
+</span><span id="line-106"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301862"><span id="local-6989586621681301864"><span class="annot"><span class="annottext">(forall x. ScriptHash -&gt; Rep ScriptHash x)
 -&gt; (forall x. Rep ScriptHash x -&gt; ScriptHash) -&gt; Generic ScriptHash
 forall x. Rep ScriptHash x -&gt; ScriptHash
 forall x. ScriptHash -&gt; Rep ScriptHash x
@@ -450,7 +450,7 @@ from :: forall x. ScriptHash -&gt; Rep ScriptHash x
 $cto :: forall x. Rep ScriptHash x -&gt; ScriptHash
 to :: forall x. Rep ScriptHash x -&gt; ScriptHash
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-107"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301570"><span id="local-6989586621681301575"><span class="annot"><span class="annottext">ScriptHash -&gt; ScriptHash -&gt; Bool
+</span><span id="line-107"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301867"><span id="local-6989586621681301872"><span class="annot"><span class="annottext">ScriptHash -&gt; ScriptHash -&gt; Bool
 (ScriptHash -&gt; ScriptHash -&gt; Bool)
 -&gt; (ScriptHash -&gt; ScriptHash -&gt; Bool) -&gt; Eq ScriptHash
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -458,7 +458,7 @@ $c== :: ScriptHash -&gt; ScriptHash -&gt; Bool
 == :: ScriptHash -&gt; ScriptHash -&gt; Bool
 $c/= :: ScriptHash -&gt; ScriptHash -&gt; Bool
 /= :: ScriptHash -&gt; ScriptHash -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301582"><span id="local-6989586621681301587"><span id="local-6989586621681301591"><span id="local-6989586621681301595"><span id="local-6989586621681301599"><span id="local-6989586621681301603"><span id="local-6989586621681301607"><span class="annot"><span class="annottext">Eq ScriptHash
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301879"><span id="local-6989586621681301884"><span id="local-6989586621681301888"><span id="local-6989586621681301892"><span id="local-6989586621681301896"><span id="local-6989586621681301900"><span id="local-6989586621681301904"><span class="annot"><span class="annottext">Eq ScriptHash
 Eq ScriptHash =&gt;
 (ScriptHash -&gt; ScriptHash -&gt; Ordering)
 -&gt; (ScriptHash -&gt; ScriptHash -&gt; Bool)
@@ -495,12 +495,12 @@ $cmax :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
 max :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
 $cmin :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
 min :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301612"><span class="annot"><span class="annottext">ScriptHash -&gt; ScriptHash -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301909"><span class="annot"><span class="annottext">ScriptHash -&gt; ScriptHash -&gt; Bool
 (ScriptHash -&gt; ScriptHash -&gt; Bool) -&gt; Eq ScriptHash
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: ScriptHash -&gt; ScriptHash -&gt; Bool
 == :: ScriptHash -&gt; ScriptHash -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301620"><span id="local-6989586621681301625"><span id="local-6989586621681301629"><span id="local-6989586621681301633"><span id="local-6989586621681301637"><span id="local-6989586621681301641"><span id="local-6989586621681301645"><span class="annot"><span class="annottext">Eq ScriptHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301917"><span id="local-6989586621681301922"><span id="local-6989586621681301926"><span id="local-6989586621681301930"><span id="local-6989586621681301934"><span id="local-6989586621681301938"><span id="local-6989586621681301942"><span class="annot"><span class="annottext">Eq ScriptHash
 Eq ScriptHash =&gt;
 (ScriptHash -&gt; ScriptHash -&gt; Ordering)
 -&gt; (ScriptHash -&gt; ScriptHash -&gt; Bool)
@@ -537,36 +537,36 @@ $cmax :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
 max :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
 $cmin :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
 min :: ScriptHash -&gt; ScriptHash -&gt; ScriptHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301651"><span class="annot"><span class="annottext">ScriptHash -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301948"><span class="annot"><span class="annottext">ScriptHash -&gt; BuiltinData
 (ScriptHash -&gt; BuiltinData) -&gt; ToData ScriptHash
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: ScriptHash -&gt; BuiltinData
 toBuiltinData :: ScriptHash -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301657"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe ScriptHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301954"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe ScriptHash
 (BuiltinData -&gt; Maybe ScriptHash) -&gt; FromData ScriptHash
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe ScriptHash
 fromBuiltinData :: BuiltinData -&gt; Maybe ScriptHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301663"><span class="annot"><span class="annottext">BuiltinData -&gt; ScriptHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301960"><span class="annot"><span class="annottext">BuiltinData -&gt; ScriptHash
 (BuiltinData -&gt; ScriptHash) -&gt; UnsafeFromData ScriptHash
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; ScriptHash
 unsafeFromBuiltinData :: BuiltinData -&gt; ScriptHash
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-108"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301669"><span class="annot"><span class="annottext">ScriptHash -&gt; ()
+</span><span id="line-108"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301966"><span class="annot"><span class="annottext">ScriptHash -&gt; ()
 (ScriptHash -&gt; ()) -&gt; NFData ScriptHash
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: ScriptHash -&gt; ()
 rnf :: ScriptHash -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301681"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301978"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition ScriptHash
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-109"></span><span>
-</span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681300953"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#ScriptHash"><span class="hs-identifier hs-type">ScriptHash</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681300953"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-111"></span><span>  </span><span id="local-6989586621681301689"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><span id="line-110"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301250"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#ScriptHash"><span class="hs-identifier hs-type">ScriptHash</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681301250"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-111"></span><span>  </span><span id="local-6989586621681301986"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
 forall (referencedTypes :: [*]).
 SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
@@ -581,14 +581,14 @@ You may want to add checks for its invariants.
 See the [Shelley ledger specification](https://github.com/IntersectMBO/cardano-ledger/releases/download/cardano-ledger-spec-2023-04-03/shelley-ledger.pdf). -}</span></span><span>
 </span><span id="line-118"></span><span class="hs-keyword">newtype</span><span> </span><span id="DatumHash"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#DatumHash"><span class="hs-identifier hs-var">DatumHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="DatumHash"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#DatumHash"><span class="hs-identifier hs-var">DatumHash</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Builtins.BuiltinByteString</span></span><span>
 </span><span id="line-119"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-120"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621681301693"><span class="annot"><span class="annottext">String -&gt; DatumHash
+</span><span id="line-120"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621681301990"><span class="annot"><span class="annottext">String -&gt; DatumHash
 (String -&gt; DatumHash) -&gt; IsString DatumHash
 forall a. (String -&gt; a) -&gt; IsString a
 $cfromString :: String -&gt; DatumHash
 fromString :: String -&gt; DatumHash
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.String.html#IsString"><span class="hs-identifier hs-var hs-var hs-var hs-var">IsString</span></a></span></span><span>
 </span><span id="line-121"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ from hex encoding</span></span><span>
-</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301698"><span id="local-6989586621681301702"><span id="local-6989586621681301706"><span class="annot"><span class="annottext">Int -&gt; DatumHash -&gt; ShowS
+</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301995"><span id="local-6989586621681301999"><span id="local-6989586621681302003"><span class="annot"><span class="annottext">Int -&gt; DatumHash -&gt; ShowS
 [DatumHash] -&gt; ShowS
 DatumHash -&gt; String
 (Int -&gt; DatumHash -&gt; ShowS)
@@ -605,7 +605,7 @@ $cshowList :: [DatumHash] -&gt; ShowS
 showList :: [DatumHash] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span>
 </span><span id="line-123"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ using hex encoding</span></span><span>
-</span><span id="line-124"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301711"><span id="local-6989586621681301715"><span class="annot"><span class="annottext">(forall ann. DatumHash -&gt; Doc ann)
+</span><span id="line-124"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302008"><span id="local-6989586621681302012"><span class="annot"><span class="annottext">(forall ann. DatumHash -&gt; Doc ann)
 -&gt; (forall ann. [DatumHash] -&gt; Doc ann) -&gt; Pretty DatumHash
 forall ann. [DatumHash] -&gt; Doc ann
 forall ann. DatumHash -&gt; Doc ann
@@ -620,7 +620,7 @@ prettyList :: forall ann. [DatumHash] -&gt; Doc ann
 </span><span id="line-125"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ using hex encoding</span></span><span>
 </span><span id="line-126"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-127"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span>
-</span><span id="line-128"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301720"><span id="local-6989586621681301722"><span class="annot"><span class="annottext">(forall x. DatumHash -&gt; Rep DatumHash x)
+</span><span id="line-128"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302017"><span id="local-6989586621681302019"><span class="annot"><span class="annottext">(forall x. DatumHash -&gt; Rep DatumHash x)
 -&gt; (forall x. Rep DatumHash x -&gt; DatumHash) -&gt; Generic DatumHash
 forall x. Rep DatumHash x -&gt; DatumHash
 forall x. DatumHash -&gt; Rep DatumHash x
@@ -631,7 +631,7 @@ from :: forall x. DatumHash -&gt; Rep DatumHash x
 $cto :: forall x. Rep DatumHash x -&gt; DatumHash
 to :: forall x. Rep DatumHash x -&gt; DatumHash
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-129"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301725"><span id="local-6989586621681301729"><span class="annot"><span class="annottext">DatumHash -&gt; DatumHash -&gt; Bool
+</span><span id="line-129"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302022"><span id="local-6989586621681302026"><span class="annot"><span class="annottext">DatumHash -&gt; DatumHash -&gt; Bool
 (DatumHash -&gt; DatumHash -&gt; Bool)
 -&gt; (DatumHash -&gt; DatumHash -&gt; Bool) -&gt; Eq DatumHash
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -639,7 +639,7 @@ $c== :: DatumHash -&gt; DatumHash -&gt; Bool
 == :: DatumHash -&gt; DatumHash -&gt; Bool
 $c/= :: DatumHash -&gt; DatumHash -&gt; Bool
 /= :: DatumHash -&gt; DatumHash -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301736"><span id="local-6989586621681301740"><span id="local-6989586621681301744"><span id="local-6989586621681301748"><span id="local-6989586621681301752"><span id="local-6989586621681301756"><span id="local-6989586621681301760"><span class="annot"><span class="annottext">Eq DatumHash
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302033"><span id="local-6989586621681302037"><span id="local-6989586621681302041"><span id="local-6989586621681302045"><span id="local-6989586621681302049"><span id="local-6989586621681302053"><span id="local-6989586621681302057"><span class="annot"><span class="annottext">Eq DatumHash
 Eq DatumHash =&gt;
 (DatumHash -&gt; DatumHash -&gt; Ordering)
 -&gt; (DatumHash -&gt; DatumHash -&gt; Bool)
@@ -676,12 +676,12 @@ $cmax :: DatumHash -&gt; DatumHash -&gt; DatumHash
 max :: DatumHash -&gt; DatumHash -&gt; DatumHash
 $cmin :: DatumHash -&gt; DatumHash -&gt; DatumHash
 min :: DatumHash -&gt; DatumHash -&gt; DatumHash
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301765"><span class="annot"><span class="annottext">DatumHash -&gt; DatumHash -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302062"><span class="annot"><span class="annottext">DatumHash -&gt; DatumHash -&gt; Bool
 (DatumHash -&gt; DatumHash -&gt; Bool) -&gt; Eq DatumHash
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: DatumHash -&gt; DatumHash -&gt; Bool
 == :: DatumHash -&gt; DatumHash -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301772"><span id="local-6989586621681301776"><span id="local-6989586621681301780"><span id="local-6989586621681301784"><span id="local-6989586621681301788"><span id="local-6989586621681301792"><span id="local-6989586621681301796"><span class="annot"><span class="annottext">Eq DatumHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302069"><span id="local-6989586621681302073"><span id="local-6989586621681302077"><span id="local-6989586621681302081"><span id="local-6989586621681302085"><span id="local-6989586621681302089"><span id="local-6989586621681302093"><span class="annot"><span class="annottext">Eq DatumHash
 Eq DatumHash =&gt;
 (DatumHash -&gt; DatumHash -&gt; Ordering)
 -&gt; (DatumHash -&gt; DatumHash -&gt; Bool)
@@ -718,36 +718,36 @@ $cmax :: DatumHash -&gt; DatumHash -&gt; DatumHash
 max :: DatumHash -&gt; DatumHash -&gt; DatumHash
 $cmin :: DatumHash -&gt; DatumHash -&gt; DatumHash
 min :: DatumHash -&gt; DatumHash -&gt; DatumHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301801"><span class="annot"><span class="annottext">DatumHash -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302098"><span class="annot"><span class="annottext">DatumHash -&gt; BuiltinData
 (DatumHash -&gt; BuiltinData) -&gt; ToData DatumHash
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: DatumHash -&gt; BuiltinData
 toBuiltinData :: DatumHash -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301806"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe DatumHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302103"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe DatumHash
 (BuiltinData -&gt; Maybe DatumHash) -&gt; FromData DatumHash
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe DatumHash
 fromBuiltinData :: BuiltinData -&gt; Maybe DatumHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301811"><span class="annot"><span class="annottext">BuiltinData -&gt; DatumHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302108"><span class="annot"><span class="annottext">BuiltinData -&gt; DatumHash
 (BuiltinData -&gt; DatumHash) -&gt; UnsafeFromData DatumHash
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; DatumHash
 unsafeFromBuiltinData :: BuiltinData -&gt; DatumHash
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-130"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301816"><span class="annot"><span class="annottext">DatumHash -&gt; ()
+</span><span id="line-130"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302113"><span class="annot"><span class="annottext">DatumHash -&gt; ()
 (DatumHash -&gt; ()) -&gt; NFData DatumHash
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: DatumHash -&gt; ()
 rnf :: DatumHash -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301827"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302124"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition DatumHash
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-131"></span><span>
-</span><span id="line-132"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681300959"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#DatumHash"><span class="hs-identifier hs-type">DatumHash</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681300959"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-133"></span><span>  </span><span id="local-6989586621681301835"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><span id="line-132"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301256"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#DatumHash"><span class="hs-identifier hs-type">DatumHash</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681301256"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-133"></span><span>  </span><span id="local-6989586621681302132"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
 forall (referencedTypes :: [*]).
 SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
@@ -762,14 +762,14 @@ You may want to add checks for its invariants.
 See the [Shelley ledger specification](https://github.com/IntersectMBO/cardano-ledger/releases/download/cardano-ledger-spec-2023-04-03/shelley-ledger.pdf). -}</span></span><span>
 </span><span id="line-140"></span><span class="hs-keyword">newtype</span><span> </span><span id="RedeemerHash"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#RedeemerHash"><span class="hs-identifier hs-var">RedeemerHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="RedeemerHash"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#RedeemerHash"><span class="hs-identifier hs-var">RedeemerHash</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Builtins.BuiltinByteString</span></span><span>
 </span><span id="line-141"></span><span>  </span><span class="hs-keyword">deriving</span><span>
-</span><span id="line-142"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621681301838"><span class="annot"><span class="annottext">String -&gt; RedeemerHash
+</span><span id="line-142"></span><span>    </span><span class="hs-special">(</span><span> </span><span id="local-6989586621681302135"><span class="annot"><span class="annottext">String -&gt; RedeemerHash
 (String -&gt; RedeemerHash) -&gt; IsString RedeemerHash
 forall a. (String -&gt; a) -&gt; IsString a
 $cfromString :: String -&gt; RedeemerHash
 fromString :: String -&gt; RedeemerHash
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.String.html#IsString"><span class="hs-identifier hs-var hs-var hs-var hs-var">IsString</span></a></span></span><span>
 </span><span id="line-143"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ from hex encoding</span></span><span>
-</span><span id="line-144"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301843"><span id="local-6989586621681301847"><span id="local-6989586621681301851"><span class="annot"><span class="annottext">Int -&gt; RedeemerHash -&gt; ShowS
+</span><span id="line-144"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302140"><span id="local-6989586621681302144"><span id="local-6989586621681302148"><span class="annot"><span class="annottext">Int -&gt; RedeemerHash -&gt; ShowS
 [RedeemerHash] -&gt; ShowS
 RedeemerHash -&gt; String
 (Int -&gt; RedeemerHash -&gt; ShowS)
@@ -786,7 +786,7 @@ $cshowList :: [RedeemerHash] -&gt; ShowS
 showList :: [RedeemerHash] -&gt; ShowS
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Show</span></a></span></span></span></span><span>
 </span><span id="line-145"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ using hex encoding</span></span><span>
-</span><span id="line-146"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301856"><span id="local-6989586621681301860"><span class="annot"><span class="annottext">(forall ann. RedeemerHash -&gt; Doc ann)
+</span><span id="line-146"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302153"><span id="local-6989586621681302157"><span class="annot"><span class="annottext">(forall ann. RedeemerHash -&gt; Doc ann)
 -&gt; (forall ann. [RedeemerHash] -&gt; Doc ann) -&gt; Pretty RedeemerHash
 forall ann. [RedeemerHash] -&gt; Doc ann
 forall ann. RedeemerHash -&gt; Doc ann
@@ -801,7 +801,7 @@ prettyList :: forall ann. [RedeemerHash] -&gt; Doc ann
 </span><span id="line-147"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ using hex encoding</span></span><span>
 </span><span id="line-148"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-149"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Bytes.html#LedgerBytes"><span class="hs-identifier hs-type">LedgerBytes</span></a></span><span>
-</span><span id="line-150"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301865"><span id="local-6989586621681301867"><span class="annot"><span class="annottext">(forall x. RedeemerHash -&gt; Rep RedeemerHash x)
+</span><span id="line-150"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302162"><span id="local-6989586621681302164"><span class="annot"><span class="annottext">(forall x. RedeemerHash -&gt; Rep RedeemerHash x)
 -&gt; (forall x. Rep RedeemerHash x -&gt; RedeemerHash)
 -&gt; Generic RedeemerHash
 forall x. Rep RedeemerHash x -&gt; RedeemerHash
@@ -813,7 +813,7 @@ from :: forall x. RedeemerHash -&gt; Rep RedeemerHash x
 $cto :: forall x. Rep RedeemerHash x -&gt; RedeemerHash
 to :: forall x. Rep RedeemerHash x -&gt; RedeemerHash
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-151"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301870"><span id="local-6989586621681301874"><span class="annot"><span class="annottext">RedeemerHash -&gt; RedeemerHash -&gt; Bool
+</span><span id="line-151"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302167"><span id="local-6989586621681302171"><span class="annot"><span class="annottext">RedeemerHash -&gt; RedeemerHash -&gt; Bool
 (RedeemerHash -&gt; RedeemerHash -&gt; Bool)
 -&gt; (RedeemerHash -&gt; RedeemerHash -&gt; Bool) -&gt; Eq RedeemerHash
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -821,7 +821,7 @@ $c== :: RedeemerHash -&gt; RedeemerHash -&gt; Bool
 == :: RedeemerHash -&gt; RedeemerHash -&gt; Bool
 $c/= :: RedeemerHash -&gt; RedeemerHash -&gt; Bool
 /= :: RedeemerHash -&gt; RedeemerHash -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301881"><span id="local-6989586621681301885"><span id="local-6989586621681301889"><span id="local-6989586621681301893"><span id="local-6989586621681301897"><span id="local-6989586621681301901"><span id="local-6989586621681301905"><span class="annot"><span class="annottext">Eq RedeemerHash
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302178"><span id="local-6989586621681302182"><span id="local-6989586621681302186"><span id="local-6989586621681302190"><span id="local-6989586621681302194"><span id="local-6989586621681302198"><span id="local-6989586621681302202"><span class="annot"><span class="annottext">Eq RedeemerHash
 Eq RedeemerHash =&gt;
 (RedeemerHash -&gt; RedeemerHash -&gt; Ordering)
 -&gt; (RedeemerHash -&gt; RedeemerHash -&gt; Bool)
@@ -858,12 +858,12 @@ $cmax :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
 max :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
 $cmin :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
 min :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301910"><span class="annot"><span class="annottext">RedeemerHash -&gt; RedeemerHash -&gt; Bool
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Haskell.Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302207"><span class="annot"><span class="annottext">RedeemerHash -&gt; RedeemerHash -&gt; Bool
 (RedeemerHash -&gt; RedeemerHash -&gt; Bool) -&gt; Eq RedeemerHash
 forall a. (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: RedeemerHash -&gt; RedeemerHash -&gt; Bool
 == :: RedeemerHash -&gt; RedeemerHash -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301917"><span id="local-6989586621681301921"><span id="local-6989586621681301925"><span id="local-6989586621681301929"><span id="local-6989586621681301933"><span id="local-6989586621681301937"><span id="local-6989586621681301941"><span class="annot"><span class="annottext">Eq RedeemerHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Eq</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302214"><span id="local-6989586621681302218"><span id="local-6989586621681302222"><span id="local-6989586621681302226"><span id="local-6989586621681302230"><span id="local-6989586621681302234"><span id="local-6989586621681302238"><span class="annot"><span class="annottext">Eq RedeemerHash
 Eq RedeemerHash =&gt;
 (RedeemerHash -&gt; RedeemerHash -&gt; Ordering)
 -&gt; (RedeemerHash -&gt; RedeemerHash -&gt; Bool)
@@ -900,36 +900,36 @@ $cmax :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
 max :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
 $cmin :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
 min :: RedeemerHash -&gt; RedeemerHash -&gt; RedeemerHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301946"><span class="annot"><span class="annottext">RedeemerHash -&gt; BuiltinData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302243"><span class="annot"><span class="annottext">RedeemerHash -&gt; BuiltinData
 (RedeemerHash -&gt; BuiltinData) -&gt; ToData RedeemerHash
 forall a. (a -&gt; BuiltinData) -&gt; ToData a
 $ctoBuiltinData :: RedeemerHash -&gt; BuiltinData
 toBuiltinData :: RedeemerHash -&gt; BuiltinData
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301951"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe RedeemerHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">ToData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302248"><span class="annot"><span class="annottext">BuiltinData -&gt; Maybe RedeemerHash
 (BuiltinData -&gt; Maybe RedeemerHash) -&gt; FromData RedeemerHash
 forall a. (BuiltinData -&gt; Maybe a) -&gt; FromData a
 $cfromBuiltinData :: BuiltinData -&gt; Maybe RedeemerHash
 fromBuiltinData :: BuiltinData -&gt; Maybe RedeemerHash
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301956"><span class="annot"><span class="annottext">BuiltinData -&gt; RedeemerHash
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">FromData</span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302253"><span class="annot"><span class="annottext">BuiltinData -&gt; RedeemerHash
 (BuiltinData -&gt; RedeemerHash) -&gt; UnsafeFromData RedeemerHash
 forall a. (BuiltinData -&gt; a) -&gt; UnsafeFromData a
 $cunsafeFromBuiltinData :: BuiltinData -&gt; RedeemerHash
 unsafeFromBuiltinData :: BuiltinData -&gt; RedeemerHash
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">UnsafeFromData</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-152"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301961"><span class="annot"><span class="annottext">RedeemerHash -&gt; ()
+</span><span id="line-152"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302258"><span class="annot"><span class="annottext">RedeemerHash -&gt; ()
 (RedeemerHash -&gt; ()) -&gt; NFData RedeemerHash
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: RedeemerHash -&gt; ()
 rnf :: RedeemerHash -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301972"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302269"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition RedeemerHash
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-153"></span><span>
-</span><span id="line-154"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681300964"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#RedeemerHash"><span class="hs-identifier hs-type">RedeemerHash</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681300964"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-155"></span><span>  </span><span id="local-6989586621681301980"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
+</span><span id="line-154"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681301261"><span class="annot"><span class="hs-identifier hs-type">HasBlueprintSchema</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#RedeemerHash"><span class="hs-identifier hs-type">RedeemerHash</span></a></span><span> </span><span class="annot"><a href="#local-6989586621681301261"><span class="hs-identifier hs-type">referencedTypes</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-155"></span><span>  </span><span id="local-6989586621681302277"><span class="annot"><span class="annottext">schema :: Schema referencedTypes
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">schema</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
 forall (referencedTypes :: [*]).
 SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
@@ -940,7 +940,7 @@ SchemaInfo -&gt; BytesSchema -&gt; Schema referencedTypes
 </span><span id="line-157"></span><span class="annot"><span class="hs-comment">{-| Information about the state of the blockchain and about the transaction
   that is currently being validated, represented as a value in 'Data'. -}</span></span><span>
 </span><span id="line-159"></span><span class="hs-keyword">newtype</span><span> </span><span id="Context"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Context"><span class="hs-identifier hs-var">Context</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Context"><span class="annot"><a href="PlutusLedgerApi.V1.Scripts.html#Context"><span class="hs-identifier hs-var">Context</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">BuiltinData</span></span><span>
-</span><span id="line-160"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681301983"><span id="local-6989586621681301987"><span class="annot"><span class="annottext">(forall ann. Context -&gt; Doc ann)
+</span><span id="line-160"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681302280"><span id="local-6989586621681302284"><span class="annot"><span class="annottext">(forall ann. Context -&gt; Doc ann)
 -&gt; (forall ann. [Context] -&gt; Doc ann) -&gt; Pretty Context
 forall ann. [Context] -&gt; Doc ann
 forall ann. Context -&gt; Doc ann
@@ -951,7 +951,7 @@ $cpretty :: forall ann. Context -&gt; Doc ann
 pretty :: forall ann. Context -&gt; Doc ann
 $cprettyList :: forall ann. [Context] -&gt; Doc ann
 prettyList :: forall ann. [Context] -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681301992"><span id="local-6989586621681301996"><span id="local-6989586621681302000"><span class="annot"><span class="annottext">Int -&gt; Context -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681302289"><span id="local-6989586621681302293"><span id="local-6989586621681302297"><span class="annot"><span class="annottext">Int -&gt; Context -&gt; ShowS
 [Context] -&gt; ShowS
 Context -&gt; String
 (Int -&gt; Context -&gt; ShowS)
@@ -969,15 +969,15 @@ showList :: [Context] -&gt; ShowS
 </span><span id="line-162"></span><span class="hs-comment">----------------------------------------------------------------------------------------------------</span><span>
 </span><span id="line-163"></span><span class="hs-comment">-- TH Splices --------------------------------------------------------------------------------------</span><span>
 </span><span id="line-164"></span><span>
-</span><span id="line-165"></span><span id="local-6989586621681302005"><span id="local-6989586621681302007"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">ScriptHash</span></span></span><span>
-</span><span id="line-166"></span><span id="local-6989586621681302134"><span id="local-6989586621681302136"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DatumHash</span></span></span><span>
-</span><span id="line-167"></span><span id="local-6989586621681302206"><span id="local-6989586621681302208"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">RedeemerHash</span></span></span><span>
-</span><span id="line-168"></span><span id="local-6989586621681302278"><span id="local-6989586621681302280"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Datum</span></span></span><span>
-</span><span id="line-169"></span><span id="local-6989586621681302353"><span id="local-6989586621681302355"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Redeemer</span></span></span><span>
+</span><span id="line-165"></span><span id="local-6989586621681302302"><span id="local-6989586621681302304"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">ScriptHash</span></span></span><span>
+</span><span id="line-166"></span><span id="local-6989586621681302431"><span id="local-6989586621681302433"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DatumHash</span></span></span><span>
+</span><span id="line-167"></span><span id="local-6989586621681302503"><span id="local-6989586621681302505"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">RedeemerHash</span></span></span><span>
+</span><span id="line-168"></span><span id="local-6989586621681302575"><span id="local-6989586621681302577"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Datum</span></span></span><span>
+</span><span id="line-169"></span><span id="local-6989586621681302650"><span id="local-6989586621681302652"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Redeemer</span></span></span><span>
 </span><span id="line-170"></span><span>
-</span><span id="line-171"></span><span id="local-6989586621681302425"><span id="local-6989586621681302434"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">ScriptHash</span></span></span><span>
-</span><span id="line-172"></span><span id="local-6989586621681302447"><span id="local-6989586621681302451"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DatumHash</span></span></span><span>
-</span><span id="line-173"></span><span id="local-6989586621681302458"><span id="local-6989586621681302462"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">RedeemerHash</span></span></span><span>
-</span><span id="line-174"></span><span id="local-6989586621681302469"><span id="local-6989586621681302477"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Datum</span></span></span><span>
-</span><span id="line-175"></span><span id="local-6989586621681302484"><span id="local-6989586621681302491"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Redeemer</span></span></span><span>
+</span><span id="line-171"></span><span id="local-6989586621681302722"><span id="local-6989586621681302731"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">ScriptHash</span></span></span><span>
+</span><span id="line-172"></span><span id="local-6989586621681302744"><span id="local-6989586621681302748"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DatumHash</span></span></span><span>
+</span><span id="line-173"></span><span id="local-6989586621681302755"><span id="local-6989586621681302759"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">RedeemerHash</span></span></span><span>
+</span><span id="line-174"></span><span id="local-6989586621681302766"><span id="local-6989586621681302774"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Datum</span></span></span><span>
+</span><span id="line-175"></span><span id="local-6989586621681302781"><span id="local-6989586621681302788"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">Redeemer</span></span></span><span>
 </span><span id="line-176"></span></pre></body></html>

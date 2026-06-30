@@ -3,7 +3,7 @@
 
 
 @package plutarch-ledger-api
-@version 3.6.0
+@version 3.7.0
 
 
 -- | This module is designed to be imported qualified, as many of its
@@ -42,14 +42,6 @@ psingletonData :: forall (t :: (S -> Type) -> (S -> Type) -> S -> Type) (k :: S 
 punsortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) f (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PUnsortedMap k v)
 
 psortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) f (s :: S). (Foldable f, POrd k, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PSortedMap k v)
-
--- | Attempt to promote <a>PUnsortedMap</a> to <a>PSortedMap</a>. This
---   function checks that the keys in the input map are in strictly
---   ascending order and fails with an error if they are not. Duplicate
---   keys are not allowed.
-
--- | <i>Deprecated: Use ppromoteToSortedMap instead</i>
-passertSorted :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (POrd k, PIsData k) => Term s (PUnsortedMap k v :--> PSortedMap k v)
 
 -- | Attempt to promote <a>PUnsortedMap</a> to <a>PSortedMap</a>. This
 --   function checks that the keys in the input map are in strictly
@@ -592,15 +584,6 @@ padaToken :: forall (s :: S). Term s PTokenName
 --   The conversion succeeds only if the input Value is already sorted and
 --   does not contain empty token maps. Otherwise, the function fails with
 --   an error.
-
--- | <i>Deprecated: Use ppromoteToSortedValue instead</i>
-passertSorted :: forall (s :: S). Term s (PRawValue :--> PSortedValue)
-
--- | Attempt to promote a <a>PRawValue</a> to <a>PSortedValue</a>.
---   
---   The conversion succeeds only if the input Value is already sorted and
---   does not contain empty token maps. Otherwise, the function fails with
---   an error.
 ppromoteToSortedValue :: forall (s :: S). Term s (PRawValue :--> PSortedValue)
 
 -- | Safely demote a <a>PSortedValue</a> to a <a>PRawValue</a>.
@@ -716,6 +699,186 @@ instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s Plutarch.Le
 instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
 instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
 instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+
+
+-- | Conversions between ledger API representations of <tt>Value</tt>s and
+--   the new <a>PBuiltinValue</a>, plus some utility functions.
+--   
+--   <h1>Why is this module necessary?</h1>
+--   
+--   In almost all situations, <tt>Value</tt>s will be provided to a script
+--   as their <tt>Data</tt> encodings, whether this is through an input or
+--   a <tt>PScriptContext</tt>. <tt>plutarch-ledger-api</tt> has an
+--   extensive collection of functions for dealing with such
+--   representations, as well as a range of <tt>newtype</tt> wrappers to
+--   provide guarantees of form when doing so.
+--   
+--   However, as these operations have to work over (effectively) nested
+--   cons lists, they are not efficient for many operations, especially
+--   simpler ones like lookups or primitive insertions. In this regard,
+--   <a>PBuiltinValue</a> excels, as these are calls to builtin operations,
+--   which are much more efficient. However, some conversion cost must be
+--   paid to go from the <tt>Data</tt> encoding to a <a>PBuiltinValue</a>.
+--   
+--   In addition to this, the <tt>UnValueData</tt> primitive has quite
+--   specific expectations of any <tt>Data</tt> it is given. More
+--   precisely, the argument must:
+--   
+--   <ul>
+--   <li>Be made using the <tt>Map</tt> constructor;</li>
+--   <li>Every 'key' must be encoded using the <tt>B</tt> constructor, and
+--   be at most 32 bytes in length;</li>
+--   <li>Every 'value' must be a non-empty list of key-value pairs.</li>
+--   <li>Every 'inner key' must be encoded using the <tt>B</tt>
+--   constructor, and be at most 32 bytes in length;</li>
+--   <li>Every 'inner value' must be encoded using the <tt>I</tt>
+--   constructor, and be non-zero, as well as fitting within a 128-bit
+--   signed integer;</li>
+--   <li>'Keys', both 'outer' and 'inner', must be in strictly ascending
+--   order, which implies no duplicates.</li>
+--   </ul>
+--   
+--   Any deviation from this will cause the builtin to error. Thus, of all
+--   the <tt>newtype</tt>s provided for structural safety by
+--   <tt>plutarch-ledger-api</tt>, only <a>PMintValue</a> is suitable.
+--   
+--   To make matters worse, the inverse <tt>ValueData</tt> builtin does not
+--   guarantee that an arbitrary <a>PBuiltinValue</a> will satisfy the
+--   structural requirements of a <a>PMintValue</a>, as it may contain an
+--   Ada entry. Thus, if 'converting back' is required, we can only
+--   guarantee a <tt>PSortedValue</tt>. Any other conversion is technically
+--   speaking unsafe and may error. Worse still, there is no
+--   straightforward way to verify what kind of 'inner' or 'outer' keys a
+--   <a>PBuiltinValue</a> contains without converting it first!
+--   
+--   Thus, this module provides clearly labelled conversions, safe and
+--   unsafe, as well as some helper wrapper functions to make
+--   <a>PBuiltinValue</a> easier to use with other types provided by
+--   <tt>plutarch-ledger-api</tt>.
+module Plutarch.LedgerApi.V3.Value
+
+-- | After verifying the conversion is safe, convert a <a>PRawValue</a>
+--   <tt>Data</tt> representation into a <a>PBuiltinValue</a>. To save on
+--   allocations, this is written in a continuation-passing style:
+--   
+--   <ul>
+--   <li>The second argument is what should happen if validation fails;
+--   and</li>
+--   <li>The third argument is what should happen if validation
+--   succeeds.</li>
+--   </ul>
+--   
+--   <h1>Important note</h1>
+--   
+--   This operation is slow, as it has to check the entire input.
+pfromRawValue :: forall (r :: S -> Type) (s :: S). Term s PRawValue -> Term s r -> Term s (PBuiltinValue :--> r) -> Term s r
+
+-- | As <a>pfromRawValue</a>, except for <a>PSortedValue</a>s instead. This
+--   is more efficient, as we only need to check for the absence of zero
+--   amounts.
+pfromSortedValue :: forall (r :: S -> Type) (s :: S). Term s PSortedValue -> Term s r -> Term s (PBuiltinValue :--> r) -> Term s r
+
+-- | Convert the <tt>Data</tt> representation of a <a>PMintValue</a> to a
+--   <a>PBuiltinValue</a>. This is done via a builtin (thus efficient), and
+--   is safe.
+pfromMintValue :: forall (s :: S). Term s (PAsData PMintValue) -> Term s PBuiltinValue
+
+-- | Convert a <a>PBuiltinValue</a> into the <tt>Data</tt> representation
+--   of a <a>PSortedValue</a>. This is done via a builtin (thus efficient),
+--   and is safe.
+--   
+--   If you need to convert to something less specific, use <a>pupcast</a>.
+ptoSortedValue :: forall (s :: S). Term s PBuiltinValue -> Term s (PAsData PSortedValue)
+
+-- | Checks for an Ada entry in the input <a>PBuiltinValue</a>. If none is
+--   found, produce the second argument; otherwise, convert the
+--   <a>PBuiltinValue</a> into a <a>PAsData</a> <a>PLedgerValue</a> and
+--   call the third argument with it.
+ptoLedgerValue :: forall (r :: S -> Type) (s :: S). Term s PBuiltinValue -> Term s r -> Term s (PAsData PLedgerValue :--> r) -> Term s r
+
+-- | As <a>ptoLedgerValue</a>, but 'fills in' a zero ADA entry if one is
+--   missing. This is a costly operation, as it must be done <i>after</i>
+--   conversion. Use with care.
+ptoLedgerValue' :: forall (s :: S). Term s PBuiltinValue -> Term s PLedgerValue
+
+-- | As <a>ptoLedgerValue</a>, except the check is for the <i>absence</i>
+--   of an Ada entry, and the third argument is called with a
+--   <a>PAsData</a> <a>PMintValue</a> instead when appropriate.
+ptoMintValue :: forall (r :: S -> Type) (s :: S). Term s PBuiltinValue -> Term s r -> Term s (PAsData PMintValue :--> r) -> Term s r
+
+-- | Convert the <tt>Data</tt> representation of a <a>PRawValue</a> into a
+--   <a>PBuiltinValue</a> while not doing any checks.
+--   
+--   This is <i>not</i> safe, and will error if any of the invariants of
+--   <a>PBuiltinValue</a> are violated. Use with care.
+punsafeFromRawValue :: forall (s :: S). Term s (PAsData PRawValue) -> Term s PBuiltinValue
+
+-- | As <a>punsafeFromRawValue</a>, except for <a>PSortedValue</a>s
+--   instead. The same caveats apply.
+punsafeFromSortedValue :: forall (s :: S). Term s (PAsData PSortedValue) -> Term s PBuiltinValue
+
+-- | Convert a <a>PBuiltinValue</a> into a <a>PAsData</a>
+--   <a>PLedgerValue</a> without checking anything. Only use this if you
+--   are certain that the <a>PBuiltinValue</a> does not violate any
+--   internal invariants of <a>PLedgerValue</a>. In particular, there
+--   <i>must</i> be an Ada amount in the argument <a>PMintValue</a>.
+punsafeToLedgerValue :: forall (s :: S). Term s PBuiltinValue -> Term s (PAsData PLedgerValue)
+
+-- | Convert a <a>PBuiltinValue</a> into a <a>PAsData</a>
+--   <a>PLedgerValue</a> without checking anything. Only use this if you
+--   are certain that the <a>PBuiltinValue</a> does not violate any
+--   internal invariants of <a>PMintValue</a>. In particular, there should
+--   <i>not</i> be an Ada amount in the argument <a>PMintValue</a>.
+punsafeToMintValue :: forall (s :: S). Term s PBuiltinValue -> Term s (PAsData PMintValue)
+
+-- | The <a>PBuiltinValue</a> without any amounts.
+pemptyBuiltinValue :: forall (s :: S). Term s PBuiltinValue
+
+-- | A <a>PBuiltinValue</a> containing an amount of a single currency-token
+--   name combination. If the <a>PInteger</a> argument is <tt>0</tt>, this
+--   will be identical to <a>pemptyBuiltinValue</a>.
+psingletonBuiltinValue :: forall (s :: S). Term s (PCurrencySymbol :--> (PTokenName :--> (PInteger :--> PBuiltinValue)))
+
+-- | Look up the amount associated with a given combination of
+--   <a>PCurrencySymbol</a> and <a>PTokenName</a> in the given
+--   <a>PBuiltinValue</a>. As <a>PBuiltinValue</a> cannot store zero
+--   amounts, if this returns <tt>0</tt>, it means that no amount is
+--   associated with the given combination of <a>PCurrencySymbol</a> and
+--   <a>PTokenName</a> in this 'PBuiltinValue.
+pvalueOf :: forall (s :: S). Term s (PCurrencySymbol :--> (PTokenName :--> (PBuiltinValue :--> PInteger)))
+
+-- | As <a>pvalueOf</a>, but for Lovelace specifically. The same caveats
+--   apply.
+plovelaceValueOf :: forall (s :: S). Term s (PBuiltinValue :--> PInteger)
+
+-- | Replace the amount at the given currency-token name combination in the
+--   given <a>PBuiltinValue</a> with the given amount. The new amount will
+--   be positive. If the given currency-token name combination does not
+--   exist, create it.
+--   
+--   <h1>Note</h1>
+--   
+--   A <a>PBuiltinValue</a> cannot store an amount that would not fit into
+--   a 128-bit signed integer. This function will error if the result would
+--   be forced to store such an amount.
+preplaceAmountPositive :: forall (s :: S). Term s (PCurrencySymbol :--> (PTokenName :--> (PPositive :--> (PBuiltinValue :--> PBuiltinValue))))
+
+-- | Replace the amount at the given currency-token name combination in the
+--   given <a>PBuiltinValue</a> with the given amount. The new amount will
+--   be negative. If the given currency-token name combination does not
+--   exist, create it.
+--   
+--   <h1>Note</h1>
+--   
+--   A <a>PBuiltinValue</a> cannot store an amount that would not fit into
+--   a 128-bit signed integer. This function will error if the result would
+--   be forced to store such an amount.
+preplaceAmountNegative :: forall (s :: S). Term s (PCurrencySymbol :--> (PTokenName :--> (PPositive :--> (PBuiltinValue :--> PBuiltinValue))))
+
+-- | Remove any amount associated with the given currency-token name
+--   combination in the given <a>PBuiltinValue</a>. If there is no such
+--   combination in the given <a>PBuiltinValue</a>, this does nothing.
+pdeleteAmount :: forall (s :: S). Term s (PCurrencySymbol :--> (PTokenName :--> (PBuiltinValue :--> PBuiltinValue)))
 
 module Plutarch.LedgerApi.V3.Contexts
 

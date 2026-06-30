@@ -35,11 +35,11 @@ supplied in the wrong order then script cost calculations will be incorrect.
 
 IMPORTANT: The evaluation context of every Plutus version must be recreated upon
 a protocol update with the updated cost model parameters. -}</span></span><span>
-</span><span id="line-38"></span><span id="local-6989586621681294668"><span class="annot"><a href="PlutusLedgerApi.V3.EvaluationContext.html#mkEvaluationContext"><span class="hs-identifier hs-type">mkEvaluationContext</span></a></span><span>
-</span><span id="line-39"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/mtl-2.3.1-inplace/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CostModelApplyError</span></span><span> </span><span class="annot"><a href="#local-6989586621681294668"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/mtl-2.3.1-inplace/src/Control.Monad.Writer.Class.html#MonadWriter"><span class="hs-identifier hs-type">MonadWriter</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">CostModelApplyWarn</span></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="#local-6989586621681294668"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span id="local-6989586621681294965"><span class="annot"><a href="PlutusLedgerApi.V3.EvaluationContext.html#mkEvaluationContext"><span class="hs-identifier hs-type">mkEvaluationContext</span></a></span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/mtl-2.3.1-inplace/src/Control.Monad.Error.Class.html#MonadError"><span class="hs-identifier hs-type">MonadError</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CostModelApplyError</span></span><span> </span><span class="annot"><a href="#local-6989586621681294965"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/mtl-2.3.1-inplace/src/Control.Monad.Writer.Class.html#MonadWriter"><span class="hs-identifier hs-type">MonadWriter</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">CostModelApplyWarn</span></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="#local-6989586621681294965"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-40"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Int.html#Int64"><span class="hs-identifier hs-type">Int64</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-41"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ the (updated) cost model parameters of the protocol</span></span><span>
-</span><span id="line-42"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681294668"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.Eval.html#EvaluationContext"><span class="hs-identifier hs-type">EvaluationContext</span></a></span></span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621681294965"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.Eval.html#EvaluationContext"><span class="hs-identifier hs-type">EvaluationContext</span></a></span></span><span>
 </span><span id="line-43"></span><span id="mkEvaluationContext"><span class="annot"><span class="annottext">mkEvaluationContext :: forall (m :: * -&gt; *).
 (MonadError CostModelApplyError m,
  MonadWriter [CostModelApplyWarn] m) =&gt;
@@ -92,10 +92,10 @@ PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Eval.html#mkDynEvaluationContext"><span class="hs-identifier hs-var">mkDynEvaluationContext</span></a></span><span>
 </span><span id="line-47"></span><span>      </span><span class="annot"><span class="annottext">PlutusLedgerLanguage
 </span><a href="PlutusLedgerApi.Common.Versions.html#PlutusV3"><span class="hs-identifier hs-var">PlutusV3</span></a></span><span>
-</span><span id="line-48"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681294755"><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681294755"><span class="hs-identifier hs-var">pv</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-48"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681295052"><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="#local-6989586621681295052"><span class="hs-identifier hs-var">pv</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-49"></span><span>          </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681294755"><span class="hs-identifier hs-var">pv</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><a href="#local-6989586621681295052"><span class="hs-identifier hs-var">pv</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var">vanRossemPV</span></a></span><span>
@@ -105,7 +105,7 @@ forall (uni :: * -&gt; *). Int -&gt; CaserBuiltin uni
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; Int
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#getMajorProtocolVersion"><span class="hs-identifier hs-var">getMajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681294755"><span class="hs-identifier hs-var">pv</span></a></span><span>
+</span><a href="#local-6989586621681295052"><span class="hs-identifier hs-var">pv</span></a></span><span>
 </span><span id="line-51"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(forall term.
  (UniOf term ~ DefaultUni) =&gt;
  Some (ValueOf DefaultUni)
@@ -133,10 +133,10 @@ Some (ValueOf uni)
 </span><span class="hs-identifier hs-var">DefaultFunSemanticsVariantC</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">BuiltinSemanticsVariant DefaultFun
 </span><span class="hs-identifier hs-var">DefaultFunSemanticsVariantE</span></span><span class="hs-special">]</span><span>
 </span><span id="line-54"></span><span>      </span><span class="hs-comment">-- See Note [Mapping of protocol versions and ledger languages to semantics variants].</span><span>
-</span><span id="line-55"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681294766"><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681294766"><span class="hs-identifier hs-var">pv</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-55"></span><span>      </span><span class="hs-special">(</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621681295063"><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="#local-6989586621681295063"><span class="hs-identifier hs-var">pv</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-56"></span><span>          </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="#local-6989586621681294766"><span class="hs-identifier hs-var">pv</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><a href="#local-6989586621681295063"><span class="hs-identifier hs-var">pv</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#%3C"><span class="hs-operator hs-var">&lt;</span></a></span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var">vanRossemPV</span></a></span><span>

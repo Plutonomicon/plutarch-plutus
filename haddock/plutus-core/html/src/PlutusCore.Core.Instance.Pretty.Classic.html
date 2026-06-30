@@ -20,12 +20,12 @@
 </span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Prettyprinter.Custom.html"><span class="hs-identifier">Prettyprinter.Custom</span></a></span><span>
 </span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Universe.html"><span class="hs-identifier">Universe</span></a></span><span>
 </span><span id="line-22"></span><span>
-</span><span id="line-23"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682180342"><span id="local-6989586621682180343"><span id="local-6989586621682180427"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682180342"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180343"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Kind"><span class="hs-identifier hs-type">Kind</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180342"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-24"></span><span>  </span><span id="local-6989586621682180438"><span class="annot"><span class="annottext">prettyBy :: forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
-</span><a href="#local-6989586621682180438"><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></a></span></span><span> </span><span id="local-6989586621682180440"><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180440"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-25"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span> </span><span id="local-6989586621682180442"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180442"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682253374"><span id="local-6989586621682253375"><span id="local-6989586621682253459"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682253374"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253375"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Kind"><span class="hs-identifier hs-type">Kind</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253374"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-24"></span><span>  </span><span id="local-6989586621682253470"><span class="annot"><span class="annottext">prettyBy :: forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
+</span><a href="#local-6989586621682253470"><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></a></span></span><span> </span><span id="local-6989586621682253472"><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253472"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-25"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span> </span><span id="local-6989586621682253474"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253474"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-26"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">parens</span></span><span>
@@ -38,17 +38,17 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-29"></span><span>                </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180440"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253472"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-30"></span><span>                </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180442"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253474"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-31"></span><span>                </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Doc ann
 </span><span class="hs-string">&quot;type&quot;</span></span><span class="hs-special">]</span><span>
 </span><span id="line-32"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-33"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-34"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#KindArrow"><span class="hs-identifier hs-type">KindArrow</span></a></span><span> </span><span id="local-6989586621682180447"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180447"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180448"><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180448"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682180449"><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180449"><span class="hs-identifier hs-var">k'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#KindArrow"><span class="hs-identifier hs-type">KindArrow</span></a></span><span> </span><span id="local-6989586621682253479"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253479"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253480"><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253480"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682253481"><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253481"><span class="hs-identifier hs-var">k'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-35"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -60,34 +60,34 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-38"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180440"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253472"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-39"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180447"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253479"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-40"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180440"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180448"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
+</span><a href="#local-6989586621682253472"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253480"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180440"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180449"><span class="hs-identifier hs-var">k'</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253472"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253481"><span class="hs-identifier hs-var">k'</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-41"></span><span>        </span><span class="hs-special">)</span><span>
 </span><span id="line-42"></span><span>
 </span><span id="line-43"></span><span class="hs-keyword">instance</span><span>
-</span><span id="line-44"></span><span>  </span><span id="local-6989586621682180360"><span id="local-6989586621682180361"><span id="local-6989586621682180362"><span id="local-6989586621682180363"><span id="local-6989586621682180456"><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180360"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180361"><span class="hs-identifier hs-type">tyname</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.Extra.html#PrettyParens"><span class="hs-identifier hs-type">PrettyParens</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#SomeTypeIn"><span class="hs-identifier hs-type">SomeTypeIn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180362"><span class="hs-identifier hs-type">uni</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682180363"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180360"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180361"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180362"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180363"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-44"></span><span>  </span><span id="local-6989586621682253392"><span id="local-6989586621682253393"><span id="local-6989586621682253394"><span id="local-6989586621682253395"><span id="local-6989586621682253488"><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253392"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253393"><span class="hs-identifier hs-type">tyname</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.Extra.html#PrettyParens"><span class="hs-identifier hs-type">PrettyParens</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#SomeTypeIn"><span class="hs-identifier hs-type">SomeTypeIn</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253394"><span class="hs-identifier hs-type">uni</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682253395"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253392"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253393"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253394"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253395"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span><span>
 </span><span id="line-46"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-47"></span><span>  </span><span id="local-6989586621682180490"><span class="annot"><span class="annottext">prettyBy :: forall ann.
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621682253522"><span class="annot"><span class="annottext">prettyBy :: forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span id="local-6989586621682180491"><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-48"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyApp"><span class="hs-identifier hs-type">TyApp</span></a></span><span> </span><span id="local-6989586621682180493"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180493"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180494"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180494"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621682180495"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180495"><span class="hs-identifier hs-var">t'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span id="local-6989586621682253523"><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-48"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyApp"><span class="hs-identifier hs-type">TyApp</span></a></span><span> </span><span id="local-6989586621682253525"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253525"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253526"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253526"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621682253527"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253527"><span class="hs-identifier hs-var">t'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-49"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><a href="Prettyprinter.Custom.html#brackets%27"><span class="hs-identifier hs-var">brackets'</span></a></span><span>
@@ -100,27 +100,27 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-52"></span><span>                </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-53"></span><span>                </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180493"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253525"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-54"></span><span>                </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180494"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253526"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180495"><span class="hs-identifier hs-var">t'</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253527"><span class="hs-identifier hs-var">t'</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-55"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-56"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-57"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyVar"><span class="hs-identifier hs-type">TyVar</span></a></span><span> </span><span id="local-6989586621682180498"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180498"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180499"><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180499"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyVar"><span class="hs-identifier hs-type">TyVar</span></a></span><span> </span><span id="local-6989586621682253530"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253530"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253531"><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253531"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-58"></span><span>      </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">sep</span></span><span>
@@ -130,20 +130,20 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-60"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-61"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180498"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253530"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-62"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180499"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253531"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-63"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-64"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyFun"><span class="hs-identifier hs-type">TyFun</span></a></span><span> </span><span id="local-6989586621682180501"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180501"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180502"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180502"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621682180503"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180503"><span class="hs-identifier hs-var">t'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-64"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyFun"><span class="hs-identifier hs-type">TyFun</span></a></span><span> </span><span id="local-6989586621682253533"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253533"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253534"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253534"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621682253535"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253535"><span class="hs-identifier hs-var">t'</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-65"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -155,27 +155,27 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-68"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-69"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180501"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253533"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-70"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180502"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253534"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180503"><span class="hs-identifier hs-var">t'</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253535"><span class="hs-identifier hs-var">t'</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-71"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-72"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyIFix"><span class="hs-identifier hs-type">TyIFix</span></a></span><span> </span><span id="local-6989586621682180505"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180505"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180506"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180506"><span class="hs-identifier hs-var">pat</span></a></span></span><span> </span><span id="local-6989586621682180507"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180507"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-72"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyIFix"><span class="hs-identifier hs-type">TyIFix</span></a></span><span> </span><span id="local-6989586621682253537"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253537"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253538"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253538"><span class="hs-identifier hs-var">pat</span></a></span></span><span> </span><span id="local-6989586621682253539"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253539"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-73"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -187,28 +187,28 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-76"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-77"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180505"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253537"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-78"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180506"><span class="hs-identifier hs-var">pat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253538"><span class="hs-identifier hs-var">pat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180507"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253539"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-79"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-80"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyForall"><span class="hs-identifier hs-type">TyForall</span></a></span><span> </span><span id="local-6989586621682180509"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180509"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180510"><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180510"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682180511"><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180511"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682180512"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180512"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-80"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyForall"><span class="hs-identifier hs-type">TyForall</span></a></span><span> </span><span id="local-6989586621682253541"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253541"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253542"><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253542"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682253543"><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253543"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682253544"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253544"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-81"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -220,30 +220,30 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-84"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-85"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180509"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253541"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-86"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180510"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253542"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180511"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253543"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180512"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253544"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-87"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-88"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyBuiltin"><span class="hs-identifier hs-type">TyBuiltin</span></a></span><span> </span><span id="local-6989586621682180514"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180514"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180515"><span class="annot"><span class="annottext">SomeTypeIn uni
-</span><a href="#local-6989586621682180515"><span class="hs-identifier hs-var">someUni</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-88"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyBuiltin"><span class="hs-identifier hs-type">TyBuiltin</span></a></span><span> </span><span id="local-6989586621682253546"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253546"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253547"><span class="annot"><span class="annottext">SomeTypeIn uni
+</span><a href="#local-6989586621682253547"><span class="hs-identifier hs-var">someUni</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-89"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -252,18 +252,18 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180514"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">RenderContext -&gt; SomeTypeIn uni -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253546"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">RenderContext -&gt; SomeTypeIn uni -&gt; Doc ann
 forall ann. RenderContext -&gt; SomeTypeIn uni -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">RenderContext
 </span><a href="PlutusCore.Pretty.Extra.html#juxtRenderContext"><span class="hs-identifier hs-var">juxtRenderContext</span></a></span><span> </span><span class="annot"><span class="annottext">SomeTypeIn uni
-</span><a href="#local-6989586621682180515"><span class="hs-identifier hs-var">someUni</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-90"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyLam"><span class="hs-identifier hs-type">TyLam</span></a></span><span> </span><span id="local-6989586621682180518"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180518"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180519"><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180519"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682180520"><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180520"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682180521"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180521"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682253547"><span class="hs-identifier hs-var">someUni</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyLam"><span class="hs-identifier hs-type">TyLam</span></a></span><span> </span><span id="local-6989586621682253550"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253550"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253551"><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253551"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682253552"><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253552"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682253553"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253553"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-91"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -275,30 +275,30 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-94"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-95"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180518"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253550"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-96"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180519"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253551"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180520"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253552"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180521"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253553"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-97"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-98"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TySOP"><span class="hs-identifier hs-type">TySOP</span></a></span><span> </span><span id="local-6989586621682180523"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180523"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180524"><span class="annot"><span class="annottext">[[Type tyname uni ann]]
-</span><a href="#local-6989586621682180524"><span class="hs-identifier hs-var">tyls</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-98"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TySOP"><span class="hs-identifier hs-type">TySOP</span></a></span><span> </span><span id="local-6989586621682253555"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253555"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253556"><span class="annot"><span class="annottext">[[Type tyname uni ann]]
+</span><a href="#local-6989586621682253556"><span class="hs-identifier hs-var">tyls</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-99"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -307,8 +307,8 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180523"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">([Type tyname uni ann] -&gt; Doc ann)
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253555"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">([Type tyname uni ann] -&gt; Doc ann)
 -&gt; [[Type tyname uni ann]] -&gt; [Doc ann]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -316,12 +316,12 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall {a} {ann}.
 PrettyBy (PrettyConfigClassic configName) a =&gt;
 [a] -&gt; Doc ann
-</span><a href="#local-6989586621682180525"><span class="hs-identifier hs-var">prettyTyl</span></a></span><span> </span><span class="annot"><span class="annottext">[[Type tyname uni ann]]
-</span><a href="#local-6989586621682180524"><span class="hs-identifier hs-var">tyls</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682253557"><span class="hs-identifier hs-var">prettyTyl</span></a></span><span> </span><span class="annot"><span class="annottext">[[Type tyname uni ann]]
+</span><a href="#local-6989586621682253556"><span class="hs-identifier hs-var">tyls</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-100"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-101"></span><span>        </span><span id="local-6989586621682180525"><span class="annot"><span class="annottext">prettyTyl :: [a] -&gt; Doc ann
-</span><a href="#local-6989586621682180525"><span class="hs-identifier hs-var hs-var">prettyTyl</span></a></span></span><span> </span><span id="local-6989586621682180529"><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621682180529"><span class="hs-identifier hs-var">tyl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
+</span><span id="line-101"></span><span>        </span><span id="local-6989586621682253557"><span class="annot"><span class="annottext">prettyTyl :: [a] -&gt; Doc ann
+</span><a href="#local-6989586621682253557"><span class="hs-identifier hs-var hs-var">prettyTyl</span></a></span></span><span> </span><span id="local-6989586621682253561"><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621682253561"><span class="hs-identifier hs-var">tyl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><span class="hs-identifier hs-var">brackets</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
@@ -332,26 +332,26 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall ann. PrettyConfigClassic configName -&gt; a -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180491"><span class="hs-identifier hs-var">config</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
-</span><a href="#local-6989586621682180529"><span class="hs-identifier hs-var">tyl</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682253523"><span class="hs-identifier hs-var">config</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[a]
+</span><a href="#local-6989586621682253561"><span class="hs-identifier hs-var">tyl</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-102"></span><span>
 </span><span id="line-103"></span><span class="hs-keyword">instance</span><span>
-</span><span id="line-104"></span><span>  </span><span id="local-6989586621682180385"><span id="local-6989586621682180386"><span id="local-6989586621682180387"><span id="local-6989586621682180388"><span id="local-6989586621682180389"><span id="local-6989586621682180390"><span id="local-6989586621682180538"><span class="hs-special">(</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180385"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180386"><span class="hs-identifier hs-type">tyname</span></a></span><span>
-</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180385"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180387"><span class="hs-identifier hs-type">name</span></a></span><span>
-</span><span id="line-106"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.PrettyConst.html#PrettyUni"><span class="hs-identifier hs-type">PrettyUni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180388"><span class="hs-identifier hs-type">uni</span></a></span><span>
-</span><span id="line-107"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682180389"><span class="hs-identifier hs-type">fun</span></a></span><span>
-</span><span id="line-108"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682180390"><span class="hs-identifier hs-type">ann</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span id="local-6989586621682253417"><span id="local-6989586621682253418"><span id="local-6989586621682253419"><span id="local-6989586621682253420"><span id="local-6989586621682253421"><span id="local-6989586621682253422"><span id="local-6989586621682253570"><span class="hs-special">(</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253417"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253418"><span class="hs-identifier hs-type">tyname</span></a></span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253417"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253419"><span class="hs-identifier hs-type">name</span></a></span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusCore.Pretty.PrettyConst.html#PrettyUni"><span class="hs-identifier hs-type">PrettyUni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253420"><span class="hs-identifier hs-type">uni</span></a></span><span>
+</span><span id="line-107"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682253421"><span class="hs-identifier hs-type">fun</span></a></span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682253422"><span class="hs-identifier hs-type">ann</span></a></span><span>
 </span><span id="line-109"></span><span>  </span><span class="hs-special">)</span><span>
-</span><span id="line-110"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180385"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180386"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180387"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180388"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180389"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180390"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
+</span><span id="line-110"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253417"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253418"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253419"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253420"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253421"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253422"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
 </span><span id="line-111"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-112"></span><span>  </span><span id="local-6989586621682180594"><span class="annot"><span class="annottext">prettyBy :: forall ann.
+</span><span id="line-112"></span><span>  </span><span id="local-6989586621682253626"><span class="annot"><span class="annottext">prettyBy :: forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span id="local-6989586621682180595"><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-113"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621682180597"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180597"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180598"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621682180598"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span id="local-6989586621682253627"><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-113"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Var"><span class="hs-identifier hs-type">Var</span></a></span><span> </span><span id="local-6989586621682253629"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253629"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253630"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621682253630"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-114"></span><span>      </span><span class="annot"><span class="annottext">[Doc ann] -&gt; Doc ann
 forall ann. [Doc ann] -&gt; Doc ann
 </span><span class="hs-identifier hs-var">sep</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; ann -&gt; [Doc ann] -&gt; [Doc ann]
@@ -359,18 +359,18 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180597"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; name -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253629"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; name -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; name -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621682180598"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-115"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyAbs"><span class="hs-identifier hs-type">TyAbs</span></a></span><span> </span><span id="local-6989586621682180600"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180600"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180601"><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180601"><span class="hs-identifier hs-var">tn</span></a></span></span><span> </span><span id="local-6989586621682180602"><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180602"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682180603"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180603"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621682253630"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyAbs"><span class="hs-identifier hs-type">TyAbs</span></a></span><span> </span><span id="local-6989586621682253632"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253632"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253633"><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253633"><span class="hs-identifier hs-var">tn</span></a></span></span><span> </span><span id="local-6989586621682253634"><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253634"><span class="hs-identifier hs-var">k</span></a></span></span><span> </span><span id="local-6989586621682253635"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253635"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-116"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -382,34 +382,34 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-119"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-120"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180600"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253632"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-121"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; tyname -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
-</span><a href="#local-6989586621682180601"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">tyname
+</span><a href="#local-6989586621682253633"><span class="hs-identifier hs-var">tn</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; Kind ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
-</span><a href="#local-6989586621682180602"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Kind ann
+</span><a href="#local-6989586621682253634"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180603"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253635"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-122"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-123"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621682180605"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180605"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180606"><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621682180606"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682180607"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180607"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span id="local-6989586621682180608"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180608"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-123"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#LamAbs"><span class="hs-identifier hs-type">LamAbs</span></a></span><span> </span><span id="local-6989586621682253637"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253637"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253638"><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621682253638"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621682253639"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253639"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span id="local-6989586621682253640"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253640"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-124"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -421,34 +421,34 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-127"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-128"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180605"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253637"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-129"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; name -&gt; Doc ann
 forall ann. PrettyConfigClassic configName -&gt; name -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">name
-</span><a href="#local-6989586621682180606"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">name
+</span><a href="#local-6989586621682253638"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180607"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253639"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180608"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253640"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-130"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-131"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span id="local-6989586621682180610"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180610"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180611"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180611"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621682180612"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180612"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-131"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Apply"><span class="hs-identifier hs-type">Apply</span></a></span><span> </span><span id="local-6989586621682253642"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253642"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253643"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253643"><span class="hs-identifier hs-var">t1</span></a></span></span><span> </span><span id="local-6989586621682253644"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253644"><span class="hs-identifier hs-var">t2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-132"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><a href="Prettyprinter.Custom.html#brackets%27"><span class="hs-identifier hs-var">brackets'</span></a></span><span>
@@ -461,9 +461,9 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-135"></span><span>                </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-136"></span><span>                </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180610"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253642"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-137"></span><span>                </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
@@ -471,21 +471,21 @@ PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180611"><span class="hs-identifier hs-var">t1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253643"><span class="hs-identifier hs-var">t1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180612"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253644"><span class="hs-identifier hs-var">t2</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-138"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-139"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-140"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span id="local-6989586621682180614"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180614"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180615"><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621682180615"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-140"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Constant"><span class="hs-identifier hs-type">Constant</span></a></span><span> </span><span id="local-6989586621682253646"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253646"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253647"><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621682253647"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-141"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -494,18 +494,18 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180614"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Some (ValueOf uni) -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253646"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Some (ValueOf uni) -&gt; Doc ann
 forall dann. Some (ValueOf uni) -&gt; Doc dann
-</span><a href="#local-6989586621682180616"><span class="hs-identifier hs-var">prettyTypeOf</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621682180615"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni) -&gt; Doc ann
+</span><a href="#local-6989586621682253648"><span class="hs-identifier hs-var">prettyTypeOf</span></a></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
+</span><a href="#local-6989586621682253647"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni) -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall dann. Some (ValueOf uni) -&gt; Doc dann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Some (ValueOf uni)
-</span><a href="#local-6989586621682180615"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-142"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span id="local-6989586621682180619"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180619"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180620"><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621682180620"><span class="hs-identifier hs-var">bi</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682253647"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-142"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Builtin"><span class="hs-identifier hs-type">Builtin</span></a></span><span> </span><span id="local-6989586621682253651"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253651"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253652"><span class="annot"><span class="annottext">fun
+</span><a href="#local-6989586621682253652"><span class="hs-identifier hs-var">bi</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-143"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -514,16 +514,16 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180619"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">fun -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253651"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">fun -&gt; Doc ann
 forall ann. fun -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">fun
-</span><a href="#local-6989586621682180620"><span class="hs-identifier hs-var">bi</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-144"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyInst"><span class="hs-identifier hs-type">TyInst</span></a></span><span> </span><span id="local-6989586621682180622"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180622"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180623"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180623"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621682180624"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180624"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682253652"><span class="hs-identifier hs-var">bi</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-144"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyInst"><span class="hs-identifier hs-type">TyInst</span></a></span><span> </span><span id="local-6989586621682253654"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253654"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253655"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253655"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span id="local-6989586621682253656"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253656"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-145"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; Doc ann
 forall ann. Doc ann -&gt; Doc ann
 </span><a href="Prettyprinter.Custom.html#braces%27"><span class="hs-identifier hs-var">braces'</span></a></span><span>
@@ -536,9 +536,9 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-148"></span><span>                </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-149"></span><span>                </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180622"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253654"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-150"></span><span>                </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
@@ -546,19 +546,19 @@ PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180623"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253655"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180624"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253656"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-151"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-152"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-153"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span id="local-6989586621682180627"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180627"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180628"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180628"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-153"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Error"><span class="hs-identifier hs-type">Error</span></a></span><span> </span><span id="local-6989586621682253659"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253659"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253660"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253660"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-154"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -567,19 +567,19 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180627"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253659"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180628"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-155"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#IWrap"><span class="hs-identifier hs-type">IWrap</span></a></span><span> </span><span id="local-6989586621682180630"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180630"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180631"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180631"><span class="hs-identifier hs-var">ty1</span></a></span></span><span> </span><span id="local-6989586621682180632"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180632"><span class="hs-identifier hs-var">ty2</span></a></span></span><span> </span><span id="local-6989586621682180633"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180633"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253660"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-155"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#IWrap"><span class="hs-identifier hs-type">IWrap</span></a></span><span> </span><span id="local-6989586621682253662"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253662"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253663"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253663"><span class="hs-identifier hs-var">ty1</span></a></span></span><span> </span><span id="local-6989586621682253664"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253664"><span class="hs-identifier hs-var">ty2</span></a></span></span><span> </span><span id="local-6989586621682253665"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253665"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-156"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -591,34 +591,34 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-159"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-160"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180630"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253662"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-161"></span><span>            </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180631"><span class="hs-identifier hs-var">ty1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253663"><span class="hs-identifier hs-var">ty1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180632"><span class="hs-identifier hs-var">ty2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253664"><span class="hs-identifier hs-var">ty2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180633"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253665"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-162"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-163"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Unwrap"><span class="hs-identifier hs-type">Unwrap</span></a></span><span> </span><span id="local-6989586621682180635"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180635"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180636"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180636"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-163"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Unwrap"><span class="hs-identifier hs-type">Unwrap</span></a></span><span> </span><span id="local-6989586621682253667"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253667"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253668"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253668"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-164"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -627,21 +627,21 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180635"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253667"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180636"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-165"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682180638"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180638"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180639"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180639"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span id="local-6989586621682180640"><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682180640"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682180641"><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
-</span><a href="#local-6989586621682180641"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253668"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-165"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Constr"><span class="hs-identifier hs-type">Constr</span></a></span><span> </span><span id="local-6989586621682253670"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253670"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253671"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253671"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span id="local-6989586621682253672"><span class="annot"><span class="annottext">Word64
+</span><a href="#local-6989586621682253672"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621682253673"><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
+</span><a href="#local-6989586621682253673"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-166"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -653,20 +653,20 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-169"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-170"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180638"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253670"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-171"></span><span>            </span><span class="hs-special">(</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180639"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Doc ann
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253671"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Word64 -&gt; Doc ann
 forall ann. Word64 -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Word64
-</span><a href="#local-6989586621682180640"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253672"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-172"></span><span>                </span><span class="annot"><span class="annottext">[Doc ann] -&gt; [Doc ann] -&gt; [Doc ann]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Term tyname name uni fun ann -&gt; Doc ann)
@@ -680,15 +680,15 @@ PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
-</span><a href="#local-6989586621682180641"><span class="hs-identifier hs-var">es</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
+</span><a href="#local-6989586621682253673"><span class="hs-identifier hs-var">es</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-173"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-174"></span><span>        </span><span class="hs-special">)</span><span>
-</span><span id="line-175"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621682180643"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180643"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180644"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180644"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span id="local-6989586621682180645"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180645"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621682180646"><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
-</span><a href="#local-6989586621682180646"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-175"></span><span>    </span><span class="annot"><a href="PlutusCore.Core.Type.html#Case"><span class="hs-identifier hs-type">Case</span></a></span><span> </span><span id="local-6989586621682253675"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253675"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253676"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253676"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span id="local-6989586621682253677"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253677"><span class="hs-identifier hs-var">arg</span></a></span></span><span> </span><span id="local-6989586621682253678"><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
+</span><a href="#local-6989586621682253678"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-176"></span><span>      </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span>
@@ -700,24 +700,24 @@ Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span>
 </span><span id="line-179"></span><span>            </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span>
 </span><span id="line-180"></span><span>            </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180643"><span class="hs-identifier hs-var">ann</span></a></span><span>
+</span><a href="#local-6989586621682253675"><span class="hs-identifier hs-var">ann</span></a></span><span>
 </span><span id="line-181"></span><span>            </span><span class="hs-special">(</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName -&gt; Type tyname uni ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682180644"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682253676"><span class="hs-identifier hs-var">ty</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180645"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253677"><span class="hs-identifier hs-var">arg</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-182"></span><span>                </span><span class="annot"><span class="annottext">[Doc ann] -&gt; [Doc ann] -&gt; [Doc ann]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%2B%2B"><span class="hs-operator hs-var">++</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Term tyname name uni fun ann -&gt; Doc ann)
@@ -731,15 +731,15 @@ PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180595"><span class="hs-identifier hs-var">config</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
-</span><a href="#local-6989586621682180646"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682253627"><span class="hs-identifier hs-var">config</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Term tyname name uni fun ann]
+</span><a href="#local-6989586621682253678"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-183"></span><span>            </span><span class="hs-special">)</span><span>
 </span><span id="line-184"></span><span>        </span><span class="hs-special">)</span><span>
 </span><span id="line-185"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-186"></span><span>      </span><span id="local-6989586621682180395"><span class="annot"><a href="#local-6989586621682180616"><span class="hs-identifier hs-type">prettyTypeOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#ValueOf"><span class="hs-identifier hs-type">ValueOf</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180388"><span class="hs-identifier hs-type">uni</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Doc</span></span><span> </span><span class="annot"><a href="#local-6989586621682180395"><span class="hs-identifier hs-type">dann</span></a></span></span><span>
-</span><span id="line-187"></span><span>      </span><span id="local-6989586621682180616"><span class="annot"><span class="annottext">prettyTypeOf :: forall dann. Some (ValueOf uni) -&gt; Doc dann
-</span><a href="#local-6989586621682180616"><span class="hs-identifier hs-var hs-var">prettyTypeOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#ValueOf"><span class="hs-identifier hs-type">ValueOf</span></a></span><span> </span><span id="local-6989586621682180650"><span class="annot"><span class="annottext">uni (Esc a)
-</span><a href="#local-6989586621682180650"><span class="hs-identifier hs-var">uni</span></a></span></span><span> </span><span class="annot"><span class="annottext">a
+</span><span id="line-186"></span><span>      </span><span id="local-6989586621682253427"><span class="annot"><a href="#local-6989586621682253648"><span class="hs-identifier hs-type">prettyTypeOf</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#ValueOf"><span class="hs-identifier hs-type">ValueOf</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253420"><span class="hs-identifier hs-type">uni</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Doc</span></span><span> </span><span class="annot"><a href="#local-6989586621682253427"><span class="hs-identifier hs-type">dann</span></a></span></span><span>
+</span><span id="line-187"></span><span>      </span><span id="local-6989586621682253648"><span class="annot"><span class="annottext">prettyTypeOf :: forall dann. Some (ValueOf uni) -&gt; Doc dann
+</span><a href="#local-6989586621682253648"><span class="hs-identifier hs-var hs-var">prettyTypeOf</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Some</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Universe.Core.html#ValueOf"><span class="hs-identifier hs-type">ValueOf</span></a></span><span> </span><span id="local-6989586621682253682"><span class="annot"><span class="annottext">uni (Esc a)
+</span><a href="#local-6989586621682253682"><span class="hs-identifier hs-var">uni</span></a></span></span><span> </span><span class="annot"><span class="annottext">a
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">RenderContext -&gt; SomeTypeIn uni -&gt; Doc dann
 forall ann. RenderContext -&gt; SomeTypeIn uni -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
@@ -749,20 +749,20 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">uni (Esc a) -&gt; SomeTypeIn uni
 forall (uni :: * -&gt; *) k (a :: k). uni (Esc a) -&gt; SomeTypeIn uni
 </span><a href="Universe.Core.html#SomeTypeIn"><span class="hs-identifier hs-var">SomeTypeIn</span></a></span><span> </span><span class="annot"><span class="annottext">uni (Esc a)
-</span><a href="#local-6989586621682180650"><span class="hs-identifier hs-var">uni</span></a></span><span>
+</span><a href="#local-6989586621682253682"><span class="hs-identifier hs-var">uni</span></a></span><span>
 </span><span id="line-188"></span><span>
 </span><span id="line-189"></span><span class="hs-keyword">instance</span><span>
-</span><span id="line-190"></span><span>  </span><span id="local-6989586621682180416"><span id="local-6989586621682180417"><span id="local-6989586621682180418"><span id="local-6989586621682180419"><span id="local-6989586621682180420"><span id="local-6989586621682180421"><span id="local-6989586621682180656"><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180416"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180417"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180418"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180419"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180420"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180421"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682180421"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-191"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180416"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180417"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180418"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180419"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180420"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682180421"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
+</span><span id="line-190"></span><span>  </span><span id="local-6989586621682253448"><span id="local-6989586621682253449"><span id="local-6989586621682253450"><span id="local-6989586621682253451"><span id="local-6989586621682253452"><span id="local-6989586621682253453"><span id="local-6989586621682253688"><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyClassicBy"><span class="hs-identifier hs-type">PrettyClassicBy</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253448"><span class="hs-identifier hs-type">configName</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253449"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253450"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253451"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253452"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253453"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="#local-6989586621682253453"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-191"></span><span>  </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Pretty.Classic.html#PrettyConfigClassic"><span class="hs-identifier hs-type">PrettyConfigClassic</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253448"><span class="hs-identifier hs-type">configName</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253449"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253450"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253451"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253452"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682253453"><span class="hs-identifier hs-type">ann</span></a></span><span class="hs-special">)</span></span></span></span></span></span></span></span><span>
 </span><span id="line-192"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-193"></span><span>  </span><span id="local-6989586621682180664"><span class="annot"><span class="annottext">prettyBy :: forall ann.
+</span><span id="line-193"></span><span>  </span><span id="local-6989586621682253696"><span class="annot"><span class="annottext">prettyBy :: forall ann.
 PrettyConfigClassic configName
 -&gt; Program tyname name uni fun ann -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span id="local-6989586621682180665"><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180665"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span id="local-6989586621682180667"><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180667"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682180668"><span class="annot"><span class="annottext">Version
-</span><a href="#local-6989586621682180668"><span class="hs-identifier hs-var">version</span></a></span></span><span> </span><span id="local-6989586621682180669"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180669"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">prettyBy</span></span></span><span> </span><span id="local-6989586621682253697"><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253697"><span class="hs-identifier hs-var">config</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span id="local-6989586621682253699"><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253699"><span class="hs-identifier hs-var">ann</span></a></span></span><span> </span><span id="local-6989586621682253700"><span class="annot"><span class="annottext">Version
+</span><a href="#local-6989586621682253700"><span class="hs-identifier hs-var">version</span></a></span></span><span> </span><span id="local-6989586621682253701"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253701"><span class="hs-identifier hs-var">term</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-194"></span><span>    </span><span class="annot"><span class="annottext">Doc ann -&gt; [Doc ann] -&gt; Doc ann
 forall a. Doc a -&gt; [Doc a] -&gt; Doc a
 </span><a href="Prettyprinter.Custom.html#sexp"><span class="hs-identifier hs-var">sexp</span></a></span><span> </span><span class="annot"><span class="annottext">Doc ann
@@ -771,18 +771,18 @@ forall ann configName dann.
 Pretty ann =&gt;
 PrettyConfigClassic configName -&gt; ann -&gt; [Doc dann] -&gt; [Doc dann]
 </span><a href="PlutusCore.Pretty.Classic.html#consAnnIf"><span class="hs-identifier hs-var">consAnnIf</span></a></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180665"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
-</span><a href="#local-6989586621682180667"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Version -&gt; Doc ann
+</span><a href="#local-6989586621682253697"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">ann
+</span><a href="#local-6989586621682253699"><span class="hs-identifier hs-var">ann</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Version -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 forall ann. Version -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Version
-</span><a href="#local-6989586621682180668"><span class="hs-identifier hs-var">version</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
+</span><a href="#local-6989586621682253700"><span class="hs-identifier hs-var">version</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall ann.
 PrettyConfigClassic configName
 -&gt; Term tyname name uni fun ann -&gt; Doc ann
 forall config a ann. PrettyBy config a =&gt; config -&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">prettyBy</span></span><span> </span><span class="annot"><span class="annottext">PrettyConfigClassic configName
-</span><a href="#local-6989586621682180665"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682180669"><span class="hs-identifier hs-var">term</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621682253697"><span class="hs-identifier hs-var">config</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682253701"><span class="hs-identifier hs-var">term</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-195"></span></pre></body></html>

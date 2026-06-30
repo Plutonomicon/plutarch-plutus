@@ -4,7 +4,7 @@
 
 -- | Libraries for Plutus Tx and its prelude
 @package plutus-tx
-@version 1.60.0.0
+@version 1.65.0.0
 
 module Data.Aeson.Extra
 
@@ -1283,6 +1283,7 @@ module PlutusTx.AsData.Internal
 wrapUnsafeDataAsConstr :: BuiltinData -> BuiltinPair BuiltinInteger (BuiltinList BuiltinData)
 wrapTail :: BuiltinList a -> BuiltinList a
 wrapUnsafeUncons :: BuiltinList a -> (a, BuiltinList a)
+droppableUnsafeCaseList :: (a -> BuiltinList a -> r) -> BuiltinList a -> r
 
 module PlutusTx.Coverage
 data CoverageAnnotation
@@ -5066,9 +5067,6 @@ module PlutusTx.Utils
 mustBeReplaced :: String -> a
 
 module PlutusTx.Plugin.Utils
-
--- | Marks the given expression for compilation to PLC.
-plc :: forall (loc :: Symbol) a. Proxy loc -> a -> CompiledCode a
 plinthc :: a -> CompiledCode a
 
 -- | This function is used in <tt>typeCheckResultAction</tt> to mark the

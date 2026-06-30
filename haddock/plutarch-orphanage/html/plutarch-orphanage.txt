@@ -3,7 +3,19 @@
 
 
 @package plutarch-orphanage
-@version 1.2.0
+@version 1.3.0
+
+
+module PlutusCore.Value.Orphans
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.K
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.Quantity
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.Value
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.K
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.Quantity
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.Value
+instance Test.QuickCheck.Function.Function PlutusCore.Value.K
+instance Test.QuickCheck.Function.Function PlutusCore.Value.Quantity
+instance Test.QuickCheck.Function.Function PlutusCore.Value.Value
 
 module PlutusLedgerApi.QuickCheck.Utils
 

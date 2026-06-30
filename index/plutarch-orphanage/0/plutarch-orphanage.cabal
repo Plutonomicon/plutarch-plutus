@@ -50,6 +50,7 @@ common lang
 library
   import:          lang
   exposed-modules:
+    PlutusCore.Value.Orphans
     PlutusLedgerApi.QuickCheck.Utils
     PlutusLedgerApi.V1.Orphans
     PlutusLedgerApi.V2.Orphans
