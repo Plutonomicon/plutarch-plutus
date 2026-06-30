@@ -37,7 +37,7 @@
       ];
       debug = true;
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux" ];
-      hercules-ci.github-pages.branch = "staging";
+      hercules-ci.github-pages.branch = "master";
 
       perSystem = { config, system, lib, self', ... }:
         let
@@ -59,7 +59,7 @@
             src = ./.;
             compiler-nix-name = "ghc984";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
-            index-state = "2026-05-24T20:48:15Z";
+            index-state = "2026-05-21T11:15:00Z";
             inputMap = {
               "https://chap.intersectmbo.org/" = CHaP;
             };
