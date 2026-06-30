@@ -9,17 +9,18 @@ module Plutarch.Numeric.Additive (
 ) where
 
 import Data.Kind (Type)
-import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
   Term,
   perror,
-  pfix,
   plam',
-  punsafeCase,
   punsafeCoerce,
   punsafeConstant,
-  toSomeTerm,
+ )
+import Plutarch.Numeric.Helpers (
+  pexpBySquaring,
+  pione,
+  pizero,
  )
 import Plutarch.Primitive.Apply (
   PlutarchType (PRepresentation),
@@ -43,8 +44,6 @@ import Plutarch.Primitive.BuiltinFun (
   pequalsInteger,
   plessThanEqualsInteger,
   pmultiplyInteger,
-  pquotientInteger,
-  premainderInteger,
   psubtractInteger,
  )
 import Plutarch.Primitive.Function ((:-->))
@@ -96,7 +95,7 @@ class PAdditiveSemigroup a => PAdditiveMonoid (a :: S -> Type) where
     pif
       (pequalsInteger # pizero # pcoerce n)
       pzero
-      (pexpBySquaring padd # x # pcoerce n)
+      (pscalePositive # x # punsafeCoerce n)
 
 -- | @since wip
 instance PAdditiveMonoid PInteger where
@@ -169,32 +168,3 @@ infix 6 #+
 x #- y = pminus # x # y
 
 infix 6 #-
-
--- Helpers
-
-pexpBySquaring ::
-  forall (a :: S -> Type) (s :: S).
-  PlutarchType a =>
-  Term s (a :--> a :--> a) ->
-  Term s (a :--> PInteger :--> a)
-pexpBySquaring f = plam' $ \x -> pfix $ \self -> plam' $ \i ->
-  -- We know that `i` cannot be non-positive here.
-  pif
-    (pequalsInteger # i # pione)
-    x
-    ( let two = punsafeConstant (PLC.someValue @Integer 2)
-          stepDown = self #$ pquotientInteger # i # two
-          squared = f # stepDown # stepDown
-       in -- Because the remainder by two can only be 0 or 1, we can use
-          -- `punsafeCase` here for speed.
-          punsafeCase (premainderInteger # i # two)
-            . NEVector.cons (toSomeTerm squared)
-            . NEVector.singleton
-            $ toSomeTerm (f # squared # x)
-    )
-
-pizero :: forall (s :: S). Term s PInteger
-pizero = punsafeConstant (PLC.someValue @Integer 0)
-
-pione :: forall (s :: S). Term s PInteger
-pione = punsafeConstant (PLC.someValue @Integer 1)
