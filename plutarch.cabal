@@ -134,6 +134,7 @@ library
     Plutarch.Maybe
     Plutarch.Monadic
     Plutarch.Numeric.Additive
+    Plutarch.Numeric.Euclidean
     Plutarch.Numeric.Helpers
     Plutarch.Numeric.Multiplicative
     Plutarch.Numeric.Positive

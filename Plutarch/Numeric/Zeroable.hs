@@ -20,7 +20,12 @@ import Plutarch.Primitive.BuiltinFun (pequalsInteger)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
 
--- | @since wip
+{- | = Laws
+
+1. @ptoNonZero x x pcoerce@ @=@ @x@
+
+@since wip
+-}
 class
   (PAdditiveMonoid a, PlutarchType (PNonZero a), PRepresentation (PNonZero a) ~ a) =>
   PZeroable (a :: S -> Type)
