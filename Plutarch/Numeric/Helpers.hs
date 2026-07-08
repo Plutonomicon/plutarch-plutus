@@ -26,7 +26,12 @@ import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
 import PlutusCore qualified as PLC
 
--- | @since wip
+{- | = Important note
+
+The function this produces /must/ be given a positive argument.
+
+@since wip
+-}
 pexpBySquaring ::
   forall (a :: S -> Type) (s :: S).
   PlutarchType a =>
