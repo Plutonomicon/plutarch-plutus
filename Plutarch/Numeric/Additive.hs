@@ -12,7 +12,6 @@ import Data.Kind (Type)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
   Term,
-  perror,
   plam',
   punsafeCoerce,
   punsafeConstant,
@@ -47,8 +46,11 @@ import Plutarch.Primitive.BuiltinFun (
   psubtractInteger,
  )
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
 import PlutusCore qualified as PLC
+import PlutusCore.Crypto.BLS12_381.G1 as G1
+import PlutusCore.Crypto.BLS12_381.G2 as G2
 
 -- | @since wip
 class PlutarchType a => PAdditiveSemigroup (a :: S -> Type) where
@@ -107,13 +109,13 @@ instance PAdditiveMonoid PNatural
 
 -- | @since wip
 instance PAdditiveMonoid PBLS12_381_G1_Element where
-  pzero = perror -- TODO: pconstant
+  pzero = pconstant G1.offchain_zero
   pscaleNatural = plam' $ \x -> plam' $ \n ->
     pbls12_381_G1_scalarMul # pcoerce n # x
 
 -- | @since wip
 instance PAdditiveMonoid PBLS12_381_G2_Element where
-  pzero = perror -- TODO: pconstant
+  pzero = pconstant G2.offchain_zero
   pscaleNatural = plam' $ \x -> plam' $ \n ->
     pbls12_381_G2_scalarMul # pcoerce n # x
 
