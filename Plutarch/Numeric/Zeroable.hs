@@ -1,7 +1,8 @@
 {-# LANGUAGE UndecidableSuperClasses #-}
 
 module Plutarch.Numeric.Zeroable (
-  -- * Type class
+  -- * Type classes
+  PAbs (..),
   PZeroable (..),
 
   -- * Type
@@ -10,17 +11,51 @@ module Plutarch.Numeric.Zeroable (
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, punsafeCoerce)
-import Plutarch.Numeric.Additive (PAdditiveMonoid)
+import Plutarch.Backend.Term (Term, plam', punsafeCoerce)
+import Plutarch.Numeric.Additive (PAdditiveMonoid, pnegate)
 import Plutarch.Numeric.Helpers (pizero)
 import Plutarch.Numeric.Multiplicative (PMultiplicativeMonoid, PMultiplicativeSemigroup)
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation), pcoerce, (#))
 import Plutarch.Primitive.Bool (pif)
-import Plutarch.Primitive.BuiltinFun (pequalsInteger)
+import Plutarch.Primitive.BuiltinFun (pequalsInteger, plessThanEqualsInteger)
 import Plutarch.Primitive.Eq (PEq)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
 import Plutarch.Primitive.Ord (POrd)
+
+{- | = Laws
+
+1. @'pabs' # x #* y@ @=@ @('pabs' # x) #* ('pabs' # y)@
+2. @x #* x@ @=@ @('pabs' # x) #* ('pabs' # x)@
+
+Additionally, if @a@ is an 'AdditiveGroup', the following law must hold:
+
+3. @'pabs' # x@ @=@ @'pabs' # ('pnegate' # x)@
+
+@since wip
+-}
+class PMultiplicativeSemigroup a => PAbs (a :: S -> Type) where
+  pabs :: forall (s :: S). Term s (a :--> a)
+  default pabs ::
+    forall (s :: S).
+    PAbs (PRepresentation a) =>
+    Term s (a :--> a)
+  pabs = punsafeCoerce (pabs @(PRepresentation a))
+
+-- | @since wip
+instance PAbs PInteger where
+  pabs = plam' $ \x ->
+    pif
+      (plessThanEqualsInteger # x # pizero)
+      (pnegate # x)
+      x
+
+-- | @since wip
+instance PAbs PNatural where
+  pabs = plam' id
+
+-- | @since wip
+instance PAbs PPositive
 
 {- | = Laws
 
@@ -63,6 +98,9 @@ instance PMultiplicativeSemigroup PNZInteger
 
 -- | @since wip
 instance PMultiplicativeMonoid PNZInteger
+
+-- | @since wip
+instance PAbs PNZInteger
 
 -- | @since wip
 instance PEq PNZInteger

@@ -35,6 +35,7 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
+import Plutarch.Numeric.Euclidean (pgcd)
 import Plutarch.Numeric.Multiplicative (ppowNatural)
 import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
@@ -340,6 +341,26 @@ main =
             let (UPLCTerm t) = toUPLCTerm anf'
             step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
+    , testCaseSteps "Case 16" $ \step -> do
+        step "Case: pgcd @Integer"
+        step "1. Does Case 16 compile?"
+        let compiled = compileTerm (pgcd @PInteger)
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
+            let anf = fromHashedAST asAST
+            step "ANF, no demand analysis"
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step "ANF, with demand analysis"
+            step $ toPrettyString anf'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            pure ()
     ]
 
 -- Cases
@@ -424,7 +445,7 @@ case13 =
       g = plam' $ \z -> paddInteger # z # punsafeConstant (PLC.someValue @Integer 2)
    in plam' $ \x -> pcompose f g # x
 
--- [[2]] (for pretty printing)
+-- Case 14: [[2]] (for pretty printing)
 case14 :: forall (s :: S). Term s (PBList (PBList (PBPair PInteger PInteger)))
 case14 = punsafeConstant $ PLC.someValue @[[(Integer, Integer)]] [[(2, 3)]]
 
