@@ -60,11 +60,10 @@ import Plutarch.Backend.AST (
   Multiplicity,
  )
 import Plutarch.Backend.AST qualified as AST
-import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
+import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Utils.Pretty (prettyValueOf, (<:=>))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
-import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (
   Doc,
   Pretty (pretty),
@@ -105,7 +104,7 @@ instance Pretty (Leaf ann) where
   pretty = \case
     LConstant _ (Some (ValueOf uni x)) -> prettyValueOf uni x
     LBuiltin _ fun -> viaShow fun
-    LCompiled _ (UPLCTerm uplc) -> "COMPILED" <+> align (braces (align . group $ prettyPlcReadable uplc))
+    LCompiled _ uplc -> "COMPILED" <+> align (braces (align . group $ pretty uplc))
     LError _ -> "ERROR"
 
 {- | As ANF \'inlines\' variables, subcomputations are either variables
