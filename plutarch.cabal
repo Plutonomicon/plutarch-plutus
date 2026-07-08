@@ -150,11 +150,13 @@ library
     Plutarch.Primitive.ByteString
     Plutarch.Primitive.Con
     Plutarch.Primitive.Data
+    Plutarch.Primitive.Eq
     Plutarch.Primitive.Function
     Plutarch.Primitive.Liftable
     Plutarch.Primitive.List
     Plutarch.Primitive.Match
     Plutarch.Primitive.Numeric
+    Plutarch.Primitive.Ord
     Plutarch.Primitive.Pair
     Plutarch.Primitive.String
     Plutarch.Primitive.Value
