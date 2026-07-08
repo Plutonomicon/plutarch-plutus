@@ -156,6 +156,7 @@ library
     Plutarch.Primitive.List
     Plutarch.Primitive.Match
     Plutarch.Primitive.Numeric
+    Plutarch.Primitive.Ord
     Plutarch.Primitive.Pair
     Plutarch.Primitive.String
     Plutarch.Primitive.Value

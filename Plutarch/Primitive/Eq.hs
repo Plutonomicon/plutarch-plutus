@@ -2,6 +2,8 @@
 
 module Plutarch.Primitive.Eq (
   PEq (..),
+  (#==),
+  (#/=),
 ) where
 
 import Data.Kind (Type)
@@ -153,3 +155,23 @@ instance PEq PString where
 instance PEq PBValue where
   peq = plam' $ \v1 -> plam' $ \v2 ->
     pequalsData # (pvalueData # v1) # (pvalueData # v2)
+
+-- | @since wip
+(#==) ::
+  forall (a :: S -> Type) (s :: S).
+  PEq a =>
+  Term s a -> Term s a -> Term s PBool
+x #== y = peq # x # y
+
+-- | @since wip
+infix 4 #==
+
+-- | @since wip
+(#/=) ::
+  forall (a :: S -> Type) (s :: S).
+  PEq a =>
+  Term s a -> Term s a -> Term s PBool
+x #/= y = pnot (peq # x # y)
+
+-- | @since wip
+infix 4 #/=
