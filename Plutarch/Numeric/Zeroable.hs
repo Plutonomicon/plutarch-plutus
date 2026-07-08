@@ -17,8 +17,10 @@ import Plutarch.Numeric.Multiplicative (PMultiplicativeMonoid, PMultiplicativeSe
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation), pcoerce, (#))
 import Plutarch.Primitive.Bool (pif)
 import Plutarch.Primitive.BuiltinFun (pequalsInteger)
+import Plutarch.Primitive.Eq (PEq)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
+import Plutarch.Primitive.Ord (POrd)
 
 {- | = Laws
 
@@ -61,6 +63,12 @@ instance PMultiplicativeSemigroup PNZInteger
 
 -- | @since wip
 instance PMultiplicativeMonoid PNZInteger
+
+-- | @since wip
+instance PEq PNZInteger
+
+-- | @since wip
+instance POrd PNZInteger
 
 -- | @since wip
 instance PZeroable PInteger where
