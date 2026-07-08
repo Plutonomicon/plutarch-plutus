@@ -158,6 +158,7 @@ library
     Plutarch.Primitive.Numeric
     Plutarch.Primitive.Ord
     Plutarch.Primitive.Pair
+    Plutarch.Primitive.SOP
     Plutarch.Primitive.String
     Plutarch.Primitive.Value
     Plutarch.Rational
