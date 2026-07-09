@@ -6,311 +6,320 @@
 
 ## Added
 
-* `PBuiltinValue`, and bindings to primitive functions for this
-* Support for CIP-133 multi-scalar multiplications of BLS primitives
+- `PBuiltinValue`, and bindings to primitive functions for this
+- Support for CIP-133 multi-scalar multiplications of BLS primitives
 
 ## Changed
 
-* Bump `plutus-core` to 1.64.0.0
-* `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
+- Bump `plutus-core` to 1.65.0.0
+- `Term` prettyprinter now uses `Name`s instead of `DeBruijn`s for readability
 
-## Removed 
+## Removed
 
-* Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for anything (though the `findAllPlaceholders` version is)
+- Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for
+  anything (though the `findAllPlaceholders` version is)
 
 # 1.13.0 -- 04-03-2026
 
 ## Added
 
-* `PValidateData` instance for `PPositive`.
-* `pheadTailBuiltin`, for use when the list is known non-empty and both the head
+- `PValidateData` instance for `PPositive`.
+- `pheadTailBuiltin`, for use when the list is known non-empty and both the head
   and tail are needed
-* `punsafeCase`, to give access to the UPLC `Case` construct more conveniently
-* `prfoldArray`, which folds a pull array from highest-to-lowest indexes
-* `PShow` instance for `PNatural`
-* `punsafeCase` is now exported from `Plutarch.Unsafe`.
+- `punsafeCase`, to give access to the UPLC `Case` construct more conveniently
+- `prfoldArray`, which folds a pull array from highest-to-lowest indexes
+- `PShow` instance for `PNatural`
+- `punsafeCase` is now exported from `Plutarch.Unsafe`.
 
 ## Changed
 
-* Bump `plutus-core` to 1.60.0.0
-* Add `KnownBuiltinType` constraint for various `PLiftable` instances as per the
+- Bump `plutus-core` to 1.60.0.0
+- Add `KnownBuiltinType` constraint for various `PLiftable` instances as per the
   new requirements from `plutus-core`. This led to some redundant `Includes`
   constraints being removed as well.
-* `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
-* `pfstBuiltin` and `psndBuiltin` are now deprecated, as pattern matching on
+- `pif'` is now deprecated, as builtin casing on `Bool` outperforms it
+- `pfstBuiltin` and `psndBuiltin` are now deprecated, as pattern matching on
   `PBuiltinPair` outperforms it
-* `hrecField` has been made hidden. Not only should this not be used anymore, it
+- `hrecField` has been made hidden. Not only should this not be used anymore, it
   was deprecated for a long time already.
-* Replaced all internal uses of `pfixHoisted` with `pfix` for improved
+- Replaced all internal uses of `pfixHoisted` with `pfix` for improved
   performance, at the cost of a negligible increase in script size in some
   cases.
-* `Plutarch.Internal.Parse` definitions are now re-exported from
-  `Plutarch.Prelude`. 
-* `pfoldlArray` renamed to `pfoldArray`.
-* `PShow`'s `pshow'` method is now available from the Prelude.
-* `PInner PPositive` is now `PNatural`, which allows the use of `pupcast` for
+- `Plutarch.Internal.Parse` definitions are now re-exported from
+  `Plutarch.Prelude`.
+- `pfoldlArray` renamed to `pfoldArray`.
+- `PShow`'s `pshow'` method is now available from the Prelude.
+- `PInner PPositive` is now `PNatural`, which allows the use of `pupcast` for
   easier conversions 'upward'.
-* `pzero` and `pone` now have defaults based on `PInner`, similar to `#+`.
+- `pzero` and `pone` now have defaults based on `PInner`, similar to `#+`.
 
 ## Removed
 
-* `pverifySignature`, due to deprecation. Replace any use of this with a more
-  specific signature verification builtin.  
-* `ptraceShowId`, `ptraceError`, `ptraceIfTrue`, `ptraceIfFalse`, and `ptrace` due to
-  deprecation. Replace any uses of these with the equivalent function specifying
-  a tracing level.
-* `punsafeConstant` due to deprecation. Replace any uses of it with `pconstant`
+- `pverifySignature`, due to deprecation. Replace any use of this with a more
+  specific signature verification builtin.
+- `ptraceShowId`, `ptraceError`, `ptraceIfTrue`, `ptraceIfFalse`, and `ptrace`
+  due to deprecation. Replace any uses of these with the equivalent function
+  specifying a tracing level.
+- `punsafeConstant` due to deprecation. Replace any uses of it with `pconstant`
   or `punsafeConstantInternal`.
 
 # 1.12.0 -- 07-11-2025
 
 ## Added
 
-* `PValidateData`, a replacement for `PTryFrom` to perform validation of
+- `PValidateData`, a replacement for `PTryFrom` to perform validation of
   @Data@-encoded types.
-* `pmapDropNothing` to `Plutarch.Maybe` 
-* `pfixInline`, a fixpoint combinator which does more inling. This gives more
+- `pmapDropNothing` to `Plutarch.Maybe`
+- `pfixInline`, a fixpoint combinator which does more inling. This gives more
   performance at the cost of script size.
-* `Plutarch.Array`, containing a full implementation of pull arrays
+- `Plutarch.Array`, containing a full implementation of pull arrays
 
 ## Changed
 
-* All `Flip` declarations are now coalesced into one, in
+- All `Flip` declarations are now coalesced into one, in
   `Plutarch.Internal.Other`.
-* `PBuiltinPair` can now be `pmatch`ed against, with partial matches not
+- `PBuiltinPair` can now be `pmatch`ed against, with partial matches not
   generating code for the 'side' not matched (issue 836).
-* Original `pfix` renamed to `pfixHoisted`.
-* `pfix` now is _not_ hoisted, which gives more performance at the cost of some
+- Original `pfix` renamed to `pfixHoisted`.
+- `pfix` now is _not_ hoisted, which gives more performance at the cost of some
   script size.
-* All previous internal uses of `pfix` are replaced with uses of `pfixHoisted`
+- All previous internal uses of `pfix` are replaced with uses of `pfixHoisted`
   for consistency.
 
 ## Removed
 
-* `PCon` and `PMatch`, as they were deprecated (for a long time)
-* `PVariant`, `PCovariant`, `PContravariant`, and all related types and type
+- `PCon` and `PMatch`, as they were deprecated (for a long time)
+- `PVariant`, `PCovariant`, `PContravariant`, and all related types and type
   classes (not useful)
-* `prememberData`, `pforgetData'` and `prememberData'` (as they were broken for
+- `prememberData`, `pforgetData'` and `prememberData'` (as they were broken for
   a while)
-* `ClosedTerm` and `EvalError` type synonyms
-* `PType` kind synonym
+- `ClosedTerm` and `EvalError` type synonyms
+- `PType` kind synonym
 
-# 1.11.0 -- 21-08-2025 
+# 1.11.0 -- 21-08-2025
 
 ## Added
 
-* `PArray` data type, corresponding to CIP-138 arrays
-* Plutarch wrappers for CIP-138 array functions
+- `PArray` data type, corresponding to CIP-138 arrays
+- Plutarch wrappers for CIP-138 array functions
 
 ## Changed
 
-* `plutus-core` dependency is now `1.51.0.0`
-* `plutarch-testlib` is now available via Nix as well
+- `plutus-core` dependency is now `1.51.0.0`
+- `plutarch-testlib` is now available via Nix as well
 
 # 1.10.1 -- 17-02-2025
 
 ## Added
 
-* PLiftable instance deriving strategy for Data records and structs
+- PLiftable instance deriving strategy for Data records and structs
 
 ## Fixed
 
-* UPLC version is fixed to have `1.1.0`
-* Optimization of Nested DataRecord no longer takes absurd amount of time
+- UPLC version is fixed to have `1.1.0`
+- Optimization of Nested DataRecord no longer takes absurd amount of time
 
 # 1.10.0 -- 29-01-2025
 
 ## Added
 
-* `pmax` and `pmin` as new methods of `POrd`
-* `#>` and `#>=` as argument-flipping versions of `#<` and `#<=`
-* `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra`)
-* `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
-* `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
+- `pmax` and `pmin` as new methods of `POrd`
+- `#>` and `#>=` as argument-flipping versions of `#<` and `#<=`
+- `pallBS` to `Plutarch.ByteString` (originally from `plutarch-extra`)
+- `pisHexDigit` to `Plutarch.String` (originally from `plutarch-extra`)
+- `preverse` and `pcheckSorted` to `Plutarch.List` (originally from
   `plutarch-extra`)
-* `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
+- `ptraceIfNothing`, `pisJust`, `pmaybe`, `pfromMaybe`, `pjust`, `pnothing`,
   `pAssertPJust` to `Plutarch.Maybe` (originally from `plutarch-extra`)
-* `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
-* `PCountable` and `PEnumerable` type classes, as well as instances
-* `PByte` type as a limited Plutarch-level equivalent to `Word8`
-* `PLogicSemantics`, and construction functions, to help use of logical
-   `PByteString` operations
-* `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
-* `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
+- `pexpectJustC` to `Plutarch.TermCont` (originally from `plutarch-extra`)
+- `PCountable` and `PEnumerable` type classes, as well as instances
+- `PByte` type as a limited Plutarch-level equivalent to `Word8`
+- `PLogicSemantics`, and construction functions, to help use of logical
+  `PByteString` operations
+- `pandBS`, `porBS`, `pxorBS`, `pcomplementBS` mirroring CIP-122 operations
+- `pzeroesBS`, `ponesBS`, `preplicateBS`, as wrappers for CIP-122's
   `ReplicateByte`
-* `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
-* `PBitString` and associated functionality for CIP-122 and CIP-123 operations
+- `compileOptimized` in `Plutarch.Internal`, to optimize the generated UPLC
+- `PBitString` and associated functionality for CIP-122 and CIP-123 operations
   on bits, in `Plutarch.BitString`
-* `PEitherData`, a `Data`-encoded counterpart to `PEither`, plus some functions
-* `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
+- `PEitherData`, a `Data`-encoded counterpart to `PEither`, plus some functions
+- `Positive` type in `Plutarch.Positive` that is Haskell level equivalent of
   `PPositive`
-* `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
-* `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of `evalScript`
-* `pmapMaybe` to `Plutarch.Maybe`
-* `PLiftable` type class
-* `Plutarch.Builtin.Bool` module
-* `Plutarch.Internal.Eq` module
-* `Plutarch.Internal.Ord` module
-* `pif'` to `Plutarch.Prelude`
-* `pcond` as a Plutarch equivalent to multi-way if
-* `PLiftable PRational` instance
-* `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the prelude
-* New methods for `Data` and Scott encoding derivation
-* `optimizeTerm` for separate optimization via UPLC from compilation
-* New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
-* `PNatural` type, corresponding to the Haskell `Natural`
-* Support for SoP encoding of data
-* `PSemigroup` and `PMonoid`, as improved Plutarch versions of `Semigroup` and
+- `PUnsafeLiftDecl` and `PConstantDecl` instances for `PPositive`
+- `evalScriptUnlimited` to `Plutarch.Evaluate` as unrestricted version of
+  `evalScript`
+- `pmapMaybe` to `Plutarch.Maybe`
+- `PLiftable` type class
+- `Plutarch.Builtin.Bool` module
+- `Plutarch.Internal.Eq` module
+- `Plutarch.Internal.Ord` module
+- `pif'` to `Plutarch.Prelude`
+- `pcond` as a Plutarch equivalent to multi-way if
+- `PLiftable PRational` instance
+- `PDataFields`, `DerivePDataLiftable`, `PDataNewtype` now exported from the
+  prelude
+- New methods for `Data` and Scott encoding derivation
+- `optimizeTerm` for separate optimization via UPLC from compilation
+- New numerical hierarchy in `Plutarch.Internal.Numeric`, plus new instances
+- `PNatural` type, corresponding to the Haskell `Natural`
+- Support for SoP encoding of data
+- `PSemigroup` and `PMonoid`, as improved Plutarch versions of `Semigroup` and
   `Monoid`
-* Unrolling utilities--`punrollBound`, `punrollUnbound`, and `punrollUnboundWhole`--is added to `Plutarch.Unroll`
-* `evalTerm'` is added to `Plutarch.Evaluate`
+- Unrolling utilities--`punrollBound`, `punrollUnbound`, and
+  `punrollUnboundWhole`--is added to `Plutarch.Unroll`
+- `evalTerm'` is added to `Plutarch.Evaluate`
 
 ## Changed
 
-* `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
-* `pindexBS` now returns a `PByte` instead of a `PInteger`
-* `pexpModInteger` is now in `Plutarch.Integer`
-* `PMaybeData` no longer uses `PDataRecord`
-* `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
+- `pconsBS` now takes a `PByte` argument instead of a `PInteger` one
+- `pindexBS` now returns a `PByte` instead of a `PInteger`
+- `pexpModInteger` is now in `Plutarch.Integer`
+- `PMaybeData` no longer uses `PDataRecord`
+- `Plutarch.Internal` is now `Plutarch.Internal.Term` to better reflect its
   actual contents
-* `PBool` definition is now in `Plutarch.Builtin.Bool`
-* `PEq` type class definition is now in `Plutarch.Internal.Eq`
-* `PPartialOrd` and `POrd` type class definitions are now in
+- `PBool` definition is now in `Plutarch.Builtin.Bool`
+- `PEq` type class definition is now in `Plutarch.Internal.Eq`
+- `PPartialOrd` and `POrd` type class definitions are now in
   `Plutarch.Internal.Ord`
-* `pif`, `pif'`, `pand`, `pand'`, `por`, `por'`, `pnot`, `#&&`, `#||` are
-   now in `Plutarch.Builtin.Bool`
-* `Term s PRational` is now `Fractional` directly, instead of by way of
+- `pif`, `pif'`, `pand`, `pand'`, `por`, `por'`, `pnot`, `#&&`, `#||` are now in
+  `Plutarch.Builtin.Bool`
+- `Term s PRational` is now `Fractional` directly, instead of by way of
   `PFractional`
-* `Plutarch.Num` is now `Plutarch.Internal.Numeric`
-* `PIntegral` type class is now in `Plutarch.Internal.Numeric`
-* `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
-* `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
-* `PPositive` (and `Positive`) are now exported from the prelude, along with
+- `Plutarch.Num` is now `Plutarch.Internal.Numeric`
+- `PIntegral` type class is now in `Plutarch.Internal.Numeric`
+- `Plutarch.Integer` is now `Plutarch.Builtin.Integer`
+- `#<`, `#<=`, `#>=`, `#>` are now part of `POrd`
+- `PPositive` (and `Positive`) are now exported from the prelude, along with
   some functionality
-* `PEither`, `PPair`, `PMaybe` and `PList` use SOP encoding instead of Scott
+- `PEither`, `PPair`, `PMaybe` and `PList` use SOP encoding instead of Scott
 
 ## Removed
 
-* `plutarch-extra`, as all its functionality has been folded into Plutarch
+- `plutarch-extra`, as all its functionality has been folded into Plutarch
   itself
-* `pbyteStr` (as it's deprecated)
-* `Plutarch.Bitwise` module, as its functionality has been superseded by more
-  type-safe operations in `Plutarch.ByteString` and  `Plutarch.BitString`
-* `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
-* `Plutarch` module, as it served no useful purpose and was just confusing
-* `PType` synonym (use `S -> Type` honestly instead)
-* `PSBool` and functionality (now in `plutarch-ledger-api`)
-* `PFractional` type class (only one instance, unlikely to ever have more)
-* `PIsData PRational` instance (made no sense)
-* `PPartialOrd` (all its functionality is now in `POrd`)
-* `Plutarch.FFI` module
-* `PNum` and `PIntegral` (replaced by new numerical hierarchy)
+- `pbyteStr` (as it's deprecated)
+- `Plutarch.Bitwise` module, as its functionality has been superseded by more
+  type-safe operations in `Plutarch.ByteString` and `Plutarch.BitString`
+- `PUnsafeLiftDecl` and `PConstantDecl` as they are replaced by `PLiftable`
+- `Plutarch` module, as it served no useful purpose and was just confusing
+- `PType` synonym (use `S -> Type` honestly instead)
+- `PSBool` and functionality (now in `plutarch-ledger-api`)
+- `PFractional` type class (only one instance, unlikely to ever have more)
+- `PIsData PRational` instance (made no sense)
+- `PPartialOrd` (all its functionality is now in `POrd`)
+- `Plutarch.FFI` module
+- `PNum` and `PIntegral` (replaced by new numerical hierarchy)
 
 ### Fixed
 
-* Bug in `ppredecessorN` for `PPosixTime` where order of subtraction was flipped
-* Bugs in `pintersection` and `phull` that assigned wrong open/close bounds
-* Bug in `pafter` that will give opposite result when comparing against infinities
+- Bug in `ppredecessorN` for `PPosixTime` where order of subtraction was flipped
+- Bugs in `pintersection` and `phull` that assigned wrong open/close bounds
+- Bug in `pafter` that will give opposite result when comparing against
+  infinities
 
 # 1.9.0 - 25-09-2024
 
 ## Added
 
-* Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and `pblake2b_224` to `Plutarch.Crypto`
-* PlutusV3 BLS primitives to `Plutarch.BLS`
-* PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
-* `unsafeEvalTerm`  to `Plutarch.Evaluate`
-* `PCountable` and `PEnumerable` type classes in `Plutarch.Enum`
+- Cryptographic hashing utilities:- `pripemd_160`, `pkeccak_256`, and
+  `pblake2b_224` to `Plutarch.Crypto`
+- PlutusV3 BLS primitives to `Plutarch.BLS`
+- PlutusV3 Bitwise primitives to `Plutarch.Bitwise`
+- `unsafeEvalTerm` to `Plutarch.Evaluate`
+- `PCountable` and `PEnumerable` type classes in `Plutarch.Enum`
 
 ## Changed
 
-* Bumped `plutus-core` version to `1.33.0.0`
-* Updated getArity mapping to handle the new builtins in `Plutarch.Internal`
-* Updated `printScript` in `Plutarch.Internal.Other` to new PlutusCore version.
+- Bumped `plutus-core` version to `1.33.0.0`
+- Updated getArity mapping to handle the new builtins in `Plutarch.Internal`
+- Updated `printScript` in `Plutarch.Internal.Other` to new PlutusCore version.
 
 # 1.8.1 - 11-07-2024
 
 ## Added
 
-* `applyArguments` to `Plutarch.Evaluate`
+- `applyArguments` to `Plutarch.Evaluate`
 
 # 1.8.0 - 24-06-2024
 
 ## Changed
 
-* Bumped `plutus-core` version to `1.30.0.0`
+- Bumped `plutus-core` version to `1.30.0.0`
 
 # 1.7.0 - 11-06-2024
 
 ## Added
 
-* `PDataNewtype` derivation aid
-* `PTryFrom PData PBool` instance
+- `PDataNewtype` derivation aid
+- `PTryFrom PData PBool` instance
 
 ## Changed
 
-* Bumped `plutus-core` version to `1.29.0.0`
+- Bumped `plutus-core` version to `1.29.0.0`
 
 # 1.6.0 - 27-05-2024
 
 ## Added
 
-* `ptraceInfo` and `ptraceDebug`, which allow tracing only when a particular log
+- `ptraceInfo` and `ptraceDebug`, which allow tracing only when a particular log
   level is active.
-* `logLevel` to get the `LogLevel` of a `Config`.
-* `LogLevel` to indicate what level of logging we'd like to run with.
-* `ptraceInfoShowId`, `ptraceInfoError`, `ptraceInfoIfTrue`, `ptraceInfoIfFalse`
+- `logLevel` to get the `LogLevel` of a `Config`.
+- `LogLevel` to indicate what level of logging we'd like to run with.
+- `ptraceInfoShowId`, `ptraceInfoError`, `ptraceInfoIfTrue`, `ptraceInfoIfFalse`
   (and similar for `Debug`), mirroring the deprecated originals, but with the
   logging level included.
-* `Eq`, `Show`, `Pretty`, `ToJSON`, `FromJSON` instances for `Config`.
-* `Pretty`, `ToJSON`, `FromJSON` instances for `TracingMode`.
+- `Eq`, `Show`, `Pretty`, `ToJSON`, `FromJSON` instances for `Config`.
+- `Pretty`, `ToJSON`, `FromJSON` instances for `TracingMode`.
 
 ## Changed
 
-* `ptrace`, `ptraceShowId`, `ptraceError`, `ptraceIfTrue` and `ptraceIfFalse`
+- `ptrace`, `ptraceShowId`, `ptraceError`, `ptraceIfTrue` and `ptraceIfFalse`
   are now synonyms of `ptraceInfo` (and similar), and also deprecated.
-* `Config` now includes a `LogLevel` as well as a `TracingMode`.
-* `Config` now has pattern synonyms to make it look like a sum type with two
+- `Config` now includes a `LogLevel` as well as a `TracingMode`.
+- `Config` now has pattern synonyms to make it look like a sum type with two
   arms: `NoTracing` which indicates that we do not trace, and `Tracing` which
   contains a `TracingMode` and a `LogLevel`.
-* `TracingMode` no longer includes `NoTracing`, as this has been superseded by
+- `TracingMode` no longer includes `NoTracing`, as this has been superseded by
   the new `Config`.
-* `tracingMode` now returns in a `Maybe`.
-* `Config` is now a `Semigroup` and a `Monoid`, with the second mimicking the
+- `tracingMode` now returns in a `Maybe`.
+- `Config` is now a `Semigroup` and a `Monoid`, with the second mimicking the
   semantics of its old `Default` instance.
-* `TracingMode` is now a `Semigroup` based on generality.
-* `TracingMode` is now an `Ord` based on generality.
-* `TracingMode` now has `Eq` and `Show` instances.
+- `TracingMode` is now a `Semigroup` based on generality.
+- `TracingMode` is now an `Ord` based on generality.
+- `TracingMode` now has `Eq` and `Show` instances.
 
 ## Removed
 
-* `Default` instance for `Config`.
-* `data-default` direct dependency.
+- `Default` instance for `Config`.
+- `data-default` direct dependency.
 
 # 1.5.0 - 26-01-2024
 
 ## Changed
 
-*  Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
+- Bump `plutus-core` and `plutus-ledger-api` to `1.20.0.0`
 
 ## Removed
 
-* `Plutarch.LedgerApi`, plus all submodules, as these are now under `plutarch-ledger-api`
+- `Plutarch.LedgerApi`, plus all submodules, as these are now under
+  `plutarch-ledger-api`
 
 # 1.4.0
 
 - Renamed `punionWith` and `punionWithData` of `Plutarch.Api.V1.AssocMap` to
   `punionResolvingCollisionsWith` and `punionResolvingCollisionsWithData`, since
-  they have been misused for what should have been `pzipWith` and `pzipWithData`.
+  they have been misused for what should have been `pzipWith` and
+  `pzipWithData`.
 - Renamed `punionWith` and `punionWithData` of `Plutarch.Api.V1.Value` to
   `punionResolvingCollisionsWith` and `punionResolvingCollisionsWithData`, since
-  they have been misused for what should have been `pzipWith` and `pzipWithData`.
-- Introduced `pzipWith`, `pzipWithData`, `pzipWithDefault`, `pzipWithDataDefault`,
-  `pzipWithDefaults`, `pzipWithDataDefaults`, `pintersectionWith`, and
-  `pintersectionWithData` in `Plutarch.Api.V1.AssocMap`. Also introduced the
-  types `BothPresentHandler`, `BothPresentHandlerCommutative`,
-  `OnePresentHandler`, `MergeHandler` and `SomeMergeHandler` for instructing
-  `pzipWith` and `pzipWithData`.
+  they have been misused for what should have been `pzipWith` and
+  `pzipWithData`.
+- Introduced `pzipWith`, `pzipWithData`, `pzipWithDefault`,
+  `pzipWithDataDefault`, `pzipWithDefaults`, `pzipWithDataDefaults`,
+  `pintersectionWith`, and `pintersectionWithData` in
+  `Plutarch.Api.V1.AssocMap`. Also introduced the types `BothPresentHandler`,
+  `BothPresentHandlerCommutative`, `OnePresentHandler`, `MergeHandler` and
+  `SomeMergeHandler` for instructing `pzipWith` and `pzipWithData`.
 - Added `Commutativity` in `AssocMap` for instructing various `AssocMap` and
   `Value` operations about the commutativity of the given value-merging
   function.
@@ -331,7 +340,8 @@
 
 # 1.2 (WIP changelog)
 
-- Changed fields of `PTxInfo` whose only representation is data to not be wrapped by `PAsData`.
+- Changed fields of `PTxInfo` whose only representation is data to not be
+  wrapped by `PAsData`.
 
   Module: `Plutarch.Api.V1.Contexts`; `Plutarch.Api.V2.Contexts`
 
@@ -343,7 +353,8 @@
 
   Included by [#326](https://github.com/Plutonomicon/plutarch/pull/326)
 
-- Added module `Plutarch.Show` with the `PShow` type class, as well as functions `pshow` and `ptraceShowId`.
+- Added module `Plutarch.Show` with the `PShow` type class, as well as functions
+  `pshow` and `ptraceShowId`.
 
   Started by [#352](https://github.com/Plutonomicon/plutarch/pull/352)
 
@@ -354,7 +365,8 @@
 - Add generic deriving for `PEq`
 
   Started by [#335](https://github.com/Plutonomicon/plutarch/pull/335)
-- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preserve and pcheckSroted.
+- `Plutarch.Prelude` and `Plutarch.List` now export pfind, pelemAt, preserve and
+  pcheckSroted.
 
   Started by: [#306](https://github.com/Plutonomicon/plutarch/pull/306)
 
@@ -364,19 +376,24 @@
 
 - `TermCont`: Parametrize by result type; add `MonadFail` instance; etc.
 
-  Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude` (TermCont is no longer exported by `Plutarch.Internal`).
+  Also, export from `Plutarch.TermCont`, and then from `Plutarch.Prelude`
+  (TermCont is no longer exported by `Plutarch.Internal`).
 
   Started by: [#226](https://github.com/Plutonomicon/plutarch/pull/226)
 
-- Add `PlutusType` generic deriving support for data encoded Plutarch types, via `PIsDataRepr` and `PIsDataReprInstances`.
+- Add `PlutusType` generic deriving support for data encoded Plutarch types, via
+  `PIsDataRepr` and `PIsDataReprInstances`.
 
-  All existing ledger api types now have `PlutusType` instances - not just `PMatch`.
+  All existing ledger api types now have `PlutusType` instances - not just
+  `PMatch`.
 
   Started by: [#250](https://github.com/Plutonomicon/plutarch/pull/250)
 
-- Add `PDataRecord` construction utilities, necessary for full usage of data encoded `PlutusType` instances.
+- Add `PDataRecord` construction utilities, necessary for full usage of data
+  encoded `PlutusType` instances.
 
-  In particular, you can build `PDataRecord`s with `pdcons` and `pdnil` - refer to the guide for more info.
+  In particular, you can build `PDataRecord`s with `pdcons` and `pdnil` - refer
+  to the guide for more info.
 
   `pdcons` and `pdnil` are also exported from `Plutarch.Prelude`.
 
@@ -390,21 +407,27 @@
 
   Added by: [#250](https://github.com/Plutonomicon/plutarch/pull/250)
 
-- Add `pconstantData` - an efficient way of building data encoded constants directly.
+- Add `pconstantData` - an efficient way of building data encoded constants
+  directly.
 
-  This is semantically equivalent to `pdata . pconstant` but does not do any extra builtin function call.
+  This is semantically equivalent to `pdata . pconstant` but does not do any
+  extra builtin function call.
 
   Module: `Plutarch.Builtin`
 
   Added by: [#251](https://github.com/Plutonomicon/plutarch/pull/251)
 
-- Added APIs for constructing, compiling, serialising & hashing Plutarch scripts.
+- Added APIs for constructing, compiling, serialising & hashing Plutarch
+  scripts.
 
-  Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` & `PStakeValidator`.
+  Type synonyms for Plutarch-typed scripts `PValidator`,`PMintingPolicy` &
+  `PStakeValidator`.
 
-  `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating Plutus API compatible scripts.
+  `mkValidator`, `mkStakeValidator` & `mkMintingPolicy` functions, for creating
+  Plutus API compatible scripts.
 
-  `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script hashes.
+  `validatorHash`, `mintingPolicySymbol` & `stakeValidatorHash` to obtain script
+  hashes.
 
   Module: `Plutarch.V1.Api`
 
@@ -417,21 +440,26 @@
 
   Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
 
-- Add `PIsData` instances for `PUnit` and `PBuiltinPair (PAsData a) (PAsData b)`.
+- Add `PIsData` instances for `PUnit` and
+  `PBuiltinPair (PAsData a) (PAsData b)`.
 
-  It's helpful to mentally note that `PTuple a b`, `PAsData (PTuple a b)` and `PBuiltinPair (PAsData a) (PAsData b)` all have the exact same underlying representation. See `Plutarch.Api.V1.Tuple` for no-op conversion functions.
+  It's helpful to mentally note that `PTuple a b`, `PAsData (PTuple a b)` and
+  `PBuiltinPair (PAsData a) (PAsData b)` all have the exact same underlying
+  representation. See `Plutarch.Api.V1.Tuple` for no-op conversion functions.
 
   Module: `Plutarch.Builtin`
 
   Added by: [#255](https://github.com/Plutonomicon/plutarch/pull/255)
 
-- Add implicit `pfromData` for `hrecField` and the record dot. Add implicit `pfromData` for `pfield`.
+- Add implicit `pfromData` for `hrecField` and the record dot. Add implicit
+  `pfromData` for `pfield`.
 
   Module: `Plutarch.DataRepr`
 
   Added by: [#235](https://github.com/Plutonomicon/plutarch/pull/270)
 
-- Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing and Plutus benchmarks.
+- Add `Plutarch.Test` for testing Plutarch code with goldens for UPLC printing
+  and Plutus benchmarks.
 
 - Add Conversion types `PTryFrom`, `PMaybeFrom` and `PFrom`
 
@@ -439,8 +467,9 @@
 
   Added by: [#326](https://github.com/Plutonomicon/plutarch/pull/326)
 
-- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will be home to everything too specific to not be in the
-  main Plutarch repo. Also refactored the test library.
+- `plutarch-extra`: Add a new directory scaffold "`plutarch-extra`" which will
+  be home to everything too specific to not be in the main Plutarch repo. Also
+  refactored the test library.
 
   Directory: `plutarch-extra`
 
@@ -452,11 +481,13 @@
 
   Added by: [#356](https://github.com/Plutonomicon/plutarch/pull/356)
 
-- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for `PMaybeData`.
+- Add `PConstant` instance for `Maybe`, with corresponding `PLift` instance for
+  `PMaybeData`.
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
-- Add `POrd` and `PEq` derivation for data encoded types via `PIsDataReprInstances`.
+- Add `POrd` and `PEq` derivation for data encoded types via
+  `PIsDataReprInstances`.
 
   Added by: [#371](https://github.com/Plutonomicon/plutarch/pull/371)
 
@@ -464,7 +495,8 @@
 
   Fixed by: [#299](https://github.com/Plutonomicon/plutarch/pull/299)
 
-- Rename `PConstant` (the typeclass) to `PConstantDecl`. `PConstant` is now a type alias with extra constraints for better type checking.
+- Rename `PConstant` (the typeclass) to `PConstantDecl`. `PConstant` is now a
+  type alias with extra constraints for better type checking.
 
   Add `PLiftData` and `PConstantData` type aliases.
 
@@ -482,11 +514,13 @@
 
   Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
 
-- `PlutusType` is now a superclass of `PIsDataRepr`, strengthening the existing `PMatch` superclass constraint.
+- `PlutusType` is now a superclass of `PIsDataRepr`, strengthening the existing
+  `PMatch` superclass constraint.
 
   Added by: [#415](https://github.com/Plutonomicon/plutarch/pull/415)
 
-- Add `PlutusType` instance for `PDataSum`. `PDataSum` can now be hand-constructed.
+- Add `PlutusType` instance for `PDataSum`. `PDataSum` can now be
+  hand-constructed.
 
   Added by: [#345](https://github.com/Plutonomicon/plutarch/pull/345)
 
@@ -500,7 +534,8 @@
 
   Added by: [#466](https://github.com/Plutonomicon/plutarch/pull/466)
 
-- Add various `TermCont` utilities: `ptraceC`, `pletFieldsC`, `ptryFromC`, `pguardC`, and `pguardC'`.
+- Add various `TermCont` utilities: `ptraceC`, `pletFieldsC`, `ptryFromC`,
+  `pguardC`, and `pguardC'`.
 
   Module: `Plutarch.Extra.TermCont`.
 
@@ -509,7 +544,9 @@
 # 1.1.0
 
 - General repository changes.
-  - The Plutarch repo has moved to GHC 9.2.1. Projects using GHC 8.10.7 should still be able to depend on Plutarch. There is CI in place to ensure compatibility.
+  - The Plutarch repo has moved to GHC 9.2.1. Projects using GHC 8.10.7 should
+    still be able to depend on Plutarch. There is CI in place to ensure
+    compatibility.
 
     Relevant PR: [#86](https://github.com/Plutonomicon/plutarch/pull/86)
 
@@ -562,7 +599,8 @@
     Module: `Plutarch.ByteString`
 
     Added in: [#30](https://github.com/Plutonomicon/plutarch/pull/30)
-  - Cryptographic hashing utilities:- `psha2_256`, `psha3_256`, `pblake2b_256`, `pverifySignature`
+  - Cryptographic hashing utilities:- `psha2_256`, `psha3_256`, `pblake2b_256`,
+    `pverifySignature`
 
     Module: `Plutarch.Crypto`
 
@@ -602,7 +640,8 @@
     Module: `Plutarch.Builtin`
 
     Added in: [#50](https://github.com/Plutonomicon/plutarch/pull/50)
-  - *Loads* of awesome list utilities thanks to [#63](https://github.com/Plutonomicon/plutarch/pull/63)!
+  - _Loads_ of awesome list utilities thanks to
+    [#63](https://github.com/Plutonomicon/plutarch/pull/63)!
 
     Module: `Plutarch.List`
   - `PIsData` instance for `PBool`
@@ -612,15 +651,19 @@
     Added in: [#110](https://github.com/Plutonomicon/plutarch/pull/110)
 
   </details>
-- Add `PIsData` for conversion between normal builtin types and their `Data` representation.
+- Add `PIsData` for conversion between normal builtin types and their `Data`
+  representation.
 
   Initially added in: [#31](https://github.com/Plutonomicon/plutarch/pull/31)
-- Add `PAsData` for preserving more type information regarding `Data` encoded values.
+- Add `PAsData` for preserving more type information regarding `Data` encoded
+  values.
 
   Initially added in: [#31](https://github.com/Plutonomicon/plutarch/pull/31)
-- Add `PDataRepr` and related machinery to ergonomically work with `Constr` encoded data.
+- Add `PDataRepr` and related machinery to ergonomically work with `Constr`
+  encoded data.
 
-  There are also **generic derivers** (!!) to implement the related typeclasses for custom data types.
+  There are also **generic derivers** (!!) to implement the related typeclasses
+  for custom data types.
 
   Module: `Plutarch.DataRepr`
 
@@ -631,7 +674,8 @@
   - [#176](https://github.com/Plutonomicon/plutarch/pull/176)
   - [#171](https://github.com/Plutonomicon/plutarch/pull/171)
   - [#185](https://github.com/Plutonomicon/plutarch/pull/185)
-- Add `PLift` and `PConstant` - enabling conversion between Plutarch terms and Haskell types.
+- Add `PLift` and `PConstant` - enabling conversion between Plutarch terms and
+  Haskell types.
 
   This comes with convenient derivers. See the relevant section on the guide.
 
@@ -642,12 +686,14 @@
   - [#109](https://github.com/Plutonomicon/plutarch/pull/109)
   - [#130](https://github.com/Plutonomicon/plutarch/pull/130)
 - Deprecate `punsafeConstant`. Use `pconstant` instead!
-- Add `PIsList` & `PList` + instances for `PBuiltinList` - ergonomic list functions for all!
+- Add `PIsList` & `PList` + instances for `PBuiltinList` - ergonomic list
+  functions for all!
 
   Module: `Plutarch.List`; another instance in `Plutarch.Builtin`
 
   Added in: [#63](https://github.com/Plutonomicon/plutarch/pull/63)
-- Mutually recursive data types, scott encoded records and more provided by `Plutarch.Rec`!
+- Mutually recursive data types, scott encoded records and more provided by
+  `Plutarch.Rec`!
 
   Module: `Plutarch.Rec`
 
@@ -677,7 +723,8 @@
   Module: `Plutarch.Internal`
 
   Added in: [#115](https://github.com/Plutonomicon/plutarch/pull/115/files)
-- Add `PType`, a synonym to `S -> Type` - i.e the kind of Plutarch types. In particular, the kind of the 3rd type parameter of `Term`.
+- Add `PType`, a synonym to `S -> Type` - i.e the kind of Plutarch types. In
+  particular, the kind of the 3rd type parameter of `Term`.
 
   Module: `Plutarch.Internal`
 
