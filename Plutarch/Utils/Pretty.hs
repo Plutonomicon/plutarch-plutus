@@ -181,7 +181,7 @@ prettyUPLC pt = case takeBindable ([], pt) of
       LamAbs () nm _body ->
         let (vars, body) = takeLamArgs ([prettyName nm], _body)
          in align . group $
-              "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyUPLC body)
+              "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyNoBind body)
       Apply () f arg ->
         let fs = prettyAtomic <$> analyzeApp f
          in align . group . encloseSep "" "" " # " $ (fs <> [prettyAtomic arg])
@@ -190,7 +190,7 @@ prettyUPLC pt = case takeBindable ([], pt) of
       c@(Constant _ _) -> pretty c
       Builtin _ b -> pretty b
       Error {} -> "ERROR"
-      Constr () cix args -> "constr" <+> pretty cix <+> align (group $ list (prettyUPLC <$> args))
+      Constr () cix args -> "constr" <+> pretty cix <+> align (group $ list (prettyNoBind <$> args))
       Case () scrut handlers ->
         group $
           "case"
@@ -198,7 +198,7 @@ prettyUPLC pt = case takeBindable ([], pt) of
             <+> hardline
             <> align
               ( group
-                  (indent 2 . blockList . fmap prettyUPLC . Vector.toList $ handlers)
+                  (indent 2 . blockList . fmap prettyNoBind . Vector.toList $ handlers)
               )
 
     prettyAtomic :: Term Name DefaultUni DefaultFun () -> Doc ann
