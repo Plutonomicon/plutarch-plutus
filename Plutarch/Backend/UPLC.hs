@@ -42,8 +42,8 @@ import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
+import Plutarch.Utils.Pretty (prettyUPLC)
 import PlutusCore (Some, ValueOf)
-import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (Pretty (pretty))
 import UntypedPlutusCore qualified as UPLC
 
@@ -66,7 +66,7 @@ newtype UPLCTerm = UPLCTerm (UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun
 
 -- | @since wip
 instance Pretty UPLCTerm where
-  pretty (UPLCTerm t) = prettyPlcReadable t
+  pretty (UPLCTerm t) = prettyUPLC t
 
 {- | The @M@ combinator, or @\x -> x@. The argument provides the name of its
 variable (in this case, @x@).

@@ -33,7 +33,6 @@ import Plutarch.Backend.Term (
   punsafeConstr,
   toSomeTerm,
  )
-import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Numeric.Euclidean (pgcd)
 import Plutarch.Numeric.Multiplicative (ppowNatural)
@@ -49,7 +48,6 @@ import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
 import PlutusCore qualified as PLC
-import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (
   Pretty (pretty),
   defaultLayoutOptions,
@@ -93,8 +91,8 @@ main =
                 let anf' = analyzeDemand anf
                 step $ toPrettyString anf'
                 step "Converting to UPLC"
-                let (UPLCTerm t) = toUPLCTerm anf'
-                step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+                let t = toUPLCTerm anf'
+                step $ "UPLC:\n" <> toPrettyString t
                 pure ()
               _ -> assertFailure $ "Unexpected top node: \n" <> ppShow t
     , testCaseSteps "Case 2" $ \step -> do
@@ -136,8 +134,8 @@ main =
             step "Demand analysis"
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 4" $ \step -> do
         step "Case: \\x y -> addInteger x y"
@@ -153,8 +151,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 5" $ \step -> do
         step "Case: \\cond ifT ifF -> (compiled (\\cond' ifT' ifF' -> if cond' ifT' ifF') cond ifT ifF"
@@ -170,8 +168,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 6" $ \step -> do
         step "Case: \\x y -> addInteger (multiplyInteger x x) (multiplyInteger y y)"
@@ -186,8 +184,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 7" $ \step -> do
         step "Case: \\x -> addInteger error (addInteger x error)"
@@ -202,8 +200,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 8" $ \step -> do
         step "Case: \\x -> constr 0 [x, error]"
@@ -219,8 +217,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 9" $ \step -> do
         step "Case: \\x -> case error of [x]"
@@ -236,8 +234,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Cases 10 and 11" $ \step -> do
         step "Case: \\x -> (compose [\\y -> y + 2, \\z -> x * z, \\z1 -> z1 - 5]) x"
@@ -269,10 +267,10 @@ main =
             assertEqual "ANF bimaps differ" tlaBM traBM
             assertEqual "ANF binds differ" tlaANF traANF
             step "ANFs are the same!"
-            let (UPLCTerm ttla) = toUPLCTerm . analyzeDemand $ anfLA
-            let (UPLCTerm ttra) = toUPLCTerm . analyzeDemand $ anfRA
-            step $ "UPLC (left associative):\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ ttla)
-            step $ "UPLC (right associative):\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ ttra)
+            let ttla = toUPLCTerm . analyzeDemand $ anfLA
+            let ttra = toUPLCTerm . analyzeDemand $ anfRA
+            step $ "UPLC (left associative):\n" <> toPrettyString ttla
+            step $ "UPLC (right associative):\n" <> toPrettyString ttra
             pure ()
     , testCaseSteps "Case 12" $ \step -> do
         step "Case: \\x -> (compose [\\y -> y + 2, \\z -> z + 2, \\z1 -> z1 + 2]) x"
@@ -288,8 +286,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 13" $ \step -> do
         step "Case: \\x -> (compose [\\y -> y * y, \\z -> z + 2]) x"
@@ -305,8 +303,8 @@ main =
             step $ toPrettyString anf
             let anf' = analyzeDemand anf
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 14" $ \step -> do
         step "Case: [[2]]"
