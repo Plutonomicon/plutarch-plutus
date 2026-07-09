@@ -336,8 +336,8 @@ main =
             let anf' = analyzeDemand anf
             step "ANF, with demand analysis"
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 16" $ \step -> do
         step "Case: pgcd @Integer"
@@ -356,8 +356,8 @@ main =
             let anf' = analyzeDemand anf
             step "ANF, with demand analysis"
             step $ toPrettyString anf'
-            let (UPLCTerm t) = toUPLCTerm anf'
-            step $ "UPLC:\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
             pure ()
     ]
 
