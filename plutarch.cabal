@@ -133,7 +133,13 @@ library
     Plutarch.List
     Plutarch.Maybe
     Plutarch.Monadic
+    Plutarch.Numeric.Additive
+    Plutarch.Numeric.Euclidean
+    Plutarch.Numeric.Field
+    Plutarch.Numeric.Helpers
+    Plutarch.Numeric.Multiplicative
     Plutarch.Numeric.Positive
+    Plutarch.Numeric.Zeroable
     Plutarch.Pair
     Plutarch.Prelude
     Plutarch.Pretty
