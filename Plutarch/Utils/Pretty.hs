@@ -16,7 +16,7 @@ import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Vector qualified as Vector
 import Data.Vector.Strict qualified as SV
-import PlutusCore.Default (DefaultUni (..), Esc)
+import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
 import Prettyprinter (
   Doc,
   Pretty (pretty),
@@ -24,8 +24,10 @@ import Prettyprinter (
   angles,
   brackets,
   encloseSep,
+  flatAlt,
   group,
   hardline,
+  hcat,
   hsep,
   indent,
   list,
@@ -123,19 +125,40 @@ compactReadableVar n
 (<:=>) :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
 d1 <:=> d2 = d1 <+> ":=" <+> d2
 
--- first two args are the left and right block separator
+_customLine :: Doc ann
+_customLine = flatAlt hardline ""
+
+-- arg is a "tag" for the AST node type, next two two args are the left and right block separator
+block' :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann -> Doc ann
+block' lbl l' r d = group $ flatAlt multiLine oneLine
+  where
+    l = l' <> lbl
+    multiLine :: Doc ann
+    multiLine = align $ l <> hardline <> indent 2 (align . group $ d) <> hardline <> r
+
+    oneLine :: Doc ann
+    oneLine = align $ l <> align d <> r
+
 block :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
-block l r d = align . group $ l <> hardline <> indent 2 (align d) <> hardline <> r
+block = block' ""
 
 -- This aligns the `[` and `]` at the same indentation level to make this easier to read
 blockList :: forall (ann :: Type). [Doc ann] -> Doc ann
 blockList = block "[" "]" . vcat . punctuate ", "
 
+customList :: forall (ann :: Type). [Doc ann] -> Doc ann
+customList = \case
+  [] -> "[]"
+  (x : xs) -> flatAlt (go x xs) (list (x : xs))
+  where
+    go :: Doc ann -> [Doc ann] -> Doc ann
+    go headEl rest = align . group . vcat $ ["[" <+> headEl] <> map ("," <+>) rest <> ["]"]
+
 blockParens :: forall (ann :: Type). Doc ann -> Doc ann
 blockParens = block "(" ")"
 
-taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
-taggedNode ann node = align . group $ block "<" ">" node <> "@" <> ann
+taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
+taggedNode lbl ann node = block' lbl "<" ">" node <> "@" <> ann
 
 prettyAnnotated ::
   forall f a ann.
@@ -171,35 +194,52 @@ prettyUPLC pt = case takeBindable ([], pt) of
         let here = "let" <+> prettyName nm <+> "=" <+> align (prettyNoBind arg)
          in takeBindable (here : acc, body)
       other -> (acc, other)
+
     takeLamArgs :: ([Doc ann], Term Name DefaultUni DefaultFun ()) -> ([Doc ann], Term Name DefaultUni DefaultFun ())
     takeLamArgs (varAcc, next) = case next of
       LamAbs () nm body -> takeLamArgs (prettyName nm : varAcc, body)
       _ -> (reverse varAcc, next)
+
     prettyNoBind :: Term Name DefaultUni DefaultFun () -> Doc ann
     prettyNoBind = \case
       Var () nm -> prettyName nm
       LamAbs () nm _body ->
         let (vars, body) = takeLamArgs ([prettyName nm], _body)
-         in align . group $
-              "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyNoBind body)
+            oneLine = "\\" <> hsep vars <+> "->" <+> prettyNoBind body
+            multiLine = "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyNoBind body)
+         in align . group $ flatAlt multiLine oneLine
       Apply () f arg ->
         let fs = prettyAtomic <$> analyzeApp f
-         in align . group . encloseSep "" "" " # " $ (fs <> [prettyAtomic arg])
+            allArgs = tail fs <> [prettyAtomic arg]
+            funPart = head fs
+            oneLine = parens $ funPart <> hcat (map (" # " <>) allArgs)
+            multiLine = funPart <> hardline <> vcat (map ("# " <>) allArgs)
+         in align . group $ flatAlt multiLine oneLine
       Force () inner -> "!" <> prettyAtomic inner
       Delay () inner -> angles $ prettyAtomic inner
-      c@(Constant _ _) -> pretty c
-      Builtin _ b -> pretty b
+      Constant _ (Some (ValueOf uni x)) -> parens (prettyValueOf uni x)
+      Builtin _ b -> viaShow b
       Error {} -> "ERROR"
-      Constr () cix args -> "constr" <+> pretty cix <+> align (group $ list (prettyNoBind <$> args))
+      Constr () cix args -> "constr" <+> pretty cix <+> align (group $ customList (prettyNoBind <$> args))
       Case () scrut handlers ->
-        group $
+        align . group $
           "case"
-            <+> blockParens (prettyNoBind scrut)
+            <+> prettyAtomic scrut
             <+> hardline
             <> align
               ( group
-                  (indent 2 . blockList . fmap prettyNoBind . Vector.toList $ handlers)
+                  (indent 2 . customList . fmap prettyNoBind . Vector.toList $ handlers)
               )
+
+    isAtom :: Term Name DefaultUni DefaultFun () -> Bool
+    isAtom = \case
+      Var {} -> True
+      Constant {} -> True
+      Error {} -> True
+      Delay {} -> True
+      Force {} -> True
+      Builtin {} -> True
+      _ -> False
 
     prettyAtomic :: Term Name DefaultUni DefaultFun () -> Doc ann
     prettyAtomic = \case
@@ -209,7 +249,30 @@ prettyUPLC pt = case takeBindable ([], pt) of
       d@Delay {} -> prettyNoBind d
       f@Force {} -> prettyNoBind f
       b@Builtin {} -> prettyNoBind b
+      LamAbs () nm _body ->
+        let (vars, body) = takeLamArgs ([prettyName nm], _body)
+            cxt = "\\" <> hsep vars <+> "->"
+            oneLine = align . parens $ cxt <+> prettyNoBind body
+            multiLine = align . vcat $ ["(" <> cxt, indent 2 (prettyNoBind body), ")"]
+         in group $ flatAlt multiLine oneLine
+      Apply () f arg -> prettyAtomicApp f arg
       other -> blockParens . prettyNoBind $ other
+
+    -- This is annoying
+    prettyAtomicApp :: Term Name DefaultUni DefaultFun () -> Term Name DefaultUni DefaultFun () -> Doc ann
+    prettyAtomicApp f arg
+      | isAtom funPart = align . group $ flatAlt atomicMultiline defOneline
+      | otherwise = align . group $ flatAlt defMultiline defOneline
+      where
+        funList = analyzeApp f <> [arg]
+        pfunList = prettyAtomic <$> funList
+        funPart = head funList
+        argsPart = tail funList
+        pfunPart = prettyAtomic funPart
+        pArgs = prettyAtomic <$> argsPart
+        defOneline = parens $ pfunPart <> hcat (map (" # " <>) pArgs)
+        defMultiline = align . group $ "(" <+> hardline <+> indent 2 (align $ encloseSep "" "" "# " pfunList) <> hardline <> ")"
+        atomicMultiline = align $ "(" <+> pfunPart <> hardline <> indent 2 (vcat (map ("# " <>) pArgs)) <> hardline <> ")"
 
     analyzeApp :: Term Name DefaultUni DefaultFun () -> [Term Name DefaultUni DefaultFun ()]
     analyzeApp = \case

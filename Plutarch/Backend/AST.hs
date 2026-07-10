@@ -101,6 +101,7 @@ import Prettyprinter (
   align,
   braces,
   brackets,
+  flatAlt,
   group,
   hardline,
   hsep,
@@ -248,30 +249,34 @@ instance {-# OVERLAPS #-} Pretty ann => Pretty (AST ann) where
   pretty = \case
     ASTLeaf l -> case l of
       LVar {} -> pretty l
-      _ -> taggedNode (pretty $ astLeafAnn l) $ pretty l
-    ASTForce ann arg -> taggedNode (pretty ann) $ "force" <+> pretty arg
-    ASTDelay ann arg -> taggedNode (pretty ann) $ "delay" <+> pretty arg
+      _ -> taggedNode "" (pretty $ astLeafAnn l) $ pretty l
+    ASTForce ann arg -> taggedNode "" (pretty ann) $ "force" <+> pretty arg
+    ASTDelay ann arg -> taggedNode "" (pretty ann) $ "delay" <+> pretty arg
     ASTLam ann vars body ->
-      taggedNode (pretty ann) $ "\\" <> mkArgs vars <+> "->" <> hardline <> indent 2 (pretty body)
+      let cxt = "\\" <> mkArgs vars <+> "-> "
+       in taggedNode cxt (pretty ann)
+            . align
+            . group
+            $ pretty body
     ASTFix ann self body ->
-      taggedNode (pretty ann) $ "Fix" <> brackets (pretty self) <+> pretty body
+      let oneLine = brackets (pretty self) <+> pretty body
+          multiLine = brackets (pretty self) <> hardline <> group (pretty body)
+       in taggedNode "Fix" (pretty ann) $ flatAlt multiLine oneLine
     ASTApply ann fun args ->
-      taggedNode (pretty ann) $
-        "Apply"
-          <+> hardline
-          <+> align (indent 2 (pretty fun))
-          <+> hardline
-          <+> align (indent 2 (blockList . map pretty . NEVector.toList $ args))
+      let oneLine = align (pretty fun) <+> align (blockList . map pretty . NEVector.toList $ args)
+          multiLine = align $ align (pretty fun) <> hardline <> align (blockList . map pretty . NEVector.toList $ args)
+       in taggedNode "Apply" (pretty ann) $ flatAlt multiLine oneLine
     ASTConstr ann cix args ->
-      taggedNode (pretty ann) $ "Constr" <> brackets (pretty cix) <+> blockList (pretty <$> Vector.toList args)
+      taggedNode "Constr " (pretty ann) $ brackets (pretty cix) <+> blockList (pretty <$> Vector.toList args)
     ASTCase ann scrut handlers ->
-      taggedNode (pretty ann) $
-        "case"
-          <+> pretty scrut
+      taggedNode "case" (pretty ann)
+        . align
+        . group
+        $ pretty scrut
           <+> hardline
-          <> indent 2 (blockList . map pretty . NEVector.toList $ handlers)
+          <> (blockList . map pretty . NEVector.toList $ handlers)
     ASTCompose ann args ->
-      taggedNode (pretty ann) $ "Compose" <+> align (blockList (pretty <$> NEVector.toList args))
+      taggedNode "Compose" (pretty ann) $ align (blockList (pretty <$> NEVector.toList args))
 
 {- | Given a 'RawTerm', construct its AST, using hashing to mark
 alpha-equivalent subcomputations.
