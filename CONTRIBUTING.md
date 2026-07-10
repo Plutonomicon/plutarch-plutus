@@ -1,10 +1,10 @@
 # Contributing to Plutarch
 
-Welcome! [Plutarch](./README.md) is a typed eDSL in Haskell for writing efficient Plutus Core``
+Welcome! [Plutarch](./README.md) is a typed eDSL in Haskell for writing efficient Plutus Core
 validators.
 
 This document gets you from a fresh checkout to **a built repo with the test suite passing**. It is
-deliberately step-by-step and ass``umes no prior experience with this codebase — only some Haskell.
+deliberately step-by-step and assumes no prior experience with this codebase — only some Haskell.
 
 Once you can build and test, see these companion docs:
 
