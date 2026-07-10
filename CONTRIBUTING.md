@@ -1,10 +1,10 @@
 # Contributing to Plutarch
 
-Welcome! [Plutarch](./README.md) is a typed eDSL in Haskell for writing efficient Plutus Core
+Welcome! [Plutarch](./README.md) is a typed eDSL in Haskell for writing efficient Plutus Core``
 validators.
 
 This document gets you from a fresh checkout to **a built repo with the test suite passing**. It is
-deliberately step-by-step and assumes no prior experience with this codebase — only some Haskell.
+deliberately step-by-step and ass``umes no prior experience with this codebase — only some Haskell.
 
 Once you can build and test, see these companion docs:
 
@@ -29,8 +29,7 @@ exact GHC version. The supported way to get all of this — matching what CI (He
   ```
 
 > **Why Nix?** The dev shell pins **GHC 9.8.4** and provides the patched `libsodium`, `secp256k1`,
-> and `blst` that the Plutus stack links against. Building without Nix is possible but unsupported —
-> see [§10](#10-building-without-nix-advanced--unsupported).
+> and `blst` that the Plutus stack links against.
 
 Optional but convenient: [`direnv`](https://direnv.net/). The repo ships an `.envrc`, so with direnv
 installed the dev shell loads automatically when you `cd` into the directory.
@@ -88,15 +87,27 @@ The whole project has a single test suite — `tests` in the `plutarch-testlib` 
 cabal test plutarch-testlib
 ```
 
-Some of these are **golden tests**: they compare output against reference files in
-`plutarch-testlib/goldens/*.golden`. If you intentionally change generated output and need to update
-those references, re-run with the accept flag:
+Some of these are **golden tests**. For each named test case, three reference files are checked
+into `plutarch-testlib/goldens/`:
+
+- `*.uplc.golden` — the compiled UPLC script, before evaluation
+- `*.uplc.eval.golden` — the UPLC script after evaluation
+- `*.bench.golden` — the CPU budget, memory budget, and script size it took to run
+
+A test fails if any of these differs from what's on disk. This exists because Plutarch's job isn't
+just "produce a correct script" — it's "produce a *cheap* correct script": on-chain execution costs
+real fees. A change that keeps every result correct but silently makes the compiled script bigger
+or more expensive still needs to be caught and reviewed, which is what the `.bench.golden` file is for.
+
+If you intentionally change generated output (e.g. an optimization changes the compiled script or
+its cost), update the references with:
 
 ```sh
 cabal test plutarch-testlib --test-options='--accept'
 ```
 
-Only accept goldens when you have reviewed the diff and the change is expected.
+Only accept goldens after reading the diff — accepting is you personally attesting that the new
+output, and its cost, are correct, not just clearing a red test.
 
 ## 6. Try it in the REPL
 
@@ -146,20 +157,6 @@ mdbook build .   # render static HTML into ./book
 When you add a new *compilable* doc page, run `./createSymlinks` in `plutarch-docs/` and add the new
 module to `plutarch-docs.cabal` under `other-modules` so it gets type-checked. See the "How to build
 docs" section of [`DEVGUIDE`](./plutarch-docs/src/DEVGUIDE.md) for details.
-
-## 10. Building without Nix (advanced / unsupported)
-
-This path is **not supported** and you're on your own for troubleshooting, but in principle you need:
-
-- **GHC 9.8.4** and a recent `cabal` (e.g. via [`ghcup`](https://www.haskell.org/ghcup/)).
-- The Cardano Haskell Packages (CHAP) repository and the pinned `index-state` — both already declared
-  in [`cabal.project`](./cabal.project). Run `cabal update` so cabal fetches the CHAP index.
-- IntersectMBO's patched native C libraries — **libsodium**, **secp256k1**, and **blst** — installed
-  and discoverable by `pkg-config`. See [`iohk-nix`](https://github.com/input-output-hk/iohk-nix) for
-  the exact forks/versions; distro packages are often incompatible.
-
-Then `cabal build all` / `cabal test all` as above. If the native libraries give you trouble, prefer
-the Nix path in [§1](#1-prerequisites).
 
 ---
 
