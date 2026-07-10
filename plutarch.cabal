@@ -172,6 +172,7 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.TH.Strategy
     Plutarch.Trace
     Plutarch.Unroll
     Plutarch.Unsafe
@@ -199,6 +200,7 @@ library
     , semialign
     , smash
     , sop-core
+    , template-haskell
     , text
     , these
     , unordered-containers
