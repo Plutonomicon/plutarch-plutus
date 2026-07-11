@@ -149,13 +149,18 @@ blockList = block "[" "]" . vcat . punctuate ", "
 customList :: forall (ann :: Type). [Doc ann] -> Doc ann
 customList = \case
   [] -> "[]"
-  (x : xs) -> flatAlt (go x xs) (list (x : xs))
+  (x : xs) -> group $ flatAlt (go x xs) (oneLineList (x : xs))
   where
     go :: Doc ann -> [Doc ann] -> Doc ann
     go headEl rest = align . group . vcat $ ["[" <+> headEl] <> map ("," <+>) rest <> ["]"]
 
-blockParens :: forall (ann :: Type). Doc ann -> Doc ann
-blockParens = block "(" ")"
+oneLineList :: forall (ann :: Type). [Doc ann] -> Doc ann
+oneLineList = \case
+  [] -> "[]"
+  xs -> "[" <> hcat (punctuate ", " xs) <> "]"
+
+_blockParens :: forall (ann :: Type). Doc ann -> Doc ann
+_blockParens = block "(" ")"
 
 taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
 taggedNode lbl ann node = block' lbl "<" ">" node <> "@" <> ann
@@ -174,15 +179,21 @@ prettyAnnotated getAnn annHandler nodePrinter x = annHandler (pretty a) $ nodePr
     a = getAnn x
     childNodes = children x
 
+-- Yes there are probably a bunch of superfluous `align`s, not worth the trouble to sort out which are safe to remove tho
 prettyUPLC :: forall ann. Term Name DefaultUni DefaultFun () -> Doc ann
-prettyUPLC pt = case takeBindable ([], pt) of
-  ([], rest) -> prettyNoBind rest
+prettyUPLC pt = case takeBindable ([], topLevelBody) of
+  ([], rest) -> case topLevelArgs of
+    [] -> prettyNoBind rest
+    _ -> prettyLamNoBind topLevelArgs $ prettyNoBind rest
   (letBinds, rest) ->
     let pRest = "in" <+> prettyNoBind rest
-     in align . vsep . reverse $ (pRest : letBinds)
+        body = align . vsep . reverse $ (pRest : letBinds)
+     in prettyLamNoBind topLevelArgs body
   where
+    (topLevelArgs, topLevelBody) = takeLamArgs ([], pt)
     -- if it's `arg` it came from Plutarch code and we just use the "compact pretty hash" as the visible name directly,
-    -- but if it's something else then it came from a blob of compiled UPLC and we need to make the text part visible
+    -- but if it's something else then it came from a blob of compiled UPLC OR has a semantically meaningful text part
+    -- so we need to make the text part visible
     prettyName :: Name -> Doc ann
     prettyName (Name txt (Unique u))
       | txt == "arg" = pretty . compactReadableVar . fromIntegral $ u
@@ -200,14 +211,18 @@ prettyUPLC pt = case takeBindable ([], pt) of
       LamAbs () nm body -> takeLamArgs (prettyName nm : varAcc, body)
       _ -> (reverse varAcc, next)
 
+    prettyLamNoBind :: [Doc ann] -> Doc ann -> Doc ann
+    prettyLamNoBind vars body = align . group $ flatAlt multiLine oneLine
+      where
+        oneLine = "\\" <> hsep vars <+> "->" <+> body
+        multiLine = "\\" <> hsep vars <+> "->" <> hardline <> indent 2 body
+
     prettyNoBind :: Term Name DefaultUni DefaultFun () -> Doc ann
     prettyNoBind = \case
       Var () nm -> prettyName nm
       LamAbs () nm _body ->
         let (vars, body) = takeLamArgs ([prettyName nm], _body)
-            oneLine = "\\" <> hsep vars <+> "->" <+> prettyNoBind body
-            multiLine = "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyNoBind body)
-         in align . group $ flatAlt multiLine oneLine
+         in prettyLamNoBind vars (prettyNoBind body)
       Apply () f arg ->
         let fs = prettyAtomic <$> analyzeApp f
             allArgs = tail fs <> [prettyAtomic arg]
@@ -241,6 +256,10 @@ prettyUPLC pt = case takeBindable ([], pt) of
       Builtin {} -> True
       _ -> False
 
+    -- An "atom", here, is a representation of a term that we can put anywhere we want without causing ambiguity.
+    -- We need all the stupid helpers primarily to insert the "first element" (the lambda binds, the scrut in a case exp, etc)
+    -- on the same line as the enclosing left paren while ensuring the rest of the term renders in a
+    -- readable way
     prettyAtomic :: Term Name DefaultUni DefaultFun () -> Doc ann
     prettyAtomic = \case
       v@Var {} -> prettyNoBind v
@@ -256,7 +275,29 @@ prettyUPLC pt = case takeBindable ([], pt) of
             multiLine = align . vcat $ ["(" <> cxt, indent 2 (prettyNoBind body), ")"]
          in group $ flatAlt multiLine oneLine
       Apply () f arg -> prettyAtomicApp f arg
-      other -> blockParens . prettyNoBind $ other
+      -- TODO: Atomic Case
+      Case () scrut handlers -> prettyAtomicCase scrut (Vector.toList handlers)
+      Constr () cix args -> prettyAtomicCtor (pretty cix) (map prettyNoBind args)
+
+    prettyAtomicCtor :: Doc ann -> [Doc ann] -> Doc ann
+    prettyAtomicCtor cix args = align . group $ flatAlt multiLine oneLine
+      where
+        multiLine :: Doc ann
+        multiLine = align $ "(" <> "constr" <+> cix <> hardline <> customList args <> hardline <> ")"
+
+        oneLine :: Doc ann
+        oneLine = parens $ "constr" <+> cix <+> oneLineList args
+    prettyAtomicCase :: Term Name DefaultUni DefaultFun () -> [Term Name DefaultUni DefaultFun ()] -> Doc ann
+    prettyAtomicCase scrut (map prettyNoBind -> handlers)
+      | isAtom scrut = align . group $ flatAlt atomicMultiline defOneline
+      | otherwise = align . group $ flatAlt defMultiline defOneline
+      where
+        -- FIXME: koz doesn't like compressed sigs like this
+        atomicMultiline, defMultiline, defOneline, pscrut :: Doc ann
+        atomicMultiline = align $ "(case" <+> pscrut <> hardline <> indent 2 (customList handlers) <> hardline <> ")"
+        defMultiline = align . group $ "(case" <+> hardline <+> indent 2 (align . vcat $ [pscrut, customList handlers]) <> hardline <> ")"
+        defOneline = parens $ "case" <+> pscrut <+> oneLineList handlers
+        pscrut = prettyAtomic scrut
 
     -- This is annoying
     prettyAtomicApp :: Term Name DefaultUni DefaultFun () -> Term Name DefaultUni DefaultFun () -> Doc ann
