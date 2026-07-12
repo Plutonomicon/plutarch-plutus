@@ -6,6 +6,7 @@ module Plutarch.Utils.Pretty (
   taggedNode,
   prettyAnnotated,
   blockList,
+  prettyUPLC,
 ) where
 
 import Control.Lens.Plated
@@ -20,9 +21,12 @@ import Prettyprinter (
   Doc,
   Pretty (pretty),
   align,
+  angles,
   brackets,
+  encloseSep,
   group,
   hardline,
+  hsep,
   indent,
   list,
   parens,
@@ -30,8 +34,11 @@ import Prettyprinter (
   tupled,
   vcat,
   viaShow,
+  vsep,
   (<+>),
  )
+import UntypedPlutusCore (DefaultFun, Name (Name), Unique (Unique))
+import UntypedPlutusCore.Core.Type (Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var))
 
 -- We can do better than the Plutus Pretty instance.
 -- If we use (_,_) for pairs and [] for list types then
@@ -124,6 +131,9 @@ block l r d = align . group $ l <> hardline <> indent 2 (align d) <> hardline <>
 blockList :: forall (ann :: Type). [Doc ann] -> Doc ann
 blockList = block "[" "]" . vcat . punctuate ", "
 
+blockParens :: forall (ann :: Type). Doc ann -> Doc ann
+blockParens = block "(" ")"
+
 taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
 taggedNode ann node = align . group $ block "<" ">" node <> "@" <> ann
 
@@ -140,3 +150,68 @@ prettyAnnotated getAnn annHandler nodePrinter x = annHandler (pretty a) $ nodePr
     childNodesPretty = prettyAnnotated getAnn annHandler nodePrinter <$> childNodes
     a = getAnn x
     childNodes = children x
+
+prettyUPLC :: forall ann. Term Name DefaultUni DefaultFun () -> Doc ann
+prettyUPLC pt = case takeBindable ([], pt) of
+  ([], rest) -> prettyNoBind rest
+  (letBinds, rest) ->
+    let pRest = "in" <+> prettyNoBind rest
+     in align . vsep . reverse $ (pRest : letBinds)
+  where
+    -- if it's `arg` it came from Plutarch code and we just use the "compact pretty hash" as the visible name directly,
+    -- but if it's something else then it came from a blob of compiled UPLC and we need to make the text part visible
+    prettyName :: Name -> Doc ann
+    prettyName (Name txt (Unique u))
+      | txt == "arg" = pretty . compactReadableVar . fromIntegral $ u
+      | otherwise = pretty txt <> "_" <> pretty (compactReadableVar . fromIntegral $ u)
+
+    takeBindable :: ([Doc ann], Term Name DefaultUni DefaultFun ()) -> ([Doc ann], Term Name DefaultUni DefaultFun ())
+    takeBindable (acc, t) = case t of
+      Apply () (LamAbs () nm body) arg ->
+        let here = "let" <+> prettyName nm <+> "=" <+> align (prettyNoBind arg)
+         in takeBindable (here : acc, body)
+      other -> (acc, other)
+    takeLamArgs :: ([Doc ann], Term Name DefaultUni DefaultFun ()) -> ([Doc ann], Term Name DefaultUni DefaultFun ())
+    takeLamArgs (varAcc, next) = case next of
+      LamAbs () nm body -> takeLamArgs (prettyName nm : varAcc, body)
+      _ -> (reverse varAcc, next)
+    prettyNoBind :: Term Name DefaultUni DefaultFun () -> Doc ann
+    prettyNoBind = \case
+      Var () nm -> prettyName nm
+      LamAbs () nm _body ->
+        let (vars, body) = takeLamArgs ([prettyName nm], _body)
+         in align . group $
+              "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyNoBind body)
+      Apply () f arg ->
+        let fs = prettyAtomic <$> analyzeApp f
+         in align . group . encloseSep "" "" " # " $ (fs <> [prettyAtomic arg])
+      Force () inner -> "!" <> prettyAtomic inner
+      Delay () inner -> angles $ prettyAtomic inner
+      c@(Constant _ _) -> pretty c
+      Builtin _ b -> pretty b
+      Error {} -> "ERROR"
+      Constr () cix args -> "constr" <+> pretty cix <+> align (group $ list (prettyNoBind <$> args))
+      Case () scrut handlers ->
+        group $
+          "case"
+            <+> blockParens (prettyNoBind scrut)
+            <+> hardline
+            <> align
+              ( group
+                  (indent 2 . blockList . fmap prettyNoBind . Vector.toList $ handlers)
+              )
+
+    prettyAtomic :: Term Name DefaultUni DefaultFun () -> Doc ann
+    prettyAtomic = \case
+      v@Var {} -> prettyNoBind v
+      c@Constant {} -> prettyNoBind c
+      e@Error {} -> prettyNoBind e
+      d@Delay {} -> prettyNoBind d
+      f@Force {} -> prettyNoBind f
+      b@Builtin {} -> prettyNoBind b
+      other -> blockParens . prettyNoBind $ other
+
+    analyzeApp :: Term Name DefaultUni DefaultFun () -> [Term Name DefaultUni DefaultFun ()]
+    analyzeApp = \case
+      Apply () f arg -> analyzeApp f <> [arg]
+      other -> [other]
