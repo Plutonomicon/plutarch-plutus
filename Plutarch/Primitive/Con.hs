@@ -11,13 +11,21 @@ module Plutarch.Primitive.Con (
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, punsafeBuiltin, punsafeCoerce)
+import Plutarch.Backend.Term (
+  Term,
+  punsafeCoerce,
+  punsafeConstant,
+ )
 import Plutarch.Primitive.Apply (
   PCanRepresent,
   PlutarchType (PRepresentation),
+  pcoerce,
   (#),
  )
+import Plutarch.Primitive.BuiltinFun (pmkCons, pmkPairData)
 import Plutarch.Primitive.Data (PAsData, PData)
+import Plutarch.Primitive.Liftable (AsPlutus, PLiftable (AsHaskell))
+import Plutarch.Primitive.List (PBList (PBCons, PBNil))
 import Plutarch.Primitive.Match (PMatch)
 import Plutarch.Primitive.Pair (PBPair (PBPair))
 import PlutusCore qualified as PLC
@@ -41,7 +49,13 @@ instance
   ) =>
   PCon (PBPair (PAsData a) (PAsData b))
   where
-  pcon' (PBPair x y) = punsafeBuiltin PLC.MkPairData # x # y
+  pcon' (PBPair x y) = pmkPairData # pcoerce x # pcoerce y
+
+-- | @since wip
+instance PLiftable a => PCon (PBList a) where
+  pcon' = \case
+    PBNil -> punsafeConstant (PLC.someValue @[AsPlutus (AsHaskell a)] [])
+    PBCons x xs -> pmkCons # pcoerce x # pcoerce xs
 
 -- | @since wip
 pcon ::

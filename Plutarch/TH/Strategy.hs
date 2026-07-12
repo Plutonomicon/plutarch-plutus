@@ -6,26 +6,31 @@ module Plutarch.TH.Strategy (
 ) where
 
 import Data.Foldable (foldl', foldrM, for_)
+import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
   Bang,
   BndrVis,
+  Body (NormalB),
   Con (ForallC, GadtC, InfixC, NormalC, RecC, RecGadtC),
   Dec (DataD, NewtypeD, TySynD),
-  Exp (AppE, ConE, LamE, VarE),
+  Exp (AppE, CaseE, ConE, LamE, LitE, VarE),
   Info (TyConI),
+  Lit (IntegerL),
+  Match (Match),
   Name,
-  Pat (VarP),
+  Pat (ConP, VarP),
   Q,
   TyVarBndr (KindedTV, PlainTV),
   Type (AppT, ConT, TupleT, VarT),
   newName,
   reify,
  )
-import Plutarch.Backend.Term (Term, plam')
+import Plutarch.Backend.Term (Term, plam', punsafeConstr)
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Con (PCon (pcon'))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.SOP (PSOP)
 
@@ -52,13 +57,43 @@ deriveFor tyName strat = do
                 else do
                   plutarchTypeDec <- deriveSOPPlutarchType tvbs name
                   pmatchDec <- deriveSOPPMatch tvbs name cs c
-                  pure $ plutarchTypeDec <> pmatchDec
+                  pconDec <- deriveSOPPCon tvbs name consAsVec
+                  pure $ plutarchTypeDec <> pmatchDec <> pconDec
     NewtypeD {} -> case strat of
       SOP -> fail "Use the Newtype strategy for newtypes."
     TySynD {} -> fail "Type synonyms are not supported. Use the underlying type."
     _ -> fail "Not a valid type name."
 
 -- Helpers
+
+deriveSOPPCon :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
+deriveSOPPCon tyVars tyName constructors =
+  [d|
+    instance $ctx => PCon $name where
+      pcon' x = $(matches 'x)
+    |]
+  where
+    name :: Q Type
+    name = pure $ foldl' (\acc -> AppT acc . VarT . bindToName) (ConT tyName) tyVars
+    ctx :: Q Type
+    ctx = do
+      let len = Vector.length tyVars
+      let varNames = fmap (AppT (ConT ''PlutarchType) . VarT . bindToName) tyVars
+      pure $ foldl' AppT (TupleT len) varNames
+    matches :: Name -> Q Exp
+    matches bindName = CaseE (VarE bindName) . Vector.toList <$> itraverse mkMatch constructors
+    mkMatch :: Int -> Con -> Q Match
+    mkMatch conIx con = do
+      let arity = getArity con
+      conName <- conToName con
+      fieldNames <- case arity of
+        0 -> pure []
+        n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
+      let conMatchPat = ConP conName [] . fmap VarP $ fieldNames
+      let constrIx = LitE . IntegerL . fromIntegral $ conIx
+      constrVec <- foldrM (\n acc -> [e|Vector.cons (toSomeTerm $(pure (VarE n))) $(pure acc)|]) (VarE 'Vector.empty) fieldNames
+      matchBody <- [e|punsafeConstr $(pure constrIx) $(pure constrVec)|]
+      pure . Match conMatchPat (NormalB matchBody) $ []
 
 deriveSOPPlutarchType :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 deriveSOPPlutarchType tyVars tyName =
