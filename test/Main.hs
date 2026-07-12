@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Main (main) where
 
@@ -36,16 +37,25 @@ import Plutarch.Backend.Term (
 import Plutarch.Backend.UPLC (UPLCTerm (UPLCTerm))
 import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Primitive.Apply ((#), (#$))
-import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
+import Plutarch.Primitive.Bool (
+  PBool,
+  pfalse,
+  pif,
+  pnot,
+  por,
+ )
 import Plutarch.Primitive.BuiltinFun (
   paddInteger,
   pmultiplyInteger,
   psubtractInteger,
  )
+import Plutarch.Primitive.Eq (peq)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.List (PBList)
+import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
+import Plutarch.TH.Strategy (Strategy (SOP), deriveFor)
 import PlutusCore qualified as PLC
 import PlutusCore.Pretty (prettyPlcReadable)
 import Prettyprinter (
@@ -62,6 +72,13 @@ import Test.Tasty.HUnit (
   testCaseSteps,
  )
 import Text.Show.Pretty (ppShow)
+
+data PThese (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PThis (Term s a)
+  | PThat (Term s b)
+  | PThese (Term s a) (Term s b)
+
+deriveFor ''PThese SOP
 
 main :: IO ()
 main =
@@ -318,6 +335,23 @@ main =
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
+            pure ()
+    , testCaseSteps "Case 15" $ \step -> do
+        step "Case: peq @(PThese PInteger PInteger)"
+        step "1. Does Case 15 compile?"
+        let compiled = compileTerm (peq @(PThese PInteger PInteger))
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            let anf = fromHashedAST asAST
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step $ toPrettyString anf'
+            let (UPLCTerm t) = toUPLCTerm anf'
+            step $ "UPLC\n" <> (renderString . layoutSmart defaultLayoutOptions . prettyPlcReadable $ t)
             pure ()
     ]
 

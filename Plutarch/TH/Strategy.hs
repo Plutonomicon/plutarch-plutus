@@ -5,7 +5,7 @@ module Plutarch.TH.Strategy (
   deriveFor,
 ) where
 
-import Data.Foldable (foldl', foldrM, for_)
+import Data.Foldable (foldl', foldlM, foldrM, for_)
 import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
@@ -21,7 +21,7 @@ import Language.Haskell.TH (
   Lit (IntegerL),
   Match (Match),
   Name,
-  Pat (ConP, VarP),
+  Pat (ConP, VarP, WildP),
   Q,
   TyVarBndr (KindedTV, PlainTV),
   Type (AppT, ConT, TupleT, VarT),
@@ -30,7 +30,9 @@ import Language.Haskell.TH (
  )
 import Plutarch.Backend.Term (Term, plam', punsafeConstr)
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Bool (pand)
 import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.SOP (PSOP)
 
@@ -58,13 +60,62 @@ deriveFor tyName strat = do
                   plutarchTypeDec <- deriveSOPPlutarchType tvbs name
                   pmatchDec <- deriveSOPPMatch tvbs name cs c
                   pconDec <- deriveSOPPCon tvbs name consAsVec
-                  pure $ plutarchTypeDec <> pmatchDec <> pconDec
+                  peqDec <- deriveSOPPEq tvbs name consAsVec
+                  pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
     NewtypeD {} -> case strat of
       SOP -> fail "Use the Newtype strategy for newtypes."
     TySynD {} -> fail "Type synonyms are not supported. Use the underlying type."
     _ -> fail "Not a valid type name."
 
 -- Helpers
+
+deriveSOPPEq :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
+deriveSOPPEq tyVars tyName constructors =
+  [d|
+    instance $ctx => PEq $name where
+      peq = plam' $ \x -> plam' $ \y -> pmatch x $ \xInner ->
+        pmatch y $ \yInner ->
+          $(peqImpl 'xInner 'yInner)
+    |]
+  where
+    name :: Q Type
+    name = pure $ foldl' (\acc -> AppT acc . VarT . bindToName) (ConT tyName) tyVars
+    ctx :: Q Type
+    ctx = do
+      let len = Vector.length tyVars
+      let varNames = fmap (AppT (ConT ''PEq) . VarT . bindToName) tyVars
+      pure $ foldl' AppT (TupleT len) varNames
+    peqImpl :: Name -> Name -> Q Exp
+    peqImpl xName yName = do
+      matches <- Vector.toList <$> traverse (mkMatch yName) constructors
+      pure . CaseE (VarE xName) $ matches
+    mkMatch :: Name -> Con -> Q Match
+    mkMatch yName con = do
+      let arity = getArity con
+      conName <- conToName con
+      fieldNamesX <- case arity of
+        0 -> pure []
+        n -> traverse (\i -> newName $ "x" <> show i) [0, 1 .. n - 1]
+      fieldNamesY <- case arity of
+        0 -> pure []
+        n -> traverse (\i -> newName $ "y" <> show i) [0, 1 .. n - 1]
+      let xMatchPat = ConP conName [] . fmap VarP $ fieldNamesX
+      let yMatchPat = ConP conName [] . fmap VarP $ fieldNamesY
+      hitExp <- case zip fieldNamesX fieldNamesY of
+        [] -> [e|ptrue|]
+        (xField, yField) : fields -> do
+          let xVar = VarE xField
+          let yVar = VarE yField
+          start <- [e|peq # $(pure xVar) # $(pure yVar)|]
+          foldlM mkPand start fields
+      missExp <- [e|pfalse|]
+      let matchBody = CaseE (VarE yName) [Match yMatchPat (NormalB hitExp) [], Match WildP (NormalB missExp) []]
+      pure . Match xMatchPat (NormalB matchBody) $ []
+    mkPand :: Exp -> (Name, Name) -> Q Exp
+    mkPand acc (xName, yName) = do
+      let xVar = VarE xName
+      let yVar = VarE yName
+      [e|pand (peq # $(pure xVar) # $(pure yVar)) $(pure acc)|]
 
 deriveSOPPCon :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
 deriveSOPPCon tyVars tyName constructors =
