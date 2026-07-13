@@ -196,6 +196,7 @@ library
     , indexed-traversable
     , lens
     , mtl
+    , nonempty-containers
     , nonempty-vector
     , plutus-core           ==1.64.0.0
     , plutus-ledger-api
