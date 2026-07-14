@@ -40,6 +40,7 @@ import Plutarch.Numeric.Multiplicative (ppowNatural)
 import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (
   PBool,
+  pand,
   pfalse,
   pif,
   pnot,

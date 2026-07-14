@@ -178,6 +178,8 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.TH.Helpers
+    Plutarch.TH.SOP
     Plutarch.TH.Strategy
     Plutarch.Trace
     Plutarch.Unroll
