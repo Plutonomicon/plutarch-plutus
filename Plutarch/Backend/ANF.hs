@@ -56,8 +56,8 @@ import Plutarch.Backend.AST (
     ASTLam,
     ASTLeaf
   ),
+  BoundVar,
   Hash,
-  Multiplicity,
  )
 import Plutarch.Backend.AST qualified as AST
 import Plutarch.Backend.UPLC (UPLCTerm)
@@ -159,8 +159,8 @@ data ANFBind (ann :: Type)
   = ANFLeaf (Leaf ann)
   | ANFForce ann Ref
   | ANFDelay ann Ref
-  | ANFLam ann (NonEmptyVector (Maybe Multiplicity)) Ref
-  | ANFFix ann Multiplicity Ref
+  | ANFLam ann (NonEmptyVector (Maybe BoundVar)) Ref
+  | ANFFix ann BoundVar Ref
   | ANFApply ann Ref (NonEmptyVector Ref)
   | ANFConstr ann Word64 (Vector Ref)
   | ANFCase ann Ref (NonEmptyVector Ref)
@@ -187,7 +187,7 @@ instance Pretty (ANFBind ann) where
     ANFCase _ scrut handlers -> "Case" <+> pretty scrut <+> list (pretty <$> NEVector.toList handlers)
     ANFCompose _ args -> hsep . punctuate " <<<" . fmap pretty . NEVector.toList $ args
     where
-      mkArgs :: forall ann. NEVector.NonEmptyVector (Maybe Multiplicity) -> Doc ann
+      mkArgs :: forall ann. NEVector.NonEmptyVector (Maybe BoundVar) -> Doc ann
       mkArgs (NEVector.toList -> xs) =
         hsep
           . fmap (\case Nothing -> "_"; Just m -> pretty m)

@@ -59,8 +59,8 @@ import Plutarch.Backend.ANF (
   getANFBindAnn,
  )
 import Plutarch.Backend.AST (
+  BoundVar (BoundVar),
   Hash (Hash),
-  Multiplicity (MultiplicityMany, MultiplicityOne),
  )
 import Plutarch.Backend.UPLC (
   UPLCTerm,
@@ -334,7 +334,7 @@ compileBind cache i = \case
             pure (applyBinds, uplcCase constrCall soleHandler)
   ANFLam _ params body -> do
     (firstDemandedBody, mNameBody, codeBody) <- checkCache cache body
-    asParamNames <- NEVector.mapM multToName params
+    asParamNames <- NEVector.mapM boundVarToName params
     case mNameBody of
       Nothing -> pure ([], uplcLam asParamNames codeBody)
       Just nameBody -> do
@@ -351,14 +351,14 @@ compileBind cache i = \case
     let len = NEVector.length components'
     let body = foldl' (\acc i -> uplcApply1 (componentArgs NEVector.! i) acc) (uplcVar compArgName) [len - 1, len - 2 .. 0]
     pure (componentBinds, uplcLam1 compArgName body)
-multToName ::
+
+boundVarToName ::
   forall (m :: Type -> Type).
   MonadReader CompileEnv m =>
-  Maybe Multiplicity -> m PLC.Name
-multToName = \case
+  Maybe BoundVar -> m PLC.Name
+boundVarToName = \case
   Nothing -> asks ceUnusedParamName
-  Just (MultiplicityOne (Hash h)) -> pure . mkName "arg" $ h
-  Just (MultiplicityMany (Hash h)) -> pure . mkName "arg" $ h
+  Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
 
 doLetBind :: UPLCTerm -> PLC.Name -> UPLCTerm -> UPLCTerm
 doLetBind f name v = uplcLet name v f
@@ -492,10 +492,10 @@ findIdentity binds = Id <$> NEVector.findIndex go binds
   where
     go :: ANFBind Demand -> Bool
     go = \case
-      ANFLam _ mults r -> case NEVector.uncons mults of
-        (arg, rest) -> case fmap (\case MultiplicityOne h -> h; MultiplicityMany h -> h) arg of
+      ANFLam _ binds r -> case NEVector.uncons binds of
+        (arg, rest) -> case arg of
           Nothing -> False
-          Just h -> case r of
+          Just (BoundVar h _) -> case r of
             AVar h' -> Vector.null rest && h == h'
             _ -> False
       _ -> False
