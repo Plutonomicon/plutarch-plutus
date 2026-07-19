@@ -10,6 +10,7 @@ import Language.Haskell.TH (
   Name,
   Q,
  )
+import Plutarch.TH.DataPlutus (deriveDataPlutus)
 import Plutarch.TH.Helpers (checkFieldsAreTerms, checkTyName)
 import Plutarch.TH.SOP (deriveSOP)
 
@@ -26,6 +27,15 @@ data Strategy
     @since wip
     -}
     SOP
+  | {- | Use `PData` as the representation. This strategy derives
+    'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+
+    This will use a PlutusTx-style sum-of-products encoding with @Constr@,
+    even for types with only one \'arm\'.
+
+    @since wip
+    -}
+    DataPlutus
 
 {- | Given a type name, and a 'Strategy', derive all possible instances for that
 type as allowed by that 'Strategy'.
@@ -57,6 +67,7 @@ deriveFor tyName strat = do
         Nothing -> fail "Types must have an s :: S type parameter in last position."
         Just (tvbs, _) -> case strat of
           SOP -> deriveSOP tvbs name consAsVec
+          DataPlutus -> deriveDataPlutus tvbs name consAsVec
     NewtypeD {} -> fail "Newtype derivations not supported at present."
     TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
     _ -> fail $ "Not a valid type name: " <> show tyName
