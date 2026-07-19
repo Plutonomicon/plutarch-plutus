@@ -19,6 +19,7 @@ import Language.Haskell.TH (
   Type (AppT, ConT),
  )
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Data (PAsData, PData)
 import Plutarch.TH.Helpers (fullTypeName, mkContextOf)
 
@@ -42,7 +43,7 @@ derivePlutarchType tyVars tyName =
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
-    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    ctx = pure . mkContextOf ''PCanData $ tyVars
 
 checkFieldIsWrapped :: Con -> Q ()
 checkFieldIsWrapped = \case

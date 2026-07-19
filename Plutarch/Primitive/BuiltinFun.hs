@@ -60,6 +60,7 @@ module Plutarch.Primitive.BuiltinFun (
 
   -- * Miscellaneous monomorphized constructors
   pmkPairData,
+  pnilData,
 
   -- * BLS12-381 operations
 
@@ -141,7 +142,13 @@ module Plutarch.Primitive.BuiltinFun (
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, pforce, punsafeBuiltin)
+import Plutarch.Backend.Term (
+  Term,
+  papp,
+  pforce,
+  punsafeBuiltin,
+  punsafeConstant,
+ )
 import Plutarch.Primitive.Apply (PCanRepresent)
 import Plutarch.Primitive.Array (PBArray)
 import Plutarch.Primitive.BLS (
@@ -396,6 +403,13 @@ pmkPairData ::
   forall (s :: S).
   Term s (PData :--> PData :--> PBPair PData PData)
 pmkPairData = punsafeBuiltin PLC.MkPairData
+
+-- | @since wip
+pnilData ::
+  forall (a :: S -> Type) (s :: S).
+  PData `PCanRepresent` a =>
+  Term s (PBList a)
+pnilData = papp (punsafeBuiltin PLC.MkNilData) (punsafeConstant . PLC.someValue @() $ ())
 
 -- | @since wip
 pbls12_381_G1_add ::

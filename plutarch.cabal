@@ -154,6 +154,7 @@ library
     Plutarch.Primitive.Bool
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.ByteString
+    Plutarch.Primitive.CanData
     Plutarch.Primitive.Con
     Plutarch.Primitive.Data
     Plutarch.Primitive.Eq

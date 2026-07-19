@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -ddump-splices #-}
 
 module TH.Data (PTheseData (..)) where
 
