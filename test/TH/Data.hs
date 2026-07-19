@@ -1,11 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -ddump-splices #-}
 
 module TH.Data (PTheseData (..)) where
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term)
+import Plutarch.Backend.Term (Term, plam')
+import Plutarch.Primitive.Apply (pcoerce, (#))
+import Plutarch.Primitive.BuiltinFun (pequalsData)
 import Plutarch.Primitive.Data (PAsData)
 import Plutarch.TH.Strategy (Strategy (DataPlutus), deriveFor)
 

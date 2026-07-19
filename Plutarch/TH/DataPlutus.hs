@@ -21,6 +21,7 @@ import Language.Haskell.TH (
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Data (PAsData, PData)
+import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.TH.Helpers (fullTypeName, mkContextOf)
 
 -- | @since wip
@@ -29,7 +30,9 @@ deriveDataPlutus tvbs name constructors = case Vector.unsnoc constructors of
   Nothing -> fail "DataPlutus derivation is not possible for nullary types."
   Just (_, _) -> do
     traverse_ checkFieldIsWrapped constructors
-    derivePlutarchType tvbs name
+    plutarchTypeDec <- derivePlutarchType tvbs name
+    peqDec <- derivePEq tvbs name
+    pure $ plutarchTypeDec <> peqDec
 
 -- Helpers
 
@@ -38,6 +41,18 @@ derivePlutarchType tyVars tyName =
   [d|
     instance $ctx => PlutarchType $name where
       type PRepresentation $name = PData
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf ''PCanData $ tyVars
+
+derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
+derivePEq tyVars tyName =
+  [d|
+    instance $ctx => PEq $name where
+      peq = plam' $ \x -> plam' $ \y -> pequalsData # pcoerce x # pcoerce y
     |]
   where
     name :: Q Type
