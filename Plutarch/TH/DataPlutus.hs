@@ -7,17 +7,21 @@ module Plutarch.TH.DataPlutus (
 
 import Control.Monad (replicateM)
 import Data.Foldable (foldl', foldrM, for_, traverse_)
+import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
   Bang,
   BndrVis,
+  Body (NormalB),
   Con (InfixC, NormalC, RecC),
   Dec,
-  Exp (AppE, ConE, LamE, VarE),
+  Exp (AppE, CaseE, ConE, LamE, LitE, VarE),
+  Lit (IntegerL),
+  Match (Match),
   Name,
-  Pat (VarP),
+  Pat (ConP, VarP),
   Q,
   TyVarBndr,
   Type (AppT, ConT),
@@ -27,11 +31,13 @@ import Plutarch.Backend.Term (plam')
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
+import Plutarch.Primitive.Con (PCon (pcon'))
 import Plutarch.Primitive.Data (PAsData, PData)
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Pair (PBPair (PBPair))
 import Plutarch.TH.Helpers (conToName, fullTypeName, getArity, mkContextOf)
+import PlutusCore qualified as PLC
 
 -- | @since wip
 deriveDataPlutus :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
@@ -41,8 +47,9 @@ deriveDataPlutus tvbs name constructors = case Vector.unsnoc constructors of
     traverse_ checkFieldIsWrapped constructors
     plutarchTypeDec <- derivePlutarchType tvbs name
     pmatchDec <- derivePMatch tvbs name cs c
+    pconDec <- derivePCon tvbs name constructors
     peqDec <- derivePEq tvbs name
-    pure $ plutarchTypeDec <> pmatchDec <> peqDec
+    pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
 
 -- Helpers
 
@@ -107,6 +114,36 @@ derivePMatch tyVars tyName cs c =
                 $ acc
         acc' <- [e|punsafeCase $(pure (VarE remaining)) (NEVector.singleton (toSomeTerm $(pure plams)))|]
         go acc' t rest
+
+derivePCon :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
+derivePCon tyVars tyName constructors =
+  [d|
+    instance $ctx => PCon $name where
+      pcon' x = $(matches 'x)
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf ''PCanData $ tyVars
+    matches :: Name -> Q Exp
+    matches bindName = CaseE (VarE bindName) . Vector.toList <$> itraverse mkMatch constructors
+    mkMatch :: Int -> Con -> Q Match
+    mkMatch conIx con = do
+      let arity = getArity con
+      conName <- conToName con
+      fieldNames <- case arity of
+        0 -> pure []
+        n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
+      let conMatchPat = ConP conName [] . fmap VarP $ fieldNames
+      let constrIx = LitE . IntegerL . fromIntegral $ conIx
+      constrE <- [e|punsafeConstant (PLC.someValue @Integer $(pure constrIx))|]
+      start <- [e|pnilData|]
+      constrList <- foldrM go start fieldNames
+      matchBody <- [e|pconstrData # $(pure constrE) # $(pure constrList)|]
+      pure . Match conMatchPat (NormalB matchBody) $ []
+    go :: Name -> Exp -> Q Exp
+    go fieldName acc = [e|pmkCons # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]
 
 derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePEq tyVars tyName =

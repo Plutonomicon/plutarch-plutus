@@ -1,5 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -ddump-splices #-}
 
 module TH.Data (PTheseData (..)) where
 
@@ -9,10 +8,17 @@ import Plutarch.Backend.Term (
   Term,
   punsafeCase,
   punsafeCoerce,
+  punsafeConstant,
   toSomeTerm,
  )
 import Plutarch.Primitive.Apply (pcoerce, (#))
-import Plutarch.Primitive.BuiltinFun (pequalsData, punConstrData)
+import Plutarch.Primitive.BuiltinFun (
+  pconstrData,
+  pequalsData,
+  pmkCons,
+  pnilData,
+  punConstrData,
+ )
 import Plutarch.Primitive.Data (PAsData)
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.TH.Strategy (Strategy (DataPlutus), deriveFor)
