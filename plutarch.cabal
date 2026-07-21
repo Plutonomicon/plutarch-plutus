@@ -164,6 +164,7 @@ library
     Plutarch.Primitive.Numeric
     Plutarch.Primitive.Ord
     Plutarch.Primitive.Pair
+    Plutarch.Primitive.SOP
     Plutarch.Primitive.String
     Plutarch.Primitive.Value
     Plutarch.Rational
@@ -177,6 +178,9 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.TH.Helpers
+    Plutarch.TH.SOP
+    Plutarch.TH.Strategy
     Plutarch.Trace
     Plutarch.Unroll
     Plutarch.Unsafe
@@ -191,8 +195,10 @@ library
     , data-default
     , generics-sop
     , hashable
+    , indexed-traversable
     , lens
     , mtl
+    , nonempty-containers
     , nonempty-vector
     , plutus-core           ==1.64.0.0
     , plutus-ledger-api
@@ -204,6 +210,7 @@ library
     , semialign
     , smash
     , sop-core
+    , template-haskell
     , text
     , these
     , unordered-containers
