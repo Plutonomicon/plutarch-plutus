@@ -36,20 +36,29 @@ import Plutarch.Primitive.Data (PAsData, PData)
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Pair (PBPair (PBPair))
-import Plutarch.TH.Helpers (conToName, fullTypeName, getArity, mkContextOf)
+import Plutarch.TH.Helpers (
+  conToName,
+  fullTypeName,
+  getArity,
+  hasNoFields,
+  mkContextOf,
+ )
 import PlutusCore qualified as PLC
 
 -- | @since wip
 deriveDataPlutus :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
 deriveDataPlutus tvbs name constructors = case Vector.unsnoc constructors of
   Nothing -> fail "DataPlutus derivation is not possible for nullary types."
-  Just (cs, c) -> do
-    traverse_ checkFieldIsWrapped constructors
-    plutarchTypeDec <- derivePlutarchType tvbs name
-    pmatchDec <- derivePMatch tvbs name cs c
-    pconDec <- derivePCon tvbs name constructors
-    peqDec <- derivePEq tvbs name
-    pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
+  Just (cs, c) ->
+    if Vector.all hasNoFields constructors
+      then fail "Use the Enum strategy for types with no fields in any 'arm'."
+      else do
+        traverse_ checkFieldIsWrapped constructors
+        plutarchTypeDec <- derivePlutarchType tvbs name
+        pmatchDec <- derivePMatch tvbs name cs c
+        pconDec <- derivePCon tvbs name constructors
+        peqDec <- derivePEq tvbs name
+        pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
 
 -- Helpers
 
