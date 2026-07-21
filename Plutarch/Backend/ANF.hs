@@ -62,8 +62,8 @@ import Plutarch.Backend.AST (
     ASTLam,
     ASTLeaf
   ),
+  BoundVar (BoundVar),
   Hash,
-  Multiplicity (MultiplicityMany, MultiplicityOne),
  )
 import Plutarch.Backend.AST qualified as AST
 import Plutarch.Backend.UPLC (UPLCTerm)
@@ -165,8 +165,8 @@ data ANFBind (ann :: Type)
   = ANFLeaf (Leaf ann)
   | ANFForce ann Ref
   | ANFDelay ann Ref
-  | ANFLam ann (NonEmptyVector (Maybe Multiplicity)) Ref
-  | ANFFix ann Multiplicity Ref
+  | ANFLam ann (NonEmptyVector (Maybe BoundVar)) Ref
+  | ANFFix ann BoundVar Ref
   | ANFApply ann Ref (NonEmptyVector Ref)
   | ANFConstr ann Word64 (Vector Ref)
   | ANFCase ann Ref (NonEmptyVector Ref)
@@ -193,7 +193,7 @@ instance Pretty (ANFBind ann) where
     ANFCase _ scrut handlers -> "Case" <+> pretty scrut <+> list (pretty <$> NEVector.toList handlers)
     ANFCompose _ args -> hsep . punctuate " <<<" . fmap pretty . NEVector.toList $ args
     where
-      mkArgs :: forall ann. NEVector.NonEmptyVector (Maybe Multiplicity) -> Doc ann
+      mkArgs :: forall ann. NEVector.NonEmptyVector (Maybe BoundVar) -> Doc ann
       mkArgs (NEVector.toList -> xs) =
         hsep
           . fmap (\case Nothing -> "_"; Just m -> pretty m)
@@ -412,13 +412,12 @@ analyzeDemand (ANF bm binds) = runST $ do
     getNeededFrom mv = \case
       AnId (Id i) -> MVector.read mv i
       AVar v -> pure . Set.singleton $ v
-    multsToSet :: NonEmptyVector (Maybe Multiplicity) -> Set Hash
-    multsToSet = NEVector.foldl' go Set.empty
-    go :: Set Hash -> Maybe Multiplicity -> Set Hash
+    bvsToSet :: NonEmptyVector (Maybe BoundVar) -> Set Hash
+    bvsToSet = NEVector.foldl' go Set.empty
+    go :: Set Hash -> Maybe BoundVar -> Set Hash
     go acc = \case
       Nothing -> acc
-      Just (MultiplicityOne h) -> Set.insert h acc
-      Just (MultiplicityMany h) -> Set.insert h acc
+      Just (BoundVar h _) -> Set.insert h acc
     collectRawStatistics ::
       forall (s :: Type).
       Int ->
@@ -445,25 +444,22 @@ analyzeDemand (ANF bm binds) = runST $ do
           neededVars <- getNeededFrom neededVarsMV r
           MVector.write countMV i 0
           MVector.write neededVarsMV i neededVars
-        ANFLam _ mults r -> do
+        ANFLam _ boundVars r -> do
           updateCountAt countMV r
           neededVars <- getNeededFrom neededVarsMV r
           -- Lambdas act as binding sites, so they only need variables bound
           -- 'above' them. Thus, we remove any used bound vars, but also note
           -- that this is where said variables get bound.
-          let multsAsSet = multsToSet mults
-          let neededVars' = Set.difference neededVars multsAsSet
+          let bvAsSet = bvsToSet boundVars
+          let neededVars' = Set.difference neededVars bvAsSet
           MVector.write countMV i 0
           MVector.write neededVarsMV i neededVars'
-          modify (\acc -> Set.foldr (`Map.insert` i) acc multsAsSet)
-        ANFFix _ mult r -> do
+          modify (\acc -> Set.foldr (`Map.insert` i) acc bvAsSet)
+        ANFFix _ (BoundVar varHash _) r -> do
           updateCountAt countMV r
           neededVars <- getNeededFrom neededVarsMV r
           -- Fixpoint self arguments aren't needed by fixes themselves. Thus, we
           -- remove it from used vars, but also note that it was bound here.
-          let varHash = case mult of
-                MultiplicityOne h -> h
-                MultiplicityMany h -> h
           let neededVars' = Set.delete varHash neededVars
           MVector.write countMV i 0
           MVector.write neededVarsMV i neededVars'
