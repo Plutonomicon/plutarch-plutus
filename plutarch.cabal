@@ -180,6 +180,7 @@ library
     Plutarch.String
     Plutarch.TermCont
     Plutarch.TH.DataPlutus
+    Plutarch.TH.Enum
     Plutarch.TH.Helpers
     Plutarch.TH.SOP
     Plutarch.TH.Strategy
@@ -225,6 +226,7 @@ test-suite tests
   main-is:        Main.hs
   other-modules:
     TH.Data
+    TH.Enum
     TH.SOP
 
   hs-source-dirs: test
