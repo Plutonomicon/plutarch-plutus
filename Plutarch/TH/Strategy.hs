@@ -39,6 +39,10 @@ Plutarch type. This means the following in practice:
 * Every field of every \'arm\' must be wrapped in @'Term' s@, where @s@ is
   the type parameter of kind 'S'.
 
+While 'deriveFor' will check for all of these, it cannot \'look through\' type
+synonyms. Please make sure that you do not use a type synonym as a field of any data
+type that you wish to use 'deriveFor' with.
+
 @since wip
 -}
 deriveFor :: Name -> Strategy -> Q [Dec]
