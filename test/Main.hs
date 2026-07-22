@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Main (main) where
 
@@ -40,8 +39,6 @@ import Plutarch.Numeric.Multiplicative (ppowNatural)
 import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (
   PBool,
-  pand,
-  pfalse,
   pif,
   pnot,
   por,
@@ -55,10 +52,8 @@ import Plutarch.Primitive.ByteString (PByteString)
 import Plutarch.Primitive.Eq (peq)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.List (PBList)
-import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
-import Plutarch.TH.Strategy (Strategy (SOP), deriveFor)
 import PlutusCore qualified as PLC
 import Prettyprinter (
   Pretty (pretty),
@@ -66,6 +61,7 @@ import Prettyprinter (
   layoutSmart,
  )
 import Prettyprinter.Render.String (renderString)
+import TH.SOP (PEither, PThese)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (
   assertBool,
@@ -74,19 +70,6 @@ import Test.Tasty.HUnit (
   testCaseSteps,
  )
 import Text.Show.Pretty (ppShow)
-
-data PThese (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PThis (Term s a)
-  | PThat (Term s b)
-  | PThese (Term s a) (Term s b)
-
-deriveFor ''PThese SOP
-
-data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
-  = PLeft (Term s a)
-  | PRight (Term s b)
-
-deriveFor ''PEither SOP
 
 main :: IO ()
 main =
