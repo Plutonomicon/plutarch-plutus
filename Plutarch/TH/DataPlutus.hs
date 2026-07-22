@@ -6,16 +6,15 @@ module Plutarch.TH.DataPlutus (
 ) where
 
 import Control.Monad (replicateM)
-import Data.Foldable (foldl', foldrM, for_, traverse_)
+import Data.Foldable (foldl', foldrM, traverse_)
 import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
-  Bang,
   BndrVis,
   Body (NormalB),
-  Con (InfixC, NormalC, RecC),
+  Con,
   Dec,
   Exp (AppE, CaseE, ConE, LamE, LitE, VarE),
   Lit (IntegerL),
@@ -24,7 +23,7 @@ import Language.Haskell.TH (
   Pat (ConP, VarP),
   Q,
   TyVarBndr,
-  Type (AppT, ConT),
+  Type,
   newName,
  )
 import Plutarch.Backend.Term (plam')
@@ -32,11 +31,12 @@ import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Data (PAsData, PData)
+import Plutarch.Primitive.Data (PData)
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Pair (PBPair (PBPair))
 import Plutarch.TH.Helpers (
+  checkFieldIsWrapped,
   conToName,
   fullTypeName,
   getArity,
@@ -195,36 +195,3 @@ derivePEq tyVars tyName =
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
     ctx = pure . mkContextOf ''PCanData $ tyVars
-
-checkFieldIsWrapped :: Con -> Q ()
-checkFieldIsWrapped = \case
-  NormalC name fields -> for_ fields (go name)
-  RecC name fields -> for_ fields (goNamed name)
-  InfixC lhs name rhs -> do
-    go name lhs
-    go name rhs
-  _ -> fail "Unexpected constructor type found. If you see this message, report as a bug."
-  where
-    go :: Name -> (Bang, Type) -> Q ()
-    go conName (_, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> "has a field whose type is not wrapped in 'PAsData'."
-       in dig errMsg t
-    goNamed :: Name -> (Name, Bang, Type) -> Q ()
-    goNamed conName (fieldName, _, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> "has a field whose type is not wrapped in 'PAsData', specifically "
-              <> show fieldName
-              <> "."
-       in dig errMsg t
-    dig :: String -> Type -> Q ()
-    dig errMsg = \case
-      AppT _ (AppT (ConT t) _) ->
-        if t == ''PAsData
-          then pure ()
-          else fail errMsg
-      _ -> fail errMsg

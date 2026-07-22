@@ -179,6 +179,7 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
     Plutarch.TH.Enum
     Plutarch.TH.Helpers

@@ -1,5 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -ddump-splices #-}
 
 module TH.Enum (PColour (..)) where
 
