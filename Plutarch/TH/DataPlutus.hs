@@ -99,8 +99,20 @@ derivePMatch tyVars tyName cs c =
       [e|punsafeCase $(pure (VarE tagName)) $(pure handlers)|]
     mkHandler :: Name -> Name -> (Name, Word) -> Q Exp
     mkHandler fieldsName contName (conName, arity) = case arity of
+      -- Generates `f C`, where `C` is the data constructor
       0 -> [e|$(pure (VarE contName)) $(pure (ConE conName))|]
-      1 -> [e|$(pure (VarE contName)) ($(pure (ConE conName)) (punsafeCoerce $(pure (VarE fieldsName))))|]
+      -- Generates `f (C (pheadList # fields))`
+      1 -> [e|$(pure (VarE contName)) ($(pure (ConE conName)) (punsafeCoerce (pheadList # $(pure (VarE fieldsName)))))|]
+      -- Generates, repeatedly, the following pattern:
+      --
+      -- ```
+      -- punsafeCase t .
+      --    NEVector.singleton .
+      --    toSomeTerm .
+      --    plam' $ \h ->
+      --    plam' $ \newT ->
+      --        punsafeCase newT ...
+      -- ```
       _ -> do
         headTails <- replicateM (fromIntegral $ arity - 1) ((,) <$> newName "h" <*> newName "t")
         argEs <- toArgEs headTails
@@ -111,6 +123,24 @@ derivePMatch tyVars tyName cs c =
       [] -> pure []
       [(h, t)] -> (:) <$> [e|punsafeCoerce $(pure (VarE h))|] <*> ((: []) <$> [e|punsafeCoerce (pheadList @PData # $(pure (VarE t)))|])
       (h, _) : rest -> (:) <$> [e|punsafeCoerce $(pure (VarE h))|] <*> toArgEs rest
+    -- Assembles a previously-generated collection of names for head-tail pairs,
+    -- and the 'inner expression' which takes all the repeated heads and stuffs
+    -- them into a data constructor, and makes a large expression. For example,
+    -- given an arity-3 constructor, we'd get something like:
+    --
+    -- ```
+    -- punsafeCase fields .
+    --    NEVector.singleton .
+    --    toSomeTerm .
+    --    plam' $ \h1 ->
+    --    plam' $ \t1 ->
+    --      punsafeCase t1 .
+    --      NEVector.singleton .
+    --      toSomeTerm .
+    --      plam' $ \h2 ->
+    --      plam' $ \t2 ->
+    --        f (C h1 h2 (pheadList # t2))
+    -- ```
     go :: Exp -> Name -> [(Name, Name)] -> Q Exp
     go acc remaining = \case
       [] -> pure acc
