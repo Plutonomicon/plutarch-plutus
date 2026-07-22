@@ -23,7 +23,8 @@ structure of the 'RawTerm', while a \'combined\' hash also includes the
 module Plutarch.Backend.AST (
   -- * Common
   Hash (..),
-  Multiplicity (..),
+  BoundVar (..),
+  Multiplicity (MultOne),
 
   -- * AST
   Leaf (..),
@@ -43,11 +44,13 @@ import Control.Monad.RWS.CPS (
   evalRWS,
   modify,
  )
-import Data.Bool (bool)
-import Data.Hashable (hash)
+import Data.Hashable (Hashable (hash, hashWithSalt), defaultHashWithSalt)
 import Data.Kind (Type)
-import Data.Maybe (fromJust)
-import Data.These (These (That, These, This))
+import Data.Monoid (Sum (Sum))
+import Data.These (
+  These (That, These, This),
+  mergeTheseWith,
+ )
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
@@ -129,26 +132,57 @@ newtype Hash = Hash Int
 instance Pretty Hash where
   pretty (Hash h) = pretty . compactReadableVar . fromIntegral $ h
 
-{- | A hash identifying a bound variable argument, together with whether it
-occurs once, or more than once, in the body where it is bound.
+{- | A hash identifying a bound variable argument, together with its
+multiplicity (how many times it occurs in the body where it is bound).
 
 @since wip
 -}
-data Multiplicity
-  = MultiplicityOne Hash
-  | MultiplicityMany Hash
+data BoundVar = BoundVar Hash Multiplicity
   deriving stock
     ( -- | @since wip
-      Show
-    , -- | @since wip
       Eq
+    , -- | @since wip
+      Show
     )
 
 -- | @since wip
-instance Pretty Multiplicity where
-  pretty = \case
-    MultiplicityOne h -> pretty h <> ":One"
-    MultiplicityMany h -> pretty h <> ":Many"
+instance Pretty BoundVar where
+  pretty (BoundVar h m) = pretty h <> ":" <> pretty m
+
+-- | @since wip
+instance Hashable BoundVar where
+  hashWithSalt = defaultHashWithSalt
+  {-# INLINEABLE hash #-}
+  hash (BoundVar (Hash h) m) = hash (h, m)
+
+{- | A positive-only number indicating the number of times a bound variable is
+used in the body of whatever binds it.
+
+@since wip
+-}
+newtype Multiplicity = Multiplicity Word
+  deriving stock
+    ( -- | @since wip
+      Show
+    )
+  deriving
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Pretty
+    , -- | @since wip
+      Hashable
+    )
+    via Word
+  deriving
+    ( -- | @since wip
+      Semigroup
+    )
+    via (Sum Word)
+
+-- | @since wip
+pattern MultOne :: Multiplicity
+pattern MultOne = Multiplicity 1
 
 {- | A leaf computation (namely, one that cannot have dependencies).
 
@@ -187,9 +221,8 @@ More precisely, this closely follows 'RawTerm', except that:
 
 * 'RLet' nodes have been removed
 * Lambdas and applications have been uncurried
-* Position trees have been replaced by 'Multiplicity', whose hashes are
+* Position trees have been replaced by 'BoundVar's, whose hashes are
   hashes of the corresponding position tree
-* Lambdas and fixpoints have been annotated with their 'Liftability'
 * Lambdas that do nothing but forward their arguments (in the same order) to
   a builtin are erased and replaced with that builtin.
 * Applications involving literal error nodes (as either the function or an
@@ -197,6 +230,7 @@ More precisely, this closely follows 'RawTerm', except that:
 * `constr` nodes involving literal error nodes are replaced with the error
   node.
 * `case` nodes scrutinizing the error node are replaced with the error node.
+* `Force` adjacent to `Delay` have been replaced with just the body of `Delay`.
 
 @since wip
 -}
@@ -204,8 +238,8 @@ data AST (ann :: Type)
   = ASTLeaf (Leaf ann)
   | ASTForce ann (AST ann)
   | ASTDelay ann (AST ann)
-  | ASTLam ann (NonEmptyVector (Maybe Multiplicity)) (AST ann)
-  | ASTFix ann Multiplicity (AST ann)
+  | ASTLam ann (NonEmptyVector (Maybe BoundVar)) (AST ann)
+  | ASTFix ann BoundVar (AST ann)
   | ASTApply ann (AST ann) (NonEmptyVector (AST ann))
   | ASTConstr ann Word64 (Vector (AST ann))
   | ASTCase ann (AST ann) (NonEmptyVector (AST ann))
@@ -318,12 +352,12 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
         mkHashed structuralHash (`ASTDelay` body')
       RFix _ pt body -> do
         fresh <- getFresh
-        let mult = case fromJust . findVarUsage fresh (Just pt) $ body of
-              (h, False) -> MultiplicityOne h
-              (h, True) -> MultiplicityMany h
+        -- We know this can't be 0
+        let mult = Multiplicity . countVarUsage pt $ body
+        let boundVar = BoundVar (mkVarHash fresh) mult
         (structuralHashBody, body') <- local (vmExtend fresh pt . vmMap stepDownOne) (go body)
         let structuralHash = hash (7 :: Int, structuralHashBody)
-        mkHashed structuralHash (\h -> ASTFix h mult body')
+        mkHashed structuralHash (\h -> ASTFix h boundVar body')
       RLet _ mpt v f -> do
         let node = RApply () (RLamAbs () mpt f) v
         (vmv, vmf) <- asks (vmFold separateTwo (vmEmpty, vmEmpty))
@@ -382,38 +416,37 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
                   mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
       RLamAbs _ mpt body -> do
         fresh <- getFresh
-        let multiplicity = case findVarUsage fresh mpt body of
-              Nothing -> Nothing
-              Just (h, b) -> Just . bool MultiplicityOne MultiplicityMany b $ h
+        let mbv = (\pt -> BoundVar (mkVarHash fresh) . Multiplicity . countVarUsage pt $ body) <$> mpt
         vm' <- asks (vmMap stepDownOne)
         let extendedVM = case mpt of
               Nothing -> vm'
               Just pt -> vmExtend fresh pt vm'
         (structuralHashBody, body') <- local (const extendedVM) (go body)
-        let (structuralHashAll, fullMults, fullBody) = case body' of
-              -- We're part of a curried lambda. We need to add one more
-              -- multiplicity.
-              ASTLam _ mults body'' ->
+        let (structuralHashAll, fullBVs, fullBody) = case body' of
+              -- We're part of a curried lambda. We need to add one more bound
+              -- var.
+              ASTLam _ bvs body'' ->
                 let structuralHash = hash (structuralHashBody, mpt)
-                 in (structuralHash, NEVector.cons multiplicity mults, body'')
+                 in (structuralHash, NEVector.cons mbv bvs, body'')
               _ ->
-                let structuralHash = hash (11 :: Int, mpt, structuralHashBody)
-                 in (structuralHash, NEVector.singleton multiplicity, body')
+                let structuralHash = hash (11 :: Int, mbv, structuralHashBody)
+                 in (structuralHash, NEVector.singleton mbv, body')
         case fullBody of
           -- If our body is an application, we want to check that the arguments
-          -- are being forwarded directly to a builtin. If they are, we should
-          -- eliminate the lambda entirely in favour of that builtin.
-          ASTApply _ f xs -> case alignMultsArgs fullMults xs of
-            Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+          -- are being forwarded directly to a builtin. If they are, we
+          -- should eliminate the lambda entirely in favour of that builtin.
+          ASTApply _ f xs -> case alignBVsArgs fullBVs xs of
+            -- Not a literal forward, nothing to do.
+            Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullBVs fullBody)
             Just () -> case getBuiltinStructure f of
-              Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
-              -- If we've made it here, we know that we have a lambda body that
-              -- just forwards the lambda's arguments, in the same order, to a
-              -- builtin, possibly with some `force`s in the way. Since such a
-              -- term is closed by definition, we can built its AST using the
-              -- empty variable map.
+              Nothing -> mkHashed structuralHashAll (\h -> ASTLam h fullBVs fullBody)
+              -- If we made it here, we know that we have a lambda body that
+              -- just forwards its arguments, in the same order, to a builtin,
+              -- possibly with some `force`s in the way. Since such a term is
+              -- closed by definition, we can build its AST using the empty
+              -- varmap.
               Just structure -> local (const vmEmpty) (go structure)
-          _ -> mkHashed structuralHashAll (\h -> ASTLam h fullMults fullBody)
+          _ -> mkHashed structuralHashAll (\h -> ASTLam h fullBVs fullBody)
       RCompose _ components -> do
         let len = NEVector.length components
         fieldVMs <- asks (vmFold separateCompose (NEVector.replicate1 len vmEmpty))
@@ -436,40 +469,35 @@ getBuiltinStructure = \case
   ASTForce _ body -> RForce () <$> getBuiltinStructure body
   _ -> Nothing
 
--- Check that the arguments of a lambda align exactly with some arguments to an
--- application. This means they must:
---
-
--- * Have the same number;
-
--- * All be variables;
-
--- * Correspond positionally to the lambda's arguments
-alignMultsArgs :: NonEmptyVector (Maybe Multiplicity) -> NonEmptyVector (AST Hash) -> Maybe ()
-alignMultsArgs mults args =
-  let (mult, mults') = NEVector.uncons mults
+-- check that the bound vars of a lambda align exactly with some arguments to an
+-- application.
+alignBVsArgs ::
+  NonEmptyVector (Maybe BoundVar) ->
+  NonEmptyVector (AST Hash) ->
+  Maybe ()
+alignBVsArgs bvs args =
+  let (bv, bvs') = NEVector.uncons bvs
       (arg, args') = NEVector.uncons args
-   in go mult arg mults' args'
+   in go bv arg bvs' args'
   where
     go ::
-      Maybe Multiplicity ->
+      Maybe BoundVar ->
       AST Hash ->
-      Vector (Maybe Multiplicity) ->
+      Vector (Maybe BoundVar) ->
       Vector (AST Hash) ->
       Maybe ()
-    go mMult arg restMult restArgs = do
-      mult <- mMult
+    go mBv arg restBVs restArgs = do
+      BoundVar bvHash _ <- mBv
       case arg of
         ASTLeaf (LVar _ varHash) -> do
-          let multHash = case mult of MultiplicityOne h -> h; MultiplicityMany h -> h
-          guard (multHash == varHash)
-          case Vector.uncons restMult of
+          guard (bvHash == varHash)
+          case Vector.uncons restBVs of
             Nothing -> case Vector.uncons restArgs of
               Nothing -> pure ()
-              _ -> Nothing
-            Just (mMult', restMult') -> do
+              Just _ -> Nothing
+            Just (mBV', restBVs') -> do
               (arg', restArgs') <- Vector.uncons restArgs
-              go mMult' arg' restMult' restArgs'
+              go mBV' arg' restBVs' restArgs'
         _ -> Nothing
 
 mergeLet :: PosTree -> PosTree -> PosTree
@@ -539,55 +567,42 @@ getFresh = do
   modify (+ 1)
   pure fresh
 
-findVarUsage :: Word64 -> Maybe PosTree -> RawTerm () -> Maybe (Hash, Bool)
-findVarUsage name mpt t = case mpt of
-  Nothing -> Nothing
-  Just PHere -> case t of
-    RVar _ _ -> do
-      let structuralHash = hash (0 :: Int)
-      let trivialVM = vmSingleton name PHere
-      let combinedHash = hash (structuralHash, trivialVM)
-      pure (Hash combinedHash, False)
-    _ -> Nothing
-  Just (POne pt) -> case t of
-    RFix _ _ body -> findVarUsage name (Just pt) body
-    RLamAbs _ _ body -> findVarUsage name (Just pt) body
-    RForce _ body -> findVarUsage name (Just pt) body
-    RDelay _ body -> findVarUsage name (Just pt) body
-    _ -> Nothing
-  Just (PTwo pts) -> case t of
-    RLet _ _ v f -> case pts of
-      This pt -> findVarUsage name (Just pt) v
-      That pt -> findVarUsage name (Just pt) f
-      -- Bind is likely to be smaller, so we'll search there.
-      These ptv _ -> (\(h, _) -> (h, True)) <$> findVarUsage name (Just ptv) v
-    RApply _ f x -> case pts of
-      This pt -> findVarUsage name (Just pt) f
-      That pt -> findVarUsage name (Just pt) x
-      -- Argument is likely to be smaller, so we'll search there.
-      These _ ptv -> (\(h, _) -> (h, True)) <$> findVarUsage name (Just ptv) x
-    _ -> Nothing
-  Just (PMany pts) -> case t of
-    RConstr _ _ fields -> Vector.foldl' go Nothing . Vector.zip pts $ fields
-    _ -> Nothing
-  Just (PCase pt pts) -> case t of
+countVarUsage ::
+  forall (ann :: Type).
+  PosTree -> RawTerm ann -> Word
+countVarUsage posTree t = case posTree of
+  PHere -> case t of
+    RVar _ _ -> 1
+    _ -> 0
+  POne pt -> case t of
+    RFix _ _ body -> countVarUsage pt body
+    RLamAbs _ _ body -> countVarUsage pt body
+    RForce _ body -> countVarUsage pt body
+    RDelay _ body -> countVarUsage pt body
+    _ -> 0
+  PTwo pts -> case t of
+    RLet _ _ v f -> mergeTheseWith (`countVarUsage` v) (`countVarUsage` f) (+) pts
+    RApply _ f x -> mergeTheseWith (`countVarUsage` f) (`countVarUsage` x) (+) pts
+    _ -> 0
+  PMany pts -> case t of
+    RConstr _ _ fields -> Vector.sum . Vector.zipWith go pts $ fields
+    _ -> 0
+  PCase pt pts -> case t of
     RCase _ scrut handlers ->
-      let resScrut = findVarUsage name pt scrut
-       in case resScrut of
-            Just (_, True) -> resScrut
-            _ -> NEVector.foldl' go resScrut . NEVector.zip pts $ handlers
-    _ -> Nothing
-  Just (PCompose pts) -> case t of
-    RCompose _ components -> NEVector.foldl' go Nothing . NEVector.zip pts $ components
-    _ -> Nothing
+      let scrutCount = maybe 0 (`countVarUsage` scrut) pt
+       in NEVector.foldl' (+) scrutCount . NEVector.zipWith go pts $ handlers
+    _ -> 0
+  PCompose pts -> case t of
+    RCompose _ components -> NEVector.sum . NEVector.zipWith go pts $ components
+    _ -> 0
   where
-    go :: Maybe (Hash, Bool) -> (Maybe PosTree, RawTerm ()) -> Maybe (Hash, Bool)
-    go acc (mptInner, tInner) = case acc of
-      Nothing -> findVarUsage name mptInner tInner
-      Just (h, False) -> case mptInner of
-        Nothing -> acc
-        Just _ -> Just (h, True)
-      Just (_, True) -> acc
+    go :: Maybe PosTree -> RawTerm ann -> Word
+    go mpt rt = case mpt of
+      Nothing -> 0
+      Just pt' -> countVarUsage pt' rt
+
+mkVarHash :: Word64 -> Hash
+mkVarHash fresh = Hash (hash (hash (0 :: Int), vmSingleton fresh PHere))
 
 astLeafAnn :: forall (ann :: Type). Leaf ann -> ann
 astLeafAnn = \case
@@ -609,7 +624,7 @@ astNodeAnn = \case
   ASTCase ann _ _ -> ann
   ASTCompose ann _ -> ann
 
-mkArgs :: NonEmptyVector (Maybe Multiplicity) -> Doc ann
+mkArgs :: NonEmptyVector (Maybe BoundVar) -> Doc ann
 mkArgs (NEVector.toList -> xs) =
   hsep
     . fmap (\case Nothing -> "_"; Just m -> pretty m)

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Main (main) where
 
@@ -37,16 +38,27 @@ import Plutarch.Backend.VarMap (VarMap, vmEmpty)
 import Plutarch.Numeric.Euclidean (pgcd)
 import Plutarch.Numeric.Multiplicative (ppowNatural)
 import Plutarch.Primitive.Apply ((#), (#$))
-import Plutarch.Primitive.Bool (PBool, pif, pnot, por)
+import Plutarch.Primitive.Bool (
+  PBool,
+  pand,
+  pfalse,
+  pif,
+  pnot,
+  por,
+ )
 import Plutarch.Primitive.BuiltinFun (
   paddInteger,
   pmultiplyInteger,
   psubtractInteger,
  )
+import Plutarch.Primitive.ByteString (PByteString)
+import Plutarch.Primitive.Eq (peq)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.List (PBList)
+import Plutarch.Primitive.Match (pmatch)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
+import Plutarch.TH.Strategy (Strategy (SOP), deriveFor)
 import PlutusCore qualified as PLC
 import Prettyprinter (
   Pretty (pretty),
@@ -62,6 +74,19 @@ import Test.Tasty.HUnit (
   testCaseSteps,
  )
 import Text.Show.Pretty (ppShow)
+
+data PThese (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PThis (Term s a)
+  | PThat (Term s b)
+  | PThese (Term s a) (Term s b)
+
+deriveFor ''PThese SOP
+
+data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
+  = PLeft (Term s a)
+  | PRight (Term s b)
+
+deriveFor ''PEither SOP
 
 main :: IO ()
 main =
@@ -350,6 +375,46 @@ main =
             step $ "RawTerm:\n" <> ppShow t
             let asAST = fromRawTerm t
             step $ "AST:\n" <> toPrettyString asAST
+            let anf = fromHashedAST asAST
+            step "ANF, no demand analysis"
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step "ANF, with demand analysis"
+            step $ toPrettyString anf'
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
+            pure ()
+    , testCaseSteps "Case 17" $ \step -> do
+        step "Case: peq @(PThese PInteger PInteger)"
+        step "1. Does Case 17 compile?"
+        let compiled = compileTerm (peq @(PThese PInteger PInteger))
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
+            let anf = fromHashedAST asAST
+            step "ANF, no demand analysis"
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step "ANF, with demand analysis"
+            step $ toPrettyString anf'
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
+            pure ()
+    , testCaseSteps "Case 18" $ \step -> do
+        step "Case: peq @(PThese PInteger PInteger)"
+        step "1. Does Case 18 compile?"
+        let compiled = compileTerm (peq @(PEither PInteger PByteString))
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
