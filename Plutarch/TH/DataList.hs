@@ -86,11 +86,12 @@ derivePMatch tyVars tyName c =
       let cArity = getArity c
       cName <- conToName c
       case cArity of
+        -- Generates `f C`, where `C` is the data constructor.
         0 -> [e|$(pure (VarE contName)) $(pure (ConE cName))|]
         -- We have to do this in such a convoluted way because the continuation
         -- (`f` argument to `pmatch'`) has to be placed on the _inside_ of all
         -- of our list unconses. However, at the same time, we also have to
-        -- build up a large application of our constructor.
+        -- build up a large application of our constructor `C`.
         _ -> go contName cName [] listName (cArity - 1)
     go :: Name -> Name -> [Name] -> Name -> Word -> Q Exp
     go contName cName headsNamesBackwards lastTailName = \case
