@@ -57,7 +57,7 @@ class PlutarchType a => PCanData (a :: S -> Type) where
     forall (s :: S).
     PCanData (PRepresentation a) =>
     Term s (PAsData a) -> Term s a
-  pfromData = punsafeCoerce
+  pfromData = punsafeCoerce . pfromData @(PRepresentation a) . punsafeCoerce
   ptoData ::
     forall (s :: S).
     Term s a -> Term s (PAsData a)
@@ -65,7 +65,7 @@ class PlutarchType a => PCanData (a :: S -> Type) where
     forall (s :: S).
     PCanData (PRepresentation a) =>
     Term s a -> Term s (PAsData a)
-  ptoData = punsafeCoerce
+  ptoData = punsafeCoerce . ptoData . pcoerce
 
 -- | @since wip
 instance PCanData PInteger where
