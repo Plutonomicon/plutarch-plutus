@@ -144,7 +144,6 @@ import Data.Kind (Type)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
   Term,
-  papp,
   pforce,
   punsafeBuiltin,
   punsafeConstant,
@@ -166,6 +165,7 @@ import Plutarch.Primitive.Pair (PBPair)
 import Plutarch.Primitive.String (PString)
 import Plutarch.Primitive.Value (PBValue)
 import PlutusCore qualified as PLC
+import PlutusCore.Data (Data)
 
 -- | @since wip
 paddInteger :: forall (s :: S). Term s (PInteger :--> PInteger :--> PInteger)
@@ -409,7 +409,7 @@ pnilData ::
   forall (a :: S -> Type) (s :: S).
   PData `PCanRepresent` a =>
   Term s (PBList a)
-pnilData = papp (punsafeBuiltin PLC.MkNilData) (punsafeConstant . PLC.someValue @() $ ())
+pnilData = punsafeConstant . PLC.someValue @[Data] $ []
 
 -- | @since wip
 pbls12_381_G1_add ::
