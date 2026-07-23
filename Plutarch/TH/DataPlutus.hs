@@ -92,20 +92,34 @@ derivePMatch tyVars tyName cs c =
       nameLast <- conToName c
       let aritiesRest = fmap getArity cs
       namesRest <- traverse conToName cs
-      handlerLast <- mkHandler fieldsName contName (nameLast, arityLast)
-      handlersRest <- traverse (mkHandler fieldsName contName) (Vector.zip namesRest aritiesRest)
-      start <- [e|NEVector.singleton (toSomeTerm $(pure handlerLast))|]
-      handlers <- foldrM (\e acc -> [e|NEVector.cons (toSomeTerm $(pure e)) $(pure acc)|]) start handlersRest
-      [e|punsafeCase $(pure (VarE tagName)) $(pure handlers)|]
-    mkHandler :: Name -> Name -> (Name, Word) -> Q Exp
-    mkHandler fieldsName contName (conName, arity) = case arity of
-      -- Generates `f C`, where `C` is the data constructor
-      0 -> [e|$(pure (VarE contName)) $(pure (ConE conName))|]
-      -- We have to do this in such a convoluted way because the continuation
-      -- (`f` argument to `pmatch'`) has to be placed on the _inside_ of all
-      -- of our list unconses. However, at the same time, we also have to
-      -- build up a large application of our constructor `C`.
-      _ -> go contName conName [] fieldsName (arity - 1)
+      -- If we have a minimum required number of fields, we extract them _now_,
+      -- to avoid having repeated code in our handlers doing the same thing.
+      let minArity = Vector.foldl' min arityLast aritiesRest
+      -- Offset all arities by the number we 'preload'
+      let arityLast' = arityLast - minArity
+      let aritiesRest' = fmap (\x -> x - minArity) aritiesRest
+      withPreload contName tagName (arityLast', nameLast) (aritiesRest', namesRest) [] fieldsName minArity
+    withPreload :: Name -> Name -> (Word, Name) -> (Vector Word, Vector Name) -> [Name] -> Name -> Word -> Q Exp
+    withPreload contName tagName (arityLast, nameLast) (aritiesRest, namesRest) preloadNamesBackwards lastTail = \case
+      0 -> do
+        handlerLast <- mkHandler lastTail contName preloadNamesBackwards (nameLast, arityLast)
+        handlersRest <- traverse (mkHandler lastTail contName preloadNamesBackwards) (Vector.zip namesRest aritiesRest)
+        start <- [e|NEVector.singleton (toSomeTerm $(pure handlerLast))|]
+        handlers <- foldrM (\e acc -> [e|NEVector.cons (toSomeTerm $(pure e)) $(pure acc)|]) start handlersRest
+        [e|punsafeCase $(pure (VarE tagName)) $(pure handlers)|]
+      n -> mkUncons lastTail $ \headName tailName ->
+        -- We accumulate all preloaded names so that we can apply them to the
+        -- appropriate data constructor 'all at once' at the end.
+        withPreload contName tagName (arityLast, nameLast) (aritiesRest, namesRest) (headName : preloadNamesBackwards) tailName (n - 1)
+    mkHandler :: Name -> Name -> [Name] -> (Name, Word) -> Q Exp
+    mkHandler lastTail contName preloadedNamesBackwards (conName, arity) = case arity of
+      -- All of our arguments have been preloaded already.
+      0 -> do
+        let headsNames = reverse preloadedNamesBackwards
+        conAppE <- foldrM (\headName acc -> AppE acc <$> [e|punsafeCoerce $(pure (VarE headName))|]) (ConE conName) headsNames
+        pure . AppE (VarE contName) $ conAppE
+      -- Some items still remain to be loaded.
+      n -> go contName conName preloadedNamesBackwards lastTail (n - 1)
     go :: Name -> Name -> [Name] -> Name -> Word -> Q Exp
     go contName cName headsNamesBackwards lastTailName = \case
       0 -> do
