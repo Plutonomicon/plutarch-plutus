@@ -5,26 +5,24 @@ module Plutarch.TH.DataPlutus (
   deriveDataPlutus,
 ) where
 
-import Control.Monad (replicateM)
-import Data.Foldable (foldl', foldrM, for_, traverse_)
+import Data.Foldable (foldrM, traverse_)
 import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
-  Bang,
   BndrVis,
   Body (NormalB),
-  Con (InfixC, NormalC, RecC),
+  Con,
   Dec,
-  Exp (AppE, CaseE, ConE, LamE, LitE, VarE),
+  Exp (AppE, CaseE, ConE, LitE, VarE),
   Lit (IntegerL),
   Match (Match),
   Name,
   Pat (ConP, VarP),
   Q,
   TyVarBndr,
-  Type (AppT, ConT),
+  Type,
   newName,
  )
 import Plutarch.Backend.Term (plam')
@@ -32,16 +30,18 @@ import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
 import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Data (PAsData, PData)
+import Plutarch.Primitive.Data (PData)
 import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.Primitive.Pair (PBPair (PBPair))
 import Plutarch.TH.Helpers (
+  checkFieldIsWrapped,
   conToName,
   fullTypeName,
   getArity,
   hasNoFields,
   mkContextOf,
+  mkUncons,
  )
 import PlutusCore qualified as PLC
 
@@ -101,58 +101,28 @@ derivePMatch tyVars tyName cs c =
     mkHandler fieldsName contName (conName, arity) = case arity of
       -- Generates `f C`, where `C` is the data constructor
       0 -> [e|$(pure (VarE contName)) $(pure (ConE conName))|]
-      -- Generates `f (C (pheadList # fields))`
-      1 -> [e|$(pure (VarE contName)) ($(pure (ConE conName)) (punsafeCoerce (pheadList # $(pure (VarE fieldsName)))))|]
-      -- Generates, repeatedly, the following pattern:
-      --
-      -- ```
-      -- punsafeCase t .
-      --    NEVector.singleton .
-      --    toSomeTerm .
-      --    plam' $ \h ->
-      --    plam' $ \newT ->
-      --        punsafeCase newT ...
-      -- ```
-      _ -> do
-        headTails <- replicateM (fromIntegral $ arity - 1) ((,) <$> newName "h" <*> newName "t")
-        argEs <- toArgEs headTails
-        let final = AppE (VarE contName) . foldl' AppE (ConE conName) $ argEs
-        go final fieldsName headTails
-    toArgEs :: [(Name, Name)] -> Q [Exp]
-    toArgEs = \case
-      [] -> pure []
-      [(h, t)] -> (:) <$> [e|punsafeCoerce $(pure (VarE h))|] <*> ((: []) <$> [e|punsafeCoerce (pheadList @PData # $(pure (VarE t)))|])
-      (h, _) : rest -> (:) <$> [e|punsafeCoerce $(pure (VarE h))|] <*> toArgEs rest
-    -- Assembles a previously-generated collection of names for head-tail pairs,
-    -- and the 'inner expression' which takes all the repeated heads and stuffs
-    -- them into a data constructor, and makes a large expression. For example,
-    -- given an arity-3 constructor, we'd get something like:
-    --
-    -- ```
-    -- punsafeCase fields .
-    --    NEVector.singleton .
-    --    toSomeTerm .
-    --    plam' $ \h1 ->
-    --    plam' $ \t1 ->
-    --      punsafeCase t1 .
-    --      NEVector.singleton .
-    --      toSomeTerm .
-    --      plam' $ \h2 ->
-    --      plam' $ \t2 ->
-    --        f (C h1 h2 (pheadList # t2))
-    -- ```
-    go :: Exp -> Name -> [(Name, Name)] -> Q Exp
-    go acc remaining = \case
-      [] -> pure acc
-      (h, t) : rest -> do
-        let plams =
-              AppE (VarE 'plam')
-                . LamE [VarP h]
-                . AppE (VarE 'plam')
-                . LamE [VarP t]
-                $ acc
-        acc' <- [e|punsafeCase $(pure (VarE remaining)) (NEVector.singleton (toSomeTerm $(pure plams)))|]
-        go acc' t rest
+      -- We have to do this in such a convoluted way because the continuation
+      -- (`f` argument to `pmatch'`) has to be placed on the _inside_ of all
+      -- of our list unconses. However, at the same time, we also have to
+      -- build up a large application of our constructor `C`.
+      _ -> go contName conName [] fieldsName (arity - 1)
+    go :: Name -> Name -> [Name] -> Name -> Word -> Q Exp
+    go contName cName headsNamesBackwards lastTailName = \case
+      0 -> do
+        -- We accumulate the heads needed in reverse order, because otherwise,
+        -- this is a quadratic procedure. We can reverse in linear time.
+        let headsNames = reverse headsNamesBackwards
+        -- Build up applications of all heads to the constructor.
+        conAppButLast <- foldrM (\headName acc -> AppE acc <$> [e|punsafeCoerce $(pure (VarE headName))|]) (ConE cName) headsNames
+        -- Add the last argument by taking the head of the last tail.
+        conAppE <- AppE conAppButLast <$> [e|punsafeCoerce (pheadList @PData # $(pure (VarE lastTailName)))|]
+        -- Hit it with the continuation internally.
+        pure . AppE (VarE contName) $ conAppE
+      n -> mkUncons lastTailName $ \headName tailName ->
+        -- We accumulate the needed names of all the heads we have to take
+        -- so that we can apply them to the constructor 'all at once' at
+        -- the end.
+        go contName cName (headName : headsNamesBackwards) tailName (n - 1)
 
 derivePCon :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
 derivePCon tyVars tyName constructors =
@@ -195,36 +165,3 @@ derivePEq tyVars tyName =
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
     ctx = pure . mkContextOf ''PCanData $ tyVars
-
-checkFieldIsWrapped :: Con -> Q ()
-checkFieldIsWrapped = \case
-  NormalC name fields -> for_ fields (go name)
-  RecC name fields -> for_ fields (goNamed name)
-  InfixC lhs name rhs -> do
-    go name lhs
-    go name rhs
-  _ -> fail "Unexpected constructor type found. If you see this message, report as a bug."
-  where
-    go :: Name -> (Bang, Type) -> Q ()
-    go conName (_, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> "has a field whose type is not wrapped in 'PAsData'."
-       in dig errMsg t
-    goNamed :: Name -> (Name, Bang, Type) -> Q ()
-    goNamed conName (fieldName, _, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> "has a field whose type is not wrapped in 'PAsData', specifically "
-              <> show fieldName
-              <> "."
-       in dig errMsg t
-    dig :: String -> Type -> Q ()
-    dig errMsg = \case
-      AppT _ (AppT (ConT t) _) ->
-        if t == ''PAsData
-          then pure ()
-          else fail errMsg
-      _ -> fail errMsg

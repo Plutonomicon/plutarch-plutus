@@ -8,27 +8,34 @@ module Plutarch.TH.Helpers (
   hasNoFields,
   bindToName,
   checkFieldsAreTerms,
+  checkFieldIsWrapped,
   fullTypeName,
   mkContextOf,
+  mkUncons,
 ) where
 
 import Data.Foldable (foldl', for_)
 import Data.Kind qualified as GHC
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
+import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
   Bang,
   BndrVis,
   Con (ForallC, GadtC, InfixC, NormalC, RecC, RecGadtC),
   Dec,
+  Exp (AppE, LamE, VarE),
   Info (TyConI),
   Name,
+  Pat (VarP),
   Q,
   TyVarBndr (KindedTV, PlainTV),
   Type (AppT, ConT, TupleT, VarT),
+  newName,
   reify,
  )
-import Plutarch.Backend.Term (Term)
+import Plutarch.Backend.Term (Term, plam')
+import Plutarch.Primitive.Data (PAsData)
 
 {- | Return the declaration of a type given its name, or error out if the name
 does not name a type.
@@ -154,3 +161,62 @@ mkContextOf tyClassName tyVars =
   let len = Vector.length tyVars
       varNames = fmap (AppT (ConT tyClassName) . VarT . bindToName) tyVars
    in foldl' AppT (TupleT len) varNames
+
+{- | Verifies that all fields of the given constructor are \'wrapped\' in
+@PAsData@.
+
+@since wip
+-}
+checkFieldIsWrapped :: Con -> Q ()
+checkFieldIsWrapped = \case
+  NormalC name fields -> for_ fields (go name)
+  RecC name fields -> for_ fields (goNamed name)
+  InfixC lhs name rhs -> do
+    go name lhs
+    go name rhs
+  _ -> fail "Unexpected constructor type found. If you see this message, report as a bug."
+  where
+    go :: Name -> (Bang, Type) -> Q ()
+    go conName (_, t) =
+      let errMsg =
+            "Constructor "
+              <> show conName
+              <> "has a field whose type is not wrapped in 'PAsData'."
+       in dig errMsg t
+    goNamed :: Name -> (Name, Bang, Type) -> Q ()
+    goNamed conName (fieldName, _, t) =
+      let errMsg =
+            "Constructor "
+              <> show conName
+              <> "has a field whose type is not wrapped in 'PAsData', specifically "
+              <> show fieldName
+              <> "."
+       in dig errMsg t
+    dig :: String -> Type -> Q ()
+    dig errMsg = \case
+      AppT _ (AppT (ConT t) _) ->
+        if t == ''PAsData
+          then pure ()
+          else fail errMsg
+      _ -> fail errMsg
+
+{- | Given a name @ell@ corresponding to a @PDList@ variable, constructs the
+equivalent of:
+
+@
+punsafeCase ell . NEVector.singleton . toSomeTerm $ f headName tailName
+@
+
+@headName@ and @tailName@ are passed to the continuation (being generated
+locally).
+
+@since wip
+-}
+mkUncons :: Name -> (Name -> Name -> Q Exp) -> Q Exp
+mkUncons listName f = do
+  hName <- newName "h"
+  tName <- newName "t"
+  body <- f hName tName
+  let innerLam = AppE (VarE 'plam') . LamE [VarP tName] $ body
+  let outerLam = AppE (VarE 'plam') . LamE [VarP hName] $ innerLam
+  [e|punsafeCase $(pure (VarE listName)) (NEVector.singleton (toSomeTerm $(pure outerLam)))|]
