@@ -12,6 +12,8 @@ module Plutarch.TH.Helpers (
   fullTypeName,
   mkContextOf,
   mkUncons,
+  conToFieldTypes,
+  mkPLam,
 ) where
 
 import Data.Foldable (foldl', for_)
@@ -220,3 +222,29 @@ mkUncons listName f = do
   let innerLam = AppE (VarE 'plam') . LamE [VarP tName] $ body
   let outerLam = AppE (VarE 'plam') . LamE [VarP hName] $ innerLam
   [e|punsafeCase $(pure (VarE listName)) (NEVector.singleton (toSomeTerm $(pure outerLam)))|]
+
+{- | Retrieve the types of all fields in a data constructor, in order. Fail if
+given something unsupported. Will do 'Term' unwrapping as well.
+
+@since wip
+-}
+conToFieldTypes :: Con -> Q [Type]
+conToFieldTypes = \case
+  NormalC _ fields -> traverse (termUnwrap . snd) fields
+  RecC _ fields -> traverse (\(_, _, t) -> termUnwrap t) fields
+  InfixC (_, t1) _ (_, t2) -> traverse termUnwrap [t1, t2]
+  ForallC {} -> fail "Derivation does not work on nested foralls."
+  GadtC {} -> fail "Derivation does not work on GADTs."
+  RecGadtC {} -> fail "Derivation does not work on GADTs."
+  where
+    termUnwrap :: Type -> Q Type
+    termUnwrap = \case
+      AppT _ t -> pure t
+      _ -> fail "Unexpected non-Term-wrapped type. If you see this, report a bug."
+
+-- | @since wip
+mkPLam :: (Name -> Q Exp) -> Q Exp
+mkPLam f = do
+  argName <- newName "x"
+  body <- f argName
+  pure . AppE (VarE 'plam') . LamE [VarP argName] $ body

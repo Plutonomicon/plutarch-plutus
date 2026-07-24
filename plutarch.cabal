@@ -183,6 +183,7 @@ library
     Plutarch.TH.DataPlutus
     Plutarch.TH.Enum
     Plutarch.TH.Helpers
+    Plutarch.TH.MS
     Plutarch.TH.SOP
     Plutarch.TH.Strategy
     Plutarch.Trace
@@ -228,6 +229,7 @@ test-suite tests
   other-modules:
     TH.Data
     TH.Enum
+    TH.MS
     TH.SOP
 
   hs-source-dirs: test
