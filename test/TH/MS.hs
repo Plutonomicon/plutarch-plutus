@@ -5,7 +5,7 @@ module TH.MS (PTheseMS (..)) where
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, papp)
+import Plutarch.Backend.Term (Term)
 import Plutarch.TH.Strategy (Strategy (MogensenScott), deriveFor)
 
 data PTheseMS (a :: S -> Type) (b :: S -> Type) (s :: S)

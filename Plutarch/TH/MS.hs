@@ -3,8 +3,9 @@
 
 module Plutarch.TH.MS (deriveMS) where
 
-import Data.Foldable (foldlM, foldrM)
+import Data.Foldable (foldl', foldlM, foldrM)
 import Data.Kind qualified as GHC
+import Data.Traversable.WithIndex (itraverse)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Language.Haskell.TH (
@@ -12,17 +13,27 @@ import Language.Haskell.TH (
   Body (NormalB),
   Con,
   Dec (ValD),
-  Exp (AppE, AppTypeE, ConE, LetE, VarE),
+  Exp (
+    AppE,
+    AppTypeE,
+    CaseE,
+    ConE,
+    LamE,
+    LetE,
+    VarE
+  ),
+  Match (Match),
   Name,
-  Pat (VarP),
+  Pat (ConP, VarP, WildP),
   Q,
   TyVarBndr,
   Type (VarT, WildCardT),
   newName,
  )
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, punsafeCoerce)
+import Plutarch.Backend.Term (Term, papp, plam', punsafeCoerce)
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Con (PCon (pcon'))
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.TH.Helpers (
@@ -45,7 +56,8 @@ deriveMS tvbs name constructors = case Vector.unsnoc constructors of
       else do
         plutarchTypeDec <- derivePlutarchType tvbs name
         pmatchDec <- derivePMatch tvbs name cs c
-        pure $ plutarchTypeDec <> pmatchDec
+        pconDec <- derivePCon tvbs name constructors
+        pure $ plutarchTypeDec <> pmatchDec <> pconDec
 
 -- Helpers
 
@@ -99,6 +111,37 @@ derivePMatch tyVars tyName cs c =
         pure . AppE (VarE contName) $ conAppE
       n -> mkPLam $ \bindName ->
         go contName cName (bindName : bindsNames) (n - 1)
+
+derivePCon :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
+derivePCon tyVars tyName constructors =
+  [d|
+    instance $ctx => PCon $name where
+      pcon' x = punsafeCoerce $(cases 'x)
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    cases :: Name -> Q Exp
+    cases argName = CaseE (VarE argName) . Vector.toList <$> itraverse mkMatch constructors
+    mkMatch :: Int -> Con -> Q Match
+    mkMatch conIx con = do
+      let arity = getArity con
+      conName <- conToName con
+      fieldNames <- case arity of
+        0 -> pure []
+        n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
+      let conMatchPat = ConP conName [] . fmap VarP $ fieldNames
+      handlerName <- newName "handler"
+      let conCount = Vector.length constructors
+      let matchBody = go handlerName conIx fieldNames conCount 0
+      pure . Match conMatchPat (NormalB matchBody) $ []
+    go :: Name -> Int -> [Name] -> Int -> Int -> Exp
+    go handlerName conIx fieldNames conCount depth
+      | depth == conCount = foldl' (\acc -> AppE (AppE (VarE 'papp) acc) . VarE) (VarE handlerName) fieldNames
+      | depth == conIx = AppE (VarE 'plam') . LamE [VarP handlerName] . go handlerName conIx fieldNames conCount $ depth + 1
+      | otherwise = AppE (VarE 'plam') . LamE [WildP] . go handlerName conIx fieldNames conCount $ depth + 1
 
 mkMSType :: Type -> Vector Con -> Con -> Q Type
 mkMSType resType cs c = do
