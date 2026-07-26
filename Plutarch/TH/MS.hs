@@ -27,13 +27,15 @@ import Language.Haskell.TH (
   Pat (ConP, VarP, WildP),
   Q,
   TyVarBndr,
-  Type (VarT, WildCardT),
+  Type (ConT, VarT, WildCardT),
   newName,
  )
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, papp, plam', punsafeCoerce)
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Bool (PBool)
 import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.TH.Helpers (
@@ -42,6 +44,7 @@ import Plutarch.TH.Helpers (
   fullTypeName,
   getArity,
   hasNoFields,
+  mkAnonPLam,
   mkContextOf,
   mkPLam,
  )
@@ -57,7 +60,8 @@ deriveMS tvbs name constructors = case Vector.unsnoc constructors of
         plutarchTypeDec <- derivePlutarchType tvbs name
         pmatchDec <- derivePMatch tvbs name cs c
         pconDec <- derivePCon tvbs name constructors
-        pure $ plutarchTypeDec <> pmatchDec <> pconDec
+        peqDec <- derivePEq tvbs name constructors
+        pure $ plutarchTypeDec <> pmatchDec <> pconDec <> peqDec
 
 -- Helpers
 
@@ -89,7 +93,7 @@ derivePMatch tyVars tyName cs c =
     ctx = pure . mkContextOf ''PlutarchType $ tyVars
     mkPMatchBody :: Name -> Name -> Name -> Q Exp
     mkPMatchBody msThingName contName resTyName = do
-      msType <- mkMSType (VarT resTyName) cs c
+      msType <- mkMSType (VarT resTyName) (Vector.snoc cs c)
       msName <- newName "asMS"
       handlerLast <- mkHandler contName c
       handlersRest <- traverse (mkHandler contName) cs
@@ -143,11 +147,65 @@ derivePCon tyVars tyName constructors =
       | depth == conIx = AppE (VarE 'plam') . LamE [VarP handlerName] . go handlerName conIx fieldNames conCount $ depth + 1
       | otherwise = AppE (VarE 'plam') . LamE [WildP] . go handlerName conIx fieldNames conCount $ depth + 1
 
-mkMSType :: Type -> Vector Con -> Con -> Q Type
-mkMSType resType cs c = do
-  lastConFunType <- mkConFunType resType c
-  restConFunTypes <- traverse (mkConFunType resType) cs
-  let allFunTypes = Vector.snoc restConFunTypes lastConFunType
+derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
+derivePEq tyVars tyName constructors =
+  [d|
+    instance $ctx => PEq $name where
+      peq = plam' $ \x -> plam' $ \y -> $(peqImpl 'x 'y)
+    |]
+  where
+    name :: Q Type
+    name = pure . fullTypeName tyName $ tyVars
+    ctx :: Q Type
+    ctx = pure . mkContextOf ''PEq $ tyVars
+    peqImpl :: Name -> Name -> Q Exp
+    peqImpl xName yName = do
+      msType <- mkMSType (ConT ''PBool) constructors
+      msNameX <- newName "msX"
+      msNameY <- newName "msY"
+      let coerceXE = AppE (AppTypeE (AppTypeE (VarE 'punsafeCoerce) WildCardT) msType) . VarE $ xName
+      let coerceYE = AppE (AppTypeE (AppTypeE (VarE 'punsafeCoerce) WildCardT) msType) . VarE $ yName
+      outerPlams <- itraverse (mkOuterPlam msNameY) constructors
+      bodyAppE <- foldlM (\acc e -> [e|$(pure acc) # $(pure e)|]) (VarE msNameX) outerPlams
+      let letBinds =
+            [ ValD (VarP msNameX) (NormalB coerceXE) []
+            , ValD (VarP msNameY) (NormalB coerceYE) []
+            ]
+      pure . LetE letBinds $ bodyAppE
+    mkOuterPlam :: Name -> Int -> Con -> Q Exp
+    mkOuterPlam msNameY argPos c = do
+      let cArity = getArity c
+      go msNameY argPos [] cArity
+    go :: Name -> Int -> [Name] -> Word -> Q Exp
+    go msNameY argPos xArgNames = \case
+      0 -> mkInnerCall msNameY argPos xArgNames
+      n -> mkPLam $ \xArgName -> go msNameY argPos (xArgName : xArgNames) (n - 1)
+    mkInnerCall :: Name -> Int -> [Name] -> Q Exp
+    mkInnerCall msNameY argPos xArgNames = do
+      innerPlams <- itraverse (mkInnerPlam argPos xArgNames) constructors
+      foldlM (\acc e -> [e|$(pure acc) # $(pure e)|]) (VarE msNameY) innerPlams
+    mkInnerPlam :: Int -> [Name] -> Int -> Con -> Q Exp
+    mkInnerPlam outerArgPos xArgNames innerArgPos c = do
+      let cArity = getArity c
+      if outerArgPos == innerArgPos
+        then goNamed xArgNames [] cArity
+        else goNameless cArity
+    goNamed :: [Name] -> [Name] -> Word -> Q Exp
+    goNamed xArgNames yArgNames = \case
+      0 -> case zip xArgNames yArgNames of
+        [] -> [e|ptrue|]
+        ((x1, y1) : args) -> do
+          start <- [e|peq # $(pure (VarE x1)) # $(pure (VarE y1))|]
+          foldlM (\acc (xName, yName) -> [e|pand $(pure acc) (peq # $(pure (VarE xName)) # $(pure (VarE yName)))|]) start args
+      n -> mkPLam $ \yArgName -> goNamed xArgNames (yArgName : yArgNames) (n - 1)
+    goNameless :: Word -> Q Exp
+    goNameless = \case
+      0 -> [e|pfalse|]
+      n -> mkAnonPLam (goNameless $ n - 1)
+
+mkMSType :: Type -> Vector Con -> Q Type
+mkMSType resType cs = do
+  allFunTypes <- traverse (mkConFunType resType) cs
   foldrM mkArrow resType allFunTypes
 
 mkConFunType :: Type -> Con -> Q Type

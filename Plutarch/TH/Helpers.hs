@@ -14,6 +14,7 @@ module Plutarch.TH.Helpers (
   mkUncons,
   conToFieldTypes,
   mkPLam,
+  mkAnonPLam,
 ) where
 
 import Data.Foldable (foldl', for_)
@@ -29,7 +30,7 @@ import Language.Haskell.TH (
   Exp (AppE, LamE, VarE),
   Info (TyConI),
   Name,
-  Pat (VarP),
+  Pat (VarP, WildP),
   Q,
   TyVarBndr (KindedTV, PlainTV),
   Type (AppT, ConT, TupleT, VarT),
@@ -248,3 +249,7 @@ mkPLam f = do
   argName <- newName "x"
   body <- f argName
   pure . AppE (VarE 'plam') . LamE [VarP argName] $ body
+
+-- | @since wip
+mkAnonPLam :: Q Exp -> Q Exp
+mkAnonPLam f = AppE (VarE 'plam') . LamE [WildP] <$> f
