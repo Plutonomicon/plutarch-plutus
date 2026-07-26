@@ -37,6 +37,10 @@ import Plutarch.TH.Helpers (
   getArity,
   hasNoFields,
   mkContextOf,
+  plam'E,
+  punsafeCaseE,
+  punsafeConstrE,
+  toSomeTermE,
  )
 
 -- | @since wip
@@ -71,7 +75,7 @@ derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Con -> Q [De
 derivePMatch tyVars tyName cs c =
   [d|
     instance $ctx => PMatch $name where
-      pmatch' x f = let handlers = $(mkHandlers 'f) in punsafeCase x handlers
+      pmatch' x f = let handlers = $(mkHandlers 'f) in $punsafeCaseE x handlers
     |]
   where
     name :: Q Type
@@ -91,8 +95,8 @@ derivePMatch tyVars tyName cs c =
       namesRest <- traverse conToName cs
       handlerLast <- mkHandler contName (nameLast, arityLast)
       handlersRest <- traverse (mkHandler contName) (Vector.zip namesRest aritiesRest)
-      start <- [e|NEVector.singleton (toSomeTerm $(pure handlerLast))|]
-      foldrM (\e acc -> [e|NEVector.cons (toSomeTerm $(pure e)) $(pure acc)|]) start handlersRest
+      start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
+      foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest
     mkHandler :: Name -> (Name, Word) -> Q Exp
     mkHandler contName (conName, arity) = do
       argNames <- case arity of
@@ -123,15 +127,15 @@ derivePCon tyVars tyName constructors =
         n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
       let conMatchPat = ConP conName [] . fmap VarP $ fieldNames
       let constrIx = LitE . IntegerL . fromIntegral $ conIx
-      constrVec <- foldrM (\n acc -> [e|Vector.cons (toSomeTerm $(pure (VarE n))) $(pure acc)|]) (VarE 'Vector.empty) fieldNames
-      matchBody <- [e|punsafeConstr $(pure constrIx) $(pure constrVec)|]
+      constrVec <- foldrM (\n acc -> [e|Vector.cons ($toSomeTermE $(pure (VarE n))) $(pure acc)|]) (VarE 'Vector.empty) fieldNames
+      matchBody <- [e|$punsafeConstrE $(pure constrIx) $(pure constrVec)|]
       pure . Match conMatchPat (NormalB matchBody) $ []
 
 derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
 derivePEq tyVars tyName constructors =
   [d|
     instance $ctx => PEq $name where
-      peq = plam' $ \x -> plam' $ \y -> pmatch x $ \xInner ->
+      peq = $plam'E $ \x -> $plam'E $ \y -> pmatch x $ \xInner ->
         pmatch y $ \yInner ->
           $(peqImpl 'xInner 'yInner)
     |]

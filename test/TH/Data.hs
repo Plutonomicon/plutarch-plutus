@@ -4,21 +4,8 @@ module TH.Data (PTheseData (..)) where
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  Term,
-  punsafeCase,
-  punsafeCoerce,
-  punsafeConstant,
-  toSomeTerm,
- )
+import Plutarch.Backend.Term (Term)
 import Plutarch.Primitive.Apply (pcoerce, (#))
-import Plutarch.Primitive.BuiltinFun (
-  pconstrData,
-  pequalsData,
-  pmkCons,
-  pnilData,
-  punConstrData,
- )
 import Plutarch.Primitive.Data (PAsData)
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.TH.Strategy (Strategy (DataList, DataPlutus), deriveFor)
