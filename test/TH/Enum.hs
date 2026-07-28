@@ -3,14 +3,7 @@
 module TH.Enum (PColour (..)) where
 
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  plam',
-  punsafeCase,
-  punsafeConstant,
-  toSomeTerm,
- )
 import Plutarch.Primitive.Apply (pcoerce, (#))
-import Plutarch.Primitive.BuiltinFun (pequalsInteger)
 import Plutarch.TH.Strategy (deriveFor)
 import Plutarch.TH.Strategy qualified as Strategy
 

@@ -12,6 +12,18 @@ module Plutarch.TH.Helpers (
   fullTypeName,
   mkContextOf,
   mkUncons,
+  toSomeTermE,
+  punsafeCaseE,
+  punsafeConstrE,
+  punsafeConstantE,
+  pequalsIntegerE,
+  plam'E,
+  punsafeCoerceE,
+  punConstrDataE,
+  pnilDataE,
+  pmkConsE,
+  pconstrDataE,
+  pequalsDataE,
   conToFieldTypes,
   mkPLam,
   mkAnonPLam,
@@ -37,7 +49,23 @@ import Language.Haskell.TH (
   newName,
   reify,
  )
-import Plutarch.Backend.Term (Term, plam')
+import Plutarch.Backend.Term (
+  Term,
+  plam',
+  punsafeCase,
+  punsafeCoerce,
+  punsafeConstant,
+  punsafeConstr,
+  toSomeTerm,
+ )
+import Plutarch.Primitive.BuiltinFun (
+  pconstrData,
+  pequalsData,
+  pequalsInteger,
+  pmkCons,
+  pnilData,
+  punConstrData,
+ )
 import Plutarch.Primitive.Data (PAsData)
 
 {- | Return the declaration of a type given its name, or error out if the name
@@ -223,6 +251,54 @@ mkUncons listName f = do
   let innerLam = AppE (VarE 'plam') . LamE [VarP tName] $ body
   let outerLam = AppE (VarE 'plam') . LamE [VarP hName] $ innerLam
   [e|punsafeCase $(pure (VarE listName)) (NEVector.singleton (toSomeTerm $(pure outerLam)))|]
+
+-- | @since wip
+toSomeTermE :: Q Exp
+toSomeTermE = pure $ VarE 'toSomeTerm
+
+-- | @since wip
+punsafeCaseE :: Q Exp
+punsafeCaseE = pure $ VarE 'punsafeCase
+
+-- | @since wip
+punsafeConstrE :: Q Exp
+punsafeConstrE = pure $ VarE 'punsafeConstr
+
+-- | @since wip
+punsafeConstantE :: Q Exp
+punsafeConstantE = pure $ VarE 'punsafeConstant
+
+-- | @since wip
+pequalsIntegerE :: Q Exp
+pequalsIntegerE = pure $ VarE 'pequalsInteger
+
+-- | @since wip
+plam'E :: Q Exp
+plam'E = pure $ VarE 'plam'
+
+-- | @since wip
+punsafeCoerceE :: Q Exp
+punsafeCoerceE = pure $ VarE 'punsafeCoerce
+
+-- | @since wip
+punConstrDataE :: Q Exp
+punConstrDataE = pure $ VarE 'punConstrData
+
+-- | @since wip
+pnilDataE :: Q Exp
+pnilDataE = pure $ VarE 'pnilData
+
+-- | @since wip
+pmkConsE :: Q Exp
+pmkConsE = pure $ VarE 'pmkCons
+
+-- | @since wip
+pconstrDataE :: Q Exp
+pconstrDataE = pure $ VarE 'pconstrData
+
+-- | @since wip
+pequalsDataE :: Q Exp
+pequalsDataE = pure $ VarE 'pequalsData
 
 {- | Retrieve the types of all fields in a data constructor, in order. Fail if
 given something unsupported. Will do 'Term' unwrapping as well.

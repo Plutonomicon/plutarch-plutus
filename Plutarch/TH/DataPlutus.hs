@@ -25,7 +25,6 @@ import Language.Haskell.TH (
   Type,
   newName,
  )
-import Plutarch.Backend.Term (plam')
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.BuiltinFun (pheadList)
 import Plutarch.Primitive.CanData (PCanData)
@@ -42,6 +41,16 @@ import Plutarch.TH.Helpers (
   hasNoFields,
   mkContextOf,
   mkUncons,
+  pconstrDataE,
+  pequalsDataE,
+  plam'E,
+  pmkConsE,
+  pnilDataE,
+  punConstrDataE,
+  punsafeCaseE,
+  punsafeCoerceE,
+  punsafeConstantE,
+  toSomeTermE,
  )
 import PlutusCore qualified as PLC
 
@@ -78,7 +87,7 @@ derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Con -> Q [De
 derivePMatch tyVars tyName cs c =
   [d|
     instance $ctx => PMatch $name where
-      pmatch' x f = pmatch (punConstrData # x) $ \(PBPair tag fields) ->
+      pmatch' x f = pmatch ($punConstrDataE # x) $ \(PBPair tag fields) ->
         $(mkMatchBody 'f 'tag 'fields)
     |]
   where
@@ -104,9 +113,9 @@ derivePMatch tyVars tyName cs c =
       0 -> do
         handlerLast <- mkHandler lastTail contName preloadNamesBackwards (nameLast, arityLast)
         handlersRest <- traverse (mkHandler lastTail contName preloadNamesBackwards) (Vector.zip namesRest aritiesRest)
-        start <- [e|NEVector.singleton (toSomeTerm $(pure handlerLast))|]
-        handlers <- foldrM (\e acc -> [e|NEVector.cons (toSomeTerm $(pure e)) $(pure acc)|]) start handlersRest
-        [e|punsafeCase $(pure (VarE tagName)) $(pure handlers)|]
+        start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
+        handlers <- foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest
+        [e|$punsafeCaseE $(pure (VarE tagName)) $(pure handlers)|]
       n -> mkUncons lastTail $ \headName tailName ->
         -- We accumulate all preloaded names so that we can apply them to the
         -- appropriate data constructor 'all at once' at the end.
@@ -116,7 +125,7 @@ derivePMatch tyVars tyName cs c =
       -- All of our arguments have been preloaded already.
       0 -> do
         let headsNames = reverse preloadedNamesBackwards
-        conAppE <- foldrM (\headName acc -> AppE acc <$> [e|punsafeCoerce $(pure (VarE headName))|]) (ConE conName) headsNames
+        conAppE <- foldrM (\headName acc -> AppE acc <$> [e|$punsafeCoerceE $(pure (VarE headName))|]) (ConE conName) headsNames
         pure . AppE (VarE contName) $ conAppE
       -- Some items still remain to be loaded.
       n -> go contName conName preloadedNamesBackwards lastTail (n - 1)
@@ -127,9 +136,9 @@ derivePMatch tyVars tyName cs c =
         -- this is a quadratic procedure. We can reverse in linear time.
         let headsNames = reverse headsNamesBackwards
         -- Build up applications of all heads to the constructor.
-        conAppButLast <- foldrM (\headName acc -> AppE acc <$> [e|punsafeCoerce $(pure (VarE headName))|]) (ConE cName) headsNames
+        conAppButLast <- foldrM (\headName acc -> AppE acc <$> [e|$punsafeCoerceE $(pure (VarE headName))|]) (ConE cName) headsNames
         -- Add the last argument by taking the head of the last tail.
-        conAppE <- AppE conAppButLast <$> [e|punsafeCoerce (pheadList @PData # $(pure (VarE lastTailName)))|]
+        conAppE <- AppE conAppButLast <$> [e|$punsafeCoerceE (pheadList @PData # $(pure (VarE lastTailName)))|]
         -- Hit it with the continuation internally.
         pure . AppE (VarE contName) $ conAppE
       n -> mkUncons lastTailName $ \headName tailName ->
@@ -160,19 +169,19 @@ derivePCon tyVars tyName constructors =
         n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
       let conMatchPat = ConP conName [] . fmap VarP $ fieldNames
       let constrIx = LitE . IntegerL . fromIntegral $ conIx
-      constrE <- [e|punsafeConstant (PLC.someValue @Integer $(pure constrIx))|]
-      start <- [e|pnilData|]
+      constrE <- [e|$punsafeConstantE (PLC.someValue @Integer $(pure constrIx))|]
+      start <- pnilDataE
       constrList <- foldrM go start fieldNames
-      matchBody <- [e|pconstrData # $(pure constrE) # $(pure constrList)|]
+      matchBody <- [e|$pconstrDataE # $(pure constrE) # $(pure constrList)|]
       pure . Match conMatchPat (NormalB matchBody) $ []
     go :: Name -> Exp -> Q Exp
-    go fieldName acc = [e|pmkCons # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]
+    go fieldName acc = [e|$pmkConsE # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]
 
 derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePEq tyVars tyName =
   [d|
     instance $ctx => PEq $name where
-      peq = plam' $ \x -> plam' $ \y -> pequalsData # pcoerce x # pcoerce y
+      peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsDataE # pcoerce x # pcoerce y
     |]
   where
     name :: Q Type

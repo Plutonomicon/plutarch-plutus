@@ -37,6 +37,9 @@ import Plutarch.TH.Helpers (
   hasNoFields,
   mkContextOf,
   mkUncons,
+  pmkConsE,
+  pnilDataE,
+  punsafeCoerceE,
  )
 
 -- | @since wip
@@ -100,9 +103,9 @@ derivePMatch tyVars tyName c =
         -- this is a quadratic procedure. We can reverse in linear time.
         let headsNames = reverse headsNamesBackwards
         -- Build up applications of all heads to the constructor.
-        conAppButLast <- foldrM (\headName acc -> AppE acc <$> [e|punsafeCoerce $(pure (VarE headName))|]) (ConE cName) headsNames
+        conAppButLast <- foldrM (\headName acc -> AppE acc <$> [e|$punsafeCoerceE $(pure (VarE headName))|]) (ConE cName) headsNames
         -- Add the last argument by taking the head of the last tail.
-        conAppE <- AppE conAppButLast <$> [e|punsafeCoerce (pheadList @PData # $(pure (VarE lastTailName)))|]
+        conAppE <- AppE conAppButLast <$> [e|$punsafeCoerceE (pheadList @PData # $(pure (VarE lastTailName)))|]
         -- Hit it with the continuation internally.
         pure . AppE (VarE contName) $ conAppE
       n -> mkUncons lastTailName $ \headName tailName ->
@@ -132,8 +135,8 @@ derivePCon tyVars tyName c =
         0 -> pure []
         n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
       let conMatchPat = ConP cName [] . fmap VarP $ fieldNames
-      start <- [e|pnilData|]
+      start <- pnilDataE
       constrList <- foldrM go start fieldNames
       pure . Match conMatchPat (NormalB constrList) $ []
     go :: Name -> Exp -> Q Exp
-    go fieldName acc = [e|pmkCons # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]
+    go fieldName acc = [e|$pmkConsE # pcoerce $(pure . VarE $ fieldName) # $(pure acc)|]

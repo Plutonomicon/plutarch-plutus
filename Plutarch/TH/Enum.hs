@@ -34,6 +34,11 @@ import Plutarch.TH.Helpers (
   fullTypeName,
   hasNoFields,
   mkContextOf,
+  pequalsIntegerE,
+  plam'E,
+  punsafeCaseE,
+  punsafeConstantE,
+  toSomeTermE,
  )
 import PlutusCore qualified as PLC
 
@@ -69,7 +74,7 @@ derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Con -> Q [De
 derivePMatch tyVars tyName cs c =
   [d|
     instance $ctx => PMatch $name where
-      pmatch' x f = punsafeCase x $(mkHandlers 'f)
+      pmatch' x f = $punsafeCaseE x $(mkHandlers 'f)
     |]
   where
     name :: Q Type
@@ -82,8 +87,8 @@ derivePMatch tyVars tyName cs c =
       namesRest <- traverse conToName cs
       handlerLast <- mkHandler contName nameLast
       handlersRest <- traverse (mkHandler contName) namesRest
-      start <- [e|NEVector.singleton (toSomeTerm $(pure handlerLast))|]
-      foldrM (\e acc -> [e|NEVector.cons (toSomeTerm $(pure e)) $(pure acc)|]) start handlersRest
+      start <- [e|NEVector.singleton ($toSomeTermE $(pure handlerLast))|]
+      foldrM (\e acc -> [e|NEVector.cons ($toSomeTermE $(pure e)) $(pure acc)|]) start handlersRest
     mkHandler :: Name -> Name -> Q Exp
     mkHandler contName conName = [e|$(pure (VarE contName)) $(pure (ConE conName))|]
 
@@ -105,14 +110,14 @@ derivePCon tyVars tyName constructors =
       conName <- conToName con
       let conMatchPat = ConP conName [] []
       let constrIx = LitE . IntegerL . fromIntegral $ conIx
-      constrE <- [e|punsafeConstant (PLC.someValue @Integer $(pure constrIx))|]
+      constrE <- [e|$punsafeConstantE (PLC.someValue @Integer $(pure constrIx))|]
       pure . Match conMatchPat (NormalB constrE) $ []
 
 derivePEq :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePEq tyVars tyName =
   [d|
     instance $ctx => PEq $name where
-      peq = plam' $ \x -> plam' $ \y -> pequalsInteger # pcoerce x # pcoerce y
+      peq = $plam'E $ \x -> $plam'E $ \y -> $pequalsIntegerE # pcoerce x # pcoerce y
     |]
   where
     name :: Q Type

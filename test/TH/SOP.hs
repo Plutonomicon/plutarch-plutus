@@ -4,12 +4,7 @@ module TH.SOP (PThese (..), PEither (..)) where
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  Term,
-  punsafeCase,
-  punsafeConstr,
-  toSomeTerm,
- )
+import Plutarch.Backend.Term (Term)
 import Plutarch.Primitive.Apply ((#))
 import Plutarch.Primitive.Bool (pand, pfalse)
 import Plutarch.Primitive.Match (pmatch)
