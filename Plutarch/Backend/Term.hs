@@ -48,6 +48,7 @@ module Plutarch.Backend.Term (
   punsafeCompiled,
 ) where
 
+import Control.Monad (join)
 import Control.Monad.Except (
   ExceptT,
   MonadError,
@@ -55,15 +56,22 @@ import Control.Monad.Except (
   throwError,
  )
 import Control.Monad.RWS.CPS (
+  MonadReader (..),
   MonadState,
   RWS,
   get,
+  gets,
   modify,
+  modify',
   runRWS,
  )
+import Control.Monad.Reader (Reader, runReader)
+import Data.Bifunctor (Bifunctor (first))
 import Data.Can (Can (Eno, Non, One, Two))
 import Data.Kind (Type)
+import Data.List (find)
 import Data.Map.Merge.Strict (WhenMatched, zipWithAMatched)
+import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import Data.These (These (That, These, This))
 import Data.Vector (Vector)
@@ -116,8 +124,11 @@ import Plutarch.Backend.VarMap (
   vmSingleton,
  )
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Utils.Pretty (compactReadableVar, customList, prettyValueOf)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
+import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, encloseSep, group, parens, vcat, viaShow, (<+>))
+import Universe (Some (Some), ValueOf (ValueOf))
 
 {- | A configuration environment for 'Term's and their compilation. Currently
 unused.
@@ -191,6 +202,143 @@ newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
 type role Term nominal representational
+
+instance Pretty (Term s a) where
+  pretty = prettyTerm
+
+prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc ann
+prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
+  (res, _, _) -> case res of
+    Left e -> error (show e)
+    Right (_, term) -> case runRWS (go term) [] 0 of
+      (res', _, _) -> res'
+  where
+    nextVarName :: RWS [(PosTree, Text)] () Integer Text
+    nextVarName = do
+      s <- gets compactReadableVar
+      modify' (+ 1)
+      pure s
+
+    withBoundVar ::
+      forall (a :: Type).
+      PosTree ->
+      (PosTree -> Maybe PosTree) ->
+      RWS [(PosTree, Text)] () Integer a ->
+      RWS [(PosTree, Text)] () Integer (Doc ann, a)
+    withBoundVar pt localF cont = do
+      varName <- nextVarName
+      let pVar = pretty varName
+      (pVar,) <$> local (((pt, varName) :) . mapMaybe1 localF) cont
+
+    resolveThisVar :: RWS [(PosTree, Text)] () Integer (Doc ann)
+    resolveThisVar = do
+      pts <- ask
+      case snd <$> find (\x -> fst x == PHere) pts of
+        Nothing -> error "free variable in Term, this should be impossible (also: Implement better error handling in prettyTerm)"
+        Just thisVar -> pure (pretty thisVar)
+
+    mapMaybe1 :: forall c d. (c -> Maybe c) -> [(c, d)] -> [(c, d)]
+    mapMaybe1 f = mapMaybe (\(x, y) -> case f x of Just x' -> Just (x', y); _ -> Nothing)
+
+    downL :: PosTree -> Maybe PosTree
+    downL = \case
+      PTwo xs -> case xs of
+        This l -> pure l
+        That r -> Nothing
+        These l _ -> pure l
+      _ -> Nothing
+
+    downR :: PosTree -> Maybe PosTree
+    downR = \case
+      PTwo xs -> case xs of
+        This _ -> Nothing
+        That r -> pure r
+        These _ r -> pure r
+      _ -> Nothing
+
+    downOne :: PosTree -> Maybe PosTree
+    downOne = \case (POne x) -> Just x; _ -> Nothing
+
+    downScrut :: PosTree -> Maybe PosTree
+    downScrut = \case (PCase pscrut _) -> pscrut; _ -> Nothing
+
+    -- TODO This is going to be horribly inefficient, do better after the logic is known to work
+    downHandler :: Int -> PosTree -> Maybe PosTree
+    downHandler n = \case
+      PCase _ handlers -> join $ handlers NEVector.!? n
+      _ -> Nothing
+
+    downMany :: Int -> PosTree -> Maybe PosTree
+    downMany n = \case
+      PMany xs -> join $ xs Vector.!? n
+      _ -> Nothing
+
+    downCompose :: Int -> PosTree -> Maybe PosTree
+    downCompose n = \case
+      PCompose xs -> join $ xs NEVector.!? n
+      _ -> Nothing
+
+    go :: RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    go = \case
+      RVar _ _ -> resolveThisVar
+      RLamAbs _ mpt body -> case mpt of
+        Nothing -> do
+          pbody <- local (mapMaybe1 downOne) $ go body
+          pure . parens $ "\\_" <+> "->" <+> pbody
+        Just ptHere -> do
+          (thisVar, pbody) <- withBoundVar ptHere downOne $ go body
+          pure . parens $ "\\" <> thisVar <+> "->" <+> pbody
+      RForce _ inner -> do
+        pinner <- local (mapMaybe1 downOne) $ go inner
+        pure $ "!" <> parens pinner
+      RDelay _ inner -> do
+        pinner <- local (mapMaybe1 downOne) $ go inner
+        pure $ angles pinner
+      RApply _ f arg -> do
+        pf <- local (mapMaybe1 downL) $ go f
+        parg <- local (mapMaybe1 downR) $ go arg
+        pure $ pf <+> "#" <+> parg
+      RConstant _ (Some (ValueOf uni x)) ->
+        pure $ prettyValueOf uni x
+      RBuiltin _ bif ->
+        pure $ viaShow bif
+      RCompiled _ uplc ->
+        pure $ braces (pretty uplc)
+      RError _ ->
+        pure "ERROR"
+      RPlaceholder _ i ->
+        pure $ "PLACEHOLDER" <> brackets (pretty i)
+      RCase _ scrut handlers -> do
+        pscrut <- local (mapMaybe1 downScrut) $ go scrut
+        phandlers <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downHandler i)) . go) handlers
+        pure $ "case" <+> parens pscrut <+> customList phandlers
+      RConstr _ cix args -> do
+        pargs <- Vector.toList <$> Vector.imapM (\i arg -> local (mapMaybe1 (downMany i)) $ go arg) args
+        pure $ "constr" <+> pretty cix <+> customList pargs
+      RCompose _ components -> do
+        pcomponents <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . go) components
+        pure $ encloseSep "" "" " . " pcomponents
+      RFix _ pt body -> do
+        (thisVar, pbody) <- withBoundVar pt downOne $ go body
+        pure $ "fix" <+> parens ("\\" <> thisVar <+> "->" <+> pbody)
+      RLet _ mpt v f -> do
+        -- I think this is right? We don't bind anything for the var part
+        pv <- local (mapMaybe1 downL) $ go v
+        -- We do need to bind the var in f (if there is an occurrence)
+        -- REVIEW: I should check and make sure we optimize this away somewhere if this is `Nothing`
+        case mpt of
+          Nothing -> do
+            pf <- local (mapMaybe1 downR) $ go f
+            pure . align . group . vcat $
+              [ "let" <+> "_" <+> "=" <+> pv
+              , "in" <+> pf
+              ]
+          Just pt -> do
+            (thisVar, pf) <- withBoundVar pt downR $ go f
+            pure . align . group . vcat $
+              [ "let" <+> thisVar <+> "=" <+> pv
+              , "in" <+> pf
+              ]
 
 {- | A 'Term' whose result has been forgotten. Useful mainly together with
 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of

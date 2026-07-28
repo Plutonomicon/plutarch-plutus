@@ -6,7 +6,10 @@ module Plutarch.Utils.Pretty (
   taggedNode,
   prettyAnnotated,
   blockList,
+  customList,
   prettyUPLC,
+  oneLineList,
+  blockParens,
 ) where
 
 import Control.Lens.Plated
@@ -159,8 +162,8 @@ oneLineList = \case
   [] -> "[]"
   xs -> "[" <> hcat (punctuate ", " xs) <> "]"
 
-_blockParens :: forall (ann :: Type). Doc ann -> Doc ann
-_blockParens = block "(" ")"
+blockParens :: forall (ann :: Type). Doc ann -> Doc ann
+blockParens = block "(" ")"
 
 taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
 taggedNode lbl ann node = block' lbl "<" ">" node <> "@" <> ann
