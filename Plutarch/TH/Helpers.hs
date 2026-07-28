@@ -24,6 +24,9 @@ module Plutarch.TH.Helpers (
   pmkConsE,
   pconstrDataE,
   pequalsDataE,
+  conToFieldTypes,
+  mkPLam,
+  mkAnonPLam,
 ) where
 
 import Data.Foldable (foldl', for_)
@@ -39,7 +42,7 @@ import Language.Haskell.TH (
   Exp (AppE, LamE, VarE),
   Info (TyConI),
   Name,
-  Pat (VarP),
+  Pat (VarP, WildP),
   Q,
   TyVarBndr (KindedTV, PlainTV),
   Type (AppT, ConT, TupleT, VarT),
@@ -296,3 +299,33 @@ pconstrDataE = pure $ VarE 'pconstrData
 -- | @since wip
 pequalsDataE :: Q Exp
 pequalsDataE = pure $ VarE 'pequalsData
+
+{- | Retrieve the types of all fields in a data constructor, in order. Fail if
+given something unsupported. Will do 'Term' unwrapping as well.
+
+@since wip
+-}
+conToFieldTypes :: Con -> Q [Type]
+conToFieldTypes = \case
+  NormalC _ fields -> traverse (termUnwrap . snd) fields
+  RecC _ fields -> traverse (\(_, _, t) -> termUnwrap t) fields
+  InfixC (_, t1) _ (_, t2) -> traverse termUnwrap [t1, t2]
+  ForallC {} -> fail "Derivation does not work on nested foralls."
+  GadtC {} -> fail "Derivation does not work on GADTs."
+  RecGadtC {} -> fail "Derivation does not work on GADTs."
+  where
+    termUnwrap :: Type -> Q Type
+    termUnwrap = \case
+      AppT _ t -> pure t
+      _ -> fail "Unexpected non-Term-wrapped type. If you see this, report a bug."
+
+-- | @since wip
+mkPLam :: (Name -> Q Exp) -> Q Exp
+mkPLam f = do
+  argName <- newName "x"
+  body <- f argName
+  pure . AppE (VarE 'plam') . LamE [VarP argName] $ body
+
+-- | @since wip
+mkAnonPLam :: Q Exp -> Q Exp
+mkAnonPLam f = AppE (VarE 'plam') . LamE [WildP] <$> f

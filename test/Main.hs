@@ -61,6 +61,7 @@ import Prettyprinter (
   layoutSmart,
  )
 import Prettyprinter.Render.String (renderString)
+import TH.MS (PTheseMS)
 import TH.SOP (PEither, PThese)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (
@@ -388,9 +389,28 @@ main =
             step $ "UPLC:\n" <> toPrettyString t
             pure ()
     , testCaseSteps "Case 18" $ \step -> do
-        step "Case: peq @(PThese PInteger PInteger)"
+        step "Case: peq @(PEither PInteger PByteString)"
         step "1. Does Case 18 compile?"
         let compiled = compileTerm (peq @(PEither PInteger PByteString))
+        case compiled of
+          Left err -> assertFailure $ "Compile error: " <> show err
+          Right (_, t) -> do
+            step "Successfully compiled!"
+            step $ "RawTerm:\n" <> ppShow t
+            let asAST = fromRawTerm t
+            step $ "AST:\n" <> ppShow asAST
+            let anf = fromHashedAST asAST
+            step "ANF, no demand analysis"
+            step $ toPrettyString anf
+            let anf' = analyzeDemand anf
+            step "ANF, with demand analysis"
+            step $ toPrettyString anf'
+            let t = toUPLCTerm anf'
+            step $ "UPLC:\n" <> toPrettyString t
+            pure ()
+    , testCaseSteps "Case 19" $ \step -> do
+        step "Case: peq @(PTheseMS PInteger PInteger)"
+        let compiled = compileTerm (peq @(PTheseMS PInteger PInteger))
         case compiled of
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
