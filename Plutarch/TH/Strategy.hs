@@ -14,6 +14,7 @@ import Plutarch.TH.DataList (deriveDataList)
 import Plutarch.TH.DataPlutus (deriveDataPlutus)
 import Plutarch.TH.Enum (deriveEnum)
 import Plutarch.TH.Helpers (checkFieldsAreTerms, checkTyName)
+import Plutarch.TH.MS (deriveMS)
 import Plutarch.TH.SOP (deriveSOP)
 
 {- | Specifies a representation choice for the data type you want derivations
@@ -45,11 +46,17 @@ data Strategy
     -}
     Enum
   | {- | Use a @'PBList'@ as the representation. This strategy derives
-    'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+    'PlutarchType', 'PMatch', and 'PCon' instances.
 
     @since wip
     -}
     DataList
+  | {- | Use a final-encoding lambda as the representation. This strategy
+    derives 'PlutarchType', 'PMatch', 'PCon' and 'PEq' instances.
+
+    @since wip
+    -}
+    MogensenScott
 
 {- | Given a type name, and a 'Strategy', derive all possible instances for that
 type as allowed by that 'Strategy'.
@@ -84,6 +91,7 @@ deriveFor tyName strat = do
           DataPlutus -> deriveDataPlutus tvbs name consAsVec
           Enum -> deriveEnum tvbs name consAsVec
           DataList -> deriveDataList tvbs name consAsVec
+          MogensenScott -> deriveMS tvbs name consAsVec
     NewtypeD {} -> fail "Newtype derivations not supported at present."
     TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
     _ -> fail $ "Not a valid type name: " <> show tyName
