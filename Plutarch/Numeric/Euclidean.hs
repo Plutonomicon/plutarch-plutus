@@ -31,7 +31,7 @@ import Plutarch.Primitive.Numeric (PInteger, PNatural)
 
 1. @(('pdiv' # x # y) #* 'pcoerce' y) #+ ('pmod' # x # y)@ @=@ @x@
 2. @'pdiv' # 'pzero' # x@ @=@ @'pmod' # 'pzero' # x@ @=@ @'pzero'@
-3. @'pgcd' # pcoerce x # x@ @=@ @'pcoerce' x@
+3. @'pgcd' # pcoerce x # x@ @=@ @x@
 4. @'pgcd' # ('pmod' # x # y) # y@ @=@ @'pgcd' # x # y@
 5. @'pgcd' # x # y@ @=@ @'pgcd' # ('pabs' # x) # y@
 
@@ -44,8 +44,8 @@ for the second argument.
 class (PZeroable a, PAbs a, PMultiplicativeMonoid a) => PEuclidean (a :: S -> Type) where
   pdiv :: Term s (a :--> PNonZero a :--> a)
   pmod :: Term s (a :--> PNonZero a :--> a)
-  pgcd :: Term s (a :--> PNonZero a :--> a)
-  pgcd = plam' $ \x -> plam' $ \y -> go # x # pcoerce y
+  pgcd :: Term s (a :--> PNonZero a :--> PNonZero a)
+  pgcd = plam' $ \x -> plam' $ \y -> punsafeCoerce $ go # x # pcoerce y
     where
       go :: Term s (a :--> a :--> a)
       go = pfix $ \self -> plam' $ \x -> plam' $ \y ->
