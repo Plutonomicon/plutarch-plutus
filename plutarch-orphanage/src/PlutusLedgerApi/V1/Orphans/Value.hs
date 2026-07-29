@@ -29,7 +29,6 @@ import Test.QuickCheck (
   CoArbitrary,
   Function (function),
   Gen,
-  NonEmptyList (NonEmpty),
   NonZero (NonZero),
   Positive (Positive),
   chooseBoundedIntegral,
@@ -309,19 +308,11 @@ instance Function PLA.TokenName where
 
 -- Helpers
 
--- This is frankly a bizarre omission
-instance Arbitrary1 NonEmptyList where
-  {-# INLINEABLE liftArbitrary #-}
-  liftArbitrary genInner =
-    NonEmpty <$> do
-      x <- genInner
-      xs <- liftArbitrary genInner
-      pure $ x : xs
-  {-# INLINEABLE liftShrink #-}
-  liftShrink shrinkInner (NonEmpty ell) =
-    NonEmpty <$> case ell of
-      [] -> []
-      (x : xs) -> (:) <$> shrinkInner x <*> liftShrink shrinkInner xs
+-- Note: this module used to define `instance Arbitrary1 NonEmptyList`, calling
+-- its absence "frankly a bizarre omission". QuickCheck now provides that
+-- instance itself (Test.QuickCheck.Modifiers), so keeping this one is a
+-- duplicate-instance error. Removed rather than CPP-guarded because the
+-- upstream definition supersedes it.
 
 {- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
 Ada quantity is positive.
