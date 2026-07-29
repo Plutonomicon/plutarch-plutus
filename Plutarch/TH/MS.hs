@@ -27,7 +27,7 @@ import Language.Haskell.TH (
   Pat (ConP, VarP, WildP),
   Q,
   TyVarBndr,
-  Type (ConT, VarT, WildCardT),
+  Type (AppT, ConT, VarT, WildCardT),
   newName,
  )
 import Plutarch.Backend.S (S)
@@ -39,6 +39,7 @@ import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 import Plutarch.TH.Helpers (
+  bindToName,
   conToFieldTypes,
   conToName,
   fullTypeName,
@@ -69,13 +70,18 @@ derivePlutarchType :: Vector (TyVarBndr BndrVis) -> Name -> Q [Dec]
 derivePlutarchType tyVars tyName =
   [d|
     instance $ctx => PlutarchType $name where
-      type PRepresentation $name = $name
+      type PRepresentation $name = $generalizedName
     |]
   where
     name :: Q Type
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
     ctx = pure . mkContextOf ''PlutarchType $ tyVars
+    generalizedName :: Q Type
+    generalizedName =
+      pure
+        . foldl' (\acc v -> AppT acc (AppT (ConT ''PRepresentation) . VarT . bindToName $ v)) (ConT tyName)
+        $ tyVars
 
 derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Con -> Q [Dec]
 derivePMatch tyVars tyName cs c =
@@ -83,7 +89,7 @@ derivePMatch tyVars tyName cs c =
     instance $ctx => PMatch $name where
       pmatch' ::
         forall (b :: S -> GHC.Type) (s :: S).
-        Term s $name -> ($name s -> Term s b) -> Term s b
+        Term s (PRepresentation $name) -> ($name s -> Term s b) -> Term s b
       pmatch' x f = $(mkPMatchBody 'x 'f ''b)
     |]
   where
