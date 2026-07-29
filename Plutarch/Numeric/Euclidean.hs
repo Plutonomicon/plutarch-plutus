@@ -34,6 +34,7 @@ import Plutarch.Primitive.Numeric (PInteger, PNatural)
 3. @'pgcd' # pcoerce x # x@ @=@ @x@
 4. @'pgcd' # ('pmod' # x # y) # y@ @=@ @'pgcd' # x # y@
 5. @'pgcd' # x # y@ @=@ @'pgcd' # ('pabs' # x) # y@
+6. @'pgcd' # 'pzero' # y@ @=@ @y@
 
 Additionally, 'pgcd' should be /morally/ commutative and associative. It is
 not possible to state these laws in general due to the 'PNonZero' requirement
@@ -41,15 +42,16 @@ for the second argument.
 
 @since wip
 -}
-class (PZeroable a, PAbs a, PMultiplicativeMonoid a) => PEuclidean (a :: S -> Type) where
+class (PZeroable a, PAbs a, PAbs (PNonZero a), PMultiplicativeMonoid a) => PEuclidean (a :: S -> Type) where
   pdiv :: Term s (a :--> PNonZero a :--> a)
   pmod :: Term s (a :--> PNonZero a :--> a)
   pgcd :: Term s (a :--> PNonZero a :--> PNonZero a)
-  pgcd = plam' $ \x -> plam' $ \y -> punsafeCoerce $ go # x # pcoerce y
+  pgcd = plam' $ \x -> plam' $ \y ->
+    ptoNonZero x y (plam' $ \xnz -> go # xnz # pcoerce y)
     where
-      go :: Term s (a :--> a :--> a)
+      go :: Term s (PNonZero a :--> a :--> PNonZero a)
       go = pfix $ \self -> plam' $ \x -> plam' $ \y ->
-        ptoNonZero y (pabs # x) (plam' $ \ynz -> self # y #$ pmod # x # ynz)
+        ptoNonZero y (pabs # x) (plam' $ \ynz -> self # ynz #$ pmod # pcoerce x # ynz)
 
 -- | @since wip
 instance PEuclidean PNatural where
