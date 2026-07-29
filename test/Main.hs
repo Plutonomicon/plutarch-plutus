@@ -253,7 +253,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case9
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -272,8 +272,8 @@ main =
           (_, Left err) -> assertFailure $ "Compile error: " <> show err
           (Right (_, tla), Right (_, tra)) -> do
             step "Successfully compiled!"
-            step $ "RawTerm (left associative):\n" <> ppShow tla
-            step $ "RawTerm (right associative):\n" <> ppShow tra
+            step $ "RawTerm (left associative):\n" <> toPrettyString case10
+            step $ "RawTerm (right associative):\n" <> toPrettyString case11
             step "2. Are both RawTerms the same?"
             assertEqual "RawTerms differ" tla tra
             step "RawTerms are the same!"
@@ -305,7 +305,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case12
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -322,7 +322,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case13
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -339,7 +339,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case14
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -352,7 +352,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (ppowNatural @PInteger)
             let asAST = fromRawTerm t
             step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
@@ -372,7 +372,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (pgcd @PInteger)
             let asAST = fromRawTerm t
             step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
@@ -392,9 +392,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (peq @(PThese PInteger PInteger))
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
@@ -412,9 +412,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (peq @(PEither PInteger PByteString))
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf

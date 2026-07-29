@@ -35,7 +35,7 @@ module Plutarch.Backend.AST (
 ) where
 
 import Control.Applicative ((<|>))
-import Control.Monad (guard, void)
+import Control.Monad (guard)
 import Control.Monad.RWS.CPS (
   MonadReader (ask, local),
   MonadState (get),
@@ -95,24 +95,20 @@ import Plutarch.Backend.VarMap (
   vmMerge,
   vmSingleton,
  )
-import Plutarch.Utils.Pretty (blockList, compactReadableVar, customList, oneLineList, prettyValueOf, taggedNode)
+import Plutarch.Utils.Pretty (blockList, compactReadableVar, prettyValueOf, taggedNode)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import Prettyprinter (
   Doc,
   Pretty (pretty),
   align,
-  angles,
   braces,
   brackets,
   flatAlt,
   group,
   hardline,
-  hcat,
   hsep,
   indent,
-  parens,
-  vcat,
   viaShow,
   (<+>),
  )

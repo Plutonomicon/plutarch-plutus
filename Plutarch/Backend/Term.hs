@@ -65,13 +65,10 @@ import Control.Monad.RWS.CPS (
   modify',
   runRWS,
  )
-import Control.Monad.Reader (Reader, runReader)
-import Data.Bifunctor (Bifunctor (first))
 import Data.Can (Can (Eno, Non, One, Two))
 import Data.Kind (Type)
 import Data.List (find)
 import Data.Map.Merge.Strict (WhenMatched, zipWithAMatched)
-import Data.Maybe (mapMaybe)
 import Data.Text (Text)
 import Data.These (These (That, These, This))
 import Data.Vector (Vector)
@@ -124,10 +121,10 @@ import Plutarch.Backend.VarMap (
   vmSingleton,
  )
 import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Utils.Pretty (PrintMode (PrintAtomic, PrintDefault), appTemplate, blockParens, caseTemplate, compactReadableVar, composeTemplate, ctorTemplate, customList, lambdaTemplate, letTemplate, prettyValueOf)
+import Plutarch.Utils.Pretty (PrintMode (PrintAtomic, PrintDefault), appTemplate, blockParens, caseTemplate, compactReadableVar, composeTemplate, ctorTemplate, lambdaTemplate, letTemplate, prettyValueOf)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
-import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, encloseSep, flatAlt, group, hsep, indent, parens, vcat, viaShow, (<+>))
+import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, group, viaShow, (<+>))
 import Universe (Some (Some), ValueOf (ValueOf))
 
 {- | A configuration environment for 'Term's and their compilation. Currently
@@ -210,10 +207,10 @@ prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc 
 prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
   (res, _, _) -> case res of
     Left e -> error (show e)
-    Right (_, term) -> case runRWS (go term) [] 0 of
+    Right (_, term) -> case runRWS (go term) mempty 0 of
       (res', _, _) -> res'
   where
-    nextVarName :: RWS [(PosTree, Text)] () Integer Text
+    nextVarName :: RWS (Vector (PosTree, Text)) () Integer Text
     nextVarName = do
       s <- gets compactReadableVar
       modify' (+ 1)
@@ -223,28 +220,28 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       forall (a :: Type).
       PosTree ->
       (PosTree -> Maybe PosTree) ->
-      RWS [(PosTree, Text)] () Integer a ->
-      RWS [(PosTree, Text)] () Integer (Doc ann, a)
+      RWS (Vector (PosTree, Text)) () Integer a ->
+      RWS (Vector (PosTree, Text)) () Integer (Doc ann, a)
     withBoundVar pt localF cont = do
       varName <- nextVarName
       let pVar = pretty varName
-      (pVar,) <$> local (((pt, varName) :) . mapMaybe1 localF) cont
+      (pVar,) <$> local (Vector.cons (pt, varName) . mapMaybe1 localF) cont
 
-    resolveThisVar :: RWS [(PosTree, Text)] () Integer (Doc ann)
+    resolveThisVar :: RWS (Vector (PosTree, Text)) () Integer (Doc ann)
     resolveThisVar = do
       pts <- ask
       case snd <$> find (\x -> fst x == PHere) pts of
         Nothing -> error "free variable in Term, this should be impossible (also: Implement better error handling in prettyTerm)"
         Just thisVar -> pure (pretty thisVar)
 
-    mapMaybe1 :: forall c d. (c -> Maybe c) -> [(c, d)] -> [(c, d)]
-    mapMaybe1 f = mapMaybe (\(x, y) -> case f x of Just x' -> Just (x', y); _ -> Nothing)
+    mapMaybe1 :: forall c d. (c -> Maybe c) -> Vector (c, d) -> Vector (c, d)
+    mapMaybe1 f = Vector.mapMaybe (\(x, y) -> case f x of Just x' -> Just (x', y); _ -> Nothing)
 
     downL :: PosTree -> Maybe PosTree
     downL = \case
       PTwo xs -> case xs of
         This l -> pure l
-        That r -> Nothing
+        That _ -> Nothing
         These l _ -> pure l
       _ -> Nothing
 
@@ -262,7 +259,6 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
     downScrut :: PosTree -> Maybe PosTree
     downScrut = \case (PCase pscrut _) -> pscrut; _ -> Nothing
 
-    -- TODO This is going to be horribly inefficient, do better after the logic is known to work
     downHandler :: Int -> PosTree -> Maybe PosTree
     downHandler n = \case
       PCase _ handlers -> join $ handlers NEVector.!? n
@@ -288,9 +284,9 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       RForce _ inner -> isSmall inner
       _ -> False
 
-    goLambda :: [Doc ann] -> Maybe PosTree -> RawTerm () -> RWS [(PosTree, Text)] () Integer ([Doc ann], Doc ann)
+    goLambda :: [Doc ann] -> Maybe PosTree -> RawTerm () -> RWS (Vector (PosTree, Text)) () Integer ([Doc ann], Doc ann)
     goLambda acc mpt = \case
-      lam@(RLamAbs _ cMPT cBody) -> case mpt of
+      RLamAbs _ cMPT cBody -> case mpt of
         Nothing -> do
           (innerVars, innerBody) <- local (mapMaybe1 downOne) $ goLambda acc cMPT cBody
           pure ("_" : innerVars, innerBody)
@@ -305,7 +301,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
           (thisVar, body) <- withBoundVar pt downOne $ go otherBody
           pure (reverse (thisVar : acc), body)
 
-    goApp :: RawTerm () -> RWS [(PosTree, Text)] () Integer [Doc ann]
+    goApp :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer [Doc ann]
     goApp = \case
       RApply _ f arg -> do
         xs <- local (mapMaybe1 downL) $ goApp f
@@ -315,13 +311,13 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
         res <- goAtomic other
         pure [res]
 
-    go :: RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    go :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
     go = go' PrintDefault
 
-    goAtomic :: RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    goAtomic :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
     goAtomic = go' PrintAtomic
 
-    go' :: PrintMode -> RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    go' :: PrintMode -> RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
     go' mode = \case
       RVar _ _ -> resolveThisVar
       RLamAbs _ mpt body -> do
@@ -365,8 +361,6 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       RLet _ mpt v f -> do
         -- I think this is right? We don't bind anything for the var part
         pv <- local (mapMaybe1 downL) $ go v
-        -- We do need to bind the var in f (if there is an occurrence)
-        -- REVIEW: I should check and make sure we optimize this away somewhere if this is `Nothing`
         case mpt of
           Nothing -> do
             pf <- local (mapMaybe1 downR) $ go f
