@@ -154,6 +154,7 @@ library
     Plutarch.Primitive.Bool
     Plutarch.Primitive.BuiltinFun
     Plutarch.Primitive.ByteString
+    Plutarch.Primitive.CanData
     Plutarch.Primitive.Con
     Plutarch.Primitive.Data
     Plutarch.Primitive.Eq
@@ -178,7 +179,11 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.TH.DataList
+    Plutarch.TH.DataPlutus
+    Plutarch.TH.Enum
     Plutarch.TH.Helpers
+    Plutarch.TH.MS
     Plutarch.TH.SOP
     Plutarch.TH.Strategy
     Plutarch.Trace
@@ -221,6 +226,12 @@ test-suite tests
   type:           exitcode-stdio-1.0
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
+  other-modules:
+    TH.Data
+    TH.Enum
+    TH.MS
+    TH.SOP
+
   hs-source-dirs: test
   build-depends:
     , mtl
