@@ -21,10 +21,13 @@ module Plutarch.Utils.Pretty (
 
 import Control.Lens.Plated
 import Data.ByteString ()
+import Data.Foldable (toList)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Vector qualified as Vector
+import Data.Vector.NonEmpty (NonEmptyVector)
+import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
 import Data.Word (Word64)
 import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
@@ -143,7 +146,9 @@ _customLine = flatAlt hardline ""
 block' :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann -> Doc ann
 block' lbl l' r d = group $ flatAlt multiLine oneLine
   where
+    l :: Doc ann
     l = l' <> lbl
+
     multiLine :: Doc ann
     multiLine = align $ l <> hardline <> indent 2 (align . group $ d) <> hardline <> r
 
@@ -210,8 +215,8 @@ lambdaTemplate mode vars body = case mode of
     oneLineNoParens = "\\" <> hsep vars <+> "->" <+> body
 
 -- | Don't pass an empty list into this
-appLike :: forall (ann :: Type). Doc ann -> PrintMode -> Bool -> [Doc ann] -> Doc ann
-appLike op mode funIsSmall funList@(fun : args) = case mode of
+appLike :: forall (ann :: Type). Doc ann -> PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
+appLike op mode funIsSmall funList@(NEVector.uncons -> (fun, args)) = case mode of
   PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
   PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
   where
@@ -224,33 +229,34 @@ appLike op mode funIsSmall funList@(fun : args) = case mode of
             l
               <+> fun
               <> hardline
-              <> indent 2 (vcat (map (op <+>) args))
+              <> indent 2 (vcat (map (op <+>) $ toList args))
               <> myLine
               <> r
         else
           align . group $
             l
               <+> myLine
-              <> indent 2 (align $ encloseSep "" "" (op <> " ") funList)
+              <> indent 2 (align . encloseSep "" "" (op <> " ") $ toList funList)
               <> myLine
               <> r
-    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) args)
-appLike _ _ _ _ = error "Don't call appTemplate on an empty list"
+    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ toList args)
 
-appTemplate :: PrintMode -> Bool -> [Doc ann] -> Doc ann
+appTemplate :: PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
 appTemplate = appLike "#"
 
-composeTemplate :: PrintMode -> [Doc ann] -> Doc ann
+composeTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
 composeTemplate mode = appLike "." mode False
 
 -- Var -> Binding -> Body -> Result
-letTemplate :: PrintMode -> Doc ann -> Doc ann -> Doc ann -> Doc ann
+letTemplate :: forall (ann :: Type). PrintMode -> Doc ann -> Doc ann -> Doc ann -> Doc ann
 letTemplate mode var bind body = case mode of
   PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
   PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
   where
+    myLine :: Doc ann
     myLine = case mode of PrintAtomic -> hardline; _ -> ""
 
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
     mkMultiline l r =
       align . group $
         l
@@ -264,6 +270,7 @@ letTemplate mode var bind body = case mode of
           <> myLine
           <> r
 
+    oneLineNoParens :: Doc ann
     oneLineNoParens = "let" <+> var <+> "=" <+> bind <+> "in" <+> body
 
 caseTemplate :: forall (ann :: Type). PrintMode -> Bool -> Doc ann -> [Doc ann] -> Doc ann
@@ -271,8 +278,10 @@ caseTemplate mode scrutIsSmall scrut handlers = case mode of
   PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
   PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
   where
+    myLine :: Doc ann
     myLine = case mode of PrintAtomic -> hardline; _ -> ""
-    -- this is the "small" variant
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
     mkMultiline l r =
       if scrutIsSmall
         then
@@ -293,6 +302,7 @@ caseTemplate mode scrutIsSmall scrut handlers = case mode of
               <> myLine
               <> r
 
+    oneLineNoParens :: Doc ann
     oneLineNoParens = "case" <+> scrut <+> oneLineList handlers
 
 ctorTemplate :: forall (ann :: Type). PrintMode -> Word64 -> [Doc ann] -> Doc ann
@@ -300,16 +310,21 @@ ctorTemplate mode cix args = case mode of
   PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
   PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
   where
+    myLine :: Doc ann
     myLine = case mode of PrintAtomic -> hardline; _ -> ""
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
     mkMultiline l r =
       align $
         l
           <> "constr"
           <+> pretty cix
           <> hardline
-          <> customList args
+          <> indent 2 (customList args)
           <> myLine
           <> r
+
+    oneLineNoParens :: Doc ann
     oneLineNoParens = "constr" <+> pretty cix <+> oneLineList args
 
 -- Yes there are probably a bunch of superfluous `align`s, not worth the trouble to sort out which are safe to remove tho
@@ -351,7 +366,7 @@ prettyUPLC pt = case takeBindable ([], topLevelBody) of
         let (vars, body) = takeLamArgs ([prettyName nm], _body)
          in lambdaTemplate mode vars (prettyNoBind body)
       Apply () f arg ->
-        let funList = prettyAtomic <$> (analyzeApp f <> [arg])
+        let funList = prettyAtomic <$> (analyzeApp f <> NEVector.singleton arg)
          in align . group $ appTemplate mode (isAtom f) funList
       Force () inner -> "!" <> prettyAtomic inner
       Delay () inner -> angles $ prettyNoBind inner
@@ -378,7 +393,7 @@ prettyUPLC pt = case takeBindable ([], topLevelBody) of
       Builtin {} -> True
       _ -> False
 
-    analyzeApp :: Term Name DefaultUni DefaultFun () -> [Term Name DefaultUni DefaultFun ()]
+    analyzeApp :: Term Name DefaultUni DefaultFun () -> NonEmptyVector (Term Name DefaultUni DefaultFun ())
     analyzeApp = \case
-      Apply () f arg -> analyzeApp f <> [arg]
-      other -> [other]
+      Apply () f arg -> analyzeApp f <> NEVector.singleton arg
+      other -> NEVector.singleton other

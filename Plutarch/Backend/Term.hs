@@ -71,6 +71,7 @@ import Data.List (find)
 import Data.Map.Merge.Strict (WhenMatched, zipWithAMatched)
 import Data.Text (Text)
 import Data.These (These (That, These, This))
+import Data.These.Combinators (justHere, justThere)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
@@ -116,6 +117,7 @@ import Plutarch.Backend.VarMap (
   VarMap,
   vmDelete,
   vmEmpty,
+  vmFold,
   vmMap,
   vmMergeM,
   vmSingleton,
@@ -206,10 +208,20 @@ instance Pretty (Term s a) where
 prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc ann
 prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
   (res, _, _) -> case res of
-    Left e -> error (show e)
-    Right (_, term) -> case runRWS (go term) mempty 0 of
+    Left e -> "Encountered an error when attempting to pretty print a term: " <> pretty (show e)
+    Right (varMap, term) -> case runRWS (withVarMap varMap $ go term) mempty 0 of
       (res', _, _) -> res'
   where
+    withVarMap ::
+      forall (r :: Type).
+      VarMap ->
+      RWS (Vector (PosTree, Text)) () Integer r ->
+      RWS (Vector (PosTree, Text)) () Integer r
+    withVarMap vm act = do
+      let posTrees = vmFold (\acc _ new -> Vector.snoc acc new) mempty vm
+      namedTrees <- Vector.mapM (\pt -> nextVarName >>= \nm -> pure (pt, nm)) posTrees
+      local (namedTrees <>) act
+
     nextVarName :: RWS (Vector (PosTree, Text)) () Integer Text
     nextVarName = do
       s <- gets compactReadableVar
@@ -235,22 +247,16 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
         Just thisVar -> pure (pretty thisVar)
 
     mapMaybe1 :: forall c d. (c -> Maybe c) -> Vector (c, d) -> Vector (c, d)
-    mapMaybe1 f = Vector.mapMaybe (\(x, y) -> case f x of Just x' -> Just (x', y); _ -> Nothing)
+    mapMaybe1 f = Vector.mapMaybe (\(x, y) -> (,) <$> f x <*> pure y)
 
     downL :: PosTree -> Maybe PosTree
     downL = \case
-      PTwo xs -> case xs of
-        This l -> pure l
-        That _ -> Nothing
-        These l _ -> pure l
+      PTwo xs -> justHere xs
       _ -> Nothing
 
     downR :: PosTree -> Maybe PosTree
     downR = \case
-      PTwo xs -> case xs of
-        This _ -> Nothing
-        That r -> pure r
-        These _ r -> pure r
+      PTwo xs -> justThere xs
       _ -> Nothing
 
     downOne :: PosTree -> Maybe PosTree
@@ -284,7 +290,11 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       RForce _ inner -> isSmall inner
       _ -> False
 
-    goLambda :: [Doc ann] -> Maybe PosTree -> RawTerm () -> RWS (Vector (PosTree, Text)) () Integer ([Doc ann], Doc ann)
+    goLambda ::
+      [Doc ann] ->
+      Maybe PosTree ->
+      RawTerm () ->
+      RWS (Vector (PosTree, Text)) () Integer ([Doc ann], Doc ann)
     goLambda acc mpt = \case
       RLamAbs _ cMPT cBody -> case mpt of
         Nothing -> do
@@ -301,15 +311,15 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
           (thisVar, body) <- withBoundVar pt downOne $ go otherBody
           pure (reverse (thisVar : acc), body)
 
-    goApp :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer [Doc ann]
+    goApp :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (NonEmptyVector (Doc ann))
     goApp = \case
       RApply _ f arg -> do
         xs <- local (mapMaybe1 downL) $ goApp f
         parg <- local (mapMaybe1 downR) $ goAtomic arg
-        pure $ xs <> [parg]
+        pure $ xs <> NEVector.singleton parg
       other -> do
         res <- goAtomic other
-        pure [res]
+        pure . NEVector.singleton $ res
 
     go :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
     go = go' PrintDefault
@@ -350,7 +360,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
         pargs <- Vector.toList <$> Vector.imapM (\i arg -> local (mapMaybe1 (downMany i)) $ go arg) args
         pure $ ctorTemplate mode cix pargs
       RCompose _ components -> do
-        pcomponents <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . goAtomic) components
+        pcomponents <- NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . goAtomic) components
         pure $ composeTemplate mode pcomponents
       RFix _ pt body -> do
         (pvars, pbody) <- goLambda [] (Just pt) body
