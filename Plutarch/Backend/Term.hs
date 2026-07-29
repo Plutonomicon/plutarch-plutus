@@ -124,10 +124,10 @@ import Plutarch.Backend.VarMap (
   vmSingleton,
  )
 import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Utils.Pretty (compactReadableVar, customList, prettyValueOf)
+import Plutarch.Utils.Pretty (PrintMode (PrintAtomic, PrintDefault), appTemplate, blockParens, caseTemplate, compactReadableVar, composeTemplate, ctorTemplate, customList, lambdaTemplate, letTemplate, prettyValueOf)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
-import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, encloseSep, group, parens, vcat, viaShow, (<+>))
+import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, encloseSep, flatAlt, group, hsep, indent, parens, vcat, viaShow, (<+>))
 import Universe (Some (Some), ValueOf (ValueOf))
 
 {- | A configuration environment for 'Term's and their compilation. Currently
@@ -278,49 +278,90 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       PCompose xs -> join $ xs NEVector.!? n
       _ -> Nothing
 
-    go :: RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
-    go = \case
-      RVar _ _ -> resolveThisVar
-      RLamAbs _ mpt body -> case mpt of
+    isSmall :: RawTerm () -> Bool
+    isSmall = \case
+      RVar {} -> True
+      RConstant {} -> True
+      RError {} -> True
+      RBuiltin {} -> True
+      RDelay _ inner -> isSmall inner
+      RForce _ inner -> isSmall inner
+      _ -> False
+
+    goLambda :: [Doc ann] -> Maybe PosTree -> RawTerm () -> RWS [(PosTree, Text)] () Integer ([Doc ann], Doc ann)
+    goLambda acc mpt = \case
+      lam@(RLamAbs _ cMPT cBody) -> case mpt of
         Nothing -> do
-          pbody <- local (mapMaybe1 downOne) $ go body
-          pure . parens $ "\\_" <+> "->" <+> pbody
-        Just ptHere -> do
-          (thisVar, pbody) <- withBoundVar ptHere downOne $ go body
-          pure . parens $ "\\" <> thisVar <+> "->" <+> pbody
-      RForce _ inner -> do
-        pinner <- local (mapMaybe1 downOne) $ go inner
-        pure $ "!" <> parens pinner
-      RDelay _ inner -> do
-        pinner <- local (mapMaybe1 downOne) $ go inner
-        pure $ angles pinner
+          (innerVars, innerBody) <- local (mapMaybe1 downOne) $ goLambda acc cMPT cBody
+          pure ("_" : innerVars, innerBody)
+        Just pt -> do
+          (thisVar, (thoseVars, body)) <- withBoundVar pt downOne $ goLambda acc cMPT cBody
+          pure (thisVar : thoseVars, body)
+      otherBody -> case mpt of
+        Nothing -> do
+          innerBody <- local (mapMaybe1 downOne) $ go otherBody
+          pure (reverse ("_" : acc), innerBody)
+        Just pt -> do
+          (thisVar, body) <- withBoundVar pt downOne $ go otherBody
+          pure (reverse (thisVar : acc), body)
+
+    goApp :: RawTerm () -> RWS [(PosTree, Text)] () Integer [Doc ann]
+    goApp = \case
       RApply _ f arg -> do
-        pf <- local (mapMaybe1 downL) $ go f
-        parg <- local (mapMaybe1 downR) $ go arg
-        pure $ pf <+> "#" <+> parg
+        xs <- local (mapMaybe1 downL) $ goApp f
+        parg <- local (mapMaybe1 downR) $ goAtomic arg
+        pure $ xs <> [parg]
+      other -> do
+        res <- goAtomic other
+        pure [res]
+
+    go :: RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    go = go' PrintDefault
+
+    goAtomic :: RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    goAtomic = go' PrintAtomic
+
+    go' :: PrintMode -> RawTerm () -> RWS [(PosTree, Text)] () Integer (Doc ann)
+    go' mode = \case
+      RVar _ _ -> resolveThisVar
+      RLamAbs _ mpt body -> do
+        (pvars, body) <- goLambda [] mpt body
+        pure $ lambdaTemplate mode pvars body
+      RForce _ inner -> do
+        pinner <- local (mapMaybe1 downOne) $ goAtomic inner
+        pure $ "!" <> pinner
+      RDelay _ inner -> do
+        pinner <- local (mapMaybe1 downOne) $ goAtomic inner
+        pure $ angles pinner
+      app@(RApply _ f _) -> do
+        pfunList <- goApp app
+        pure $ appTemplate mode (isSmall f) pfunList
       RConstant _ (Some (ValueOf uni x)) ->
         pure $ prettyValueOf uni x
       RBuiltin _ bif ->
         pure $ viaShow bif
       RCompiled _ uplc ->
-        pure $ braces (pretty uplc)
+        pure . align . group $ "COMPILED" <> braces (pretty uplc)
       RError _ ->
         pure "ERROR"
       RPlaceholder _ i ->
-        pure $ "PLACEHOLDER" <> brackets (pretty i)
+        pure $ "$PLACEHOLDER" <> brackets (pretty i)
       RCase _ scrut handlers -> do
-        pscrut <- local (mapMaybe1 downScrut) $ go scrut
+        pscrut <- local (mapMaybe1 downScrut) $ goAtomic scrut
         phandlers <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downHandler i)) . go) handlers
-        pure $ "case" <+> parens pscrut <+> customList phandlers
+        pure $ caseTemplate mode (isSmall scrut) pscrut phandlers
       RConstr _ cix args -> do
         pargs <- Vector.toList <$> Vector.imapM (\i arg -> local (mapMaybe1 (downMany i)) $ go arg) args
-        pure $ "constr" <+> pretty cix <+> customList pargs
+        pure $ ctorTemplate mode cix pargs
       RCompose _ components -> do
-        pcomponents <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . go) components
-        pure $ encloseSep "" "" " . " pcomponents
+        pcomponents <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . goAtomic) components
+        pure $ composeTemplate mode pcomponents
       RFix _ pt body -> do
-        (thisVar, pbody) <- withBoundVar pt downOne $ go body
-        pure $ "fix" <+> parens ("\\" <> thisVar <+> "->" <+> pbody)
+        (pvars, pbody) <- goLambda [] (Just pt) body
+        let resNoParens = "fix" <+> align (lambdaTemplate PrintAtomic pvars pbody)
+        case mode of
+          PrintDefault -> pure resNoParens
+          PrintAtomic -> pure $ blockParens resNoParens
       RLet _ mpt v f -> do
         -- I think this is right? We don't bind anything for the var part
         pv <- local (mapMaybe1 downL) $ go v
@@ -329,16 +370,10 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
         case mpt of
           Nothing -> do
             pf <- local (mapMaybe1 downR) $ go f
-            pure . align . group . vcat $
-              [ "let" <+> "_" <+> "=" <+> pv
-              , "in" <+> pf
-              ]
+            pure $ letTemplate mode "_" pv pf
           Just pt -> do
             (thisVar, pf) <- withBoundVar pt downR $ go f
-            pure . align . group . vcat $
-              [ "let" <+> thisVar <+> "=" <+> pv
-              , "in" <+> pf
-              ]
+            pure $ letTemplate mode thisVar pv pf
 
 {- | A 'Term' whose result has been forgotten. Useful mainly together with
 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of
