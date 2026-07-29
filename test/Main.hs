@@ -415,9 +415,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (peq @(PTheseMS PInteger PInteger))
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
