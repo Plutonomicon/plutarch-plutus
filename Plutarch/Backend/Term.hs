@@ -224,7 +224,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       RWS (Set (PosTree, Text)) () Integer r
     withVarMap vm act = do
       let posTrees = vmFold (\acc _ new -> Vector.snoc acc new) mempty vm
-      namedTrees <- Set.fromList . Vector.toList <$> Vector.mapM (\pt -> nextVarName Nothing >>= \nm -> pure (pt, nm)) posTrees
+      namedTrees <- Vector.foldM (\acc pt -> nextVarName Nothing >>= \nm -> pure $ Set.insert (pt, nm) acc) mempty posTrees
       local (namedTrees <>) act
 
     -- "Nothing" means "Free" (since we don't have a VarTag ctor for it)
