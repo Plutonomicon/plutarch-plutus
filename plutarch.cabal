@@ -243,3 +243,4 @@ test-suite tests
     , prettyprinter
     , tasty
     , tasty-hunit
+    , text

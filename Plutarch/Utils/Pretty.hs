@@ -6,7 +6,17 @@ module Plutarch.Utils.Pretty (
   taggedNode,
   prettyAnnotated,
   blockList,
+  customList,
   prettyUPLC,
+  oneLineList,
+  blockParens,
+  lambdaTemplate,
+  appTemplate,
+  caseTemplate,
+  ctorTemplate,
+  composeTemplate,
+  letTemplate,
+  PrintMode (PrintDefault, PrintAtomic),
 ) where
 
 import Control.Lens.Plated
@@ -15,8 +25,11 @@ import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Vector qualified as Vector
+import Data.Vector.NonEmpty (NonEmptyVector)
+import Data.Vector.NonEmpty qualified as NEVector
 import Data.Vector.Strict qualified as SV
-import PlutusCore.Default (DefaultUni (..), Esc)
+import Data.Word (Word64)
+import PlutusCore.Default (DefaultUni (..), Esc, Some (Some), ValueOf (ValueOf))
 import Prettyprinter (
   Doc,
   Pretty (pretty),
@@ -24,8 +37,10 @@ import Prettyprinter (
   angles,
   brackets,
   encloseSep,
+  flatAlt,
   group,
   hardline,
+  hcat,
   hsep,
   indent,
   list,
@@ -123,19 +138,53 @@ compactReadableVar n
 (<:=>) :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
 d1 <:=> d2 = d1 <+> ":=" <+> d2
 
--- first two args are the left and right block separator
+_customLine :: Doc ann
+_customLine = flatAlt hardline ""
+
+-- arg is a "tag" for the AST node type, next two two args are the left and right block separator
+block' :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann -> Doc ann
+block' lbl l' r d = group $ flatAlt multiLine oneLine
+  where
+    l :: Doc ann
+    l = l' <> lbl
+
+    multiLine :: Doc ann
+    multiLine = align $ l <> hardline <> indent 2 (align . group $ d) <> hardline <> r
+
+    oneLine :: Doc ann
+    oneLine = align $ l <> align d <> r
+
 block :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
-block l r d = align . group $ l <> hardline <> indent 2 (align d) <> hardline <> r
+block = block' ""
 
 -- This aligns the `[` and `]` at the same indentation level to make this easier to read
 blockList :: forall (ann :: Type). [Doc ann] -> Doc ann
 blockList = block "[" "]" . vcat . punctuate ", "
 
+customList :: forall (ann :: Type). [Doc ann] -> Doc ann
+customList = \case
+  [] -> "[]"
+  (x : xs) -> group $ flatAlt (go x xs) (oneLineList (x : xs))
+  where
+    go :: Doc ann -> [Doc ann] -> Doc ann
+    go headEl rest =
+      align . group $
+        "["
+          <+> headEl
+          <> hardline
+          <> foldr (\x acc -> "," <+> x <> hardline <> acc) "" rest
+          <> "]"
+
+oneLineList :: forall (ann :: Type). [Doc ann] -> Doc ann
+oneLineList = \case
+  [] -> "[]"
+  xs -> "[" <> hcat (punctuate ", " xs) <> "]"
+
 blockParens :: forall (ann :: Type). Doc ann -> Doc ann
 blockParens = block "(" ")"
 
-taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann
-taggedNode ann node = align . group $ block "<" ">" node <> "@" <> ann
+taggedNode :: forall (ann :: Type). Doc ann -> Doc ann -> Doc ann -> Doc ann
+taggedNode lbl ann node = block' lbl "<" ">" node <> "@" <> ann
 
 prettyAnnotated ::
   forall f a ann.
@@ -151,15 +200,164 @@ prettyAnnotated getAnn annHandler nodePrinter x = annHandler (pretty a) $ nodePr
     a = getAnn x
     childNodes = children x
 
+data PrintMode = PrintAtomic | PrintDefault
+
+lambdaTemplate :: forall (ann :: Type). PrintMode -> [Doc ann] -> Doc ann -> Doc ann
+lambdaTemplate mode vars body = case mode of
+  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
+  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  where
+    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+    cxt = "\\" <> hsep vars <+> "->"
+    mkMultiline l r =
+      align . group $
+        l
+          <> cxt
+          <> hardline
+          <> indent 2 body
+          <> myLine
+          <> r
+    oneLineNoParens = "\\" <> hsep vars <+> "->" <+> body
+
+-- | Don't pass an empty list into this
+appLike :: forall (ann :: Type). Doc ann -> PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
+appLike op mode funIsSmall funList = case mode of
+  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
+  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  where
+    fun :: Doc ann
+    args :: Vector.Vector (Doc ann)
+    (fun, args) = NEVector.uncons funList
+
+    myLine :: Doc ann
+    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+
+    myIndent :: Doc ann -> Doc ann
+    myIndent = case mode of
+      PrintAtomic -> indent 2
+      PrintDefault -> id
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
+    mkMultiline l r =
+      if funIsSmall
+        then
+          group $
+            l
+              <> fun
+              <> hardline
+              <> indent 2 (vcat (map (op <+>) $ Vector.toList args))
+              <> myLine
+              <> r
+        else
+          group $
+            l
+              <> myLine
+              <> myIndent (align . encloseSep "" "" (op <> " ") $ NEVector.toList funList)
+              <> myLine
+              <> r
+    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ Vector.toList args)
+
+appTemplate :: PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
+appTemplate = appLike "#"
+
+composeTemplate :: PrintMode -> NonEmptyVector (Doc ann) -> Doc ann
+composeTemplate mode = appLike "." mode False
+
+-- Var -> Binding -> Body -> Result
+letTemplate :: forall (ann :: Type). PrintMode -> Doc ann -> Doc ann -> Doc ann -> Doc ann
+letTemplate mode var bind body = case mode of
+  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
+  where
+    myLine :: Doc ann
+    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
+    mkMultiline l r =
+      align . group $
+        l
+          <> "let"
+          <+> var
+          <+> "="
+          <+> align (group bind)
+          <> hardline
+          <> "in"
+          <+> align (group body)
+          <> myLine
+          <> r
+
+    oneLineNoParens :: Doc ann
+    oneLineNoParens = "let" <+> var <+> "=" <+> bind <+> "in" <+> body
+
+caseTemplate :: forall (ann :: Type). PrintMode -> Bool -> Doc ann -> [Doc ann] -> Doc ann
+caseTemplate mode scrutIsSmall scrut handlers = case mode of
+  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
+  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  where
+    myLine :: Doc ann
+    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
+    mkMultiline l r =
+      if scrutIsSmall
+        then
+          align . group $
+            l
+              <> "case"
+              <+> scrut
+              <> hardline
+              <> indent 2 (customList handlers)
+              <> myLine
+              <> r
+        else
+          align . group $
+            l
+              <> "case"
+              <+> hardline
+              <> indent 2 (align . vcat $ [scrut, customList handlers])
+              <> myLine
+              <> r
+
+    oneLineNoParens :: Doc ann
+    oneLineNoParens = "case" <+> scrut <+> oneLineList handlers
+
+ctorTemplate :: forall (ann :: Type). PrintMode -> Word64 -> [Doc ann] -> Doc ann
+ctorTemplate mode cix args = case mode of
+  PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
+  PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
+  where
+    myLine :: Doc ann
+    myLine = case mode of PrintAtomic -> hardline; _ -> ""
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
+    mkMultiline l r =
+      align $
+        l
+          <> "constr"
+          <+> pretty cix
+          <> hardline
+          <> indent 2 (customList args)
+          <> myLine
+          <> r
+
+    oneLineNoParens :: Doc ann
+    oneLineNoParens = "constr" <+> pretty cix <+> oneLineList args
+
+-- Yes there are probably a bunch of superfluous `align`s, not worth the trouble to sort out which are safe to remove tho
 prettyUPLC :: forall ann. Term Name DefaultUni DefaultFun () -> Doc ann
-prettyUPLC pt = case takeBindable ([], pt) of
-  ([], rest) -> prettyNoBind rest
+prettyUPLC pt = case takeBindable ([], topLevelBody) of
+  ([], rest) -> case topLevelArgs of
+    [] -> prettyNoBind rest
+    _ -> lambdaTemplate PrintDefault topLevelArgs $ prettyNoBind rest
   (letBinds, rest) ->
     let pRest = "in" <+> prettyNoBind rest
-     in align . vsep . reverse $ (pRest : letBinds)
+        body = align . vsep . reverse $ (pRest : letBinds)
+     in lambdaTemplate PrintDefault topLevelArgs body
   where
+    (topLevelArgs, topLevelBody) = takeLamArgs ([], pt)
     -- if it's `arg` it came from Plutarch code and we just use the "compact pretty hash" as the visible name directly,
-    -- but if it's something else then it came from a blob of compiled UPLC and we need to make the text part visible
+    -- but if it's something else then it came from a blob of compiled UPLC OR has a semantically meaningful text part
+    -- so we need to make the text part visible
     prettyName :: Name -> Doc ann
     prettyName (Name txt (Unique u))
       | txt == "arg" = pretty . compactReadableVar . fromIntegral $ u
@@ -171,47 +369,47 @@ prettyUPLC pt = case takeBindable ([], pt) of
         let here = "let" <+> prettyName nm <+> "=" <+> align (prettyNoBind arg)
          in takeBindable (here : acc, body)
       other -> (acc, other)
+
     takeLamArgs :: ([Doc ann], Term Name DefaultUni DefaultFun ()) -> ([Doc ann], Term Name DefaultUni DefaultFun ())
     takeLamArgs (varAcc, next) = case next of
       LamAbs () nm body -> takeLamArgs (prettyName nm : varAcc, body)
       _ -> (reverse varAcc, next)
-    prettyNoBind :: Term Name DefaultUni DefaultFun () -> Doc ann
-    prettyNoBind = \case
+
+    go :: PrintMode -> Term Name DefaultUni DefaultFun () -> Doc ann
+    go mode = \case
       Var () nm -> prettyName nm
       LamAbs () nm _body ->
         let (vars, body) = takeLamArgs ([prettyName nm], _body)
-         in align . group $
-              "\\" <> hsep vars <+> "->" <> hardline <> indent 2 (prettyNoBind body)
+         in lambdaTemplate mode vars (prettyNoBind body)
       Apply () f arg ->
-        let fs = prettyAtomic <$> analyzeApp f
-         in align . group . encloseSep "" "" " # " $ (fs <> [prettyAtomic arg])
+        let funList = prettyAtomic <$> (analyzeApp f <> NEVector.singleton arg)
+         in align . group $ appTemplate mode (isAtom f) funList
       Force () inner -> "!" <> prettyAtomic inner
-      Delay () inner -> angles $ prettyAtomic inner
-      c@(Constant _ _) -> pretty c
-      Builtin _ b -> pretty b
+      Delay () inner -> angles $ prettyNoBind inner
+      Constant _ (Some (ValueOf uni x)) -> parens (prettyValueOf uni x)
+      Builtin _ b -> viaShow b
       Error {} -> "ERROR"
-      Constr () cix args -> "constr" <+> pretty cix <+> align (group $ list (prettyNoBind <$> args))
+      Constr () cix args -> ctorTemplate mode cix (prettyNoBind <$> args)
       Case () scrut handlers ->
-        group $
-          "case"
-            <+> blockParens (prettyNoBind scrut)
-            <+> hardline
-            <> align
-              ( group
-                  (indent 2 . blockList . fmap prettyNoBind . Vector.toList $ handlers)
-              )
+        caseTemplate mode (isAtom scrut) (prettyAtomic scrut) (prettyNoBind <$> Vector.toList handlers)
 
     prettyAtomic :: Term Name DefaultUni DefaultFun () -> Doc ann
-    prettyAtomic = \case
-      v@Var {} -> prettyNoBind v
-      c@Constant {} -> prettyNoBind c
-      e@Error {} -> prettyNoBind e
-      d@Delay {} -> prettyNoBind d
-      f@Force {} -> prettyNoBind f
-      b@Builtin {} -> prettyNoBind b
-      other -> blockParens . prettyNoBind $ other
+    prettyAtomic = go PrintAtomic
 
-    analyzeApp :: Term Name DefaultUni DefaultFun () -> [Term Name DefaultUni DefaultFun ()]
+    prettyNoBind :: Term Name DefaultUni DefaultFun () -> Doc ann
+    prettyNoBind = go PrintDefault
+
+    isAtom :: Term Name DefaultUni DefaultFun () -> Bool
+    isAtom = \case
+      Var {} -> True
+      Constant {} -> True
+      Error {} -> True
+      Delay _ inner -> isAtom inner
+      Force _ inner -> isAtom inner
+      Builtin {} -> True
+      _ -> False
+
+    analyzeApp :: Term Name DefaultUni DefaultFun () -> NonEmptyVector (Term Name DefaultUni DefaultFun ())
     analyzeApp = \case
-      Apply () f arg -> analyzeApp f <> [arg]
-      other -> [other]
+      Apply () f arg -> analyzeApp f <> NEVector.singleton arg
+      other -> NEVector.singleton other

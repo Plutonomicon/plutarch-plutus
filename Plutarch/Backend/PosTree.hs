@@ -99,6 +99,8 @@ data PosTree
       Show
     , -- | @since wip
       Eq
+    , -- | @since wip
+      Ord
     )
 
 -- | @since wip

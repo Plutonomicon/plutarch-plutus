@@ -5,6 +5,7 @@ module Main (main) where
 import Control.Monad.Except (runExceptT)
 import Control.Monad.RWS.CPS (runRWS)
 import Data.Kind (Type)
+import Data.Text qualified as T
 import Data.Vector.NonEmpty qualified as NEVector
 import Plutarch.Backend.ANF (
   ANF (ANF),
@@ -51,9 +52,11 @@ import Plutarch.Primitive.BuiltinFun (
 import Plutarch.Primitive.ByteString (PByteString)
 import Plutarch.Primitive.Eq (peq)
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
+import Plutarch.Primitive.String (PString)
 import PlutusCore qualified as PLC
 import Prettyprinter (
   Pretty (pretty),
@@ -237,7 +240,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case9
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -256,8 +259,8 @@ main =
           (_, Left err) -> assertFailure $ "Compile error: " <> show err
           (Right (_, tla), Right (_, tra)) -> do
             step "Successfully compiled!"
-            step $ "RawTerm (left associative):\n" <> ppShow tla
-            step $ "RawTerm (right associative):\n" <> ppShow tra
+            step $ "RawTerm (left associative):\n" <> toPrettyString case10
+            step $ "RawTerm (right associative):\n" <> toPrettyString case11
             step "2. Are both RawTerms the same?"
             assertEqual "RawTerms differ" tla tra
             step "RawTerms are the same!"
@@ -289,7 +292,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case12
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -306,7 +309,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case13
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -323,7 +326,7 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString case14
             let asAST = fromRawTerm t
             let anf = fromHashedAST asAST
             step $ toPrettyString anf
@@ -336,9 +339,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (ppowNatural @PInteger)
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
@@ -356,9 +359,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (pgcd @PInteger)
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
@@ -376,9 +379,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (peq @(PThese PInteger PInteger))
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
@@ -396,9 +399,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (peq @(PEither PInteger PByteString))
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
@@ -415,9 +418,9 @@ main =
           Left err -> assertFailure $ "Compile error: " <> show err
           Right (_, t) -> do
             step "Successfully compiled!"
-            step $ "RawTerm:\n" <> ppShow t
+            step $ "RawTerm:\n" <> toPrettyString (peq @(PTheseMS PInteger PInteger))
             let asAST = fromRawTerm t
-            step $ "AST:\n" <> ppShow asAST
+            step $ "AST:\n" <> toPrettyString asAST
             let anf = fromHashedAST asAST
             step "ANF, no demand analysis"
             step $ toPrettyString anf
@@ -427,6 +430,18 @@ main =
             let t = toUPLCTerm anf'
             step $ "UPLC:\n" <> toPrettyString t
             pure ()
+    , testCaseSteps "Case 20 (for reviewing manually)" $ \step -> do
+        let testTerm :: forall (s :: S). Term s ((PBool :--> PBool) :--> PBool :--> PString)
+            testTerm = plam' $ \f -> plam' $ \x ->
+              let lol = toPrettyString (f # x)
+               in pconstant (T.pack . show $ lol)
+            compiled = compileTerm testTerm
+        step $ "RawTerm:\n" <> toPrettyString testTerm
+        case compiled of
+          Left err -> assertFailure $ "Somehow case 20 didn't compile. That shouldn't happen. Here's why it failed: " <> show err
+          Right (_, t) -> do
+            let res = toUPLCTerm . analyzeDemand . fromHashedAST . fromRawTerm $ t
+            step $ "UPLC:\n" <> toPrettyString res
     ]
 
 -- Cases
