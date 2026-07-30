@@ -69,6 +69,8 @@ import Data.Can (Can (Eno, Non, One, Two))
 import Data.Kind (Type)
 import Data.List (find)
 import Data.Map.Merge.Strict (WhenMatched, zipWithAMatched)
+import Data.Set (Set)
+import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.These (These (That, These, This))
 import Data.These.Combinators (justHere, justThere)
@@ -212,17 +214,20 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
     Right (varMap, term) -> case runRWS (withVarMap varMap $ go term) mempty 0 of
       (res', _, _) -> res'
   where
+    mapMaybeSet :: forall (a :: Type). Ord a => (a -> Maybe a) -> Set a -> Set a
+    mapMaybeSet f = Set.foldl' (\acc x -> case f x of Just y -> Set.insert y acc; _ -> acc) mempty
+
     withVarMap ::
       forall (r :: Type).
       VarMap ->
-      RWS (Vector (PosTree, Text)) () Integer r ->
-      RWS (Vector (PosTree, Text)) () Integer r
+      RWS (Set (PosTree, Text)) () Integer r ->
+      RWS (Set (PosTree, Text)) () Integer r
     withVarMap vm act = do
       let posTrees = vmFold (\acc _ new -> Vector.snoc acc new) mempty vm
-      namedTrees <- Vector.mapM (\pt -> nextVarName >>= \nm -> pure (pt, nm)) posTrees
+      namedTrees <- Set.fromList . Vector.toList <$> Vector.mapM (\pt -> nextVarName >>= \nm -> pure (pt, nm)) posTrees
       local (namedTrees <>) act
 
-    nextVarName :: RWS (Vector (PosTree, Text)) () Integer Text
+    nextVarName :: RWS (Set (PosTree, Text)) () Integer Text
     nextVarName = do
       s <- gets compactReadableVar
       modify' (+ 1)
@@ -232,22 +237,22 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       forall (a :: Type).
       PosTree ->
       (PosTree -> Maybe PosTree) ->
-      RWS (Vector (PosTree, Text)) () Integer a ->
-      RWS (Vector (PosTree, Text)) () Integer (Doc ann, a)
+      RWS (Set (PosTree, Text)) () Integer a ->
+      RWS (Set (PosTree, Text)) () Integer (Doc ann, a)
     withBoundVar pt localF cont = do
       varName <- nextVarName
       let pVar = pretty varName
-      (pVar,) <$> local (Vector.cons (pt, varName) . mapMaybe1 localF) cont
+      (pVar,) <$> local (Set.insert (pt, varName) . mapMaybe1 localF) cont
 
-    resolveThisVar :: RWS (Vector (PosTree, Text)) () Integer (Doc ann)
+    resolveThisVar :: RWS (Set (PosTree, Text)) () Integer (Doc ann)
     resolveThisVar = do
       pts <- ask
       case snd <$> find (\x -> fst x == PHere) pts of
         Nothing -> error "free variable in Term, this should be impossible (also: Implement better error handling in prettyTerm)"
         Just thisVar -> pure (pretty thisVar)
 
-    mapMaybe1 :: forall c d. (c -> Maybe c) -> Vector (c, d) -> Vector (c, d)
-    mapMaybe1 f = Vector.mapMaybe (\(x, y) -> (,) <$> f x <*> pure y)
+    mapMaybe1 :: forall (c :: Type) (d :: Type). (Ord c, Ord d) => (c -> Maybe c) -> Set (c, d) -> Set (c, d)
+    mapMaybe1 f = mapMaybeSet (\(x, y) -> (,) <$> f x <*> pure y)
 
     downL :: PosTree -> Maybe PosTree
     downL = \case
@@ -294,7 +299,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       [Doc ann] ->
       Maybe PosTree ->
       RawTerm () ->
-      RWS (Vector (PosTree, Text)) () Integer ([Doc ann], Doc ann)
+      RWS (Set (PosTree, Text)) () Integer ([Doc ann], Doc ann)
     goLambda acc mpt = \case
       RLamAbs _ cMPT cBody -> case mpt of
         Nothing -> do
@@ -311,7 +316,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
           (thisVar, body) <- withBoundVar pt downOne $ go otherBody
           pure (reverse (thisVar : acc), body)
 
-    goApp :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (NonEmptyVector (Doc ann))
+    goApp :: RawTerm () -> RWS (Set (PosTree, Text)) () Integer (NonEmptyVector (Doc ann))
     goApp = \case
       RApply _ f arg -> do
         xs <- local (mapMaybe1 downL) $ goApp f
@@ -321,13 +326,13 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
         res <- goAtomic other
         pure . NEVector.singleton $ res
 
-    go :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
+    go :: RawTerm () -> RWS (Set (PosTree, Text)) () Integer (Doc ann)
     go = go' PrintDefault
 
-    goAtomic :: RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
+    goAtomic :: RawTerm () -> RWS (Set (PosTree, Text)) () Integer (Doc ann)
     goAtomic = go' PrintAtomic
 
-    go' :: PrintMode -> RawTerm () -> RWS (Vector (PosTree, Text)) () Integer (Doc ann)
+    go' :: PrintMode -> RawTerm () -> RWS (Set (PosTree, Text)) () Integer (Doc ann)
     go' mode = \case
       RVar _ _ -> resolveThisVar
       RLamAbs _ mpt body -> do

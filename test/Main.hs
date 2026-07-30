@@ -430,7 +430,7 @@ main =
             let t = toUPLCTerm anf'
             step $ "UPLC:\n" <> toPrettyString t
             pure ()
-    , testCaseSteps "Case 20 (not a real test, always passes)" $ \step -> do
+    , testCaseSteps "Case 20 (for reviewing manually)" $ \step -> do
         let testTerm :: forall (s :: S). Term s ((PBool :--> PBool) :--> PBool :--> PString)
             testTerm = plam' $ \f -> plam' $ \x ->
               let lol = toPrettyString (f # x)

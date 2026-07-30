@@ -21,7 +21,6 @@ module Plutarch.Utils.Pretty (
 
 import Control.Lens.Plated
 import Data.ByteString ()
-import Data.Foldable (toList)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -168,7 +167,13 @@ customList = \case
   (x : xs) -> group $ flatAlt (go x xs) (oneLineList (x : xs))
   where
     go :: Doc ann -> [Doc ann] -> Doc ann
-    go headEl rest = align . group . vcat $ ["[" <+> headEl] <> map ("," <+>) rest <> ["]"]
+    go headEl rest =
+      align . group $
+        "["
+          <+> headEl
+          <> hardline
+          <> foldr (\x acc -> "," <+> x <> hardline <> acc) "" rest
+          <> "]"
 
 oneLineList :: forall (ann :: Type). [Doc ann] -> Doc ann
 oneLineList = \case
@@ -216,30 +221,41 @@ lambdaTemplate mode vars body = case mode of
 
 -- | Don't pass an empty list into this
 appLike :: forall (ann :: Type). Doc ann -> PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
-appLike op mode funIsSmall funList@(NEVector.uncons -> (fun, args)) = case mode of
+appLike op mode funIsSmall funList = case mode of
   PrintAtomic -> align . group $ flatAlt (mkMultiline "(" ")") (parens oneLineNoParens)
   PrintDefault -> align . group $ flatAlt (mkMultiline "" "") oneLineNoParens
   where
+    fun :: Doc ann
+    args :: Vector.Vector (Doc ann)
+    (fun, args) = NEVector.uncons funList
+
+    myLine :: Doc ann
     myLine = case mode of PrintAtomic -> hardline; _ -> ""
-    -- this is the "small" variant
+
+    myIndent :: Doc ann -> Doc ann
+    myIndent = case mode of
+      PrintAtomic -> indent 2
+      PrintDefault -> id
+
+    mkMultiline :: Doc ann -> Doc ann -> Doc ann
     mkMultiline l r =
       if funIsSmall
         then
-          align . group $
+          group $
             l
-              <+> fun
+              <> fun
               <> hardline
-              <> indent 2 (vcat (map (op <+>) $ toList args))
+              <> indent 2 (vcat (map (op <+>) $ Vector.toList args))
               <> myLine
               <> r
         else
-          align . group $
+          group $
             l
-              <+> myLine
-              <> indent 2 (align . encloseSep "" "" (op <> " ") $ toList funList)
+              <> myLine
+              <> myIndent (align . encloseSep "" "" (op <> " ") $ NEVector.toList funList)
               <> myLine
               <> r
-    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ toList args)
+    oneLineNoParens = fun <> hcat (map ((" " <> op <> " ") <>) $ Vector.toList args)
 
 appTemplate :: PrintMode -> Bool -> NonEmptyVector (Doc ann) -> Doc ann
 appTemplate = appLike "#"
