@@ -4,6 +4,7 @@ module Plutarch.Numeric.Field (
   PDistributive (..),
   PSemiring (..),
   PRing (..),
+  PField (..),
 ) where
 
 import Data.Kind (Type)
@@ -14,7 +15,9 @@ import Plutarch.Numeric.Additive (
   PAdditiveMonoid,
   PAdditiveSemigroup,
  )
+import Plutarch.Numeric.Euclidean (PEuclidean)
 import Plutarch.Numeric.Multiplicative (PMultiplicativeMonoid)
+import Plutarch.Numeric.Zeroable (PNonZero)
 import Plutarch.Primitive.Apply (pcoerce)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger, PNatural, PPositive)
@@ -71,3 +74,16 @@ class (PSemiring a, PAdditiveGroup a) => PRing (a :: S -> Type) where
 -- | @since wip
 instance PRing PInteger where
   pfromInteger = plam' id
+
+{- | = Laws
+
+1. @'precip' '#$' 'precip' '#' x@ @=@ @x@
+2. @x '#*' ('precip' '#' y)@ @=@ @'pdiv' '#' x '#' y@
+3. @'precip' '#' 'pone'@ @=@ @'pone'@
+4. @'ptoNonZero' z f ('pmod' '#' x '#' y)@ @=@ @z@
+5. @'pdiv' '#' pone '#' y@ @=@ @'precip' '#' y@
+
+@since wip
+-}
+class PEuclidean a => PField (a :: S -> Type) where
+  precip :: Term s (PNonZero a :--> PNonZero a)
