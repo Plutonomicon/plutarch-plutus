@@ -224,23 +224,30 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       RWS (Set (PosTree, Text)) () Integer r
     withVarMap vm act = do
       let posTrees = vmFold (\acc _ new -> Vector.snoc acc new) mempty vm
-      namedTrees <- Set.fromList . Vector.toList <$> Vector.mapM (\pt -> nextVarName >>= \nm -> pure (pt, nm)) posTrees
+      namedTrees <- Set.fromList . Vector.toList <$> Vector.mapM (\pt -> nextVarName Nothing >>= \nm -> pure (pt, nm)) posTrees
       local (namedTrees <>) act
 
-    nextVarName :: RWS (Set (PosTree, Text)) () Integer Text
-    nextVarName = do
+    -- "Nothing" means "Free" (since we don't have a VarTag ctor for it)
+    nextVarName :: Maybe VarTag -> RWS (Set (PosTree, Text)) () Integer Text
+    nextVarName vt = do
       s <- gets compactReadableVar
       modify' (+ 1)
-      pure s
+      let suffix = case vt of
+            Nothing -> "_free"
+            Just tag -> case tag of
+              Argument -> ""
+              LetBinding -> "_letBound"
+              Self -> "_self"
+      pure (s <> suffix)
 
     withBoundVar ::
       forall (a :: Type).
-      PosTree ->
+      (VarTag, PosTree) ->
       (PosTree -> Maybe PosTree) ->
       RWS (Set (PosTree, Text)) () Integer a ->
       RWS (Set (PosTree, Text)) () Integer (Doc ann, a)
-    withBoundVar pt localF cont = do
-      varName <- nextVarName
+    withBoundVar (vt, pt) localF cont = do
+      varName <- nextVarName (Just vt)
       let pVar = pretty varName
       (pVar,) <$> local (Set.insert (pt, varName) . mapMaybe1 localF) cont
 
@@ -295,13 +302,16 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
       RForce _ inner -> isSmall inner
       _ -> False
 
+    tagArg :: Maybe PosTree -> Maybe (VarTag, PosTree)
+    tagArg = fmap (Argument,)
+
     goLambda ::
       [Doc ann] ->
-      Maybe PosTree ->
+      Maybe (VarTag, PosTree) ->
       RawTerm () ->
       RWS (Set (PosTree, Text)) () Integer ([Doc ann], Doc ann)
     goLambda acc mpt = \case
-      RLamAbs _ cMPT cBody -> case mpt of
+      RLamAbs _ (tagArg -> cMPT) cBody -> case mpt of
         Nothing -> do
           (innerVars, innerBody) <- local (mapMaybe1 downOne) $ goLambda acc cMPT cBody
           pure ("_" : innerVars, innerBody)
@@ -336,7 +346,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
     go' mode = \case
       RVar _ _ -> resolveThisVar
       RLamAbs _ mpt body -> do
-        (pvars, body) <- goLambda [] mpt body
+        (pvars, body) <- goLambda [] (tagArg mpt) body
         pure $ lambdaTemplate mode pvars body
       RForce _ inner -> do
         pinner <- local (mapMaybe1 downOne) $ goAtomic inner
@@ -368,7 +378,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
         pcomponents <- NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . goAtomic) components
         pure $ composeTemplate mode pcomponents
       RFix _ pt body -> do
-        (pvars, pbody) <- goLambda [] (Just pt) body
+        (pvars, pbody) <- goLambda [] (Just (Self, pt)) body
         let resNoParens = "fix" <+> align (lambdaTemplate PrintAtomic pvars pbody)
         case mode of
           PrintDefault -> pure resNoParens
@@ -381,7 +391,7 @@ prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
             pf <- local (mapMaybe1 downR) $ go f
             pure $ letTemplate mode "_" pv pf
           Just pt -> do
-            (thisVar, pf) <- withBoundVar pt downR $ go f
+            (thisVar, pf) <- withBoundVar (LetBinding, pt) downR $ go f
             pure $ letTemplate mode thisVar pv pf
 
 {- | A 'Term' whose result has been forgotten. Useful mainly together with
