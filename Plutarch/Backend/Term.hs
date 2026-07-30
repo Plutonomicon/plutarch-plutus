@@ -48,6 +48,7 @@ module Plutarch.Backend.Term (
   punsafeCompiled,
 ) where
 
+import Control.Monad (join)
 import Control.Monad.Except (
   ExceptT,
   MonadError,
@@ -55,17 +56,24 @@ import Control.Monad.Except (
   throwError,
  )
 import Control.Monad.RWS.CPS (
+  MonadReader (..),
   MonadState,
   RWS,
   get,
+  gets,
   modify,
+  modify',
   runRWS,
  )
 import Data.Can (Can (Eno, Non, One, Two))
 import Data.Kind (Type)
+import Data.List (find)
 import Data.Map.Merge.Strict (WhenMatched, zipWithAMatched)
+import Data.Set (Set)
+import Data.Set qualified as Set
 import Data.Text (Text)
 import Data.These (These (That, These, This))
+import Data.These.Combinators (justHere, justThere)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
@@ -111,13 +119,17 @@ import Plutarch.Backend.VarMap (
   VarMap,
   vmDelete,
   vmEmpty,
+  vmFold,
   vmMap,
   vmMergeM,
   vmSingleton,
  )
 import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Utils.Pretty (PrintMode (PrintAtomic, PrintDefault), appTemplate, blockParens, caseTemplate, compactReadableVar, composeTemplate, ctorTemplate, lambdaTemplate, letTemplate, prettyValueOf)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
+import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, group, viaShow, (<+>))
+import Universe (Some (Some), ValueOf (ValueOf))
 
 {- | A configuration environment for 'Term's and their compilation. Currently
 unused.
@@ -191,6 +203,196 @@ newtype Term (s :: S) (a :: S -> Type)
   = Term {asRawTerm :: ExceptT TermError (RWS TermEnv () Word64) (VarMap, RawTerm ())}
 
 type role Term nominal representational
+
+instance Pretty (Term s a) where
+  pretty = prettyTerm
+
+prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc ann
+prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
+  (res, _, _) -> case res of
+    Left e -> "Encountered an error when attempting to pretty print a term: " <> pretty (show e)
+    Right (varMap, term) -> case runRWS (withVarMap varMap $ go term) mempty 0 of
+      (res', _, _) -> res'
+  where
+    mapMaybeSet :: forall (a :: Type). Ord a => (a -> Maybe a) -> Set a -> Set a
+    mapMaybeSet f = Set.foldl' (\acc x -> case f x of Just y -> Set.insert y acc; _ -> acc) mempty
+
+    withVarMap ::
+      forall (r :: Type).
+      VarMap ->
+      RWS (Set (PosTree, Text)) () Integer r ->
+      RWS (Set (PosTree, Text)) () Integer r
+    withVarMap vm act = do
+      let posTrees = vmFold (\acc _ new -> Vector.snoc acc new) mempty vm
+      namedTrees <- Vector.foldM (\acc pt -> nextVarName Nothing >>= \nm -> pure $ Set.insert (pt, nm) acc) mempty posTrees
+      local (namedTrees <>) act
+
+    -- "Nothing" means "Free" (since we don't have a VarTag ctor for it)
+    nextVarName :: Maybe VarTag -> RWS (Set (PosTree, Text)) () Integer Text
+    nextVarName vt = do
+      s <- gets compactReadableVar
+      modify' (+ 1)
+      let suffix = case vt of
+            Nothing -> "_free"
+            Just tag -> case tag of
+              Argument -> ""
+              LetBinding -> "_letBound"
+              Self -> "_self"
+      pure (s <> suffix)
+
+    withBoundVar ::
+      forall (a :: Type).
+      (VarTag, PosTree) ->
+      (PosTree -> Maybe PosTree) ->
+      RWS (Set (PosTree, Text)) () Integer a ->
+      RWS (Set (PosTree, Text)) () Integer (Doc ann, a)
+    withBoundVar (vt, pt) localF cont = do
+      varName <- nextVarName (Just vt)
+      let pVar = pretty varName
+      (pVar,) <$> local (Set.insert (pt, varName) . mapMaybe1 localF) cont
+
+    resolveThisVar :: RWS (Set (PosTree, Text)) () Integer (Doc ann)
+    resolveThisVar = do
+      pts <- ask
+      case snd <$> find (\x -> fst x == PHere) pts of
+        Nothing -> error "free variable in Term, this should be impossible (also: Implement better error handling in prettyTerm)"
+        Just thisVar -> pure (pretty thisVar)
+
+    mapMaybe1 :: forall (c :: Type) (d :: Type). (Ord c, Ord d) => (c -> Maybe c) -> Set (c, d) -> Set (c, d)
+    mapMaybe1 f = mapMaybeSet (\(x, y) -> (,) <$> f x <*> pure y)
+
+    downL :: PosTree -> Maybe PosTree
+    downL = \case
+      PTwo xs -> justHere xs
+      _ -> Nothing
+
+    downR :: PosTree -> Maybe PosTree
+    downR = \case
+      PTwo xs -> justThere xs
+      _ -> Nothing
+
+    downOne :: PosTree -> Maybe PosTree
+    downOne = \case (POne x) -> Just x; _ -> Nothing
+
+    downScrut :: PosTree -> Maybe PosTree
+    downScrut = \case (PCase pscrut _) -> pscrut; _ -> Nothing
+
+    downHandler :: Int -> PosTree -> Maybe PosTree
+    downHandler n = \case
+      PCase _ handlers -> join $ handlers NEVector.!? n
+      _ -> Nothing
+
+    downMany :: Int -> PosTree -> Maybe PosTree
+    downMany n = \case
+      PMany xs -> join $ xs Vector.!? n
+      _ -> Nothing
+
+    downCompose :: Int -> PosTree -> Maybe PosTree
+    downCompose n = \case
+      PCompose xs -> join $ xs NEVector.!? n
+      _ -> Nothing
+
+    isSmall :: RawTerm () -> Bool
+    isSmall = \case
+      RVar {} -> True
+      RConstant {} -> True
+      RError {} -> True
+      RBuiltin {} -> True
+      RDelay _ inner -> isSmall inner
+      RForce _ inner -> isSmall inner
+      _ -> False
+
+    tagArg :: Maybe PosTree -> Maybe (VarTag, PosTree)
+    tagArg = fmap (Argument,)
+
+    goLambda ::
+      [Doc ann] ->
+      Maybe (VarTag, PosTree) ->
+      RawTerm () ->
+      RWS (Set (PosTree, Text)) () Integer ([Doc ann], Doc ann)
+    goLambda acc mpt = \case
+      RLamAbs _ (tagArg -> cMPT) cBody -> case mpt of
+        Nothing -> do
+          (innerVars, innerBody) <- local (mapMaybe1 downOne) $ goLambda acc cMPT cBody
+          pure ("_" : innerVars, innerBody)
+        Just pt -> do
+          (thisVar, (thoseVars, body)) <- withBoundVar pt downOne $ goLambda acc cMPT cBody
+          pure (thisVar : thoseVars, body)
+      otherBody -> case mpt of
+        Nothing -> do
+          innerBody <- local (mapMaybe1 downOne) $ go otherBody
+          pure (reverse ("_" : acc), innerBody)
+        Just pt -> do
+          (thisVar, body) <- withBoundVar pt downOne $ go otherBody
+          pure (reverse (thisVar : acc), body)
+
+    goApp :: RawTerm () -> RWS (Set (PosTree, Text)) () Integer (NonEmptyVector (Doc ann))
+    goApp = \case
+      RApply _ f arg -> do
+        xs <- local (mapMaybe1 downL) $ goApp f
+        parg <- local (mapMaybe1 downR) $ goAtomic arg
+        pure $ xs <> NEVector.singleton parg
+      other -> do
+        res <- goAtomic other
+        pure . NEVector.singleton $ res
+
+    go :: RawTerm () -> RWS (Set (PosTree, Text)) () Integer (Doc ann)
+    go = go' PrintDefault
+
+    goAtomic :: RawTerm () -> RWS (Set (PosTree, Text)) () Integer (Doc ann)
+    goAtomic = go' PrintAtomic
+
+    go' :: PrintMode -> RawTerm () -> RWS (Set (PosTree, Text)) () Integer (Doc ann)
+    go' mode = \case
+      RVar _ _ -> resolveThisVar
+      RLamAbs _ mpt body -> do
+        (pvars, body) <- goLambda [] (tagArg mpt) body
+        pure $ lambdaTemplate mode pvars body
+      RForce _ inner -> do
+        pinner <- local (mapMaybe1 downOne) $ goAtomic inner
+        pure $ "!" <> pinner
+      RDelay _ inner -> do
+        pinner <- local (mapMaybe1 downOne) $ goAtomic inner
+        pure $ angles pinner
+      app@(RApply _ f _) -> do
+        pfunList <- goApp app
+        pure $ appTemplate mode (isSmall f) pfunList
+      RConstant _ (Some (ValueOf uni x)) ->
+        pure $ prettyValueOf uni x
+      RBuiltin _ bif ->
+        pure $ viaShow bif
+      RCompiled _ uplc ->
+        pure . align . group $ "COMPILED" <> braces (pretty uplc)
+      RError _ ->
+        pure "ERROR"
+      RPlaceholder _ i ->
+        pure $ "$PLACEHOLDER" <> brackets (pretty i)
+      RCase _ scrut handlers -> do
+        pscrut <- local (mapMaybe1 downScrut) $ goAtomic scrut
+        phandlers <- NEVector.toList <$> NEVector.imapM (\i -> local (mapMaybe1 (downHandler i)) . go) handlers
+        pure $ caseTemplate mode (isSmall scrut) pscrut phandlers
+      RConstr _ cix args -> do
+        pargs <- Vector.toList <$> Vector.imapM (\i arg -> local (mapMaybe1 (downMany i)) $ go arg) args
+        pure $ ctorTemplate mode cix pargs
+      RCompose _ components -> do
+        pcomponents <- NEVector.imapM (\i -> local (mapMaybe1 (downCompose i)) . goAtomic) components
+        pure $ composeTemplate mode pcomponents
+      RFix _ pt body -> do
+        (pvars, pbody) <- goLambda [] (Just (Self, pt)) body
+        let resNoParens = "fix" <+> align (lambdaTemplate PrintAtomic pvars pbody)
+        case mode of
+          PrintDefault -> pure resNoParens
+          PrintAtomic -> pure $ blockParens resNoParens
+      RLet _ mpt v f -> do
+        -- I think this is right? We don't bind anything for the var part
+        pv <- local (mapMaybe1 downL) $ go v
+        case mpt of
+          Nothing -> do
+            pf <- local (mapMaybe1 downR) $ go f
+            pure $ letTemplate mode "_" pv pf
+          Just pt -> do
+            (thisVar, pf) <- withBoundVar (LetBinding, pt) downR $ go f
+            pure $ letTemplate mode thisVar pv pf
 
 {- | A 'Term' whose result has been forgotten. Useful mainly together with
 'punsafeCase' and 'punsafeConstr', as it allows fields and handlers of
