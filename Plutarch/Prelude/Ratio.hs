@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Plutarch.Prelude.Rational (
+module Plutarch.Prelude.Ratio (
   -- * Type
   PRatio (PRatio),
 ) where
