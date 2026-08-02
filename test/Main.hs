@@ -2,112 +2,20 @@
 
 module Main (main) where
 
-import Control.Monad.Except (runExceptT)
-import Control.Monad.RWS.CPS (runRWS)
-import Data.Kind (Type)
-import Data.Text qualified as T
-import Data.Vector.NonEmpty qualified as NEVector
-import Plutarch.Backend.ANF (
-  ANF (ANF),
-  ANFBind (ANFLam),
-  analyzeDemand,
-  fromHashedAST,
- )
-import Plutarch.Backend.AST (
-  fromRawTerm,
- )
-import Plutarch.Backend.Compile (toUPLCTerm)
-import Plutarch.Backend.RawTerm (RawTerm (RLamAbs))
-import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  Term (asRawTerm),
-  TermEnv (TermEnv),
-  TermError,
-  pcompiled,
-  pcompose,
-  pdelay,
-  perror,
-  pforce,
-  plam',
-  punsafeCase,
-  punsafeConstant,
-  punsafeConstr,
-  toSomeTerm,
- )
-import Plutarch.Backend.VarMap (VarMap, vmEmpty)
-import Plutarch.Numeric.Euclidean (pgcd)
-import Plutarch.Numeric.Multiplicative (ppowNatural)
-import Plutarch.Primitive.Apply ((#), (#$))
-import Plutarch.Primitive.Bool (
-  PBool,
-  pif,
-  pnot,
-  por,
- )
-import Plutarch.Primitive.BuiltinFun (
-  paddInteger,
-  pmultiplyInteger,
-  psubtractInteger,
- )
-import Plutarch.Primitive.ByteString (PByteString)
-import Plutarch.Primitive.Eq (peq)
-import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Primitive.Liftable (pconstant)
-import Plutarch.Primitive.List (PBList)
-import Plutarch.Primitive.Numeric (PInteger)
-import Plutarch.Primitive.Pair (PBPair)
-import Plutarch.Primitive.String (PString)
-import PlutusCore qualified as PLC
-import Prettyprinter (
-  Pretty (pretty),
-  defaultLayoutOptions,
-  layoutSmart,
- )
-import Prettyprinter.Render.String (renderString)
-import TH.MS (PTheseMS)
-import TH.SOP (PEither, PThese)
+import Term qualified
 import Test.Tasty (defaultMain, testGroup)
-import Test.Tasty.HUnit (
-  assertBool,
-  assertEqual,
-  assertFailure,
-  testCaseSteps,
- )
-import Text.Show.Pretty (ppShow)
 
 main :: IO ()
 main =
+  defaultMain . testGroup "Goldens" $
+    [ Term.goldens
+    ]
+
+{-
+main :: IO ()
+main =
   defaultMain . testGroup "Term" $
-    [ testCaseSteps "Case 1" $ \step -> do
-        step "Case: \\x -> (\\y -> y) ((\\z -> z) x)"
-        step "1. Does Case 1 compile?"
-        let compiled = compileTerm case1
-        case compiled of
-          Left err -> assertFailure $ "Compile error: " <> show err
-          Right (vm, t) -> do
-            step "Successfully compiled!"
-            step "2. Is our VarMap empty?"
-            assertBool "VarMap is not empty" (vm == vmEmpty)
-            step "VarMap is empty!"
-            step "3. Is the top node RLamAbs?"
-            case t of
-              RLamAbs {} -> do
-                step $ "Top node: \n" <> ppShow t
-                step "Converting to AST"
-                let asAST = fromRawTerm t
-                step $ "AST: \n" <> toPrettyString asAST
-                step "Converting to ANF"
-                let anf = fromHashedAST asAST
-                step $ toPrettyString anf
-                step "Demand analysis"
-                let anf' = analyzeDemand anf
-                step $ toPrettyString anf'
-                step "Converting to UPLC"
-                let t = toUPLCTerm anf'
-                step $ "UPLC:\n" <> toPrettyString t
-                pure ()
-              _ -> assertFailure $ "Unexpected top node: \n" <> ppShow t
-    , testCaseSteps "Case 2" $ \step -> do
+    [ testCaseSteps "Case 2" $ \step -> do
         step "Case: \\x -> force (delay x)"
         step "1. Does Case 2 compile?"
         let compiled = compileTerm case2
@@ -446,14 +354,6 @@ main =
 
 -- Cases
 
--- Case 1: \x -> (\y -> y) ((\z -> z) x)
-case1 :: forall (s :: S). Term s (PInteger :--> PInteger)
-case1 = plam' $ \x -> plam' id # (plam' id # x)
-
--- Case 2: \x -> force (delay x)
-case2 :: forall (a :: S -> Type) (s :: S). Term s (a :--> a)
-case2 = plam' $ \x -> pforce (pdelay x)
-
 -- Case 3: \x y -> por (pnot x) y
 case3 :: forall (s :: S). Term s (PBool :--> PBool :--> PBool)
 case3 = plam' $ \x -> plam' $ \y -> por (pnot x) y
@@ -539,4 +439,4 @@ compileTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
   (res, _, _) -> res
 
 toPrettyString :: forall a. Pretty a => a -> String
-toPrettyString = renderString . layoutSmart defaultLayoutOptions . pretty
+toPrettyString = renderString . layoutSmart defaultLayoutOptions . pretty -}

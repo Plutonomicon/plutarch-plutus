@@ -179,6 +179,7 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.Test.Golden
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
     Plutarch.TH.Enum
@@ -198,6 +199,7 @@ library
     , constraints
     , containers
     , data-default
+    , filepath
     , generics-sop
     , hashable
     , indexed-traversable
@@ -215,6 +217,8 @@ library
     , semialign
     , smash
     , sop-core
+    , tasty
+    , tasty-golden
     , template-haskell
     , text
     , these
@@ -227,6 +231,7 @@ test-suite tests
   ghc-options:    -threaded -rtsopts -with-rtsopts=-N
   main-is:        Main.hs
   other-modules:
+    Term
     TH.Data
     TH.Enum
     TH.MS
@@ -234,12 +239,5 @@ test-suite tests
 
   hs-source-dirs: test
   build-depends:
-    , mtl
-    , nonempty-vector
     , plutarch
-    , plutus-core
-    , pretty-show
-    , prettyprinter
     , tasty
-    , tasty-hunit
-    , text
