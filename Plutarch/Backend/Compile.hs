@@ -82,6 +82,7 @@ import Plutarch.Backend.UPLC (
   uplcMCombinator,
   uplcVar,
  )
+import Plutarch.Helpers.Backend (getFresh)
 import PlutusCore qualified as PLC
 
 {- | Given an ANF, compile it into UPLC. This compilation also applies automatic
@@ -295,12 +296,6 @@ untilM act cond = do
   res <- act
   stop <- cond res
   if stop then pure res else untilM act cond
-
-getFresh :: RWS (Set Int) () Int Int
-getFresh = do
-  fresh <- get
-  modify (+ 1)
-  pure fresh
 
 mkName :: Text -> Int -> PLC.Name
 mkName t = PLC.Name t . PLC.Unique

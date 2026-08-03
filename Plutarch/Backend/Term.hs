@@ -57,11 +57,8 @@ import Control.Monad.Except (
  )
 import Control.Monad.RWS.CPS (
   MonadReader (..),
-  MonadState,
   RWS,
-  get,
   gets,
-  modify,
   modify',
   runRWS,
  )
@@ -124,6 +121,7 @@ import Plutarch.Backend.VarMap (
   vmMergeM,
   vmSingleton,
  )
+import Plutarch.Helpers.Backend (getFresh)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Utils.Pretty (PrintMode (PrintAtomic, PrintDefault), appTemplate, blockParens, caseTemplate, compactReadableVar, composeTemplate, ctorTemplate, lambdaTemplate, letTemplate, prettyValueOf)
 import PlutusCore (Some, ValueOf)
@@ -429,7 +427,7 @@ plam' ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   (Term s a -> Term s b) -> Term s (a :--> b)
 plam' f = Term $ do
-  fresh <- freshAndIncrement
+  fresh <- getFresh
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Argument)
   (vm, t) <- asRawTerm (f varTerm)
   let (mpt, vm') = vmDelete fresh vm
@@ -451,7 +449,7 @@ plet ::
   forall (a :: S -> Type) (b :: S -> Type) (s :: S).
   Term s a -> (Term s a -> Term s b) -> Term s b
 plet v f = Term $ do
-  fresh <- freshAndIncrement
+  fresh <- getFresh
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () LetBinding)
   (fvm, ft) <- asRawTerm (f varTerm)
   (vvm, vt) <- asRawTerm v
@@ -472,7 +470,7 @@ pfix ::
   (Term s (a :--> b) -> Term s (a :--> b)) ->
   Term s (a :--> b)
 pfix f = Term $ do
-  fresh <- freshAndIncrement
+  fresh <- getFresh
   let varTerm = Term . pure $ (vmSingleton fresh PHere, RVar () Self)
   (vm, t) <- asRawTerm (f varTerm)
   let (mpt, vm') = vmDelete fresh vm
@@ -826,15 +824,6 @@ mergeCase = zipWithAMatched $ \k v1 v2 -> case v1 of
       pure . PCase func $ args'
     _ -> throwError . BadMergeCase k v1 $ v2
   _ -> throwError . BadMergeCase k v1 $ v2
-
-freshAndIncrement ::
-  forall (m :: Type -> Type) (a :: Type).
-  (MonadState a m, Num a) =>
-  m a
-freshAndIncrement = do
-  fresh <- get
-  modify (+ 1)
-  pure fresh
 
 maybeToCan ::
   forall (a :: Type) (b :: Type).
