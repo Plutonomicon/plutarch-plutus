@@ -25,15 +25,7 @@ import Language.Haskell.TH (
   Type,
   newName,
  )
-import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
-import Plutarch.Primitive.BuiltinFun (pheadList)
-import Plutarch.Primitive.CanData (PCanData)
-import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Data (PData)
-import Plutarch.Primitive.Eq (PEq (peq))
-import Plutarch.Primitive.Match (PMatch (pmatch'))
-import Plutarch.Primitive.Pair (PBPair (PBPair))
-import Plutarch.TH.Helpers (
+import Plutarch.Helpers.TH (
   checkFieldIsWrapped,
   conToName,
   fullTypeName,
@@ -52,6 +44,14 @@ import Plutarch.TH.Helpers (
   punsafeConstantE,
   toSomeTermE,
  )
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.BuiltinFun (pheadList)
+import Plutarch.Primitive.CanData (PCanData)
+import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Data (PData)
+import Plutarch.Primitive.Eq (PEq (peq))
+import Plutarch.Primitive.Match (PMatch (pmatch'))
+import Plutarch.Primitive.Pair (PBPair (PBPair))
 import PlutusCore qualified as PLC
 
 -- | @since wip

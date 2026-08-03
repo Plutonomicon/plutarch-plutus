@@ -104,6 +104,7 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.Helpers.Numeric
+    Plutarch.Helpers.TH
     Plutarch.Internal.Case
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
@@ -182,7 +183,6 @@ library
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
     Plutarch.TH.Enum
-    Plutarch.TH.Helpers
     Plutarch.TH.MS
     Plutarch.TH.SOP
     Plutarch.TH.Strategy

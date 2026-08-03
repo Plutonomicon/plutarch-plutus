@@ -26,12 +26,7 @@ import Language.Haskell.TH (
   newName,
  )
 import Plutarch.Backend.Term (plam')
-import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Eq (PEq (peq))
-import Plutarch.Primitive.Match (PMatch (pmatch'))
-import Plutarch.Primitive.SOP (PSOP)
-import Plutarch.TH.Helpers (
+import Plutarch.Helpers.TH (
   conToName,
   fullTypeName,
   getArity,
@@ -42,6 +37,11 @@ import Plutarch.TH.Helpers (
   punsafeConstrE,
   toSomeTermE,
  )
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Eq (PEq (peq))
+import Plutarch.Primitive.Match (PMatch (pmatch'))
+import Plutarch.Primitive.SOP (PSOP)
 
 -- | @since wip
 deriveSOP :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]

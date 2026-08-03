@@ -32,13 +32,7 @@ import Language.Haskell.TH (
  )
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, papp, plam', punsafeCoerce)
-import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Bool (PBool)
-import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Eq (PEq (peq))
-import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Primitive.Match (PMatch (pmatch'))
-import Plutarch.TH.Helpers (
+import Plutarch.Helpers.TH (
   bindToName,
   conToFieldTypes,
   conToName,
@@ -49,6 +43,12 @@ import Plutarch.TH.Helpers (
   mkContextOf,
   mkPLam,
  )
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Bool (PBool)
+import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Eq (PEq (peq))
+import Plutarch.Primitive.Function ((:-->))
+import Plutarch.Primitive.Match (PMatch (pmatch'))
 
 -- | @since wip
 deriveMS :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]

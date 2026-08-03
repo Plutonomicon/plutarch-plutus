@@ -22,14 +22,7 @@ import Language.Haskell.TH (
   Type,
   newName,
  )
-import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
-import Plutarch.Primitive.BuiltinFun (pheadList)
-import Plutarch.Primitive.CanData (PCanData)
-import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Data (PData)
-import Plutarch.Primitive.List (PBList)
-import Plutarch.Primitive.Match (PMatch (pmatch'))
-import Plutarch.TH.Helpers (
+import Plutarch.Helpers.TH (
   checkFieldIsWrapped,
   conToName,
   fullTypeName,
@@ -41,6 +34,13 @@ import Plutarch.TH.Helpers (
   pnilDataE,
   punsafeCoerceE,
  )
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.BuiltinFun (pheadList)
+import Plutarch.Primitive.CanData (PCanData)
+import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Data (PData)
+import Plutarch.Primitive.List (PBList)
+import Plutarch.Primitive.Match (PMatch (pmatch'))
 
 -- | @since wip
 deriveDataList :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
