@@ -27,10 +27,34 @@ import System.FilePath ((<.>), (</>))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
 
+{- | Constructs golden files based on the given closed 'Term'. Specifically,
+will generate golden files of each of the following:
+
+* The 'Term' itself;
+* Its 'AST';
+* Its 'ANF', both before, and after, demand analysis; and
+* The resulting UPLC.
+
+All but the first of these will produce an error if the 'Term' fails to
+compile.
+
+= Important note
+
+Ensure that the test name is unique to all tests in your suite. This will be
+used to determine the name of the folder where the golden files will be
+placed: if there is a name collision, this will produce weird failures.
+
+@since wip
+-}
 plutarchGolden ::
   forall (a :: S -> Type).
+  {- | A description for the test. This is what you will see when you run the
+  golden test.
+  -}
   String ->
+  -- | A name for the test, which should be unique (as described above).
   String ->
+  -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
 plutarchGolden testDescription testName t =
