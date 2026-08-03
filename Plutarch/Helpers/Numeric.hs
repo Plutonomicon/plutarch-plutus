@@ -1,4 +1,4 @@
-module Plutarch.Numeric.Helpers (
+module Plutarch.Helpers.Numeric (
   pexpBySquaring,
   pizero,
   pione,
