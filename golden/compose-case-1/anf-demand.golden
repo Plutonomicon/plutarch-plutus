@@ -1,0 +1,47 @@
+ANF Hashes:
+ #0 := m5XKL3leqWoN
+ #1 := qjJx7b4Msxl
+ #2 := i8py2W1iKkz
+ #3 := rY8t205mIUqN
+ #4 := vjMEhbkCp9cN
+ #5 := wK4gCppT8Fn
+ #6 := uobS4qpm7fAN
+ #7 := lAuuiZ9AppE
+ #8 := hF9c7g4Bb9pN
+ #9 := adezdKolsQC
+ #10 := bIKUrGxqtHBN
+ #11 := qbe4R9mHpFp
+ #12 := vf8IfP1u4enN
+ #13 := oDk9d5OTbZo
+
+ANF Binds:
+ #0 := AddInteger
+ #1 := 2 :: Integer
+ #2 := Apply #0 [fDjhdb6tHhr, #1]
+ #3 := \fDjhdb6tHhr:1 -> #2
+ #4 := MultiplyInteger
+ #5 := Apply #4 [oOLG13GvP3nN, datZyZxDQtv]
+ #6 := \datZyZxDQtv:1 -> #5
+ #7 := SubtractInteger
+ #8 := 5 :: Integer
+ #9 := Apply #7 [lZmjiLE9xtw, #8]
+ #10 := \lZmjiLE9xtw:1 -> #9
+ #11 := #3 <<< #6 <<< #10
+ #12 := Apply #11 [oOLG13GvP3nN]
+ #13 := \oOLG13GvP3nN:2 -> #12
+
+ANF Annotations:
+ #0 := Trivial
+ #1 := Trivial
+ #2 := Demanded (Id 3) 1
+ #3 := Demanded (Id 13) 1
+ #4 := Trivial
+ #5 := Demanded (Id 6) 1
+ #6 := Demanded (Id 13) 1
+ #7 := Trivial
+ #8 := Trivial
+ #9 := Demanded (Id 10) 1
+ #10 := Demanded (Id 13) 1
+ #11 := Demanded (Id 13) 1
+ #12 := Demanded (Id 13) 1
+ #13 := NeverDemanded

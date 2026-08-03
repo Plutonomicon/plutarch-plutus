@@ -1,0 +1,15 @@
+ANF Hashes:
+ #0 := m5XKL3leqWoN
+ #1 := vjMEhbkCp9cN
+ #2 := yI8DIugRYDcN
+ #3 := fJUSkp3b4BnN
+ #4 := lT9yD6VtIlz
+ #5 := yCeZaksQ5ar
+
+ANF Binds:
+ #0 := AddInteger
+ #1 := MultiplyInteger
+ #2 := Apply #1 [oOLG13GvP3nN, oOLG13GvP3nN]
+ #3 := Apply #1 [fDjhdb6tHhr, fDjhdb6tHhr]
+ #4 := Apply #0 [#2, #3]
+ #5 := \oOLG13GvP3nN:2 fDjhdb6tHhr:2 -> #4

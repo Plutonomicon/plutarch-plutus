@@ -1,0 +1,25 @@
+<\oOLG13GvP3nN:2 -> 
+  <Apply
+    <Compose
+      [
+        <\fDjhdb6tHhr:1 -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN [fDjhdb6tHhr, <2 :: Integer>@qjJx7b4Msxl]
+          >@i8py2W1iKkz
+        >@rY8t205mIUqN, 
+        <\datZyZxDQtv:1 -> 
+          <Apply
+            <MultiplyInteger>@vjMEhbkCp9cN [oOLG13GvP3nN, datZyZxDQtv]
+          >@wK4gCppT8Fn
+        >@uobS4qpm7fAN, 
+        <\lZmjiLE9xtw:1 -> 
+          <Apply
+            <SubtractInteger>@lAuuiZ9AppE
+            [lZmjiLE9xtw, <5 :: Integer>@hF9c7g4Bb9pN]
+          >@adezdKolsQC
+        >@bIKUrGxqtHBN
+      ]
+    >@qbe4R9mHpFp
+    [oOLG13GvP3nN]
+  >@vf8IfP1u4enN
+>@oDk9d5OTbZo

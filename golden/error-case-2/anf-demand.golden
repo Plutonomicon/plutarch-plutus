@@ -1,0 +1,11 @@
+ANF Hashes:
+ #0 := snoyBrYmrlN
+ #1 := eAqkk5qxLrc
+
+ANF Binds:
+ #0 := ERROR
+ #1 := \oOLG13GvP3nN:1 -> #0
+
+ANF Annotations:
+ #0 := Trivial
+ #1 := NeverDemanded

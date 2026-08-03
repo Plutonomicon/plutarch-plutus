@@ -1,0 +1,24 @@
+\a b ->
+  case a
+    [ \c ->
+        case b
+          [ \d -> EqualsInteger # c # d
+          , \_ -> False :: Bool
+          , \_ _ -> False :: Bool
+          ]
+    , \e ->
+        case b
+          [ \_ -> False :: Bool
+          , \f -> EqualsInteger # e # f
+          , \_ _ -> False :: Bool
+          ]
+    , \g h ->
+        case b
+          [ \_ -> False :: Bool
+          , \_ -> False :: Bool
+          , \i j ->
+              case 
+                (EqualsInteger # h # j)
+                [False :: Bool, EqualsInteger # g # i]
+          ]
+    ]

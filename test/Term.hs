@@ -18,8 +18,8 @@ goldens :: TestTree
 goldens =
   testGroup
     "Term"
-    [ plutarchGolden "\\x -> (\\y -> y) ((\\z -> z) x)" "Case 1" case1
-    , plutarchGolden "\\x -> force (delay x)" "Case 2" case2
+    [ plutarchGolden "\\x -> (\\y -> y) ((\\z -> z) x)" "Term Case 1" case1
+    , plutarchGolden "\\x -> force (delay x)" "Term Case 2" case2
     ]
 
 -- Cases

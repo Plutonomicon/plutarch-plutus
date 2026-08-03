@@ -1,0 +1,43 @@
+ANF Hashes:
+ #0 := dr5yy9ULU5j
+ #1 := hTZyTFV7cmhN
+ #2 := jruczESvzajN
+ #3 := ofkSqfsbj7l
+ #4 := wlLU94G0EHoN
+ #5 := i8lLZjQ3HArN
+ #6 := ltW0ItXXSGr
+ #7 := sx7tFDgHbIh
+ #8 := mxxHIeUfs6b
+ #9 := iyp3TE6qbSvN
+ #10 := tF4slwvUIpf
+ #11 := r335jknHYcm
+ #12 := hE1QK8pH3VxN
+ #13 := dIPb0M0m3MjN
+ #14 := lQQBhx6VpZCN
+ #15 := wuy0imIhvcD
+ #16 := t5yt126JWjN
+ #17 := sI0CLyfcjGc
+ #18 := uMLGVJ4eWqv
+ #19 := m5Ei0FS0RK
+
+ANF Binds:
+ #0 := EqualsInteger
+ #1 := Apply #0 [datZyZxDQtv, lZmjiLE9xtw]
+ #2 := \lZmjiLE9xtw:1 -> #1
+ #3 := False :: Bool
+ #4 := \_ -> #3
+ #5 := \_ _ -> #3
+ #6 := Case fDjhdb6tHhr [#2, #4, #5]
+ #7 := \datZyZxDQtv:1 -> #6
+ #8 := Apply #0 [p4sXwS8SsCb, gj5npqULRul]
+ #9 := \gj5npqULRul:1 -> #8
+ #10 := Case fDjhdb6tHhr [#4, #9, #5]
+ #11 := \p4sXwS8SsCb:1 -> #10
+ #12 := Apply #0 [o4D79O2oigpN, yaX1WGBRrzw]
+ #13 := Apply #0 [gkpA63EOvxy, fafl0TrfiamN]
+ #14 := Case #12 [#3, #13]
+ #15 := \fafl0TrfiamN:1 yaX1WGBRrzw:1 -> #14
+ #16 := Case fDjhdb6tHhr [#4, #4, #15]
+ #17 := \gkpA63EOvxy:1 o4D79O2oigpN:1 -> #16
+ #18 := Case oOLG13GvP3nN [#7, #11, #17]
+ #19 := \oOLG13GvP3nN:1 fDjhdb6tHhr:3 -> #18

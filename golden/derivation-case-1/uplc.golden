@@ -1,0 +1,26 @@
+\oOLG13GvP3nN fDjhdb6tHhr ->
+  let bind_g = \unused_a unused_a -> (False :: Bool)
+  let bind_f = \unused_a -> (False :: Bool)
+  in case oOLG13GvP3nN
+       [ \datZyZxDQtv ->
+           case fDjhdb6tHhr
+             [ \lZmjiLE9xtw -> EqualsInteger # datZyZxDQtv # lZmjiLE9xtw
+             , bind_f
+             , bind_g
+             ]
+       , \p4sXwS8SsCb ->
+           case fDjhdb6tHhr
+             [ bind_f
+             , \gj5npqULRul -> EqualsInteger # p4sXwS8SsCb # gj5npqULRul
+             , bind_g
+             ]
+       , \gkpA63EOvxy o4D79O2oigpN ->
+           case fDjhdb6tHhr
+             [ bind_f
+             , bind_f
+             , \fafl0TrfiamN yaX1WGBRrzw ->
+                 case 
+                   (EqualsInteger # o4D79O2oigpN # yaX1WGBRrzw)
+                   [(False :: Bool), EqualsInteger # gkpA63EOvxy # fafl0TrfiamN]
+             ]
+       ]
