@@ -51,5 +51,7 @@ allow-newer:
   , bin:QuickCheck
   -- https://github.com/IntersectMBO/plutus/pull/7236
   , turtle:optparse-applicative
+  -- Needed due to QuickCheck pin
+  , hedgehog-quickcheck:QuickCheck
 
 constraints: setup.optparse-applicative >=0.19.0.0

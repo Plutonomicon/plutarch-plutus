@@ -163,7 +163,7 @@ library
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
-    , QuickCheck
+    , QuickCheck            ^>=2.18
     , quickcheck-instances
     , random
     , semialign
