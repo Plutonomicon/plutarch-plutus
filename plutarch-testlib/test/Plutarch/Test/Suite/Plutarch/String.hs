@@ -1,8 +1,10 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.String (tests) where
 
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 {-# HLINT ignore tests "Monoid law, left identity" #-}
 tests :: TestTree

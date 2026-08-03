@@ -1,15 +1,17 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.Maybe (tests) where
 
 import Data.Kind (Type)
 import Plutarch.LedgerApi.Utils (PMaybeData, pmapMaybeData, pmaybeDataToMaybe, pmaybeToMaybeData)
 import Plutarch.Maybe (pmapMaybe)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkPLiftableLaws)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent, propEvalEqual)
 import Plutarch.Test.Utils (instanceOfType)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

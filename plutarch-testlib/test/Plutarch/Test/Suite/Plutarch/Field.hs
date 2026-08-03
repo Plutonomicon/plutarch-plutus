@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE PackageImports #-}
 {-# OPTIONS_GHC -Wno-deprecations #-}
 
 -- TODO: Remove this module once old DataRepr stuff is fully gone
@@ -6,12 +7,12 @@
 module Plutarch.Test.Suite.Plutarch.Field (tests) where
 
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.SpecTypes (PTriplet)
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusTx (toData)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

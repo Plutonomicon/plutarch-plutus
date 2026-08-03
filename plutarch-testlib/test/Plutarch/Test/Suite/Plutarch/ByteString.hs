@@ -1,3 +1,5 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.ByteString (tests) where
 
 import Data.ByteString (ByteString)
@@ -5,9 +7,9 @@ import Data.ByteString qualified as BS
 import GHC.Exts (fromList)
 import Plutarch.Prelude
 import Plutarch.String (pisHexDigit)
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 {-# HLINT ignore tests "Monoid law, left identity" #-}
 tests :: TestTree

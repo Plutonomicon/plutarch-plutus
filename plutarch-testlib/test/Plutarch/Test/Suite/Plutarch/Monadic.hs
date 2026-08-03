@@ -1,3 +1,4 @@
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE QualifiedDo #-}
 
 module Plutarch.Test.Suite.Plutarch.Monadic (tests) where
@@ -6,8 +7,8 @@ import Control.Monad.Trans.Cont (cont, runCont)
 import Plutarch.Internal.ListLike (pconvertLists)
 import Plutarch.Monadic qualified as P
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, plutarchGolden)
 
 tests :: TestTree
 tests =

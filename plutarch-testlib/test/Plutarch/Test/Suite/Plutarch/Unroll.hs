@@ -1,11 +1,12 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.Unroll (tests, unrollBenches) where
 
 import Plutarch.Prelude
-
 import Plutarch.Test.Bench (bench)
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Unit (testEvalEqual, testEvalFail)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 regularLength :: forall list a s. PIsListLike list a => Term s (list a :--> PInteger)
 regularLength = pfixHoisted # plam go #$ 0

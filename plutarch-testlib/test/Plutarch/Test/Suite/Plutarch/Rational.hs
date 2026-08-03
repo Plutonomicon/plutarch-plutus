@@ -1,10 +1,11 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.Rational (tests) where
 
 import Plutarch.Evaluate (evalTerm')
 import Plutarch.Internal.Term (Config (NoTracing))
 import Plutarch.Prelude
 import Plutarch.Rational (pproperFraction, preduce, ptruncate)
-import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.Methods (
   ppowPositiveBetter,
   pscaleIntegerBetter,
@@ -13,6 +14,7 @@ import Plutarch.Test.Methods (
  )
 import Plutarch.Unsafe (punsafeCoerce)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

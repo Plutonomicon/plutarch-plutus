@@ -1,3 +1,5 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.List (tests, integerList) where
 
 import Data.List (find)
@@ -6,11 +8,11 @@ import Plutarch.Internal.ListLike (pconvertLists, pfoldl')
 import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.List (pcheckSorted, pmatchList, preverse)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent)
 import Plutarch.Test.Unit (testEvalEqual)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck (testProperty)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenEvalFail, goldenGroup, plutarchGolden)
 
 integerList :: [Integer] -> Term s (PList PInteger)
 integerList xs = pconvertLists #$ pconstant @(PBuiltinList PInteger) xs
