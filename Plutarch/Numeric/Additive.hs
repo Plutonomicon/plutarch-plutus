@@ -16,7 +16,7 @@ import Plutarch.Backend.Term (
   punsafeCoerce,
   punsafeConstant,
  )
-import Plutarch.Numeric.Helpers (
+import Plutarch.Helpers.Numeric (
   pexpBySquaring,
   pione,
   pizero,

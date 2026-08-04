@@ -10,10 +10,10 @@ import Language.Haskell.TH (
   Name,
   Q,
  )
+import Plutarch.Helpers.TH (checkFieldsAreTerms, checkTyName)
 import Plutarch.TH.DataList (deriveDataList)
 import Plutarch.TH.DataPlutus (deriveDataPlutus)
 import Plutarch.TH.Enum (deriveEnum)
-import Plutarch.TH.Helpers (checkFieldsAreTerms, checkTyName)
 import Plutarch.TH.MS (deriveMS)
 import Plutarch.TH.SOP (deriveSOP)
 

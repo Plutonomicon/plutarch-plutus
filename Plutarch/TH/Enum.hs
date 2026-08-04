@@ -24,12 +24,7 @@ import Language.Haskell.TH (
   TyVarBndr,
   Type,
  )
-import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
-import Plutarch.Primitive.Con (PCon (pcon'))
-import Plutarch.Primitive.Eq (PEq (peq))
-import Plutarch.Primitive.Match (PMatch (pmatch'))
-import Plutarch.Primitive.Numeric (PInteger)
-import Plutarch.TH.Helpers (
+import Plutarch.Helpers.TH (
   conToName,
   fullTypeName,
   hasNoFields,
@@ -40,6 +35,11 @@ import Plutarch.TH.Helpers (
   punsafeConstantE,
   toSomeTermE,
  )
+import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
+import Plutarch.Primitive.Con (PCon (pcon'))
+import Plutarch.Primitive.Eq (PEq (peq))
+import Plutarch.Primitive.Match (PMatch (pmatch'))
+import Plutarch.Primitive.Numeric (PInteger)
 import PlutusCore qualified as PLC
 
 -- | @since wip

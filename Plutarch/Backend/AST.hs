@@ -38,11 +38,9 @@ import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Control.Monad.RWS.CPS (
   MonadReader (ask, local),
-  MonadState (get),
   RWS,
   asks,
   evalRWS,
-  modify,
  )
 import Data.Hashable (Hashable (hash, hashWithSalt), defaultHashWithSalt)
 import Data.Kind (Type)
@@ -95,6 +93,7 @@ import Plutarch.Backend.VarMap (
   vmMerge,
   vmSingleton,
  )
+import Plutarch.Helpers.Backend (getFresh)
 import Plutarch.Utils.Pretty (blockList, compactReadableVar, prettyValueOf, taggedNode)
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
@@ -557,15 +556,6 @@ separateCase acc@(scrutVM, handlerVMs) k = \case
     go vm = \case
       Nothing -> vm
       Just t -> vmExtend k t vm
-
-getFresh ::
-  forall (a :: Type) (m :: Type -> Type).
-  (MonadState a m, Num a) =>
-  m a
-getFresh = do
-  fresh <- get
-  modify (+ 1)
-  pure fresh
 
 countVarUsage ::
   forall (ann :: Type).

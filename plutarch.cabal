@@ -103,6 +103,9 @@ library
     Plutarch.Either
     Plutarch.Enum
     Plutarch.Evaluate
+    Plutarch.Helpers.Backend
+    Plutarch.Helpers.Numeric
+    Plutarch.Helpers.TH
     Plutarch.Internal.Case
     Plutarch.Internal.Eq
     Plutarch.Internal.Evaluate
@@ -136,7 +139,6 @@ library
     Plutarch.Numeric.Additive
     Plutarch.Numeric.Euclidean
     Plutarch.Numeric.Field
-    Plutarch.Numeric.Helpers
     Plutarch.Numeric.Multiplicative
     Plutarch.Numeric.Positive
     Plutarch.Numeric.Zeroable
@@ -185,7 +187,6 @@ library
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
     Plutarch.TH.Enum
-    Plutarch.TH.Helpers
     Plutarch.TH.MS
     Plutarch.TH.SOP
     Plutarch.TH.Strategy

@@ -9,7 +9,7 @@ module Plutarch.Numeric.Multiplicative (
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (Term, plam', punsafeCoerce)
-import Plutarch.Numeric.Helpers (pexpBySquaring, pione, pizero)
+import Plutarch.Helpers.Numeric (pexpBySquaring, pione, pizero)
 import Plutarch.Primitive.Apply (
   PlutarchType (PRepresentation),
   pcoerce,

@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskellQuotes #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
-module Plutarch.TH.Helpers (
+module Plutarch.Helpers.TH (
   checkTyName,
   getArity,
   conToName,
