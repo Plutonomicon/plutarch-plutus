@@ -1,0 +1,5 @@
+\a b ->
+  case a
+    [ \c -> case b [\d -> EqualsInteger # c # d, \_ -> False :: Bool]
+    , \e -> case b [\_ -> False :: Bool, \f -> EqualsInteger # e # f]
+    ]

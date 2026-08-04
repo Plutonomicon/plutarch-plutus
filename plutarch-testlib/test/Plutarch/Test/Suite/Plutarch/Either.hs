@@ -1,3 +1,5 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.Either (tests) where
 
 import Plutarch.Either (PEitherData (PDLeft, PDRight))
@@ -5,10 +7,10 @@ import Plutarch.Evaluate (evalTerm')
 import Plutarch.Internal.Term (Config (NoTracing))
 import Plutarch.LedgerApi.V1 (PPosixTime)
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerProperties)
 import Plutarch.Test.Methods (pmaxDefaultBetter, pminDefaultBetter)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

@@ -1,0 +1,36 @@
+\oOLG13GvP3nN fDjhdb6tHhr ->
+  case 
+    (EqualsInteger # oOLG13GvP3nN # (0 :: Integer))
+    [ (\datZyZxDQtv ->
+        (\mArg_a -> mArg_a # mArg_a)
+        # (\functionalArg_b ->
+            (\eCBOolj7xId bUiGidwO3Fh ->
+              case 
+                (EqualsInteger # bUiGidwO3Fh # (0 :: Integer))
+                [ (\ti6ipqViMlsN ->
+                    lZmjiLE9xtw
+                    # ti6ipqViMlsN
+                    # (ModInteger # eCBOolj7xId # ti6ipqViMlsN)
+                  )
+                  # bUiGidwO3Fh
+                , (\p4sXwS8SsCb ->
+                    case 
+                      (LessThanEqualsInteger # p4sXwS8SsCb # (0 :: Integer))
+                      [ p4sXwS8SsCb
+                      , (\yWumnJg3ddDN ->
+                          SubtractInteger # (0 :: Integer) # yWumnJg3ddDN
+                        )
+                        # p4sXwS8SsCb
+                      ]
+                  )
+                  # eCBOolj7xId
+                ]
+            )
+            # (functionalArg_b # functionalArg_b)
+          )
+        # datZyZxDQtv
+        # fDjhdb6tHhr
+      )
+      # oOLG13GvP3nN
+    , fDjhdb6tHhr
+    ]

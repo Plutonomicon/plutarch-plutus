@@ -1,0 +1,24 @@
+\a b ->
+  case 
+    (EqualsInteger # a # 0 :: Integer)
+    [ (\c ->
+        (
+          fix (\d_self e f ->
+                case 
+                  (EqualsInteger # f # 0 :: Integer)
+                  [ (\g -> d_self # g # (ModInteger # e # g)) # f
+                  , (\h ->
+                      case 
+                        (LessThanEqualsInteger # h # 0 :: Integer)
+                        [h, (\i -> SubtractInteger # 0 :: Integer # i) # h]
+                    )
+                    # e
+                  ]
+              )
+        )
+        # c
+        # b
+      )
+      # a
+    , b
+    ]

@@ -1,3 +1,5 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.PlutarchLedgerApi.AssocMap (
   assocMapBenches,
   tests,
@@ -21,7 +23,6 @@ import Plutarch.LedgerApi.Utils (pmaybeToMaybeData)
 import Plutarch.Maybe (pjust, pmapMaybe, pnothing)
 import Plutarch.Prelude
 import Plutarch.Test.Bench (bcompareWithin, bench)
-import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerPropertiesAssocMap)
 import Plutarch.Test.QuickCheck (checkHaskellEquivalent2, propEval, propEvalEqual)
 import Plutarch.Test.Unit (testEvalEqual)
@@ -33,6 +34,7 @@ import Prettyprinter (Pretty)
 import Test.QuickCheck (Arbitrary, arbitrary, shrink)
 import Test.Tasty (TestTree, adjustOption, testGroup)
 import Test.Tasty.QuickCheck (Property, forAllShrinkShow, testProperty)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, plutarchGolden)
 
 mkAssocMapFixture :: [Integer] -> Term s (PSortedMap PInteger PInteger)
 mkAssocMapFixture =

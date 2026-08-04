@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Plutarch.Test.Suite.Plutarch.Parse (tests) where
@@ -10,7 +11,6 @@ import Generics.SOP qualified as SOP
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData, OtherLiftError))
 import Plutarch.Prelude
 import Plutarch.Repr.Tag (DeriveAsTag (DeriveAsTag))
-import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import PlutusCore.Data (Data (B, Constr, I, List))
 import PlutusTx (
   FromData (fromBuiltinData),
@@ -36,6 +36,7 @@ import PlutusTx.Builtins.Internal (
  )
 import PlutusTx.Builtins.Internal qualified as PTx
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, plutarchGolden)
 
 tests :: TestTree
 tests =

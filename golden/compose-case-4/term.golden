@@ -1,0 +1,2 @@
+\a ->
+  ((\b -> MultiplyInteger # b # b) . (\c -> AddInteger # c # 2 :: Integer)) # a

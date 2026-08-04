@@ -1,0 +1,20 @@
+ANF Hashes:
+ #0 := oWFQFgV6AJkN
+ #1 := mEmTpVQhZ1i
+ #2 := kurP9EGAUkl
+ #3 := yv15VWhLCiwN
+ #4 := rW4fhYaXJScN
+
+ANF Binds:
+ #0 := \fDjhdb6tHhr:1 -> fDjhdb6tHhr
+ #1 := \datZyZxDQtv:1 -> datZyZxDQtv
+ #2 := Apply #1 [oOLG13GvP3nN]
+ #3 := Apply #0 [#2]
+ #4 := \oOLG13GvP3nN:1 -> #3
+
+ANF Annotations:
+ #0 := Demanded (Id 4) 1
+ #1 := Demanded (Id 4) 1
+ #2 := Demanded (Id 4) 1
+ #3 := Demanded (Id 4) 1
+ #4 := NeverDemanded

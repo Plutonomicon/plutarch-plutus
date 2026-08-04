@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 
 -- Needed because ImpredicativeTypes is too stupid to figure out
@@ -27,12 +28,12 @@ import Plutarch.Array (
 import Plutarch.Evaluate (evalTerm')
 import Plutarch.Internal.Term (Config (NoTracing))
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import Plutarch.Test.Methods (ppowPositiveBetter, pscalePositiveBetter)
 import Plutarch.Test.QuickCheck (propEvalEqual)
 import Plutarch.Unsafe (punsafeCoerce)
 import Test.QuickCheck.Instances ()
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, plutarchGolden)
 
 tests :: TestTree
 tests =

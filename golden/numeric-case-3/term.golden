@@ -1,0 +1,28 @@
+\a b ->
+  case 
+    (EqualsInteger # 0 :: Integer # b)
+    [ (\c ->
+        fix (\d_self e ->
+              case 
+                (EqualsInteger # e # 1 :: Integer)
+                [ case 
+                    (RemainderInteger # e # 2 :: Integer)
+                    [ MultiplyInteger
+                      # (d_self # (QuotientInteger # e # 2 :: Integer))
+                      # (d_self # (QuotientInteger # e # 2 :: Integer))
+                    , MultiplyInteger
+                      # (
+                          MultiplyInteger
+                          # (d_self # (QuotientInteger # e # 2 :: Integer))
+                          # (d_self # (QuotientInteger # e # 2 :: Integer))
+                        )
+                      # c
+                    ]
+                , c
+                ]
+            )
+      )
+      # a
+      # b
+    , 1 :: Integer
+    ]

@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE PackageImports #-}
 {-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Plutarch.Test.Suite.Plutarch.POrd (tests) where
@@ -14,12 +15,12 @@ import Plutarch.LedgerApi.V1 (
   PMaybeData,
  )
 import Plutarch.Prelude
-import Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkHaskellOrdEquivalent, checkPOrdLaws)
 import Plutarch.Test.SpecTypes (PTriplet, Triplet (Triplet))
 import PlutusLedgerApi.QuickCheck.Utils ()
 import PlutusLedgerApi.V1 (Credential (PubKeyCredential, ScriptCredential))
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (GoldenTestTree, goldenEval, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

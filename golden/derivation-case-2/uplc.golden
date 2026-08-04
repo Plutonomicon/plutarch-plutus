@@ -1,0 +1,10 @@
+\oOLG13GvP3nN fDjhdb6tHhr ->
+  let bind_f = \unused_a -> (False :: Bool)
+  in case oOLG13GvP3nN
+       [ \datZyZxDQtv ->
+           case fDjhdb6tHhr
+             [\lZmjiLE9xtw -> EqualsInteger # datZyZxDQtv # lZmjiLE9xtw, bind_f]
+       , \bUiGidwO3Fh ->
+           case fDjhdb6tHhr
+             [bind_f, \p4sXwS8SsCb -> EqualsInteger # bUiGidwO3Fh # p4sXwS8SsCb]
+       ]

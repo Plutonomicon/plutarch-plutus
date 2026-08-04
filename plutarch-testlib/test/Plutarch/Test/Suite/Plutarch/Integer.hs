@@ -1,9 +1,11 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.Integer (tests) where
 
 import Plutarch.Prelude
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import Plutarch.Test.Laws (checkLedgerPropertiesPCountable, checkLedgerPropertiesPEnumerable)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

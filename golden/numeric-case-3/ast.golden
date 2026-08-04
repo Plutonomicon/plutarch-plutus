@@ -1,0 +1,89 @@
+<\oOLG13GvP3nN:1 fDjhdb6tHhr:2 -> 
+  <case
+    <Apply
+      <EqualsInteger>@dr5yy9ULU5j [<0 :: Integer>@mqE7eqJLvgvN, fDjhdb6tHhr]
+    >@qSfJlBaB8jg 
+    [
+      <Apply
+        <\datZyZxDQtv:2 -> 
+          <Fix
+            [lZmjiLE9xtw:4]
+            <\eCBOolj7xId:6 -> 
+              <case
+                <Apply
+                  <EqualsInteger>@dr5yy9ULU5j
+                  [eCBOolj7xId, <1 :: Integer>@vyRIuwDii3A]
+                >@kMkRSKqTnAkN 
+                [
+                  <case
+                    <Apply
+                      <RemainderInteger>@n275PtZtdlc
+                      [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                    >@ocG8t8PJKFA 
+                    [
+                      <Apply
+                        <MultiplyInteger>@vjMEhbkCp9cN
+                        [
+                          <Apply
+                            lZmjiLE9xtw
+                            [
+                              <Apply
+                                <QuotientInteger>@kq3kmmKulbi
+                                [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                              >@hg2X6q0B0Ux
+                            ]
+                          >@jFoE1cKX8xk, 
+                          <Apply
+                            lZmjiLE9xtw
+                            [
+                              <Apply
+                                <QuotientInteger>@kq3kmmKulbi
+                                [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                              >@hg2X6q0B0Ux
+                            ]
+                          >@jFoE1cKX8xk
+                        ]
+                      >@eMYZWc7UWso, 
+                      <Apply
+                        <MultiplyInteger>@vjMEhbkCp9cN
+                        [
+                          <Apply
+                            <MultiplyInteger>@vjMEhbkCp9cN
+                            [
+                              <Apply
+                                lZmjiLE9xtw
+                                [
+                                  <Apply
+                                    <QuotientInteger>@kq3kmmKulbi
+                                    [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                                  >@hg2X6q0B0Ux
+                                ]
+                              >@jFoE1cKX8xk, 
+                              <Apply
+                                lZmjiLE9xtw
+                                [
+                                  <Apply
+                                    <QuotientInteger>@kq3kmmKulbi
+                                    [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                                  >@hg2X6q0B0Ux
+                                ]
+                              >@jFoE1cKX8xk
+                            ]
+                          >@eMYZWc7UWso, 
+                          datZyZxDQtv
+                        ]
+                      >@smkDB23mVKfN
+                    ]
+                  >@jmtcjBojUkdN, 
+                  datZyZxDQtv
+                ]
+              >@tbak4tM3q4m
+            >@clZ1xRwReny
+          >@f2HZ3PbF85qN
+        >@eCmWgwcEpfjN
+        [oOLG13GvP3nN, fDjhdb6tHhr]
+      >@rrb4goHIsXuN, 
+      <1 :: Integer>@vyRIuwDii3A
+    ]
+  >@y1JFByIR9wo
+>@jhU9DszYDGv

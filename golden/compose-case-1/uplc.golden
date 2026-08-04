@@ -1,0 +1,12 @@
+\oOLG13GvP3nN ->
+  let compArg_a = oOLG13GvP3nN
+  let fDjhdb6tHhr = (\datZyZxDQtv ->
+                      MultiplyInteger # oOLG13GvP3nN # datZyZxDQtv
+                    )
+                    # (
+                        (\lZmjiLE9xtw ->
+                          SubtractInteger # lZmjiLE9xtw # (5 :: Integer)
+                        )
+                        # compArg_a
+                      )
+  in AddInteger # fDjhdb6tHhr # (2 :: Integer)

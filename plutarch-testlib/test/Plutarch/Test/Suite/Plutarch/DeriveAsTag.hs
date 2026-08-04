@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UndecidableSuperClasses #-}
 
@@ -26,12 +27,12 @@ import Plutarch.Prelude (
   pmatch,
  )
 import Plutarch.Repr.Tag (DeriveAsTag (DeriveAsTag))
-import Plutarch.Test.Golden (goldenEval, plutarchGolden)
 import Plutarch.Test.Laws (checkPLiftableLaws, checkPLiftableLawsForDeriveTags, checkPlutusTypeLaws)
 import Prettyprinter (Pretty (pretty))
 import Test.QuickCheck.Arbitrary (Arbitrary (arbitrary))
 import Test.QuickCheck.Gen (elements)
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, plutarchGolden)
 
 data PFoo1 (s :: S) = A1
   deriving stock (GHC.Generic, Show, Eq)

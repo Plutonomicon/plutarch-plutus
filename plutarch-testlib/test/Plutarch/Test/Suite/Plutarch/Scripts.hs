@@ -1,3 +1,5 @@
+{-# LANGUAGE PackageImports #-}
+
 module Plutarch.Test.Suite.Plutarch.Scripts (tests) where
 
 import Codec.Serialise (serialise)
@@ -24,9 +26,9 @@ import Plutarch.LedgerApi.V3 (
  )
 import Plutarch.Prelude
 import Plutarch.Script (Script)
-import Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 import PlutusLedgerApi.V1 qualified as Plutus
 import Test.Tasty (TestTree, testGroup)
+import "plutarch-testlib" Plutarch.Test.Golden (goldenEval, goldenGroup, plutarchGolden)
 
 tests :: TestTree
 tests =

@@ -1,0 +1,69 @@
+<\oOLG13GvP3nN:2 fDjhdb6tHhr:2 -> 
+  <case
+    <Apply
+      <EqualsInteger>@dr5yy9ULU5j [oOLG13GvP3nN, <0 :: Integer>@mqE7eqJLvgvN]
+    >@xHs2s8gm9YgN 
+    [
+      <Apply
+        <\datZyZxDQtv:1 -> 
+          <Apply
+            <Fix
+              [lZmjiLE9xtw:1]
+              <\eCBOolj7xId:2 bUiGidwO3Fh:2 -> 
+                <case
+                  <Apply
+                    <EqualsInteger>@dr5yy9ULU5j
+                    [bUiGidwO3Fh, <0 :: Integer>@mqE7eqJLvgvN]
+                  >@snLiMg4JfOrN 
+                  [
+                    <Apply
+                      <\ti6ipqViMlsN:2 -> 
+                        <Apply
+                          lZmjiLE9xtw
+                          [
+                            ti6ipqViMlsN, 
+                            <Apply
+                              <ModInteger>@jkPDXneA23xN
+                              [eCBOolj7xId, ti6ipqViMlsN]
+                            >@cIWTqFaO6ECN
+                          ]
+                        >@gr94HPjl9bA
+                      >@waEoq0hhp4r
+                      [bUiGidwO3Fh]
+                    >@i8RlbDpxYphN, 
+                    <Apply
+                      <\p4sXwS8SsCb:3 -> 
+                        <case
+                          <Apply
+                            <LessThanEqualsInteger>@khwRaGmJyGyN
+                            [p4sXwS8SsCb, <0 :: Integer>@mqE7eqJLvgvN]
+                          >@ozAoBq5zyhA 
+                          [
+                            p4sXwS8SsCb, 
+                            <Apply
+                              <\yWumnJg3ddDN:1 -> 
+                                <Apply
+                                  <SubtractInteger>@lAuuiZ9AppE
+                                  [<0 :: Integer>@mqE7eqJLvgvN, yWumnJg3ddDN]
+                                >@cw80DIyiumyN
+                              >@xc7canbYuJi
+                              [p4sXwS8SsCb]
+                            >@nZ7OvwvfpYmN
+                          ]
+                        >@lWA1q3JcxPb
+                      >@lp4m3fI44AkN
+                      [eCBOolj7xId]
+                    >@ddBkoDu5prEN
+                  ]
+                >@pbwDHrc56yC
+              >@bCEcVV1FgSd
+            >@eq8jlfSqPrz
+            [datZyZxDQtv, fDjhdb6tHhr]
+          >@aeJvdYWrfnhN
+        >@nwwEFXyuoHtN
+        [oOLG13GvP3nN]
+      >@bzQqmRfHoKn, 
+      fDjhdb6tHhr
+    ]
+  >@olCkKrI9txu
+>@fx2nFCMg6Ac

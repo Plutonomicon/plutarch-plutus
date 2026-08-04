@@ -1,0 +1,7 @@
+\a ->
+  (
+    (\b -> AddInteger # b # 2 :: Integer)
+    . (\c -> AddInteger # c # 2 :: Integer)
+    . (\d -> AddInteger # d # 2 :: Integer)
+  )
+  # a

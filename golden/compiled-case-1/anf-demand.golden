@@ -1,0 +1,15 @@
+ANF Hashes:
+ #0 := nHY6ZBWu65xN
+ #1 := fH1r6OpkSnj
+ #2 := bKUFLC0046dN
+
+ANF Binds:
+ #0 := COMPILED {\oOLG13GvP3nN fDjhdb6tHhr datZyZxDQtv ->
+                   case oOLG13GvP3nN [datZyZxDQtv, fDjhdb6tHhr]}
+ #1 := Apply #0 [oOLG13GvP3nN, fDjhdb6tHhr, datZyZxDQtv]
+ #2 := \oOLG13GvP3nN:1 fDjhdb6tHhr:1 datZyZxDQtv:1 -> #1
+
+ANF Annotations:
+ #0 := Demanded (Id 2) 1
+ #1 := Demanded (Id 2) 1
+ #2 := NeverDemanded
