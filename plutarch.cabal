@@ -180,6 +180,7 @@ library
     Plutarch.Script
     Plutarch.String
     Plutarch.TermCont
+    Plutarch.Test.Codegen
     Plutarch.Test.Golden
     Plutarch.TH.DataList
     Plutarch.TH.DataPlutus
@@ -206,6 +207,7 @@ library
     , indexed-traversable
     , lens
     , mtl
+    , myers-diff
     , nonempty-containers
     , nonempty-vector
     , plutus-core           ==1.64.0.0
@@ -218,6 +220,7 @@ library
     , semialign
     , smash
     , sop-core
+    , tagged
     , tasty
     , tasty-golden
     , template-haskell
